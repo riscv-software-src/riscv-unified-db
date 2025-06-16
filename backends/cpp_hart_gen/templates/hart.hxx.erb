@@ -225,8 +225,8 @@ namespace udb {
         return m_csr_addr_map.count(csr_addr) == 1;
       }
 
-      <%= name_of(:struct, "Csr", cfg_arch) %> direct_csr_lookup(const Bits<12>& csr_addr) {
-        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
+      <%= name_of(:struct, cfg_arch, "Csr") %> direct_csr_lookup(const Bits<12>& csr_addr) {
+        <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
         auto csr = m_csr_addr_map.find(csr_addr);
         if (csr == m_csr_addr_map.end()) {
@@ -244,8 +244,8 @@ namespace udb {
         }
       }
 
-      <%= name_of(:struct, "Csr", cfg_arch) %> indirect_csr_lookup(const Bits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
-        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
+      <%= name_of(:struct, cfg_arch, "Csr") %> indirect_csr_lookup(const Bits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
+        <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
         udb_assert((window_slot > 0) && (window_slot <= 6), "Indirect slots must be between 1-6, inclusive");
 
@@ -265,7 +265,7 @@ namespace udb {
         }
       }
 
-      PossiblyUnknownBits<64> csr_hw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+      PossiblyUnknownBits<64> csr_hw_read(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
@@ -277,7 +277,7 @@ namespace udb {
         }
       }
 
-      PossiblyUnknownBits<64> csr_sw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+      PossiblyUnknownBits<64> csr_sw_read(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
@@ -289,7 +289,7 @@ namespace udb {
         }
       }
 
-      void csr_sw_write(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle, const Bits<<%= cfg_arch.mxlen %>>& value) {
+      void csr_sw_write(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle, const Bits<<%= cfg_arch.mxlen %>>& value) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");

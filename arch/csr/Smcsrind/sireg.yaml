@@ -4,6 +4,7 @@ kind: csr
 name: sireg
 long_name: Supervisor Indirect Register Alias
 address: 0x151
+writable: true
 priv_mode: S
 length: SXLEN
 definedBy: Sscsrind

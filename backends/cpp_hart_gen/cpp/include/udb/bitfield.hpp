@@ -60,7 +60,7 @@ namespace udb {
     BitfieldMember(const BitfieldMember &other) : m_parent(other.m_parent) {}
 
     static constexpr Bits<Size> MaximumValue =
-        (Bits<1>(1).template sll<Size>()) - 1;
+        (Bits<1>(1).template widening_sll<Size>()) - 1;
     static constexpr Bits<ParentSize> Mask = MaximumValue.template sll<Start>();
 
     template <unsigned N>
@@ -198,7 +198,7 @@ namespace udb {
     requires(N >= Size)
   BitfieldMember<ParentSize, Start, Size>::template
   operator PossiblyUnknownBits<N>() const {
-    return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
+    return (static_cast<Bits<ParentSize>>((m_parent) >> Start)) & MaximumValue;
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>

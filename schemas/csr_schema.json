@@ -189,6 +189,7 @@
         "long_name",
         "length",
         "description",
+        "writable",
         "priv_mode",
         "definedBy"
       ],
