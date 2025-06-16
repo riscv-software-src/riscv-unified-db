@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.syncwf
+long_name: Non-memory-mapped device write-after-read synchronization
+description: |
+  This synchronization instruction delays execution till last write (output)
+  to non-memory-mapped device transactions are started for specified devices.
+  As well, instruction implies fence.tso functionality for all memory accesses.
+  Immediate argument is 3-bit encoding of 5-bit bitmask field
+  that specifies up to five pre-defined devices.
+  Values of bitmask encoding supported:  0,1,2,4,8,16,15,31
+  Instruction encoded in CB instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisync
+assembly: " slist"
+base: 32
+encoding:
+  match: "100100---0000001"
+  variables:
+    - name: slist
+      location: 9-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<5> bitmask;
+  if (slist == 0) {
+    bitmask = 0;
+  } else if (slist < 6) {
+    XReg shift = slist - 1;
+    bitmask = (5'b1 << shift);
+  } else {
+    XReg shift = slist - 2;
+    bitmask = (5'b1 << shift) - 1;
+  }
+  fence_tso();
+  sync_write_after_read_device(false,bitmask);

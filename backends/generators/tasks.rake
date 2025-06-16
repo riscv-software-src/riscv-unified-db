@@ -19,14 +19,10 @@ namespace :gen do
     FileUtils.mkdir_p output_dir
 
     # Get the arch paths based on the config
-    inst_dir = $root / "arch" / "inst"
-    csr_dir = $root / "arch" / "csr"
-
-    # If using a specific config other than the default, use the resolved arch
-    if config_name != "_"
-      inst_dir = $root / "gen" / "resolved_arch" / config_name / "inst"
-      csr_dir = $root / "gen" / "resolved_arch" / config_name / "csr"
-    end
+    resolver = Udb.Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
 
     # Run the Go generator script using the same Python environment
     # Note: The script uses --output not --output-dir
@@ -49,15 +45,11 @@ namespace :gen do
     FileUtils.mkdir_p output_dir
 
     # Get the arch paths based on the config
-    inst_dir = $root / "arch" / "inst"
-    csr_dir = $root / "arch" / "csr"
-
-    # If using a specific config other than the default, use the resolved arch
-    if config_name != "_"
-      inst_dir = $root / "gen" / "resolved_arch" / config_name / "inst"
-      csr_dir = $root / "gen" / "resolved_arch" / config_name / "csr"
-      ext_dir = $root / "gen" / "resolved_arch" / config_name / "ext"
-    end
+    resolver = Udb.Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
+    ext_dir = cfg_arch.path / "ext"
 
     # Run the C header generator script using the same Python environment
     # The script generates encoding.h for inclusion in C programs

@@ -188,11 +188,11 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
   PLAYBOOK
 end
 
-rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "arch" / "prose" / "**" / "*"] do |t|
+rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "spec" / "std" / "prose" / "**" / "*"] do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("html-gen-prose-", "")
   FileUtils.rm_rf $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
   FileUtils.mkdir_p $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
-  FileUtils.cp_r $root / "arch" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
+  FileUtils.cp_r $root / "spec" / "std" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
 
   Rake::Task["#{$root}/.stamps"].invoke
 

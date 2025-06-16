@@ -36,13 +36,13 @@ module Udb
   end
 
   sig { returns(Pathname) }
-  def self.default_arch_isa_path
-    repo_root / "data" / "arch" / "isa"
+  def self.default_std_isa_path
+    repo_root / "spec" / "std" / "isa"
   end
 
   sig { returns(Pathname) }
-  def self.default_arch_overlay_isa_path
-    repo_root / "data" / "arch_overlay" / "isa"
+  def self.default_custom_isa_path
+    repo_root / "spec" / "custom" / "isa"
   end
 
   sig { returns(Pathname) }
@@ -75,11 +75,11 @@ module Udb
 
     # path to the standard specification
     sig { returns(Pathname) }
-    attr_reader :arch_path
+    attr_reader :std_path
 
     # path to custom overlay specifications
     sig { returns(Pathname) }
-    attr_reader :arch_overlay_path
+    attr_reader :custom_path
 
     # path to a python binary
     sig { returns(Pathname) }
@@ -99,8 +99,8 @@ module Udb
         schemas_path_override: T.nilable(Pathname),
         cfgs_path_override: T.nilable(Pathname),
         gen_path_override: T.nilable(Pathname),
-        arch_path_override: T.nilable(Pathname),
-        arch_overlay_path_override: T.nilable(Pathname),
+        std_path_override: T.nilable(Pathname),
+        custom_path_override: T.nilable(Pathname),
         python_path_override: T.nilable(Pathname)
       ).void
     }
@@ -109,16 +109,16 @@ module Udb
       schemas_path_override: nil,
       cfgs_path_override: nil,
       gen_path_override: nil,
-      arch_path_override: nil,
-      arch_overlay_path_override: nil,
+      std_path_override: nil,
+      custom_path_override: nil,
       python_path_override: nil
     )
       @repo_root = repo_root
-      @schemas_path = schemas_path_override || (@repo_root / "data" / "schemas")
+      @schemas_path = schemas_path_override || (@repo_root / "spec" / "schemas")
       @cfgs_path = cfgs_path_override || (@repo_root / "cfgs")
       @gen_path = gen_path_override || (@repo_root / "gen")
-      @arch_path = arch_path_override || (@repo_root / "data" / "arch" / "isa")
-      @arch_overlay_path = arch_overlay_path_override || (@repo_root / "data" / "arch_overlay" / "isa")
+      @std_path = std_path_override || (@repo_root / "spec" / "std" / "isa")
+      @custom_path = custom_path_override || (@repo_root / "spec" / "custom" / "isa")
       @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
     end
 
@@ -156,7 +156,7 @@ module Udb
         else
           unless config_yaml["arch_overlay"][0] == "/"
             # expand to an absolute path
-            config_yaml["arch_overlay"] = (arch_overlay_path / config_yaml["arch_overlay"]).to_s
+            config_yaml["arch_overlay"] = (custom_path / config_yaml["arch_overlay"]).to_s
           end
 
           raise "Cannot determine arch_overlay path" unless File.directory?(config_yaml["arch_overlay"])
@@ -174,20 +174,20 @@ module Udb
     def merge_arch(config_yaml)
       config_name = config_yaml["name"]
 
-      deps = Dir[arch_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
-      deps += Dir[arch_overlay_path / config_yaml["arch_overlay"] / "**" / "*.yaml"].map { |p| Pathname.new(p) } unless config_yaml["arch_overlay"].nil?
+      deps = Dir[std_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
+      deps += Dir[custom_path / config_yaml["arch_overlay"] / "**" / "*.yaml"].map { |p| Pathname.new(p) } unless config_yaml["arch_overlay"].nil?
 
-      if any_newer?(gen_path / "arch" / config_name / ".stamp", deps)
+      if any_newer?(gen_path / "spec" / config_name / ".stamp", deps)
         udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
         run [
           python_path.to_s,
           "#{udb_gem_path}/python/yaml_resolver.py",
           "merge",
-          arch_path.to_s,
+          std_path.to_s,
           config_yaml["arch_overlay"].to_s,
-          "#{gen_path}/arch/#{config_name}"
+          "#{gen_path}/spec/#{config_name}"
         ]
-        FileUtils.touch(gen_path / "arch" / config_name / ".stamp")
+        FileUtils.touch(gen_path / "spec" / config_name / ".stamp")
       end
     end
 

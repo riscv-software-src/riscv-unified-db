@@ -69,8 +69,8 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
   manual_name = parts[0]
   version_name = parts[1]
 
-  manual_yaml_path = $root / "arch" / "manual" / "#{manual_name}.yaml"
-  version_paths = Dir.glob($root / "arch" / "manual_version" / "**" / "#{version_name}.yaml")
+  manual_yaml_path = $resolver.std_path / "manual" / "#{manual_name}.yaml"
+  version_paths = Dir.glob($resolver.std_path / "manual_version" / "**" / "#{version_name}.yaml")
   raise "Cannot find version" unless version_paths.size == 1
 
   version_yaml_path = version_paths[0]
@@ -104,8 +104,8 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   manual_name = parts[0]
   version_name = parts[1]
 
-  manual_yaml_path = $root / "arch" / "manual" / "#{manual_name}.yaml"
-  version_paths = Dir.glob($root / "arch" / "manual_version" / "**" / "#{version_name}.yaml")
+  manual_yaml_path = $resolver.std_path / "manual" / "#{manual_name}.yaml"
+  version_paths = Dir.glob($resolver.std_path / "manual_version" / "**" / "#{version_name}.yaml")
   raise "Cannot find version" unless version_paths.size == 1
 
   version_yaml_path = version_paths[0]
@@ -145,8 +145,8 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { 
   manual_name = parts[0]
   version_name = parts[1]
 
-  manual_yaml_path = $root / "arch" / "manual" / "#{manual_name}.yaml"
-  version_paths = Dir.glob($root / "arch" / "manual_version" / "**" / "#{version_name}.yaml")
+  manual_yaml_path = $resolver.std_path / "manual" / "#{manual_name}.yaml"
+  version_paths = Dir.glob($resolver.std_path / "manual_version" / "**" / "#{version_name}.yaml")
   raise "Cannot find version" unless version_paths.size == 1
 
   version_yaml_path = version_paths[0]
@@ -294,10 +294,10 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc
   parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
   versions, _ = versions_from_env(ENV["MANUAL_NAME"])
-  version_files = Dir.glob($root / "arch" / "manual_version" / "**" / "*.yaml").select { |f| versions.include?(File.basename(f, ".yaml"))}
+  version_files = Dir.glob($resolver.std_path / "manual_version" / "**" / "*.yaml").select { |f| versions.include?(File.basename(f, ".yaml"))}
   FileList[
     __FILE__,
-    ($root / "arch" / "manual" / "#{manual_name}.yaml").to_s,
+    ($resolver.std_path / "manual" / "#{manual_name}.yaml").to_s,
     ($root / "backends" / "manual" / "templates" / "index.adoc.erb").to_s,
   ] + version_files
 } do |t|
@@ -321,12 +321,12 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tna
   parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
   versions, _ = versions_from_env(ENV["MANUAL_NAME"])
-  version_files = Dir.glob($root / "arch" / "manual_version" / "**" / "*.yaml").select { |f| versions.include?(File.basename(f, ".yaml"))}
+  version_files = Dir.glob($resolver.std_path / "manual_version" / "**" / "*.yaml").select { |f| versions.include?(File.basename(f, ".yaml"))}
   FileList[
     __FILE__,
-    ($root / "arch" / "manual" / "#{manual_name}.yaml").to_s,
+    ($resolver.std_path / "manual" / "#{manual_name}.yaml").to_s,
     ($root / "backends" / "manual" / "templates" / "playbook.yml.erb").to_s,
-    ($root / "arch" / "manual" / manual_name / "**" / "contents.yaml").to_s
+    ($resolver.std_path / "manual" / manual_name / "**" / "contents.yaml").to_s
   ] + version_files
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")

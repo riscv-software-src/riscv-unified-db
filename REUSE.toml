@@ -23,7 +23,7 @@ path = [
     "Rakefile",
     "README.adoc",
     "requirements.txt",
-    "data/schemas/**",
+    "spec/schemas/**",
 ]
 SPDX-FileCopyrightText = [
     "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",

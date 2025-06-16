@@ -29,8 +29,8 @@ module Udb
       include Thor::Actions
 
       desc "extension NAME", "Show information about an extension"
-      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
-      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_custom_isa_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
@@ -48,9 +48,9 @@ module Udb
 
         resolver =
           Udb::Resolver.new(
-            arch_path_override: Pathname.new(options[:arch]),
+            std_path_override: Pathname.new(options[:arch]),
             gen_path_override: Pathname.new(options[:gen]),
-            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
+            custom_path_override: Pathname.new(options[:arch_overlay])
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         ext = cfg_arch.extension(ext_name)
@@ -72,8 +72,8 @@ module Udb
 
     class List < SubCommandBase
       desc "extensions", "list all extensions, including those implied, for a config"
-      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
-      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_custom_isa_path.to_s
       method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
@@ -91,9 +91,9 @@ module Udb
 
         resolver =
           Udb::Resolver.new(
-            arch_path_override: Pathname.new(options[:arch]),
+            std_path_override: Pathname.new(options[:arch]),
             gen_path_override: Pathname.new(options[:gen]),
-            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
+            custom_path_override: Pathname.new(options[:arch_overlay])
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         cfg_arch.possible_extensions.each do |ext|
@@ -103,8 +103,8 @@ module Udb
 
 
       desc "parameters", "list all parameters applicable to  a config"
-      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
-      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_custom_isa_path.to_s
       method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
@@ -132,9 +132,9 @@ module Udb
 
         resolver =
           Udb::Resolver.new(
-            arch_path_override: Pathname.new(options[:arch]),
+            std_path_override: Pathname.new(options[:arch]),
             gen_path_override: Pathname.new(options[:gen]),
-            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
+            custom_path_override: Pathname.new(options[:arch_overlay])
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         params =
@@ -187,8 +187,8 @@ module Udb
     subcommand "show", CliCommands::Show
 
     desc "disasm ENCODING", "Disassemble an instruction encoding"
-    method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
-    method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+    method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s
+    method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_custom_isa_path.to_s
     method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
     method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
     method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
@@ -207,9 +207,9 @@ module Udb
 
       resolver =
         Udb::Resolver.new(
-          arch_path_override: Pathname.new(options[:arch]),
+          std_path_override: Pathname.new(options[:arch]),
           gen_path_override: Pathname.new(options[:gen]),
-          arch_overlay_path_override: Pathname.new(options[:arch_overlay])
+          custom_path_override: Pathname.new(options[:arch_overlay])
         )
       cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
 
