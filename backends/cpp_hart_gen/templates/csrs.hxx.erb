@@ -71,7 +71,7 @@ namespace udb {
     }
     ValueType _hw_read() const {
       if (m_undefined) {
-        return 0; // TODO!!
+        //TODO: return ValueType with some undefined value
         // throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
       }
       return m_value;

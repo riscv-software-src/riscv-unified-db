@@ -9,6 +9,7 @@ kind: csr
 name: pmpaddr29
 long_name: PMP Address 29
 address: 0x3CD
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

@@ -14,6 +14,7 @@ kind: csr
 name: pmpaddr<%= pmpaddr_num %>
 long_name: PMP Address <%= pmpaddr_num %>
 address: 0x<%= (0x3B0 + pmpaddr_num).to_s(16).upcase %>
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

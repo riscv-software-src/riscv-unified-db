@@ -665,6 +665,7 @@ namespace udb {
 
 #define BITS_COMPARISON_OPERATOR(op)                                                     \
   constexpr bool operator op(const _Bits &o) const noexcept { return get() op o.get(); } \
+  constexpr bool operator op(const int &o) const noexcept { return get() op o; } \
                                                                                          \
   template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>  \
     requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)                                     \

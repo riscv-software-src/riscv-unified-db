@@ -9,6 +9,7 @@ kind: csr
 name: pmpcfg8
 long_name: PMP Configuration Register 8
 address: 0x3A8
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration

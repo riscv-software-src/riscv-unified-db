@@ -9,6 +9,7 @@ kind: csr
 name: hpmcounter3
 long_name: User-mode Hardware Performance Counter 0
 address: 0xC03
+writable: false
 description: |
   Alias for M-mode CSR `mhpmcounter3`.
 

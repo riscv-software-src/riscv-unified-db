@@ -9,6 +9,7 @@ kind: csr
 name: pmpcfg4
 long_name: PMP Configuration Register 4
 address: 0x3A4
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration

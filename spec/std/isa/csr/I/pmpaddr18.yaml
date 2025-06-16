@@ -9,6 +9,7 @@ kind: csr
 name: pmpaddr18
 long_name: PMP Address 18
 address: 0x3C2
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

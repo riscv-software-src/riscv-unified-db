@@ -13,6 +13,7 @@ base: 32 # odd numbered pmpcfg registers do not exist in RV64
 <%- end -%>
 long_name: PMP Configuration Register <%= pmpcfg_num %>
 address: 0x<%= (0x3A0 + pmpcfg_num).to_s(16).upcase %>
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration

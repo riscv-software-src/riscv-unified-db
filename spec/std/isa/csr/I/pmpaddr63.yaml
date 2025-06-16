@@ -9,6 +9,7 @@ kind: csr
 name: pmpaddr63
 long_name: PMP Address 63
 address: 0x3EF
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

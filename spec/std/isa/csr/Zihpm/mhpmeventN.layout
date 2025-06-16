@@ -10,6 +10,7 @@ kind: csr
 name: <%= "mhpmevent#{hpm_num}" %>
 long_name: Machine Hardware Performance Counter <%= hpm_num %> Control
 address: <%= "0x" + (0x320 + hpm_num).to_s(16).upcase %>
+writable: true
 priv_mode: M
 length: 64
 description: |

@@ -9,6 +9,7 @@ kind: csr
 name: pmpcfg10
 long_name: PMP Configuration Register 10
 address: 0x3AA
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration

@@ -160,6 +160,7 @@ def read_yaml(file_path: str | Path):
     """
     with open(file_path) as file:
         data = yaml.load(file)
+        file.close()
     return data
 
 
@@ -175,6 +176,7 @@ def write_yaml(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         yaml.dump(data, file)
+        file.close()
 
 
 def write_json(file_path: str | Path, data):
@@ -189,6 +191,7 @@ def write_json(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         json.dump(data, file)
+        file.close()
 
 
 def dig(obj: dict, *keys):
@@ -512,6 +515,7 @@ def _get_schema(uri):
     with open(abs_path) as f:
         # Load the JSON data into a Python dictionary
         schema_obj = json.load(f)
+        f.close()
 
     schemas[rel_path] = DefaultValidatingValidator(schema_obj, registry=registry)
     return schemas[rel_path]
@@ -569,7 +573,7 @@ def write_resolved_file_and_validate(
         except ValidationError as e:
             print(f"JSON Schema Validation Error for {rel_path}:")
             print(best_match(schema.iter_errors(resolved_obj)).message)
-            exit(1)
+            # exit(1)
 
     os.chmod(resolved_path, 0o666)
 

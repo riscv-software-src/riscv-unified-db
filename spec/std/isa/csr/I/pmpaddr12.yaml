@@ -9,6 +9,7 @@ kind: csr
 name: pmpaddr12
 long_name: PMP Address 12
 address: 0x3BC
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

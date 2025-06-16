@@ -9,6 +9,7 @@ kind: csr
 name: pmpaddr6
 long_name: PMP Address 6
 address: 0x3B6
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address
