@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 # Many classes include DatabaseObject have an "cfg_arch" member which is a ConfiguredArchitecture class.
 # It combines knowledge of the RISC-V Architecture with a particular configuration.
@@ -230,6 +230,153 @@ class ConfiguredArchitecture < Architecture
     syms
   end
 
+  # validate a configuration
+  sig {
+    params(
+      config_path: Pathname,
+      std_path: Pathname,   # path to standard architecture spec
+      custom_path: Pathname, # path to custom overlay, if needed
+      gen_path: Pathname    # path to put generated files
+    ).void
+  }
+  def self.validate(
+    config_path,
+    std_path: Udb.default_std_isa_path,
+    custom_path: Udb.default_custom_isa_path,
+    gen_path: Udb.default_gen_path
+  )
+
+    config_spec = YAML.load_file(config_path)
+    case config_spec.fetch("type")
+    when "unconfigured"
+      return  # nothing else to do!
+    when "fully configured"
+      validate_full_config(config_path, std_path:, custom_path:, gen_path:)
+    when "partially configured"
+      validate_partial_config(config_path, std_path:, custom_path:, gen_path:)
+    else
+      raise "Not a valid configuration type: #{config_spec.fetch('type')}"
+    end
+  end
+
+  sig {
+    params(
+      config_path: Pathname,
+      gen_path: Pathname,
+      std_path: Pathname,
+      custom_path: Pathname
+    ).void
+  }
+  def self.validate_full_config(config_path, gen_path:, std_path:, custom_path:)
+    config_spec = YAML.load_file(config_path)
+    resolver = Resolver.new(
+      gen_path_override: gen_path,
+      std_path_override: std_path,
+      custom_path_override: custom_path
+    )
+    resolver.resolve_arch(config_spec)
+    resolved_path = resolver.gen_path / "resolved_spec" / config_spec["name"]
+
+    # first, check that all the extensions are defined
+    config_spec.fetch("implemented_extensions").each do |e|
+      ext_name = e.fetch(0)
+      ext_version = e.fetch(1)
+
+      unless (resolved_path / "ext" / "#{ext_name}.yaml").file?
+        raise "Cannot find defintion of extension #{ext_name} #{resolved_path / "ext" / "#{ext_name}.yaml"}"
+      end
+
+      ext_spec = YAML.load_file(resolved_path / "ext" / "#{ext_name}.yaml")
+      has_ver = ext_spec.fetch("versions").any? do |ext_ver|
+        VersionSpec.new(ext_ver.fetch("version")).eql?(ext_version)
+      end
+
+      raise "Cannot find version #{ext_version} of #{ext_name}" unless has_ver
+    end
+
+    cfg_arch = resolver.cfg_arch_for(config_path)
+
+    param_missing = false
+    # check params
+    cfg_arch.transitive_implemented_extension_versions.each do |ext_ver|
+      puts ext_ver.name
+      ext_ver.params.each do |param|
+        puts "  #{param.name}"
+        unless config_spec.fetch("params").key?(param.name)
+          warn "missing required parameter #{param.name}"
+          param_missing = true
+          next
+        end
+
+        unless param.schema.validate(config_spec.fetch("params").fetch(param.name))
+          warn "value of parameter #{param.name} is not valid"
+        end
+      end
+    end
+
+    raise "Parameter(s) are missing" if param_missing
+  end
+  private_class_method :validate_full_config
+
+  sig {
+    params(
+      config_path: Pathname,
+      gen_path: Pathname,
+      std_path: Pathname,
+      custom_path: Pathname
+    ).void
+  }
+  def self.validate_partial_config(config_path, gen_path:, std_path:, custom_path:)
+    config_spec = YAML.load_file(config_path)
+    resolver = Resolver.new(
+      gen_path_override: gen_path,
+      std_path_override: std_path,
+      custom_path_override: custom_path
+    )
+    resolver.resolve_arch(config_spec)
+    resolved_path = resolver.gen_path / "resolved_spec" / config_spec["name"]
+
+    # first, check that all the extensions are defined
+    config_spec.fetch("mandatory_extensions").each do |e|
+      ext_name = e.fetch("name")
+      ext_req = RequirementSpec.new(e.fetch("version"))
+
+      unless (resolved_path / "ext" / "#{ext_name}.yaml").file?
+        raise "Cannot find defintion of extension #{ext_name} #{resolved_path / "ext" / "#{ext_name}.yaml"}"
+      end
+
+      ext_spec = YAML.load_file(resolved_path / "ext" / "#{ext_name}.yaml")
+      has_ver = ext_spec.fetch("versions").any? do |ext_ver|
+        ext_req.satisfied_by?(VersionSpec.new(ext_ver.fetch("version")), ext_spec)
+      end
+
+      raise "Cannot find any version of #{ext_name} that satisfies #{ext_req}" unless has_ver
+    end
+
+    cfg_arch = resolver.cfg_arch_for(config_path)
+
+    invalid_param = false
+    # check params
+    possible_params = cfg_arch.mandatory_extension_reqs.map(&:params).flatten.uniq
+    if config_spec.key?("params")
+      config_spec.fetch("params").each do |pname, pvalue|
+        unless possible_params.any? { |param| param.name == pname }
+          warn "Parameter #{pname} is not from a mandatory extension"
+          invalid_param = true
+          next
+        end
+
+        param = possible_params.find { |param| param.name == pname }
+        unless param.schema.validate(pvalue)
+          warn "value of parameter #{param.name} is not valid"
+        end
+      end
+    end
+
+    raise "Parameter(s) are invalid" if invalid_param
+  end
+  private_class_method :validate_partial_config
+
   # Initialize a new configured architecture definition
   #
   # @param name [:to_s]      The name associated with this ConfiguredArchitecture
@@ -432,11 +579,17 @@ class ConfiguredArchitecture < Architecture
       transitive_implemented_extension_versions.each do |ext_version|
         ext = T.must(extension(ext_version.name))
         ext.params.each do |ext_param|
-          next unless @config.param_values.key?(ext_param.name)
+          if !@config.param_values.key?(ext_param.name)
+            if ext_param.when.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
+              raise "missing parameter value for #{ext_param.name} in config #{ext_param.when.to_logic_tree}"
+            else
+              next
+            end
+          end
 
           @params_with_value << ParameterWithValue.new(
             ext_param,
-            T.must(@config.param_values[ext_param.name])
+            @config.param_values.fetch(ext_param.name)
           )
         end
       end
@@ -467,10 +620,12 @@ class ConfiguredArchitecture < Architecture
 
     @params_without_value = []
     extensions.each do |ext|
+      next if possible_extensions.none? { |poss| poss.name == ext.name }
       ext.params.each do |ext_param|
         # Params listed in the config always only have one value.
         next if @config.param_values.key?(ext_param.name)
         next if @params_without_value.any? { |p| p.name == ext_param.name }
+        next if ext_param.when.satisfied_by_cfg_arch?(self) == SatisfiedResult::No
 
         @params_without_value << ext_param
       end
@@ -989,6 +1144,7 @@ class ConfiguredArchitecture < Architecture
     return @env unless @env.nil?
 
     @env = Class.new
+    @env.extend T::Sig
     @env.instance_variable_set(:@cfg, @cfg)
     @env.instance_variable_set(:@params, @params)
     @env.instance_variable_set(:@cfg_arch, self)
@@ -1009,9 +1165,18 @@ class ConfiguredArchitecture < Architecture
       # @param ext_name [String,#to_s] Name of the extension
       # @param ext_requirement [String, #to_s] Version string, as a Gem Requirement (https://guides.rubygems.org/patterns/#pessimistic-version-constraint)
       # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
-      sig { params(ext_name: T.any(String, Symbol), ext_requirements: T::Array[String]).returns(T::Boolean) }
+      sig { params(ext_name: T.any(String, Symbol), ext_requirements: T.any(String, T::Array[String])).returns(T::Boolean) }
       def ext?(ext_name, ext_requirements = [])
-        @cfg_arch.ext?(ext_name.to_s, ext_requirements)
+        ext_reqs =
+          case ext_requirements
+          when Array
+            ext_requirements
+          when String
+            [ext_requirements]
+          else
+            T.absurd(ext_requirements)
+          end
+        @cfg_arch.ext?(ext_name.to_s, ext_reqs)
       end
 
       # List of possible XLENs for any implemented mode

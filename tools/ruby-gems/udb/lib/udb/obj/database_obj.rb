@@ -134,7 +134,7 @@ class DatabaseObject
     @cache[fn_name] ||= yield
   end
 
-  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction.
   sig { returns(ExtensionRequirementExpression) }
   def defined_by_condition
     @defined_by_condition ||=

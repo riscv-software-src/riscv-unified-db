@@ -184,7 +184,7 @@ module Udb
           "#{udb_gem_path}/python/yaml_resolver.py",
           "merge",
           std_path.to_s,
-          config_yaml["arch_overlay"].to_s,
+          config_yaml["arch_overlay"].nil? ? "/does/not/exist" : config_yaml["arch_overlay"].to_s,
           "#{gen_path}/spec/#{config_name}"
         ]
         FileUtils.touch(gen_path / "spec" / config_name / ".stamp")
@@ -197,16 +197,16 @@ module Udb
       config_name = config_yaml["name"]
 
       deps = Dir[gen_path / "arch" / config_yaml["name"] / "**" / "*.yaml"].map { |p| Pathname.new(p) }
-      if any_newer?(gen_path / "resolved_arch" / config_yaml["name"] / ".stamp", deps)
+      if any_newer?(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp", deps)
         udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
         run [
           python_path.to_s,
           "#{udb_gem_path}/python/yaml_resolver.py",
           "resolve",
-          "#{gen_path}/arch/#{config_name}",
-          "#{gen_path}/resolved_arch/#{config_name}"
+          "#{gen_path}/spec/#{config_name}",
+          "#{gen_path}/resolved_spec/#{config_name}"
         ]
-        FileUtils.touch(gen_path / "resolved_arch" / config_yaml["name"] / ".stamp")
+        FileUtils.touch(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp")
       end
     end
 
@@ -216,6 +216,8 @@ module Udb
       config_path =
         case config_path_or_name
         when Pathname
+          raise "Path does not exist: #{config_path_or_name}" unless config_path_or_name.file?
+
           config_path_or_name
         when String
           @repo_root / "cfgs" / "#{config_path_or_name}.yaml"
@@ -234,7 +236,7 @@ module Udb
       @cfg_archs[config_path] = Udb::ConfiguredArchitecture.new(
         config_name,
         Udb::FileConfig.create(gen_path / "cfgs" / "#{config_name}.yaml"),
-        gen_path / "resolved_arch" / config_name
+        gen_path / "resolved_spec" / config_name
       )
     end
   end

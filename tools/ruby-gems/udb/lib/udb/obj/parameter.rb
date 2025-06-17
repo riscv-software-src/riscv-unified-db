@@ -167,7 +167,7 @@ class Parameter
   def value_known? = false
 
   sig { override.returns(Idl::RuntimeParam::ValueType) }
-  def value = raise "Parameter value not known"
+  def value = raise "Parameter value not known for #{name}"
 end
 
 class ParameterWithValue

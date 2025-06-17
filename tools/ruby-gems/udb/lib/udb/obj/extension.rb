@@ -678,6 +678,10 @@ class ExtensionRequirement
     @satisfying_versions = ext.nil? ? [] : ext.versions.select { |v| satisfied_by?(v) }
   end
 
+  def params
+    @params ||= satisfying_versions.map(&:params).flatten.uniq
+  end
+
   # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
   #                            If none, raises an error.
   def min_satisfying_ext_ver

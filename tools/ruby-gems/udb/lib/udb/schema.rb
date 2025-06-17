@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: false
+# frozen_string_literal: true
 
 require "idlc/type"
 require "idlc/interfaces"
@@ -20,6 +20,12 @@ module Udb
         raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
 
         @schema_hash = schema_hash
+    end
+
+    sig { params(rb_value: T.untyped).returns(T::Boolean) }
+    def validate(rb_value)
+      schemer = JSONSchemer.schema(@schema_hash)
+      schemer.valid?(rb_value)
     end
 
     # @return [Hash] Hash representation of the JSON Schema

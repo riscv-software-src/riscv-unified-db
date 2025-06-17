@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # fill out templates for every csr, inst, ext, and func
@@ -13,7 +14,7 @@
     rest = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc/#{config_name}/antora/modules/#{type}s/pages")
     FileUtils.mkdir_p File.dirname(t.name)
     src = $root / "gen" / "cfg_html_doc" / config_name / "adoc" / "#{type}s" / rest
-    File.write t.name, AntoraUtils.resolve_links(src)
+    File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(src)
   end
 end
 
@@ -34,7 +35,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
   erb.filename = toc_path.to_s
 
   cfg_arch = $resolver.cfg_arch_for(config_name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(erb.result(binding))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => proc { |tname|
@@ -52,7 +53,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
 
   cfg_arch = $resolver.cfg_arch_for(config_name)
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => proc { |tname|
@@ -66,7 +67,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => 
   cfg_arch = $resolver.cfg_arch_for(config_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(File.read(t.prerequisites[0])))
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(File.read(t.prerequisites[0])))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/antora.yml} => proc { |tname|
@@ -188,11 +189,11 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
   PLAYBOOK
 end
 
-rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "spec" / "std" / "prose" / "**" / "*"] do |t|
+rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "spec" / "std" / "isa" / "prose" / "**" / "*"] do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("html-gen-prose-", "")
   FileUtils.rm_rf $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
   FileUtils.mkdir_p $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
-  FileUtils.cp_r $root / "spec" / "std" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
+  FileUtils.cp_r $root / "spec" / "std" / "isa" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
 
   Rake::Task["#{$root}/.stamps"].invoke
 

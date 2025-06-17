@@ -32,7 +32,7 @@ UDB_ROOT = (
     else os.getenv("UDB_ROOT")
 )
 
-SCHEMAS_PATH = Path(os.path.join(UDB_ROOT, "data", "schemas"))
+SCHEMAS_PATH = Path(os.path.join(UDB_ROOT, "spec", "schemas"))
 
 
 def retrieve_from_filesystem(uri: str):

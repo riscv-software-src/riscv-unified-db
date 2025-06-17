@@ -1,7 +1,10 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: true
 # frozen_string_literal: true
+
+require "sorbet-runtime"
 
 module Udb
 
@@ -30,6 +33,8 @@ module Udb
 #        - 2.1 is compatible with 2.0
 #
 class VersionSpec
+  extend T::Sig
+
   include Comparable
 
   # MAJOR[.MINOR[.PATCH[-pre]]]
@@ -47,6 +52,7 @@ class VersionSpec
   # @return [Boolean] Whether or not this is a pre-release
   attr_reader :pre
 
+  sig { params(version_str: String).void }
   def initialize(version_str)
     if version_str =~ /^\s*#{VERSION_REGEX}\s*$/
       m = ::Regexp.last_match
@@ -62,11 +68,13 @@ class VersionSpec
     @version_str = version_str
   end
 
+  sig { returns(String) }
   def inspect
     "VersionSpec[str: #{@version_str}; major: #{@major}, minor: #{@minor}, patch: #{@patch}, pre: #{@pre}]"
   end
 
   # @return [String] The version, in canonical form
+  sig { returns(String) }
   def canonical
     "#{@major}.#{@minor}.#{@patch}#{@pre ? '-pre' : ''}"
   end
@@ -75,6 +83,7 @@ class VersionSpec
   #
   # @example
   #   VersionSpec.new("2.2").to_rvi_s #=> "2p2"
+  sig { returns(String) }
   def to_rvi_s
     s = @major.to_s
     s += "p#{@minor}" if @minor_given
@@ -84,8 +93,10 @@ class VersionSpec
   end
 
   # @return [String] The exact string used during construction
+  sig { returns(String) }
   def to_s = @version_str
 
+  sig { params(other: T.any(String, VersionSpec)).returns(T.nilable(Integer)) }
   def <=>(other)
     if other.is_a?(String)
       VersionSpec.new(other) <=> self
@@ -108,16 +119,17 @@ class VersionSpec
 
   # @param other [VersionSpec] Comparison
   # @return [Boolean] Whether or not +other+ is an VersionSpec with the same canonical version
+  sig { params(other: T.any(String, VersionSpec)).returns(T::Boolean) }
   def eql?(other)
     if other.is_a?(String)
-      eql?(ExtensionVersion.new(other))
+      eql?(VersionSpec.new(other))
     elsif other.is_a?(VersionSpec)
       other.major == @major && \
         other.minor == @minor && \
         other.patch == @patch && \
         other.pre == @pre
     else
-      raise ArgumentError, "Cannot compare VersionSpec with #{other.class.name}"
+      T.absurd(other)
     end
   end
 end
@@ -138,10 +150,12 @@ end
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.11"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.12"), s_ext) #=> false
 class RequirementSpec
+  extend T::Sig
   REQUIREMENT_OP_REGEX = /((?:>=)|(?:>)|(?:~>)|(?:<)|(?:<=)|(?:!=)|(?:=))/
   REQUIREMENT_REGEX = /#{REQUIREMENT_OP_REGEX}\s*(#{VersionSpec::VERSION_REGEX})/
 
   # @param requirement [String] A requirement string
+  sig { params(requirement: String).void }
   def initialize(requirement)
     unless requirement.is_a?(String)
       raise ArgumentError, "requirement must be a string (is a #{requirement.class.name})"
@@ -157,11 +171,13 @@ class RequirementSpec
     end
   end
 
+  sig { returns(String) }
   def to_s
     "#{@op} #{@version_str}"
   end
 
   # invert the requirement
+  sig { void }
   def invert!
     case @op
     when ">="
@@ -185,7 +201,9 @@ class RequirementSpec
   # @param version [String] A version string
   # @param version [VersionSpec] A version spec
   # @param ext [Extension] An extension, needed to evaluate the compatible (~>) operator
+  # @param ext [Hash] Raw extension spec (from YAML)
   # @return [Boolean] if the version satisfies the requirement
+  sig { params(version: T.any(String, VersionSpec), ext: T.any(Extension, T::Hash[String, T.untyped])).returns(T::Boolean) }
   def satisfied_by?(version, ext)
     v_spec =
       case version
@@ -194,7 +212,7 @@ class RequirementSpec
       when VersionSpec
         version
       else
-        raise ArgumentError, "satisfied_by? expects a String or VersionSpec (got #{version.class.name})"
+        T.absurd(version)
       end
 
     case @op
@@ -211,10 +229,22 @@ class RequirementSpec
     when "!="
       v_spec != @version_spec
     when "~>"
-      matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
-      raise "Can't find version?" if matching_ver.nil?
+      if ext.is_a?(Extension)
+        matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+        raise "Can't find version?" if matching_ver.nil?
 
-      matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+        matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+      else
+        versions = ext.fetch("versions")
+        compatible_versions = []
+        versions.each do |vinfo|
+          vspec = VersionSpec.new(vinfo.fetch("version"))
+          compatible_versions << vspec if vspec >= v_spec
+          break if compatible_versions.size.positive? && vinfo.key?("breaking")
+        end
+
+        compatible_versions.include?(v_spec)
+      end
     when "!~>" # not a legal spec, but used for inversion
       matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
       raise "Can't find version?" if matching_ver.nil?

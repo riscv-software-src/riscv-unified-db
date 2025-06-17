@@ -626,7 +626,7 @@ class ExtensionRequirementExpression
   sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def satisfied_by_cfg_arch?(cfg_arch)
     if cfg_arch.fully_configured?
-      if satisfied_by? { |ext_req| ext_req.satisfied_by?(cfg_arch.transitive_implemented_extension_versions) }
+      if satisfied_by? { |ext_req| cfg_arch.transitive_implemented_extension_versions.any? { |ev| ext_req.satisfied_by?(ev) } }
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
