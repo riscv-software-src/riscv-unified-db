@@ -287,7 +287,7 @@ class DecodeGen
               next if dv.excludes.empty?
 
               dv_val = extract_dv(dv, encoding_var_name)
-              conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val})" })
+              conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val}_b)" })
             end
           end
           if has_hints
