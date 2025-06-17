@@ -26516,7 +26516,7 @@ class RuboCop::Cop::Lint::UnusedMethodArgument < ::RuboCop::Cop::Base
   def message(variable); end
 
   class << self
-    # source://rubocop//lib/rubocop/cop/lint/unused_method_argument.rb#80
+    # source://rubocop-performance/1.25.0/lib/rubocop-performance.rb#12
     def autocorrect_incompatible_with; end
 
     # source://rubocop//lib/rubocop/cop/lint/unused_method_argument.rb#84
@@ -29059,6 +29059,36 @@ module RuboCop::Cop::MinBranchesCount
   #
   # source://rubocop//lib/rubocop/cop/mixin/min_branches_count.rb#9
   def min_branches_count?(node); end
+end
+
+module RuboCop::Cop::Minitest; end
+
+class RuboCop::Cop::Minitest::MultipleAssertions < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::VisibilityHelp
+  include ::RuboCop::Cop::DefNode
+
+  # source://rubocop//lib/rubocop/cop/exclude_limit.rb#11
+  def max=(value); end
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#37
+  def on_class(class_node); end
+
+  private
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#54
+  def assertions_count(node); end
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#62
+  def assertions_count_based_on_type(node); end
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#77
+  def assertions_count_in_assignment(node); end
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#99
+  def assertions_count_in_branches(branches); end
+
+  # source://rubocop-minitest/0.38.1/lib/rubocop/cop/minitest/multiple_assertions.rb#103
+  def max_assertions; end
 end
 
 # Common code for indenting the first elements in multiline

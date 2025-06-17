@@ -1658,6 +1658,9 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#106
   def has_terminal?(terminal, mode, index); end
 
+  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
+  def idlc_instantiate_node(node_type, *args); end
+
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#66
   def index=(_arg0); end
 
@@ -1678,9 +1681,6 @@ class Treetop::Runtime::CompiledParser
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#120
   def terminal_parse_failure(expected_string, unexpected = T.unsafe(nil)); end
-
-  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
-  def treetop_instantiate_node(node_type, *args); end
 end
 
 # source://treetop//lib/treetop/runtime/compiled_parser.rb#42

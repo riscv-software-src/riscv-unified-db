@@ -120,6 +120,8 @@ module Udb
       @std_path = std_path_override || (@repo_root / "spec" / "std" / "isa")
       @custom_path = custom_path_override || (@repo_root / "spec" / "custom" / "isa")
       @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
+
+      FileUtils.mkdir_p @gen_path
     end
 
     # returns true if either +target+ does not exist, or if any of +deps+ are newer than +target+
@@ -150,17 +152,10 @@ module Udb
       # write the config with arch_overlay expanded
       if any_newer?(gen_path / "cfgs" / "#{config_name}.yaml", [config_path])
         config_yaml = YAML.load_file(config_path)
-        FileUtils.mkdir_p gen_path / "cfgs"
-        if config_yaml["arch_overlay"].nil?
-          config_yaml["arch_overlay"] = "/does/not/exist"
-        else
-          unless config_yaml["arch_overlay"][0] == "/"
-            # expand to an absolute path
-            config_yaml["arch_overlay"] = (custom_path / config_yaml["arch_overlay"]).to_s
-          end
 
-          raise "Cannot determine arch_overlay path" unless File.directory?(config_yaml["arch_overlay"])
-        end
+        # is there anything to do here? validate?
+
+        FileUtils.mkdir_p gen_path / "cfgs"
         File.write(gen_path / "cfgs" / "#{config_name}.yaml", YAML.dump(config_yaml))
       else
         config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_name}.yaml")
@@ -177,6 +172,18 @@ module Udb
       deps = Dir[std_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
       deps += Dir[custom_path / config_yaml["arch_overlay"] / "**" / "*.yaml"].map { |p| Pathname.new(p) } unless config_yaml["arch_overlay"].nil?
 
+      overlay_path =
+        if config_yaml["arch_overlay"].nil?
+          nil
+        else
+          if config_yaml.fetch("arch_overlay")[0] == "/"
+            Pathname.new(config_yaml.fetch("arch_overlay"))
+          else
+            custom_path / config_yaml.fetch("arch_overlay")
+          end
+        end
+      raise "custom directory '#{overlay_path}' does not exist" if !overlay_path.nil? && !overlay_path.directory?
+
       if any_newer?(gen_path / "spec" / config_name / ".stamp", deps)
         udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
         run [
@@ -184,7 +191,7 @@ module Udb
           "#{udb_gem_path}/python/yaml_resolver.py",
           "merge",
           std_path.to_s,
-          config_yaml["arch_overlay"].nil? ? "/does/not/exist" : config_yaml["arch_overlay"].to_s,
+          overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
           "#{gen_path}/spec/#{config_name}"
         ]
         FileUtils.touch(gen_path / "spec" / config_name / ".stamp")

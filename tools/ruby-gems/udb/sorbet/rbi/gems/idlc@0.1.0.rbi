@@ -531,7 +531,7 @@ class Idl::AstNode::LinesDescriptor < ::T::Struct
   const :lines_interval, T::Range[T.untyped]
 
   class << self
-    # source://sorbet-runtime/0.5.12157/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -726,28 +726,28 @@ class Idl::BitfieldFieldDefinitionAst < ::Idl::AstNode
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/type.rb#671
+# source://idlc//lib/idlc/type.rb#617
 class Idl::BitfieldType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#672
+  # source://idlc//lib/idlc/type.rb#618
   def initialize(type_name, width, field_names, field_ranges); end
 
-  # source://idlc//lib/idlc/type.rb#692
+  # source://idlc//lib/idlc/type.rb#638
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#688
+  # source://idlc//lib/idlc/type.rb#634
   def field_names; end
 
-  # source://idlc//lib/idlc/type.rb#681
+  # source://idlc//lib/idlc/type.rb#627
   def range(field_name); end
 end
 
-# source://idlc//lib/idlc/type.rb#956
+# source://idlc//lib/idlc/type.rb#902
 Idl::Bits1Type = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#957
+# source://idlc//lib/idlc/type.rb#903
 Idl::Bits32Type = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#958
+# source://idlc//lib/idlc/type.rb#904
 Idl::Bits64Type = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/ast.rb#3098
@@ -787,10 +787,10 @@ class Idl::BitsCastSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#959
+# source://idlc//lib/idlc/type.rb#905
 Idl::BitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#962
+# source://idlc//lib/idlc/type.rb#908
 Idl::BoolType = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/ast.rb#1386
@@ -1098,10 +1098,10 @@ class Idl::ConditionalStatementSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#960
+# source://idlc//lib/idlc/type.rb#906
 Idl::ConstBitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#961
+# source://idlc//lib/idlc/type.rb#907
 Idl::ConstBoolType = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/interfaces.rb#96
@@ -1422,17 +1422,17 @@ class Idl::CsrSoftwareWriteSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#704
+# source://idlc//lib/idlc/type.rb#650
 class Idl::CsrType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#711
+  # source://idlc//lib/idlc/type.rb#657
   sig { params(csr: ::Idl::Csr, qualifiers: T::Array[::Symbol]).void }
   def initialize(csr, qualifiers: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#708
+  # source://idlc//lib/idlc/type.rb#654
   sig { returns(::Idl::Csr) }
   def csr; end
 
-  # source://idlc//lib/idlc/type.rb#716
+  # source://idlc//lib/idlc/type.rb#662
   sig { returns(T::Array[::Idl::CsrField]) }
   def fields; end
 end
@@ -1836,9 +1836,9 @@ class Idl::EnumSizeSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#601
+# source://idlc//lib/idlc/type.rb#547
 class Idl::EnumerationType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#631
+  # source://idlc//lib/idlc/type.rb#577
   sig do
     params(
       type_name: ::String,
@@ -1849,35 +1849,35 @@ class Idl::EnumerationType < ::Idl::Type
   end
   def initialize(type_name, element_names, element_values, builtin: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#646
+  # source://idlc//lib/idlc/type.rb#592
   sig { returns(T::Boolean) }
   def builtin?; end
 
-  # source://idlc//lib/idlc/type.rb#649
+  # source://idlc//lib/idlc/type.rb#595
   sig { returns(::Idl::EnumerationType) }
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#662
+  # source://idlc//lib/idlc/type.rb#608
   sig { params(element_value: ::Integer).returns(T.nilable(::String)) }
   def element_name(element_value); end
 
-  # source://idlc//lib/idlc/type.rb#610
+  # source://idlc//lib/idlc/type.rb#556
   sig { returns(T::Array[::String]) }
   def element_names; end
 
-  # source://idlc//lib/idlc/type.rb#614
+  # source://idlc//lib/idlc/type.rb#560
   sig { returns(T::Array[::Integer]) }
   def element_values; end
 
-  # source://idlc//lib/idlc/type.rb#618
+  # source://idlc//lib/idlc/type.rb#564
   sig { returns(::Idl::Type) }
   def ref_type; end
 
-  # source://idlc//lib/idlc/type.rb#654
+  # source://idlc//lib/idlc/type.rb#600
   sig { params(element_name: ::String).returns(T.nilable(::Integer)) }
   def value(element_name); end
 
-  # source://idlc//lib/idlc/type.rb#606
+  # source://idlc//lib/idlc/type.rb#552
   sig { returns(::Integer) }
   def width; end
 end
@@ -2330,12 +2330,12 @@ class Idl::FunctionDefSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#723
+# source://idlc//lib/idlc/type.rb#669
 class Idl::FunctionType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#726
+  # source://idlc//lib/idlc/type.rb#672
   def initialize(func_name, func_def_ast, symtab); end
 
-  # source://idlc//lib/idlc/type.rb#805
+  # source://idlc//lib/idlc/type.rb#751
   sig do
     params(
       symtab: ::Idl::SymbolTable,
@@ -2346,40 +2346,40 @@ class Idl::FunctionType < ::Idl::Type
   end
   def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#776
+  # source://idlc//lib/idlc/type.rb#722
   def apply_template_values(template_values, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#909
+  # source://idlc//lib/idlc/type.rb#855
   def argument_name(index, template_values = T.unsafe(nil), func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#894
+  # source://idlc//lib/idlc/type.rb#840
   def argument_type(index, template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#826
+  # source://idlc//lib/idlc/type.rb#772
   def argument_values(symtab, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#924
+  # source://idlc//lib/idlc/type.rb#870
   def body; end
 
-  # source://idlc//lib/idlc/type.rb#738
+  # source://idlc//lib/idlc/type.rb#684
   def builtin?; end
 
-  # source://idlc//lib/idlc/type.rb#734
+  # source://idlc//lib/idlc/type.rb#680
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#742
+  # source://idlc//lib/idlc/type.rb#688
   def external?; end
 
-  # source://idlc//lib/idlc/type.rb#724
+  # source://idlc//lib/idlc/type.rb#670
   def func_def_ast; end
 
-  # source://idlc//lib/idlc/type.rb#740
+  # source://idlc//lib/idlc/type.rb#686
   def generated?; end
 
-  # source://idlc//lib/idlc/type.rb#744
+  # source://idlc//lib/idlc/type.rb#690
   def num_args; end
 
-  # source://idlc//lib/idlc/type.rb#852
+  # source://idlc//lib/idlc/type.rb#798
   sig do
     params(
       template_values: T::Array[::Integer],
@@ -2389,22 +2389,22 @@ class Idl::FunctionType < ::Idl::Type
   end
   def return_type(template_values, argument_nodes, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#881
+  # source://idlc//lib/idlc/type.rb#827
   def return_types(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#865
+  # source://idlc//lib/idlc/type.rb#811
   def return_value(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#770
+  # source://idlc//lib/idlc/type.rb#716
   def template_names; end
 
-  # source://idlc//lib/idlc/type.rb#772
+  # source://idlc//lib/idlc/type.rb#718
   def template_types(symtab); end
 
-  # source://idlc//lib/idlc/type.rb#774
+  # source://idlc//lib/idlc/type.rb#720
   def templated?; end
 
-  # source://idlc//lib/idlc/type.rb#746
+  # source://idlc//lib/idlc/type.rb#692
   def type_check_call(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 end
 
@@ -3496,7 +3496,7 @@ module Idl::StringLiteralSyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#964
+# source://idlc//lib/idlc/type.rb#910
 Idl::StringType = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/ast.rb#1641
@@ -3545,36 +3545,36 @@ class Idl::StructDefinitionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#564
+# source://idlc//lib/idlc/type.rb#510
 class Idl::StructType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#569
+  # source://idlc//lib/idlc/type.rb#515
   sig { params(type_name: ::String, member_types: T::Array[::Idl::Type], member_names: T::Array[::String]).void }
   def initialize(type_name, member_types, member_names); end
 
-  # source://idlc//lib/idlc/type.rb#579
+  # source://idlc//lib/idlc/type.rb#525
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#583
+  # source://idlc//lib/idlc/type.rb#529
   def default; end
 
-  # source://idlc//lib/idlc/type.rb#591
+  # source://idlc//lib/idlc/type.rb#537
   def member?(name); end
 
-  # source://idlc//lib/idlc/type.rb#593
+  # source://idlc//lib/idlc/type.rb#539
   def member_type(member_name); end
 
-  # source://idlc//lib/idlc/type.rb#577
+  # source://idlc//lib/idlc/type.rb#523
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/type.rb#566
+  # source://idlc//lib/idlc/type.rb#512
   sig { returns(::String) }
   def type_name; end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#115
+# source://idlc//lib/idlc/symbol_table.rb#114
 class Idl::SymbolTable
-  # source://idlc//lib/idlc/symbol_table.rb#208
+  # source://idlc//lib/idlc/symbol_table.rb#207
   sig do
     params(
       mxlen: T.nilable(::Integer),
@@ -3588,117 +3588,117 @@ class Idl::SymbolTable
   end
   def initialize(mxlen: T.unsafe(nil), possible_xlens: T.unsafe(nil), params: T.unsafe(nil), builtin_enums: T.unsafe(nil), builtin_funcs: T.unsafe(nil), csrs: T.unsafe(nil), name: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#382
+  # source://idlc//lib/idlc/symbol_table.rb#381
   def add(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#391
+  # source://idlc//lib/idlc/symbol_table.rb#390
   def add!(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#408
+  # source://idlc//lib/idlc/symbol_table.rb#407
   def add_above!(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#417
+  # source://idlc//lib/idlc/symbol_table.rb#416
   def add_at!(level, name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#440
+  # source://idlc//lib/idlc/symbol_table.rb#439
   def at_global_scope?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#316
+  # source://idlc//lib/idlc/symbol_table.rb#315
   def callstack; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#189
+  # source://idlc//lib/idlc/symbol_table.rb#188
   sig { params(csr_name: ::String).returns(T.nilable(::Idl::Csr)) }
   def csr(csr_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#183
+  # source://idlc//lib/idlc/symbol_table.rb#182
   sig { params(csr_name: ::String).returns(T::Boolean) }
   def csr?(csr_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#186
+  # source://idlc//lib/idlc/symbol_table.rb#185
   sig { returns(T::Hash[::String, ::Idl::Csr]) }
   def csr_hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#489
+  # source://idlc//lib/idlc/symbol_table.rb#488
   def deep_clone(clone_values: T.unsafe(nil), freeze_global: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#258
+  # source://idlc//lib/idlc/symbol_table.rb#257
   def deep_freeze; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#401
+  # source://idlc//lib/idlc/symbol_table.rb#400
   def del(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#362
+  # source://idlc//lib/idlc/symbol_table.rb#361
   def find_all(single_scope: T.unsafe(nil), &block); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#332
+  # source://idlc//lib/idlc/symbol_table.rb#331
   def get(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#340
+  # source://idlc//lib/idlc/symbol_table.rb#339
   def get_from(name, level); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#352
+  # source://idlc//lib/idlc/symbol_table.rb#351
   def get_global(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#445
+  # source://idlc//lib/idlc/symbol_table.rb#444
   def global_clone; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#129
+  # source://idlc//lib/idlc/symbol_table.rb#128
   def hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#486
+  # source://idlc//lib/idlc/symbol_table.rb#485
   def in_use?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#253
+  # source://idlc//lib/idlc/symbol_table.rb#252
   sig { returns(::String) }
   def inspect; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#321
+  # source://idlc//lib/idlc/symbol_table.rb#320
   def key?(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#325
+  # source://idlc//lib/idlc/symbol_table.rb#324
   def keys_pretty; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#426
+  # source://idlc//lib/idlc/symbol_table.rb#425
   def levels; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#150
+  # source://idlc//lib/idlc/symbol_table.rb#149
   sig { returns(T::Boolean) }
   def multi_xlen?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#121
+  # source://idlc//lib/idlc/symbol_table.rb#120
   sig { returns(T.nilable(::Integer)) }
   def mxlen; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#124
+  # source://idlc//lib/idlc/symbol_table.rb#123
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#192
+  # source://idlc//lib/idlc/symbol_table.rb#191
   sig { params(param_name: ::String).returns(T.nilable(::Idl::RuntimeParam)) }
   def param(param_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#195
+  # source://idlc//lib/idlc/symbol_table.rb#194
   sig { returns(T::Hash[::String, ::Idl::RuntimeParam]) }
   def params_hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#306
+  # source://idlc//lib/idlc/symbol_table.rb#305
   def pop; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#153
+  # source://idlc//lib/idlc/symbol_table.rb#152
   sig { returns(T::Array[::Integer]) }
   def possible_xlens; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#431
+  # source://idlc//lib/idlc/symbol_table.rb#430
   def print; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#294
+  # source://idlc//lib/idlc/symbol_table.rb#293
   def push(ast); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#475
+  # source://idlc//lib/idlc/symbol_table.rb#474
   def release; end
 
   class << self
-    # source://idlc//lib/idlc/symbol_table.rb#160
+    # source://idlc//lib/idlc/symbol_table.rb#159
     sig do
       params(
         blk: T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean))
@@ -3706,7 +3706,7 @@ class Idl::SymbolTable
     end
     def make_implemented_callback(&blk); end
 
-    # source://idlc//lib/idlc/symbol_table.rb#174
+    # source://idlc//lib/idlc/symbol_table.rb#173
     sig do
       params(
         blk: T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
@@ -3714,7 +3714,7 @@ class Idl::SymbolTable
     end
     def make_implemented_csr_callback(&blk); end
 
-    # source://idlc//lib/idlc/symbol_table.rb#167
+    # source://idlc//lib/idlc/symbol_table.rb#166
     sig do
       params(
         blk: T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean))
@@ -3724,44 +3724,44 @@ class Idl::SymbolTable
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#176
+# source://idlc//lib/idlc/symbol_table.rb#175
 class Idl::SymbolTable::BuiltinFunctionCallbacks < ::T::Struct
   prop :implemented, T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean))
   prop :implemented_version, T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean))
   prop :implemented_csr, T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
 
   class << self
-    # source://sorbet-runtime/0.5.12157/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#126
+# source://idlc//lib/idlc/symbol_table.rb#125
 class Idl::SymbolTable::DuplicateSymError < ::StandardError; end
 
-# source://idlc//lib/idlc/symbol_table.rb#135
+# source://idlc//lib/idlc/symbol_table.rb#134
 class Idl::SymbolTable::EnumDef < ::T::Struct
   prop :name, ::String
   prop :element_values, T::Array[::Integer]
   prop :element_names, T::Array[::String]
 
-  # source://idlc//lib/idlc/symbol_table.rb#143
+  # source://idlc//lib/idlc/symbol_table.rb#142
   sig { params(name: ::String, element_values: T::Array[::Integer], element_names: T::Array[::String]).void }
   def initialize(name:, element_values:, element_names:); end
 
   class << self
-    # source://sorbet-runtime/0.5.12157/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#155
+# source://idlc//lib/idlc/symbol_table.rb#154
 Idl::SymbolTable::ImplementedCallbackType = T.type_alias { T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean)) }
 
-# source://idlc//lib/idlc/symbol_table.rb#169
+# source://idlc//lib/idlc/symbol_table.rb#168
 Idl::SymbolTable::ImplementedCsrCallbackType = T.type_alias { T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean)) }
 
-# source://idlc//lib/idlc/symbol_table.rb#162
+# source://idlc//lib/idlc/symbol_table.rb#161
 Idl::SymbolTable::ImplementedVersionCallbackType = T.type_alias { T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean)) }
 
 # source://idlc//lib/idlc/syntax_node.rb#49
@@ -3828,7 +3828,7 @@ class Idl::Type
   # source://idlc//lib/idlc/type.rb#107
   def initialize(kind, qualifiers: T.unsafe(nil), width: T.unsafe(nil), sub_type: T.unsafe(nil), name: T.unsafe(nil), tuple_types: T.unsafe(nil), enum_class: T.unsafe(nil), csr: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#422
+  # source://idlc//lib/idlc/type.rb#368
   def ary?; end
 
   # source://idlc//lib/idlc/type.rb#221
@@ -3840,7 +3840,7 @@ class Idl::Type
   # source://idlc//lib/idlc/type.rb#161
   def comparable_to?(type); end
 
-  # source://idlc//lib/idlc/type.rb#426
+  # source://idlc//lib/idlc/type.rb#372
   def const?; end
 
   # source://idlc//lib/idlc/type.rb#231
@@ -3859,7 +3859,7 @@ class Idl::Type
   # source://idlc//lib/idlc/type.rb#320
   def fully_qualified_name; end
 
-  # source://idlc//lib/idlc/type.rb#438
+  # source://idlc//lib/idlc/type.rb#384
   def global?; end
 
   # source://idlc//lib/idlc/type.rb#43
@@ -3870,24 +3870,24 @@ class Idl::Type
   sig { returns(::Symbol) }
   def kind; end
 
-  # source://idlc//lib/idlc/type.rb#460
+  # source://idlc//lib/idlc/type.rb#406
   sig { returns(::Idl::Type) }
   def make_const; end
 
-  # source://idlc//lib/idlc/type.rb#453
+  # source://idlc//lib/idlc/type.rb#399
   sig { returns(::Idl::Type) }
   def make_const!; end
 
-  # source://idlc//lib/idlc/type.rb#465
+  # source://idlc//lib/idlc/type.rb#411
   def make_global; end
 
-  # source://idlc//lib/idlc/type.rb#446
+  # source://idlc//lib/idlc/type.rb#392
   def make_signed; end
 
-  # source://idlc//lib/idlc/type.rb#430
+  # source://idlc//lib/idlc/type.rb#376
   def mutable?; end
 
-  # source://idlc//lib/idlc/type.rb#404
+  # source://idlc//lib/idlc/type.rb#350
   def name; end
 
   # source://idlc//lib/idlc/type.rb#74
@@ -3897,21 +3897,15 @@ class Idl::Type
   # source://idlc//lib/idlc/type.rb#88
   def qualify(qualifier); end
 
-  # source://idlc//lib/idlc/type.rb#434
+  # source://idlc//lib/idlc/type.rb#380
   def signed?; end
 
   # source://idlc//lib/idlc/type.rb#80
   sig { returns(::Idl::Type) }
   def sub_type; end
 
-  # source://idlc//lib/idlc/type.rb#442
+  # source://idlc//lib/idlc/type.rb#388
   def template_var?; end
-
-  # source://idlc//lib/idlc/type.rb#399
-  def to_cxx; end
-
-  # source://idlc//lib/idlc/type.rb#350
-  def to_cxx_no_qualifiers; end
 
   # source://idlc//lib/idlc/type.rb#300
   sig { returns(::String) }
@@ -3929,7 +3923,7 @@ class Idl::Type
   def width; end
 
   class << self
-    # source://idlc//lib/idlc/type.rb#553
+    # source://idlc//lib/idlc/type.rb#499
     def from_json_schema(schema); end
 
     # source://idlc//lib/idlc/type.rb#94
@@ -3937,10 +3931,10 @@ class Idl::Type
 
     private
 
-    # source://idlc//lib/idlc/type.rb#513
+    # source://idlc//lib/idlc/type.rb#459
     def from_json_schema_array_type(schema); end
 
-    # source://idlc//lib/idlc/type.rb#472
+    # source://idlc//lib/idlc/type.rb#418
     def from_json_schema_scalar_type(schema); end
   end
 end
@@ -4042,62 +4036,62 @@ end
 # source://idlc//lib/idlc/ast.rb#27
 Idl::ValueRbType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean, T::Hash[::String, T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean)]) }
 
-# source://idlc//lib/idlc/symbol_table.rb#16
+# source://idlc//lib/idlc/symbol_table.rb#15
 class Idl::Var
-  # source://idlc//lib/idlc/symbol_table.rb#21
+  # source://idlc//lib/idlc/symbol_table.rb#20
   def initialize(name, type, value = T.unsafe(nil), decode_var: T.unsafe(nil), template_index: T.unsafe(nil), function_name: T.unsafe(nil), param: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#61
+  # source://idlc//lib/idlc/symbol_table.rb#60
   def clone; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#73
+  # source://idlc//lib/idlc/symbol_table.rb#72
   def const?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#45
+  # source://idlc//lib/idlc/symbol_table.rb#44
   sig { returns(T::Boolean) }
   def const_eval?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#40
+  # source://idlc//lib/idlc/symbol_table.rb#39
   sig { void }
   def const_incompatible!; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#77
+  # source://idlc//lib/idlc/symbol_table.rb#76
   def decode_var?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#53
+  # source://idlc//lib/idlc/symbol_table.rb#52
   def hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#19
+  # source://idlc//lib/idlc/symbol_table.rb#18
   def name; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#81
+  # source://idlc//lib/idlc/symbol_table.rb#80
   def param?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#95
+  # source://idlc//lib/idlc/symbol_table.rb#94
   def template_index; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#101
+  # source://idlc//lib/idlc/symbol_table.rb#100
   def template_val?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#91
+  # source://idlc//lib/idlc/symbol_table.rb#90
   def template_value?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#87
+  # source://idlc//lib/idlc/symbol_table.rb#86
   def template_value_for?(function_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#105
+  # source://idlc//lib/idlc/symbol_table.rb#104
   def to_cxx; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#57
+  # source://idlc//lib/idlc/symbol_table.rb#56
   def to_s; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#19
+  # source://idlc//lib/idlc/symbol_table.rb#18
   def type; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#19
+  # source://idlc//lib/idlc/symbol_table.rb#18
   def value; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#109
+  # source://idlc//lib/idlc/symbol_table.rb#108
   def value=(new_value); end
 end
 
@@ -4295,7 +4289,7 @@ class Idl::VariableDeclarationWithInitializationSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#963
+# source://idlc//lib/idlc/type.rb#909
 Idl::VoidType = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/ast.rb#3002
@@ -4337,15 +4331,15 @@ class Idl::WidthRevealSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#941
+# source://idlc//lib/idlc/type.rb#887
 class Idl::XregType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#942
+  # source://idlc//lib/idlc/type.rb#888
   def initialize(xlen); end
 
-  # source://idlc//lib/idlc/type.rb#950
+  # source://idlc//lib/idlc/type.rb#896
   def to_cxx; end
 
-  # source://idlc//lib/idlc/type.rb#946
+  # source://idlc//lib/idlc/type.rb#892
   def to_s; end
 end
 
@@ -4445,6 +4439,9 @@ class Treetop::Runtime::CompiledParser
   # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#106
   def has_terminal?(terminal, mode, index); end
 
+  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
+  def idlc_instantiate_node(node_type, *args); end
+
   # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#66
   def index=(_arg0); end
 
@@ -4465,9 +4462,6 @@ class Treetop::Runtime::CompiledParser
 
   # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#120
   def terminal_parse_failure(expected_string, unexpected = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
-  def treetop_instantiate_node(node_type, *args); end
 end
 
 # source://idlc//lib/idlc/syntax_node.rb#13

@@ -5,7 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem concurrent-ruby`.
 
 
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/version.rb#1
+# source://concurrent-ruby//lib/concurrent-ruby/concurrent/constants.rb#1
 module Concurrent
   extend ::Concurrent::Utility::EngineDetector
   extend ::Concurrent::Utility::NativeExtensionLoader
@@ -854,7 +854,7 @@ end
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/errors.rb#9
 class Concurrent::CancelledOperationError < ::Concurrent::Error; end
 
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/collection/copy_on_write_observer_set.rb#4
+# source://concurrent-ruby//lib/concurrent-ruby/concurrent/map.rb#7
 module Concurrent::Collection; end
 
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/collection/copy_on_notify_observer_set.rb#12

@@ -55,7 +55,7 @@ class VersionSpec
   sig { params(version_str: String).void }
   def initialize(version_str)
     if version_str =~ /^\s*#{VERSION_REGEX}\s*$/
-      m = ::Regexp.last_match
+      m = T.must(::Regexp.last_match)
       @major = m[1].to_i
       @minor_given = !m[2].nil?
       @minor = @minor_given ? m[2].to_i : 0
@@ -113,7 +113,7 @@ class VersionSpec
         0
       end
     else
-      raise ArgumentError, "Cannot compare VersionSpec with #{other.class.name}"
+      T.absurd(other)
     end
   end
 
@@ -157,14 +157,10 @@ class RequirementSpec
   # @param requirement [String] A requirement string
   sig { params(requirement: String).void }
   def initialize(requirement)
-    unless requirement.is_a?(String)
-      raise ArgumentError, "requirement must be a string (is a #{requirement.class.name})"
-    end
-
     if requirement =~ /^\s*#{REQUIREMENT_REGEX}\s*$/
-      m = ::Regexp.last_match
-      @op = m[1]
-      @version_str = m[2]
+      m = T.must(::Regexp.last_match)
+      @op = T.must(m[1])
+      @version_str = T.must(m[2])
       @version_spec = VersionSpec.new(@version_str)
     else
       raise ArgumentError, "Bad requirement string '#{requirement}' #{REQUIREMENT_REGEX}"
@@ -246,10 +242,22 @@ class RequirementSpec
         compatible_versions.include?(v_spec)
       end
     when "!~>" # not a legal spec, but used for inversion
-      matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
-      raise "Can't find version?" if matching_ver.nil?
+      if ext.is_a?(Extension)
+        matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+        raise "Can't find version?" if matching_ver.nil?
 
-      !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+        !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+      else
+        versions = ext.fetch("versions")
+        compatible_versions = []
+        versions.each do |vinfo|
+          vspec = VersionSpec.new(vinfo.fetch("version"))
+          compatible_versions << vspec if vspec >= v_spec
+          break if compatible_versions.size.positive? && vinfo.key?("breaking")
+        end
+
+        !compatible_versions.include?(v_spec)
+      end
     end
   end
 end

@@ -48,6 +48,9 @@ class ConfiguredArchitecture < Architecture
   sig { returns(String) }
   attr_reader :name
 
+  sig { returns(AbstractConfig) }
+  attr_reader :config
+
   sig { returns(T::Boolean) }
   def fully_configured? = @config.fully_configured?
 
@@ -237,7 +240,7 @@ class ConfiguredArchitecture < Architecture
       std_path: Pathname,   # path to standard architecture spec
       custom_path: Pathname, # path to custom overlay, if needed
       gen_path: Pathname    # path to put generated files
-    ).void
+    ).returns(T::Boolean)
   }
   def self.validate(
     config_path,
@@ -249,7 +252,7 @@ class ConfiguredArchitecture < Architecture
     config_spec = YAML.load_file(config_path)
     case config_spec.fetch("type")
     when "unconfigured"
-      return  # nothing else to do!
+      true  # nothing else to do!
     when "fully configured"
       validate_full_config(config_path, std_path:, custom_path:, gen_path:)
     when "partially configured"
@@ -265,7 +268,7 @@ class ConfiguredArchitecture < Architecture
       gen_path: Pathname,
       std_path: Pathname,
       custom_path: Pathname
-    ).void
+    ).returns(T::Boolean)
   }
   def self.validate_full_config(config_path, gen_path:, std_path:, custom_path:)
     config_spec = YAML.load_file(config_path)
@@ -279,8 +282,15 @@ class ConfiguredArchitecture < Architecture
 
     # first, check that all the extensions are defined
     config_spec.fetch("implemented_extensions").each do |e|
-      ext_name = e.fetch(0)
-      ext_version = e.fetch(1)
+      ext_name = T.let("", String)
+      ext_version = T.let("", String)
+      if e.is_a?(Array)
+        ext_name = e.fetch(0)
+        ext_version = e.fetch(1)
+      else
+        ext_name = e.fetch("name")
+        ext_version = e.fetch("version")
+      end
 
       unless (resolved_path / "ext" / "#{ext_name}.yaml").file?
         raise "Cannot find defintion of extension #{ext_name} #{resolved_path / "ext" / "#{ext_name}.yaml"}"
@@ -296,12 +306,10 @@ class ConfiguredArchitecture < Architecture
 
     cfg_arch = resolver.cfg_arch_for(config_path)
 
-    param_missing = false
+    param_missing = T.let(false, T::Boolean)
     # check params
     cfg_arch.transitive_implemented_extension_versions.each do |ext_ver|
-      puts ext_ver.name
       ext_ver.params.each do |param|
-        puts "  #{param.name}"
         unless config_spec.fetch("params").key?(param.name)
           warn "missing required parameter #{param.name}"
           param_missing = true
@@ -310,11 +318,13 @@ class ConfiguredArchitecture < Architecture
 
         unless param.schema.validate(config_spec.fetch("params").fetch(param.name))
           warn "value of parameter #{param.name} is not valid"
+          param_missing = true
         end
       end
     end
 
-    raise "Parameter(s) are missing" if param_missing
+    warn "Parameter(s) are missing or invalid" if param_missing
+    !param_missing
   end
   private_class_method :validate_full_config
 
@@ -324,7 +334,7 @@ class ConfiguredArchitecture < Architecture
       gen_path: Pathname,
       std_path: Pathname,
       custom_path: Pathname
-    ).void
+    ).returns(T::Boolean)
   }
   def self.validate_partial_config(config_path, gen_path:, std_path:, custom_path:)
     config_spec = YAML.load_file(config_path)
@@ -355,7 +365,7 @@ class ConfiguredArchitecture < Architecture
 
     cfg_arch = resolver.cfg_arch_for(config_path)
 
-    invalid_param = false
+    invalid_param = T.let(false, T::Boolean)
     # check params
     possible_params = cfg_arch.mandatory_extension_reqs.map(&:params).flatten.uniq
     if config_spec.key?("params")
@@ -369,11 +379,13 @@ class ConfiguredArchitecture < Architecture
         param = possible_params.find { |param| param.name == pname }
         unless param.schema.validate(pvalue)
           warn "value of parameter #{param.name} is not valid"
+          invalid_param = true
         end
       end
     end
 
-    raise "Parameter(s) are invalid" if invalid_param
+    warn "Parameter(s) are invalid" if invalid_param
+    !invalid_param
   end
   private_class_method :validate_partial_config
 
@@ -440,7 +452,7 @@ class ConfiguredArchitecture < Architecture
       )
     )
 
-    params = params_with_value.concat(params_without_value)
+    params = params_with_value.concat(params_without_value).concat(out_of_scope_params)
     params.uniq! { |p| p.name }
     @symtab =
       Idl::SymbolTable.new(
@@ -581,7 +593,7 @@ class ConfiguredArchitecture < Architecture
         ext.params.each do |ext_param|
           if !@config.param_values.key?(ext_param.name)
             if ext_param.when.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
-              raise "missing parameter value for #{ext_param.name} in config #{ext_param.when.to_logic_tree}"
+              raise "missing parameter value for #{ext_param.name} in config #{config.name}"
             else
               next
             end
@@ -631,6 +643,23 @@ class ConfiguredArchitecture < Architecture
       end
     end
     @params_without_value
+  end
+
+  # Returns list of parameters that out of scope for the config
+  sig { returns(T::Array[Parameter]) }
+  def out_of_scope_params
+    return @out_of_scope_params unless @out_of_scope_params.nil?
+
+    @out_of_scope_params = []
+    extensions.each do |ext|
+      ext.params.each do |ext_param|
+        next if params_with_value.any? { |p| p.name == ext_param.name }
+        next if params_without_value.any? { |p| p.name == ext_param.name }
+
+        @out_of_scope_params << ext_param
+      end
+    end
+    @out_of_scope_params
   end
 
   # @return [Array<ExtensionVersion>] List of extension versions explicitly marked as implemented in the config.

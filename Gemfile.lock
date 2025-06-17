@@ -167,6 +167,7 @@ GEM
       stringio
     public_suffix (6.0.2)
     racc (1.8.1)
+    rack (3.1.16)
     rainbow (3.1.1)
     rake (13.3.0)
     rbi (0.3.3)
@@ -201,10 +202,24 @@ GEM
     rubocop-ast (1.45.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
+    rubocop-github (0.26.0)
+      rubocop (>= 1.76)
+      rubocop-performance (>= 1.24)
+      rubocop-rails (>= 2.23)
     rubocop-minitest (0.38.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
+    rubocop-performance (1.25.0)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.75.0, < 2.0)
+      rubocop-ast (>= 1.38.0, < 2.0)
+    rubocop-rails (2.32.0)
+      activesupport (>= 4.2.0)
+      lint_roller (~> 1.1)
+      rack (>= 1.1)
+      rubocop (>= 1.75.0, < 2.0)
+      rubocop-ast (>= 1.44.0, < 2.0)
     rubocop-sorbet (0.10.2)
       lint_roller
       rubocop (>= 1.75.2)
@@ -309,7 +324,9 @@ DEPENDENCIES
   minitest
   rake (~> 13.0)
   rdbg
+  rubocop-github
   rubocop-minitest
+  rubocop-performance
   rubocop-sorbet
   ruby-prof
   ruby-progressbar (~> 1.13)

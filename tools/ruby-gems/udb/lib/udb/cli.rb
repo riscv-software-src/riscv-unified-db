@@ -50,10 +50,15 @@ module Udb
           else
             raise ArgumentError, "Cannot find config: #{name_or_path}"
           end
-        ConfiguredArchitecture.validate(cfg_file)
+        result = ConfiguredArchitecture.validate(cfg_file)
 
         cfg_spec = YAML.load_file(cfg_file)
-        say "Config #{cfg_spec.fetch('name')} is valid"
+        if result
+          say "Config #{cfg_spec.fetch('name')} is valid"
+        else
+          say "Config #{cfg_spec.fetch('name')} is invalid"
+          exit 1
+        end
       end
     end
 
