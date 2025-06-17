@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "pathname"
 require "forwardable"
@@ -22,6 +22,14 @@ class AbstractConfig
   abstract!
 
   ParamValueType = T.type_alias { T.any(Integer, String, T::Boolean) }
+
+  class Type < T::Enum
+    enums do
+      UnConfig = new("unconfigured")
+      Full = new("fully configured")
+      Partial = new("partially configured")
+    end
+  end
 
   ####################
   # ABSTRACT METHODS #
@@ -58,7 +66,7 @@ class AbstractConfig
   sig { abstract.returns(T::Boolean) }
   def unconfigured?; end
 
-  sig { abstract.returns(String) }
+  sig { abstract.returns(Type) }
   def type; end
 
   ########################
@@ -95,7 +103,7 @@ class FileConfig < AbstractConfig
     @data = data
   end
 
-  sig { override.returns(String) }
+  sig { override.returns(Type) }
   def type = @data["type"]
 
   sig { params(obj: T.untyped).returns(T.untyped) }

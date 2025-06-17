@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "udb/resolver"
+
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 
@@ -19,7 +21,7 @@ namespace :gen do
     FileUtils.mkdir_p output_dir
 
     # Get the arch paths based on the config
-    resolver = Udb.Resolver.new
+    resolver = Udb::Resolver.new
     cfg_arch = resolver.cfg_arch_for(config_name)
     inst_dir = cfg_arch.path / "inst"
     csr_dir = cfg_arch.path / "csr"
@@ -45,7 +47,7 @@ namespace :gen do
     FileUtils.mkdir_p output_dir
 
     # Get the arch paths based on the config
-    resolver = Udb.Resolver.new
+    resolver = Udb::Resolver.new
     cfg_arch = resolver.cfg_arch_for(config_name)
     inst_dir = cfg_arch.path / "inst"
     csr_dir = cfg_arch.path / "csr"
