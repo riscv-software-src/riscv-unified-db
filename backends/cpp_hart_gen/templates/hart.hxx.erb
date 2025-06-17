@@ -181,7 +181,7 @@ namespace udb {
           <%-       ext_ver.implications.each do |implied_ext_ver_and_cond| -%>
             <%-       unless implied_ext_ver_and_cond.cond.empty? -%>
             auto implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
-              for (const auto& pair : implemented_ext) {
+              for (const auto& pair : implemented_exts) {
                 if ((pair.first == ExtensionName::from_s(ext_name)) && (VersionRequirement(req).satisfied_by(Version(pair.second)))) {
                   return true;
                 }
@@ -237,7 +237,7 @@ namespace udb {
           csr_handle.name = csr->name();
           csr_handle.addr_type = CsrAddressType::Direct;
           csr_handle.address = csr_addr;
-          csr_handle.window_slot = 0;
+          csr_handle.indirect_slot = 0;
           csr_handle.mode = csr->mode();
           csr_handle.writable = csr->writable();
           return csr_handle;
@@ -258,7 +258,7 @@ namespace udb {
           csr_handle.name = csr->name();
           csr_handle.addr_type = CsrAddressType::Indirect;
           csr_handle.address = csr_indirect_addr;
-          csr_handle.window_slot = window_slot;
+          csr_handle.indirect_slot = window_slot;
           csr_handle.mode = csr->mode();
           csr_handle.writable = csr->writable();
           return csr_handle;
