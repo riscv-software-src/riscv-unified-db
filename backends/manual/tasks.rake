@@ -4,7 +4,7 @@ require "digest"
 
 $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 
-MANUAL_GEN_DIR = $root / "gen" / "manual"
+MANUAL_GEN_DIR = $resolver.gen_path / "manual"
 
 def versions_from_env(manual_name)
   versions = ENV["VERSIONS"].split(",")
@@ -13,7 +13,7 @@ def versions_from_env(manual_name)
     raise ArgumentError, "'all' was given as a version, so nothing else should be" unless versions.length == 1
 
     versions = []
-    version_fns = Dir.glob("#{$root}/arch/manual_version/**/*.yaml")
+    version_fns = Dir.glob("#{$resolver.std_path}/manual_version/**/*.yaml")
     raise "Cannot find version files" if version_fns.empty?
 
     version_fns.each do |manual_version_fn|
@@ -23,7 +23,7 @@ def versions_from_env(manual_name)
     output_hash = "all"
   else
     versions.each do |version|
-      raise "No manual version #{version}" if Dir.glob("#{$root}/arch/manual_version/**/#{version}.yaml").empty?
+      raise "No manual version #{version}" if Dir.glob("#{$resolver.std_path}/manual_version/**/#{version}.yaml").empty?
     end
     output_hash = versions.size == 1 ? versions[0] : Digest::SHA2.hexdigest(versions.join(""))
   end
@@ -353,7 +353,7 @@ rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/
   parts = t.name.sub("#{MANUAL_GEN_DIR}/","").split("/")
   manual_version_name = parts[1]
 
-  version_paths = Dir.glob("#{$root}/arch/manual_version/**/#{manual_version_name}.yaml")
+  version_paths = Dir.glob("#{$resolver.std_path}/manual_version/**/#{manual_version_name}.yaml")
   raise "No manual version named '#{manual_version_name}' found" unless version_paths.size == 1
 
   version_path = version_paths[0]

@@ -498,6 +498,8 @@ class ConfiguredArchitecture < Architecture
     @symtab.deep_freeze
     raise if @symtab.name.nil?
     @global_ast.freeze_tree(@symtab)
+
+    @params_with_value = T.let(nil, T.nilable(T::Array[ParameterWithValue]))
   end
 
   # Returns a string representation of the object, suitable for debugging.
@@ -582,47 +584,51 @@ class ConfiguredArchitecture < Architecture
   # @return [Array<ParameterWithValue>] List of all parameters with one known value in the config
   sig { returns(T::Array[ParameterWithValue]) }
   def params_with_value
-    return @params_with_value unless @params_with_value.nil?
-
-    @params_with_value = []
-    return @params_with_value if @config.unconfigured?
-
-    if @config.fully_configured?
-      transitive_implemented_extension_versions.each do |ext_version|
-        ext = T.must(extension(ext_version.name))
-        ext.params.each do |ext_param|
-          if !@config.param_values.key?(ext_param.name)
-            if ext_param.when.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
-              raise "missing parameter value for #{ext_param.name} in config #{config.name}"
-            else
-              next
+    @params_with_value ||= T.let(
+      if @config.unconfigured?
+        T.cast([], T::Array[ParameterWithValue])
+      elsif @config.fully_configured?
+        params = T.let([], T::Array[ParameterWithValue])
+        transitive_implemented_extension_versions.each do |ext_version|
+          ext = T.must(extension(ext_version.name))
+          ext.params.each do |ext_param|
+            if !@config.param_values.key?(ext_param.name)
+              if ext_param.when.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
+                raise "missing parameter value for #{ext_param.name} in config #{config.name}"
+              else
+                next
+              end
             end
+            next if params.any? { |p| p.name == ext_param.name }
+
+            params << ParameterWithValue.new(
+              ext_param,
+              @config.param_values.fetch(ext_param.name)
+            )
           end
-
-          @params_with_value << ParameterWithValue.new(
-            ext_param,
-            @config.param_values.fetch(ext_param.name)
-          )
         end
-      end
-    elsif @config.partially_configured?
-      mandatory_extension_reqs.each do |ext_requirement|
-        ext = T.must(extension(ext_requirement.name))
-        ext.params.each do |ext_param|
-          # Params listed in the config always only have one value.
-          next unless @config.param_values.key?(ext_param.name)
-          next if @params_with_value.any? { |p| p.name == ext_param.name }
+        params
+      elsif @config.partially_configured?
+        params = T.let([], T::Array[ParameterWithValue])
 
-          @params_with_value << ParameterWithValue.new(
-            ext_param,
-            T.must(@config.param_values[ext_param.name])
-          )
+        mandatory_extension_reqs.each do |ext_requirement|
+          ext = T.must(extension(ext_requirement.name))
+          ext.params.each do |ext_param|
+            # Params listed in the config always only have one value.
+            next unless @config.param_values.key?(ext_param.name)
+            next if params.any? { |p| p.name == ext_param.name }
+
+            params << ParameterWithValue.new(
+              ext_param,
+              T.must(@config.param_values[ext_param.name])
+            )
+          end
         end
-      end
-    else
-      raise "ERROR: unexpected config type"
-    end
-    @params_with_value
+        params
+      else
+        raise "unreachable"
+      end,
+      T.nilable(T::Array[ParameterWithValue]))
   end
 
   # @return [Array<Parameter>] List of all available parameters without one known value in the config

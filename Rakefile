@@ -233,120 +233,120 @@ def insert_warning(str, from)
 end
 
 (3..31).each do |hpm_num|
-  file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmcounterN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmcounterNh.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmeventN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmeventN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmeventN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmeventNh.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmeventNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/hpmcounterN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/hpmcounterN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/hpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/hpmcounterNh.layout",
     __FILE__
     ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/hpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
 (0..63).each do |pmpaddr_num|
-  file "#{$root}/arch/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
-    "#{$root}/arch/csr/I/pmpaddrN.layout",
+  file "#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
+    "#{$resolver.std_path}/csr/I/pmpaddrN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/I/pmpaddrN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/I/pmpaddrN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/I/pmpaddrN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/I/pmpaddrN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
 (0..15).each do |pmpcfg_num|
-  file "#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml" => [
-    "#{$root}/arch/csr/I/pmpcfgN.layout",
+  file "#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml" => [
+    "#{$resolver.std_path}/csr/I/pmpcfgN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/I/pmpcfgN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/I/pmpcfgN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/I/pmpcfgN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/I/pmpcfgN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
-file "#{$root}/arch/csr/I/mcounteren.yaml" => [
-  "#{$root}/arch/csr/I/mcounteren.layout",
+file "#{$resolver.std_path}/csr/I/mcounteren.yaml" => [
+  "#{$resolver.std_path}/csr/I/mcounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/I/mcounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/I/mcounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/I/mcounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/I/mcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/S/scounteren.yaml" => [
-  "#{$root}/arch/csr/S/scounteren.layout",
+file "#{$resolver.std_path}/csr/S/scounteren.yaml" => [
+  "#{$resolver.std_path}/csr/S/scounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/S/scounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/S/scounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/S/scounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/S/scounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/Sscofpmf/scountovf.yaml" => [
-  "#{$root}/arch/csr/Sscofpmf/scountovf.layout",
+file "#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml" => [
+  "#{$resolver.std_path}/csr/Sscofpmf/scountovf.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/Sscofpmf/scountovf.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/Sscofpmf/scountovf.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/Sscofpmf/scountovf.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/Sscofpmf/scountovf.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/H/hcounteren.yaml" => [
-  "#{$root}/arch/csr/H/hcounteren.layout",
+file "#{$resolver.std_path}/csr/H/hcounteren.yaml" => [
+  "#{$resolver.std_path}/csr/H/hcounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/H/hcounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/H/hcounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/H/hcounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/H/hcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/Zicntr/mcountinhibit.yaml" => [
-  "#{$root}/arch/csr/Zicntr/mcountinhibit.layout",
+file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
+  "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/Zicntr/mcountinhibit.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
@@ -354,27 +354,27 @@ namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
     (3..31).each do |hpm_num|
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}h.yaml"].invoke
 
-      Rake::Task["#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml"].invoke
     end
 
-    Rake::Task["#{$root}/arch/csr/I/mcounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/S/scounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/Sscofpmf/scountovf.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/H/hcounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/Zicntr/mcountinhibit.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/I/mcounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/S/scounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/H/hcounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml"].invoke
 
     (0..63).each do |pmpaddr_num|
-      Rake::Task["#{$root}/arch/csr/I/pmpaddr#{pmpaddr_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml"].invoke
     end
 
     (0..15).each do |pmpcfg_num|
-      Rake::Task["#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
   end
 end
