@@ -3223,7 +3223,7 @@ Add a zero-extended non-zero immediate, scaled by 4, to the stack pointer
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "rd","type":4},{"bits":8,"name": "imm != 0[5:4|9:6|2|3]","type":4},{"bits":3,"name": 0x0,"type":2}]}
+{"reg":[{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "xd","type":4},{"bits":8,"name": "imm != 0[5:4|9:6|2|3]","type":4},{"bits":3,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -3238,7 +3238,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[10:7], $encoding[12:11], $encoding[5], $encoding[6], 2'd0}
-|rd |$encoding[4:2]
+|xd |$encoding[4:2]
 |===
 
 Included in::
