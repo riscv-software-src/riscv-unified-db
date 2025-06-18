@@ -1,0 +1,142 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sstateen0
+long_name: Supervisor State Enable 0 Register
+address: 0x10C
+priv_mode: S
+length: MXLEN
+description:
+  - id: csr-sstateen0-purpose
+    normative: true
+    text: |
+      Each bit of a `stateen` CSR controls less-privileged access to an extension’s state,
+      for an extension that was not deemed "worthy" of a full XS field in `sstatus` like the
+      FS and VS fields for the F and V extensions.
+  - id: csr-sstateen0-num-justification
+    normative: false
+    text: |
+      The number of registers provided at each level is four because it is believed that
+      4 * 64 = 256 bits for machine and hypervisor levels, and 4 * 32 = 128 bits for
+      supervisor level, will be adequate for many years to come, perhaps for as long as
+      the RISC-V ISA is in use.
+      The exact number four is an attempted compromise between providing too few bits on
+      the one hand and going overboard with CSRs that will never be used on the other.
+  - id: csr-sstateen0-scope
+    normative: true
+    text: |
+      The `stateen` registers at each level control access to state at all less-privileged
+      levels, but not at its own level.
+  - id: csr-sstateen0-effect
+    normative: true
+    text: |
+      When a `stateen` CSR prevents access to state for a privilege mode, attempting to execute
+      in that privilege mode an instruction that implicitly updates the state without reading
+      it may or may not raise an illegal instruction or virtual instruction exception.
+      Such cases must be disambiguated by being explicitly specified one way or the other.
+      In some cases, the bits of the `stateen` CSRs will have a dual purpose as enables for the
+      ISA extensions that introduce the controlled state.
+  - id: csr-sstateen0-bit-allocation
+    normative: true
+    text: |
+      For every bit with a defined purpose in an `sstateen` CSR, the same bit is defined in the matching
+      `mstateen` CSR to control access below machine level to the same state. The upper 32 bits of an
+      `mstateen` CSR (or for RV32, the corresponding high-half CSR) control access to state that is inherently
+      inaccessible to user level, so no corresponding enable bits in the supervisor-level `sstateen` CSR are
+      applicable. The intention is to allocate bits for this purpose starting at the most-significant end, bit 63,
+      through to bit 32, and then on to the next-higher `mstateen` CSR. If the rate that bits are being allocated
+      from the least-significant end for `sstateen` CSRs is sufficiently low, allocation from the most-significant
+      end of `mstateen` CSRs may be allowed to encroach on the lower 32 bits before jumping to the next-higher
+      `mstateen` CSR. In that case, the bit positions of "encroaching" bits will remain forever read-only zeros in
+      the matching `sstateen` CSRs.
+  - id: csr-sstateen0-zero
+    normative: true
+    text: |
+      For every bit in an `mstateen` CSR that is zero (whether read-only zero or set to zero),
+      the same bit appears as read-only zero in the matching `hstateen` and `sstateen` CSRs.
+      For every bit in an `hstateen` CSR that is zero (whether read-only zero or set to zero),
+      the same bit appears as read-only zero in `sstateen` when accessed in VS-mode.
+  - id: csr-sstateen0-read-only
+    normative: true
+    text: |
+      A bit in a supervisor-level `sstateen` CSR cannot be read-only one unless the same bit is read-only one in the matching
+      `mstateen` CSR and, if it exists, in the matching `hstateen` CSR. Bit 63 of each `mstateen` CSR may be read-only zero
+      only if the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
+
+definedBy:
+  allOf:
+    - Smstateen
+    - Ssstateen
+fields:
+  JVT:
+    long_name: jvt access control
+    location: 2
+    definedBy: Zcmt
+    description: |
+      The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].JVT == 1'b0){
+        return 0;
+      }
+      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].JVT == 1'b0) {
+        return 0;
+      }
+      return csr_value.JVT;
+  FCSR:
+    long_name: fcsr access control
+    location: 1
+    #definedBy:
+    #anyOf: [Zhinx, Zfinx, Zdinx]
+    description: |
+      The FCSR bit controls access to `fcsr` for the case when floating-point instructions
+      operate on `x` registers instead of `f` registers as specified by the Zfinx and related
+      extensions (Zdinx, etc.). Whenever `misa.F` = 1, FCSR bit of `mstateen0` is read-only
+      zero (and hence read-only zero in `hstateen0` and `sstateen0` too). For convenience,
+      when the `stateen` CSRs are implemented and `misa.F` = 0, then if the FCSR bit of a
+      controlling `stateen0` CSR is zero, all floating-point instructions cause an illegal
+      instruction trap (or virtual instruction trap, if relevant), as though they all access
+      `fcsr`, regardless of whether they really do.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].FCSR == 1'b0){
+        return 0;
+      }
+      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].FCSR == 1'b0) {
+        return 0;
+      }
+      return csr_value.FCSR;
+  C:
+    long_name: custom state access control
+    location: 0
+    description: |
+      The C bit controls access to any and all custom state. The C bit of these registers is
+      not custom state itself; it is a standard field of a standard CSR, either `mstateen0`,
+      `hstateen0`, or `sstateen0`.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].C == 1'b0){
+        return 0;
+      }
+      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].C == 1'b0) {
+        return 0;
+      }
+      return csr_value.C;
+sw_read(): |
+  # For every bit in an mstateen CSR that is zero, the same bit
+  # appears as read-only zero in the matching sstateen CSR.
+  Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
+  Bits<64> sstateen0_value = $bits(CSR[sstateen0]) & mstateen0_mask;
+
+  # For every bit in an hstateen CSR that is zero, the same bit
+  # appears as read-only zero in sstateen when accessed in VS-mode.
+  if (mode() == PrivilegeMode::VS) {
+    Bits<64> hstateen0_mask = $bits(CSR[hstateen0]);
+    sstateen0_value = sstateen0_value & hstateen0_mask;
+  }
+
+  return sstateen0_value;

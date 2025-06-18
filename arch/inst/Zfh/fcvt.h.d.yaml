@@ -3,20 +3,23 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Convert Double-precision to Half-precision
+description:
+  - id: inst-fcvt.h.d-behaviour
+    normative: false
+    text: |
+      `fcvt.h.d` converts a Double-precision Floating-point number to a Half-precision floating-point number.
 definedBy:
   allOf: [D, Zfh]
-assembly: fd, fs1, frm
+assembly: fd, fs1, rm
 encoding:
   match: 010001000001-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always
