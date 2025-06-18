@@ -278,7 +278,7 @@ module Udb
     method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
     def disasm(encoding_str)
       raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
-      raise MalformattedArgumentError, "encoding must be a hex string" unless encoding_str =~ /^(0[xX])?[a-fA-F0-9]+$/
+      raise MalformattedArgumentError, "encoding must be a hex string" unless encoding_str =~ /\A(0[xX])?[a-fA-F0-9]+\z/
 
       cfg_file =
         if File.file?(options[:config])

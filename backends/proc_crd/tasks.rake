@@ -5,9 +5,9 @@
 require "pathname"
 
 PROC_CRD_DOC_DIR = Pathname.new "#{$root}/backends/proc_crd"
-PROC_CRD_GEN_DIR = $root / "gen" / "proc_crd"
+PROC_CRD_GEN_DIR = $resolver.gen_path / "proc_crd"
 
-Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
+Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
   model_name = File.basename(f, ".yaml")
   model_obj = YAML.load_file(f, permitted_classes: [Date])
   class_name = File.basename(model_obj['class']['$ref'].split("#")[0], ".yaml")
@@ -15,11 +15,11 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
 
   file "#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc" => [
     __FILE__,
-    "#{$root}/arch/proc_cert_class/#{class_name}.yaml",
-    "#{$root}/arch/proc_cert_model/#{model_name}.yaml",
-    "#{$root}/lib/arch_obj_models/certificate.rb",
-    "#{$root}/lib/arch_obj_models/portfolio.rb",
-    "#{$root}/lib/portfolio_design.rb",
+    "#{$resolver.std_path}/proc_cert_class/#{class_name}.yaml",
+    "#{$resolver.std_path}/proc_cert_model/#{model_name}.yaml",
+    "#{Udb.gem_path}/lib/udb/obj/certificate.rb",
+    "#{Udb.gem_path}/lib/udb/obj/portfolio.rb",
+    "#{Udb.gem_path}/lib/udb/portfolio_design.rb",
     "#{$root}/backends/portfolio/templates/ext_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
@@ -63,7 +63,7 @@ namespace :gen do
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/proc_cert_model/#{model_name}.yaml")
+    unless File.exist?("#{$resolver.std_path}/proc_cert_model/#{model_name}.yaml")
       warn "No certification model named '#{model_name}' found in arch/proc_cert_model"
       exit 1
     end
@@ -83,7 +83,7 @@ namespace :gen do
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/proc_cert_model/#{args[:model_name]}.yaml")
+    unless File.exist?("#{$resolver.std_path}/proc_cert_model/#{args[:model_name]}.yaml")
       warn "No certification model named '#{args[:model_name]}' found in arch/proc_cert_model"
       exit 1
     end

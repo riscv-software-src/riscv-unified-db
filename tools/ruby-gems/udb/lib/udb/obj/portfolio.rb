@@ -651,9 +651,9 @@ class Portfolio < TopLevelDatabaseObject
 
           unless ecode.dig("when", "version").nil?
             # check version
-            next unless design.ext?(ext_version.name.to_sym, ecode["when"]["version"])
+            next unless design.ext?(ext_version.name.to_sym, [ecode["when"]["version"]])
           end
-          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], arch)
+          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], ext_version.ext)
         end
         list
       end
