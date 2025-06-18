@@ -4,8 +4,21 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Smaia
 long_name: Advanced Interrupt Architecture, M-mode extension
-description: Advanced Interrupt Architecture, M-mode extension
+description: |
+  The Smaia extension defines all new machine-level CSRs and behavioral changes to the interrupt system as
+  specified in the Advanced Interrupt Architecture (AIA) v1.0. It includes support for interrupt delegation,
+  virtual interrupt control, and prioritized interrupt delivery mechanisms.
+
+  This extension is applicable to harts that support machine-level AIA features. It includes support for
+  both local interrupt controller registers (like MVIP, MVIEN) and indirect CSR access mechanisms (via MISEL, MIREG).
+
+  This extension takes precedence over conflicting behavior from other extensions unless explicitly overridden
+  (e.g., by Smcsrind/Sscsrind).
+
+  The existence and behavior of certain CSRs may depend on the implementation's privilege support (M, S, H) and XLEN.
+
 type: privileged
+
 versions:
   - version: "1.0.0"
     state: ratified

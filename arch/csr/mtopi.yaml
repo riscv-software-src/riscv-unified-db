@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+
+name: mtopi
+long_name: Machine Top Interrupt
+priv_mode: M
+address: 0xFB0
+length: 32
+definedBy: Smaia
+
+description: |
+  The `mtopi` CSR (Machine Top Interrupt) is a read-only register that encodes the highest-priority
+  interrupt that is both pending and enabled at machine level, excluding those delegated to lower
+  privilege levels. This CSR is valid only when AIA is implemented.
+
+  The value of `mtopi` is:
+  - Zero if no eligible interrupt is pending and enabled.
+  - Non-zero if a valid interrupt is pending and enabled.
+
+  Field definitions:
+    - Bits 27:16 — IID (Interrupt Identity Number)
+    - Bits 7:0   — IPRIO (Interrupt Priority)
+    - All other bits are reserved and read as zeros.
+
+  Notes:
+  - Reading `mtopi` does not clear or affect any interrupt state.
+  - `mtopi` is *not* masked by `mstatus.MIE`.
+  - IPRIO = 1 when all `iprio` bytes are read-only zero.
+  - If the actual priority exceeds 255 → IPRIO = 255
+  - If priority is 0:
+    - IPRIO = 0 → if interrupt has *higher* default priority than machine external interrupt
+    - IPRIO = 255 → otherwise
+
+  See also: `mcause`, `mstatus.MPIE`, `mip`, `mie`, `mideleg`, `iprio`.
+
+fields:
+  IPRIO:
+    location: 7-0
+    base: 32
+    type: RO
+    reset_value: 0
+    description: |
+      Encoded priority of the top pending-and-enabled interrupt.
+      Value depends on the priority system of the platform.
+
+      - If actual priority is 1-255, this field holds that value.
+      - If all iprio[] bytes are zero, always returns 1 when `mtopi` is non-zero.
+      - If actual priority > 255, returns 255.
+      - If actual priority == 0:
+        - Returns 0 if IID has default priority higher than machine external interrupt.
+        - Returns 255 otherwise.
+  IID:
+    location: 27-16
+    base: 32
+    type: RO
+    reset_value: 0
+    description: |
+      Major identity number of the top pending-and-enabled machine-level interrupt.
+      IID = 0 means no qualifying interrupt is currently pending and enabled.
+  RESERVED:
+    location: 31-28
+    base: 32
+    type: RO
+    reset_value: 0
+    description: Reserved. Always reads as 0.

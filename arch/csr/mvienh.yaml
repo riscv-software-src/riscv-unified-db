@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+
+name: mvienh
+long_name: Upper 32 bits of Machine Virtual Interrupt Enables
+priv_mode: M
+address: 0x318
+length: 32
+definedBy: Smaia
+
+description: |
+  The `mvienh` CSR provides access to the upper 32 bits of the 64-bit `mvien` register
+  on RV32 systems. It enables or disables delegation of virtual interrupt-pending bits
+  (in `mviph`) for interrupt causes numbered 63–32.
+
+  Each bit in `mvienh` corresponds to a virtual interrupt cause ID _i_ = 32 + _n_,
+  where _n_ = bit index in `mvienh`.
+
+  A bit in `mvienh` must be set to 1 for the corresponding `mviph` bit to be delegated
+  to supervisor mode (visible in `sip`), even if the interrupt is not delegated through
+  `mideleg`.
+
+  Writable bits vary by platform and extension. Bits may be read-only zero or one depending
+  on platform constraints or profiling.
+
+  See also: `mvien`, `mviph`, `mideleg`, `sip`.
+
+fields:
+  VIEH:
+    location: 31-0
+    base: 32
+    type: RW-R
+    reset_value: 0
+    description: |
+      *Virtual Interrupt Enables High*
+
+      Interrupt enable bits for virtual interrupt causes 32-63.
+
+      Each bit enables visibility of the corresponding `mviph` bit to supervisor mode,
+      even if not delegated via `mideleg`. Writable status for each bit is platform-specific.
+    sw_write(csr_value): |

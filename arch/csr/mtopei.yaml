@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+
+name: mtopei
+long_name: Machine Top External Interrupt
+priv_mode: M
+address: 0x35C
+length: 32
+definedBy: Smaia
+
+description: |
+  The `mtopei` CSR (Machine Top External Pending and Enabled Interrupt) reflects the identity
+  of the highest-priority external interrupt that is both pending and enabled in the IMSIC's
+  machine-level interrupt file and that also exceeds the threshold in the `eithreshold` CSR.
+
+  - Reading `mtopei` returns the ID of the interrupt left-shifted by 16 bits.
+  - Writing to `mtopei` claims (acknowledges) the interrupt.
+  - Returns zero if no qualifying interrupt is found or threshold filtering eliminates them.
+
+  Exists only if an IMSIC is implemented.
+
+  See also: `stopei`, `vstopei`, `miselect`, `mireg`, `eithreshold`.
+
+fields:
+  TOPEI:
+    location: 0-31
+    base: 32
+    type: RW
+    reset_value: 0
+    description: |
+      Top pending-and-enabled interrupt ID shifted left by 16 bits.
+      Writing this field acknowledges (claims) the interrupt.
+      Returns zero if no interrupt matches the condition.
