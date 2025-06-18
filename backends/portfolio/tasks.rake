@@ -1,32 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# typed: true
 # frozen_string_literal: true
-#
+
 # Contains common methods called from portfolio-based tasks.rake files.
 
+require "sorbet-runtime"
+
 require "pathname"
-require_relative "#{$lib}/idl/passes/gen_adoc"
+require "idlc/passes/gen_adoc"
+
+require "udb/config"
 
 # @return [Architecture]
 def pf_create_arch
-  cfg_arch_for("_")
+  $resolver.cfg_arch_for("_")
 end
 
 # @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).
 # @return [ConfiguredArchitecture]
+sig { params(portfolio_grp_with_arch: Udb::PortfolioGroup).returns(Udb::ConfiguredArchitecture) }
 def pf_create_cfg_arch(portfolio_grp_with_arch)
-  raise ArgumentError, "portfolio_grp_with_arch is a #{portfolio_grp_with_arch.class} but must be a PortfolioGroup" unless portfolio_grp_with_arch.is_a?(PortfolioGroup)
-
-  # Ensure that unconfigured resolved architecture called "_" exists.
-  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
-
   # Create a ConfiguredArchitecture object and provide it a PortfolioGroupConfig object to implement the AbstractConfig API.
   # The DatabaseObjects in PortfolioGroup only have an Architecture object and not a ConfiguredArchitecture object
   # otherwise there would be a circular dependency. To avoid this circular dependency, none of the routines
   # called in the PortfolioGroup object to satisfy the requests from the AbstractConfig API for the ConfiguredArchitecture
   # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
-  ConfiguredArchitecture.new(
+  Udb::ConfiguredArchitecture.new(
     portfolio_grp_with_arch.name,
-    PortfolioGroupConfig.new(portfolio_grp_with_arch),
-    $root / "gen" / "resolved_arch" / "_"
+    Udb::AbstractConfig.create(portfolio_grp_with_arch),
+    $resolver.gen_path / "resolved_spec" / "_"
   )
 end
 
@@ -77,7 +81,7 @@ def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_desi
   $logger.info "Converting monospace formatting to internal link format"
   erb_result_monospace_converted_to_links = portfolio_design.convert_monospace_to_links(erb_result)
   $logger.info "Converting internal link format to adoc links"
-  erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_monospace_converted_to_links)
+  erb_result_with_links_resolved = Udb::Helpers::AsciidocUtils.resolve_links(erb_result_monospace_converted_to_links)
   $logger.info "Writing adoc to #{target_pname}"
   File.write(target_pname, erb_result_with_links_resolved)
 end
@@ -98,7 +102,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
     "-r asciidoctor-diagram",
-    "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-r idl_highlighter",
     "-o #{target_pname}",
     adoc_file
   ].join(" ")
@@ -133,7 +137,7 @@ def pf_adoc2html(adoc_file, target_pname)
     "-a toc",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
     "-r asciidoctor-diagram",
-    "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-r idl_highlighter",
     "-o #{target_pname}",
     adoc_file
   ].join(" ")

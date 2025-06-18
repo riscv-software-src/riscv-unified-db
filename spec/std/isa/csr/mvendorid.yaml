@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvendorid
+long_name: Machine Vendor ID
+address: 0xf11
+writable: false
+priv_mode: M
+length: 32
+description: Reports the JEDEC manufacturer ID of the core.
+fields:
+  Bank:
+    description: JEDEC manufacturer ID bank minus 1
+    location: 31-7
+    type: RO
+    reset_value(): return VENDOR_ID_BANK;
+  Offset:
+    description: JEDEC manufacturer ID offset
+    location: 6-0
+    type: RO
+    reset_value(): return VENDOR_ID_OFFSET;
+definedBy: Sm

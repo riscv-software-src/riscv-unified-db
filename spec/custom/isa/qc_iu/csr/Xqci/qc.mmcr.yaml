@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: csr_schema.json#
+kind: csr
+name: qc.mmcr
+long_name: Machine Mode Control Register
+address: 0x7c0
+base: 32
+priv_mode: M
+length: MXLEN
+description: |
+  Machine Mode Control Register.
+definedBy:
+  anyOf:
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
+fields:
+  WP_EXEC:
+    type: RW
+    reset_value: 0
+    location: 3-0
+    description: Watchpoint execution enable (WP 0-3)
+  WP_WRITE:
+    type: RW
+    reset_value: 0
+    location: 7-4
+    description: Watchpoint write enable (WP 0-3)
+  WP_READ:
+    type: RW
+    reset_value: 0
+    location: 11-8
+    description: Watchpoint read enable (WP 0-3)
+  IRQNE:
+    type: RW
+    reset_value: 0
+    location: 21
+    description: IRQ nesting enable (for custom IRQ only)

@@ -1,0 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/proc_cert_class_schema.json
+
+$schema: proc_cert_class_schema.json#
+kind: processor certificate class
+processor_kind: Microcontroller
+name: MC
+long_name: Microcontroller Processor Certificate Class
+
+introduction: |
+  The MC (Microcontroller Class) targets processors running low-level software on an RTOS or bare-metal.

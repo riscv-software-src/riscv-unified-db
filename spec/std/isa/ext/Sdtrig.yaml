@@ -1,0 +1,67 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sdtrig
+long_name: Debug triggers
+description: |
+  Triggers can cause a breakpoint exception, entry into Debug Mode, or a
+  trace action without having to execute a special instruction. This makes
+  them invaluable when debugging code from ROM. They can trigger on
+  execution of instructions at a given memory address, or on the
+  address/data in loads/stores.
+
+  If Sdtrig is implemented, the Trigger Module must support at least one
+  trigger. Accessing trigger CSRs that are not used by any of the
+  implemented triggers must result in an illegal instruction exception.
+  M-Mode and Debug Mode accesses to trigger CSRs that are used by any of
+  the implemented triggers must succeed, regardless of the current type of
+  the currently selected trigger.
+
+  A trigger matches when the conditions that it specifies (e.g. a load
+  from a specific address) are met. A trigger fires when a trigger that
+  matches performs the action configured for that trigger.
+
+  Triggers do not fire while in Debug Mode.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+
+params:
+  MSTATEEN_CONTEXT_TYPE:
+    when:
+      name: Smstateen
+      version: ~> 1.0
+    schema:
+      type: string
+      enum: [rw, read-only-0, read-only-1]
+    description: |
+      Behavior of the mstateen0.CONTEXT bit:
+
+        * 'rw': read-write
+        * 'read-only-0': read-only, fixed to 0
+        * 'read-only-1': read-only, fixed to 1
+  HSTATEEN_CONTEXT_TYPE:
+    when:
+      allOf:
+        - name: H
+          version: ~> 1.0
+        - name: Ssstateen
+          version: ~> 1.0
+    schema:
+      type: string
+      enum: [rw, read-only-0, read-only-1]
+    description: |
+      Behavior of the hstateen0.CONTEXT bit:
+
+        * 'rw': read-write
+        * 'read-only-0': read-only, fixed to 0
+        * 'read-only-1': read-only, fixed to 1
+    extra_validation: |
+      assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
+      assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'

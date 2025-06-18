@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: profile_schema.json#
+kind: profile
+name: MP-U-64
+long_name: U-mode extensions for a Mock 64-bit Apps Processor profile
+marketing_name: MockProfile 64-bit Unpriv
+mode: Unpriv
+base: 64
+release: { $ref: profile_release/Mock.yaml# }
+extensions:
+  A:
+    presence: optional
+    version: "= 2.1"
+  I:
+    presence: mandatory
+    version: "~> 2.1"
+  Svade:
+    presence: mandatory
+    note: Adding this to get coverage when extension "conflicts" with another (Svadu in this case).

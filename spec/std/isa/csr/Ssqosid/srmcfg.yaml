@@ -1,0 +1,155 @@
+# Copyright (c) Syed Owais Ali Shah
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: srmcfg
+long_name: Supervisor Resource Management Configuration
+address: 0x181
+priv_mode: S
+length: SXLEN
+definedBy: Ssqosid
+description:
+  - id: csr-srmcfg-purpose
+    normative: true
+    text: |
+      The `srmcfg` register is used to configure a Resource Control ID (`RCID`) and a Monitoring Counter ID (`MCID`).
+      Both `RCID` and `MCID` are WARL fields.
+
+  - id: csr-`srmcfg`-field-usage
+    normative: true
+    text: |
+      The `RCID` and `MCID` accompany each request made by the hart to shared resource controllers.
+      The `RCID` is used to determine the resource allocations (e.g., cache occupancy limits, memory bandwidth limits, etc.) to enforce.
+      The `MCID` is used to identify a counter to monitor resource usage.
+
+  - id: csr-srmcfg-default-scope
+    normative: true
+    text: |
+      The `RCID` and `MCID` configured in the `srmcfg` CSR apply to all privilege modes of software execution on that hart by default,
+      but this behavior may be overridden by future extensions.
+
+  - id: csr-srmcfg-smstateen-interaction
+    normative: true
+    text: |
+      If extension `Smstateen` is implemented together with `Ssqosid`, then `Ssqosid` also requires the `SRMCFG` bit in `mstateen0` to be implemented.
+      If `mstateen0.SRMCFG` is `0`, attempts to access `srmcfg` in privilege modes less privileged than M-mode raise an illegal-instruction exception.
+
+  - id: csr-srmcfg-vsmode-exception
+    normative: true
+    text: |
+      If `mstateen0.SRMCFG` is `1` or if extension `Smstateen` is not implemented, attempts to access `srmcfg` when `V=1` raise a virtual-instruction exception.
+
+  - id: csr-srmcfg-rcid-reset
+    normative: false
+    text: |
+      A reset value of `0` is suggested for the `RCID` field, matching resource controllers' default behavior of associating all capacity with `RCID=0`.
+
+  - id: csr-srmcfg-mcid-reset
+    normative: false
+    text: |
+      The `MCID` reset value does not affect functionality and may be implementation-defined.
+
+  - id: csr-srmcfg-id-bit-allocation
+    normative: false
+    text: |
+      Typically, fewer bits are allocated for `RCID` (e.g., to support tens of `RCID`s) than for `MCID` (e.g., to support hundreds of `MCID`s).
+
+  - id: csr-srmcfg-rcid-grouping
+    normative: false
+    text: |
+      A common `RCID` is usually used to group apps or VMs, pooling resource allocations to meet collective SLAs.
+
+  - id: csr-srmcfg-mcid-granularity
+    normative: false
+    text: |
+      If an SLA breach occurs, unique `MCID`s enable granular monitoring, aiding decisions on resource adjustment,
+      associating a different `RCID` with a subset of members, or migrating members to other machines.
+      The larger pool of `MCID`s speeds up this analysis.
+
+  - id: csr-srmcfg-privilege-behavior
+    normative: false
+    text: |
+      The `RCID` and `MCID` in `srmcfg` apply across all privilege levels on the hart.
+      Typically, higher-privilege modes don't modify `srmcfg`, as they often serve lower-privileged tasks.
+      If differentiation is needed, higher privilege code can update `srmcfg` and restore it before returning to a lower privilege level.
+
+  - id: csr-srmcfg-vm-virtualization
+    normative: false
+    text: |
+      In VM environments, hypervisors usually manage resource allocations, keeping the Guest OS out of QoS flows.
+      If needed, the hypervisor can virtualize the `srmcfg` CSR for a VM using the virtual-instruction exceptions triggered upon Guest access.
+
+  - id: csr-srmcfg-vs-mode-future
+    normative: false
+    text: |
+      If the direct selection of `RCID` and `MCID` by the VM becomes common and emulation overhead is an issue,
+      future extensions may allow VS-mode to use a selector for a hypervisor-configured set of CSRs holding `RCID` and `MCID` values designated for that Guest OS use.
+
+  - id: csr-srmcfg-context-switch
+    normative: false
+    text: |
+      During context switches, the supervisor may choose to execute with the `srmcfg` of the outgoing context to attribute the execution to it.
+      Prior to restoring the new context, it switches to the new VM’s `srmcfg`.
+      The supervisor can also use a separate configuration for execution not to be attributed to either context.
+fields:
+  RCID:
+    location: 11-0
+    type: RW
+    long_name: Resource Control ID
+    description: |
+      The `RCID` is used to determine the resource allocations (e.g., cache occupancy limits,
+      memory bandwidth limits, etc.) to enforce.
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::Smstateen)) {
+        if (mode() < PrivilegeMode::M && CSR[mstateen0].SRMCFG == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+        if (virtual_mode?() && CSR[mstateen0].SRMCFG == 1) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        if (virtual_mode?()) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      }
+      return csr_value.RCID & ((1 `<< RCID_WIDTH) - 1);
+
+  MCID:
+    location: 27-16
+    type: RW
+    long_name: Monitoring Counter ID
+    description: |
+      The `MCID` is used to identify a counter to monitor resource usage.
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::Smstateen)) {
+        if (mode() < PrivilegeMode::M && CSR[mstateen0].SRMCFG == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+        if (virtual_mode?() && CSR[mstateen0].SRMCFG == 1) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        if (virtual_mode?()) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      }
+      return csr_value.MCID & ((1 `<< MCID_WIDTH) - 1);
+
+sw_read(): |
+  if (implemented?(ExtensionName::Smstateen)) {
+    if (mode() < PrivilegeMode::M && CSR[mstateen0].SRMCFG == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+    if (virtual_mode?() && CSR[mstateen0].SRMCFG == 1) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    }
+  } else {
+    if (virtual_mode?()) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    }
+  }
+  return $bits(CSR[mstateen0]);

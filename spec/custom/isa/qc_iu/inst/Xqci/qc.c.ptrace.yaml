@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.ptrace
+long_name: Tracing pseudo-instruction (hint) working only in simulation environment
+description: |
+  The tracing instruction have no explicit arguments.
+  Implicit arguments defined by simulation environment implementation.
+  Instruction is used to signal simulator to collect some tracing information.
+  Instruction encoded in CI instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisim
+assembly: ""
+base: 32
+encoding:
+  match: "0000000000000010"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg func = 9;
+  XReg arg = 0;
+  iss_syscall(func,arg);

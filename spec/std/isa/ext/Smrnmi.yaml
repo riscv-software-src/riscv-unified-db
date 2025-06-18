@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smrnmi
+long_name: Resumable Non-Maskable Interrupts
+description: |
+  The base machine-level architecture supports only unresumable non-maskable interrupts (UNMIs),
+  where the NMI jumps to a handler in machine mode, overwriting the current `mepc` and `mcause`
+  register values.
+  If the hart had been executing machine-mode code in a trap handler, the previous values in `mepc`
+  and `mcause` would not be recoverable and so execution is not generally resumable.
+
+  The `Smrnmi` extension adds support for resumable non-maskable interrupts (RNMIs) to RISC-V.
+  The extension adds four new CSRs (`mnepc`, `mncause`, `mnstatus`, and `mnscratch`) to hold the
+  interrupted state, and one new instruction, `mnret`, to resume from the RNMI handler.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
