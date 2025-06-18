@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: miph
+long_name: Machine Interrupt Pending High
+address: 0x354
+writable: true
+priv_mode: M
+length: 32
+definedBy: Smaia
+description: |
+  The `miph` CSR holds the upper 32 bits of the `mip` register on RV64 systems.
+  It is used in conjunction with `mip` to represent interrupt-pending bits above bit 31.
+
+  This CSR is only defined for RV64, and must not be implemented on RV32.
+
+  The `miph` CSR may contain pending status for platform-specific interrupts, especially
+  those mapped to bits 32 and above in `mip`.
+
+  Writing to `miph` affects the corresponding upper bits of `mip`. Similarly, reading from
+  `miph` returns the upper 32 bits of `mip`.
+
+  It is a read/write register in M-mode.
+
+  [NOTE]
+  ====
+  The `miph` register is not part of the base privilege specification but is defined
+  in the RISC-V privileged architecture when `mip` is wider than 32 bits, such as on RV64.
+  ====
+
+fields:
+  miph:
+    location: 31-0
+    type: RW
+    description: |
+      Interrupt-pending bits 32 through 63. Each bit corresponds to an interrupt
+      source above bit 31 in the full `mip` register. These bits reflect interrupt
+      pending status and are writable in M-mode.
+    reset_value: 0

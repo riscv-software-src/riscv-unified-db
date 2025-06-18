@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+
+name: mvien
+long_name: Machine Virtual Interrupt Enables
+priv_mode: M
+address: 0x308
+length: 64
+definedBy: Smaia
+description: |
+  The `mvien` CSR (Machine Virtual Interrupt Enables) controls whether the virtual interrupt-pending
+  bits in register `mvip` are active and visible to supervisor mode via the `sip` CSR, even when the
+  corresponding bit in `mideleg` is 0.
+
+  Each bit in `mvien` corresponds to an interrupt cause [0–63]. A bit in `mvien` must be 1 to enable
+  delegation of the corresponding bit in `mvip` to supervisor mode.
+
+  - Bits 1 (SSIP) and 9 (SEIP) may be writable depending on platform implementation.
+  - Bit 5 (STIP) may be writable or read-only zero depending on `mip` configuration.
+  - Bits 0-12 (except 1, 5, 9) are reserved and must be read-only zeros.
+  - Bits 13-63 may be writable, read-only zero, or read-only one depending on platform/extension.
+
+  For RV32, the upper 32 bits of `mvien` are accessed via `mvienh` (CSR 0x309).
+
+  See also: `mvip`, `mideleg`, `sip`.
+
+fields:
+  SSIP:
+    location: 1
+    base: 64
+    type: RW-R
+    reset_value: 0
+    description: |
+      Supervisor software interrupt enable. May be writable or read-only zero depending on platform.
+      When 1, allows delegation of SSIP via `mvip` even if not delegated via `mideleg`.
+    sw_write(csr_value): |
+
+  STIP:
+    location: 5
+    base: 64
+    type: RW-R
+    reset_value: 0
+    description: |
+      Supervisor timer interrupt enable. Writable only if the corresponding `mip.STIP` bit is writable;
+      otherwise read-only zero.
+    sw_write(csr_value): |
+
+  SEIP:
+    location: 9
+    base: 64
+    type: RW-R
+    reset_value: 0
+    description: |
+      Supervisor external interrupt enable. Strongly recommended to be writable. Controls delegation
+      of SEIP via `mvip`.
+    sw_write(csr_value): |
+
+  VIE:
+    location: 63-13
+    base: 64
+    type: RW-R
+    reset_value: 0
+    description: |
+      Interrupt enable bits for virtual supervisor-level interrupts 13–63.
+      Writable, read-only zero, or read-only one depending on implementation or platform profile.
+    sw_write(csr_value): |
+
+  RESERVED:
+    location: 12-0
+    base: 64
+    type: RO
+    reset_value: 0
+    description: |
+      Reserved. Read-only zeros except for SSIP (bit 1), STIP (bit 5), and SEIP (bit 9).

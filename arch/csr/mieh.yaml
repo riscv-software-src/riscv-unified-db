@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mieh
+long_name: Upper 32 bits of Machine Interrupt Enable
+address: 0x314
+writable: true
+priv_mode: M
+length: 32
+definedBy: Smaia
+description: |
+  The `mieh` CSR holds the upper 32 bits of the 64-bit `mie` register on RV32 systems.
+
+  Like `mie`, this register enables individual interrupts, but for interrupt IDs 32–63.
+  This register is only present if Supervisor mode is implemented, and only meaningful
+  if external interrupt sources are defined in that upper range.
+
+  WARL: Writes to unsupported or unimplemented bits are ignored and read as zero.
+  Writable bits can be discovered by writing all 1s and reading back the value.
+
+fields:
+  mieh:
+    location: 31-0
+    type: RW-R
+    sw_write(csr_value): |
+    description: |
+      Interrupt enable bits 32-63. Each bit enables the corresponding interrupt
+      if supported. Unsupported bits are read-only zero.
+    reset_value: 0

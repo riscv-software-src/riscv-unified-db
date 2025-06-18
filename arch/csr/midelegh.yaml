@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: midelegh
+long_name: Upper 32 bits of mideleg
+address: 0x313
+writable: true
+priv_mode: M
+length: 32
+definedBy: Smaia
+description: |
+  The `midelegh` CSR holds the upper 32 bits of the 64-bit `mideleg` CSR on RV32 systems.
+  This register is present only when Supervisor mode is implemented.
+
+  Like `mideleg`, `midelegh` controls interrupt delegation from M-mode to HS/S-mode.
+  Bits in `midelegh` correspond to interrupt causes 32 through 63. When a bit is set,
+  the corresponding interrupt is delegated to S-mode if it occurs while executing in
+  S-mode or U-mode.
+
+  The set of writable bits in this register is WARL — an implementation may not support
+  delegation for all interrupt causes. Supported bits can be discovered by writing all 1s
+  to the register and reading back the result.
+
+  Bits corresponding to unsupported or unimplemented interrupts must be read-only zero.
+
+fields:
+  midelegh:
+    location: 31-0
+    type: RW-R
+    sw_write(csr_value): |
+
+    description: |
+      Interrupt delegation bits 32-63. Each bit, when set, delegates the corresponding
+      interrupt to HS/S-mode. Bits corresponding to unimplemented or non-delegatable interrupts
+      are read-only zero.
+    reset_value: 0

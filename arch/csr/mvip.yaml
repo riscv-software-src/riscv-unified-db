@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+
+name: mvip
+long_name: Machine Virtual Interrupt Pending
+priv_mode: M
+address: 0x305
+length: 64
+definedBy: Smaia
+description: |
+  The `mvip` CSR (Machine Virtual Interrupt Pending) provides software-visible virtual interrupt pending bits
+  for supervisor-level interrupts. It enables M-mode to selectively delegate virtual interrupt signals
+  to S-mode via the `sip` register, even if the `mideleg` bit for the interrupt is 0.
+
+  Bits in `mvip` are meaningful when the corresponding bits in `mvien` are set to 1.
+  - Bits 1 (SSIP), 5 (STIP), and 9 (SEIP) are writable and may act as aliases to `mip` depending on the value of `mvien`.
+  - Other bits in the range [0-12] are reserved and must be hardwired to 0.
+  - Bits [13-63] are implementation-defined but generally writable.
+
+  `mvip` allows M-mode to emulate interrupt delivery behavior to S-mode without depending on real hardware interrupt signals.
+
+fields:
+  vip:
+    location: 63-0
+    type: RW
+    reset_value: 0
+    description: |
+      Each bit represents a virtual interrupt-pending bit. Bits 1 (SSIP), 5 (STIP), and 9 (SEIP) are writable and emulate
+      pending supervisor interrupts. Bits [0-12] other than these may be reserved. Bits [13–63] are implementation-defined.
