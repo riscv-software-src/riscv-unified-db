@@ -143,7 +143,7 @@ module Udb
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
       puts cmd.join(" ")
-      system(*cmd)
+      T.unsafe(self).send(:system, *cmd)
       raise unless $?.success?
     end
 
