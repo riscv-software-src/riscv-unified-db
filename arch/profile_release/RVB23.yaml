@@ -1,8 +1,10 @@
-$schema: profile_schema.json#
-kind: profile
+$schema: profile_release_schema.json#
+kind: profile release
 name: RVB23
+long_name: RVB23
 marketing_name: RVB23
-class: RVB
+family:
+  $ref: profile_family/RVB.yaml#
 release: 23
 state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"

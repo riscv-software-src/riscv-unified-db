@@ -3,19 +3,23 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.lu
-long_name: No synopsis available.
-description: |
-  No description available.
+long_name: Floating-point Convert Unsigned Long to Double-precision
+description:
+  - id: inst-fcvt.d.lu-behaviour
+    normative: false
+    text: |
+      `fcvt.d.lu` converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
+      floating-point number in floating-point register `fd`.
 definedBy: D
-assembly: xd, xs1, rm
+assembly: fd, xs1, rm
 encoding:
   match: 110100100011-------------1010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

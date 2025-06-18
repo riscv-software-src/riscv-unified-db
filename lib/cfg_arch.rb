@@ -2,7 +2,7 @@
 
 # Many classes include DatabaseObject have an "cfg_arch" member which is a ConfiguredArchitecture class.
 # It combines knowledge of the RISC-V Architecture with a particular configuration.
-# A configuration is an instance of the Config object either located in the /cfg directory
+# A configuration is an instance of the AbstractConfig object either located in the /cfg directory
 # or created at runtime for things like profiles and certificate models.
 
 require "concurrent"
@@ -20,7 +20,7 @@ require_relative "idl/passes/prune"
 require_relative "idl/passes/reachable_exceptions"
 require_relative "idl/passes/reachable_functions"
 
-require_relative "template_helpers"
+require_relative "backend_helpers"
 
 include TemplateHelpers
 
@@ -47,7 +47,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
   # There are three cases when this will return true:
-  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writeable.
+  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writable.
   #   2. A mode is known to be implemented, but the writability of the CSR bit that controls XLEN in that mode is not known.
   #   3. It is not known if the mode is implemented.
   #
@@ -63,7 +63,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
   #
   # There are three cases when this will return true:
-  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writeable.
+  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writable.
   #   2. +mode+ is known to be implemented, but the writability of the CSR bit that controls XLEN in +mode+ is not known.
   #   3. It is not known if +mode+ is implemented.
   #
@@ -165,30 +165,34 @@ class ConfiguredArchitecture < Architecture
 
   # Initialize a new configured architecture definition
   #
-  # @param config_name [#to_s] The name of a configuration, which must correspond
-  #                            to a folder name under cfg_path
-  def initialize(config_name, arch_path)
+  # @param name [:to_s]      The name associated with this ConfiguredArchitecture
+  # @param config [AbstractConfig]   The configuration object
+  # @param arch_path [:to_s] Path to the resolved architecture directory corresponding to the configuration
+  def initialize(name, config, arch_path)
+    raise ArgumentError, "name needs to be a String but is a #{name.class}" unless name.to_s.is_a?(String)
+    raise ArgumentError, "config needs to be a AbstractConfig but is a #{config.class}" unless config.is_a?(AbstractConfig)
+    raise ArgumentError, "arch_path needs to be a String but is a #{arch_path.class}" unless arch_path.to_s.is_a?(String)
     super(arch_path)
 
-    @name = config_name.to_s.freeze
+    @name = name.to_s.freeze
     @name_sym = @name.to_sym.freeze
 
     @obj_cache = {}
 
-    @config = Config.create("#{$root}/gen/cfgs/#{config_name}.yaml")
-    @mxlen = @config.mxlen
+    @config = config
+    @mxlen = config.mxlen
     @mxlen.freeze
 
     @idl_compiler = Idl::Compiler.new
 
     @symtab = Idl::SymbolTable.new(self)
     overlay_path =
-      if @config.arch_overlay.nil?
+      if config.arch_overlay.nil?
         "/does/not/exist"
-      elsif File.exist?(@config.arch_overlay)
-        File.realpath(@config.arch_overlay)
+      elsif File.exist?(config.arch_overlay)
+        File.realpath(config.arch_overlay)
       else
-        "#{$root}/arch_overlay/#{@config.arch_overlay}"
+        "#{$root}/arch_overlay/#{config.arch_overlay}"
       end
 
     custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
@@ -207,18 +211,18 @@ class ConfiguredArchitecture < Architecture
 
   # type check all IDL, including globals, instruction ops, and CSR functions
   #
-  # @param config [Config] Configuration
+  # @param config [AbstractConfig] Configuration
   # @param show_progress [Boolean] whether to show progress bars
   # @param io [IO] where to write progress bars
   # @return [void]
   def type_check(show_progress: true, io: $stdout)
-    io.puts "Type checking IDL code for #{@config.name}..."
+    io.puts "Type checking IDL code for #{@config.name}..." if show_progress
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
+        ProgressBar.create(title: "Instructions", total: possible_instructions.size)
       end
 
-    instructions.each do |inst|
+    possible_instructions.each do |inst|
       progressbar.increment if show_progress
       if @mxlen == 32
         inst.type_checked_operation_ast(32) if inst.rv32?
@@ -230,10 +234,10 @@ class ConfiguredArchitecture < Architecture
 
     progressbar =
       if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
+        ProgressBar.create(title: "CSRs", total: possible_csrs.size)
       end
 
-    csrs.each do |csr|
+    possible_csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
         if (possible_xlens.include?(32) && csr.defined_in_base32?)
@@ -265,11 +269,12 @@ class ConfiguredArchitecture < Architecture
       end
     end
 
+    func_list = reachable_functions
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
+        ProgressBar.create(title: "Functions", total: func_list.size)
       end
-    functions.each do |func|
+    func_list.each do |func|
       progressbar.increment if show_progress
       func.type_check(@symtab)
     end
@@ -277,7 +282,7 @@ class ConfiguredArchitecture < Architecture
     puts "done" if show_progress
   end
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters with one known value in the config
+  # @return [Array<ParameterWithValue>] List of all parameters with one known value in the config
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
@@ -290,7 +295,7 @@ class ConfiguredArchitecture < Architecture
         ext.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
+          @params_with_value << ParameterWithValue.new(
             ext_param,
             @config.param_values[ext_param.name]
           )
@@ -303,7 +308,7 @@ class ConfiguredArchitecture < Architecture
           # Params listed in the config always only have one value.
           next unless @config.param_values.key?(ext_param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
+          @params_with_value << ParameterWithValue.new(
             ext_param,
             @config.param_values[ext_param.name]
           )
@@ -315,7 +320,7 @@ class ConfiguredArchitecture < Architecture
     @params_with_value
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters without one known value in the config
+  # @return [Array<Parameter>] List of all available parameters without one known value in the config
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
@@ -405,7 +410,7 @@ class ConfiguredArchitecture < Architecture
 
     @not_prohibited_extensions ||=
       if @config.fully_configured?
-        transitive_implemented_extension_versions.map { |ext_ver| ext_ver.extension }.uniq
+        transitive_implemented_extension_versions.map { |ext_ver| ext_ver.ext }.uniq
       elsif @config.partially_configured?
         # reject any extension in which all of the extension versions are prohibited
         extensions.reject { |ext| (ext.versions - transitive_prohibited_extension_versions).empty? }
@@ -425,7 +430,7 @@ class ConfiguredArchitecture < Architecture
       elsif @config.partially_configured?
         extensions.map(&:versions).flatten.reject { |ext_ver| transitive_prohibited_extension_versions.include?(ext_ver) }
       else
-        extensions.map(&:version).flatten
+        extensions.map(&:versions).flatten
       end
   end
   alias possible_extension_versions not_prohibited_extension_versions
@@ -632,7 +637,7 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Csr>] List of all CSRs that it is possible to implement
   def not_prohibited_csrs
-    @not_prohibited_csrs =
+    @not_prohibited_csrs ||=
       if @config.fully_configured?
         transitive_implemented_csrs
       elsif @config.partially_configured?
@@ -810,24 +815,25 @@ class ConfiguredArchitecture < Architecture
     @reachable_functions
   end
 
-  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-  # and replace them with links to the relevant object page
+  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page.
+  # See backend_helpers.rb for a definition of the proprietary link format.
   #
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
-  def find_replace_links(adoc)
+  def convert_monospace_to_links(adoc)
     adoc.gsub(/`([\w.]+)`/) do |match|
       name = Regexp.last_match(1)
       csr_name, field_name = name.split(".")
-      csr = csr(csr_name)
+      csr = not_prohibited_csrs.find { |c| c.name == csr_name }
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
+        link_to_udb_doc_csr_field(csr_name, field_name)
       elsif !csr.nil?
-        "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif instruction(name)
-        "%%LINK%inst;#{name};#{name}%%"
-      elsif extension(name)
-        "%%LINK%ext;#{name};#{name}%%"
+        link_to_udb_doc_csr(csr_name)
+      elsif not_prohibited_instructions.any? { |inst| inst.name == name }
+        link_to_udb_doc_inst(name)
+      elsif not_prohibited_extensions.any? { |ext| ext.name == name }
+        link_to_udb_doc_ext(name)
       else
         match
       end
@@ -845,8 +851,9 @@ class ConfiguredArchitecture < Architecture
 
     @env = Class.new
     @env.instance_variable_set(:@cfg, @cfg)
-    @env.instance_variable_set(:@cfg_arch, self)
     @env.instance_variable_set(:@params, @params)
+    @env.instance_variable_set(:@cfg_arch, self)
+    @env.instance_variable_set(:@arch, self) # For backwards-compatibility
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     params_with_value.each do |param|
@@ -870,16 +877,6 @@ class ConfiguredArchitecture < Architecture
       # @return [Array<Integer>] List of possible XLENs for any implemented mode
       def possible_xlens
         @cfg_arch.possible_xlens
-      end
-
-      # insert a hyperlink to an object
-      # At this point, we insert a placeholder since it will be up
-      # to the backend to create a specific link
-      #
-      # @params type [Symbol] Type (:section, :csr, :inst, :ext)
-      # @params name [#to_s] Name of the object
-      def link_to(type, name)
-        "%%LINK%#{type};#{name}%%"
       end
 
       # info on interrupt and exception codes

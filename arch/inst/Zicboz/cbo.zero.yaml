@@ -31,11 +31,11 @@ description: |
 
   CBO operations never raise a misaligned address fault.
 definedBy: Zicboz
-assembly: "TODO"
+assembly: (xs1)
 encoding:
   match: 000000000100-----010000000001111
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   m: always
@@ -70,7 +70,7 @@ operation(): |
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
   } else {
     XReg mask = CACHE_BLOCK_SIZE - 1;
-    XReg cache_block_vaddr = X[rs1] & ~mask;
+    XReg cache_block_vaddr = X[xs1] & ~mask;
 
     TranslationResult result;
     result = translate(cache_block_vaddr, MemoryOperation::Write, effective_ldst_mode(), $encoding);

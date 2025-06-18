@@ -3,17 +3,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vadc.vim
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vs2, vd, imm
+assembly: vd, vs2, imm, v0
 encoding:
   match: 0100000----------011-----1010111
   variables:
     - name: vs2
       location: 24-20
-    - name: simm5
+    - name: imm
       location: 19-15
     - name: vd
       location: 11-7

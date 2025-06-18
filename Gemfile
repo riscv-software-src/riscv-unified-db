@@ -16,9 +16,11 @@ gem "pygments.rb"
 gem "rake", "~> 13.0"
 gem "rouge"
 gem "ruby-progressbar", "~> 1.13"
+gem "sorbet-runtime"
 gem "treetop", "1.6.12"
 gem "ttfunk", "1.7" # needed to avoid having asciidoctor-pdf dependencies pulling in a buggy version of ttunk (1.8)
 gem "webrick"
+gem "write_xlsx"
 gem "yard"
 
 group :development do
@@ -30,4 +32,12 @@ group :development do
   gem "ruby-prof"
   gem "ruby-prof-flamegraph", git: "https://github.com/oozou/ruby-prof-flamegraph.git", ref: "fc3c437", require: false
   gem "solargraph"
+  gem "sorbet"
+  gem "spoom"
+  gem "tapioca", require: false
+end
+
+group :development, :test do
+  gem "minitest"
+  gem "simplecov"
 end

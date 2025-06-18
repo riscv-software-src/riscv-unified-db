@@ -3,19 +3,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsetvli
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: xs1, xd, imm
+assembly: xd, xs1, vtypei
 encoding:
   match: 0----------------111-----1010111
   variables:
-    - name: zimm11
+    - name: xs1
       location: 30-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

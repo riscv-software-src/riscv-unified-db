@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA20S64
+long_name: S-mode extensions for version 20 of the 64-bit Apps Processor profile
 marketing_name: RVA20S64
 mode: S
 base: 64
@@ -10,14 +11,14 @@ introduction: |
   supervisor-mode execution environment in 64-bit applications
   processors.  RVA20S64 is based on privileged architecture version 1.11.
 extensions:
-  $inherits: "profile/RVI20U64.yaml#/extensions"
+  $inherits: "profile/RVA20U64.yaml#/extensions"
   U:
     presence: mandatory
     version: "~> 1.0"
     param_constraints:
       U_MODE_ENDIANNESS:
         schema:
-          const: little``
+          const: little
   S:
     presence: mandatory
     version: "= 1.11"

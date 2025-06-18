@@ -3,16 +3,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.s.lu
-long_name: No synopsis available.
-description: |
-  No description available.
+long_name: Floating-point Convert Unsigned Long to Single-precision
+description:
+  - id: inst-fcvt.s.lu-behaviour
+    normative: false
+    text: |
+      `fcvt.s.lu` converts a 64-bit unsigned integer into a single-precision floating-point number.
 definedBy: F
 base: 64
 assembly: fd, xs1, rm
 encoding:
   match: 110100000011-------------1010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: rm
       location: 14-12

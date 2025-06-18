@@ -3,20 +3,20 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmaxm.q
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   allOf: [Q, Zfa]
-assembly: qd, qs1, qs2
+assembly: fd, fs1, fs2
 encoding:
   match: 0010111----------011-----1010011
   variables:
-    - name: qs2
+    - name: fs2
       location: 24-20
-    - name: qs1
+    - name: fs1
       location: 19-15
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

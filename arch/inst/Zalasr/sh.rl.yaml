@@ -3,16 +3,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: sh.rl
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xs1, xs2, aq
+assembly: xs2, (xs1)
 encoding:
-  match: 00111-1----------001000000101111
+  match: 0011101----------001000000101111
   variables:
-    - name: aq
-      location: 26-26
     - name: rs2
       location: 24-20
     - name: rs1

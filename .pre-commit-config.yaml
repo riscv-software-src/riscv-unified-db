@@ -8,50 +8,85 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-ast
+        stages: [pre-commit]
       - id: check-builtin-literals
+        stages: [pre-commit]
       - id: check-case-conflict
+        stages: [pre-commit]
       - id: check-docstring-first
+        stages: [pre-commit]
       - id: check-symlinks
+        stages: [pre-commit]
       - id: end-of-file-fixer
+        stages: [pre-commit]
+        exclude: \.((golden\.adoc)|svg)$
       - id: trailing-whitespace
+        stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]
+        exclude: \.svg$
       - id: check-merge-conflict
+        stages: [pre-commit]
         args: ["--assume-in-merge"]
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
       - id: check-json
+        stages: [pre-commit]
         exclude: ^\.devcontainer/ # Uses JSONC (comments)
       - id: check-yaml
+        stages: [pre-commit]
 
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.5.3
     hooks:
       - id: prettier
-        files: \.(json|yml|yaml)$
+        stages: [pre-commit]
+        files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0
     hooks:
       - id: check-jsonschema
+        name: Validate instruction files with jsonschema
+        stages: [pre-commit]
         alias: check-jsonschema-inst
         files: ^arch/inst/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/inst_schema.json"]
       - id: check-jsonschema
+        name: Validate CSR files with jsonschema
+        stages: [pre-commit]
         alias: check-jsonschema-csr
         files: ^arch/csr/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/csr_schema.json"]
       - id: check-jsonschema
+        name: Validate extension files with jsonschema
+        stages: [pre-commit]
         alias: check-jsonschema-ext
         files: ^arch/ext/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/ext_schema.json"]
       - id: check-jsonschema
+        name: Validate cert model files with jsonschema
+        stages: [pre-commit]
         alias: check-jsonschema-cert-model
-        files: ^arch/certificate_model/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_model_schema.json"]
+        files: ^arch/proc_cert_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_model_schema.json"]
       - id: check-jsonschema
+        name: Validate cert class files with jsonschema
+        stages: [pre-commit]
         alias: check-jsonschema-cert-class
-        files: ^arch/certificate_class/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_class_schema.json"]
+        files: ^arch/proc_cert_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
+      - id: check-jsonschema
+        name: Validate profile family files with jsonschema
+        stages: [pre-commit]
+        alias: check-jsonschema-profile-family
+        files: ^arch/profile_family/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/profile_family_schema.json"]
+      - id: check-jsonschema
+        name: Validate profile release files with jsonschema
+        stages: [pre-commit]
+        alias: check-jsonschema-profile-release
+        files: ^arch/profile_release/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/profile_release_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version
@@ -62,17 +97,23 @@ repos:
     rev: "v20.1.0"
     hooks:
       - id: clang-format
+        stages: [pre-commit]
         types_or: [c++, c]
         files: \.(hpp|cpp)$
+        # TEMPORARILY DISABLE CLANG-FORMAT IN LIBHART
+        # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
+        exclude: backends/cpp_hart_gen
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 25.1.0
     hooks:
       - id: black
+        stages: [pre-commit]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1
     hooks:
       - id: pyupgrade
+        stages: [pre-commit]
 
   - repo: local
     hooks:
@@ -87,7 +128,22 @@ repos:
     rev: v3.11.0-1
     hooks:
       - id: shfmt
+        stages: [pre-commit]
         args:
           - --indent
           - "2"
           - --case-indent
+
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    hooks:
+      - id: reuse-lint-file
+        exclude: COMMIT_EDITMSG|MERGE_MSG
+
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.22.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+        additional_dependencies:
+          - "@commitlint/config-conventional"

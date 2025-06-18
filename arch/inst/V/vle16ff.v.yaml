@@ -3,17 +3,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vle16ff.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, xs1, vd
+assembly: vd, (xs1), vm
 encoding:
   match: 000000-10000-----101-----0000111
   variables:
     - name: vm
       location: 25-25
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

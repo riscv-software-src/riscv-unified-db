@@ -346,6 +346,124 @@ versions:
   requires:
     name: Zca
     version: ">= 1.0.0"
+- version: "0.11.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code of qc.shlusat instruction (should use zero-extension and not sign-extension)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions (should compare values of xlen()*2 bits)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions because change in IDL operators (width adjustment)
+    - Fix IDL code of qc.subsat, qc.addusat and qc.addsat instructions because change in IDL operators (width adjustment)
+    - Fix IDL code for qc.c.mileaveret, qc.c.mnret and qc.c.mret instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.clrint, qc.c.setint, qc.clrinti and qc.setinti instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.di, qc.c.dir, qc.c.ei, qc.c.eir and qc.c.mienter.nest instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.sync, qc.c.syncr, qc.c.syncwf and qc.c.syncwl instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.bseti, qc.c.extu, qc.ext and qc.extu instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extd, qc.extdu, qc.extdr and qc.extdur instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extdpr, qc.extdprh, qc.extdupr and qc.extduprh instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insb, qc.insbi, qc.insbr and qc.insbri instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insbh, qc.insbhr, qc.insbpr and qc.insbprh instructions because change in IDL '<<' operator
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.8.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.12.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix desciption of qc.c.eir instruction to match IDL code and functionality
+    - Fix encoding of qc.swm and qc.swmi instructions to state that rs3 cannot be x0
+    - Fix description and IDL code of qc.swm and qc.lwm instructions to state that length is in rs2[4:0]
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.9.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.6.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.13.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix version history of releases v0.11.0 and v0.12.0
+    - Fix description and IDL code of qc.csrrwr instruction to allow just read CSR
+    - Fix IDL code of qc.c.mileaveret instruction to avoid restoring from stack NMIP and EXCP bits
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.4.0" }
+  - { name: Xqciint, version: "0.10.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.6.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
 description: |
   The Xqci extension includes a set of instructions that improve RISC-V code density and
   performance in microontrollers. It fills several gaps:

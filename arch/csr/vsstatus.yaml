@@ -5,6 +5,7 @@ kind: csr
 name: vsstatus
 long_name: Virtual Supervisor Status
 address: 0x200
+writable: true
 virtual_address: 0x100
 priv_mode: VS
 length: VSXLEN

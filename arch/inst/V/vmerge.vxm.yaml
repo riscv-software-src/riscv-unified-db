@@ -3,17 +3,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmerge.vxm
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vs2, xs1, vd
+assembly: vd, vs2, xs1, v0
 encoding:
   match: 0101110----------100-----1010111
   variables:
     - name: vs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

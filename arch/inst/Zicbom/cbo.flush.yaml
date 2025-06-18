@@ -29,11 +29,11 @@ description: |
 
   CBO operations never raise a misaligned address fault.
 definedBy: Zicbom
-assembly: "TODO"
+assembly: (xs1)
 encoding:
   match: 000000000010-----010000000001111
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   m: always
@@ -60,7 +60,7 @@ access_detail: |
   !===
 
 # operation(): |
-#   XReg cache_block_address = X[rs1] & ~(CACHE_BLOCK_SIZE-1);
+#   XReg cache_block_address = X[xs1] & ~(CACHE_BLOCK_SIZE-1);
 #   Boolean has_fault?;
 #   ExceptionCode code;
 

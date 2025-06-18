@@ -1,8 +1,10 @@
 $schema: profile_release_schema.json#
 kind: profile release
 name: RVA20
+long_name: RVA20
 marketing_name: RVA20
-class: RVA
+family:
+  $ref: profile_family/RVA.yaml#
 release: 20
 state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"

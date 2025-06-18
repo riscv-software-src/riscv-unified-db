@@ -2,12 +2,12 @@
 
 require_relative "portfolio"
 
-# A profile class consists of a number of releases each with set of profiles.
-# For example, the RVA profile class has releases such as RVA20, RVA22, RVA23
+# A profile family consists of a number of releases each with set of profiles.
+# For example, the RVA profile family has releases such as RVA20, RVA22, RVA23
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
-class ProfileClass < PortfolioClass
-  # @return [String] Naming scheme for profile class
+class ProfileFamily < PortfolioClass
+  # @return [String] Naming scheme for profile family
   def naming_scheme = @data["naming_scheme"]
 
   # @return [String] Name of the class
@@ -21,11 +21,11 @@ class ProfileClass < PortfolioClass
     License.new(@data["doc_license"])
   end
 
-  # @return [Array<ProfileRelease>] Defined profile releases in this profile class
+  # @return [Array<ProfileRelease>] Defined profile releases in this profile family
   def profile_releases
     return @profile_releases unless @profile_releases.nil?
 
-    @profile_releases = @cfg_arch.profile_releases.select { |pr| pr.profile_class.name == name }
+    @profile_releases = @arch.profile_releases.select { |pr| pr.profile_family.name == name }
 
     @profile_releases
   end
@@ -37,61 +37,59 @@ class ProfileClass < PortfolioClass
     matching_classes = portfolio_classes_matching_portfolio_kind_and_processor_kind
 
     # Look for all profile releases that are from any of the matching classes.
-    @profile_releases_matching_processor_kind = @cfg_arch.profile_releases.select { |pr|
-      matching_classes.any? { |matching_class| matching_class.name == pr.profile_class.name }
+    @profile_releases_matching_processor_kind = @arch.profile_releases.select { |pr|
+      matching_classes.any? { |matching_class| matching_class.name == pr.profile_family.name }
     }
 
     @profile_releases_matching_processor_kind
   end
 
-  # @return [Array<Profile>] All profiles in this profile class (for all releases).
+  # @return [Array<Profile>] All profiles in this profile family (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = @cfg_arch.profiles.select {|profile| profile.profile_class.name == name}
+    @profiles = @arch.profiles.select {|profile| profile.profile_family.name == name}
   end
 
   # @return [Array<Profile>] All profiles in database matching my processor kind
   def profiles_matching_processor_kind
     return @profiles_matching_processor_kind unless @profiles_matching_processor_kind.nil?
 
-    @profiles_matching_processor_kind = @cfg_arch.profiles.select {|profile| profile.profile_class.processor_kind == processor_kind}
+    @profiles_matching_processor_kind = @arch.profiles.select {|profile| profile.profile_family.processor_kind == processor_kind}
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by the profile class
-  def referenced_extensions
-    return @referenced_extensions unless @referenced_extensions.nil?
+  # @return [Array<Extension>] Sorted list of all mandatory or optional extensions across the profile releases belonging
+  #                            to the profile family
+  def in_scope_extensions
+    return @in_scope_extensions unless @in_scope_extensions.nil?
 
-    @referenced_extensions = []
+    @in_scope_extensions = []
     profiles.each do |profile|
-      @referenced_extensions += profile.in_scope_extensions
+      @in_scope_extensions += profile.in_scope_extensions
     end
 
-    @referenced_extensions.uniq!(&:name)
-
-    @referenced_extensions
+    @in_scope_extensions = @in_scope_extensions.uniq(&:name).sort_by(&:name)
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by any profile class in the database with my processor kind
-  def referenced_extensions_matching_processor_kind
-    return @reference_extensions_matching_processor_kind unless @reference_extensions_matching_processor_kind.nil?
+  # @return [Array<Extension>] Sorted list of all potential extensions with my processor kind
+  def in_scope_extensions_matching_processor_kind
+    return @in_scope_extensions_matching_processor_kind unless @in_scope_extensions_matching_processor_kind.nil?
 
-    @reference_extensions_matching_processor_kind = []
+    @in_scope_extensions_matching_processor_kind = []
     profiles_matching_processor_kind.each do |profile|
-      @reference_extensions_matching_processor_kind += profile.in_scope_extensions
+      @in_scope_extensions_matching_processor_kind += profile.in_scope_extensions
     end
 
-    @reference_extensions_matching_processor_kind.uniq!(&:name)
-
-    @reference_extensions_matching_processor_kind
+    @in_scope_extensions_matching_processor_kind =
+      @in_scope_extensions_matching_processor_kind.uniq(&:name).sort_by(&:name)
   end
 end
 
 # A profile release consists of a number of releases each with one or more profiles.
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
-# Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
+# Note there is no Portfolio base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class ProfileRelease < DatabaseObject
+class ProfileRelease < TopLevelDatabaseObject
   def marketing_name = @data["marketing_name"]
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
@@ -114,12 +112,12 @@ class ProfileRelease < DatabaseObject
     @data["contributors"].map { |data| Person.new(data) }
   end
 
-  # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
-  def profile_class
-    profile_class = @cfg_arch.profile_class(@data["class"])
-    raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
+  # @return [ProfileFamily] Profile Family that this ProfileRelease belongs to
+  def profile_family
+    profile_family = @arch.ref(@data["family"]['$ref'])
+    raise "No profile family named '#{@data["family"]}'" if profile_family.nil?
 
-    profile_class
+    profile_family
   end
 
   # @return [Array<Profile>] All profiles in this profile release
@@ -128,45 +126,39 @@ class ProfileRelease < DatabaseObject
 
     @profiles = []
     @data["profiles"].each do |profile_ref|
-      @profiles << @cfg_arch.ref(profile_ref["$ref"])
+      @profiles << @arch.ref(profile_ref["$ref"])
     end
     @profiles
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by the release
-  def referenced_extensions
-    return @referenced_extensions unless @referenced_extensions.nil?
+  # @return [PortfolioGroup] All portfolios in this profile release
+  def portfolio_grp
+    return @portfolio_grp unless @portfolio_grp.nil?
 
-    @referenced_extensions = []
-    profiles.each do |profile|
-      @referenced_extensions += profile.in_scope_extensions
-    end
-
-    @referenced_extensions.uniq!(&:name)
-
-    @referenced_extensions
+    @portfolio_grp = PortfolioGroup.new(marketing_name, profiles)
   end
+
+  #####################################
+  # METHODS HANDLED BY PortfolioGroup #
+  #####################################
+
+  # @return [Array<Extension>] List of all mandatory or optional extensions referenced by this profile release.
+  def in_scope_extensions = portfolio_grp.in_scope_extensions
 
   # @return [String] Given an extension +ext_name+, return the presence as a string.
   #                  Returns the greatest presence string across all profiles in the release.
   #                  If the extension name isn't found in the release, return "-".
-  def extension_presence(ext_name)
-    greatest_presence = nil
+  def extension_presence(ext_name) = portfolio_grp.extension_presence(ext_name)
 
-    profiles.each do |profile|
-      presence = profile.extension_presence_obj(ext_name)
+  # @return [String] Given an instruction +inst_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the release.
+  #                  If the instruction name isn't found in the release, return "-".
+  def instruction_presence(inst_name) = portfolio_grp.instruction_presence(inst_name)
 
-      unless presence.nil?
-        if greatest_presence.nil?
-          greatest_presence = presence
-        elsif presence > greatest_presence
-          greatest_presence = presence
-        end
-      end
-    end
-
-    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
-  end
+  # @return [String] Given a CSR +csr_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the release.
+  #                  If the CSR name isn't found in the release, return "-".
+  def csr_presence(csr_name) = portfolio_grp.csr_presence(csr_name)
 end
 
 # Representation of a specific profile in a profile release.
@@ -176,14 +168,14 @@ class Profile < Portfolio
 
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
-    profile_release = @cfg_arch.ref(@data["release"]["$ref"])
+    profile_release = @arch.ref(@data["release"]["$ref"])
     raise "No profile release named '#{@data["release"]["$ref"]}'" if profile_release.nil?
 
     profile_release
   end
 
-  # @return [ProfileClass] The profile class this profile belongs to
-  def profile_class = profile_release.profile_class
+  # @return [ProfileFamily] The profile family this profile belongs to
+  def profile_family = profile_release.profile_family
 
   # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
   def mode
@@ -194,9 +186,6 @@ class Profile < Portfolio
   def base
     @data["base"]
   end
-
-  # @return [Array<Extension>] List of all extensions referenced by the profile
-  def referenced_extensions = in_scope_extensions
 
   # Too complicated to put in profile ERB template.
   # @param presence_type [String]
@@ -211,10 +200,10 @@ class Profile < Portfolio
     ret << ""
 
     unless presence_ext_reqs.empty?
-      if (presence_type == ExtensionPresence.optional) && uses_optional_types?
+      if (presence_type == Presence.optional) && uses_optional_types?
         # Iterate through each optional type. Use object version (not string) to get
         # precise comparisons (i.e., presence string and optional type string).
-        ExtensionPresence.optional_types_obj.each do |optional_type_obj|
+        Presence.optional_types_obj.each do |optional_type_obj|
           optional_type_ext_reqs = in_scope_ext_reqs(optional_type_obj)
           unless optional_type_ext_reqs.empty?
             ret << ""
@@ -242,7 +231,7 @@ class Profile < Portfolio
     # Add extra notes that just belong to this presence.
     # Use object version (not string) of presence to avoid adding extra notes
     # already added for optional types if they are in use.
-    extra_notes_for_presence(ExtensionPresence.new(presence_type))&.each do |extra_note|
+    extra_notes_for_presence(Presence.new(presence_type))&.each do |extra_note|
       ret << "NOTE: #{extra_note.text}"
       ret << ""
     end # each extra_note
@@ -255,7 +244,7 @@ class Profile < Portfolio
   def ext_req_to_adoc(ext_req)
     ret = []
 
-    ext = cfg_arch.extension(ext_req.name)
+    ext = arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
     ret << "Version #{ext_req.requirement_specs_to_s}"

@@ -3,21 +3,21 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fdiv.q
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: qd, qs1, qs2, rm
+assembly: fd, fs1, fs2, rm
 encoding:
   match: 0001111------------------1010011
   variables:
-    - name: qs2
+    - name: fs2
       location: 24-20
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

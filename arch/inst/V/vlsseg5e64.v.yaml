@@ -3,19 +3,19 @@
 $schema: inst_schema.json#
 kind: instruction
 name: vlsseg5e64.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, xs2, xs1, vd
+assembly: vd, (xs1), xs2, vm
 encoding:
   match: 100010-----------111-----0000111
   variables:
     - name: vm
       location: 25-25
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

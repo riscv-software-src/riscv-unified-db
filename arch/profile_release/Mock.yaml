@@ -1,0 +1,26 @@
+$schema: profile_release_schema.json#
+kind: profile release
+name: Mock
+long_name: Mock
+marketing_name: Mock Profile Release Marketing Name
+family:
+  $ref: profile_family/Mock.yaml#
+release: 20
+state: ratified # current status ["ratified", "development"]
+versions:
+  - version: "1.0"
+ratification_date: "2024-01-01"
+introduction: Here's the Mock Profile Release introduction.
+description: |
+  This is the Mock Profile Release description.
+  It can be longer than the introduction since it gets its own sub-heading.
+contributors:
+  - name: Joe Blow
+    email: joe.blow@riscv.org
+    company: Acme Inc
+  - name: Jane Doe
+    email: jane.doe@gmail.com
+    company: Universal Imports
+profiles:
+  - { $ref: profile/MP-U-64.yaml# }
+  - { $ref: profile/MP-S-64.yaml# }

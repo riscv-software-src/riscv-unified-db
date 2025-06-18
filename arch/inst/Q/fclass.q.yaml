@@ -3,17 +3,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fclass.q
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: xd, qs1
+assembly: xd, fs1
 encoding:
   match: 111001100000-----001-----1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

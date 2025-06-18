@@ -12,6 +12,8 @@ description: |
   The initial value in `rs1` is written to the CSR.
   If `rd`=`x0`, then the instruction shall not read the CSR and shall not
   cause any of the side effects that might occur on a CSR read.
+  If `rs1`=`x0`, then the instruction shall not write to the CSR and shall not
+  cause any of the side effects that might occur on a CSR write.
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:
@@ -35,10 +37,13 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg csr = X[rs2];
+  XReg csr_addr = X[rs2];
+  Csr csr = direct_csr_lookup(csr_addr);
   if (rd != 0) {
-    X[rd] = CSR[csr].sw_read();
+    X[rd] = csr_sw_read(csr);
   }
-  # writes the value in X[rs1] to the CSR,
-  # performing any WARL transformations first
-  CSR[csr].sw_write(X[rs1]);
+  if (rs1 != 0) {
+    # writes the value in X[rs1] to the CSR,
+    # performing any WARL transformations first
+    csr_sw_write(csr, X[rs1]);
+  }

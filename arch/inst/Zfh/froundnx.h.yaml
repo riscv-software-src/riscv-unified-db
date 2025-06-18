@@ -3,20 +3,20 @@
 $schema: inst_schema.json#
 kind: instruction
 name: froundnx.h
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   allOf: [Zfa, Zfh]
-assembly: xd, xs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010001000101-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

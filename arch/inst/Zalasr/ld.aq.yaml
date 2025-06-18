@@ -3,19 +3,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: ld.aq
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xd, xs1, rl
+assembly: xd, (xs1)
 encoding:
-  match: 001101-00000-----011-----0101111
+  match: 001101000000-----011-----0101111
   variables:
-    - name: rl
-      location: 25-25
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

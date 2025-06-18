@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmaxm.s
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zfa
-assembly: xd, xs1, xs2
+assembly: fd, fs1, fs2
 encoding:
   match: 0010100----------011-----1010011
   variables:

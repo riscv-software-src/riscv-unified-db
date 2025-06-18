@@ -5,6 +5,7 @@ kind: csr
 name: mip
 long_name: Machine Interrupt Pending
 address: 0x344
+writable: true
 priv_mode: M
 
 # Description is shared with mie CSR (it copies it from here).
@@ -285,7 +286,7 @@ fields:
 
       * `hip.VSTIP`
       * `vsip.STIP` when `hideleg.VSTI` is set
-      * `hvip.VSTIP` <% if ext?(:Sstc) %>when `menvcfg.STCE` is clear<% end %> (though `hvip.VSTIP` is writeable)
+      * `hvip.VSTIP` <% if ext?(:Sstc) %>when `menvcfg.STCE` is clear<% end %> (though `hvip.VSTIP` is writable)
     type: RO-H
     reset_value: 0
     definedBy: H
@@ -297,7 +298,7 @@ fields:
 
       Reports the current pending state of an M-mode timer interrupt.
 
-      Bit is controlled by the timer device (using `mtimecmp`), and is not writeable.
+      Bit is controlled by the timer device (using `mtimecmp`), and is not writable.
     type: RO-H
     reset_value: 0
   SEIP:
@@ -309,12 +310,12 @@ fields:
 
       Reports the current pending state of an (H)S-mode external interrupt.
 
-      This field has two parts: a software-writeable shadow value and a wire from the interrupt controller.
-      The value presented to software in the bit on a CSR read is the logical OR of the software-writeable value and the interrupt controller value.
+      This field has two parts: a software-writable shadow value and a wire from the interrupt controller.
+      The value presented to software in the bit on a CSR read is the logical OR of the software-writable value and the interrupt controller value.
       When software writes this bit, only the shadow value is updated (the interrupt controller is not notified of the write).
 
       <%- if ext?(:Smaia) -%>
-      The software-writeable shadow value is aliased in `mvip.SEIP` (`Smaia` extension).
+      The software-writable shadow value is aliased in `mvip.SEIP` (`Smaia` extension).
       <%- end -%>
 
       _Alias_:

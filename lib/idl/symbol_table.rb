@@ -14,6 +14,7 @@ module Idl
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
+      @type.qualify(:template_var)
       @type.freeze
       @value = value
       raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
@@ -102,11 +103,6 @@ module Idl
     end
 
     def initialize(cfg_arch)
-      raise "Must provide cfg_arch" if cfg_arch.nil?
-      # TODO: XXX: Put this check back in when replaced by Design class.
-      #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
-      #raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless (cfg_arch.is_a?(ConfiguredArchitecture) || cfg_arch.is_a?(MockConfiguredArchitecture))
-
       @mutex = Thread::Mutex.new
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
@@ -362,7 +358,7 @@ module Idl
       end
 
       # need more!
-      warn "Allocating more SymbolTables"
+      $logger.info "Allocating more SymbolTables"
       5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])

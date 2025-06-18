@@ -3,15 +3,15 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vl4re32.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: xs1, vd
+assembly: vd, (xs1)
 encoding:
   match: 011000101000-----110-----0000111
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

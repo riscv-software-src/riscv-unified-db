@@ -52,3 +52,37 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+
+params:
+  MSTATEEN_CONTEXT_TYPE:
+    when:
+      name: Smstateen
+      version: ~> 1.0
+    schema:
+      type: string
+      enum: [rw, read-only-0, read-only-1]
+    description: |
+      Behavior of the mstateen0.CONTEXT bit:
+
+        * 'rw': read-write
+        * 'read-only-0': read-only, fixed to 0
+        * 'read-only-1': read-only, fixed to 1
+  HSTATEEN_CONTEXT_TYPE:
+    when:
+      allOf:
+        - name: H
+          version: ~> 1.0
+        - name: Ssstateen
+          version: ~> 1.0
+    schema:
+      type: string
+      enum: [rw, read-only-0, read-only-1]
+    description: |
+      Behavior of the hstateen0.CONTEXT bit:
+
+        * 'rw': read-write
+        * 'read-only-0': read-only, fixed to 0
+        * 'read-only-1': read-only, fixed to 1
+    extra_validation: |
+      assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
+      assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'

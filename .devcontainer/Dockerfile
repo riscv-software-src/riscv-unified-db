@@ -5,10 +5,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /workspace
 
 RUN export DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
 
 # please keep pkgs sorted
-RUN apt-get install -y --no-install-recommends \
+RUN \
+  apt-get update && \
+  apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
     bundler \
     clang-format \
@@ -25,9 +26,11 @@ RUN apt-get install -y --no-install-recommends \
     libc6-dev-riscv64-cross \
     libelf-dev \
     libgmp-dev \
+    libnewlib-dev\
     libyaml-dev \
     nodejs \
     npm \
+    parallel \
     python3 \
     python3-pip \
     python3.12-venv \

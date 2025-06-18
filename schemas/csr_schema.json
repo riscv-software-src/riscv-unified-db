@@ -17,7 +17,7 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Long name of the field"
+          "description": "One line description of the CSR field"
         },
         "location": {
           "$ref": "schema_defs.json#/$defs/field_location",
@@ -77,14 +77,22 @@
         "alias": {
           "oneOf": [
             {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+              "$ref": "schema_defs.json#/$defs/csr_field"
+            },
+            {
+              "$ref": "schema_defs.json#/$defs/csr_field_bits"
             },
             {
               "type": "array",
               "items": {
-                "type": "string",
-                "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+                "oneOf": [
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field"
+                  },
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field_bits"
+                  }
+                ]
               }
             }
           ],
@@ -109,6 +117,12 @@
             }
           ],
           "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
 
@@ -192,9 +206,7 @@
           "description": "Object type"
         },
         "name": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_.]+$",
-          "description": "CSR name"
+          "$ref": "schema_defs.json#/$defs/csr_name"
         },
         "base": {
           "type": "integer",
@@ -203,7 +215,7 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Descriptive name for the CSR"
+          "description": "One line description for the CSR"
         },
         "description": {
           "$ref": "schema_defs.json#/$defs/spec_text",
@@ -223,10 +235,15 @@
           "type": "integer",
           "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
         },
-        "indirect": {
+        "indirect_slot": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Indirect window slot of the CSR, corresponding to its appearance in *ireg<slot>"
+        },
+        "writable": {
           "type": "boolean",
-          "default": false,
-          "description": "Whether or not the CSR is accessible via an indirect address"
+          "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
         },
         "virtual_address": true,
         "$comment": "Conditionally required; see below",
@@ -258,6 +275,12 @@
         "$source": {
           "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false,
@@ -281,20 +304,16 @@
           }
         },
         {
-          "oneOf": [
-            {
+          "if": {
+            "not": {
               "properties": {
-                "indirect": { "const": false }
-              },
-              "required": ["address"]
-            },
-            {
-              "properties": {
-                "indirect": { "const": true }
-              },
-              "required": ["indirect_address"]
+                "indirect_address": { "const": null }
+              }
             }
-          ]
+          },
+          "then": {
+            "required": ["indirect_slot"]
+          }
         }
       ]
     }

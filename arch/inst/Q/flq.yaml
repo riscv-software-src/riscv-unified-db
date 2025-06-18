@@ -3,19 +3,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: flq
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: qd, xs1, imm
+assembly: fd, xs1, imm
 encoding:
   match: -----------------100-----0000111
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

@@ -3,16 +3,16 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fli.q
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   allOf: [Q, Zfa]
-assembly: fd, qs1
+assembly: fd, xs1
 encoding:
   match: 111101100001-----000-----1010011
   variables:
-    - name: qs1
+    - name: xs1
       location: 19-15
     - name: fd
       location: 11-7

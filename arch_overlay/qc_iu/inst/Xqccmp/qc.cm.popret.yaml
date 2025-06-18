@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: qc.cm.popret
-long_name: Destroy function call stack frame and return to `ra`.
+long_name: Destroy function call stack frame and return to `ra`
 description: |
   Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
   This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to ra.
@@ -24,6 +24,7 @@ encoding:
       not: [0, 1, 2, 3]
     - name: spimm
       location: 3-2
+      left_shift: 4
 access:
   s: always
   u: always
@@ -38,7 +39,7 @@ operation(): |
   XReg size = xlen() / 8;
   XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
   XReg stack_aligned_adj = (nreg * size + 15) & ~0xF;
-  XReg virtual_address_new_sp = virtual_address_sp + stack_aligned_adj + spimm;
+  XReg virtual_address_new_sp = virtual_address_sp + stack_aligned_adj + (spimm `<< 4);
   XReg virtual_address_base = virtual_address_new_sp - size;
 
 

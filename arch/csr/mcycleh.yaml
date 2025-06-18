@@ -6,6 +6,7 @@ name: mcycleh
 long_name: High-half machine Cycle Counter
 definedBy: Zicntr
 address: 0xB80
+writable: true
 description: |
   High-half alias of `mcycle`.
 priv_mode: M

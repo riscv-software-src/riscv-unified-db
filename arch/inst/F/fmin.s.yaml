@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmin.s
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: F
-assembly: xd, xs1, xs2
+assembly: fd, fs1, fs2
 encoding:
   match: 0010100----------000-----1010011
   variables:

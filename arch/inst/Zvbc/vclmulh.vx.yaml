@@ -3,12 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vclmulh.vx
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbc, Zvkn, Zvks]
-assembly: vm, vs2, xs1, vd
+definedBy: Zvbc
+assembly: vd, vs2, xs1, vm
 encoding:
   match: 001101-----------110-----1010111
   variables:

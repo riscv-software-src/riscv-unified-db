@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Create deploy dir
+      - name: Create many artifacts in the _site directory
         run: /bin/bash lib/deploy.sh
       - name: Setup Pages
         uses: actions/configure-pages@v5

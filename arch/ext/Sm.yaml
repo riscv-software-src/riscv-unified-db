@@ -404,6 +404,7 @@ params:
       minimum: 0
       maximum: 0xFFFFFFFFFFFFFFFF
     when:
+      name: Sm
       version: ">= 1.12.0"
   PMA_GRANULARITY:
     description: |

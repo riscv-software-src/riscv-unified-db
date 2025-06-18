@@ -37,7 +37,7 @@
       "required": ["description", "schema"],
       "properties": {
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Parameter description, including list of valid values"
         },
         "also_defined_in": {
@@ -58,7 +58,8 @@
           "$ref": "json-schema-draft-07.json#"
         },
         "when": {
-          "$ref": "schema_defs.json#/$defs/when_condition"
+          "description": "Extension requirement condition that must be met for parameter to exist. The condition that the defining extension is implemented is implicit, and does not need to be explicitly listed",
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
         "extra_validation": {
           "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
@@ -73,6 +74,7 @@
         "$schema",
         "kind",
         "name",
+        "type",
         "description",
         "long_name",
         "versions"
@@ -95,7 +97,7 @@
           "description": "One line description for the extension"
         },
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Full documentation of the extension"
         },
         "rvi_jira_issue": {
@@ -109,7 +111,10 @@
         "doc_license": {
           "$ref": "schema_defs.json#/$defs/license"
         },
-        "type": { "enum": ["unprivileged", "privileged"] },
+        "type": {
+          "enum": ["unprivileged", "privileged"],
+          "description": "Either unprivileged or privileged"
+        },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
           "$ref": "schema_defs.json#/$defs/requires_entry"
@@ -312,6 +317,12 @@
         "$source": {
           "type": "string",
           "description": "Source file where this extension was defined"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false

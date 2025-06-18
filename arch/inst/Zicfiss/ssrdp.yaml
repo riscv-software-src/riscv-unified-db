@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: ssrdp
-long_name: No synopsis available.
+long_name: Read ssp into a Register
 description: |
   No description available.
 definedBy: Zicfiss
@@ -11,7 +11,7 @@ assembly: xd
 encoding:
   match: 11001101110000000100-----1110011
   variables:
-    - name: rd
+    - name: xd
       location: 11-7
       not: 0
 access:

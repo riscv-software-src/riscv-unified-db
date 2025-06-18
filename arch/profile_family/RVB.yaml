@@ -1,0 +1,54 @@
+$schema: profile_family_schema.json#
+kind: profile family
+processor_kind: Apps Processor
+name: RVB
+long_name: Apps Processor profile family for Bespoke Rich Operating System
+marketing_name: RVB
+introduction: |
+  The RVB profile family targets application processors for markets
+  running Bespoke (AKA custom, AKA Yocto) Linux Operating Systems
+  in embedded applications.
+description: |
+  The RVB profile family is intended to be used for 64-bit application
+  processors running rich OS stacks.  Only user-mode and
+  supervisor-mode profiles are specified in this family.
+
+  NOTE: There is no machine-mode profile currently defined for RVB.
+  A machine-mode profile for application processors would only be used in specifying platforms for
+  portable machine-mode software. Given the relatively low volume of
+  portable M-mode software in this domain, the wide variety of potential
+  M-mode code, and the very specific needs of each type of M-mode
+  software, we are not specifying individual M-mode ISA requirements in
+  the RVB profiles.
+
+  NOTE: Only XLEN=64 application processor profiles are currently
+  defined.  It would be possible to also define very similar XLEN=32
+  variants.
+naming_scheme: |
+  The profile family name is RVB (RISC-V Bespoke processor).
+  A profile release name is a integer (currently 2 digits, could grow in the future).
+  A full profile name is comprised of, in order:
+
+  * Prefix *RVB* for RISC-V Bespoke
+  * Profile release
+  * Privilege mode:
+  ** *U* Unprivileged (available to any privilege mode, *U* is *not* User-mode)
+  ** *S* Supervisor mode (note that Hypervisor support is treated as an option)
+  ** *M* Machine mode
+  * A base ISA XLEN specifier (*32*, *64*)
+
+  The initial profiles based on specifications ratified in 2024 are:
+
+  * RVB23U64, RVB23S64 64-bit application-processor profiles
+
+  NOTE: Profile names are embeddable into RISC-V ISA naming strings.
+  This implies that there will be no standard ISA extension with a name
+  that matches the profile naming convention.  This allows tools that
+  process the RISC-V ISA naming string to parse and/or process a combined string.
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+  text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt

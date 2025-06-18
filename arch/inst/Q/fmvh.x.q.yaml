@@ -3,19 +3,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmvh.x.q
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   allOf: [Q, Zfa]
 base: 64
-assembly: xd, qs1
+assembly: xd, fs1
 encoding:
   match: 111001100001-----000-----1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

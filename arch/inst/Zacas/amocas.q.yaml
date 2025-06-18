@@ -42,7 +42,7 @@ description: |
 
 definedBy: Zacas
 base: 64
-assembly: xd, xs1, xs2, aq, rl
+assembly: xd, xs2, (xs1)
 encoding:
   match: 00101------------100-----0101111
   variables:

@@ -4,12 +4,17 @@
 // Now the document header is complete and the wavedrom attribute is active.
 
 <% instructions.sort_by(&:name).each do |inst| %>
-<%= anchor_for_inst(inst.name) %>
+<%= anchor_for_udb_doc_inst(inst.name) %>
 == <%= inst.name %>
 
 Synopsis::
 <%= inst.long_name %>
 
+<%- if ENV['ASSEMBLY']=="1" && inst.assembly.to_s.strip != "" -%>
+Assembly::
+<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+
+<%- end -%>
 Encoding::
 <%- if inst.multi_encoding? -%>
 [NOTE]
@@ -88,5 +93,4 @@ Included in::
 <%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
 <%- end -%>
 
-<
 <% end %>

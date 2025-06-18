@@ -1,0 +1,189 @@
+<<<
+[appendix]
+== CSR Details
+
+<% portfolio_design.in_scope_csrs.sort_by(&:name).each do |csr| -%>
+<<<
+<%= anchor_for_udb_doc_csr(csr.name) %>
+=== <%= csr.name %>
+
+*<%= csr.long_name %>*
+
+<% unless csr.base.nil? -%>
+[NOTE]
+--
+`<%= csr.name %>` is only defined in RV<%= csr.base %>.
+--
+<% end -%>
+
+<%= csr.description %>
+
+==== Attributes
+[%autowidth]
+|===
+h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
+<% if csr.priv_mode == 'VS' -%>
+h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
+<% end -%>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
+<% if csr.dynamic_length? -%>
+h| Length         | <%= csr.length_pretty %>
+<% else -%>
+h| Length         | <%= csr.length_pretty %>
+<% end -%>
+h| Privilege Mode | <%= csr.priv_mode %>
+|===
+
+
+==== Format
+<% unless csr.dynamic_length? || csr.possible_fields.any? { |f| f.dynamic_location? } -%>
+<%# CSR has a known static length, so there is only one format to display -%>
+.<%= csr.name %> format
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
+....
+<% else -%>
+<%# CSR has a dynamic length, or a field has a dynamic location,
+    so there is more than one format to display -%>
+This CSR format changes dynamically with XLEN.
+
+.<%= csr.name %> Format when <%= csr.length_cond32 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, 32, optional_type: 2) %>
+....
+
+.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, 64, optional_type: 2) %>
+....
+
+
+<% end # unless dynamic length -%>
+
+==== Field Summary
+
+// use @ as a separator since IDL code can contain |
+[%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+|===
+@ Name @ Location @ Type @ Reset Value
+
+<% csr.possible_fields.each do |field| -%>
+@ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
+a@
+<% if field.dynamic_location? -%>
+
+[when,"<%= field.location_cond32 %>"]
+--
+<%= field.location_pretty(32) %>
+--
+
+[when,"<%= field.location_cond64 %>"]
+--
+<%= field.location_pretty(64) %>
+--
+
+<% else -%>
+<%= field.location_pretty %>
+<% end -%>
+a@
+
+--
+<%= field.type_pretty %>
+--
+
+a@
+
+--
+<%= field.reset_value_pretty %>
+--
+
+<% end -%>
+|===
+
+==== Fields
+
+<% if csr.possible_fields.empty? -%>
+This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
+<% else -%>
+
+<% csr.possible_fields.each do |field| -%>
+<%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
+===== `<%= csr.name %>.<%= field.name %>` Field
+
+<% if !field.defined_in_all_bases? -%>
+IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
+<% end -%>
+
+// These four asterisks are called a "delimited sidebar block"
+// (see https://docs.asciidoctor.org/asciidoc/latest/blocks/sidebars/)
+// and cause the text until the next four asterisks to have a thin border around it.
+// You can also use the [sidebar] attribute on a block.
+//
+// One limitation of sidebars is the normal section heading syntax
+// (e.g., == for a level 1 heading) won't work. Instead, you have to
+// do what's described in https://github.com/asciidoctor/asciidoctor/issues/1709
+// but that would be a level 5 heading in this CSR field case which is pretty ugly.
+
+****
+Location: ::
+<%= field.location_pretty %>
+
+Description: ::
+<%= field.description.gsub("\n", " +\n") %>
+
+Type: ::
+<%= field.type_pretty %>
+
+Reset value: ::
+<%= field.reset_value_pretty %>
+
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => field, "org" => "appendix", "use_description_list" => true }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field, "org" => "appendix", "use_description_list" => true }) %>
+<% end # if gen_ctp_content -%>
+
+****
+
+<% end # Each field -%>
+<% end # if no fields -%>
+
+<% if csr.possible_fields.map(&:has_custom_sw_write?).any? -%>
+==== Software write
+
+This CSR may store a value that is different from what software attempts to write.
+
+When a software write occurs (_e.g._, through `csrrw`), the following determines the
+written value:
+
+[idl]
+----
+<% csr.possible_fields.each do |field| -%>
+<% if field.has_custom_sw_write? -%>
+<%= field.name %> = <%= field.data["sw_write(csr_value)"] %>
+<% else -%>
+<%= field.name %> = csr_value.<%= field.name %>
+<% end -%>
+<% end -%>
+----
+<% end -%>
+
+<% if csr.has_custom_sw_read? -%>
+==== Software read
+
+This CSR may return a value that is different from what is stored in hardware.
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= csr.sw_read_ast(portfolio_design.symtab).gen_adoc %>
+----
+<% end -%>
+
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => csr, "org" => "appendix" }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => csr, "org" => "appendix" }) %>
+<% end # if gen_ctp_content -%>
+
+<% end # do in_scope_csrs -%>
