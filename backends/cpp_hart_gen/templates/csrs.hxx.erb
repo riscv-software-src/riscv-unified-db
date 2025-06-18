@@ -220,8 +220,8 @@ namespace udb {
     unsigned address() const override { return <%= csr.address %>; }
     static constexpr unsigned _address() { return <%= csr.address %>; }
     const std::string name() const override { return "<%= csr.name %>"; }
-    PrivilegeMode mode() const override { return PrivilegeMode::<%= csr.priv_mode %>; }
-    bool writable() const override { return <%= csr.writable %>; }
+    PrivilegeMode mode() const { return PrivilegeMode::<%= csr.priv_mode %>; }
+    bool writable() const { return <%= csr.writable %>; }
 
     void reset() override {
       <%- fields_for_xlen.each do |field| -%>

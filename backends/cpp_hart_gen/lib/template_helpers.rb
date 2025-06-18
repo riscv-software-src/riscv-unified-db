@@ -39,14 +39,18 @@ end
 class ExtensionRequirementExpression
   class LogicNode
     def to_cxx(&block)
-      if type == :term
+      if type == TYPES::Term
         yield @children[0].name, @children[0].requirement_specs_to_s
-      elsif type == :not
+      elsif type == TYPES::Not
         "!(#{@children[0].to_cxx(&block)})"
-      elsif type == :and
+      elsif type == TYPES::And
         "(#{@children[0].to_cxx(&block)} && #{@children[1].to_cxx(&block)})"
-      elsif type == :or
+      elsif type == TYPES::Or
         "(#{@children[0].to_cxx(&block)} || #{@children[1].to_cxx(&block)})"
+      elsif type == TYPES::If
+        raise "huh?"
+      else
+        T.absurd(type)
       end
     end
   end
