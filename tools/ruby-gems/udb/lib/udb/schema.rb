@@ -185,7 +185,7 @@ module Udb
     end
 
     # @return [Boolean] if the maximum value of the schema is known, i.e., is a restricted integer
-    sig { returns(T::Boolean) }
+    sig { override.returns(T::Boolean) }
     def max_val_known?
       to_idl_type.kind == :bits && \
         (@schema_hash.key?("const") || \
@@ -194,7 +194,7 @@ module Udb
     end
 
     # @return [Boolean] if the minimum value of the schema is known, i.e., is a restricted integer
-    sig { returns(T::Boolean) }
+    sig { override.returns(T::Boolean) }
     def min_val_known?
       to_idl_type.kind == :bits && \
         (@schema_hash.key?("const") || \
@@ -203,7 +203,7 @@ module Udb
     end
 
     # @return [Integer] The maximum value the schema allows. Only valid if #max_val_known? is true
-    sig { returns(Integer) }
+    sig { override.returns(Integer) }
     def max_val
       if @schema_hash.key?("const")
         @schema_hash["const"]
@@ -217,7 +217,7 @@ module Udb
     end
 
     # @return [Integer] The minimum value the schema allows. Only valid if #min_val_known? is true
-    sig { returns(Integer) }
+    sig { override.returns(Integer) }
     def min_val
       if @schema_hash.key?("const")
         @schema_hash["const"]

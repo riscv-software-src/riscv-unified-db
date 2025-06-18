@@ -188,8 +188,8 @@ class ConfiguredArchitecture < Architecture
     @symtab
   end
 
-  sig { returns(String) }
-  def config_type = @config.type
+  sig { returns(ConfigType) }
+  def config_type = @config_type
 
   # return the params as a hash of symbols for the SymbolTable
   sig { returns(T::Hash[String, T.any(Idl::Var, Idl::Type)]) }
@@ -403,6 +403,7 @@ class ConfiguredArchitecture < Architecture
     @name_sym = @name.to_sym.freeze
 
     @config = config
+    @config_type = T.let(@config.type, ConfigType)
     @mxlen = config.mxlen
     @mxlen.freeze
 
@@ -585,9 +586,10 @@ class ConfiguredArchitecture < Architecture
   sig { returns(T::Array[ParameterWithValue]) }
   def params_with_value
     @params_with_value ||= T.let(
-      if @config.unconfigured?
+      case @config_type
+      when ConfigType::UnConfig
         T.cast([], T::Array[ParameterWithValue])
-      elsif @config.fully_configured?
+      when ConfigType::Full
         params = T.let([], T::Array[ParameterWithValue])
         transitive_implemented_extension_versions.each do |ext_version|
           ext = T.must(extension(ext_version.name))
@@ -608,7 +610,7 @@ class ConfiguredArchitecture < Architecture
           end
         end
         params
-      elsif @config.partially_configured?
+      when ConfigType::Partial
         params = T.let([], T::Array[ParameterWithValue])
 
         mandatory_extension_reqs.each do |ext_requirement|
@@ -626,7 +628,7 @@ class ConfiguredArchitecture < Architecture
         end
         params
       else
-        raise "unreachable"
+        T.absurd(@config_type)
       end,
       T.nilable(T::Array[ParameterWithValue]))
   end
@@ -932,7 +934,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<Idl::GlobalAst>] List of globals
-  sig { returns(Idl::GlobalAst) }
+  sig { returns(T::Array[T.any(Idl::GlobalAst, Idl::GlobalWithInitializationAst)]) }
   def globals
     return @globals unless @globals.nil?
 

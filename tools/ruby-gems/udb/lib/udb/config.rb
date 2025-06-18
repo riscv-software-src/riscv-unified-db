@@ -11,6 +11,14 @@ require_relative "obj/portfolio"
 
 module Udb
 
+  class ConfigType < T::Enum
+    enums do
+      UnConfig = new("unconfigured")
+      Full = new("fully configured")
+      Partial = new("partially configured")
+    end
+  end
+
 # This class represents a configuration. Is is coded as an abstract base class (must be inherited by a child).
 #
 # There are child classes derived from AbstractConfig to handle:
@@ -22,14 +30,6 @@ class AbstractConfig
   abstract!
 
   ParamValueType = T.type_alias { T.any(Integer, String, T::Boolean) }
-
-  class Type < T::Enum
-    enums do
-      UnConfig = new("unconfigured")
-      Full = new("fully configured")
-      Partial = new("partially configured")
-    end
-  end
 
   ####################
   # ABSTRACT METHODS #
@@ -66,17 +66,20 @@ class AbstractConfig
   sig { abstract.returns(T::Boolean) }
   def unconfigured?; end
 
-  sig { abstract.returns(Type) }
-  def type; end
-
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(name: String).void }
+  sig { params(name: String, type: ConfigType).void }
   def initialize(name)
     @name = name
+    @name.freeze
+    @type = type
+    @type.freeze
   end
+
+  sig { returns(ConfigType) }
+  attr_reader :type
 
   sig { returns(String) }
   def name = @name
@@ -98,13 +101,10 @@ class FileConfig < AbstractConfig
 
   sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
   def initialize(cfg_file_path, data)
-    super(data["name"])
+    super(data["name"], ConfigType.deserialize(T.cast(@data.fetch("type"), String)))
     @cfg_file_path = cfg_file_path
     @data = data
   end
-
-  sig { override.returns(Type) }
-  def type = @data["type"]
 
   sig { params(obj: T.untyped).returns(T.untyped) }
   def self.freeze_data(obj)
@@ -352,14 +352,11 @@ class PortfolioGroupConfig < AbstractConfig
 
   sig { params(portfolio_grp: ::Udb::PortfolioGroup).void }
   def initialize(portfolio_grp)
-    super(portfolio_grp.name)
+    super(portfolio_grp.name, ConfigType::Partial)
 
     @portfolio_grp = portfolio_grp
 
   end
-
-  sig { override.returns(String) }
-  def type = "portfolio"
 
   ###############################
   # ABSTRACT METHODS OVERRIDDEN #

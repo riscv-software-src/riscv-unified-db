@@ -13,7 +13,7 @@ namespace :gen do
      * CONFIG - Configuration name (defaults to "_")
      * OUTPUT_DIR - Output directory for generated Go code (defaults to "#{$root}/gen/go")
   DESC
-  task :go => "#{$root}/gen/go" do
+  task go: "#{$root}/gen/go" do
     config_name = ENV["CONFIG"] || "_"
     output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/go/"
 
@@ -39,7 +39,7 @@ namespace :gen do
      * CONFIG - Configuration name (defaults to "_")
      * OUTPUT_DIR - Output directory for generated C Header headers (defaults to "#{$root}/gen/c_header")
   DESC
-  task :c_header => "#{$root}/gen/c_header" do
+  task c_header: "#{$root}/gen/c_header" do
     config_name = ENV["CONFIG"] || "_"
     output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/c_header/"
 
