@@ -47,4 +47,5 @@ end
 group :development, :test do
   gem "minitest"
   gem "simplecov"
+  gem "simplecov-cobertura"
 end
