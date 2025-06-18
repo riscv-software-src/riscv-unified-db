@@ -175,7 +175,7 @@ Changes::
 <%- unless version.implications.empty? -%>
 Implies::
 
-<%= version.implications.map { |i| "    * #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n") %>
+<%= version.implications.map { |i| "    * #{i.ext_ver.name} (#{i.ext_ver.version_spec}) #{i.cond.empty? ? '' : i.cond.to_asciidoc(join: ', ')}" }.join("\n") %>
 
 <%- unless version.requirement_condition.empty? -%>
 Requires::
@@ -221,8 +221,8 @@ Version requirements are specified as conditions using the following operators:
 <%-     end -%>
 
 <%-     version.implications.each do |implication_hsh| -%>
-<%-       sub_ext = implication_hsh[:ext_ver] -%>
-<%-       cond = implication_hsh[:cond] -%>
+<%-       sub_ext = implication_hsh.ext_ver -%>
+<%-       cond = implication_hsh.cond -%>
 ==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>) <%= "if #{cond.to_asciidoc(join: ', ')}" unless cond.empty? %>
 
 <%= cfg_arch.extension(sub_ext.name).description %>
@@ -266,11 +266,11 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 [%autowidth]
 |===
-| Mnemonic | <%= implications.map { |e| "`#{e[:ext_ver].name}`" }.join(" | ") %>
+| Mnemonic | <%= implications.map { |e| "`#{e.ext_ver.name}`" }.join(" | ") %>
 
 <%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e[:ext_ver]) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e.ext_ver) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 
