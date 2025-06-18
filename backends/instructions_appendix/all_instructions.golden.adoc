@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -35078,7 +35078,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "uimm","type":4},{"bits":10,"name": "vtypei","type":4},{"bits":2,"name": 0x3,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "uimm","type":4},{"bits":3,"name": "lmul","type":4},{"bits":3,"name": "sew","type":4},{"bits":1,"name": "ta","type":4},{"bits":1,"name": "ma","type":4},{"bits":4,"name": 0xc,"type":2}]}
 ....
 
 Description::
@@ -35089,7 +35089,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|vtypei |$encoding[29:20]
+|ma |$encoding[27]
+|ta |$encoding[26]
+|sew |$encoding[25:23]
+|lmul |$encoding[22:20]
 |uimm |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
@@ -35148,7 +35151,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "xs1","type":4},{"bits":1,"name": 0x0,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":3,"name": "lmul","type":4},{"bits":3,"name": "sew","type":4},{"bits":1,"name": "ta","type":4},{"bits":1,"name": "ma","type":4},{"bits":4,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -35159,7 +35162,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|xs1 |$encoding[30:20]
+|ma |$encoding[27]
+|ta |$encoding[26]
+|sew |$encoding[25:23]
+|lmul |$encoding[22:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
