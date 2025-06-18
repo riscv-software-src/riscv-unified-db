@@ -5,10 +5,10 @@ kind: instruction
 name: c.fld
 long_name: Load double-precision
 description: |
-  Loads a double precision floating-point value from memory into register rd.
+  Loads a double precision floating-point value from memory into register fd.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
-  to the base address in register rs1.
-  It expands to `fld` `rd, offset(rs1)`.
+  to the base address in register xs1.
+  It expands to `fld` `fd, offset(xs1)`.
 definedBy:
   anyOf:
     - allOf:
@@ -22,9 +22,9 @@ encoding:
     - name: imm
       location: 6-5|12-10
       left_shift: 3
-    - name: rd
+    - name: fd
       location: 4-2
-    - name: rs1
+    - name: xs1
       location: 9-7
 access:
   s: always
@@ -36,6 +36,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[creg2reg(rs1)] + imm;
+  XReg virtual_address = X[creg2reg(xs1)] + imm;
 
-  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  f[fd] = sext(read_memory<64>(virtual_address, $encoding), 64);
