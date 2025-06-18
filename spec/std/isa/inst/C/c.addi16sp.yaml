@@ -16,7 +16,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: imm(sp)
+assembly: sp, imm
 encoding:
   match: 011-00010-----01
   variables:

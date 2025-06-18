@@ -8,26 +8,39 @@ kind: instruction
 name: c.ld
 long_name: Load double
 description: |
-  Loads a 64-bit value from memory into register rd.
+  Loads a 64-bit value from memory into register xd.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
-  to the base address in register rs1.
-  It expands to `ld` `rd, offset(rs1)`.
+  to the base address in register xs1.
+  It expands to `ld` `xd, offset(xs1)`.
+  For RV32, if the Zclsd extension is enabled, this instruction loads a 64-bit value into registers xd and xd+1. It computes an effective address by adding the zero-extended imm, scaled by 8, to the base address in register xs1.
 definedBy:
   anyOf:
     - C
     - Zca
-base: 64
+    - Zclsd
 assembly: xd, imm(xs1)
 encoding:
-  match: 011-----------00
-  variables:
-    - name: imm
-      location: 6-5|12-10
-      left_shift: 3
-    - name: rd
-      location: 4-2
-    - name: rs1
-      location: 9-7
+  RV32:
+    match: 011-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xd
+        location: 4-2
+        not: [1, 3, 5, 7]
+      - name: xs1
+        location: 9-7
+  RV64:
+    match: 011-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xd
+        location: 4-2
+      - name: xs1
+        location: 9-7
 access:
   s: always
   u: always
@@ -38,9 +51,18 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[creg2reg(rs1)] + imm;
-
-  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  if (xlen() == 32) {
+    if (implemented?(ExtensionName::Zclsd)) {
+      Bits<64> val = read_memory<64>(X[creg2reg(xs1)] + imm, $encoding);
+      X[creg2reg(xd)] = val[31:0];
+      X[creg2reg(xd + 1)] = val[63:32];
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else {
+    XReg virtual_address = X[creg2reg(xs1)] + imm;
+    X[creg2reg(xd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  }
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
@@ -60,13 +82,13 @@ sail(): |
           TR_Address(paddr, _) =>
             match (width) {
               BYTE =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 1, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 1, aq, rl, false), is_unsigned),
               HALF =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 2, aq, rl, false), is_unsigned),
-              WORD =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 4, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 2, aq, rl, false), is_unsigned),
+              WOxD =>
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 4, aq, rl, false), is_unsigned),
               DOUBLE if sizeof(xlen) >= 64 =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 8, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 8, aq, rl, false), is_unsigned),
               _ => report_invalid_width(__FILE__, __LINE__, width, "load")
             }
         }

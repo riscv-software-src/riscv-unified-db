@@ -16,7 +16,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: xd, imm(sp)
+assembly: xd, sp, imm
 encoding:
   match: 000-----------00
   variables:
@@ -24,7 +24,7 @@ encoding:
       location: 10-7|12-11|5|6
       left_shift: 2
       not: 0
-    - name: rd
+    - name: xd
       location: 4-2
 access:
   s: always
@@ -36,4 +36,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[creg2reg(rd)] = X[2] + imm;
+  X[creg2reg(xd)] = X[2] + imm;

@@ -8,10 +8,10 @@ kind: instruction
 name: c.fldsp
 long_name: Load doubleword into floating-point register from stack
 description: |
-  Loads a double-precision floating-point value from memory into floating-point register rd.
+  Loads a double-precision floating-point value from memory into floating-point register fd.
   It computes its effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
-  It expands to `fld` `rd, offset(x2)`.
+  It expands to `fld` `fd, offset(x2)`.
 definedBy:
   anyOf:
     - allOf:
@@ -25,7 +25,7 @@ encoding:
     - name: imm
       location: 4-2|12|6-5
       left_shift: 3
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always
@@ -42,4 +42,4 @@ operation(): |
 
   XReg virtual_address = X[2] + imm;
 
-  f[rd] = read_memory<64>(virtual_address, $encoding);
+  f[fd] = read_memory<64>(virtual_address, $encoding);

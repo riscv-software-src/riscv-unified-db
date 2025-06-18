@@ -8,10 +8,10 @@ kind: instruction
 name: c.fsw
 long_name: Store single-precision
 description: |
-  Stores a single precision floating-point value in register rs2 to memory.
+  Stores a single precision floating-point value in register fs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 4,
-  to the base address in register rs1.
-  It expands to `fsw` `rs2, offset(rs1)`.
+  to the base address in register xs1.
+  It expands to `fsw` `fs2, offset(xs1)`.
 definedBy:
   anyOf:
     - allOf:
@@ -19,16 +19,16 @@ definedBy:
         - F
     - Zcf
 base: 32
-assembly: xs2, imm(xs1)
+assembly: fs2, imm(xs1)
 encoding:
   match: 111-----------00
   variables:
     - name: imm
       location: 5|12-10|6
       left_shift: 2
-    - name: rs2
+    - name: fs2
       location: 4-2
-    - name: rs1
+    - name: xs1
       location: 9-7
 access:
   s: always
@@ -40,6 +40,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[creg2reg(rs1)] + imm;
+  XReg virtual_address = X[creg2reg(xs1)] + imm;
 
-  write_memory<32>(virtual_address, X[creg2reg(rs2)][31:0], $encoding);
+  write_memory<32>(virtual_address, X[creg2reg(fs2)][31:0], $encoding);
