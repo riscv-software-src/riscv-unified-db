@@ -184,7 +184,7 @@ namespace udb {
       &BitfieldMember<ParentSize, Start, Size>::template operator=(
           const BitfieldMember<ParentSize, Start, Size> &other) {
     m_parent = (static_cast<BitsType<ParentSize>>(m_parent) & ~Mask) |
-               ((static_cast<BitsType<Size>>(other).template sll<Size>()) & Mask);
+               ((static_cast<BitsType<Size>>(other).template widening_sll<Size>()) & Mask);
     return *this;
   }
 
