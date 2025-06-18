@@ -10,6 +10,7 @@ require "yaml"
 require_relative "obj/portfolio"
 
 module Udb
+  extend T::Sig
 
   class ConfigType < T::Enum
     enums do
@@ -41,18 +42,28 @@ class AbstractConfig
   def param_values; end
 
   # @return [Boolean] Is an overlay present?
-  sig { abstract.returns(T::Boolean) }
-  def overlay?; end
+  sig { returns(T::Boolean) }
+  def overlay?  = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
 
   # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
   # @return [nil] No arch_overlay for this config
-  sig { abstract.returns(T.nilable(String)) }
-  def arch_overlay; end
+  sig { returns(T.nilable(String)) }
+  def arch_overlay = @data["arch_overlay"]
 
   # @return [String] Absolute path to the arch_overlay
   # @return [nil] No arch_overlay for this config
-  sig { abstract.returns(T.nilable(String)) }
-  def arch_overlay_abs; end
+  sig { returns(T.nilable(String)) }
+  def arch_overlay_abs
+    return nil unless @data.key?("arch_overlay")
+
+    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
+      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
+    elsif File.directory?(@data['arch_overlay'])
+      @data['arch_overlay']
+    else
+      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
+    end
+  end
 
   sig { abstract.returns(T.nilable(Integer)) }
   def mxlen; end
@@ -70,11 +81,15 @@ class AbstractConfig
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(name: String, type: ConfigType).void }
-  def initialize(name)
-    @name = name
+  # use AbstractConfig#create instead
+  private_class_method :new
+
+  sig { params(data: T::Hash[String, T.untyped]).void }
+  def initialize(data)
+    @data = data
+    @name = @data.fetch("name")
     @name.freeze
-    @type = type
+    @type = ConfigType.deserialize(T.cast(@data.fetch("type"), String))
     @type.freeze
   end
 
@@ -86,25 +101,6 @@ class AbstractConfig
 
   sig { returns(T::Boolean) }
   def configured? = !unconfigured?
-end
-
-# This class represents a configuration as specified by YAML files in the /cfg directory.
-# Is is coded as an abstract base class (must be inherited by a child).
-class FileConfig < AbstractConfig
-  abstract!
-  ########################
-  # NON-ABSTRACT METHODS #
-  ########################
-
-  # use FileConfig#create instead
-  private_class_method :new
-
-  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
-  def initialize(cfg_file_path, data)
-    super(data["name"], ConfigType.deserialize(T.cast(@data.fetch("type"), String)))
-    @cfg_file_path = cfg_file_path
-    @data = data
-  end
 
   sig { params(obj: T.untyped).returns(T.untyped) }
   def self.freeze_data(obj)
@@ -121,54 +117,51 @@ class FileConfig < AbstractConfig
   private_class_method :freeze_data
 
   # Factory method to create a FullConfig, PartialConfig, or UnConfig based
-  # on the contents of cfg_filename.
+  # on the contents of cfg_file_path_or_portfolio_grp
   #
-  # @return [FileConfig] A new FileConfig object
-  sig { params(cfg_file_path: Pathname).returns(FileConfig) }
-  def self.create(cfg_file_path)
-    raise ArgumentError, "Cannot find #{cfg_file_path}" unless cfg_file_path.exist?
+  # @return [AbstractConfig] A new AbstractConfig object
+  sig { params(cfg_file_path_or_portfolio_grp: T.any(Pathname, PortfolioGroup)).returns(AbstractConfig) }
+  def self.create(cfg_file_path_or_portfolio_grp)
+    if cfg_file_path_or_portfolio_grp.is_a?(Pathname)
+      cfg_file_path = T.cast(cfg_file_path_or_portfolio_grp, Pathname)
+      raise ArgumentError, "Cannot find #{cfg_file_path}" unless cfg_file_path.exist?
 
-    data = ::YAML.load_file(cfg_file_path)
+      data = ::YAML.load_file(cfg_file_path)
 
-    # now deep freeze the data
-    freeze_data(data)
+      # now deep freeze the data
+      freeze_data(data)
 
-    case data["type"]
-    when "fully configured"
-      FullConfig.send(:new, cfg_file_path, data)
-    when "partially configured"
-      PartialConfig.send(:new, cfg_file_path, data)
-    when "unconfigured"
-      UnConfig.send(:new, cfg_file_path, data)
+      case data["type"]
+      when "fully configured"
+        FullConfig.send(:new, data)
+      when "partially configured"
+        PartialConfig.send(:new, data)
+      when "unconfigured"
+        UnConfig.send(:new, data)
+      else
+        raise "Unexpected type (#{data['type']}) in config"
+      end
+    elsif cfg_file_path_or_portfolio_grp.is_a?(PortfolioGroup)
+      portfolio_grp = T.cast(cfg_file_path_or_portfolio_grp, PortfolioGroup)
+      data = {
+        "$schema" => "config_schema.json#",
+        "kind" => "architecture configuration",
+        "type" => "partially configured",
+        "name" => portfolio_grp.name,
+        "description" => "Partial config construction from Portfolio Group #{portfolio_grp.name}",
+        "params" => portfolio_grp.param_values,
+        "mandatory_extensions" => portfolio_grp.mandatory_ext_reqs.map do |ext_req|
+          {
+            "name" => ext_req.name,
+            "version" => ext_req.requirement_specs.map(&:to_s)
+          }
+        end
+      }
+      data.fetch("params")["MXLEN"] = portfolio_grp.max_base
+      freeze_data(data)
+      PartialConfig.send(:new, data)
     else
-      raise "Unexpected type (#{data['type']}) in config"
-    end
-  end
-
-  ###############################
-  # ABSTRACT METHODS OVERRIDDEN #
-  ###############################
-
-  sig { override.returns(T::Boolean) }
-  def overlay? = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
-
-  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
-  # @return [nil] No arch_overlay for this config
-  sig { override.returns(T.nilable(String)) }
-  def arch_overlay = @data["arch_overlay"]
-
-  # @return [String] Absolute path to the arch_overlay
-  # @return [nil] No arch_overlay for this config
-  sig { override.returns(T.nilable(String)) }
-  def arch_overlay_abs
-    return nil unless @data.key?("arch_overlay")
-
-    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
-      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
-    elsif File.directory?(@data['arch_overlay'])
-      @data['arch_overlay']
-    else
-      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
+      T.absurd(cfg_file_path_or_portfolio_grp)
     end
   end
 end
@@ -177,14 +170,14 @@ end
 # This class represents a configuration that is "unconfigured". #
 # It doesn't know anything about extensions or parameters.      #
 #################################################################
-class UnConfig < FileConfig
+class UnConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
-  def initialize(cfg_file_path, data)
-    super(cfg_file_path, data)
+  sig { params(data: T::Hash[String, T.untyped]).void }
+  def initialize(data)
+    super(data)
 
     @param_values = {}.freeze
   end
@@ -213,14 +206,14 @@ end
 # This class represents a configuration that is "partially-configured" (e.g., portfolio or configurable IP). #
 # It only lists mandatory & prohibited extensions and fully-constrained parameters (single value).
 ##############################################################################################################
-class PartialConfig < FileConfig
+class PartialConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
-  def initialize(cfg_file_path, data)
-    super(cfg_file_path, data)
+  sig { params(data: T::Hash[String, T.untyped]).void }
+  def initialize(data)
+    super(data)
 
     @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
@@ -287,14 +280,14 @@ end
 # This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
 # It has a complete list of extensions and parameters (all are a single value at this point).                  #
 ################################################################################################################
-class FullConfig < FileConfig
+class FullConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
-  def initialize(cfg_file_path, data)
-    super(cfg_file_path, data)
+  sig { params(data: T::Hash[String, T.untyped]).void }
+  def initialize(data)
+    super(data)
 
     @param_values = @data["params"]
 
@@ -336,97 +329,5 @@ class FullConfig < FileConfig
         end
       end
   end
-end
-
-########################
-# PortfolioGroupConfig #
-########################
-
-# A PortfolioGroupConfig provides an implementation of the AbstractConfig API using a PortfolioGroup object.
-# This object contains information from one or more portfolios.
-# A certificate has just one portfolio and a profile release has one or more portfolios.
-class PortfolioGroupConfig < AbstractConfig
-  ########################
-  # NON-ABSTRACT METHODS #
-  ########################
-
-  sig { params(portfolio_grp: ::Udb::PortfolioGroup).void }
-  def initialize(portfolio_grp)
-    super(portfolio_grp.name, ConfigType::Partial)
-
-    @portfolio_grp = portfolio_grp
-
-  end
-
-  ###############################
-  # ABSTRACT METHODS OVERRIDDEN #
-  ###############################
-
-  # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
-  #                                been configured with a value. May be empty.
-  sig { override.returns(T::Hash[String, ParamValueType]) }
-  def param_values = @portfolio_grp.param_values
-
-  # @return [Boolean] Is an overlay present?
-  sig { override.returns(FalseClass) }
-  def overlay? = false
-
-  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
-  # @return [nil] No arch_overlay for this config
-  sig { override.returns(T.nilable(String)) }
-  def arch_overlay = nil
-
-  # @return [String] Absolute path to the arch_overlay
-  # @return [nil] No arch_overlay for this config
-  sig { override.returns(T.nilable(String)) }
-  def arch_overlay_abs = nil
-
-  # 32, 64, or nil if dynamic (not yet supported in portfolio)
-  sig { override.returns(T.nilable(Integer)) }
-  def mxlen = @portfolio_grp.max_base
-
-  # Portfolios are always considered partially configured.
-  sig { override.returns(T::Boolean) }
-  def fully_configured? = false
-
-  sig { override.returns(T::Boolean) }
-  def partially_configured? = true
-
-  sig { override.returns(T::Boolean) }
-  def unconfigured? = false
-
-  # @return [Array<Hash{String => String,Array<String}>]
-  #    List of all extensions that must be implemented by the configuration
-  #    The first entry in the nested array is an Extension name.
-  #    The second entry in the nested array is an Extension version requirement.
-  #
-  # @example
-  #   mandatory_extensions =>
-  #     [{ "name" => "A", "version" => ["~> 2.0"] }, { "name" => "B", "version" => ["~> 1.0"] }, ...]
-  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
-  def mandatory_extensions
-    @portfolio_grp.mandatory_ext_reqs.map do |ext_req|
-      {
-        "name" => ext_req.name,
-        "version" => ext_req.requirement_specs.map(&:to_s)
-      }
-    end
-  end
-
-  # @return [Array<Hash{String => String,Array<String}>]
-  #   List of all extensions that are explicitly prohibited by the configuration.
-  #   The first entry in the nested array is an Extension name.
-  #   The second entry in the nested array is an Extension version requirement.
-  #
-  # @example
-  #   partial_config.prohibited_extensions =>
-  #     [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
-  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
-  def prohibited_extensions = []    # No prohibited_extensions in a portfolio group
-
-  # Whether or not a compliant instance of this partial config can have more extensions than those listed
-  # in mandatory_extensions/non_mandatory_extensions.
-  sig { returns(TrueClass) }
-  def additional_extensions_allowed? = true
 end
 end

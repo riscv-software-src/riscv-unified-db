@@ -4,10 +4,13 @@
 
 require "pathname"
 
-PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile"
-PROFILE_GEN_DIR = $root / "gen" / "profile"
+require "udb_helpers/paths"
+require "udb/portfolio_design"
 
-Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
+PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile"
+PROFILE_GEN_DIR = $resolver.gen_path / "profile"
+
+Dir.glob("#{$resolver.std_path}/profile_release/*.yaml") do |f|
   release_name = File.basename(f, ".yaml")
   release_obj = YAML.load_file(f, permitted_classes: [Date])
   raise "Can't parse #{f}" if release_obj.nil?
@@ -20,16 +23,16 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
   profile_names = release_obj['profiles'].map {|p| File.basename(p['$ref'].split("#")[0], ".yaml") }
   raise "Ill-formed profile release file #{f}: can't parse profile names" if profile_names.nil?
 
-  profile_pathnames = profile_names.map {|profile_name| "#{$root}/arch/profile/#{profile_name}.yaml" }
+  profile_pathnames = profile_names.map {|profile_name| "#{$resolver.std_path}/profile/#{profile_name}.yaml" }
 
   file "#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc" => [
     __FILE__,
-    "#{$root}/arch/profile_family/#{family_name}.yaml",
-    "#{$root}/arch/profile_release/#{release_name}.yaml",
-    "#{$root}/lib/arch_obj_models/profile.rb",
-    "#{$root}/lib/arch_obj_models/portfolio.rb",
-    "#{$root}/lib/portfolio_design.rb",
-    "#{$root}/lib/backend_helpers.rb",
+    "#{$resolver.std_path}/profile_family/#{family_name}.yaml",
+    "#{$resolver.std_path}/profile_release/#{release_name}.yaml",
+    "#{Udb.gem_path}/lib/udb/obj/profile.rb",
+    "#{Udb.gem_path}/lib/udb/obj/portfolio.rb",
+    "#{Udb.gem_path}/lib/udb/portfolio_design.rb",
+    "#{Udb::Helpers.gem_path}/lib/udb_helpers/backend_helpers.rb",
     "#{$root}/backends/portfolio/templates/ext_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
@@ -55,10 +58,10 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     $logger.info "Creating PortfolioDesign object using profile release #{release_name}"
-    portfolio_design = PortfolioDesign.new(
+    portfolio_design = Udb::PortfolioDesign.new(
       release_name,
       cfg_arch,
-      PortfolioDesign.profile_release_type,
+      Udb::PortfolioDesign.profile_release_type,
       profile_release_with_cfg_arch.profiles,
       profile_release_with_cfg_arch.profile_family
     )
@@ -105,7 +108,7 @@ namespace :gen do
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/profile_release/#{release_name}.yaml")
+    unless File.exist?("#{$resolver.std_path}/profile_release/#{release_name}.yaml")
       warn "No profile release named '#{release_name}' found in arch/profile_release"
       exit 1
     end
@@ -126,7 +129,7 @@ namespace :gen do
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/profile_release/#{release_name}.yaml")
+    unless File.exist?("#{$resolver.std_path}/profile_release/#{release_name}.yaml")
       warn "No profile release named '#{release_name}' found in arch/profile_release"
       exit 1
     end

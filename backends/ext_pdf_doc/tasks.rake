@@ -34,7 +34,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |tname|
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
     "-r asciidoctor-diagram",
-    "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-r idl_highlighter",
     "-o #{t.name}",
     adoc_file
   ].join(" ")
@@ -73,7 +73,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   arch_yaml_paths = Dir.glob("#{$root}/arch/**/*.yaml")
   cfg_path = $root / "gen" / "ext_pdf_doc" / "#{config_name}.yaml"
-  cfg = FileConfig.create(cfg_path)
+  cfg = AbstractConfig.create(cfg_path)
   arch_yaml_paths += Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") unless cfg.arch_overlay.nil?
   [
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,

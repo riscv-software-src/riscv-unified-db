@@ -12,6 +12,11 @@ require_relative "cfg_arch"
 module Udb
   extend T::Sig
 
+  sig { returns(Pathname) }
+  def self.gem_path
+    @gem_path ||= Pathname.new(Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path)
+  end
+
   sig { params(from_dir: Pathname).returns(Pathname) }
   def self.find_udb_root(from_dir)
     if (from_dir / "do").executable?
@@ -185,10 +190,9 @@ module Udb
       raise "custom directory '#{overlay_path}' does not exist" if !overlay_path.nil? && !overlay_path.directory?
 
       if any_newer?(gen_path / "spec" / config_name / ".stamp", deps)
-        udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
         run [
           python_path.to_s,
-          "#{udb_gem_path}/python/yaml_resolver.py",
+          "#{Udb.gem_path}/python/yaml_resolver.py",
           "merge",
           std_path.to_s,
           overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
@@ -205,10 +209,9 @@ module Udb
 
       deps = Dir[gen_path / "arch" / config_yaml["name"] / "**" / "*.yaml"].map { |p| Pathname.new(p) }
       if any_newer?(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp", deps)
-        udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
         run [
           python_path.to_s,
-          "#{udb_gem_path}/python/yaml_resolver.py",
+          "#{Udb.gem_path}/python/yaml_resolver.py",
           "resolve",
           "#{gen_path}/spec/#{config_name}",
           "#{gen_path}/resolved_spec/#{config_name}"
@@ -242,7 +245,7 @@ module Udb
 
       @cfg_archs[config_path] = Udb::ConfiguredArchitecture.new(
         config_name,
-        Udb::FileConfig.create(gen_path / "cfgs" / "#{config_name}.yaml"),
+        Udb::AbstractConfig.create(gen_path / "cfgs" / "#{config_name}.yaml"),
         gen_path / "resolved_spec" / config_name
       )
     end
