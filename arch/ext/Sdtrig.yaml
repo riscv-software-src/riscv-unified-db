@@ -47,13 +47,6 @@ params:
     extra_validation: |
       # MCONTEXT must exist if HCONTEXT does
       assert (MCONTEXT_AVAILABLE) if HCONTEXT_AVAILABLE
-type: privileged
-versions:
-  - version: "1.0.0"
-    state: ratified
-    ratification_date: null
-
-params:
   MSTATEEN_CONTEXT_TYPE:
     when:
       name: Smstateen
@@ -86,3 +79,8 @@ params:
     extra_validation: |
       assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
       assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
