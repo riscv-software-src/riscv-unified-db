@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rubocop-performance"
   s.add_development_dependency "rubocop-sorbet"
   s.add_development_dependency "simplecov"
+  s.add_development_dependency "simplecov-cobertura"
   s.add_development_dependency "sorbet"
   s.add_development_dependency "spoom"
   s.add_development_dependency "tapioca"

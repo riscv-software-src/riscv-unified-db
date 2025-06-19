@@ -40,6 +40,13 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
         run: ./do test:smoke
+      - name: Upload idlc coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/idlc/coverage/coverage.xml
+          flags: idlc
   regress-gen-isa-manual:
     runs-on: ubuntu-latest
     env:
