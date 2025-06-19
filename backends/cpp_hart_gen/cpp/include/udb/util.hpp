@@ -40,8 +40,8 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
-      return (value >> START) & mask;
+          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1_b;
+      return (value >> Bits<BITS_LEN>(START)) & mask;
     }
   }
 
@@ -57,7 +57,7 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1_b;
       return (value >> START) & mask;
     }
   }
@@ -74,7 +74,7 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> START) & mask;
     }
   }
@@ -89,7 +89,7 @@ namespace udb {
       return value;
     } else {
       Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> START) & mask;
     }
   }
@@ -107,7 +107,7 @@ namespace udb {
       return value;
     } else {
       Bits<MAX_BITS_LEN> mask =
-          (static_cast<Bits<MAX_BITS_LEN>>(1).template sll<SIZE>()) - 1;
+          (static_cast<Bits<MAX_BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> START) & mask;
     }
   }
@@ -125,7 +125,7 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BitfieldMemberSize> mask =
-          (static_cast<Bits<BitfieldMemberSize>>(1).template sll<size>()) - 1;
+          (static_cast<Bits<BitfieldMemberSize>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> start) & mask;
     }
   }
@@ -298,13 +298,13 @@ namespace udb {
       ((BitsTypes::width() != BitsInfinitePrecision) && ...) &&
       ((BitsType::PossiblyUnknown == true) ||((BitsTypes::PossiblyUnknown == true) || ...))
     )
-  constexpr PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::width()> __unknown_concat(
+  constexpr PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::Width> __unknown_concat(
       const BitsType &a, const BitsTypes &...bits) {
     if constexpr (sizeof...(BitsTypes) == 0) {
       return a;
     } else {
-      return (PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::width()>{a}
-              << ConcatWidth<BitsTypes...>::Width) |
+      return (PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::Width>{a}
+              << _Bits<ConcatWidth<BitsTypes...>::Width>(ConcatWidth<BitsTypes...>::Width)) |
             __unknown_concat(bits...);
     }
   }

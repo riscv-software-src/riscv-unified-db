@@ -63,7 +63,7 @@ namespace udb {
     BitfieldMember(const BitfieldMember &other) : m_parent(other.m_parent) {}
 
     static constexpr Bits<Size> MaximumValue =
-        (Bits<1>(1).template widening_sll<Size>()) - 1;
+        (Bits<1>(1).template widening_sll<Size>()) - 1_b;
     static constexpr Bits<ParentSize> Mask = MaximumValue.template widening_sll<Start>();
 
     template <unsigned N>
@@ -110,12 +110,12 @@ namespace udb {
 
     template <typename OtherType>
     Bits<Size> operator>>(const OtherType &shamt) const {
-      return static_cast<BitsType<Size>>(*this) >> shamt;
+      return static_cast<BitsType<Size>>(*this) >> _Bits<Size>(shamt);
     }
 
     template <typename OtherType>
     Bits<Size> operator&(const OtherType &other) const {
-      return static_cast<BitsType<Size>>(*this) & other;
+      return static_cast<BitsType<Size>>(*this) & _Bits<Size>(other);
     }
 
     BitsType<Bits<Size>::InfinitePrecision> operator<<(const int &shamt) const {
@@ -166,7 +166,7 @@ namespace udb {
   template <unsigned N>
     requires(N >= Size)
   BitfieldMember<ParentSize, Start, Size>::template operator BitfieldMember<ParentSize, Start, Size>::template BitsType<N>() const {
-    return (static_cast<BitsType<ParentSize>>(m_parent) >> Start) & MaximumValue;
+    return (static_cast<BitsType<ParentSize>>(m_parent) >> _Bits<Size>(Start) & MaximumValue;
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>

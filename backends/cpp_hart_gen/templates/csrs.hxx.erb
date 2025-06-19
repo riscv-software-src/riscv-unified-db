@@ -243,9 +243,9 @@ namespace udb {
         <%-
           field_cpp = fields_for_xlen32.map do |field|
             if field.dynamic_location?
-              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(32).size) - 1).to_s(16)}).template sll<#{field.location(32).begin}>())"
+              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(32).size) - 1).to_s(16)}).template widening_sll<#{field.location(32).begin}>())"
             else
-              "(m_#{field.name}._hw_read().template sll<#{field.location(32).begin}>())"
+              "(m_#{field.name}._hw_read().template widening_sll<#{field.location(32).begin}>())"
             end
           end
         -%>
@@ -255,9 +255,9 @@ namespace udb {
         <%-
           field_cpp = fields_for_xlen32.map do |field|
             if field.dynamic_location?
-              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(64).size) - 1).to_s(16)}).template sll<#{field.location(64).begin}>())"
+              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(64).size) - 1).to_s(16)}).template widening_sll<#{field.location(64).begin}>())"
             else
-              "(m_#{field.name}._hw_read().template sll<#{field.location(64).begin}>())"
+              "(m_#{field.name}._hw_read().template widening_sll<#{field.location(64).begin}>())"
             end
           end
         -%>
@@ -270,9 +270,9 @@ namespace udb {
         xlen = cfg_arch.possible_xlens[0] # any possible xlen will do
         field_cpp = fields_for_xlen.map do |field|
           if field.dynamic_location?
-            "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(xlen).size) - 1).to_s(16)}).template sll<#{field.location(xlen).begin}>())"
+            "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(xlen).size) - 1).to_s(16)}).template widening_sll<#{field.location(xlen).begin}>())"
           else
-            "(m_#{field.name}._hw_read().template sll<#{field.location(xlen).begin}>())"
+            "(m_#{field.name}._hw_read().template widening_sll<#{field.location(xlen).begin}>())"
           end
         end
       -%>
