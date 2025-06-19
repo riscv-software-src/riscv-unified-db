@@ -945,7 +945,7 @@ namespace udb {
       return _Bits<InfinitePrecision, Signed>{ReturnType{get()}.get() << shamt.get()};
     }
 
-    constexpr _Bits operator>>(const _Bits &shamt) const { return {m_val >> shamt.get()}; }
+    constexpr _Bits operator>>(const _Bits &shamt) const { return _Bits{m_val >> shamt.get()}; }
 
     template <template <unsigned, bool> class ShiftBitsType, unsigned ShiftN>
       requires(BitsType<ShiftBitsType<ShiftN, false>>)
@@ -2182,7 +2182,7 @@ namespace udb {
     template <unsigned SHAMT>
     constexpr _PossiblyUnknownBits<addsat_v<N, SHAMT>, Signed> widening_sll() const {
       using ReturnType = _PossiblyUnknownBits<addsat_v<N, SHAMT>, Signed>;
-      return {ReturnType{m_val}.m_val << SHAMT, ReturnType{m_val}.m_unknown_mask << SHAMT};
+      return {ReturnType{m_val}.m_val << _Bits<sizeof(unsigned) * 8, false>(SHAMT), ReturnType{m_val}.m_unknown_mask << _Bits<sizeof(unsigned) * 8, false>(SHAMT)};
     }
 
     friend std::ostream &operator<<(std::ostream &stream, const _PossiblyUnknownBits &val) {
