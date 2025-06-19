@@ -531,7 +531,7 @@ class Idl::AstNode::LinesDescriptor < ::T::Struct
   const :lines_interval, T::Range[T.untyped]
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -3731,7 +3731,7 @@ class Idl::SymbolTable::BuiltinFunctionCallbacks < ::T::Struct
   prop :implemented_csr, T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -3750,7 +3750,7 @@ class Idl::SymbolTable::EnumDef < ::T::Struct
   def initialize(name:, element_values:, element_names:); end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
     def inherited(s); end
   end
 end

@@ -1,1 +1,0 @@
-../../../common/ruby/test_helper.rb
