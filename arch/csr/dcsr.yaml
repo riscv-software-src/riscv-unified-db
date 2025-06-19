@@ -136,18 +136,16 @@ fields:
     type(): |
       if (DCSR_STEPIE_TYPE == "tied-to-0" || DCSR_STEPIE_TYPE == "tied-to-1") {
         return CsrFieldType::RO;
-      } else if (DCSR_STEPIE_TYPE == "rw") {
-        return CsrFieldType::RW;
       }
+      assert(DCSR_STEPIE_TYPE == "rw", "Unhandled DCSR_STEPIE_TYPE value");
       return CsrFieldType::RW;
     reset_value(): |
       if (DCSR_STEPIE_TYPE == "tied-to-0") {
         return 0;
       } else if (DCSR_STEPIE_TYPE == "tied-to-1") {
         return 1;
-      } else if (DCSR_STEPIE_TYPE == "rw") {
-        return UNDEFINED_LEGAL;
       }
+      assert(DCSR_STEPIE_TYPE == "rw", "Unhandled DCSR_STEPIE_TYPE value");
       return UNDEFINED_LEGAL;
   STOPCOUNT:
     location: 10
@@ -160,18 +158,16 @@ fields:
     type(): |
       if (DCSR_STOPCOUNT_TYPE == "tied-to-0" || DCSR_STOPCOUNT_TYPE == "tied-to-1") {
         return CsrFieldType::RO;
-      } else if (DCSR_STOPCOUNT_TYPE == "rw") {
-        return CsrFieldType::RW;
       }
+      assert(DCSR_STOPCOUNT_TYPE == "rw", "Unhandled DCSR_STOPCOUNT_TYPE value");
       return CsrFieldType::RW;
     reset_value(): |
       if (DCSR_STOPCOUNT_TYPE == "tied-to-0") {
         return 0;
       } else if (DCSR_STOPCOUNT_TYPE == "tied-to-1") {
         return 1;
-      } else if (DCSR_STOPCOUNT_TYPE == "rw") {
-        return UNDEFINED_LEGAL;
       }
+      assert(DCSR_STOPCOUNT_TYPE == "rw", "Unhandled DCSR_STOPCOUNT_TYPE value");
       return UNDEFINED_LEGAL;
   STOPTIME:
     location: 9
@@ -184,18 +180,16 @@ fields:
     type(): |
       if (DCSR_STOPTIME_TYPE == "tied-to-0" || DCSR_STOPTIME_TYPE == "tied-to-1") {
         return CsrFieldType::RO;
-      } else if (DCSR_STOPTIME_TYPE == "rw") {
-        return CsrFieldType::RW;
       }
+      assert(DCSR_STOPTIME_TYPE == "rw", "Unhandled DCSR_STOPTIME_TYPE value");
       return CsrFieldType::RW;
     reset_value(): |
       if (DCSR_STOPTIME_TYPE == "tied-to-0") {
         return 0;
       } else if (DCSR_STOPTIME_TYPE == "tied-to-1") {
         return 1;
-      } else if (DCSR_STOPTIME_TYPE == "rw") {
-        return UNDEFINED_LEGAL;
       }
+      assert(DCSR_STOPTIME_TYPE == "rw", "Unhandled DCSR_STOPTIME_TYPE value");
       return UNDEFINED_LEGAL;
   CAUSE:
     location: 8-6
@@ -238,18 +232,16 @@ fields:
     type(): |
       if (DCSR_MPRVEN_TYPE == "tied-to-0" || DCSR_MPRVEN_TYPE == "tied-to-1") {
         return CsrFieldType::RO;
-      } else if (DCSR_MPRVEN_TYPE == "rw") {
-        return CsrFieldType::RW;
       }
+      assert(DCSR_MPRVEN_TYPE == "rw", "Unhandled DCSR_MPRVEN_TYPE value");
       return CsrFieldType::RW;
     reset_value(): |
       if (DCSR_MPRVEN_TYPE == "tied-to-0") {
         return 0;
       } else if (DCSR_MPRVEN_TYPE == "tied-to-1") {
         return 1;
-      } else if (DCSR_MPRVEN_TYPE == "rw") {
-        return UNDEFINED_LEGAL;
       }
+      assert(DCSR_MPRVEN_TYPE == "rw", "Unhandled DCSR_MPRVEN_TYPE value");
       return UNDEFINED_LEGAL;
   NMIP:
     location: 3
