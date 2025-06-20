@@ -81,7 +81,7 @@ file "#{GEN_XLSX}" => [
     __FILE__,
     src_pnames
 ].flatten do |t|
-    arch = create_arch
+    arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)

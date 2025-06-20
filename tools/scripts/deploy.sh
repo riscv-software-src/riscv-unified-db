@@ -98,8 +98,8 @@ deploy_mkdir $DEPLOY_DIR/htmls
 
 deploy_log "Resolve / Create Index for base architecture"
 deploy_do "gen:resolved_arch"
-tar czf $DEPLOY_DIR/resolved_arch.tar.gz gen/resolved_arch/_
-deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
+tar czf $DEPLOY_DIR/resolved_spec.tar.gz gen/resolved_spec/_
+deploy_cp_recursive gen/resolved_spec/_ $DEPLOY_DIR/resolved_spec
 
 deploy_log "Create _site/isa_explorer"
 deploy_mkdir $DEPLOY_DIR/isa_explorer
@@ -181,17 +181,17 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <h3>Resolved architecture</h3>
     <ul>
       <li>
-        <a href="$PAGES_URL/resolved_arch/index.yaml">index.yaml</a>
-        Database index, as array of relative paths from $PAGES_URL/resolved_arch
+        <a href="$PAGES_URL/resolved_spec/index.yaml">index.yaml</a>
+        Database index, as array of relative paths from $PAGES_URL/resolved_spec
         <ul>
           <li>
-            For example, you can find <a href="$PAGES_URL/resolved_arch/ext/Sm.yaml">Sm.yaml</a> at $PAGES_URL/resolved_arch/ext/Sm.yaml
+            For example, you can find <a href="$PAGES_URL/resolved_spec/ext/Sm.yaml">Sm.yaml</a> at $PAGES_URL/resolved_spec/ext/Sm.yaml
           </li>
         </ul>
       </li>
       <li>
-        <a href="$PAGES_URL/resolved_arch.tar.gz">resolved_arch.tar.gz</a>
-        The contents of the resolved architecture as a tarball
+        <a href="$PAGES_URL/resolved_spec.tar.gz">resolved_spec.tar.gz</a>
+        The contents of the resolved specificatione as a tarball
       </li>
     </ul>
 

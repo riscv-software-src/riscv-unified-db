@@ -66,6 +66,14 @@ module Udb
   class Resolver
     extend T::Sig
 
+    # return type of #cfg_info
+    class ConfigInfo < T::Struct
+      const :name, String
+      const :path, Pathname
+      const :unresolved_yaml, T::Hash[String, T.untyped]
+      prop :resolved_yaml, T.nilable(T::Hash[String, T.untyped])
+    end
+
     # path to find database schema files
     sig { returns(Pathname) }
     attr_reader :schemas_path
@@ -85,6 +93,18 @@ module Udb
     # path to custom overlay specifications
     sig { returns(Pathname) }
     attr_reader :custom_path
+
+    # path to merged spec (merged with custom overley, but prior to resolution)
+    sig { params(cfg_path_or_name: T.any(String, Pathname)).returns(Pathname) }
+    def merged_spec_path(cfg_path_or_name)
+      @gen_path / "spec" / cfg_info(cfg_path_or_name).name
+    end
+
+    # path to merged and resolved spec
+    sig { params(cfg_path_or_name: T.any(String, Pathname)).returns(Pathname) }
+    def resolved_spec_path(cfg_path_or_name)
+      @gen_path / "resolved_spec" / cfg_info(cfg_path_or_name).name
+    end
 
     # path to a python binary
     sig { returns(Pathname) }
@@ -158,23 +178,24 @@ module Udb
     # returns the config data
     sig { params(config_path: Pathname).returns(T::Hash[String, T.untyped]) }
     def resolve_config(config_path)
-      config_yaml = T.nilable(T::Hash[String, T.untyped])
-      config_name = config_path.basename(".yaml")
+      config_info = cfg_info(config_path)
+      return T.must(config_info.resolved_yaml) unless config_info.resolved_yaml.nil?
 
+      resolved_config_yaml = T.let({}, T.nilable(T::Hash[String, T.untyped]))
       # write the config with arch_overlay expanded
-      if any_newer?(gen_path / "cfgs" / "#{config_name}.yaml", [config_path])
-        config_yaml = YAML.load_file(config_path)
-
+      if any_newer?(gen_path / "cfgs" / "#{config_info.name}.yaml", [config_path])
         # is there anything to do here? validate?
 
+        resolved_config_yaml = config_info.unresolved_yaml.dup
+        resolved_config_yaml["$source"] = config_path.realpath.to_s
+
         FileUtils.mkdir_p gen_path / "cfgs"
-        File.write(gen_path / "cfgs" / "#{config_name}.yaml", YAML.dump(config_yaml))
+        File.write(gen_path / "cfgs" / "#{config_info.name}.yaml", YAML.dump(resolved_config_yaml))
       else
-        config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_name}.yaml")
+        resolved_config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_info.name}.yaml")
       end
 
-      config_yaml["$source"] = config_path.realpath
-      config_yaml
+      config_info.resolved_yaml = resolved_config_yaml
     end
 
     sig { params(config_yaml: T::Hash[String, T.untyped]).void }
@@ -196,16 +217,16 @@ module Udb
         end
       raise "custom directory '#{overlay_path}' does not exist" if !overlay_path.nil? && !overlay_path.directory?
 
-      if any_newer?(gen_path / "spec" / config_name / ".stamp", deps)
+      if any_newer?(merged_spec_path(config_name) / ".stamp", deps)
         run [
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "merge",
           std_path.to_s,
           overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
-          "#{gen_path}/spec/#{config_name}"
+          merged_spec_path(config_name).to_s
         ]
-        FileUtils.touch(gen_path / "spec" / config_name / ".stamp")
+        FileUtils.touch(merged_spec_path(config_name) / ".stamp")
       end
     end
 
@@ -214,16 +235,16 @@ module Udb
       merge_arch(config_yaml)
       config_name = config_yaml["name"]
 
-      deps = Dir[gen_path / "arch" / config_yaml["name"] / "**" / "*.yaml"].map { |p| Pathname.new(p) }
-      if any_newer?(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp", deps)
+      deps = Dir[merged_spec_path(config_name) / "**" / "*.yaml"].map { |p| Pathname.new(p) }
+      if any_newer?(resolved_spec_path(config_name) / ".stamp", deps)
         run [
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "resolve",
-          "#{gen_path}/spec/#{config_name}",
-          "#{gen_path}/resolved_spec/#{config_name}"
+          merged_spec_path(config_name).to_s,
+          resolved_spec_path(config_name).to_s
         ]
-        FileUtils.touch(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp")
+        FileUtils.touch(resolved_spec_path(config_name) / ".stamp")
       end
 
       FileUtils.cp_r(std_path / "isa", gen_path / "resolved_spec" / config_yaml["name"])
@@ -237,15 +258,27 @@ module Udb
         when Pathname
           raise "Path does not exist: #{config_path_or_name}" unless config_path_or_name.file?
 
-          config_path_or_name
+          config_path_or_name.realpath
         when String
           @cfgs_path / "#{config_path_or_name}.yaml"
         else
           T.absurd(config_path_or_name)
         end
 
+      config_yaml = YAML.safe_load_file(config_path)
+      info = ConfigInfo.new(name: config_yaml["name"], path: config_path, unresolved_yaml: config_yaml)
+      @cfg_info[config_path] = info
+      @cfg_info[info.name] = info
+    end
+    private :cfg_info
+
+    # resolve the specification for a config, and return a ConfiguredArchitecture
+    sig { params(config_path_or_name: T.any(Pathname, String)).returns(Udb::ConfiguredArchitecture) }
+    def cfg_arch_for(config_path_or_name)
+      config_info = cfg_info(config_path_or_name)
+
       @cfg_archs ||= {}
-      return @cfg_archs[config_path] if @cfg_archs.key?(config_path)
+      return @cfg_archs[config_info.path] if @cfg_archs.key?(config_info.path)
 
       config_yaml = resolve_config(config_path)
       config_name = config_yaml["name"]
