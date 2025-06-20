@@ -1,8 +1,12 @@
+
+# typed: true
 # frozen_string_literal: true
-#
+
 # Generate
 
+require "sorbet-runtime"
 require "write_xlsx"
+
 require "udb/architecture"
 
 # @param presence [String] Can be nil
@@ -85,9 +89,8 @@ end
 
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Instruction table data
+sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2inst_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   inst_table = {
@@ -134,9 +137,8 @@ end
 
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] CSR table data
+sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2csr_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   csr_table = {
@@ -230,9 +232,8 @@ end
 #
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
+sig { params(arch: Udb::Architecture, output_pname: String).void }
 def gen_xlsx(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Create a new Excel workbook
   $logger.info "Creating Excel workboook #{output_pname}"
