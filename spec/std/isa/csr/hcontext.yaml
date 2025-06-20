@@ -33,7 +33,7 @@ fields:
     reset_value: 0
     sw_write(csr_value): |
       # check if mstateen0 is implemented
-      if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
+      if (implemented?(ExtensionName::Smstateen) && !CSR[mstateen0].CONTEXT) {
         unimplemented_csr($encoding);
       }
 
@@ -49,7 +49,7 @@ fields:
       return CSR[mcontext].HCONTEXT;
 sw_read(): |
   # check if mstateen0 is implemented
-  if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
+  if (implemented?(ExtensionName::Smstateen) && !CSR[mstateen0].CONTEXT) {
     unimplemented_csr($encoding);
   }
 
