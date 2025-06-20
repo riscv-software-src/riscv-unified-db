@@ -5,7 +5,7 @@ kind: instruction
 name: bext
 long_name: Single-Bit extract (Register)
 description: |
-  This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+  Returns a single bit extracted from rs1 at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of rs2.
 definedBy: Zbs
 assembly: xd, xs1, xs2
