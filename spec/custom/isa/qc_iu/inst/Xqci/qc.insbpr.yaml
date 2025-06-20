@@ -1,0 +1,47 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.insbpr
+long_name: Insert bits, packed descriptor (Register)
+description: |
+  Insertion of a subset of bits from `rs1` into `rd`.
+  The width of the subset is determined by `rs2` bits [13:8] (0..32),
+  and the offset of the subset is determined by `rs2` bits [4:0].
+  In case when width == 0, the destination register is left unchanged.
+  In case when `rs2` bit [13] == 1 width is enforced to 32.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcibm
+base: 32
+encoding:
+  match: 0000010----------011-----0001011
+  variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, xs2"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg width_bits = X[rs2][13:8];
+  XReg width = (width_bits > 32) ? 32 : width_bits;
+  XReg shamt = X[rs2][4:0];
+  if (width > 0) {
+    XReg mask = ((32'b1 << width) - 1) << shamt;
+    XReg orig_val = X[rd];
+    X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);
+  }

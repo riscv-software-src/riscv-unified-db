@@ -1,0 +1,105 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/hpmcounterN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: hpmcounter24
+long_name: User-mode Hardware Performance Counter 21
+address: 0xC18
+description: |
+  Alias for M-mode CSR `mhpmcounter24`.
+
+  Privilege mode access is controlled with `mcounteren.HPM24`
+  <%- if ext?(:S) -%>
+  , `scounteren.HPM24`
+  <%- if ext?(:H) -%>
+  , and `hcounteren.HPM24`
+  <%- end -%>
+  <%- end -%>
+  as follows:
+
+  <%- if ext?(:H) -%>
+  [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
+  !===
+  .2+h![.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`# .2+h! [.rotate]#`hcounteren.HPM24`#
+  4+^.>h! `hpmcounter24` behavior
+  .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
+
+  ! 0 ! - ! - ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction`
+  ! 1 ! 0 ! 0 ! read-only ! `IllegalInstruction` ! `VirtualInstruction` ! `VirtualInstruction`
+  ! 1 ! 1 ! 0 ! read-only ! read-only ! `VirtualInstruction` ! `VirtualInstruction`
+  ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
+  ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
+  !===
+  <%- elsif ext?(:S) -%>
+  [%autowidth,cols="1,1,1,1",separator="!"]
+  !===
+  .2+h![.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`#
+  2+^.>h! `hpmcounter24` behavior
+  .^h! S-mode .^h! U-mode
+
+  ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+  ! 1 ! 0 ! read-only ! `IllegalInstruction`
+  ! 1 ! 1 ! read-only ! read-only
+  !===
+  <%- else -%>
+  [%autowidth,cols="1,1",separator="!"]
+  !===
+  .2+h![.rotate]#`mcounteren.HPM24`#
+  ^.>h! `hpmcounter24` behavior
+  .^h! U-mode
+
+  ! 0 ! `IllegalInstruction`
+  ! 1 ! read-only
+  !===
+  <%- end -%>
+priv_mode: U
+length: 64
+definedBy: Zihpm
+fields:
+  COUNT:
+    location: 63-0
+    alias: mhpmcounter24.COUNT
+    description: Alias of `mhpmcounter24.COUNT`.
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  # access is determined by *counteren CSRs
+  if (mode() == PrivilegeMode::S) {
+    # S-mode is present ->
+    #   mcounteren determines access in S-mode
+    if (CSR[mcounteren].HPM24 == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::U) {
+    if (CSR[misa].S == 1'b1) {
+      # S-mode is present ->
+      #   mcounteren and scounteren together determine access in U-mode
+      if ((CSR[mcounteren].HPM24 & CSR[scounteren].HPM24) == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+    } else if (CSR[mcounteren].HPM24 == 1'b0) {
+      # S-mode is not present ->
+      #   mcounteren determines access in U-mode
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::VS) {
+    # access in VS mode
+    if (CSR[hcounteren].HPM24 == 1'b0 && CSR[mcounteren].HPM24 == 1'b1) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else if (CSR[mcounteren].HPM24 == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::VU) {
+    # access in VU mode
+    if (((CSR[hcounteren].HPM24 & CSR[scounteren].HPM24) == 1'b0) && (CSR[mcounteren].HPM24 == 1'b1)) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else if (CSR[mcounteren].HPM24 == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+
+  return read_hpm_counter(24);

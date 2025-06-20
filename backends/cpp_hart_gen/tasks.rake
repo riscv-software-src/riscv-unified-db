@@ -6,10 +6,10 @@ require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
 require_relative "lib/gen_cpp"
 require_relative "lib/decode_tree"
-require_relative "../../lib/idl/passes/find_src_registers"
+require "idlc/passes/find_src_registers"
 
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
-CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
+CPP_HART_GEN_DST = $resolver.gen_path / "cpp_hart_gen"
 
 OPTION_STR = <<~DESC_OPTIONS.freeze
   Options:
@@ -89,7 +89,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -113,7 +113,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -128,10 +128,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
   [
-    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
-    "#{$root}/lib/idl/passes/prune.rb",
+    "#{$root}/tools/ruby-gems/idlc/lib/idlc/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -141,7 +140,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -162,10 +161,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
   [
-    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
-    "#{$root}/lib/idl/passes/prune.rb",
+    "#{$root}/tools/ruby-gems/idlc/lib/idlc/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -175,7 +173,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -234,7 +232,7 @@ def configs_build_name
   end
 
   config_names = configs.map do |config|
-    cfg_arch_for(config).name
+    $resolver.cfg_arch_for(config).name
   end
 
   build_name =

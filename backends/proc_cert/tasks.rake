@@ -20,14 +20,14 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
 
   # Create the ConfiguredArchitecture object with knowledge of the ProcCertModel.
   # Needs a PortfolioGroup object so just create one with just one ProcCertModel (which is a child of Portfolio).
-  cfg_arch = pf_create_cfg_arch(PortfolioGroup.new(model_name, [proc_cert_model_with_arch]))
+  cfg_arch = pf_create_cfg_arch(Udb::PortfolioGroup.new(model_name, [proc_cert_model_with_arch]))
 
   $logger.info "Creating ProcCertModel with a ConfiguredArchitecture object for #{model_name}"
   proc_cert_model_with_cfg_arch = cfg_arch.proc_cert_model(model_name)
 
   # Create the one ProcCertDesign object required for the ERB evaluation using the cfg_arch.
   $logger.info "Creating ProcCertDesign object using processor certificate model #{model_name}"
-  proc_cert_design = ProcCertDesign.new(model_name, cfg_arch, ProcCertDesign.proc_ctp_type, proc_cert_model_with_cfg_arch,
+  proc_cert_design = Udb::ProcCertDesign.new(model_name, cfg_arch, Udb::ProcCertDesign.proc_ctp_type, proc_cert_model_with_cfg_arch,
     proc_cert_model_with_cfg_arch.proc_cert_class)
 
   # Create empty binding and then specify explicitly which variables the ERB template can access.

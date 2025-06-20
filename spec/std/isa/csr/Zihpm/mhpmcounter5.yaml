@@ -1,0 +1,52 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmcounterN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mhpmcounter5
+long_name: Machine Hardware Performance Counter 5
+address: 0xB05
+priv_mode: M
+length: 64
+description: Programmable hardware performance counter.
+definedBy: Smhpm
+fields:
+  COUNT:
+    location: 63-0
+    description: |
+      [when="HPM_COUNTER_EN[5] == true"]
+      --
+      Performance counter for event selected in `mhpmevent5.EVENT`.
+
+      Increments every time event occurs unless:
+
+        * `mcountinhibit.HPM5` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.HPM5`<%- end -%> is set
+        <%- if ext?(:Sscofpmf) -%>
+        * `mhpmevent5.MINH` is set and the current privilege level is M
+        <%- if ext?(:S) -%>
+        * `mhpmevent5.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent5..SINH`<%- end -%> is set and the current privilege level is (H)S
+        <%- end -%>
+        <%- if ext?(:U) -%>
+        * `mhpmevent5.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent5.SINH`<%- end -%> is set and the current privilege level is U
+        <%- end -%>
+        <%- if ext?(:H) -%>
+        * `mhpmevent5.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent5.SINH`<%- end -%> is set and the current privilege level is VS
+        * `mhpmevent5.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent5.SINH`<%- end -%> is set and the current privilege level is VU
+        <%- end -%>
+        <%- end -%>
+      --
+
+      [when="HPM_COUNTER_EN[5] == false"]
+      Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
+
+    type(): "return (HPM_COUNTER_EN[5]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[5]) ? UNDEFINED_LEGAL : 0;"
+sw_read(): |
+  if (HPM_COUNTER_EN[5]) {
+    return read_hpm_counter(5);
+  } else {
+    return 0;
+  }

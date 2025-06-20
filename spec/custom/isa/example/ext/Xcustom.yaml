@@ -1,0 +1,15 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+---
+$schema: "ext_schema.json#"
+kind: extension
+name: Xcustom
+long_name: A new custom extension
+type: unprivileged
+versions:
+  - version: "0.1.0"
+    ratification_date: null
+    state: development
+description: |
+  A new custom extension!

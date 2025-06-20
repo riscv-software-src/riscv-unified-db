@@ -1,5 +1,5 @@
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
@@ -13,17 +13,20 @@ puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
 
 require "etc"
 
-$root = Pathname.new(__FILE__).dirname.realpath
+$root = Pathname.new(__dir__).realpath
 $lib = $root / "lib"
+
+require "udb/resolver"
+$resolver = Udb::Resolver.new($root)
 
 require "logger"
 require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
-require_relative $root / "lib" / "architecture"
-require_relative $root / "lib" / "portfolio_design"
-require_relative $root / "lib" / "proc_cert_design"
+require "udb/architecture"
+require "udb/portfolio_design"
+require "udb/proc_cert_design"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO
@@ -38,78 +41,29 @@ Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
   load rakefile
 end
 
-directory "#{$root}/.stamps"
-
-# @param config_locator [String or Pathname]
-# @return [ConfiguredArchitecture]
-sig { params(config_locator: T.any(String, Pathname)).returns(ConfiguredArchitecture) }
-def cfg_arch_for(config_locator)
-  config_locator = config_locator.to_s
-
-  $cfg_archs ||= {}
-  return $cfg_archs[config_locator] unless $cfg_archs[config_locator].nil?
-
-  # does the gen cfg already exist?
-  if File.exist?("#{$root}/gen/cfgs/#{config_locator}.yaml")
-    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config_locator}.yaml")
-    if File.mtime("#{$root}/gen/cfgs/#{config_locator}.yaml") < File.mtime(config_yaml["$source"])
-
-      cfg_arch =
-        ConfiguredArchitecture.new(
-          config_locator,
-          FileConfig.create("#{$root}/gen/cfgs/#{config_locator}.yaml"),
-          $root / "gen" / "resolved_arch" / config_locator
-        )
-      $cfg_archs[config_locator] = cfg_arch
-      return cfg_arch
-    end
-  end
-
-  config_path =
-    if File.exist?("#{$root}/cfgs/#{config_locator}.yaml")
-      "#{$root}/cfgs/#{config_locator}.yaml"
-    elsif File.exist? config_locator
-      File.realpath(config_locator)
-    else
-      raise ArgumentError, "Can't find config #{config_locator}"
-    end
-
-  config_yaml = YAML.load_file(config_path)
-  config_name = config_yaml["name"]
-
-  overlay_dir =
-    if config_yaml["arch_overlay"].nil?
-      "/does/not/exist"
-    elsif File.exist?("#{$root}/arch_overlay/#{config_yaml['arch_overlay']}")
-      "#{$root}/arch_overlay/#{config_yaml['arch_overlay']}"
-    elsif File.directory?(config_yaml["arch_overlay"])
-      File.realpath(config_yaml["arch_overlay"])
-    else
-      raise ArgumentError, "Can't find arch_overlay #{config_yaml['arch_overlay']}"
-    end
-
-  config_yaml["arch_overlay"] = overlay_dir
-  config_yaml["$source"] = config_path
-
-  # write the config with arch_overlay expanded
-  unless File.exist?("#{$root}/gen/cfgs/#{config_name}.yaml") && (File.mtime("#{$root}/gen/cfgs/#{config_name}.yaml") < File.mtime(config_path))
-    FileUtils.mkdir_p "#{$root}/gen/cfgs"
-    File.write "#{$root}/gen/cfgs/#{config_name}.yaml", YAML.dump(config_yaml)
-  end
-  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
-
-  $cfg_archs[config_name] =
-    ConfiguredArchitecture.new(
-      config_name,
-      FileConfig.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
-      $root / "gen" / "resolved_arch" / config_name
-    )
+# load and execute Rakefile for each gem
+Dir.glob("#{$root}/tools/ruby-gems/*/Rakefile") do |rakefile|
+  load rakefile
 end
+
+directory "#{$root}/.stamps"
 
 file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
   #sh "bundle exec yard config --gem-install-yri"
   sh "bundle exec yard gem"
   FileUtils.touch t.name
+end
+
+namespace :chore do
+  desc "Update Ruby library dependencies"
+  task :update_deps do
+    # these should run in order,
+    # so don't change this to use task prereqs, which might run in any order
+    Rake::Task["chore:idlc:update_deps"].invoke
+    Rake::Task["chore:udb:update_deps"].invoke
+
+    sh "bundle update"
+  end
 end
 
 namespace :gen do
@@ -122,32 +76,9 @@ namespace :gen do
   end
 
   desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
-  task "resolved_arch" => "#{$root}/.stamps/resolve-_.stamp"
-end
-
-# rule to generate standard for any configurations with an overlay
-rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
-  cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
-  raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
-
-  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = FileConfig.create(cfg_path)
-  arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-  overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
-  [
-    "#{$root}/.stamps",
-    "#{$root}/lib/yaml_resolver.py"
-  ] + arch_files + overlay_files
-} do |t|
-  cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
-  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = FileConfig.create(cfg_path)
-
-  overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
-  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"
-  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve gen/arch/#{cfg_name} gen/resolved_arch/#{cfg_name}"
-
-  FileUtils.touch t.name
+  task "resolved_arch" do
+    $resolver.cfg_arch_for("_")
+  end
 end
 
 namespace :serve do
@@ -198,7 +129,11 @@ namespace :test do
 
   desc "Type-check the Ruby library"
   task :sorbet do
-    sh "srb tc @.sorbet-config"
+    $logger.info "Type checking idlc gem"
+    Rake::Task["test:idlc:sorbet"].invoke
+    $logger.info "Type checking udb gem"
+    Rake::Task["test:udb:sorbet"].invoke
+    # sh "srb tc @.sorbet-config"
   end
 end
 
@@ -218,7 +153,7 @@ namespace :test do
   task :inst_encodings do
     print "Checking for conflicts in instruction encodings.."
 
-    cfg_arch = cfg_arch_for("_")
+    cfg_arch = $resolver.cfg_arch_for("_")
     insts = cfg_arch.instructions
     failed = T.let(false, T::Boolean)
     insts.each_with_index do |inst, idx|
@@ -246,7 +181,7 @@ namespace :test do
   task :csrs do
     print "Checking for conflicts in CSRs.."
 
-    cfg_arch = cfg_arch_for("_")
+    cfg_arch = $resolver.cfg_arch_for("_")
     csrs = cfg_arch.csrs
     failed = T.let(false, T::Boolean)
     csrs.each_with_index do |csr, idx|
@@ -270,9 +205,9 @@ namespace :test do
     puts "done"
   end
 
-  task schema: "#{$root}/.stamps/resolve-_.stamp" do
+  task :schema do
     puts "Checking arch files against schema.."
-    cfg_arch_for("_").validate(show_progress: true)
+    $resolver.cfg_arch_for("_").validate($resolver, show_progress: true)
     puts "All files validate against their schema"
   end
 
@@ -281,7 +216,7 @@ namespace :test do
     raise "Missing CFG enviornment variable" if cfg.nil?
 
     print "Parsing IDL code for #{cfg}..."
-    cfg_arch = cfg_arch_for(cfg)
+    cfg_arch = $resolver.cfg_arch_for(cfg)
     puts "done"
 
     cfg_arch.type_check
@@ -298,120 +233,120 @@ def insert_warning(str, from)
 end
 
 (3..31).each do |hpm_num|
-  file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmcounterN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmcounterNh.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmeventN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmeventN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmeventN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/mhpmeventNh.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/mhpmeventNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}.yaml" => [
-    "#{$root}/arch/csr/Zihpm/hpmcounterN.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/hpmcounterN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/hpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
-  file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}h.yaml" => [
-    "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout",
+  file "#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml" => [
+    "#{$resolver.std_path}/csr/Zihpm/hpmcounterNh.layout",
     __FILE__
     ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/Zihpm/hpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
 (0..63).each do |pmpaddr_num|
-  file "#{$root}/arch/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
-    "#{$root}/arch/csr/I/pmpaddrN.layout",
+  file "#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
+    "#{$resolver.std_path}/csr/I/pmpaddrN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/I/pmpaddrN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/I/pmpaddrN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/I/pmpaddrN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/I/pmpaddrN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
 (0..15).each do |pmpcfg_num|
-  file "#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml" => [
-    "#{$root}/arch/csr/I/pmpcfgN.layout",
+  file "#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml" => [
+    "#{$resolver.std_path}/csr/I/pmpcfgN.layout",
     __FILE__
    ] do |t|
-    erb = ERB.new(File.read($root / "arch/csr/I/pmpcfgN.layout"), trim_mode: "-")
-    erb.filename = "#{$root}/arch/csr/I/pmpcfgN.layout"
+    erb = ERB.new(File.read($resolver.std_path / "csr/I/pmpcfgN.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/csr/I/pmpcfgN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
 
-file "#{$root}/arch/csr/I/mcounteren.yaml" => [
-  "#{$root}/arch/csr/I/mcounteren.layout",
+file "#{$resolver.std_path}/csr/I/mcounteren.yaml" => [
+  "#{$resolver.std_path}/csr/I/mcounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/I/mcounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/I/mcounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/I/mcounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/I/mcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/S/scounteren.yaml" => [
-  "#{$root}/arch/csr/S/scounteren.layout",
+file "#{$resolver.std_path}/csr/S/scounteren.yaml" => [
+  "#{$resolver.std_path}/csr/S/scounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/S/scounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/S/scounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/S/scounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/S/scounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/Sscofpmf/scountovf.yaml" => [
-  "#{$root}/arch/csr/Sscofpmf/scountovf.layout",
+file "#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml" => [
+  "#{$resolver.std_path}/csr/Sscofpmf/scountovf.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/Sscofpmf/scountovf.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/Sscofpmf/scountovf.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/Sscofpmf/scountovf.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/Sscofpmf/scountovf.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/H/hcounteren.yaml" => [
-  "#{$root}/arch/csr/H/hcounteren.layout",
+file "#{$resolver.std_path}/csr/H/hcounteren.yaml" => [
+  "#{$resolver.std_path}/csr/H/hcounteren.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/H/hcounteren.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/H/hcounteren.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/H/hcounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/H/hcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
-file "#{$root}/arch/csr/Zicntr/mcountinhibit.yaml" => [
-  "#{$root}/arch/csr/Zicntr/mcountinhibit.layout",
+file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
+  "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.layout",
   __FILE__
 ] do |t|
-  erb = ERB.new(File.read($root / "arch/csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
-  erb.filename = "#{$root}/arch/csr/Zicntr/mcountinhibit.layout"
+  erb = ERB.new(File.read($resolver.std_path / "csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
@@ -419,32 +354,37 @@ namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
     (3..31).each do |hpm_num|
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmevent#{hpm_num}h.yaml"].invoke
 
-      Rake::Task["#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}.yaml"].invoke
-      Rake::Task["#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}h.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml"].invoke
     end
 
-    Rake::Task["#{$root}/arch/csr/I/mcounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/S/scounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/Sscofpmf/scountovf.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/H/hcounteren.yaml"].invoke
-    Rake::Task["#{$root}/arch/csr/Zicntr/mcountinhibit.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/I/mcounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/S/scounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/H/hcounteren.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml"].invoke
 
     (0..63).each do |pmpaddr_num|
-      Rake::Task["#{$root}/arch/csr/I/pmpaddr#{pmpaddr_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml"].invoke
     end
 
     (0..15).each do |pmpcfg_num|
-      Rake::Task["#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+      Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
   end
 end
 
 namespace :test do
+  task :unit do
+    Rake::Task["test:idlc:unit"].invoke
+    Rake::Task["test:udb:unit"].invoke
+    Rake::Task["test:udb_helpers:unit"].invoke
+  end
   desc <<~DESC
     Run smoke tests
 
@@ -452,14 +392,14 @@ namespace :test do
   DESC
   task :smoke do
     $logger.info "Starting test:smoke"
+    $logger.info "Running test:sorbet"
+    Rake::Task["test:sorbet"].invoke
+    $logger.info "Running test:unit"
+    Rake::Task["test:unit"].invoke
     $logger.info "Running gen:isa_explorer_browser_ext"
     Rake::Task["gen:isa_explorer_browser_ext"].invoke
-    $logger.info "Running test:idl_compiler"
-    Rake::Task["test:idl_compiler"].invoke
-    $logger.info "Running test:lib"
-    Rake::Task["test:lib"].invoke
-    $logger.info "UPDATE: Running test:sorbet"
-    Rake::Task["test:sorbet"].invoke
+    # $logger.info "Running test:lib"
+    # Rake::Task["test:lib"].invoke
     $logger.info "Running test:schema"
     Rake::Task["test:schema"].invoke
     $logger.info "UPDATE: Running test:idl for rv32"

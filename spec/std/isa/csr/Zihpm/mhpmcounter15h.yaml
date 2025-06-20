@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmcounterNh.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mhpmcounter15h
+long_name: Machine Hardware Performance Counter 15, Upper half
+address: 0xB8F
+priv_mode: M
+length: 32
+base: 32
+description: |
+  Upper half of mhpmcounter15.
+definedBy: Smhpm
+fields:
+  COUNT:
+    location: 31-0
+    alias: mhpmcounter.COUNT15[63:32]
+    description: |
+      Upper bits of counter.
+    type(): "return (HPM_COUNTER_EN[15]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[15]) ? UNDEFINED_LEGAL : 0;"
+sw_read(): |
+  if (HPM_COUNTER_EN[15]) {
+    return read_hpm_counter(15)[63:32];
+  } else {
+    return 0;
+  }

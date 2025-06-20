@@ -1,8 +1,0 @@
---dir
-.
---ignore
-ext
---ignore
-.home/.gems
---ignore
-node_modules

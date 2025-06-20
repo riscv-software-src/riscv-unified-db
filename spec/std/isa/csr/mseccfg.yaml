@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mseccfg
+long_name: Machine Security Configuration
+address: 0x747
+writable: true
+priv_mode: M
+length: 64
+description: Machine Security Configuration
+definedBy:
+  name: Sm
+  version: ">= 1.12"
+fields: {}

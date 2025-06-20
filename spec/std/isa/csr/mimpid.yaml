@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mimpid
+long_name: Machine Implementation ID
+address: 0xf13
+writable: false
+priv_mode: M
+length: MXLEN
+description: |
+  Reports the vendor-specific implementation ID.
+
+  The `mimpid` CSR provides a unique encoding of the version of the
+  processor implementation. This register must be readable in any
+  implementation, but a value of 0 can be returned to indicate that the
+  field is not implemented. The Implementation value should reflect the
+  design of the RISC-V processor itself and not any surrounding system.
+
+  [NOTE]
+  ====
+  The format of this field is left to the provider of the architecture
+  source code, but will often be printed by standard tools as a
+  hexadecimal string without any leading or trailing zeros, so the
+  Implementation value can be left-justified (i.e., filled in from
+  most-significant nibble down) with subfields aligned on nibble
+  boundaries to ease human readability.
+  ====
+definedBy: Sm
+fields:
+  Implementation:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RO
+    description: Vendor-specific implementation ID.
+    reset_value(): return IMP_ID;
