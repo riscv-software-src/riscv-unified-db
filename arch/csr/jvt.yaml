@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
@@ -42,22 +45,22 @@ fields:
       }
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if ((mode() != PrivMode::M) && implemented?(ExtensionName::Smstateen)) {
+      if ((mode() != PrivilegeMode::M) && implemented?(ExtensionName::Smstateen)) {
         if (CSR[mstateen0].JVT == 1'b0) {
           unimplemented_csr();
         }
       }
-      else if ((mode() == PrivMode::U) && implemented?(ExtensionName::Ssstaten)) {
+      else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstaten)) {
         if (CSR[sstateen0].JVT == 1'b0) {
           unimplemented_csr();
         }
       }
-      else if ((mode() == PrivMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+      else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstaten)) {
         if (CSR[hstateen0].JVT == 1'b0) {
           unimplemented_csr();
         }
       }
-      else if ((mode() == PrivMode::VU) && implemented?(ExtensionName::Ssstateen)) {
+      else if ((mode() == PrivilegeMode::VU) && implemented?(ExtensionName::Ssstateen)) {
         if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
           unimplemented_csr();
         }
@@ -90,22 +93,22 @@ sw_read(): |
   # of a `cm.jalt` or `cm.jt` instruction by a lower privilege level results in an illegal-instruction trap (or, if
   # appropriate, a virtual-instruction trap).
 
-  if ((mode() != PrivMode::M) && implemented?(ExtensionName::Smstateen)) {
+  if ((mode() != PrivilegeMode::M) && implemented?(ExtensionName::Smstateen)) {
     if (CSR[mstateen0].JVT == 1'b0) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
-  else if ((mode() == PrivMode::U) && implemented?(ExtensionName::Ssstaten)) {
+  else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstaten)) {
     if (CSR[sstateen0].JVT == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   }
-  else if ((mode() == PrivMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+  else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstaten)) {
     if (CSR[hstateen0].JVT == 1'b0) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
-  else if ((mode() == PrivMode::VU) && implemented?(ExtensionName::Ssstateen)) {
+  else if ((mode() == PrivilegeMode::VU) && implemented?(ExtensionName::Ssstateen)) {
     if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
