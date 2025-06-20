@@ -483,7 +483,6 @@ class ConfiguredArchitecture < Architecture
         name: @name,
         csrs:
       )
-    
     overlay_path =
       if config.arch_overlay.nil?
         "/does/not/exist"
