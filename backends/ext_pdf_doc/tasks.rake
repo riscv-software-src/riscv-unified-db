@@ -72,7 +72,7 @@ end
 
 rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$resolver.gen_path}/ext_pdf_doc").to_s.split("/")[0]
-  arch_yaml_paths = Dir.glob("#{$root}/arch/**/*.yaml")
+  arch_yaml_paths = Dir.glob("#{$resolver.resolved_spec_path(config_name)}/**/*.yaml")
   cfg_path = $resolver.gen_path / "ext_pdf_doc" / "#{config_name}.yaml"
   cfg = Udb::AbstractConfig.create(cfg_path)
   arch_yaml_paths += Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") unless cfg.arch_overlay.nil?
