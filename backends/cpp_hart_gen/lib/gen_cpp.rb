@@ -1,17 +1,31 @@
 
+# typed: true
+# frozen_string_literal: true
+
+require "sorbet-runtime"
+
 require_relative "constexpr_pass"
 require_relative "control_flow_pass"
 require_relative "written_pass"
+require_relative "type"
 
 class TrueClass
+  extend T::Sig
+  sig { returns(String) }
   def to_cxx = "true"
 end
 
 class FalseClass
+  extend T::Sig
+
+  sig { returns(String) }
   def to_cxx = "false"
 end
 
 class Integer
+  extend T::Sig
+
+  sig { returns(String) }
   def to_cxx
     if negative?
       "-#{-self}_sb"
@@ -22,6 +36,9 @@ class Integer
 end
 
 class String
+  extend T::Sig
+
+  sig { returns(String) }
   def to_cxx
     "\"#{self}\"sv";
   end
@@ -30,16 +47,17 @@ end
 
 module Idl
   class AstNode
-    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      internal_error "Need to implement #gen_cpp for #{self.class.name}"
-    end
+    sig { abstract.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2); end
   end
 
-  class NoopAst
+  class NoopAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2) = ";"
   end
 
-  class AryRangeAssignmentAst
+  class AryRangeAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression = nil
       value_result = value_try do
@@ -56,7 +74,8 @@ module Idl
     end
   end
 
-  class ConditionalReturnStatementAst
+  class ConditionalReturnStatementAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = <<~CPP
         if (#{condition.gen_cpp(symtab, 0, indent_spaces:)}) {
@@ -67,7 +86,8 @@ module Idl
     end
   end
 
-  class ReturnExpressionAst
+  class ReturnExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       return_expressions = return_value_nodes.map { |ast| ast.gen_cpp(symtab) }
       if return_expressions.size == 1
@@ -80,42 +100,48 @@ module Idl
     end
   end
 
-  class IfBodyAst
+  class IfBodyAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = []
       children.each do |child|
-        cpp << child.gen_cpp(symtab, indent, indent_spaces:)
+        cpp << child.gen_cpp(symtab, indent = 2, indent_spaces:)
       end
       cpp.join("\n")
     end
   end
 
-  class PostIncrementExpressionAst
+  class PostIncrementExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{rval.gen_cpp(symtab, indent, indent_spaces:)}++"
+      "#{' ' * indent}#{rval.gen_cpp(symtab, indent = 2, indent_spaces:)}++"
     end
   end
 
-  class PostDecrementExpressionAst
+  class PostDecrementExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{rval.gen_cpp(symtab, indent, indent_spaces:)}--"
+      "#{' ' * indent}#{rval.gen_cpp(symtab, indent = 2, indent_spaces:)}--"
     end
   end
 
-  class StringLiteralAst
+  class StringLiteralAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       # text_value will include leading and trailing quotes
       "#{' ' * indent}#{text_value}sv"
     end
   end
 
-  class DontCareReturnAst
+  class DontCareReturnAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' ' * indent}{}"
     end
   end
 
-  class UserTypeNameAst
+  class UserTypeNameAst < AstNode
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c(symtab)
       type = symtab.get(text_value)
       if type.kind == :struct
@@ -124,6 +150,7 @@ module Idl
         text_value
       end
     end
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       type = symtab.get(text_value)
       if type.kind == :struct
@@ -134,16 +161,18 @@ module Idl
     end
   end
 
-  class MultiVariableAssignmentAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class MultiVariableAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       lhs = "std::tie(#{variables.map { |v| v.gen_cpp(symtab, 0, indent_spaces: )}.join(', ')})"
       rhs = function_call.gen_cpp(symtab, 0, indent_spaces:)
       "#{' ' * indent}#{lhs} = #{rhs}"
     end
   end
 
-  class CsrFunctionCallAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class CsrFunctionCallAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       args_cpp = args.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
 
       csr_obj = csr.csr_def(symtab)
@@ -155,7 +184,7 @@ module Idl
         end
       else
         if function_name == "sw_read"
-          if symtab.cfg_arch.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
+          if symtab.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
             "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}(__UDB_XLEN)"
           else
             "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}()"
@@ -167,7 +196,8 @@ module Idl
     end
   end
 
-  class FunctionDefAst
+  class FunctionDefAst < AstNode
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_return_type(symtab)
       if templated?
         template_names.each_with_index do |tname, idx|
@@ -194,6 +224,7 @@ module Idl
       cpp
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c_return_type(symtab)
       if @return_type_nodes.empty?
         "void"
@@ -204,13 +235,14 @@ module Idl
       end
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_cpp_argument_list(symtab)
       symtab.push(self)
       apply_template_and_arg_syms(symtab)
 
       list = @argument_nodes.map do |arg|
         written = (builtin? || generated?) || body.written?(symtab, arg.name)
-        "#{written ? '' : 'const'} #{arg.gen_cpp(symtab, 0, ref: !written)}"
+        "#{written ? '' : 'const'} #{T.cast(arg, VariableDeclarationAst).gen_cpp_maybe_ref(symtab, 0, ref: !written)}"
       end.join(", ")
 
       symtab.pop
@@ -218,6 +250,7 @@ module Idl
       list
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c_argument_list(symtab)
       symtab.push(self)
       apply_template_and_arg_syms(symtab)
@@ -231,6 +264,7 @@ module Idl
       list
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_cpp_template(symtab)
       if !templated?
         ""
@@ -244,7 +278,17 @@ module Idl
       end
     end
 
-    def gen_cpp_prototype(symtab, indent, indent_spaces: 2, qualifiers: "", include_semi: true, cpp_class: nil)
+    sig {
+      params(
+        symtab: SymbolTable,
+        indent: Integer,
+        indent_spaces: Integer,
+        qualifiers: String,
+        include_semi: T::Boolean,
+        cpp_class: T.nilable(String)
+      ).returns(String)
+    }
+    def gen_cpp_prototype(symtab, indent = 2, indent_spaces: 2, qualifiers: "", include_semi: true, cpp_class: nil)
       scope = cpp_class.nil? ? "" : "#{cpp_class}::"
       <<~PROTOTYPE
         #{' ' * indent}#{gen_cpp_template(symtab)}
@@ -253,8 +297,9 @@ module Idl
     end
   end
 
-  class CsrSoftwareWriteAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class CsrSoftwareWriteAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       # csr isn't known at runtime for sw_write...
       csr_obj = csr.csr_def(symtab)
       if csr_obj.nil?
@@ -265,26 +310,30 @@ module Idl
     end
   end
 
-  class FieldAccessExpressionAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class FieldAccessExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}#{obj.gen_cpp(symtab, 0, indent_spaces: )}.#{@field_name}"
     end
   end
 
-  class FieldAssignmentAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
-      "#{field_access.gen_cpp(symtab, 0, indent_spaces:)} = #{write_value.gen_cpp(symtab, 0, indent_spaces:)}"
+  class FieldAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
+      "#{id.gen_cpp(symtab, 0, indent_spaces:)}.#{@field_name} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
     end
   end
 
-  class ConcatenationExpressionAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class ConcatenationExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}concat(#{expressions.map { |e| e.gen_cpp(symtab, 0, indent_spaces: )}.join(', ')})"
     end
   end
 
-  class BitsCastAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class BitsCastAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       t = expr.type(symtab)
       width =
         if t.kind == :enum_ref
@@ -302,17 +351,19 @@ module Idl
     end
   end
 
-  class EnumCastAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class EnumCastAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}#{enum_name.gen_cpp(symtab, 0, indent_spaces:)}{#{expression.gen_cpp(symtab, 0, indent_spaces: )}}"
     end
   end
 
-  class CsrFieldAssignmentAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class CsrFieldAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
 
       field  = csr_field.field_def(symtab)
-      if symtab.cfg_arch.multi_xlen? && field.dynamic_location?
+      if symtab.multi_xlen? && field.dynamic_location?
         "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
         "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
@@ -320,37 +371,43 @@ module Idl
     end
   end
 
-  class EnumRefAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class EnumRefAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}#{class_name}::#{member_name}"
     end
   end
 
-  class EnumSizeAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class EnumSizeAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}#{value(symtab)}"
     end
   end
 
-  class EnumElementSizeAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class EnumElementSizeAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}#{value(symtab)}"
     end
   end
 
-  class EnumArrayCastAst
-    def gen_cpp(symtab, indent, indent_spaces: 2)
+  class EnumArrayCastAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       "#{' '*indent}std::array<Bits<#{enum_class.type(symtab).width}>, #{enum_class.type(symtab).element_names.size}> {#{enum_class.type(symtab).element_values.map(&:to_s).join(', ')}}"
     end
   end
 
-  class ParenExpressionAst
+  class ParenExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
-  class IntLiteralAst
+  class IntLiteralAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       v = value(symtab)
       w = width(symtab)
@@ -364,10 +421,12 @@ module Idl
     end
   end
 
-  class IdAst
+  class IdAst < AstNode
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c(symtab)
       text_value
     end
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       var = symtab.get(text_value)
 
@@ -391,13 +450,15 @@ module Idl
     end
   end
 
-  class SignCastAst
+  class SignCastAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).make_signed()"
     end
   end
 
-  class AryRangeAccessAst
+  class AryRangeAccessAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       value_result = value_try do
         return "#{' '*indent}extract<#{lsb.value(symtab)}, #{msb.value(symtab) - lsb.value(symtab) + 1}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
@@ -409,7 +470,8 @@ module Idl
     end
   end
 
-  class VariableDeclarationAst
+  class VariableDeclarationAst < AstNode
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c(symtab)
       add_symbol(symtab)
       if ary_size.nil?
@@ -426,7 +488,9 @@ module Idl
         cpp
       end
     end
-    def gen_cpp(symtab, indent = 0, indent_spaces: 2, ref: false)
+
+    sig { params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer, ref: T::Boolean).returns(String) }
+    def gen_cpp_maybe_ref(symtab, indent = 0, indent_spaces: 2, ref: false)
       add_symbol(symtab)
       if ary_size.nil?
         "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)}#{ref ? '&' : ''} #{id.gen_cpp(symtab, 0, indent_spaces:)}"
@@ -441,22 +505,30 @@ module Idl
         cpp
       end
     end
+
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      gen_cpp_maybe_ref(symtab, indent, indent_spaces:, ref: false)
+    end
   end
 
-  class MultiVariableDeclarationAst
+  class MultiVariableDeclarationAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       add_symbol(symtab)
       "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{var_name_nodes.map { |var| var.gen_cpp(symtab, 0, indent_spaces:) }.join(', ')}"
     end
   end
 
-  class TernaryOperatorExpressionAst
+  class TernaryOperatorExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' ' * indent}(#{condition.gen_cpp(symtab, 0, indent_spaces:)}) ? static_cast<#{type(symtab).to_cxx}>(#{true_expression.gen_cpp(symtab, 0, indent_spaces:)}) : static_cast<#{type(symtab).to_cxx}>(#{false_expression.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
-  class BuiltinTypeNameAst
+  class BuiltinTypeNameAst < AstNode
+    sig { params(symtab: SymbolTable).returns(String) }
     def gen_c(symtab)
       if @type_name == "Bits"
         result = ""
@@ -491,6 +563,7 @@ module Idl
       end
     end
 
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @type_name == "Bits"
         result = ""
@@ -511,7 +584,7 @@ module Idl
         end
         result
       elsif @type_name == "XReg"
-        "#{' '*indent}Bits<#{symtab.cfg_arch.possible_xlens.max}>"
+        "#{' '*indent}Bits<#{symtab.possible_xlens.max}>"
       elsif @type_name == "Boolean"
         "#{' '*indent}bool"
       elsif @type_name == "U32"
@@ -526,7 +599,8 @@ module Idl
     end
   end
 
-  class ForLoopAst
+  class ForLoopAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       # lines = ["#{' '*indent}for pass:[(]#{init.gen_cpp(0, indent_spaces:)}; #{condition.gen_cpp(0, indent_spaces:)}; #{update.gen_cpp(0, indent_spaces:)}) {"]
       lines = []
@@ -547,7 +621,8 @@ module Idl
     end
   end
 
-  class BuiltinVariableAst
+  class BuiltinVariableAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       case name
       when "$encoding"
@@ -560,7 +635,8 @@ module Idl
     end
   end
 
-  class VariableDeclarationWithInitializationAst
+  class VariableDeclarationWithInitializationAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       add_symbol(symtab)
       if ary_size.nil?
@@ -576,7 +652,8 @@ module Idl
     end
   end
 
-  class AryElementAccessAst
+  class AryElementAccessAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if var.type(symtab).integral?
         if index.constexpr?(symtab) && var.type(symtab).width != :unknown
@@ -595,7 +672,8 @@ module Idl
     end
   end
 
-  class BinaryExpressionAst
+  class BinaryExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if op == ">>>"
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
@@ -619,19 +697,22 @@ module Idl
     end
   end
 
-  class VariableAssignmentAst
+  class VariableAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
     end
   end
 
-  class PcAssignmentAst
+  class PcAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}__UDB_SET_PC(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
-  class AryElementAssignmentAst
+  class AryElementAssignmentAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if lhs.text_value.start_with?("X")
         #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
@@ -645,19 +726,22 @@ module Idl
     end
   end
 
-  class StatementAst
+  class StatementAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' ' * indent}#{action.gen_cpp(symtab, 0, indent_spaces:)};"
     end
   end
 
-  class UnaryOperatorExpressionAst
+  class UnaryOperatorExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}#{op}(#{exp.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
-  class ReturnStatementAst
+  class ReturnStatementAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression =
         if return_value_nodes.empty?
@@ -674,7 +758,8 @@ module Idl
     end
   end
 
-  class ReplicationExpressionAst
+  class ReplicationExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       result = ""
       value_result = value_try do
@@ -687,7 +772,8 @@ module Idl
     end
   end
 
-  class ConditionalStatementAst
+  class ConditionalStatementAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = <<~IF
         if (#{condition.gen_cpp(symtab, 0, indent_spaces:)}) {
@@ -698,13 +784,15 @@ module Idl
     end
   end
 
-  class ArrayLiteralAst
+  class ArrayLiteralAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "{#{element_nodes.map { |e| e.gen_cpp(symtab, 0) }.join(', ')}}"
     end
   end
 
-  class FunctionCallExpressionAst
+  class FunctionCallExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if name == "ary_includes?"
         # special case
@@ -740,28 +828,32 @@ module Idl
     end
   end
 
-  class ArraySizeAst
+  class ArraySizeAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size()"
     end
   end
 
-  class FunctionBodyAst
+  class FunctionBodyAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       statements.map{ |s| "#{' ' * indent}#{s.gen_cpp(symtab, 0, indent_spaces:)}" }.join("\n")
     end
   end
 
-  class CsrFieldReadExpressionAst
+  class CsrFieldReadExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_def(symtab).name}).#{@field_name}()._hw_read()"
     end
   end
 
-  class CsrReadExpressionAst
+  class CsrReadExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       csr = csr_def(symtab)
-      if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
+      if symtab.multi_xlen? && csr.format_changes_with_xlen?
         "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
       else
         "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
@@ -769,7 +861,8 @@ module Idl
     end
   end
 
-  class IfAst
+  class IfAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = []
       cpp << "if (#{if_cond.gen_cpp(symtab, 0, indent_spaces:)}) {"

@@ -1,0 +1,48 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: czero.eqz
+long_name: Conditional zero, if condition is equal to zero
+description: |
+  If rs2 contains the value zero, this instruction writes the value zero to rd. Otherwise, this instruction
+  copies the contents of rs1 to rd.
+  This instruction carries a syntactic dependency from both rs1 and rs2 to rd. Furthermore, if the Zkt
+  extension is implemented, this instruction's timing is independent of the data values in rs1 and rs2.
+definedBy: Zicond
+assembly: xd, xs1, xs2
+encoding:
+  match: 0000111----------101-----0110011
+  variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |
+  X[rd] = (X[rs2] == 0) ? 0 : X[rs1];
+
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
+sail(): |
+  {
+    let value = X(rs1);
+    let condition = X(rs2);
+    let result : xlenbits = if (condition == zeros()) then zeros()
+  						    else value;
+    X(rd) = result;
+    RETIRE_SUCCESS
+  }
+
+# SPDX-SnippetEnd

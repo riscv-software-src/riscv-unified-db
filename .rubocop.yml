@@ -1,4 +1,11 @@
-require: rubocop-minitest
+plugins:
+  - rubocop-minitest
+  - rubocop-performance
+  - rubocop-sorbet
+
+inherit_gem:
+  rubocop-github:
+    - config/default.yml
 
 AllCops:
   TargetRubyVersion: 3.2.3

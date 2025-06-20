@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "udb_helpers/backend_helpers"
 require "ruby-prof"
 
 # fill out templates for every csr, inst, ext, and func
@@ -7,15 +8,13 @@ require "ruby-prof"
   rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |tname|
     [
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
-      "#{$root}/lib/cfg_arch.rb",
-      "#{$root}/lib/idl/passes/gen_adoc.rb",
       __FILE__,
       "#{$root}/.stamps"
     ]
   } do |t|
     config_name = Pathname.new(t.name).basename(".stamp").sub("adoc-gen-#{type}s-", "")
 
-    cfg_arch = cfg_arch_for(config_name)
+    cfg_arch = $resolver.cfg_arch_for(config_name.to_s)
     adoc_template_path = CFG_HTML_DOC_DIR / "templates" / "#{type}.adoc.erb"
     adoc_template = adoc_template_path.read
     erb = ERB.new(adoc_template, trim_mode: "-")
@@ -29,14 +28,14 @@ require "ruby-prof"
       cfg_arch.transitive_implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
+        File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "inst"
       cfg_arch.transitive_implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
         puts "  Generating #{path}"
         # RubyProf.start
-        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
+        File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
         # result = RubyProf.stop
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
@@ -45,13 +44,13 @@ require "ruby-prof"
         ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
+        File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "func"
       global_symtab = cfg_arch.symtab
       path = dir_path / "funcs.adoc"
       puts "  Generating #{path}"
-      File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
+      File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
     else
       raise "todo"
     end
@@ -72,7 +71,7 @@ require "ruby-prof"
 
     config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-    cfg_arch = cfg_arch_for(config_name)
+    cfg_arch = $resolver.cfg_arch_for(config_name.to_s)
 
     lines = [
       "= Implemented #{to_long[type]}",
@@ -106,7 +105,7 @@ require "ruby-prof"
       raise "Unsupported type"
     end
 
-    File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(lines.join("\n")))
+    File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(lines.join("\n")))
   end
 end
 
@@ -116,7 +115,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => [
 ] do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name.to_s)
 
   puts "Generating landing page for #{config_name}"
   erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")

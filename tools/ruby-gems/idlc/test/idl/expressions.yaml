@@ -1,0 +1,476 @@
+# yaml-language-server: $schema=expression_schema.json
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+schema: expression_schema.json#
+tests:
+  ###################################################
+  # Integer literals
+  ###################################################
+  - e: "0"
+    =: 1'd0
+    d: C-style 0
+
+  - e: "0xf"
+    =: 4'd15
+    d: C-style hex
+
+  - e: "0xF"
+    =: 4'd15
+    d: C-style hex, caps
+
+  - e: "077"
+    =: 7'd63
+    d: C-style octal
+
+  - e: "0b1010"
+    =: 4'd10
+    d: C-style binary
+
+  - e: "0xfs"
+    =: 5'sd15
+    d: C-style hex, signed
+
+  - e: "0xF"
+    =: 4'd15
+    d: C-style hex, caps
+
+  - e: $width(0)
+    =: 1'd1
+    d: Literal width of 0 is defined to be 1
+
+  - e: $width(1)
+    =: 1'd1
+    d: Literal width is minimum to express the value
+
+  - e: $width(2'd1)
+    =: 2'd2
+    d: Literal width is explicit
+
+  ###################################################
+  # Basic addition
+  ###################################################
+
+  - e: 4'd1 + 4'd3
+    =: 4'd4
+    d: Non-widening addition
+
+  - e: 4'd1 + -2'd1
+    =: 4'd4
+    d: Addition with implicit widening cast of RHS
+    w: -2'd1 is truncated due to insufficient bit width (from -1 to 3 on line 1)
+
+  - e: 2'd1 + 4'd3
+    =: 4'd4
+    d: Addition with implicit widening cast of LHS
+
+  - e: 4'sd1 + 4'sd3
+    =: 4'sd4
+    d: Non-widening signed addition
+
+  - e: 4'sd1 + -2'sd1
+    =: 4'sd0
+    d: Signed addition with implicit widening cast of RHS
+
+  - e: 2'sd1 + 4'sd3
+    =: 4'sd4
+    d: Signed addition with implicit widening cast of LHS
+
+  - e: $width(1 + 1)
+    =: 1'd1
+    d: Addition result is max width of LHS and RHS
+
+  - e: $width(1 + 1 + 1)
+    =: 1'd1
+    d: Chained addition result is max width of all operands
+    w: "WARNING: The value of '1 + 1' (true, true) is truncated from 2 to 0 because the result is only 1 bits"
+
+  - e: 1 + 1 + 1
+    =: 1'd1
+    d: Chained addition with truncation ((1'd1 + 1'd1 == 1'd0) + 1'd1) == 1'd1
+    w: "WARNING: The value of '1 + 1' (true, true) is truncated from 2 to 0 because the result is only 1 bits"
+
+  - e: 1 + 1 + 2'd1
+    =: 2'd1
+    d: Chained addition with truncation ((1'd1 + 1'd1 == 1'd0) + 2'd1) == 1'd1
+    w: "WARNING: The value of '1 + 1' (true, true) is truncated from 2 to 0 because the result is only 1 bits"
+
+  - e: 2'd1 + 1 + 1
+    =: 2'd3
+    d: Chained addition with truncation ((2'd1 + 1'd1 == 2'd2) + 1'd1) == 2'd3
+    w: "WARNING: The value of '1 + 1' (true, true) is truncated from 2 to 0 because the result is only 1 bits"
+
+  ###################################################
+  # Basic subtraction
+  ###################################################
+
+  - e: 8'd4 - 8'd3 - 8'd1
+    =: 8'd0
+    d: Chained subtraction
+
+  - e: 8'd4 - (8'd3 - 8'd1)
+    =: 8'd2
+    d: Chained subtraction, with parens
+
+  ###################################################
+  # Mixed operation
+  ###################################################
+
+  - e: 8'5 - 8'd3 + 8'd2
+    =: 8'd4
+    d: Addition and subtraction have the same precedence
+
+  - e: 8'5 + 8'd3 - 8'd8
+    =: 8'd0
+    d: Addition and subtraction have the same precedence
+
+  - e: 8'5 - (8'd3 + 8'd2)
+    =: 8'd0
+    d: Override Addition and subtraction have the same precedence
+
+  - e: 8'd5 + 8'd3 * 8'd2
+    =: 8'd11
+    d: Mulitplication is higher precedence than addition
+
+  - e: (8'd5 + 8'd3) * 8'd2
+    =: 8'd16
+    d: Override multiplication precedence over addition
+
+  - e: 8'd5 - 8'd3 * 8'd2
+    =: 8'd255
+    d: Mulitplication is higher precedence than subtraction
+
+  - e: (8'd5 - 8'd3) * 8'd2
+    =: 8'd4
+    d: Override multiplication precedence over subtraction
+
+  ###################################################
+  # Ternary operator
+  ###################################################
+
+  - e: "true ? 1'd0 : 1'd1"
+    =: 1'd0
+    d: Ternary operator
+
+  - e: "false ? 1'd0 : 1'd1"
+    =: 1'd1
+    d: Ternary operator
+
+  - e: "true ? (false ? 1'd0 : 1'd1) : 2'd2"
+    =: 1'd1
+    d: Nested ternary operator
+
+  - e: "true ? false ? 1'd0 : 1'd1 : 2'd2"
+    =: 1'd1
+    d: Ternary operator is right-associative
+
+  ###################################################
+  # Widening addition
+  ###################################################
+
+  - e: 4'd1 `+ 4'd3
+    =: 4'd4
+    d: Widening addition
+
+  - e: 4'd1 `+ -2'd1
+    =: 4'd4
+    d: Widening addition with implicit widening cast of RHS
+    w: -2'd1 is truncated due to insufficient bit width (from -1 to 3 on line 1)
+
+  - e: 2'd1 `+ 4'd3
+    =: 4'd4
+    d: Widening addition with implicit widening cast of LHS
+
+  - e: 4'sd1 `+ 4'sd3
+    =: 4'sd4
+    d: Widening signed addition
+
+  - e: 4'sd1 `+ -2'sd1
+    =: 4'sd0
+    d: Signed addition with implicit widening cast of RHS
+
+  - e: 2'sd1 `+ 4'sd3
+    =: 4'sd4
+    d: Signed addition with implicit widening cast of LHS
+
+  - e: $width(1 `+ 1)
+    =: 2'd2
+    d: Widening addition result is max width of LHS and RHS, plus 1
+
+  - e: $width(1 `+ 1 `+ 1)
+    =: 2'd3
+    d: Chained widening addition result is max width of all operands, plus 1 each time
+
+  - e: 1 `+ 1 `+ 1
+    =: 3'd3
+    d: Chained widening addition without truncation
+
+  - e: 1 `+ 1 `+ 2'd1
+    =: 4'd3
+    d: Chained addition without truncation
+
+  - e: 2'd1 `+ 1 `+ 1
+    =: 4'd3
+    d: Chained addition without truncation
+
+  ###################################################
+  # left shift
+  ###################################################
+
+  - e: 8'd1 << 8'd1
+    =: 8'd2
+    d: Left shift
+
+  - e: 1 << 1
+    =: 1'd0
+    d: Truncated left shift
+
+  - e: 1 `<< 1
+    =: 2'd2
+    d: Widening left shift
+
+  ###################################################
+  # right logical shift
+  ###################################################
+
+  - e: 8'd2 >> 8'd1
+    =: 8'd1
+    d: Right shift
+
+  - e: 8'd255 >> 8'd1
+    =: 8'd127
+    d: Right logical shift
+
+  ###################################################
+  # right arithmetic shift
+  ###################################################
+
+  - e: 8'd255 >>> 8'd0
+    =: 8'd255
+    d: Identity right arithmetic shift
+
+  - e: 8'd255 >>> 8'd1
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd2
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd3
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd4
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd5
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd6
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd7
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd8
+    =: 8'd255
+    d: Right arithmetic shift in ones
+
+  - e: 8'd255 >>> 8'd9
+    =: 8'd255
+    d: Right arithmetic shift in ones, shift is too wide (ok, still defined)
+
+  - e: 8'd127 >>> 8'd0
+    =: 8'd127
+    d: Identity right arithmetic shift
+
+  - e: 8'd127 >>> 8'd1
+    =: 8'd63
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd2
+    =: 8'd31
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd3
+    =: 8'd15
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd4
+    =: 8'd7
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd5
+    =: 8'd3
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd6
+    =: 8'd1
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd7
+    =: 8'd0
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd8
+    =: 8'd0
+    d: Right arithmetic shift in zeros
+
+  - e: 8'd127 >>> 8'd9
+    =: 8'd0
+    d: Right arithmetic shift in zeros, shift is too wide (ok, still defined)
+
+  - e: 9'd511 >>> 8'd0
+    =: 9'd511
+    d: Identity right arithmetic shift, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd1
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd2
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd3
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd4
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd5
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd6
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd7
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd8
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd511 >>> 8'd9
+    =: 9'd511
+    d: Right arithmetic shift in ones, non-power-of-two width, shift is too wide (ok, still defined)
+
+  - e: 9'd255 >>> 8'd0
+    =: 9'd255
+    d: Identity right arithmetic shift, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd1
+    =: 9'd127
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd2
+    =: 9'd63
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd3
+    =: 9'd31
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd4
+    =: 9'd15
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd5
+    =: 9'd7
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd6
+    =: 9'd3
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd7
+    =: 9'd1
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd8
+    =: 9'd0
+    d: Right arithmetic shift in ones, non-power-of-two width
+
+  - e: 9'd255 >>> 8'd9
+    =: 9'd0
+    d: Right arithmetic shift in ones, non-power-of-two width, shift is too wide (ok, still defined)
+
+  ###########################################################
+  # Logical
+  ###########################################################
+
+  - e: true && true
+    =: "true"
+    d: Logical and
+
+  - e: true && false
+    =: "false"
+    d: Logical and
+
+  - e: false && true
+    =: "false"
+    d: Logical and
+
+  - e: false && false
+    =: "false"
+    d: Logical and
+
+  - e: true || true
+    =: "true"
+    d: Logical or
+
+  - e: true || false
+    =: "true"
+    d: Logical or
+
+  - e: false || true
+    =: "true"
+    d: Logical or
+
+  - e: false || false
+    =: "false"
+    d: Logical or
+
+  - e: 2'd1 == 2'd1
+    =: "true"
+    d: Equality
+
+  - e: 2'd1 == 3'd1
+    =: "true"
+    d: Equality, width does not matter
+
+  - e: 2 + 1 == 3
+    =: "true"
+    d: Equality, lower precedence than addition
+
+  - e: 2 + 1 == 1
+    =: "false"
+    d: Equality, lower precedence than addition
+
+  - e: 2'd1 != 2'd1
+    =: "false"
+    d: Inequality
+
+  - e: 2'd1 != 3'd1
+    =: "false"
+    d: Inequality, width does not matter
+
+  - e: 2 + 1 != 3
+    =: "false"
+    d: Inequality, lower precedence than addition
+
+  - e: 2 + 1 != 1
+    =: "true"
+    d: Inequality, lower precedence than addition

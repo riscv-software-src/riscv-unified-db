@@ -3,16 +3,16 @@
 # Generate
 
 require "write_xlsx"
-require_relative $root / "lib" / "architecture"
+require "udb/architecture"
 
 # @param presence [String] Can be nil
 # @return [String] m=mandatory, o=optional, n=not present
 def presence2char(presence)
   raise ArgumentError, "Expecting String but got class #{presence}" unless presence.is_a?(String)
 
-  if presence == Presence.mandatory
+  if presence == Udb::Presence.mandatory
     "m"
-  elsif presence == Presence.optional
+  elsif presence == Udb::Presence.optional
     "o"
   elsif presence == '-'
     "n"
@@ -24,7 +24,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
 
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
@@ -39,9 +39,9 @@ def arch2ext_table(arch)
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Implied By\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Incompatible\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implied By", formatter: "textarea", sorter: "alphanum"},
+      {name: "Requires", formatter: "textarea", sorter: "alphanum"},
+      {name: "Incompatible", formatter: "textarea", sorter: "alphanum"},
       {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
       {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       sorted_profile_releases.map do |pr|
@@ -55,14 +55,12 @@ def arch2ext_table(arch)
 
   arch.extensions.sort_by!(&:name).each do |ext|
     row = [
-      ext.name,
-      ext.long_name,
-      ext.compact_priv_type,
-      "UDB Missing",
-      # See https://github.com/riscv-software-src/riscv-unified-db/issues/597 for the next 2 columns.
-      ext.max_version.implied_by.map(&:name),
-      # ext.max_version.transitive_conflicts.map(&:name),
-      "UDB MISSING",
+      ext.name,           # Name
+      ext.long_name,      # Description
+      ext.compact_priv_type,  # IC
+      ext.max_version.implied_by.map(&:name),  # Implied By
+      ext.max_version.requirement_condition.empty? ? "" : ext.max_version.requirement_condition.to_logic_tree.to_s, # Requires
+      ext.conflicts_condition.empty? ? "" : ext.conflicts_condition.to_logic_tree.to_s, # Incompatible
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -355,7 +353,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to ext_table data structure
@@ -401,7 +399,7 @@ end
 # param [Architecture] arch
 # return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
 def get_sorted_profile_releases(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
 
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)

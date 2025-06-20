@@ -1,0 +1,58 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Shvstvala
+long_name: vstval profile requirements
+description: |
+  vstval must be written with the faulting virtual address
+  for load, store, and instruction page-fault, access-fault, and
+  misaligned exceptions, and for breakpoint exceptions other than
+  those caused by execution of the `ebreak` or `c.ebreak` instructions.
+  For virtual-instruction and illegal-instruction exceptions, vstval must be written with the
+  faulting instruction.
+
+  [NOTE]
+  This extension was ratified with the RVA22 profiles.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      REPORT_VA_IN_VSTVAL_ON_BREAKPOINT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT:
+        schema:
+          const: true
+      REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION:
+        schema:
+          const: true

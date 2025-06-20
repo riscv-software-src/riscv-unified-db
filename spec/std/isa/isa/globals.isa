@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 %version: 1.0
 
 include "builtin_functions.idl"
@@ -1246,7 +1249,7 @@ function access_check {
   }
   body {
     # check if this is a valid physical address
-    if (paddr > ((1 << PHYS_ADDR_WIDTH) - access_size)) {
+    if (paddr > ((1 `<< PHYS_ADDR_WIDTH) - access_size)) {
       raise(fault_type, from_mode, vaddr);
     }
 
@@ -2477,7 +2480,7 @@ function misaligned_is_atomic? {
         in_naturally_aligned_region?<128>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG8, physical_address, N) &&
-                in_naturally_aligned_region?<4>(physical_address, N)) {
+                in_naturally_aligned_region?<64>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG4, physical_address, N) &&
                 in_naturally_aligned_region?<32>(physical_address, N)) {

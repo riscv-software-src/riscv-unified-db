@@ -1,4 +1,4 @@
-= RISC-V Unified Database (UnifiedDB/UDB)
+image::doc/udb.svg[UDB banner]
 
 image::https://api.reuse.software/badge/github.com/riscv-software-src/riscv-unified-db[REUSE status, link="https://api.reuse.software/info/github.com/riscv-software-src/riscv-unified-db"]
 
@@ -23,8 +23,8 @@ That said, the following data has been validated against third-party sources:
 ** xref:doc/idl.adoc[ISA Description Language (IDL)]
 ** xref:doc/ruby.adoc[Ruby database interface]
 * How-to/recipes
-** xref:CONTRIBUTING[Contribution guidelines]
-** xref:doc/templates[Data templates]
+** xref:CONTRIBUTING.adoc[Contribution guidelines]
+** xref:doc/data-templates.adoc[Data templates]
 ** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
 
 == Overview
@@ -44,16 +44,17 @@ https://lf-riscv.atlassian.net/wiki/x/iwCsCw?atlOrigin=eyJpIjoiYzU3N2ZiNDViMGRkN
 
 The following directories contain information relevant to most users of UnifiedDB
 
-* `arch`: The RISC-V standard
-* `arch_overlay`: Non-standard RISC-V extensions
+* `data`: Holds all data specification files, along with their schemas
+* `data/arch`: The RISC-V standard
+* `data/arch_overlay`: Non-standard RISC-V extensions
+* `data/schemas`: Data schemas for the specification content
 * `cfgs`: Configurations used by backends to customize generated outputs
-* `schemas`: Data schemas for the content in `arch`
 
 Additionally, developers will be interested in the following:
 
 * `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
+* `tools/gems`: Ruby gem libraries for interacting with UDB / IDL
 * `bin`: Wrapper scripts to run commands within the container environment
-* `lib`: Scripts (mostly Ruby) to read/interact with UDB data
 
 == Getting Started
 

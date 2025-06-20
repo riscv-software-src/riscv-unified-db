@@ -11,6 +11,8 @@ path = [
     "cfgs/**",
     "container.def",
     "do",
+    "doc/data-templates.adoc",
+    "doc/riscv-opcodes-migration.adoc",
     "docs/**",
     "Gemfile.lock",
     "Gemfile",
@@ -21,7 +23,7 @@ path = [
     "Rakefile",
     "README.adoc",
     "requirements.txt",
-    "schemas/**",
+    "spec/schemas/**",
 ]
 SPDX-FileCopyrightText = [
     "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
@@ -37,15 +39,14 @@ path = [
     "doc/idl.adoc",
     "doc/ruby.adoc",
     "doc/schemas.adoc",
-    "doc/prose_schema.adoc"
+    "doc/prose-schema.adoc"
 ]
 SPDX-FileCopyrightText = "2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>"
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
 
 [[annotations]]
 path = [
-    "arch/**",
-    "arch_overlay/**",
+    "data/arch_overlay/**",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = [
@@ -59,3 +60,10 @@ SPDX-License-Identifier = [
     # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
     "CC-BY-4.0",
 ]
+
+[[annotations]]
+path = [
+  "doc/udb*.svg"
+]
+SPDX-FileCopyrightText = "Copyright (c) Derek Hower, Paul Clarke"
+SPDX-License-Identifier = "CC0-1.0"

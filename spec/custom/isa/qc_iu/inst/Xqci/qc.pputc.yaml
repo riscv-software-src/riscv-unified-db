@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.pputc
+long_name: Print character passed in register argument pseudo-instruction (hint) working only in simulation environment
+description: |
+  The print character instruction calls simulation environment with `rs1` explicit argument.
+  Simulation environment expected to print the character on its console or standard output.
+  Instruction encoded in I instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisim
+assembly: " xs1"
+base: 32
+encoding:
+  match: 100100000000-----010000000010011
+  variables:
+    - name: rs1
+      location: 19-15
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg func = 4;
+  XReg arg = X[rs1];
+  iss_syscall(func,arg);

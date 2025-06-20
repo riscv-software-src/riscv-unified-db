@@ -1,0 +1,38 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: profile_release_schema.json#
+kind: profile release
+name: RVA23
+long_name: RVA23
+marketing_name: RVA23
+family:
+  $ref: profile_family/RVA.yaml#
+release: 23
+state: ratified # current status ["ratified", "development"]
+ratification_date: "2023-04-03"
+# Semantic versions within the release
+versions:
+  - version: "1.0.0"
+
+introduction: |
+  This profile release targets 64-bit application processors for markets
+  requiring a high-degree of binary compatibility between compliant implementations.
+description: |
+  This profile release is intended to be used for 64-bit application
+  processors running rich OS stacks.  Only user-mode and
+  supervisor-mode profiles are specified in this release.
+
+  NOTE: There is no machine-mode profile currently defined for this release.
+  A machine-mode profile for application processors would only be used in specifying platforms for
+  portable machine-mode software. Given the relatively low volume of
+  portable M-mode software in this domain, the wide variety of potential
+  M-mode code, and the very specific needs of each type of M-mode
+  software, we are not specifying individual M-mode ISA requirements in this release.
+
+  NOTE: Only XLEN=64 application processor profiles are currently defined.
+  It would be possible to also define very similar XLEN=32 variants.
+
+profiles:
+  - { $ref: profile/RVA23U64.yaml# }
+  - { $ref: profile/RVA23S64.yaml# }

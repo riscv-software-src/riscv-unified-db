@@ -111,10 +111,10 @@
     },
     {
       "type": "rdbg",
-      "name": "RVA20",
+      "name": "RVI20",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:profile_release_pdf[RVA20]",
+      "script": "gen:profile_release_pdf[RVI20]",
       "args": [],
       "askParameters": false
     },

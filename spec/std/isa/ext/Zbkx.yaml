@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zbkx
+long_name: Crossbar permutations
+description: |
+  Adds instructions to implement a "lookup table" for 4 and 8 bit elements inside the general purpose
+  registers.
+
+  These instructions are useful for expressing N-bit to N-bit boolean operations, and implementing
+  cryptographic code with secret dependent memory accesses (particularly SBoxes) such that the
+  execution latency does not depend on the (secret) data being operated on.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

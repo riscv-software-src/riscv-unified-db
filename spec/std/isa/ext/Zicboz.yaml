@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zicboz
+long_name: Cache block zero instruction
+description: Cache block zero instruction
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2022-05
+params:
+  CACHE_BLOCK_SIZE:
+    description: |
+      The observable size of a cache block, in bytes
+    also_defined_in: [Zicbom, Zicbop]
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 0xFFFFFFFFFFFFFFFF

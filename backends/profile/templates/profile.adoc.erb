@@ -15,10 +15,10 @@
 [preface]
 == Copyright and license information
 This document is released under the
-<% if profile_class.doc_license.url.nil? -%>
-<%= profile_class.doc_license.name %>.
+<% if profile_family.doc_license.url.nil? -%>
+<%= profile_family.doc_license.name %>.
 <% else -%>
-<%= profile_class.doc_license.url %>[<%= profile_class.doc_license.name %>].
+<%= profile_family.doc_license.url %>[<%= profile_family.doc_license.name %>].
 <% end -%>
 
 <% if profile_release.ratification_date.nil? -%>
@@ -26,7 +26,7 @@ Copyright <%= Date.today.year %>
 <% else -%>
 Copyright <%= profile_release.ratification_date.year %>
 <% end -%>
-by <%= profile_class.company.name %>.
+by <%= profile_family.company.name %>.
 
 <% unless profile_release.contributors.nil? -%>
 [preface]
@@ -263,28 +263,28 @@ are by definition non-profile extensions.  For example, mandatory or
 optional profile extensions for a new profile might be prototyped as
 non-profile extensions on an earlier profile.
 
-== <%= profile_class.name %> Profile Class
+== <%= profile_family.name %> Profile Family
 
-<%= profile_class.introduction %>
+<%= profile_family.introduction %>
 
-=== <%= profile_class.name %> Description
+=== <%= profile_family.name %> Description
 
-<%= profile_class.description %>
+<%= profile_family.description %>
 
-=== <%= profile_class.name %> Naming Scheme
+=== <%= profile_family.name %> Naming Scheme
 
-<%= profile_class.naming_scheme %>
+<%= profile_family.naming_scheme %>
 
 NOTE: Profile names are embeddable into RISC-V ISA naming strings.
 This implies that there will be no standard ISA extension with a name
 that matches the profile naming convention.  This allows tools that
 process the RISC-V ISA naming string to parse and/or process a combined string.
 
-=== <%= profile_class.name %> Profile Releases
+=== <%= profile_family.name %> Profile Releases
 
-The following profile releases are defined in this profile class:
+The following profile releases are defined in this profile family:
 
-<% profile_class.profile_releases.each do |profile_release| -%>
+<% profile_family.profile_releases.each do |profile_release| -%>
 --
 Name:: <%= profile_release.marketing_name %>
 State:: <%= profile_release.state %>
@@ -312,7 +312,7 @@ associated implementation-defined parameters across all its defined profiles.
 
 <%= profile.introduction %>
 
-<% Presence.presence_types.each do |presence_type| -%>
+<% Udb::Presence.presence_types.each do |presence_type| -%>
 
 ==== <%= presence_type.capitalize %> Extensions
 
@@ -350,31 +350,31 @@ associated implementation-defined parameters.
 [appendix]
 == Profile Comparisons
 
-=== <%= profile_class.processor_kind %> Profile Releases
+=== <%= profile_family.processor_kind %> Profile Releases
 
-The <%= profile_class.processor_kind %> processor kind has <%= profile_class.profile_releases_matching_processor_kind.size %> processor
-profile releases that reference a total of <%= profile_class.in_scope_extensions_matching_processor_kind.size %> extensions.
+The <%= profile_family.processor_kind %> processor kind has <%= profile_family.profile_releases_matching_processor_kind.size %> processor
+profile releases that reference a total of <%= profile_family.in_scope_extensions_matching_processor_kind.size %> extensions.
 
 .Extension Presence
 |===
-| Extension | <%= profile_class.profile_releases_matching_processor_kind.map(&:marketing_name).join(" | ") %>
+| Extension | <%= profile_family.profile_releases_matching_processor_kind.map(&:marketing_name).join(" | ") %>
 
-<% profile_class.in_scope_extensions_matching_processor_kind.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_class.profile_releases_matching_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
+<% profile_family.in_scope_extensions_matching_processor_kind.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_family.profile_releases_matching_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
 
-=== <%= profile_class.marketing_name %> Profile Releases
+=== <%= profile_family.marketing_name %> Profile Releases
 
-The <%= profile_class.marketing_name %> Profile Class has <%= profile_class.profile_releases.size %> releases that
-reference a total of <%= profile_class.in_scope_extensions.size %> extensions.
+The <%= profile_family.marketing_name %> Profile Family has <%= profile_family.profile_releases.size %> releases that
+reference a total of <%= profile_family.in_scope_extensions.size %> extensions.
 
 .Extension Presence
 |===
-| Extension | <%= profile_class.profile_releases.map(&:marketing_name).join(" | ") %>
+| Extension | <%= profile_family.profile_releases.map(&:marketing_name).join(" | ") %>
 
-<% profile_class.in_scope_extensions.each do |ext| -%>
-| <%= ext.name %> | <%= profile_class.profile_releases.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
+<% profile_family.in_scope_extensions.each do |ext| -%>
+| <%= ext.name %> | <%= profile_family.profile_releases.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
 
