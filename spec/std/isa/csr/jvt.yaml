@@ -47,22 +47,22 @@ fields:
     sw_write(csr_value): |
       if ((mode() != PrivilegeMode::M) && implemented?(ExtensionName::Smstateen)) {
         if (CSR[mstateen0].JVT == 1'b0) {
-          unimplemented_csr();
+          unimplemented_csr($encoding);
         }
       }
       else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstateen)) {
         if (CSR[sstateen0].JVT == 1'b0) {
-          unimplemented_csr();
+          unimplemented_csr($encoding);
         }
       }
       else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstateen)) {
         if (CSR[hstateen0].JVT == 1'b0) {
-          unimplemented_csr();
+          unimplemented_csr($encoding);
         }
       }
       else if ((mode() == PrivilegeMode::VU) && implemented?(ExtensionName::Ssstateen)) {
         if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
-          unimplemented_csr();
+          unimplemented_csr($encoding);
         }
       }
       else {
