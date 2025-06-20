@@ -110,12 +110,12 @@ namespace udb {
 
     template <typename OtherType>
     Bits<Size> operator>>(const OtherType &shamt) const {
-      return static_cast<BitsType<Size>>(*this) >> _Bits<Size>(shamt);
+      return static_cast<BitsType<Size>>(*this) >> Bits<Size>(shamt);
     }
 
     template <typename OtherType>
     Bits<Size> operator&(const OtherType &other) const {
-      return static_cast<BitsType<Size>>(*this) & _Bits<Size>(other);
+      return static_cast<BitsType<Size>>(*this) & Bits<Size>(other);
     }
 
     BitsType<Bits<Size>::InfinitePrecision> operator<<(const int &shamt) const {
@@ -166,7 +166,7 @@ namespace udb {
   template <unsigned N>
     requires(N >= Size)
   BitfieldMember<ParentSize, Start, Size>::template operator BitfieldMember<ParentSize, Start, Size>::template BitsType<N>() const {
-    return (static_cast<BitsType<ParentSize>>(m_parent) >> _Bits<Size>(Start) & MaximumValue;
+    return (static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue;
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
