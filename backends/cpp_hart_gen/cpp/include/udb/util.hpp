@@ -125,7 +125,7 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BitfieldMemberSize> mask =
-          (static_cast<Bits<BitfieldMemberSize>>(1).template widening_sll<SIZE>()) - 1;
+          (static_cast<Bits<BitfieldMemberSize>>(1).template widening_sll<size>()) - 1;
       return (value >> start) & mask;
     }
   }
@@ -304,7 +304,7 @@ namespace udb {
       return a;
     } else {
       return (PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::Width>{a}
-              << _Bits<ConcatWidth<BitsTypes...>::Width>(ConcatWidth<BitsTypes...>::Width)) |
+              << Bits<ConcatWidth<BitsTypes...>::Width>(ConcatWidth<BitsTypes...>::Width)) |
             __unknown_concat(bits...);
     }
   }
