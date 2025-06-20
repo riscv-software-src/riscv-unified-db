@@ -175,7 +175,7 @@ module Udb
     sig { params(config_path: Pathname).returns(T::Hash[String, T.untyped]) }
     def resolve_config(config_path)
       config_info = cfg_info(config_path)
-      return config_info.resolved_yaml unless config_info.resolved_yaml.nil?
+      return T.must(config_info.resolved_yaml) unless config_info.resolved_yaml.nil?
 
       resolved_config_yaml = T.let({}, T.nilable(T::Hash[String, T.untyped]))
       # write the config with arch_overlay expanded
