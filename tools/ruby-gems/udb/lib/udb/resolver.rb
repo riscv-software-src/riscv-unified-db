@@ -174,19 +174,19 @@ module Udb
     # returns the config data
     sig { params(config_path: Pathname).returns(T::Hash[String, T.untyped]) }
     def resolve_config(config_path)
-      config_info - cfg_info(config_path)
+      config_info = cfg_info(config_path)
       return config_info.resolved_yaml unless config_info.resolved_yaml.nil?
 
       resolved_config_yaml = T.let({}, T.nilable(T::Hash[String, T.untyped]))
       # write the config with arch_overlay expanded
-      if any_newer?(gen_path / "cfgs" / "#{config_name}.yaml", [config_path])
+      if any_newer?(gen_path / "cfgs" / "#{config_info.name}.yaml", [config_path])
         # is there anything to do here? validate?
 
         resolved_config_yaml = config_info.unresolved_yaml.dup
-        resolved_config_yaml["$source"] = config_path.realpath
+        resolved_config_yaml["$source"] = config_path.realpath.to_s
 
         FileUtils.mkdir_p gen_path / "cfgs"
-        File.write(gen_path / "cfgs" / "#{config_name}.yaml", YAML.dump(resolved_config_yaml))
+        File.write(gen_path / "cfgs" / "#{config_info.name}.yaml", YAML.dump(resolved_config_yaml))
       else
         resolved_config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_info.name}.yaml")
       end
@@ -276,6 +276,7 @@ module Udb
       @cfg_archs ||= {}
       return @cfg_archs[config_info.path] if @cfg_archs.key?(config_info.path)
 
+      resolve_config(config_info.path)
       resolve_arch(config_info.unresolved_yaml)
 
       @cfg_archs[config_info.path] = Udb::ConfiguredArchitecture.new(
