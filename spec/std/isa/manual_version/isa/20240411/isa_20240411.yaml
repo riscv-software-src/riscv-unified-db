@@ -1,0 +1,222 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/manual_version_schema.json
+---
+$schema: manual_version_schema.json#
+kind: manual version
+manual: { $ref: manual/isa.yaml# }
+version: "4.0.0-pre"
+name: "isa_20240411"
+long_name: "Release 20240411 of the RISC-V ISA Manuals"
+marketing_version: "20240411"
+state: "development"
+url: https://github.com/riscv/releases/tag/20240411
+uses_isa_manual: true
+isa_manual_tree: "tags/20240411"
+volumes:
+  - title: "RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
+    description: "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
+    authors:
+      - name: Andrew Waterman
+        email: awaterman@sifive.com
+        organization:
+          name: SiFive, Inc.
+          url: https://www.sifive.com/
+    chapters:
+      - src/colophon.adoc
+      - src/intro.adoc
+      - src/rv32.adoc
+      - src/rv32e.adoc
+      - src/rv64.adoc
+      - src/rv128.adoc
+      - src/zifencei.adoc
+      - src/zicsr.adoc
+      - src/counters.adoc
+      - src/zihintntl.adoc
+      - src/zihintpause.adoc
+      - src/zimop.adoc
+      - src/zicond.adoc
+      - src/m-st-ext.adoc
+      - src/a-st-ext.adoc
+      - src/zawrs.adoc
+      - src/zacas.adoc
+      - src/rvwmo.adoc
+      - src/ztso-st-ext.adoc
+      - src/cmo.adoc
+      - src/f-st-ext.adoc
+      - src/d-st-ext.adoc
+      - src/q-st-ext.adoc
+      - src/zfh.adoc
+      - src/zfa.adoc
+      - src/zfinx.adoc
+      - src/c-st-ext.adoc
+      - src/zc.adoc
+      - src/b-st-ext.adoc
+      - src/j-st-ext.adoc
+      - src/p-st-ext.adoc
+      - src/v-st-ext.adoc
+      - src/scalar-crypto.adoc
+      - src/vector-crypto.adoc
+      - src/rv-32-64g.adoc
+      - src/extending.adoc
+      - src/naming.adoc
+      - src/history.adoc
+      - src/mm-eplan.adoc
+      - src/mm-formal.adoc
+      #Appendices for Vector
+      - src/vector-examples.adoc
+      - src/calling-convention.adoc
+      #/End of Vector appendices
+      - src/index.adoc
+    extensions:
+      - { name: I, version: "2.1.0" }
+      - { name: U, version: "1.12.0" }
+      # - { name: E, version: "2.0" }
+      # - { name: RVI64, version: "2.1" }
+      # - { name: RVI128, version: "1.7" }
+      - { name: Zifencei, version: "2.0.0" }
+      - { name: Zicsr, version: "2.0.0" }
+      - { name: Zicntr, version: "2.0.0" }
+      - { name: Zihpm, version: "2.0.0" }
+      - { name: Zihintntl, version: "1.0.0" }
+      - { name: Zihintpause, version: "2.0.0" }
+      - { name: Zimop, version: "2.0.0" }
+      - { name: Zicond, version: "1.0.0" }
+      - { name: M, version: "2.0.0" }
+      - { name: A, version: "2.1.0" }
+      - { name: Zawrs, version: "1.0.1" }
+      - { name: Zacas, version: "1.0.0" }
+      - { name: Zabha, version: "1.0.0" }
+      # - { name: RVWMO, version: "2.0" }
+      - { name: Ztso, version: "1.0.0" }
+      - { name: Zicbom, version: "1.0.0" }
+      - { name: Zicboz, version: "1.0.0" }
+      - { name: Zicbop, version: "1.0.0" }
+      - { name: F, version: "2.2.0" }
+      - { name: D, version: "2.2.0" }
+      # - { name: Q, version: "2.2" }
+      - { name: Zfh, version: "1.0.0" }
+      - { name: Zfhmin, version: "1.0.0" }
+      - { name: Zfbfmin, version: "1.0.0" }
+      - { name: Zvfbfmin, version: "1.0.0" }
+      - { name: Zvfbfwma, version: "1.0.0" }
+      - { name: Zfa, version: "1.0.0" }
+      - { name: Zfinx, version: "1.0.0" }
+      - { name: Zdinx, version: "1.0.0" }
+      - { name: Zhinx, version: "1.0.0" }
+      - { name: C, version: "2.0.0" }
+      - { name: Zca, version: "1.0.0" }
+      - { name: Zcf, version: "1.0.0" }
+      - { name: Zcd, version: "1.0.0" }
+      - { name: Zcb, version: "1.0.0" }
+      - { name: Zcmp, version: "1.0.0" }
+      - { name: Zcmt, version: "1.0.0" }
+      - { name: B, version: "1.0.0" }
+      - { name: Zba, version: "1.0.0" }
+      - { name: Zbb, version: "1.0.0" }
+      - { name: Zbc, version: "1.0.0" }
+      - { name: Zbs, version: "1.0.0" }
+      - { name: Zbkb, version: "1.0.0" }
+      - { name: Zbkc, version: "1.0.0" }
+      - { name: Zbkx, version: "1.0.0" }
+      # - { name: J, version: "0.0" }
+      # - { name: P, version: "0.2" }
+      - { name: V, version: "1.0.0" }
+      - { name: Zvl32b, version: "1.0.0" }
+      - { name: Zvl64b, version: "1.0.0" }
+      - { name: Zvl128b, version: "1.0.0" }
+      - { name: Zvl256b, version: "1.0.0" }
+      - { name: Zvl512b, version: "1.0.0" }
+      - { name: Zvl1024b, version: "1.0.0" }
+      - { name: Zve32x, version: "1.0.0" }
+      - { name: Zve32f, version: "1.0.0" }
+      - { name: Zve64x, version: "1.0.0" }
+      - { name: Zve64f, version: "1.0.0" }
+      - { name: Zve64d, version: "1.0.0" }
+      - { name: Zvfhmin, version: "1.0.0" }
+      - { name: Zvfh, version: "1.0.0" }
+      - { name: Zvknha, version: "1.0.0" }
+      - { name: Zvknhb, version: "1.0.0" }
+      - { name: Zknd, version: "1.0.0" }
+      - { name: Zkne, version: "1.0.0" }
+      - { name: Zknh, version: "1.0.0" }
+      - { name: Zksed, version: "1.0.0" }
+      - { name: Zksh, version: "1.0.0" }
+      - { name: Zkr, version: "1.0.0" }
+      - { name: Zkn, version: "1.0.0" }
+      - { name: Zks, version: "1.0.0" }
+      - { name: Zk, version: "1.0.0" }
+      - { name: Zkt, version: "1.0.0" }
+      - { name: Zvbb, version: "1.0.0" }
+      - { name: Zvbc, version: "1.0.0" }
+      - { name: Zvkb, version: "1.0.0" }
+      - { name: Zvkg, version: "1.0.0" }
+      - { name: Zvkned, version: "1.0.0" }
+      - { name: Zvknha, version: "1.0.0" }
+      - { name: Zvknhb, version: "1.0.0" }
+      - { name: Zvksed, version: "1.0.0" }
+      - { name: Zvksh, version: "1.0.0" }
+      - { name: Zvkn, version: "1.0.0" }
+      - { name: Zvknc, version: "1.0.0" }
+      - { name: Zvkng, version: "1.0.0" }
+      - { name: Zvks, version: "1.0.0" }
+      - { name: Zvksc, version: "1.0.0" }
+      - { name: Zvksg, version: "1.0.0" }
+      - { name: Zvkt, version: "1.0.0" }
+      - { name: Zicfilp, version: "1.0.0" }
+      - { name: Zicfiss, version: "1.0.0" }
+    # - { name: Zam, version: "0.1" }
+    changes:
+      - The inclusion of all ratified extensions through March 2024.
+      - The draft Zam extension has been removed, in favor of the definition of a misaligned atomicity granule PMA.
+      - The concept of vacant memory regions has been superseded by inaccessible memory or I/O regions.
+  - title: "RISC-V Instruction Set Manual, Volume II: Privileged ISA"
+    description: "The RISC-V Instruction Set Manual, Volume II: Privileged ISA"
+    authors:
+      - name: Andrew Waterman
+        email: awaterman@sifive.com
+        organization:
+          name: SiFive, Inc.
+          url: https://www.sifive.com/
+    chapters:
+      - src/priv-preface.adoc
+      - src/priv-intro.adoc
+      - src/priv-csrs.adoc
+      - src/machine.adoc
+      - src/smstateen.adoc
+      - src/indirect-csr.adoc
+      - src/smepmp.adoc
+      - src/smcntrpmf.adoc
+      - src/rnmi.adoc
+      - src/smcdeleg.adoc
+      - src/supervisor.adoc
+      - src/sstc.adoc
+      - src/sscofpmf.adoc
+      - src/hypervisor.adoc
+      - src/priv-insns.adoc
+      - src/priv-history.adoc
+      - src/bibliography.adoc
+    extensions:
+      - { name: Smstateen, version: "1.0.0" }
+      - { name: Smcsrind, version: "1.0.0" }
+      - { name: Sscsrind, version: "1.0.0" }
+      - { name: Smepmp, version: "1.0.0" }
+      - { name: Smcntrpmf, version: "1.0.0" }
+      - { name: Smrnmi, version: "0.5.0" }
+      - { name: Smcdeleg, version: "1.0.0" }
+      - { name: S, version: "1.12.0" }
+      - { name: Sm, version: "1.12.0" }
+      - { name: Smhpm, version: "1.12.0" }
+      - { name: Smpmp, version: "1.12.0" }
+      - { name: Sv32, version: "1.12.0" }
+      - { name: Sv39, version: "1.12.0" }
+      - { name: Sv48, version: "1.12.0" }
+      - { name: Sv57, version: "1.12.0" }
+      - { name: Svnapot, version: "1.0.0" }
+      - { name: Svpbmt, version: "1.0.0" }
+      - { name: Svinval, version: "1.0.0" }
+      - { name: Svadu, version: "1.0.0" }
+      - { name: Svvptc, version: "1.0.0" }
+      - { name: Sscofpmf, version: "1.0.0" }
+      - { name: H, version: "1.0.0" }

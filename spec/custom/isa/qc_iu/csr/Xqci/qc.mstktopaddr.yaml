@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: csr_schema.json#
+kind: csr
+name: qc.mstktopaddr
+long_name: Machine Stack Top Limit
+address: 0x7c4
+base: 32
+priv_mode: M
+length: MXLEN
+description: |
+  Stack top limit register. If the stack pointer (sp == x2) greater then its value - SpOutOfRange exception occurs
+definedBy:
+  anyOf:
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
+fields:
+  STKADDR:
+    location: 31-4
+    description: |
+      If the stack pointer (sp == x2) greater then STKADDR*16 - SpOutOfRange exception occurs
+    type: RW
+    reset_value: 0
+  RESERVED:
+    location: 3-0
+    description: Reserved and must be zero
+    type: RO
+    reset_value: 0

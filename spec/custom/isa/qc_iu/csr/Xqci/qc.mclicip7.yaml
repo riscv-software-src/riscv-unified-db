@@ -1,0 +1,179 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+kind: csr
+name: qc.mclicip7
+long_name: IRQ Pending 7
+address: 0x7f7
+length: 32
+priv_mode: M
+base: 32
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+description: |
+  Pending bits for IRQs 224-255
+fields:
+  IRQ224:
+    type: RW
+    reset_value: 0
+    location: 0
+    description: IRQ224 pending
+  IRQ225:
+    type: RW
+    reset_value: 0
+    location: 1
+    description: IRQ225 pending
+  IRQ226:
+    type: RW
+    reset_value: 0
+    location: 2
+    description: IRQ226 pending
+  IRQ227:
+    type: RW
+    reset_value: 0
+    location: 3
+    description: IRQ227 pending
+  IRQ228:
+    type: RW
+    reset_value: 0
+    location: 4
+    description: IRQ228 pending
+  IRQ229:
+    type: RW
+    reset_value: 0
+    location: 5
+    description: IRQ229 pending
+  IRQ230:
+    type: RW
+    reset_value: 0
+    location: 6
+    description: IRQ230 pending
+  IRQ231:
+    type: RW
+    reset_value: 0
+    location: 7
+    description: IRQ231 pending
+  IRQ232:
+    type: RW
+    reset_value: 0
+    location: 8
+    description: IRQ232 pending
+  IRQ233:
+    type: RW
+    reset_value: 0
+    location: 9
+    description: IRQ233 pending
+  IRQ234:
+    type: RW
+    reset_value: 0
+    location: 10
+    description: IRQ234 pending
+  IRQ235:
+    type: RW
+    reset_value: 0
+    location: 11
+    description: IRQ235 pending
+  IRQ236:
+    type: RW
+    reset_value: 0
+    location: 12
+    description: IRQ236 pending
+  IRQ237:
+    type: RW
+    reset_value: 0
+    location: 13
+    description: IRQ237 pending
+  IRQ238:
+    type: RW
+    reset_value: 0
+    location: 14
+    description: IRQ238 pending
+  IRQ239:
+    type: RW
+    reset_value: 0
+    location: 15
+    description: IRQ239 pending
+  IRQ240:
+    type: RW
+    reset_value: 0
+    location: 16
+    description: IRQ240 pending
+  IRQ241:
+    type: RW
+    reset_value: 0
+    location: 17
+    description: IRQ241 pending
+  IRQ242:
+    type: RW
+    reset_value: 0
+    location: 18
+    description: IRQ242 pending
+  IRQ243:
+    type: RW
+    reset_value: 0
+    location: 19
+    description: IRQ243 pending
+  IRQ244:
+    type: RW
+    reset_value: 0
+    location: 20
+    description: IRQ244 pending
+  IRQ245:
+    type: RW
+    reset_value: 0
+    location: 21
+    description: IRQ245 pending
+  IRQ246:
+    type: RW
+    reset_value: 0
+    location: 22
+    description: IRQ246 pending
+  IRQ247:
+    type: RW
+    reset_value: 0
+    location: 23
+    description: IRQ247 pending
+  IRQ248:
+    type: RW
+    reset_value: 0
+    location: 24
+    description: IRQ248 pending
+  IRQ249:
+    type: RW
+    reset_value: 0
+    location: 25
+    description: IRQ249 pending
+  IRQ250:
+    type: RW
+    reset_value: 0
+    location: 26
+    description: IRQ250 pending
+  IRQ251:
+    type: RW
+    reset_value: 0
+    location: 27
+    description: IRQ251 pending
+  IRQ252:
+    type: RW
+    reset_value: 0
+    location: 28
+    description: IRQ252 pending
+  IRQ253:
+    type: RW
+    reset_value: 0
+    location: 29
+    description: IRQ253 pending
+  IRQ254:
+    type: RW
+    reset_value: 0
+    location: 30
+    description: IRQ254 pending
+  IRQ255:
+    type: RW
+    reset_value: 0
+    location: 31
+    description: IRQ255 pending

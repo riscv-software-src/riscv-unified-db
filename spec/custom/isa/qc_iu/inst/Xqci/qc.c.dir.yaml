@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.dir
+long_name: Disable interrupts (Register)
+description: |
+  Globally disable interrupts, write previous value of `mstatus` to `rd`.
+  Equivalent to "csrrci `rd`, `mstatus`, 8".
+  Instruction encoded in CI instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+assembly: " xd"
+base: 32
+encoding:
+  match: 0001-----0000010
+  variables:
+    - name: rd
+      location: 11-7
+      not: 0
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg pre_mstatus = CSR[mstatus].sw_read();
+  CSR[mstatus].MIE = 0;
+  XReg pre_qc_mcause = CSR[qc.mcause].sw_read();
+  CSR[qc.mcause].sw_write(pre_qc_mcause & ~(32'b1<<26));
+  X[rd] = pre_mstatus;

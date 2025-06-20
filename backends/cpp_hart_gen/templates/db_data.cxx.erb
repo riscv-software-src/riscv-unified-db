@@ -3,10 +3,10 @@
 std::map<std::string, std::string> udb::DbData::SCHEMAS = {
       { "schema_defs.json",
   R"SCHEMA(
-  <%= File.read("#{$root}/schemas/schema_defs.json") %>
+  <%= File.read("#{$resolver.schemas_path}/schema_defs.json") %>
   )SCHEMA"
       },
-      <%- Dir.glob("#{$root}/schemas/config*").map do |f| -%>
+      <%- Dir.glob("#{$resolver.schemas_path}/config*").map do |f| -%>
         { "<%= File.basename(f) %>",
   R"SCHEMA(
   <%= File.read(f) %>

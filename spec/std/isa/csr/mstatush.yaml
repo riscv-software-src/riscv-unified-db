@@ -1,0 +1,75 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mstatush
+long_name: Machine Status High
+address: 0x310
+writable: true
+priv_mode: M
+base: 32
+length: 32
+description:
+  The mstatus register tracks and controls the hart's current operating
+  state.
+definedBy:
+  name: Sm
+  version: ">= 1.12"
+fields:
+  MDT:
+    location: 10
+    description: |
+      *Machine Disable Trap*
+
+      Written to 1 when entering M-mode from an exception/interrupt.
+      When returning via an MRET instruction, the bit is written to 0.
+      On reset in set to 1, and software should write it to 0 when boot sequence is done.
+      When mstatush.MDT=1, direct write by CSR instruction cannot set mstatus.MIE to 1.
+    definedBy: Smdbltrp
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  MPV:
+    location: 7
+    description: |
+      *Machine Previous Virtualization mode*
+
+      Written with the prior virtualization mode when entering M-mode from an exception/interrupt.
+      When returning via an MRET instruction, the virtualization mode becomes the value of MPV unless MPP=3, in which case the virtualization mode is always 0.
+      Can also be written by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: H
+  GVA:
+    location: 6
+    description: |
+      *Guest Virtual Address*
+
+      When a trap is taken and a guest virtual address is written into mtval, GVA is set.
+      When a trap is taken and a guest virtual address is written into mtval, GVA is cleared.
+    type: RW-H
+    reset_value: 0
+    definedBy: H
+  MBE:
+    location: 5
+    description: |
+      see `mstatus.MBE`
+    type(): 'return (M_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+    reset_value(): 'return (M_MODE_ENDIANNESS == "big") ? 1 : 0;'
+    alias: mstatus.MBE
+  SBE:
+    location: 4
+    definedBy: S
+    description: |
+      see `mstatus.SBE`
+    type(): 'return (S_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+    reset_value(): |
+      if (S_MODE_ENDIANNESS == "little") {
+        return 0;
+      } else if (S_MODE_ENDIANNESS == "big") {
+        return 1;
+      } else {
+        return UNDEFINED_LEGAL;
+      }

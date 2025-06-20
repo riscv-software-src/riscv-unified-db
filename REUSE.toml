@@ -23,7 +23,7 @@ path = [
     "Rakefile",
     "README.adoc",
     "requirements.txt",
-    "schemas/**",
+    "spec/schemas/**",
 ]
 SPDX-FileCopyrightText = [
     "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
@@ -46,8 +46,7 @@ SPDX-License-Identifier = "BSD-3-Clause-Clear"
 
 [[annotations]]
 path = [
-    "arch/**",
-    "arch_overlay/**",
+    "data/arch_overlay/**",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = [

@@ -1,0 +1,1206 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/H/hcounteren.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: hcounteren
+long_name: Hypervisor Counter Enable
+address: 0x606
+priv_mode: S
+length: 32
+description: |
+  Together with `scounteren`, delegates control of the hardware performance-monitoring counters
+  to VS/VU-mode
+
+  See `cycle` for a table describing how exceptions occur.
+definedBy: H
+fields:
+  CY:
+    location: 0
+    description: |
+      When all of `scounteren.CY`, `mcounteren.CY`, and `hcounteren.CY` are set,
+      the `cycle` CSR (an alias of `mcycle`) is accessible to VU-mode.
+
+      When `mcounteren.CY` and `hcounteren.CY` are set,
+      the `cycle` CSR (an alias of `mcycle`) is accessible to VS-mode.
+
+      When `hcounteren.CY` is clear and `mcounteren.CY` is set, then any access to `cycle` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",cols="1,1,1,4,4"]
+      !===
+      .2+h! [.rotate]#`hcounteren.CY`# .2+h! [.rotate]#`mcounteren.CY`# .2+h! [.rotate]#`scounteren.CY`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    definedBy: Zicntr
+    type(): |
+      if (HCOUNTENABLE_EN[0]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[0]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  TM:
+    location: 1
+    description: |
+      When all of `scounteren.TM`, `mcounteren.TM`, and `hcounteren.TM` are set,
+      the `time` CSR (an alias of `mtime` memory-mapped CSR) is accessible to VU-mode.
+
+      When `mcounteren.TM` and `hcounteren.TM` are set,
+      the `time` CSR (an alias of `mtime`) is accessible to VS-mode.
+
+      When `hcounteren.TM` is clear and `mcounteren.TM` is set, then any access to `time` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    definedBy: Zicntr
+    type(): |
+      if (HCOUNTENABLE_EN[1]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[1]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  IR:
+    location: 2
+    description: |
+      When all of `scounteren.IR`, `mcounteren.IR`, and `hcounteren.IR` are set,
+      the `instret` CSR (an alias of `minstret`) is accessible to VU-mode.
+
+      When `mcounteren.IR` and `hcounteren.IR` are set,
+      the `instret` CSR (an alias of `minstret`) is accessible to VS-mode.
+
+      When `hcounteren.IR` is clear and `mcounteren.IR` is set, then any access to `instret` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[2]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[2]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM3:
+    location: 3
+    description: |
+      When all of `scounteren.HPM3`, `mcounteren.HPM3`, and `hcounteren.HPM3` are set,
+      the `hpmcounter3` CSR (an alias of `mhpmcounter3`) is accessible to VU-mode.
+
+      When `mcounteren.HPM3` and `hcounteren.HPM3` are set,
+      the `hpmcounter3` CSR (an alias of `mhpmcounter3`) is accessible to VS-mode.
+
+      When `hcounteren.HPM3` is clear and `mcounteren.HPM3` is set, then any access to `hpmcounter3` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM3`# .2+h! [.rotate]#`mcounteren.HPM3`# .2+h! [.rotate]#`scounteren.HPM3`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[3]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[3]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM4:
+    location: 4
+    description: |
+      When all of `scounteren.HPM4`, `mcounteren.HPM4`, and `hcounteren.HPM4` are set,
+      the `hpmcounter4` CSR (an alias of `mhpmcounter4`) is accessible to VU-mode.
+
+      When `mcounteren.HPM4` and `hcounteren.HPM4` are set,
+      the `hpmcounter4` CSR (an alias of `mhpmcounter4`) is accessible to VS-mode.
+
+      When `hcounteren.HPM4` is clear and `mcounteren.HPM4` is set, then any access to `hpmcounter4` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM4`# .2+h! [.rotate]#`mcounteren.HPM4`# .2+h! [.rotate]#`scounteren.HPM4`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[4]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[4]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM5:
+    location: 5
+    description: |
+      When all of `scounteren.HPM5`, `mcounteren.HPM5`, and `hcounteren.HPM5` are set,
+      the `hpmcounter5` CSR (an alias of `mhpmcounter5`) is accessible to VU-mode.
+
+      When `mcounteren.HPM5` and `hcounteren.HPM5` are set,
+      the `hpmcounter5` CSR (an alias of `mhpmcounter5`) is accessible to VS-mode.
+
+      When `hcounteren.HPM5` is clear and `mcounteren.HPM5` is set, then any access to `hpmcounter5` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM5`# .2+h! [.rotate]#`mcounteren.HPM5`# .2+h! [.rotate]#`scounteren.HPM5`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[5]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[5]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM6:
+    location: 6
+    description: |
+      When all of `scounteren.HPM6`, `mcounteren.HPM6`, and `hcounteren.HPM6` are set,
+      the `hpmcounter6` CSR (an alias of `mhpmcounter6`) is accessible to VU-mode.
+
+      When `mcounteren.HPM6` and `hcounteren.HPM6` are set,
+      the `hpmcounter6` CSR (an alias of `mhpmcounter6`) is accessible to VS-mode.
+
+      When `hcounteren.HPM6` is clear and `mcounteren.HPM6` is set, then any access to `hpmcounter6` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM6`# .2+h! [.rotate]#`mcounteren.HPM6`# .2+h! [.rotate]#`scounteren.HPM6`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[6]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[6]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM7:
+    location: 7
+    description: |
+      When all of `scounteren.HPM7`, `mcounteren.HPM7`, and `hcounteren.HPM7` are set,
+      the `hpmcounter7` CSR (an alias of `mhpmcounter7`) is accessible to VU-mode.
+
+      When `mcounteren.HPM7` and `hcounteren.HPM7` are set,
+      the `hpmcounter7` CSR (an alias of `mhpmcounter7`) is accessible to VS-mode.
+
+      When `hcounteren.HPM7` is clear and `mcounteren.HPM7` is set, then any access to `hpmcounter7` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM7`# .2+h! [.rotate]#`mcounteren.HPM7`# .2+h! [.rotate]#`scounteren.HPM7`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[7]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[7]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM8:
+    location: 8
+    description: |
+      When all of `scounteren.HPM8`, `mcounteren.HPM8`, and `hcounteren.HPM8` are set,
+      the `hpmcounter8` CSR (an alias of `mhpmcounter8`) is accessible to VU-mode.
+
+      When `mcounteren.HPM8` and `hcounteren.HPM8` are set,
+      the `hpmcounter8` CSR (an alias of `mhpmcounter8`) is accessible to VS-mode.
+
+      When `hcounteren.HPM8` is clear and `mcounteren.HPM8` is set, then any access to `hpmcounter8` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM8`# .2+h! [.rotate]#`mcounteren.HPM8`# .2+h! [.rotate]#`scounteren.HPM8`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[8]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[8]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM9:
+    location: 9
+    description: |
+      When all of `scounteren.HPM9`, `mcounteren.HPM9`, and `hcounteren.HPM9` are set,
+      the `hpmcounter9` CSR (an alias of `mhpmcounter9`) is accessible to VU-mode.
+
+      When `mcounteren.HPM9` and `hcounteren.HPM9` are set,
+      the `hpmcounter9` CSR (an alias of `mhpmcounter9`) is accessible to VS-mode.
+
+      When `hcounteren.HPM9` is clear and `mcounteren.HPM9` is set, then any access to `hpmcounter9` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM9`# .2+h! [.rotate]#`mcounteren.HPM9`# .2+h! [.rotate]#`scounteren.HPM9`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[9]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[9]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM10:
+    location: 10
+    description: |
+      When all of `scounteren.HPM10`, `mcounteren.HPM10`, and `hcounteren.HPM10` are set,
+      the `hpmcounter10` CSR (an alias of `mhpmcounter10`) is accessible to VU-mode.
+
+      When `mcounteren.HPM10` and `hcounteren.HPM10` are set,
+      the `hpmcounter10` CSR (an alias of `mhpmcounter10`) is accessible to VS-mode.
+
+      When `hcounteren.HPM10` is clear and `mcounteren.HPM10` is set, then any access to `hpmcounter10` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM10`# .2+h! [.rotate]#`mcounteren.HPM10`# .2+h! [.rotate]#`scounteren.HPM10`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[10]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[10]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM11:
+    location: 11
+    description: |
+      When all of `scounteren.HPM11`, `mcounteren.HPM11`, and `hcounteren.HPM11` are set,
+      the `hpmcounter11` CSR (an alias of `mhpmcounter11`) is accessible to VU-mode.
+
+      When `mcounteren.HPM11` and `hcounteren.HPM11` are set,
+      the `hpmcounter11` CSR (an alias of `mhpmcounter11`) is accessible to VS-mode.
+
+      When `hcounteren.HPM11` is clear and `mcounteren.HPM11` is set, then any access to `hpmcounter11` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM11`# .2+h! [.rotate]#`mcounteren.HPM11`# .2+h! [.rotate]#`scounteren.HPM11`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[11]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[11]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM12:
+    location: 12
+    description: |
+      When all of `scounteren.HPM12`, `mcounteren.HPM12`, and `hcounteren.HPM12` are set,
+      the `hpmcounter12` CSR (an alias of `mhpmcounter12`) is accessible to VU-mode.
+
+      When `mcounteren.HPM12` and `hcounteren.HPM12` are set,
+      the `hpmcounter12` CSR (an alias of `mhpmcounter12`) is accessible to VS-mode.
+
+      When `hcounteren.HPM12` is clear and `mcounteren.HPM12` is set, then any access to `hpmcounter12` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM12`# .2+h! [.rotate]#`mcounteren.HPM12`# .2+h! [.rotate]#`scounteren.HPM12`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[12]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[12]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM13:
+    location: 13
+    description: |
+      When all of `scounteren.HPM13`, `mcounteren.HPM13`, and `hcounteren.HPM13` are set,
+      the `hpmcounter13` CSR (an alias of `mhpmcounter13`) is accessible to VU-mode.
+
+      When `mcounteren.HPM13` and `hcounteren.HPM13` are set,
+      the `hpmcounter13` CSR (an alias of `mhpmcounter13`) is accessible to VS-mode.
+
+      When `hcounteren.HPM13` is clear and `mcounteren.HPM13` is set, then any access to `hpmcounter13` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM13`# .2+h! [.rotate]#`mcounteren.HPM13`# .2+h! [.rotate]#`scounteren.HPM13`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[13]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[13]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM14:
+    location: 14
+    description: |
+      When all of `scounteren.HPM14`, `mcounteren.HPM14`, and `hcounteren.HPM14` are set,
+      the `hpmcounter14` CSR (an alias of `mhpmcounter14`) is accessible to VU-mode.
+
+      When `mcounteren.HPM14` and `hcounteren.HPM14` are set,
+      the `hpmcounter14` CSR (an alias of `mhpmcounter14`) is accessible to VS-mode.
+
+      When `hcounteren.HPM14` is clear and `mcounteren.HPM14` is set, then any access to `hpmcounter14` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM14`# .2+h! [.rotate]#`mcounteren.HPM14`# .2+h! [.rotate]#`scounteren.HPM14`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[14]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[14]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM15:
+    location: 15
+    description: |
+      When all of `scounteren.HPM15`, `mcounteren.HPM15`, and `hcounteren.HPM15` are set,
+      the `hpmcounter15` CSR (an alias of `mhpmcounter15`) is accessible to VU-mode.
+
+      When `mcounteren.HPM15` and `hcounteren.HPM15` are set,
+      the `hpmcounter15` CSR (an alias of `mhpmcounter15`) is accessible to VS-mode.
+
+      When `hcounteren.HPM15` is clear and `mcounteren.HPM15` is set, then any access to `hpmcounter15` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM15`# .2+h! [.rotate]#`mcounteren.HPM15`# .2+h! [.rotate]#`scounteren.HPM15`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[15]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[15]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM16:
+    location: 16
+    description: |
+      When all of `scounteren.HPM16`, `mcounteren.HPM16`, and `hcounteren.HPM16` are set,
+      the `hpmcounter16` CSR (an alias of `mhpmcounter16`) is accessible to VU-mode.
+
+      When `mcounteren.HPM16` and `hcounteren.HPM16` are set,
+      the `hpmcounter16` CSR (an alias of `mhpmcounter16`) is accessible to VS-mode.
+
+      When `hcounteren.HPM16` is clear and `mcounteren.HPM16` is set, then any access to `hpmcounter16` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM16`# .2+h! [.rotate]#`mcounteren.HPM16`# .2+h! [.rotate]#`scounteren.HPM16`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[16]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[16]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM17:
+    location: 17
+    description: |
+      When all of `scounteren.HPM17`, `mcounteren.HPM17`, and `hcounteren.HPM17` are set,
+      the `hpmcounter17` CSR (an alias of `mhpmcounter17`) is accessible to VU-mode.
+
+      When `mcounteren.HPM17` and `hcounteren.HPM17` are set,
+      the `hpmcounter17` CSR (an alias of `mhpmcounter17`) is accessible to VS-mode.
+
+      When `hcounteren.HPM17` is clear and `mcounteren.HPM17` is set, then any access to `hpmcounter17` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM17`# .2+h! [.rotate]#`mcounteren.HPM17`# .2+h! [.rotate]#`scounteren.HPM17`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[17]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[17]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM18:
+    location: 18
+    description: |
+      When all of `scounteren.HPM18`, `mcounteren.HPM18`, and `hcounteren.HPM18` are set,
+      the `hpmcounter18` CSR (an alias of `mhpmcounter18`) is accessible to VU-mode.
+
+      When `mcounteren.HPM18` and `hcounteren.HPM18` are set,
+      the `hpmcounter18` CSR (an alias of `mhpmcounter18`) is accessible to VS-mode.
+
+      When `hcounteren.HPM18` is clear and `mcounteren.HPM18` is set, then any access to `hpmcounter18` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM18`# .2+h! [.rotate]#`mcounteren.HPM18`# .2+h! [.rotate]#`scounteren.HPM18`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[18]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[18]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM19:
+    location: 19
+    description: |
+      When all of `scounteren.HPM19`, `mcounteren.HPM19`, and `hcounteren.HPM19` are set,
+      the `hpmcounter19` CSR (an alias of `mhpmcounter19`) is accessible to VU-mode.
+
+      When `mcounteren.HPM19` and `hcounteren.HPM19` are set,
+      the `hpmcounter19` CSR (an alias of `mhpmcounter19`) is accessible to VS-mode.
+
+      When `hcounteren.HPM19` is clear and `mcounteren.HPM19` is set, then any access to `hpmcounter19` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM19`# .2+h! [.rotate]#`mcounteren.HPM19`# .2+h! [.rotate]#`scounteren.HPM19`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[19]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[19]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM20:
+    location: 20
+    description: |
+      When all of `scounteren.HPM20`, `mcounteren.HPM20`, and `hcounteren.HPM20` are set,
+      the `hpmcounter20` CSR (an alias of `mhpmcounter20`) is accessible to VU-mode.
+
+      When `mcounteren.HPM20` and `hcounteren.HPM20` are set,
+      the `hpmcounter20` CSR (an alias of `mhpmcounter20`) is accessible to VS-mode.
+
+      When `hcounteren.HPM20` is clear and `mcounteren.HPM20` is set, then any access to `hpmcounter20` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM20`# .2+h! [.rotate]#`mcounteren.HPM20`# .2+h! [.rotate]#`scounteren.HPM20`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[20]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[20]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM21:
+    location: 21
+    description: |
+      When all of `scounteren.HPM21`, `mcounteren.HPM21`, and `hcounteren.HPM21` are set,
+      the `hpmcounter21` CSR (an alias of `mhpmcounter21`) is accessible to VU-mode.
+
+      When `mcounteren.HPM21` and `hcounteren.HPM21` are set,
+      the `hpmcounter21` CSR (an alias of `mhpmcounter21`) is accessible to VS-mode.
+
+      When `hcounteren.HPM21` is clear and `mcounteren.HPM21` is set, then any access to `hpmcounter21` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM21`# .2+h! [.rotate]#`mcounteren.HPM21`# .2+h! [.rotate]#`scounteren.HPM21`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[21]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[21]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM22:
+    location: 22
+    description: |
+      When all of `scounteren.HPM22`, `mcounteren.HPM22`, and `hcounteren.HPM22` are set,
+      the `hpmcounter22` CSR (an alias of `mhpmcounter22`) is accessible to VU-mode.
+
+      When `mcounteren.HPM22` and `hcounteren.HPM22` are set,
+      the `hpmcounter22` CSR (an alias of `mhpmcounter22`) is accessible to VS-mode.
+
+      When `hcounteren.HPM22` is clear and `mcounteren.HPM22` is set, then any access to `hpmcounter22` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM22`# .2+h! [.rotate]#`mcounteren.HPM22`# .2+h! [.rotate]#`scounteren.HPM22`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[22]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[22]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM23:
+    location: 23
+    description: |
+      When all of `scounteren.HPM23`, `mcounteren.HPM23`, and `hcounteren.HPM23` are set,
+      the `hpmcounter23` CSR (an alias of `mhpmcounter23`) is accessible to VU-mode.
+
+      When `mcounteren.HPM23` and `hcounteren.HPM23` are set,
+      the `hpmcounter23` CSR (an alias of `mhpmcounter23`) is accessible to VS-mode.
+
+      When `hcounteren.HPM23` is clear and `mcounteren.HPM23` is set, then any access to `hpmcounter23` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM23`# .2+h! [.rotate]#`mcounteren.HPM23`# .2+h! [.rotate]#`scounteren.HPM23`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[23]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[23]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM24:
+    location: 24
+    description: |
+      When all of `scounteren.HPM24`, `mcounteren.HPM24`, and `hcounteren.HPM24` are set,
+      the `hpmcounter24` CSR (an alias of `mhpmcounter24`) is accessible to VU-mode.
+
+      When `mcounteren.HPM24` and `hcounteren.HPM24` are set,
+      the `hpmcounter24` CSR (an alias of `mhpmcounter24`) is accessible to VS-mode.
+
+      When `hcounteren.HPM24` is clear and `mcounteren.HPM24` is set, then any access to `hpmcounter24` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM24`# .2+h! [.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[24]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[24]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM25:
+    location: 25
+    description: |
+      When all of `scounteren.HPM25`, `mcounteren.HPM25`, and `hcounteren.HPM25` are set,
+      the `hpmcounter25` CSR (an alias of `mhpmcounter25`) is accessible to VU-mode.
+
+      When `mcounteren.HPM25` and `hcounteren.HPM25` are set,
+      the `hpmcounter25` CSR (an alias of `mhpmcounter25`) is accessible to VS-mode.
+
+      When `hcounteren.HPM25` is clear and `mcounteren.HPM25` is set, then any access to `hpmcounter25` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM25`# .2+h! [.rotate]#`mcounteren.HPM25`# .2+h! [.rotate]#`scounteren.HPM25`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[25]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[25]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM26:
+    location: 26
+    description: |
+      When all of `scounteren.HPM26`, `mcounteren.HPM26`, and `hcounteren.HPM26` are set,
+      the `hpmcounter26` CSR (an alias of `mhpmcounter26`) is accessible to VU-mode.
+
+      When `mcounteren.HPM26` and `hcounteren.HPM26` are set,
+      the `hpmcounter26` CSR (an alias of `mhpmcounter26`) is accessible to VS-mode.
+
+      When `hcounteren.HPM26` is clear and `mcounteren.HPM26` is set, then any access to `hpmcounter26` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM26`# .2+h! [.rotate]#`mcounteren.HPM26`# .2+h! [.rotate]#`scounteren.HPM26`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[26]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[26]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM27:
+    location: 27
+    description: |
+      When all of `scounteren.HPM27`, `mcounteren.HPM27`, and `hcounteren.HPM27` are set,
+      the `hpmcounter27` CSR (an alias of `mhpmcounter27`) is accessible to VU-mode.
+
+      When `mcounteren.HPM27` and `hcounteren.HPM27` are set,
+      the `hpmcounter27` CSR (an alias of `mhpmcounter27`) is accessible to VS-mode.
+
+      When `hcounteren.HPM27` is clear and `mcounteren.HPM27` is set, then any access to `hpmcounter27` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM27`# .2+h! [.rotate]#`mcounteren.HPM27`# .2+h! [.rotate]#`scounteren.HPM27`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[27]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[27]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM28:
+    location: 28
+    description: |
+      When all of `scounteren.HPM28`, `mcounteren.HPM28`, and `hcounteren.HPM28` are set,
+      the `hpmcounter28` CSR (an alias of `mhpmcounter28`) is accessible to VU-mode.
+
+      When `mcounteren.HPM28` and `hcounteren.HPM28` are set,
+      the `hpmcounter28` CSR (an alias of `mhpmcounter28`) is accessible to VS-mode.
+
+      When `hcounteren.HPM28` is clear and `mcounteren.HPM28` is set, then any access to `hpmcounter28` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM28`# .2+h! [.rotate]#`mcounteren.HPM28`# .2+h! [.rotate]#`scounteren.HPM28`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[28]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[28]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM29:
+    location: 29
+    description: |
+      When all of `scounteren.HPM29`, `mcounteren.HPM29`, and `hcounteren.HPM29` are set,
+      the `hpmcounter29` CSR (an alias of `mhpmcounter29`) is accessible to VU-mode.
+
+      When `mcounteren.HPM29` and `hcounteren.HPM29` are set,
+      the `hpmcounter29` CSR (an alias of `mhpmcounter29`) is accessible to VS-mode.
+
+      When `hcounteren.HPM29` is clear and `mcounteren.HPM29` is set, then any access to `hpmcounter29` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM29`# .2+h! [.rotate]#`mcounteren.HPM29`# .2+h! [.rotate]#`scounteren.HPM29`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[29]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[29]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM30:
+    location: 30
+    description: |
+      When all of `scounteren.HPM30`, `mcounteren.HPM30`, and `hcounteren.HPM30` are set,
+      the `hpmcounter30` CSR (an alias of `mhpmcounter30`) is accessible to VU-mode.
+
+      When `mcounteren.HPM30` and `hcounteren.HPM30` are set,
+      the `hpmcounter30` CSR (an alias of `mhpmcounter30`) is accessible to VS-mode.
+
+      When `hcounteren.HPM30` is clear and `mcounteren.HPM30` is set, then any access to `hpmcounter30` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM30`# .2+h! [.rotate]#`mcounteren.HPM30`# .2+h! [.rotate]#`scounteren.HPM30`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[30]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[30]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  HPM31:
+    location: 31
+    description: |
+      When all of `scounteren.HPM31`, `mcounteren.HPM31`, and `hcounteren.HPM31` are set,
+      the `hpmcounter31` CSR (an alias of `mhpmcounter31`) is accessible to VU-mode.
+
+      When `mcounteren.HPM31` and `hcounteren.HPM31` are set,
+      the `hpmcounter31` CSR (an alias of `mhpmcounter31`) is accessible to VS-mode.
+
+      When `hcounteren.HPM31` is clear and `mcounteren.HPM31` is set, then any access to `hpmcounter31` in
+      VU-mode or VS-mode causes a VirtualInstruction exception.
+
+      Summary:
+
+      [separator="!",%autowidth]
+      !===
+      .2+h! [.rotate]#`hcounteren.HPM31`# .2+h! [.rotate]#`mcounteren.HPM31`# .2+h! [.rotate]#`scounteren.HPM31`# 2+^.>! `cycle` access behavior
+      .>h! VS-mode .>h! VU-mode
+
+      ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+      ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+      ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+      ! 1 ! 1 ! 1 ! allowed              ! allowed
+      !===
+    type(): |
+      if (HCOUNTENABLE_EN[31]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HCOUNTENABLE_EN[31]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }

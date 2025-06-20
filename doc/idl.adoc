@@ -914,7 +914,7 @@ In the context of riscv-unified-db, IDL source comes from multiple sources:
 
 === .idl files
 
-Global variables, constants, and functions are declared in .idl files under the `arch/isa` folder.
+Global variables, constants, and functions are declared in .idl files under the `isa` folder.
 The file `globals.idl` is implicitly treated as the top-level source file. Other files may be included from there.
 
 === Instruction definitions

@@ -1,0 +1,42 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfh
+long_name: Vector Extension for Half-Precision Floating-Point
+description: |
+  This extension provides support for vectors of IEEE 754-2008
+  binary16 values.
+  When the Zvfh extension is implemented, all instructions in Sections
+  <<sec-vector-float>>, <<sec-vector-float-reduce>>,
+  <<sec-vector-float-reduce-widen>>, <<sec-vector-float-move>>,
+  <<sec-vfslide1up>>, and <<sec-vfslide1down>>
+  become defined when SEW=16.
+  The EEW=16 floating-point operands of these instructions use the binary16
+  format.
+
+  Additionally, conversions between 8-bit integers and binary16 values are
+  provided.  The floating-point-to-integer narrowing conversions
+  (`vfncvt[.rtz].x[u].f.w`) and integer-to-floating-point
+  widening conversions (`vfwcvt.f.x[u].v`) become defined when SEW=8.
+
+  The Zvfh extension depends on the Zve32f and Zfhmin extensions.
+
+  [NOTE]
+  Requiring basic scalar half-precision support makes Zvfh's
+  vector-scalar instructions substantially more useful.
+  We considered requiring more complete scalar half-precision support, but we
+  reasoned that, for many half-precision vector workloads, performing the scalar
+  computation in single-precision will suffice.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      allOf:
+        - Zve32f
+        - Zfhmin

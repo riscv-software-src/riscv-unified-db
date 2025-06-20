@@ -1,0 +1,34 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.psyscall
+long_name: System call with register argument pseudo-instruction (hint) working only in simulation environment
+description: |
+  The System call instruction calls simulation environment with unsigned `rs1` explicit argument.
+  Additional implicit arguments defined by simulation environment implementation.
+  Instruction is used to call simulator to execute function according to the argument.
+  Instruction encoded in I instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisim
+assembly: " xs1"
+base: 32
+encoding:
+  match: 110000000000-----010000000010011
+  variables:
+    - name: rs1
+      location: 19-15
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg func = 10;
+  XReg arg = X[rs1];
+  iss_syscall(func,arg);

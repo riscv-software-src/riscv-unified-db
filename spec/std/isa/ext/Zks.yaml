@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zks
+long_name: ShangMi Algorithm Suite
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zbkb`
+  * `Zbkc`
+  * `Zbkx`
+  * `Zksed`
+  * `Zksh`
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies:
+      - name: Zbkb
+        version: "1.0.0"
+      - name: Zbkc
+        version: "1.0.0"
+      - name: Zbkx
+        version: "1.0.0"
+      - name: Zkne
+        version: "1.0.0"
+      - name: Zknd
+        version: "1.0.0"
+      - name: Zknh
+        version: "1.0.0"
