@@ -1,0 +1,42 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: dpc
+long_name: Debug PC Register
+address: 0x7B1
+priv_mode: D
+length: MXLEN
+description: |
+  Upon entry to debug mode, dpc is updated with the virtual address of the next instruction to be executed.
+
+  Executing the Program Buffer may cause the value of dpc to become UNSPECIFIED. If that is the case,
+  it must be possible to read/write dpc using an abstract command with postexec not set. The debugger
+  must attempt to save dpc between halting and executing a Program Buffer, and then restore dpc before
+  leaving Debug Mode.
+
+  If the Access Register abstract command supports reading dpc while the hart is running, then the
+  value read should be the address of a recently executed instruction.
+
+  If the Access Register abstract command supports writing dpc while the hart is running, then the
+  executing program should jump to the written address shortly after the write occurs.
+
+  The writability of dpc follows the same rules as mepc as defined in the Privileged Spec. In particular,
+  dpc must be able to hold all valid virtual addresses and the writability of the low bits depends on
+  IALIGN.
+
+  When resuming, the hart’s PC is updated to the virtual address stored in dpc. A debugger may write
+  dpc to change where the hart resumes.
+
+  This CSR is read/write.
+definedBy: Sdext
+fields:
+  DPC:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Debug PC Value
+    reset_value: UNDEFINED_LEGAL
