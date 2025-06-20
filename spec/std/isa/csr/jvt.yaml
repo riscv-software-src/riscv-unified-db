@@ -50,12 +50,12 @@ fields:
           unimplemented_csr();
         }
       }
-      else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstaten)) {
+      else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstateen)) {
         if (CSR[sstateen0].JVT == 1'b0) {
           unimplemented_csr();
         }
       }
-      else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+      else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstateen)) {
         if (CSR[hstateen0].JVT == 1'b0) {
           unimplemented_csr();
         }
@@ -98,12 +98,12 @@ sw_read(): |
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
-  else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstaten)) {
+  else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstateen)) {
     if (CSR[sstateen0].JVT == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   }
-  else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+  else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstateen)) {
     if (CSR[hstateen0].JVT == 1'b0) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
