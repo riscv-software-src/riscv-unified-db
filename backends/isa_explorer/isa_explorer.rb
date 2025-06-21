@@ -25,7 +25,7 @@ def presence2char(presence)
   end
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
@@ -87,7 +87,7 @@ def arch2ext_table(arch)
   return ext_table
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Instruction table data
 sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2inst_table(arch)
@@ -135,7 +135,7 @@ def arch2inst_table(arch)
   return inst_table
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] CSR table data
 sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2csr_table(arch)
@@ -230,7 +230,7 @@ end
 
 # Create ISA Explorer tables as XLSX file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 sig { params(arch: Udb::Architecture, output_pname: String).void }
 def gen_xlsx(arch, output_pname)
@@ -351,7 +351,7 @@ end
 
 # Create ISA Explorer extension table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
@@ -367,10 +367,10 @@ end
 
 # Create ISA Explorer instruction table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_inst_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to inst_table data structure
@@ -383,10 +383,10 @@ end
 
 # Create ISA Explorer CSR table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_csr_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to csr_table data structure
@@ -397,10 +397,10 @@ def gen_js_csr_table(arch, output_pname)
   gen_js_table(csr_table, "csr_table", output_pname)
 end
 
-# param [Architecture] arch
+# param [Udb::Architecture] arch
 # return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
 def get_sorted_profile_releases(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Udb::Architecture" unless arch.is_a?(Udb::Architecture)
 
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)
