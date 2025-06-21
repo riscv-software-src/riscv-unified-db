@@ -17,11 +17,11 @@ encoding:
   variables:
     - name: bs
       location: 31-30
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

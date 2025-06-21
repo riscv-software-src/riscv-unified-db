@@ -9,9 +9,9 @@ name: c.addiw
 long_name: Add a sign-extended non-zero immediate
 description: |
   C.ADDIW is an RV64C/RV128C-only instruction that performs the same computation as C.ADDI but produces a 32-bit result, then sign-extends result to 64 bits.
-  C.ADDIW expands into `addiw rd, rd, imm`.
-  The immediate can be zero for C.ADDIW, where this corresponds to `sext.w rd`.
-  C.ADDIW is only valid when rd &ne; x0; the code points with rd=x0 are reserved.
+  C.ADDIW expands into `addiw xd, xd, imm`.
+  The immediate can be zero for C.ADDIW, where this corresponds to `sext.w xd`.
+  C.ADDIW is only valid when xd &ne; x0; the code points with xd=x0 are reserved.
 definedBy:
   anyOf:
     - C
@@ -23,7 +23,7 @@ encoding:
   variables:
     - name: imm
       location: 12|6-2
-    - name: rd
+    - name: xd
       location: 11-7
       not: 0
 access:
@@ -36,4 +36,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = sext((X[rd] + imm), 32);
+  X[xd] = sext((X[xd] + imm), 32);

@@ -26,9 +26,9 @@ encoding:
   variables:
     - name: rnum
       location: 23-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

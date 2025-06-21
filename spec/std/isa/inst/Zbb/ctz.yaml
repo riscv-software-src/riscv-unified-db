@@ -18,9 +18,9 @@ assembly: xd, xs1
 encoding:
   match: 011000000001-----001-----0010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -33,9 +33,9 @@ operation(): |
   }
 
   if (xlen() == 32) {
-    X[rd] = lowest_set_bit(X[rs1][31:0]);
+    X[xd] = lowest_set_bit(X[xs1][31:0]);
   } else {
-    X[rd] = lowest_set_bit(X[rs1]);
+    X[xd] = lowest_set_bit(X[xs1]);
   }
 
 # SPDX-SnippetBegin

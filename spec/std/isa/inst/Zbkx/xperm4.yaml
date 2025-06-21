@@ -8,19 +8,19 @@ kind: instruction
 name: xperm4
 long_name: Crossbar permutation (nibbles)
 description: |
-  The xperm4 instruction operates on nibbles. The rs1 register contains a vector of XLEN/4 4-bit
-  elements. The rs2 register contains a vector of XLEN/4 4-bit indexes. The result is each element in
-  rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.
+  The xperm4 instruction operates on nibbles. The xs1 register contains a vector of XLEN/4 4-bit
+  elements. The xs2 register contains a vector of XLEN/4 4-bit indexes. The result is each element in
+  xs2 replaced by the indexed element in xs1, or zero if the index into xs2 is out of bounds.
 definedBy: Zbkx
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------010-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -29,8 +29,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  XReg input1 = X[rs1];
-  XReg input2 = X[rs2];
+  XReg input1 = X[xs1];
+  XReg input2 = X[xs2];
   XReg output = 0;
 
   for(U32 i=0; i<(xlen()-4); i = i+4) {
@@ -40,7 +40,7 @@ operation(): |
     }
   }
 
-  X[rd] = output;
+  X[xd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

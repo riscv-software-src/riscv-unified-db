@@ -63,7 +63,7 @@ sail(): |
 - **`assembly`**: Instruction format in assembly language, including operands.
 - **`encoding.match`**: Binary encoding of the instruction with fixed bits defined by `0` or `1` and variable bits indicated by `-`.
 - **`encoding.variables`**: Defines fields in the instruction encoding, including their location.
-  - **`name`**: Name of the field (e.g., `rs1`, `rs2`).
+  - **`name`**: Name of the field (e.g., `xs1`, `xs2`).
   - **`location`**: Bit positions of the field in the instruction encoding.
 - **`access`**: Specifies the privilege mode access for the instruction (`always`, `sometimes`, or `never`).
 - **`data_independent_timing`**: Indicates whether the execution timing is data-independent.

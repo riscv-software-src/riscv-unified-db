@@ -29,8 +29,8 @@ access:
   vu: always
 data_independent_timing: true
 pseudoinstructions:
-  - when: (rs2 == rs1)
-    to: fneg.s
+  - when: (fs2 == fs1)
+    to: fneg.s fd, fs1
 
 operation(): |
   check_f_ok($encoding);

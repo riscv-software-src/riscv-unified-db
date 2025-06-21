@@ -14,9 +14,9 @@ assembly: xs2, (xs1)
 encoding:
   match: 0011101----------001000000101111
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always

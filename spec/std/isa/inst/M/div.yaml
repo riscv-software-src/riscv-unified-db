@@ -8,22 +8,22 @@ kind: instruction
 name: div
 long_name: Signed division
 description: |
-  Divide rs1 by rs2, and store the result in rd. The remainder is discarded.
+  Divide xs1 by xs2, and store the result in xd. The remainder is discarded.
 
-  Division by zero will put -1 into rd.
+  Division by zero will put -1 into xd.
 
   Division resulting in signed overflow (when most negative number is divided by -1)
-  will put the most negative number into rd;
+  will put the most negative number into xd;
 definedBy: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------100-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -35,8 +35,8 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg src1 = X[rs1];
-  XReg src2 = X[rs2];
+  XReg src1 = X[xs1];
+  XReg src2 = X[xs2];
 
   # smallest signed value
   XReg signed_min = (xlen() == 32) ? $signed({1'b1, {31{1'b0}}}) : {1'b1, {63{1'b0}}};
@@ -44,16 +44,16 @@ operation(): |
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
-    X[rd] = {MXLEN{1'b1}};
+    X[xd] = {MXLEN{1'b1}};
 
   } else if ((src1 == signed_min) && (src2 == {MXLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the most negative number (-2^(MXLEN-1))
-    X[rd] = signed_min;
+    X[xd] = signed_min;
 
   } else {
     # no special case, just divide
-    X[rd] = $signed(src1) / $signed(src2);
+    X[xd] = $signed(src1) / $signed(src2);
   }
 
 # SPDX-SnippetBegin

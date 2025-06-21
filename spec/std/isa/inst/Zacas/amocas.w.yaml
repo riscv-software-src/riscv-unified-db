@@ -9,20 +9,20 @@ kind: instruction
 name: amocas.w
 long_name: Atomic Compare-and-Swap Word
 description: |
-  For RV32, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
-  compares the loaded value to the 32-bit value held in rd, and if the
-  comparison is bitwise equal, then stores the 32-bit value held in rs2 to the
-  original address in rs1. The value loaded from memory is placed into
-  register rd.
+  For RV32, AMOCAS.W atomically loads a 32-bit data value from address in xs1,
+  compares the loaded value to the 32-bit value held in xd, and if the
+  comparison is bitwise equal, then stores the 32-bit value held in xs2 to the
+  original address in xs1. The value loaded from memory is placed into
+  register xd.
 
-  For RV64, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
-  compares the loaded value to the lower 32 bits of the value held in rd, and
+  For RV64, AMOCAS.W atomically loads a 32-bit data value from address in xs1,
+  compares the loaded value to the lower 32 bits of the value held in xd, and
   if the comparison is bitwise equal, then stores the lower 32 bits of the
-  value held in rs2 to the original address in rs1. The 32-bit value loaded
-  from memory is sign-extended and is placed into register rd.
+  value held in xs2 to the original address in xs1. The 32-bit value loaded
+  from memory is sign-extended and is placed into register xd.
 
   Just as for AMOs in the A extension, AMOCAS.W requires that the address held
-  in rs1 be naturally aligned to the size of the operand (i.e., four-byte
+  in xs1 be naturally aligned to the size of the operand (i.e., four-byte
   aligned for words). And the same exception options apply if the address is
   not naturally aligned.
 
@@ -52,11 +52,11 @@ encoding:
       location: 26-26
     - name: rl
       location: 25-25
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

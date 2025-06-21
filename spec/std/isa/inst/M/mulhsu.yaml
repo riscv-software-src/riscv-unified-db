@@ -8,14 +8,14 @@ kind: instruction
 name: mulhsu
 long_name: Signed/unsigned multiply high
 description: |
-  Multiply the signed value in rs1 by the unsigned value in rs2, and store the upper half of the result in rd.
+  Multiply the signed value in xs1 by the unsigned value in xs2, and store the upper half of the result in xd.
   The lower half is thrown away.
 
   If both the upper and lower halves are needed, it suggested to use the sequence:
 
   ---
-    mulhsu rdh, rs1, rs2
-    mul    rdl, rs1, rs2
+    mulhsu xdh, xs1, xs2
+    mul    xdl, xs1, xs2
   ---
 
   Microarchitectures may look for that sequence and fuse the operations.
@@ -25,11 +25,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------010-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -43,11 +43,11 @@ operation(): |
   }
 
   # enlarge and extend the sources
-  Bits<1> rs1_sign_bit = X[rs1][MXLEN-1];
-  Bits<MXLEN*8'd2> src1 = {{MXLEN{rs1_sign_bit}}, X[rs1]};
-  Bits<MXLEN*8'd2> src2 = {{MXLEN{1'b0}}, X[rs2]};
+  Bits<1> xs1_sign_bit = X[xs1][MXLEN-1];
+  Bits<MXLEN*8'd2> src1 = {{MXLEN{xs1_sign_bit}}, X[xs1]};
+  Bits<MXLEN*8'd2> src2 = {{MXLEN{1'b0}}, X[xs2]};
 
-  X[rd] = (src1 * src2)[(MXLEN*8'd2)-1:MXLEN];
+  X[xd] = (src1 * src2)[(MXLEN*8'd2)-1:MXLEN];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

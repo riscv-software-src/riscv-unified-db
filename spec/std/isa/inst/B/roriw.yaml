@@ -8,7 +8,7 @@ kind: instruction
 name: roriw
 long_name: Rotate right word (Immediate)
 description: |
-  Performs a rotate right on the least-significant word of rs1 by the amount in
+  Performs a rotate right on the least-significant word of xs1 by the amount in
   the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
   copying bit 31 to all of the more-significant bits.
 definedBy:
@@ -20,9 +20,9 @@ encoding:
   variables:
     - name: shamt
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -35,10 +35,10 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_word = X[rs1][31:0];
+  XReg xs1_word = X[xs1][31:0];
 
-  XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
-  X[rd] = {{32{unextended_result[31]}}, unextended_result};
+  XReg unextended_result = (X[xs1] >> shamt) | (X[xs1] << (32 - shamt));
+  X[xd] = {{32{unextended_result[31]}}, unextended_result};
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

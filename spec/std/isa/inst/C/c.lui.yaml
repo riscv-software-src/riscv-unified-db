@@ -9,9 +9,9 @@ name: c.lui
 long_name: Load the non-zero 6-bit immediate field into bits 17-12 of the destination register
 description: |
   C.LUI loads the non-zero 6-bit immediate field into bits 17-12 of the destination register, clears the bottom 12 bits, and sign-extends bit 17 into all higher bits of the destination.
-  C.LUI expands into `lui rd, imm`.
-  C.LUI is only valid when rd&ne;x0 and rd&ne;x2, and when the immediate is not equal to zero.
-  The code points with imm=0 are reserved; the remaining code points with rd=x0 are HINTs; and the remaining code points with rd=x2 correspond to the C.ADDI16SP instruction
+  C.LUI expands into `lui xd, imm`.
+  C.LUI is only valid when xd&ne;x0 and xd&ne;x2, and when the immediate is not equal to zero.
+  The code points with imm=0 are reserved; the remaining code points with xd=x0 are HINTs; and the remaining code points with xd=x2 correspond to the C.ADDI16SP instruction
 definedBy:
   anyOf:
     - C
@@ -23,7 +23,7 @@ encoding:
     - name: imm
       location: 12|6-2
       left_shift: 12
-    - name: rd
+    - name: xd
       location: 11-7
       not: [0, 2]
 access:
@@ -36,4 +36,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = $signed(imm);
+  X[xd] = $signed(imm);

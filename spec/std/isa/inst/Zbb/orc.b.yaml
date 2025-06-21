@@ -9,16 +9,16 @@ name: orc.b
 long_name: Bitware OR-combine, byte granule
 description: |
   Combines the bits within each byte using bitwise logical OR. This sets the bits
-  of each byte in the result rd to all zeros if no bit within the respective byte
-  of rs is set, or to all ones if any bit within the respective byte of rs is set.
+  of each byte in the result xd to all zeros if no bit within the respective byte
+  of xs1 is set, or to all ones if any bit within the respective byte of xs1 is set.
 definedBy: Zbb
 assembly: xd, xs1
 encoding:
   match: 001010000111-----101-----0010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -30,14 +30,14 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg input = X[rs1];
+  XReg input = X[xs1];
   XReg output = 0;
 
   for (U32 i=0; i<(xlen() - 8); i = i+8) {
     output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;
   }
 
-  X[rd] = output;
+  X[xd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
