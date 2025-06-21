@@ -8,18 +8,18 @@ kind: instruction
 name: orn
 long_name: OR with inverted operand
 description: |
-  Performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+  Performs the bitwise logical OR operation between xs1 and the bitwise inversion of xs2.
 definedBy:
   anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------110-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -32,7 +32,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs1] | ~X[rs2];
+  X[xd] = X[xs1] | ~X[xs2];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

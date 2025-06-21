@@ -11,7 +11,7 @@ description: |
   Stores a 64-bit value in register rs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
-  It expands to `sd` `rs2, offset(x2)`.
+  It expands to `sd` `xs2, offset(x2)`.
 definedBy:
   anyOf:
     - C

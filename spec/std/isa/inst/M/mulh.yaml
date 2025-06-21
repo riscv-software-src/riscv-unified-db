@@ -8,14 +8,14 @@ kind: instruction
 name: mulh
 long_name: Signed multiply high
 description: |
-  Multiply the signed values in rs1 to rs2, and store the upper half of the result in rd.
+  Multiply the signed values in xs1 to xs2, and store the upper half of the result in xd.
   The lower half is thrown away.
 
   If both the upper and lower halves are needed, it suggested to use the sequence:
 
   ---
-    mulh rdh, rs1, rs2
-    mul  rdl, rs1, rs2
+    mulh xdh, xs1, xs2
+    mul  xdl, xs1, xs2
   ---
 
   Microarchitectures may look for that sequence and fuse the operations.
@@ -25,11 +25,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------001-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -43,14 +43,14 @@ operation(): |
   }
 
   # enlarge and sign extend the sources
-  Bits<1> rs1_sign_bit = X[rs1][xlen()-1];
-  Bits<MXLEN `* 2> src1 = {{xlen(){rs1_sign_bit}}, X[rs1]};
+  Bits<1> xs1_sign_bit = X[xs1][xlen()-1];
+  Bits<MXLEN `* 2> src1 = {{xlen(){xs1_sign_bit}}, X[xs1]};
 
-  Bits<1> rs2_sign_bit = X[rs2][xlen()-1];
-  Bits<MXLEN `* 2> src2 = {{xlen(){rs2_sign_bit}}, X[rs2]};
+  Bits<1> xs2_sign_bit = X[xs2][xlen()-1];
+  Bits<MXLEN `* 2> src2 = {{xlen(){xs2_sign_bit}}, X[xs2]};
 
-  # grab the high half of the result, and put it in rd
-  X[rd] = (src1 * src2)[(xlen()*8'd2)-1:xlen()];
+  # grab the high half of the result, and put it in xd
+  X[xd] = (src1 * src2)[(xlen()*8'd2)-1:xlen()];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

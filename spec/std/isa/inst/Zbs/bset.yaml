@@ -8,18 +8,18 @@ kind: instruction
 name: bset
 long_name: Single-Bit set (Register)
 description: |
-  Returns rs1 with a single bit set at the index specified in rs2.
-  The index is read from the lower log2(XLEN) bits of rs2.
+  Returns xs1 with a single bit set at the index specified in xs2.
+  The index is read from the lower log2(XLEN) bits of xs2.
 definedBy: Zbs
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------001-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -31,8 +31,8 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg index = X[rs2] & (xlen() - 1);
-  X[rd] = X[rs1] | (1 << index);
+  XReg index = X[xs2] & (xlen() - 1);
+  X[xd] = X[xs1] | (1 << index);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
