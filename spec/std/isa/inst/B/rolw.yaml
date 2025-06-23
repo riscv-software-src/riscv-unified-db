@@ -14,15 +14,17 @@ definedBy:
   anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, xs2
 base: 64
-encoding:
-  match: 0110000----------001-----0111011
-  variables:
-    - name: xs2
-      location: 24-20
-    - name: xs1
-      location: 19-15
-    - name: xd
-      location: 11-7
+format:
+  $inherits:
+    - inst_subtype/R/R-x.yaml#/data
+  opcodes:
+    funct7:
+      display_name: ROLW
+      value: 0b0110000
+    funct3:
+      display_name: ROLW
+      value: 0b001
+    opcode: { $inherits: inst_opcode/OP-32.yaml#/data }
 access:
   s: always
   u: always
