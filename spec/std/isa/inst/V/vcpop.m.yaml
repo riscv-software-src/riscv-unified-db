@@ -20,7 +20,7 @@ encoding:
       location: 25-25
     - name: vs2
       location: 24-20
-    - name: vd
+    - name: xd
       location: 11-7
 access:
   s: always
