@@ -8,10 +8,10 @@ kind: instruction
 name: c.swsp
 long_name: Store word to stack
 description: |
-  Stores a 32-bit value in register rs2 to memory.
+  Stores a 32-bit value in register xs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 4,
   to the stack pointer, x2.
-  It expands to `sw` `rs2, offset(x2)`.
+  It expands to `sw` `xs2, offset(x2)`.
 definedBy:
   extension:
     anyOf:
@@ -24,7 +24,7 @@ encoding:
     - name: imm
       location: 8-7|12-9
       left_shift: 2
-    - name: rs2
+    - name: xs2
       location: 6-2
 access:
   s: always
@@ -38,4 +38,4 @@ operation(): |
 
   XReg virtual_address = X[2] + imm;
 
-  write_memory<32>(virtual_address, X[rs2][31:0], $encoding);
+  write_memory<32>(virtual_address, X[xs2][31:0], $encoding);

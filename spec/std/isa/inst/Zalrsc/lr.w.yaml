@@ -8,7 +8,7 @@ kind: instruction
 name: lr.w
 long_name: Load reserved word
 description: |
-  Loads a word from the address in rs1, places the sign-extended value in rd,
+  Loads a word from the address in xs1, places the sign-extended value in xd,
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
@@ -16,7 +16,7 @@ description: |
   The 32-bit load result is sign-extended to 64-bits.
   <%- end -%>
 
-  The address in rs1 must be naturally aligned to the size of the operand
+  The address in xs1 must be naturally aligned to the size of the operand
   (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).
 
   If the address is not naturally aligned, a `LoadAddressMisaligned` exception or an
@@ -63,9 +63,9 @@ encoding:
     - name: rl
       location: 25
       not: 1
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -79,7 +79,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1];
+  XReg virtual_address = X[xs1];
 
   if (!is_naturally_aligned<32>(virtual_address)) {
     # can raise either LoadAddressMisaligned *or* LoadAccessFault
@@ -101,9 +101,9 @@ operation(): |
 
   XReg load_value = load_reserved<32>(virtual_address, aq, rl, $encoding);
   if (xlen() == 64) {
-    X[rd] = load_value;
+    X[xd] = load_value;
   } else {
-    X[rd] = sext(load_value[31:0], 32);
+    X[xd] = sext(load_value[31:0], 32);
   }
 
 # SPDX-SnippetBegin

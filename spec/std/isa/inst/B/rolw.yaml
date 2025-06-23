@@ -8,7 +8,7 @@ kind: instruction
 name: rolw
 long_name: Rotate left word (Register)
 description: |
-  Performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+  Performs a rotate left of the least-significant word of xs1 by the amount in least-significant 5 bits of xs2.
   The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
 definedBy:
   extension:
@@ -20,11 +20,11 @@ base: 64
 encoding:
   match: 0110000----------001-----0111011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -37,12 +37,12 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_word = X[rs1][31:0];
-  XReg shamt = X[rs2][4:0];
+  XReg xs1_word = X[xs1][31:0];
+  XReg shamt = X[xs2][4:0];
 
-  XReg unextended_result = (rs1_word << shamt) | (rs1_word >> (32 - shamt));
+  XReg unextended_result = (xs1_word << shamt) | (xs1_word >> (32 - shamt));
 
-  X[rd] = {{32{unextended_result[31]}}, unextended_result};
+  X[xd] = {{32{unextended_result[31]}}, unextended_result};
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

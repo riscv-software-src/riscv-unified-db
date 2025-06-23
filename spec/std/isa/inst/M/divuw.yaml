@@ -8,7 +8,7 @@ kind: instruction
 name: divuw
 long_name: Unsigned 32-bit division
 description: |
-  Divide the unsigned 32-bit values in rs1 and rs2, and store the sign-extended result in rd.
+  Divide the unsigned 32-bit values in xs1 and xs2, and store the sign-extended result in xd.
 
   The remainder is discarded.
 
@@ -21,11 +21,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------101-----0111011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -37,20 +37,20 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  Bits<32> src1 = X[rs1][31:0];
-  Bits<32> src2 = X[rs2][31:0];
+  Bits<32> src1 = X[xs1][31:0];
+  Bits<32> src2 = X[xs2][31:0];
 
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the largest 32-bit unsigned value (sign extended to 64-bits)
-    X[rd] = {64{1'b1}};
+    X[xd] = {64{1'b1}};
 
   } else {
 
     Bits<32> result = src1 / src2;
     Bits<1> sign_bit = result[31];
 
-    X[rd] = {{32{sign_bit}}, result};
+    X[xd] = {{32{sign_bit}}, result};
   }
 
 # SPDX-SnippetBegin

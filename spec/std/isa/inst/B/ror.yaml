@@ -8,7 +8,7 @@ kind: instruction
 name: ror
 long_name: Rotate right (Register)
 description: |
-  Performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
+  Performs a rotate right of xs1 by the amount in least-significant `log2(XLEN)` bits of xs2.
 definedBy:
   extension:
     anyOf:
@@ -18,11 +18,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0110000----------101-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -35,9 +35,9 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg shamt = (xlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];
+  XReg shamt = (xlen() == 32) ? X[xs2][4:0] : X[xs2][5:0];
 
-  X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
+  X[xd] = (X[xs1] >> shamt) | (X[xs1] << (xlen() - shamt));
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

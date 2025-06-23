@@ -40,7 +40,7 @@ data_independent_timing: false
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-  X[fd] = i32_to_f32(X[xs1], rounding_mode);
+  f[fd] = i32_to_f32(X[xs1], rounding_mode);
   mark_f_state_dirty();
 
 # SPDX-SnippetBegin

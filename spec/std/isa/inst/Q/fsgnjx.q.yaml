@@ -29,6 +29,6 @@ access:
   vu: always
 data_independent_timing: false
 pseudoinstructions:
-  - when: (rs2 == rs1)
-    to: fabs.q
+  - when: (fs2 == fs1)
+    to: fabs.q fd, fs1
 operation(): |

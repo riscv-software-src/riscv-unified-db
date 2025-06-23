@@ -13,9 +13,9 @@ definedBy:
 encoding:
   match: 0001011----------000000001110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 description:
   The `sinval.vma` instruction invalidates any address-translation cache
@@ -30,8 +30,8 @@ access:
   vu: never
 assembly: xs1, xs2
 operation(): |
-  XReg vaddr = X[rs1];
-  Bits<ASID_WIDTH> asid = X[rs2][ASID_WIDTH-1:0];
+  XReg vaddr = X[xs1];
+  Bits<ASID_WIDTH> asid = X[xs2][ASID_WIDTH-1:0];
 
   if (CSR[mstatus].TVM == 1 &&
       ((mode() == PrivilegeMode::S) || (mode() == PrivilegeMode::VS))) {
@@ -60,14 +60,14 @@ operation(): |
     vma_type.smode = true;
   }
 
-  if ((rs1 == 0) && (rs2 == 0)) {
+  if ((xs1 == 0) && (xs2 == 0)) {
     # invalidate all translations, from all addresses and all ASIDs
     # includes global mappings
     vma_type.global = true;
 
     invalidate_translations(vma_type);
 
-  } else if ((rs1 == 0) && (rs2 != 0)) {
+  } else if ((xs1 == 0) && (xs2 != 0)) {
     # invalidates all translations from ASID 'asid'
     # does not affect global mappings
     vma_type.single_asid = true;
@@ -75,7 +75,7 @@ operation(): |
 
     invalidate_translations(vma_type);
 
-  } else if ((rs1 != 0) && (rs2 == 0)) {
+  } else if ((xs1 != 0) && (xs2 == 0)) {
     # invalidate all translations from leaf page tables containing 'vaddr'
     # does not affect global mappings
     if (canonical_vaddr?(vaddr)) {

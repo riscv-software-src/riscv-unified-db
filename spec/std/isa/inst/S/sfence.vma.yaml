@@ -20,7 +20,7 @@ description: |
   already visible to the current RISC-V hart are ordered before certain
   implicit references by subsequent instructions in that hart to the
   memory-management data structures. The specific set of operations
-  ordered by SFENCE.VMA is determined by _rs1_ and _rs2_, as described
+  ordered by SFENCE.VMA is determined by _xs1_ and _xs2_, as described
   below. SFENCE.VMA is also used to invalidate entries in the
   address-translation cache associated with a hart (see <<sv32algorithm>>). Further details on the behavior of this instruction are described in <<virt-control>> and <<pmp-vmem>>.
 
@@ -51,58 +51,58 @@ description: |
 
   For the common case that the translation data structures have only been
   modified for a single address mapping (i.e., one page or superpage),
-  _rs1_ can specify a virtual address within that mapping to effect a
+  _xs1_ can specify a virtual address within that mapping to effect a
   translation fence for that mapping only. Furthermore, for the common
   case that the translation data structures have only been modified for a
-  single address-space identifier, _rs2_ can specify the address space.
-  The behavior of SFENCE.VMA depends on _rs1_ and _rs2_ as follows:
+  single address-space identifier, _xs2_ can specify the address space.
+  The behavior of SFENCE.VMA depends on _xs1_ and _xs2_ as follows:
 
-  * If __rs1__=`x0` and __rs2__=`x0`, the fence orders all reads and writes
+  * If __xs1__=`x0` and __xs2__=`x0`, the fence orders all reads and writes
   made to any level of the page tables, for all address spaces. The fence
   also invalidates all address-translation cache entries, for all address
   spaces.
-  * If __rs1__=`x0` and __rs2__&#8800;``x0``, the fence orders all
+  * If __xs1__=`x0` and __xs2__&#8800;``x0``, the fence orders all
   reads and writes made to any level of the page tables, but only for the
-  address space identified by integer register _rs2_. Accesses to _global_
+  address space identified by integer register _xs2_. Accesses to _global_
   mappings (see <<translation>>) are not ordered. The
   fence also invalidates all address-translation cache entries matching
-  the address space identified by integer register _rs2_, except for
+  the address space identified by integer register _xs2_, except for
   entries containing global mappings.
-  * If __rs1__&#8800;``x0`` and __rs2__=`x0`, the fence orders only
+  * If __xs1__&#8800;``x0`` and __xs2__=`x0`, the fence orders only
   reads and writes made to leaf page table entries corresponding to the
-  virtual address in __rs1__, for all address spaces. The fence also
+  virtual address in __xs1__, for all address spaces. The fence also
   invalidates all address-translation cache entries that contain leaf page
-  table entries corresponding to the virtual address in _rs1_, for all
+  table entries corresponding to the virtual address in _xs1_, for all
   address spaces.
-  * If __rs1__&#8800;``x0`` and __rs2__&#8800;``x0``, the
+  * If __xs1__&#8800;``x0`` and __xs2__&#8800;``x0``, the
   fence orders only reads and writes made to leaf page table entries
-  corresponding to the virtual address in _rs1_, for the address space
-  identified by integer register _rs2_. Accesses to global mappings are
+  corresponding to the virtual address in _xs1_, for the address space
+  identified by integer register _xs2_. Accesses to global mappings are
   not ordered. The fence also invalidates all address-translation cache
   entries that contain leaf page table entries corresponding to the
-  virtual address in _rs1_ and that match the address space identified by
-  integer register _rs2_, except for entries containing global mappings.
+  virtual address in _xs1_ and that match the address space identified by
+  integer register _xs2_, except for entries containing global mappings.
 
-  If the value held in _rs1_ is not a valid virtual address, then the
+  If the value held in _xs1_ is not a valid virtual address, then the
   SFENCE.VMA instruction has no effect. No exception is raised in this
   case.
 
-  When __rs2__&#8800;``x0``, bits SXLEN-1:ASIDMAX of the value held
-  in _rs2_ are reserved for future standard use. Until their use is
+  When __xs2__&#8800;``x0``, bits SXLEN-1:ASIDMAX of the value held
+  in _xs2_ are reserved for future standard use. Until their use is
   defined by a standard extension, they should be zeroed by software and
   ignored by current implementations. Furthermore, if
   ASIDLEN<ASIDMAX, the implementation shall ignore bits
-  ASIDMAX-1:ASIDLEN of the value held in _rs2_.
+  ASIDMAX-1:ASIDLEN of the value held in _xs2_.
 
   [NOTE]
   ====
   It is always legal to over-fence, e.g., by fencing only based on a
-  subset of the bits in _rs1_ and/or _rs2_, and/or by simply treating all
-  SFENCE.VMA instructions as having _rs1_=`x0` and/or _rs2_=`x0`. For
-  example, simpler implementations can ignore the virtual address in _rs1_
-  and the ASID value in _rs2_ and always perform a global fence. The
+  subset of the bits in _xs1_ and/or _xs2_, and/or by simply treating all
+  SFENCE.VMA instructions as having _xs1_=`x0` and/or _xs2_=`x0`. For
+  example, simpler implementations can ignore the virtual address in _xs1_
+  and the ASID value in _xs2_ and always perform a global fence. The
   choice not to raise an exception when an invalid virtual address is held
-  in _rs1_ facilitates this type of simplification.
+  in _xs1_ facilitates this type of simplification.
   ====
 
   An implicit read of the memory-management data structures may return any
@@ -131,7 +131,7 @@ description: |
   In a conventional TLB design, it is possible for multiple entries to
   match a single address if, for example, a page is upgraded to a
   superpage without first clearing the original non-leaf PTE's valid bit
-  and executing an SFENCE.VMA with __rs1__=`x0`. In this case, a similar
+  and executing an SFENCE.VMA with __xs1__=`x0`. In this case, a similar
   remark applies: it is unpredictable whether the old non-leaf PTE or the
   new leaf PTE is used, but the behavior is otherwise well defined.
 
@@ -167,24 +167,24 @@ description: |
 
   * When software recycles an ASID (i.e., reassociates it with a different
   page table), it should _first_ change `satp` to point to the new page
-  table using the recycled ASID, _then_ execute SFENCE.VMA with __rs1__=`x0`
-  and _rs2_ set to the recycled ASID. Alternatively, software can execute
+  table using the recycled ASID, _then_ execute SFENCE.VMA with __xs1__=`x0`
+  and _xs2_ set to the recycled ASID. Alternatively, software can execute
   the same SFENCE.VMA instruction while a different ASID is loaded into
   `satp`, provided the next time `satp` is loaded with the recycled ASID,
   it is simultaneously loaded with the new page table.
   * If the implementation does not provide ASIDs, or software chooses to
   always use ASID 0, then after every `satp` write, software should
-  execute SFENCE.VMA with __rs1__=`x0`. In the common case that no global
-  translations have been modified, _rs2_ should be set to a register other
+  execute SFENCE.VMA with __xs1__=`x0`. In the common case that no global
+  translations have been modified, _xs2_ should be set to a register other
   than `x0` but which contains the value zero, so that global translations
   are not flushed.
   * If software modifies a non-leaf PTE, it should execute SFENCE.VMA with
-  __rs1__=`x0`. If any PTE along the traversal path had its G bit set, _rs2_
-  must be `x0`; otherwise, _rs2_ should be set to the ASID for which the
+  __xs1__=`x0`. If any PTE along the traversal path had its G bit set, _xs2_
+  must be `x0`; otherwise, _xs2_ should be set to the ASID for which the
   translation is being modified.
   * If software modifies a leaf PTE, it should execute SFENCE.VMA with
-  _rs1_ set to a virtual address within the page. If any PTE along the
-  traversal path had its G bit set, _rs2_ must be `x0`; otherwise, _rs2_
+  _xs1_ set to a virtual address within the page. If any PTE along the
+  traversal path had its G bit set, _xs2_ must be `x0`; otherwise, _xs2_
   should be set to the ASID for which the translation is being modified.
   * For the special cases of increasing the permissions on a leaf PTE and
   changing an invalid PTE to a valid leaf, software may choose to execute
@@ -216,9 +216,9 @@ assembly: xs1, xs2
 encoding:
   match: 0001001----------000000001110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always
@@ -226,8 +226,8 @@ access:
   vs: always
   vu: never
 operation(): |
-  XReg vaddr = X[rs1];
-  Bits<16> asid = X[rs2][ASID_WIDTH-1:0];
+  XReg vaddr = X[xs1];
+  Bits<16> asid = X[xs2][ASID_WIDTH-1:0];
 
   if (mode() == PrivilegeMode::U) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
@@ -262,7 +262,7 @@ operation(): |
     vma_type.smode = true;
   }
 
-  if ((rs1 == 0) && (rs2 == 0)) {
+  if ((xs1 == 0) && (xs2 == 0)) {
     # invalidate all translations, from all addresses and all ASIDs
     # includes global mappings
     vma_type.global = true;
@@ -271,7 +271,7 @@ operation(): |
     invalidate_translations(vma_type);
     order_pgtbl_reads_after_vmafence(vma_type);
 
-  } else if ((rs1 == 0) && (rs2 != 0)) {
+  } else if ((xs1 == 0) && (xs2 != 0)) {
     # invalidates all translations from ASID 'asid'
     # does not affect global mappings
     vma_type.single_asid = true;
@@ -281,7 +281,7 @@ operation(): |
     invalidate_translations(vma_type);
     order_pgtbl_reads_after_vmafence(vma_type);
 
-  } else if ((rs1 != 0) && (rs2 == 0)) {
+  } else if ((xs1 != 0) && (xs2 == 0)) {
     # invalidate all translations from leaf page tables containing 'vaddr'
     # does not affect global mappings
     if (canonical_vaddr?(vaddr)) {

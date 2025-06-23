@@ -8,8 +8,8 @@ kind: instruction
 name: andn
 long_name: AND with inverted operand
 description: |
-  Performs the bitwise logical AND operation between `rs1` and the
-  bitwise inversion of `rs2`.
+  Performs the bitwise logical AND operation between `xs1` and the
+  bitwise inversion of `xs2`.
 definedBy:
   extension:
     anyOf:

@@ -21,28 +21,28 @@ access:
 encoding:
   match: 0000101----------010-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
+  XReg xs1_val = X[xs1];
+  XReg xs2_val = X[xs2];
   XReg output = 0;
 
   for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val >> (xlen() - i - 1))
+    output = (((xs2_val >> i) & 1) == 1)
+      ? output ^ (xs1_val >> (xlen() - i - 1))
       : output;
   }
 
-  X[rd] = output;
+  X[xd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

@@ -16,9 +16,9 @@ assembly: xd, xs1
 encoding:
   match: 011010000111-----101-----0010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -27,7 +27,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  XReg input = X[rs1];
+  XReg input = X[xs1];
   XReg output = 0;
 
   for(U32 i=0; i<(xlen()-8); i = i+8) {
@@ -36,7 +36,7 @@ operation(): |
     }
   }
 
-  X[rd] = output;
+  X[xd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

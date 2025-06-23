@@ -22,11 +22,11 @@ encoding:
   # Use custom-0 opcode to avoid conflicts with RISC-V defined instructions.
   match: 0000001----------000-----0001011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -41,11 +41,11 @@ operation(): |
     }
   #}
 
-  XReg src1 = X[rs1];
-  XReg src2 = X[rs2];
+  XReg src1 = X[xs1];
+  XReg src2 = X[xs2];
 
   #anchor("calculation") {
-    X[rd] = (src1 * src2)[MXLEN-1:0];
+    X[xd] = (src1 * src2)[MXLEN-1:0];
   #}
 
 sail(): |

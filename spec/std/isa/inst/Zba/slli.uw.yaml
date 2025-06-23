@@ -8,7 +8,7 @@ kind: instruction
 name: slli.uw
 long_name: Shift left unsigned word (Immediate)
 description: |
-  Takes the least-significant word of rs1, zero-extends it, and shifts it
+  Takes the least-significant word of xs1, zero-extends it, and shifts it
   left by the immediate.
 
   [NOTE]
@@ -22,9 +22,9 @@ encoding:
   variables:
     - name: shamt
       location: 25-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 assembly: xd, xs1, shamt
 access:
@@ -37,7 +37,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs1][31:0] << shamt;
+  X[xd] = X[xs1][31:0] << shamt;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

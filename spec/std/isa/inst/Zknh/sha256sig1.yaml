@@ -16,9 +16,9 @@ assembly: xd, xs1
 encoding:
   match: 000100000011-----001-----0010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

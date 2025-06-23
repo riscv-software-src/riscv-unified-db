@@ -8,7 +8,7 @@ kind: instruction
 name: bexti
 long_name: Single-Bit extract (Immediate)
 description: |
-  Returns a single bit extracted from rs1 at the index specified in rs2.
+  Returns a single bit extracted from xs1 at the index specified in xs2.
   The index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings
   corresponding to shamt[5]=1 are reserved.
 definedBy:
@@ -21,18 +21,18 @@ encoding:
     variables:
       - name: shamt
         location: 24-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 010010-----------101-----0010011
     variables:
       - name: shamt
         location: 25-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -45,7 +45,7 @@ operation(): |
   }
 
   XReg index = shamt & (xlen() - 1);
-  X[rd] = (X[rs1] >> index) & 1;
+  X[xd] = (X[xs1] >> index) & 1;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
