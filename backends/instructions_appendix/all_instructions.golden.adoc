@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /home/uniqueusman/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -6155,13 +6155,13 @@ Atomic Read and Clear Bits in CSR with Immediate
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "uimm","type":4},{"bits":12,"name": "csr","type":4}]}
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "imm","type":4},{"bits":12,"name": "csr","type":4}]}
 ....
 
 Description::
 The CSRRCI variant is similar to CSRRC, except this updates the CSR using an XLEN-bit value obtained
-by zero-extending a 5-bit unsigned immediate (uimm[4:0]) field encoded in the `xs1` field instead of a
-value from an integer register. For CSRRCI, if the `uimm[4:0]` field is zero, then this instruction
+by zero-extending a 5-bit unsigned immediate (imm[4:0]) field encoded in the `xs1` field instead of a
+value from an integer register. For CSRRCI, if the `imm[4:0]` field is zero, then this instruction
 will not write to the CSR, and shall not cause any of the side effects that might otherwise occur on
 a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. The CSRRCI will
 always read the CSR and cause any read side effects regardless of `xd` and `xs1` fields.
@@ -6172,7 +6172,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |csr |$encoding[31:20]
-|uimm |$encoding[19:15]
+|imm |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -6237,13 +6237,13 @@ Atomic Read and Set Bits in CSR with Immediate
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "uimm","type":4},{"bits":12,"name": "csr","type":4}]}
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "imm","type":4},{"bits":12,"name": "csr","type":4}]}
 ....
 
 Description::
 The CSRRSI variant is similar to CSRRS, except this updates the CSR using an XLEN-bit value obtained
-by zero-extending a 5-bit unsigned immediate (uimm[4:0]) field encoded in the `xs1` field instead of a
-value from an integer register. For CSRRSI, if the `uimm[4:0]` field is zero, then this instruction
+by zero-extending a 5-bit unsigned immediate (imm[4:0]) field encoded in the `xs1` field instead of a
+value from an integer register. For CSRRSI, if the `imm[4:0]` field is zero, then this instruction
 will not write to the CSR, and shall not cause any of the side effects that might otherwise occur on
 a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. The CSRRSI will
 always read the CSR and cause any read side effects regardless of `xd` and `xs1` fields.
@@ -6254,7 +6254,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |csr |$encoding[31:20]
-|uimm |$encoding[19:15]
+|imm |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -19941,7 +19941,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x82,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x10,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":8,"name": 0x82,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x10,"type":2}]}
 ....
 
 Description::
@@ -19954,7 +19954,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
-|vd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
