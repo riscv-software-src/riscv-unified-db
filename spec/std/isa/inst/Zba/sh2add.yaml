@@ -8,17 +8,17 @@ kind: instruction
 name: sh2add
 long_name: Shift left by 2 and add
 description: |
-  Shifts `rs1` to the left by 2 places and adds it to `rs2`.
+  Shifts `xs1` to the left by 2 places and adds it to `xs2`.
 definedBy: Zba
 assembly: xd, xs1, xs2
 encoding:
   match: 0010000----------100-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -30,7 +30,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs2] + (X[rs1] << 2);
+  X[xd] = X[xs2] + (X[xs1] << 2);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

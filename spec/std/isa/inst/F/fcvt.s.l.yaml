@@ -11,8 +11,8 @@ description:
   - id: inst-fcvt.s.l-behaviour
     normative: false
     text: |
-      `fcvt.s.l` converts a 64-bit signed integer in integer register `rs1` into a floating-point
-      number in floating-point register `rd`.
+      `fcvt.s.l` converts a 64-bit signed integer in integer register `xs1` into a floating-point
+      number in floating-point register `fd`.
 definedBy: F
 base: 64
 assembly: fd, xs1, rm
