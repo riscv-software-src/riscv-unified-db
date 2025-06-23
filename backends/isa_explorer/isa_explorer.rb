@@ -43,7 +43,7 @@ def arch2ext_table(arch)
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Implied By", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implies", formatter: "textarea", sorter: "alphanum"},
       {name: "Requires", formatter: "textarea", sorter: "alphanum"},
       {name: "Incompatible", formatter: "textarea", sorter: "alphanum"},
       {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
@@ -62,7 +62,7 @@ def arch2ext_table(arch)
       ext.name,           # Name
       ext.long_name,      # Description
       ext.compact_priv_type,  # IC
-      ext.max_version.implied_by.map(&:name),  # Implied By
+      ext.max_version.implications.map{|cond_ext_ver| cond_ext_ver.ext_ver.name}.uniq,  # Implies
       ext.max_version.requirement_condition.empty? ? "" : ext.max_version.requirement_condition.to_logic_tree.to_s, # Requires
       ext.conflicts_condition.empty? ? "" : ext.conflicts_condition.to_logic_tree.to_s, # Incompatible
       ext.ratified,
