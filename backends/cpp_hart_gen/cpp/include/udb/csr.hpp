@@ -50,7 +50,6 @@ namespace udb {
     bool readOnly(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO || type(xlen) == CsrFieldType::ROH;
     }
-    bool writeable(const unsigned& xlen) const { return !readOnly(xlen); }
     bool immutable(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO;
     }
@@ -115,5 +114,13 @@ namespace udb {
 
     // can't this CSR be implemented when ext is not?
     virtual bool implemented_without_Q_(const ExtensionName&) const = 0;
+
+
+    // highest privilege level that can access the CSR
+    virtual PrivilegeMode mode() const = 0;
+
+    // can this CSR be written?
+    virtual bool writable() const = 0;
+
   };
 }  // namespace udb
