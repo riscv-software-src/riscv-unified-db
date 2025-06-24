@@ -23,6 +23,7 @@ module Idl
       :const,
       :signed,
       :global,
+      :known,
       :template_var
     ].freeze
 
@@ -75,7 +76,7 @@ module Idl
       end
     end
 
-    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
+    def initialize(kind, qualifiers: [], width: nil, max_width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
@@ -88,6 +89,7 @@ module Idl
 
       raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer) || width == :unknown
       @width = width
+      @max_width = max_width
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
       @tuple_types = tuple_types
@@ -319,9 +321,33 @@ module Idl
           end
 
         if signed?
-          "SignedBits<#{width_cxx}>"
+          if known?
+            "SignedBits<#{width_cxx}>"
+          else
+            "_PossiblyUnknownBits<#{width_cxx}, true>"
+          end
         else
-          "Bits<#{width_cxx}>"
+          if known?
+            if @width.is_a?(Integer)
+              "Bits<#{width_cxx}>"
+            else
+              if @max_width.nil?
+                "RuntimeBits"
+              else
+                "RuntimeBits<#{@max_width}>"
+              end
+            end
+          else
+            if @width.is_a?(Integer)
+              "PossiblyUnknownBits<#{width_cxx}>"
+            else
+              if @max_width.nil?
+                "PossiblyUnknownRuntimeBits"
+              else
+                "_PossiblyUnknownRuntimeBits<#{@max_width}, false>"
+              end
+            end
+          end
         end
       when :enum
         @name
@@ -399,6 +425,10 @@ module Idl
       @qualifiers.include?(:template_var)
     end
 
+    def known?
+      @qualifiers.include?(:known)
+    end
+
     def make_signed
       @qualifiers.append(:signed).uniq!
       self
@@ -411,6 +441,11 @@ module Idl
 
     def make_global
       @qualifiers.append(:global).uniq!
+      self
+    end
+
+    def make_known
+      @qualifiers.append(:known).uniq!
       self
     end
 
@@ -853,7 +888,7 @@ module Idl
   # prettier prints
   class XregType < Type
     def initialize(xlen)
-      super(:bits, width: xlen)
+      super(:bits, width: xlen, max_width: 64)
     end
 
     def to_s
