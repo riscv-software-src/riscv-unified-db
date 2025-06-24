@@ -343,10 +343,20 @@ module Idl
         end
 
       if width == :unknown
-        "#{' '*indent}Bits<BitsInfinitePrecision>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        # is the value also unknown?
+        if t.known?
+          "#{' '*indent}RuntimeBits<BitsInfinitePrecision>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        else
+          "#{' '*indent}PossiblyUnknownRuntimeBits<BitsInfinitePrecision>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        end
       else
         raise "nil" if width.nil?
-        "#{' '*indent}Bits<#{width}>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        # do we know if this value has anything unknown??
+        if t.known?
+          "#{' '*indent}Bits<#{width}>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        else
+          "#{' '*indent}PossiblyUnknownBits<#{width}>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
+        end
       end
     end
   end
@@ -414,9 +424,25 @@ module Idl
       t = type(symtab)
 
       if w == :unknown
-        "#{' ' * indent}_RuntimeBits<#{symtab.cfg_arch.possible_xlens.max}, #{t.signed?}>{#{v}_b, __UDB_XLEN}"
+        if t.known?
+          "#{' ' * indent}_RuntimeBits<#{symtab.cfg_arch.possible_xlens.max}, #{t.signed?}>{#{v}_b, __UDB_XLEN}"
+        else
+          "#{' ' * indent}_PossiblyUnknownRuntimeBits<#{symtab.cfg_arch.possible_xlens.max}, #{t.signed?}>{\"#{v}\"_xb, __UDB_XLEN}"
+        end
       else
-        "#{' ' * indent}_Bits<#{w}, #{t.signed?}>{#{v}_b}"
+        if t.known?
+          if t.signed?
+            "#{' ' * indent}#{v}_sb"
+          else
+            "#{' ' * indent}#{v}_b"
+          end
+        else
+          if t.signed?
+            "#{' ' * indent}\"#{v}\"_xsb"
+          else
+            "#{' ' * indent}\"#{v}\"_xb"
+          end
+        end
       end
     end
   end
@@ -465,7 +491,7 @@ module Idl
       end
       value_else(value_result) do
         # we don't know the value of something (probably a param), so we need the slow extract
-        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1)"
+        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1_b)"
       end
     end
   end
@@ -569,28 +595,29 @@ module Idl
         result = ""
         value_result = value_try do
           v = bits_expression.value(symtab)
+          # know the value, so this is safely a Bits type
           result = "#{' '*indent}Bits<#{v}>"
         end
         value_else(value_result) do
           if bits_expression.constexpr?(symtab)
-            result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab)}.get()>"
+            result = "#{' '*indent}PossiblyUnknownBits<#{bits_expression.gen_cpp(symtab)}.get()>"
           elsif bits_expression.max_value(symtab).nil?
-            result = "#{' '*indent}Bits<BitsInfinitePrecision>"
+            result = "#{' '*indent}PossiblyUnknownBits<BitsInfinitePrecision>"
           else
             max = bits_expression.max_value(symtab)
             max = "BitsInfinitePrecision" if max == :unknown
-            result = "#{' '*indent}_RuntimeBits<#{max}, false>"
+            result = "#{' '*indent}_PossiblyUnknownRuntimeBits<#{max}, false>"
           end
         end
         result
       elsif @type_name == "XReg"
-        "#{' '*indent}Bits<#{symtab.possible_xlens.max}>"
+        "#{' '*indent}PossiblyUnknownBits<#{symtab.possible_xlens.max}>"
       elsif @type_name == "Boolean"
         "#{' '*indent}bool"
       elsif @type_name == "U32"
-        "#{' '*indent}Bits<32>"
+        "#{' '*indent}PossiblyUnknownBits<32>"
       elsif @type_name == "U64"
-        "#{' '*indent}Bits<64>"
+        "#{' '*indent}PossiblyUnknownBits<64>"
       elsif @type_name == "String"
         "#{' '*indent}std::string"
       else
@@ -657,7 +684,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if var.type(symtab).integral?
         if index.constexpr?(symtab) && var.type(symtab).width != :unknown
-          "#{' '*indent}extract<#{index.gen_cpp(symtab, 0)}, 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
+          "#{' '*indent}extract<(#{index.gen_cpp(symtab, 0)}).get(), 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
         else
           "#{' '*indent}extract( #{var.gen_cpp(symtab, 0, indent_spaces:)}, #{index.gen_cpp(symtab, 0)}, 1_b)"
         end

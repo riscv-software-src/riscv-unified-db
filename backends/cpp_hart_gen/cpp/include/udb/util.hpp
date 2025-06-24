@@ -30,9 +30,12 @@ namespace udb {
   static_assert(extract<8, 1>(0xeeff) == 0x0_b, "Did not extract a bit");
 
   // extract bits from a Bits type
-  template <unsigned START, unsigned SIZE, unsigned BITS_LEN>
+  template <
+    unsigned START, unsigned SIZE, unsigned BITS_LEN,
+    template <unsigned, bool> class BitsClass, bool Signed
+  >
     requires(BITS_LEN <= BitsMaxNativePrecision)
-  constexpr Bits<SIZE> extract(const Bits<BITS_LEN> &value) {
+  constexpr BitsClass<SIZE, Signed> extract(const BitsClass<BITS_LEN, Signed> &value) {
     static_assert((START + SIZE) <= BITS_LEN,
                   "Cannot extract more bits than type contains");
 
@@ -58,23 +61,6 @@ namespace udb {
     } else {
       constexpr Bits<BITS_LEN> mask =
           (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1_b;
-      return (value >> START) & mask;
-    }
-  }
-
-  // extract bits from a PossiblyUnknownBits type
-  template <unsigned START, unsigned SIZE, unsigned BITS_LEN>
-    requires(BITS_LEN <= BitsMaxNativePrecision)
-  constexpr PossiblyUnknownBits<SIZE> extract(
-      const PossiblyUnknownBits<BITS_LEN> &value) {
-    static_assert((START + SIZE) <= BITS_LEN,
-                  "Cannot extract more bits than type contains");
-
-    if constexpr (SIZE == BITS_LEN) {
-      return value;
-    } else {
-      constexpr Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> START) & mask;
     }
   }
@@ -170,19 +156,23 @@ namespace udb {
     }
   }
 
-  template <unsigned MSB, unsigned LSB, unsigned T>
-  constexpr Bits<T> bit_insert(const Bits<T> &target,
-                               const Bits<MSB - LSB + 1> &value) {
-    static_assert(MSB < T, "MSB is outside target range");
+  template <unsigned MSB, unsigned LSB, unsigned TargetN,
+    template <unsigned, bool> class TargetBitsType, unsigned ArgN, bool ArgSign,
+    template <unsigned, bool> class ValueBitsType>
+    requires (ValueBitsType<MSB - LSB + 1, false>::IsABits)
+  constexpr TargetBitsType<TargetN, ArgSign> bit_insert(
+    const TargetBitsType<ArgN, ArgSign> &target,
+    const ValueBitsType<MSB - LSB + 1, false> &value) {
+    static_assert(MSB < TargetN, "MSB is outside target range");
     static_assert(LSB <= MSB, "LSB is greater than MSB");
-    static_assert(T <= Bits<T>::MaxNativePrecision,
+    static_assert(TargetN <= BitsMaxNativePrecision,
                   "Multi-precision Bits is not constexpr");
-    Bits<T> mask =
+    TargetBitsType<TargetN, ArgSign> mask =
         ((Bits<1>{1}.template widening_sll<MSB - LSB + 1>()) - 1_b).template widening_sll<LSB>();
     return (target & ~mask) | ((value.template widening_sll<LSB>()) & mask);
   }
 
-  static_assert(bit_insert<0, 0, 32>(0_b, 1_b) == 0x1_b, "Did not insert bit");
+  static_assert(bit_insert<0, 0, 32>(0x000000000_b, 1_b) == 0x1_b, "Did not insert bit");
   static_assert(bit_insert<1, 1, 32>(0_b, 1_b) == 0x2_b, "Did not insert bit");
   static_assert(bit_insert<8, 8, 32>(0_b, 1_b) == 0x100_b, "Did not insert bit");
   static_assert(bit_insert<15, 15, 32>(0_b, 1_b) == 0x8000_b, "Did not insert bit");
@@ -192,23 +182,29 @@ namespace udb {
   static_assert(bit_insert<7, 4, 32>(0xf_b, 0xa_b) == 0xaf_b, "Did not insert nibble");
   static_assert(bit_insert<7, 4, 32>(0xff_b, 0xa_b) == 0xaf_b, "Did not insert nibble");
 
-  template <unsigned T, typename MsbType, typename LsbType, typename ValueType>
-  void bit_insert(Bits<T> &target, const MsbType &msb, const LsbType &lsb,
+  template <
+    template <unsigned, bool> class BitsClass, unsigned T, bool Signed,
+    typename MsbType, typename LsbType, typename ValueType
+  >
+  void bit_insert(BitsClass<T, Signed> &target, const MsbType &msb, const LsbType &lsb,
                   const ValueType &value) {
-    Bits<T> mask = ((Bits<T + 1>{1} << msb) - 1_b) << lsb;
-    target = (target & ~mask) | ((Bits<T>{value} << lsb) & mask);
+    BitsClass<T, Signed> mask = ((BitsClass<T + 1, Signed>{1} << msb) - 1_b) << lsb;
+    target = (target & ~mask) | ((BitsClass<T, Signed>{value} << lsb) & mask);
   }
 
-  template <unsigned N, unsigned M>
-  constexpr Bits<N * M> replicate(const Bits<M> &_value) {
+  template <
+    unsigned N, unsigned M,
+    template <unsigned, bool> class BitsClass
+  >
+  constexpr BitsClass<N * M, false> replicate(const BitsClass<M, false> &_value) {
     static_assert(N > 0, "Must replicate at least once");
     static_assert(M < BitsMaxNativePrecision,
                   "Please don't replicate multiprecision numbers ;(");
 
-    Bits<N * M> value = _value;
-    Bits<N * M> result = value;
+    BitsClass<N * M, false> value = _value;
+    BitsClass<N * M, false> result = value;
     for (unsigned i = 1; i < N; i++) {
-      result |= value << (i * M);
+      result |= value << Bits(i * M);
     }
     return result;
   }

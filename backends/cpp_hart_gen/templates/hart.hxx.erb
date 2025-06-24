@@ -171,7 +171,7 @@ namespace udb {
         std::map<ExtensionName, Version> implemented_exts;
 
         for (auto ext : ext_ver_list) {
-          implemented_exts.emplace(ExtensionName::from_s(ext[0]), ext[1]);
+          implemented_exts.emplace(ExtensionName::from_s(ext[0].get<std::string>()), ext[1].get<std::string>());
         }
         for (auto ext : ext_ver_list) {
           <%- cfg_arch.extensions.each do |ext| -%>
@@ -234,12 +234,12 @@ namespace udb {
           return csr_handle;
         } else {
           csr_handle.valid = true;
-          csr_handle.name = csr->name();
+          csr_handle.name = csr->second->name();
           csr_handle.addr_type = CsrAddressType::Direct;
           csr_handle.address = csr_addr;
           csr_handle.indirect_slot = 0;
-          csr_handle.mode = csr->mode();
-          csr_handle.writable = csr->writable();
+          csr_handle.mode = csr->second->mode();
+          csr_handle.writable = csr->second->writable();
           return csr_handle;
         }
       }
@@ -247,7 +247,7 @@ namespace udb {
       <%= name_of(:struct, cfg_arch, "Csr") %> indirect_csr_lookup(const Bits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
         <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
-        udb_assert((window_slot > 0) && (window_slot <= 6), "Indirect slots must be between 1-6, inclusive");
+        udb_assert((window_slot > 0_b) && (window_slot <= 6_b), "Indirect slots must be between 1-6, inclusive");
 
         auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_indirect_addr, window_slot));
         if (csr == m_csr_indirect_addr_map.end()) {
@@ -255,12 +255,12 @@ namespace udb {
           return csr_handle;
         } else {
           csr_handle.valid = true;
-          csr_handle.name = csr->name();
+          csr_handle.name = csr->second->name();
           csr_handle.addr_type = CsrAddressType::Indirect;
           csr_handle.address = csr_indirect_addr;
           csr_handle.indirect_slot = window_slot;
-          csr_handle.mode = csr->mode();
-          csr_handle.writable = csr->writable();
+          csr_handle.mode = csr->second->mode();
+          csr_handle.writable = csr->second->writable();
           return csr_handle;
         }
       }
@@ -269,11 +269,11 @@ namespace udb {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.hw_read(xlen());
+          return csr->second->hw_read(xlen());
         } else {
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.hw_read(xlen());
+          return csr->second->hw_read(xlen());
         }
       }
 
@@ -281,11 +281,11 @@ namespace udb {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.sw_read(xlen());
+          return csr->second->sw_read(xlen());
         } else {
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.sw_read(xlen());
+          return csr->second->sw_read(xlen());
         }
       }
 
@@ -293,11 +293,11 @@ namespace udb {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.sw_write(value, xlen());
+          return csr->second->sw_write(value, xlen());
         } else {
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.sw_write(value, xlen());
+          return csr->second->sw_write(value, xlen());
         }
       }
 
@@ -309,7 +309,7 @@ namespace udb {
         m_next_pc = next_pc;
       }
 
-      uint64_t pc() const override { return m_pc; }
+      uint64_t pc() const override { return m_pc.get(); }
 
       void advance_pc() override {
         m_pc = m_next_pc;
@@ -351,7 +351,7 @@ namespace udb {
       void printState(FILE* out = stdout) const override;
 
     CsrBase* csr(unsigned address) override {
-      auto it = m_csr_addr_map.find(address);
+      auto it = m_csr_addr_map.find(Bits<12>{address});
       if (it == m_csr_addr_map.end()) {
          return nullptr;
       }
@@ -359,7 +359,7 @@ namespace udb {
     }
 
     const CsrBase* csr(unsigned address) const override {
-      auto it = m_csr_addr_map.find(address);
+      auto it = m_csr_addr_map.find(Bits<12>{address});
       if (it == m_csr_addr_map.end()) {
          return nullptr;
       }
@@ -398,7 +398,7 @@ namespace udb {
     bool _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding, InstBase* obj);
 
     uint64_t fetch() override { return _fetch(); }
-    Bits<INSTR_ENC_SIZE> _fetch();
+    Bits<INSTR_ENC_SIZE.get()> _fetch();
 
     <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
       return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};

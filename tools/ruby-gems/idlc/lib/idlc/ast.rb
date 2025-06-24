@@ -1072,11 +1072,11 @@ module Idl
 
     def type(symtab)
       if expression.type(symtab).width == :unknown
-        Type.new(:bits, width: :unknown, qualifiers: [:const])
+        Type.new(:bits, width: :unknown, qualifiers: [:const, :known])
       else
         len = expression.type(symtab).width.bit_length
         len = len.zero? ? 1 : len
-        Type.new(:bits, width: len, qualifiers: [:const])
+        Type.new(:bits, width: len, qualifiers: [:const, :known])
       end
     end
 
@@ -1116,7 +1116,7 @@ module Idl
       Type.new(
         :bits,
         width: enum_class.type(symtab).element_names.size.bit_length,
-        qualifiers: [:const]
+        qualifiers: [:const, :known]
       )
     end
 
@@ -1152,7 +1152,7 @@ module Idl
     end
 
     def type(symtab)
-      Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const])
+      Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const, :known])
     end
 
     def value(symtab)
@@ -1241,7 +1241,7 @@ module Idl
       Type.new(
         :array,
         width: enum_class.type(symtab).element_values.size,
-        sub_type: Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const]),
+        sub_type: Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const, :known]),
         qualifiers: [:const]
       )
     end
@@ -1812,7 +1812,11 @@ module Idl
       if var_type.kind == :array
         var_type.sub_type
       elsif var_type.integral?
-        Bits1Type
+        if var_type.known?
+          Bits1Type
+        else
+          PossiblyUnknownBits1Type
+        end
       else
         internal_error "Bad ary element access"
       end
@@ -1892,7 +1896,11 @@ module Idl
         msb_value = msb.value(symtab)
         lsb_value = lsb.value(symtab)
         range_size = msb_value - lsb_value + 1
-        return Type.new(:bits, width: range_size)
+        if var.type(symtab).known?
+          return Type.new(:bits, width: range_size, qualifiers: [:known])
+        else
+          return Type.new(:bits, width: range_size)
+        end
       end
       # don't know the width at compile time....assume the worst
       value_else(value_result) { var.type(symtab) }
@@ -3125,7 +3133,7 @@ module Idl
       when :bits
         etype
       when :enum_ref
-        Type.new(:bits, width: etype.enum_class.width)
+        Type.new(:bits, width: etype.enum_class.width, qualifiers: [:known])
       when :csr
         if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
@@ -3253,6 +3261,7 @@ module Idl
         # type of non-widening left/right shift is the type of the left hand side
         lhs_type
       elsif op == "`<<"
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         value_result = value_try do
           # if shift amount is known, then the result width is increased by the shift
           # otherwise, the result is the width of the left hand side
@@ -3263,6 +3272,7 @@ module Idl
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
       elsif ["`+", "`-"].include?(op)
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         # widening addition/subtraction: result is 1 more bit than the largest operand to
         # capture the carry
         value_result = value_try do
@@ -3274,6 +3284,7 @@ module Idl
           Type.new(:bits, width: :unknown, qualifiers:)
         end
       elsif op == "`*"
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         # widening multiply: result is 2x the width of the largest operand
         value_result = value_try do
           value_error "lhs width is unknown" if lhs_type.width == :unknown
@@ -3285,6 +3296,7 @@ module Idl
         end
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
+        qualifiers << :known if lhs_type.known? && (short_circuit || rhs_type.known?)
         if [lhs_type.width, rhs_type.width].include?(:unknown)
           Type.new(:bits, width: :unknown, qualifiers:)
         else
@@ -3509,7 +3521,7 @@ module Idl
           prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
 
           # check for truncation
-          prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+          prod_bits_needed = bits_needed(prod, type(symtab).signed?)
           if (type(symtab).width != :unknown)
             return prod if prod_bits_needed <= type(symtab).width
 
@@ -3653,7 +3665,7 @@ module Idl
         prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
 
         # check for truncation
-        prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+        prod_bits_needed = bits_needed(prod, type(symtab).signed?)
         if (type(symtab).width != :unknown)
           return prod if prod_bits_needed <= type(symtab).width
 
@@ -4000,20 +4012,33 @@ module Idl
 
     # @!macro type
     def type(symtab)
+      all_known_values = true
+      width_known = true
+
       is_const = T.let(true, T::Boolean)
       total_width = expressions.reduce(0) do |sum, exp|
         e_type = exp.type(symtab)
-        return BitsUnknownType if e_type.width == :unknown
-
-        is_const &&= e_type.const?
-
-        sum + e_type.width
+        if e_type.width == :unknown
+          width_known = false
+        elsif width_known
+          sum = sum + e_type.width
+        end
+        all_known_values &= e_type.known?
+        sum
       end
 
-      if is_const
-        Type.new(:bits, width: total_width, qualifiers: [:const])
+      if all_known_values
+        if width_known
+          Type.new(:bits, width: total_width, qualifiers: [:known])
+        else
+          Type.new(:bits, width: :unknown, qualifiers: [:known])
+        end
       else
-        Type.new(:bits, width: total_width)
+        if width_known
+          Type.new(:bits, width: total_width)
+        else
+          Type.new(:bits, width: :unknown)
+        end
       end
     end
 
@@ -4082,7 +4107,7 @@ module Idl
     def type(symtab)
       value_result = value_try do
         width = (n.value(symtab) * v.type(symtab).width)
-        return Type.new(:bits, width:)
+        return Type.new(:bits, width:, qualifiers: [:known])
       end
       value_else(value_result) do
         Type.new(:bits, width: :unknown)
@@ -4185,7 +4210,7 @@ module Idl
       when "$encoding"
         sz = symtab.get("__instruction_encoding_size")
         internal_error "Forgot to set __instruction_encoding_size" if sz.nil?
-        Type.new(:bits, width: sz.value, qualifiers: [:const])
+        Type.new(:bits, width: sz.value, qualifiers: [:const, :known])
       when "$pc"
         if symtab.mxlen == 32
           Bits32Type
@@ -4611,10 +4636,19 @@ module Idl
           if true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits
             true_width = true_expression.type(symtab).width
             false_width = false_expression.type(symtab).width
+            known = true_expression.type(symtab).known? && false_expression.type(symtab).known?
             if true_width == :unknown || false_width == :unknown
-              Type.new(:bits, width: :unknown)
+              if known
+                Type.new(:bits, width: :unknown, qualifiers: [:known])
+              else
+                Type.new(:bits, width: :unknown)
+              end
             else
-              Type.new(:bits, width: [true_width, false_width].max)
+              if known
+                Type.new(:bits, width: [true_width, false_width].max, qualifiers: [:known])
+              else
+                Type.new(:bits, width: [true_width, false_width].max)
+              end
             end
           else
             true_expression.type(symtab).clone
@@ -5191,16 +5225,18 @@ module Idl
       case @type_name
       when "XReg"
         if symtab.mxlen == 32
-          Bits32Type
+          PossiblyUnknownBits32Type
+        elsif symtab.mxlen == 64
+          PossiblyUnknownBits64Type
         else
-          Bits64Type
+          Type.new(:bits, width: :unknown, max_width: 64)
         end
       when "Boolean"
         BoolType
       when "U32"
-        Bits32Type
+        PossiblyUnknownBits32Type
       when "U64"
-        Bits64Type
+        PossiblyUnknownBits64Type
       when "String"
         StringType
       when "Bits"
@@ -5279,7 +5315,35 @@ module Idl
       @known_value = known_value
       @unknown_mask = unknown_mask
     end
+    def bit_length
+      [@known_value.bit_length, @unknown_mask.bit_length].max
+    end
+    def to_s
+      known_str = @known_value.to_s(2).reverse
+      x = @unknown_mask.to_s(2).reverse
+      v = []
+      ([known_str.size, x.size].max).times do |i|
+        if i >= known_str.size
+          v << ((x[i] == '1') ? 'x' : '0')
+        elsif i >= x.size
+          v << known_str[i]
+        else
+          if x[i] == '1'
+            v << 'x'
+          else
+            v << known_str[i]
+          end
+        end
+      end
+      "0b#{v.reverse.join("")}"
+    end
   end
+
+  # TODO: move this into a unit test
+  tmp = UnknownLiteral.new(5, 4)
+  raise tmp.to_s unless tmp.to_s == "0bx01"
+  tmp = UnknownLiteral.new(0x7fff_ffff, 0b1000_0000_0000)
+  raise tmp.to_s unless tmp.to_s == "0b1111111111111111111x11111111111"
 
   # represents an integer literal
   class IntLiteralAst < AstNode
@@ -5325,6 +5389,8 @@ module Idl
       when /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         signed = ::Regexp.last_match(4)
+        value = ::Regexp.last_match(6)
+
         width = width(symtab)
 
         unless width == :unknown
@@ -5332,18 +5398,19 @@ module Idl
         end
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers << :known unless value.include?('x')
         @type = Type.new(:bits, width:, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         signed = ::Regexp.last_match(3)
 
-        qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers = signed == "s" ? [:signed, :const, :known] : [:const, :known]
         @type = Type.new(:bits, width: width(symtab), qualifiers:)
       when /^([0-9]*)(s?)$/
         # basic decimal
         signed = ::Regexp.last_match(2)
 
-        qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers = signed == "s" ? [:signed, :const, :known] : [:const, :known]
         @type = Type.new(:bits, width: width(symtab), qualifiers:)
       else
         internal_error "Unhandled int value '#{text_value}'"
@@ -5471,13 +5538,13 @@ module Idl
             unknown_mask =
               case radix_id
               when "b"
-                value.gsub("1", "0").gsub(/xX/, "1").to_i(2)
+                value.gsub("1", "0").gsub(/[xX]/, "1").to_i(2)
               when "o"
-                value.gsub(/[0-7]/, "0").gsub(/xX/, "7").to_i(8)
+                value.gsub(/[0-7]/, "0").gsub(/[xX]/, "7").to_i(8)
               when "d"
                 raise "impossible"
               when "h"
-                value.gsub(/[0-9a-fA-F]/, "0").gsub(/xX/, "f").to_i(16)
+                value.gsub(/[0-9a-fA-F]/, "0").gsub(/[xX]/, "f").to_i(16)
               end
             UnknownLiteral.new(known_value, unknown_mask)
           end
@@ -7334,7 +7401,7 @@ module Idl
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
         end
       when "address"
-        Type.new(:bits, width: 12)
+        Type.new(:bits, width: 12, qualifiers: [:const, :known])
       when "implemented_without?"
         ConstBoolType
       else

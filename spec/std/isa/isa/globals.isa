@@ -23,11 +23,11 @@ include "fp.idl"
 ############################################################
 
 # CSR field value is undefined, but whatever it is, it must be legal for the field
-Bits<65> UNDEFINED_LEGAL = 65'h10000000000000000;
+Bits<MXLEN> UNDEFINED_LEGAL = MXLEN'hxxxxxxxxxxxxxxxx;
 
 # CSR field value is undefined, but whateer it is, it must be legal for the field and it
 # must be the same value if the same sequence of instructions leading to the read is executed
-Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 66'h20000000000000000;
+Bits<MXLEN> UNDEFINED_LEGAL_DETERMINISTIC = MXLEN'hxxxxxxxxxxxxxxxx; #66'h20000000000000000;
 
 # Signals an illegal write of a WLRL field
 Bits<67> ILLEGAL_WLRL = 67'h40000000000000000;

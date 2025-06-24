@@ -70,6 +70,8 @@ namespace udb {
       requires(N >= Size)
     operator BitsType<N>() const;
 
+    Bits<Size>::StorageType get() const { return this.operator BitsType<Size>().get(); }
+
     bool operator!() const { return !static_cast<BitsType<Size>>(*this).get(); }
 
     template <unsigned N>
@@ -166,7 +168,7 @@ namespace udb {
   template <unsigned N>
     requires(N >= Size)
   BitfieldMember<ParentSize, Start, Size>::template operator BitfieldMember<ParentSize, Start, Size>::template BitsType<N>() const {
-    return (static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue;
+    return static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue;
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>

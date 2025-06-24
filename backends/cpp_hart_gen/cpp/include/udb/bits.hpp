@@ -2001,7 +2001,18 @@ namespace udb {
       return m_val.get();
     }
 
+    template <bool _Signed = Signed>
+      requires(_Signed == false)
+    constexpr _PossiblyUnknownBits<N, true> make_signed() const { return {m_val}; }
+
+    template <bool _Signed = Signed>
+      requires(_Signed == true)
+    constexpr _PossiblyUnknownBits<N, true> make_signed() const { return *this; }
+
     // assignment
+    constexpr _PossiblyUnknownBits &operator=(const _PossiblyUnknownBits&) = default;
+    constexpr _PossiblyUnknownBits &operator=(_PossiblyUnknownBits&&) = default;
+
     template <template <unsigned, bool> class BitsType, unsigned M, bool _Signed>
     constexpr _PossiblyUnknownBits &operator=(const BitsType<M, _Signed> &rhs) {
       m_val = rhs.value();
@@ -2014,6 +2025,13 @@ namespace udb {
 
     // invert operator
     constexpr _PossiblyUnknownBits operator~() const & { return {~m_val, m_unknown_mask}; }
+
+    // post-increment
+    // the arithmetic operators are undefined with unknown values, so
+    // these operators return {Runtime}Bits
+    _Bits<N, Signed> operator++(int) {
+      return m_val++;
+    }
 
 #define BITS_COMPARISON_OPERATOR(op)                                              \
   template <template <unsigned, bool> class BitsType, unsigned M, bool _Signed>   \
@@ -2158,9 +2176,9 @@ namespace udb {
 
 #undef BITS_BITWISE_OPERATOR
 
-    template <template <unsigned, bool> class BitsType, unsigned M, bool _Signed>
+    template <template <unsigned, bool> class BitsType, unsigned M>
     constexpr _PossiblyUnknownBits operator<<(const BitsType<M, false> &shamt) {
-      if constexpr (BitsType<M, _Signed>::PossiblyUnknown) {
+      if constexpr (BitsType<M, false>::PossiblyUnknown) {
         if (shamt.unknown_mask() != 0) {
           throw UndefinedValueError("Cannot shift an unknown amount");
         }
@@ -2168,14 +2186,28 @@ namespace udb {
       return {m_val << shamt, m_unknown_mask << shamt};
     }
 
-    template <template <unsigned, bool> class BitsType, unsigned M, bool _Signed>
-    constexpr _PossiblyUnknownBits operator>>(const BitsType<M, _Signed> &shamt) const {
-      if constexpr (BitsType<M, _Signed>::PossiblyUnknown) {
+    template <template <unsigned, bool> class BitsType, unsigned M>
+    constexpr _PossiblyUnknownBits operator>>(const BitsType<M, false> &shamt) const {
+      if constexpr (BitsType<M, false>::PossiblyUnknown) {
         if (shamt.unknown_mask() != 0) {
           throw UndefinedValueError("Cannot shift an unknown amount");
         }
       }
       return {m_val >> shamt, m_unknown_mask >> shamt};
+    }
+
+    template <template <unsigned, bool> class BitsType, unsigned M>
+    constexpr _PossiblyUnknownBits sra(const BitsType<M, false> &shamt) const {
+      if constexpr (BitsType<M, false>::PossiblyUnknown) {
+        if (shamt.unknown_mask() != 0) {
+          throw UndefinedValueError("Cannot shift an unknown amount");
+        }
+      }
+      if ((m_unknown_mask.get() >> N) & 0x1) {
+        return {m_val.cast_to_signed() >> shamt.get(), ~_Bits<N, false>::mask() | (m_unknown_mask >> shamt).get()};
+      } else {
+        return {m_val.cast_to_signed() >> shamt.get(), (m_unknown_mask >> shamt).get()};
+      }
     }
 
     // widening left shift when the shift amount is known at compile time

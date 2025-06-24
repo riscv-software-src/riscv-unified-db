@@ -151,7 +151,7 @@ template <SocModel SocType>
 
 <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
 template <SocModel SocType>
-void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen)
+void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value, const unsigned& xlen)
 {
   if (xlen == 32) {
     <%- fields_for_xlen.each do |field| -%>
@@ -176,7 +176,7 @@ void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%=
 }
 <%- else -%>
 template <SocModel SocType>
-void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%= csr.max_length %>>& value)
+void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value)
 {
   <%- xlen = cfg_arch.possible_xlens[0] # any valid xlen will work -%>
   <%- fields_for_xlen.each do |field| -%>
@@ -187,7 +187,7 @@ void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%=
 
 <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
 template <SocModel SocType>
-bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen) {
+bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value, const unsigned& xlen) {
   <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
@@ -229,7 +229,7 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%=
 }
 <%- else -%>
 template <SocModel SocType>
-bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%= csr.max_length %>>& value) {
+bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value) {
   View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
 
   <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
