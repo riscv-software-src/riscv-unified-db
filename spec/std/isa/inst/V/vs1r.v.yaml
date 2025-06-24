@@ -10,7 +10,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vs3, xs1
+assembly: vs3, (xs1)
 encoding:
   match: 000000101000-----000-----0100111
   variables:
