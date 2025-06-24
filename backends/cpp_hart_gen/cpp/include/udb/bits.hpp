@@ -1049,14 +1049,17 @@ namespace udb {
       }
       if (base == 2) {
         // the number of bits is the number of characters after the first x or 1
-        while (*ptr != '1' && *ptr != 'x' && *ptr != 'X') {
+        while (*ptr != '1' && *ptr != 'x' && *ptr != 'X' && *ptr != '\0') {
           ptr++;
-          if (*ptr != '1' && *ptr != '0' && *ptr != 'x' && *ptr != 'X') {
+          if (*ptr != '1' && *ptr != '0' && *ptr != 'x' && *ptr != 'X' && *ptr != '\0') {
             // bad character
             return 0;
           }
         }
         width = strlen(ptr);
+
+        // special case: if zero, need one bit
+        width = width == 0 ? 1 : width;
       } else if (base == 10) {
         uint64_t pow = 1;
         uint64_t last_val = val;
@@ -1977,8 +1980,8 @@ namespace udb {
     constexpr ~_PossiblyUnknownBits() noexcept = default;
 
     template <template <unsigned, bool> class BitsType, unsigned M, bool _Signed>
-      requires(BitsType<M, _Signed>::IsABits && BitsType<M, _Signed>::PossiblyUknown)
-    constexpr operator BitsType<M, Signed>() const {
+      requires(BitsType<M, _Signed>::IsABits && BitsType<M, _Signed>::PossiblyUnknown)
+    constexpr operator BitsType<M, _Signed>() const {
       if constexpr (!BitsType<M, _Signed>::PossiblyUnknown) {
         if (m_unknown_mask != 0) {
           throw UndefinedValueError("Cannot convert value with unknowns to Bits type");

@@ -88,7 +88,7 @@ namespace udb {
   template <SocModel SocType>
   int <%= name_of(:hart, cfg_arch) %><SocType>::_run_one()
   {
-    Bits<INSTR_ENC_SIZE> enc;
+    Bits<INSTR_ENC_SIZE.get()> enc;
     try {
        enc = _fetch();
     } catch(const AbortInstruction& e) {
@@ -104,7 +104,7 @@ namespace udb {
     }
 
     // set the fall-through next pc
-    m_next_pc = m_pc + inst->enc_len();
+    m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
     try {
       inst->execute();
@@ -153,7 +153,7 @@ namespace udb {
           inst = current_bb->pop();
 
           // set the fall-through next pc
-          m_next_pc = m_pc + inst->enc_len();
+          m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
           inst->execute();
           if (this->m_exit_requested) {
@@ -180,7 +180,7 @@ namespace udb {
           }
 
           // set the fall-through next pc
-          m_next_pc = m_pc + inst->enc_len();
+          m_next_pc = m_pc + Bits<XLEN>{inst->enc_len()};
 
           inst->execute();
 

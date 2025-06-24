@@ -217,7 +217,7 @@ class DecodeGen
         if idx.zero?
           bits
         else
-          "(#{bits}.template sll<#{idx}>())"
+          "(#{bits}.template widening_sll<#{idx}>())"
         end
       idx += ef.size
     end
@@ -295,7 +295,7 @@ class DecodeGen
             impl_hints.each do |hint_inst|
               mask = hint_inst.encoding(xlen).format.gsub("0", "1").gsub("-", "0")
               value = hint_inst.encoding(xlen).format.gsub("-", "0")
-              conds << ("((#{encoding_var_name} & 0b#{mask}ull) != 0b#{value}ull)")
+              conds << ("((#{encoding_var_name} & 0b#{mask}_b) != 0b#{value}_b)")
             end
           end
 
@@ -309,9 +309,9 @@ class DecodeGen
             end
           end
           if !conds.empty?
-            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) && #{conds.join(' && ')}) {\n"
+            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}) == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
           else
-            code += "#{' '*indent}#{els}if (extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) {\n"
+            code += "#{' '*indent}#{els}if (extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}) == 0b#{child.value.reverse}_b) {\n"
           end
           code += decode_c(encoding_var_name, xlen, inst_list, child, indent + 2)
           code += "#{' '*indent}}\n"
