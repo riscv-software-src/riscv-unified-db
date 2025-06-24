@@ -8,20 +8,37 @@ kind: instruction
 name: ld
 long_name: Load doubleword
 description: |
-  Load 64 bits of data into register `xd` from an
+  For RV64, load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
-definedBy: I
-base: 64
+  <% if ext?(:Zilsd) %>
+  For RV32, Loads a 64-bit value into registers xd and xd+1.
+  The effective address is obtained by adding
+  register xs1 to the sign-extended 12-bit offset.
+  <% end %>
+
+definedBy:
+  anyOf: [I, Zilsd]
 assembly: xd, imm(xs1)
 encoding:
-  match: -----------------011-----0000011
-  variables:
-    - name: imm
-      location: 31-20
-    - name: xs1
-      location: 19-15
-    - name: xd
-      location: 11-7
+  RV32:
+    match: -----------------011-----0000011
+    variables:
+      - name: imm
+        location: 31-20
+      - name: xs1
+        location: 19-15
+      - name: xd
+        location: 11-7
+        not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+  RV64:
+    match: -----------------011-----0000011
+    variables:
+      - name: imm
+        location: 31-20
+      - name: xs1
+        location: 19-15
+      - name: xd
+        location: 11-7
 access:
   s: always
   u: always
@@ -30,7 +47,18 @@ access:
 operation(): |
   XReg virtual_address = X[xs1] + $signed(imm);
 
-  X[xd] = read_memory<64>(virtual_address, $encoding);
+  if (xlen() == 32) {
+    if (implemented?(ExtensionName::Zilsd)) {
+      Bits<64> data = read_memory<64>(virtual_address, $encoding);
+
+      X[xd] = data[31:0];
+      X[xd+1] = data[63:32];
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else {
+    X[xd] = read_memory<64>(virtual_address, $encoding);
+  }
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

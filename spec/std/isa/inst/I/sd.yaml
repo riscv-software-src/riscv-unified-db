@@ -8,30 +8,55 @@ kind: instruction
 name: sd
 long_name: Store doubleword
 description: |
-  Store 64 bits of data from register `xs2` to an
+  For RV64, store 64 bits of data from register `xs2` to an
   address formed by adding `xs1` to a signed offset.
-definedBy: I
-base: 64
+  <% if ext?(:Zilsd) %>
+  For RV32, store doubleword from even/odd register pair.
+  <% end %>
+definedBy:
+  anyOf: [I, Zilsd]
 assembly: xs2, imm(xs1)
 encoding:
-  match: -----------------011-----0100011
-  variables:
-    - name: imm
-      location: 31-25|11-7
-      sign_extend: true
-    - name: xs1
-      location: 19-15
-    - name: xs2
-      location: 24-20
+  RV32:
+    match: -----------------011-----0100011
+    variables:
+      - name: imm
+        location: 31-25|11-7
+      - name: xs2
+        not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+        location: 24-20
+      - name: xs1
+        location: 19-15
+  RV64:
+    match: -----------------011-----0100011
+    variables:
+      - name: imm
+        location: 31-25|11-7
+        sign_extend: true
+      - name: xs2
+        location: 24-20
+      - name: xs1
+        location: 19-15
 access:
   s: always
   u: always
   vs: always
   vu: always
 operation(): |
+  Bits<64> data;
   XReg virtual_address = X[xs1] + $signed(imm);
 
-  write_memory<64>(virtual_address, X[xs2], $encoding);
+  if (xlen() == 32) {
+    if (implemented?(ExtensionName::Zclsd)) {
+      data = {X[xs2 + 1], X[xs2]};
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else {
+    data = X[xs2];
+  }
+
+  write_memory<64>(virtual_address, data, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
