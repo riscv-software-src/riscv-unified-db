@@ -37,6 +37,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg width = width_minus1 + 1;
-  XReg unsigned_extraction = (X[rs1] >> shamt) & ((32'b1 << width) - 1);
+  XReg width = width_minus1 `+ 1;
+  XReg unsigned_extraction = (X[rs1] >> shamt) & ((33'b1 << width) - 1);
   X[rd] = sext(unsigned_extraction, width);
