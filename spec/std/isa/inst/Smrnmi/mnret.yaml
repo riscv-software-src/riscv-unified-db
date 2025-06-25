@@ -14,7 +14,7 @@ description: |
   also sets mstatus.MPRV to 0. If the Zicfilp extension is implemented, then if the new privileged mode is
   y, MNRET sets ELP to the logical AND of yLPE (see Section 22.1.1) and mnstatus.MNPELP.
 definedBy: Smrnmi
-assembly: mnret
+assembly: ""
 encoding:
   match: "01110000001000000000000001110011"
   variables: []
