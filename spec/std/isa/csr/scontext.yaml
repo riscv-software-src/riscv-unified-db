@@ -41,7 +41,7 @@ fields:
 
       # enforce width of SCONTEXT
       Bits<32> scontext_value = csr_value.DATA & ((32'1 << DBG_SCONTEXT_WIDTH) - 1);
-      return scontext_value
+      return scontext_value;
 sw_read(): |
   # check if mstateen0 or hstateen0 is clear
   if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
