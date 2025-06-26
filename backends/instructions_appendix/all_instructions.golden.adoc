@@ -37213,7 +37213,7 @@ Synopsis::
 No synopsis available
 
 Assembly::
-vs1r.v vs3, xs1
+vs1r.v vs3, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -37250,7 +37250,7 @@ Synopsis::
 No synopsis available
 
 Assembly::
-vs2r.v vs3, xs1
+vs2r.v vs3, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -37287,7 +37287,7 @@ Synopsis::
 No synopsis available
 
 Assembly::
-vs4r.v vs3, xs1
+vs4r.v vs3, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -37324,7 +37324,7 @@ Synopsis::
 No synopsis available
 
 Assembly::
-vs8r.v vs3, xs1
+vs8r.v vs3, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
