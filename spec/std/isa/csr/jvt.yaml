@@ -87,6 +87,11 @@ fields:
         return CsrFieldType::RW;
       }
     reset_value: 0
+    sw_write(csr_value): |
+      if (JVT_READ_ONLY || (csr_value != 0)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      return 0;
 sw_read(): |
   # If the Smstateen extension is implemented, then bit 2 in `mstateen0`, `sstateen0`, and `hstateen0` is
   # implemented. If bit 2 of a controlling `stateen0` CSR is zero, then access to the `jvt` CSR and execution
