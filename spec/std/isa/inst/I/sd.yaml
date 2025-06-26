@@ -8,7 +8,7 @@ kind: instruction
 name: sd
 long_name: Store doubleword
 description: |
-  Store 64 bits of data from register `xs2` to an
+  For RV64, store 64 bits of data from register `xs2` to an
   address formed by adding `xs1` to a signed offset.
 definedBy:
   extension:
@@ -31,9 +31,20 @@ access:
   vs: always
   vu: always
 operation(): |
+  Bits<64> data;
   XReg virtual_address = X[xs1] + $signed(imm);
 
-  write_memory<64>(virtual_address, X[xs2], $encoding);
+  if (xlen() == 32) {
+    if (implemented?(ExtensionName::Zclsd)) {
+      data = {X[xs2 + 1], X[xs2]};
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else {
+    data = X[xs2];
+  }
+
+  write_memory<64>(virtual_address, data, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

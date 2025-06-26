@@ -8,7 +8,7 @@ kind: instruction
 name: ld
 long_name: Load doubleword
 description: |
-  Load 64 bits of data into register `xd` from an
+  For RV64, load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
 definedBy:
   extension:
@@ -32,7 +32,18 @@ access:
 operation(): |
   XReg virtual_address = X[xs1] + $signed(imm);
 
-  X[xd] = read_memory<64>(virtual_address, $encoding);
+  if (xlen() == 32) {
+    if (implemented?(ExtensionName::Zilsd)) {
+      Bits<64> data = read_memory<64>(virtual_address, $encoding);
+
+      X[xd] = data[31:0];
+      X[xd+1] = data[63:32];
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else {
+    X[xd] = read_memory<64>(virtual_address, $encoding);
+  }
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
