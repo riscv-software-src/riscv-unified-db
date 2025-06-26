@@ -35,7 +35,7 @@ fields:
     reset_value: 0
     sw_write(csr_value): |
       # check if mstateen0 or hstateen0 is clear
-      if (implemented?(ExtensionName::Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+      if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
         unimplemented_csr($encoding);
       }
 
@@ -44,6 +44,6 @@ fields:
       return scontext_value
 sw_read(): |
   # check if mstateen0 or hstateen0 is clear
-  if (implemented?(ExtensionName::Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+  if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
     unimplemented_csr($encoding);
   }
