@@ -88,7 +88,7 @@ fields:
       }
     reset_value: 0
     sw_write(csr_value): |
-      if (JVT_READ_ONLY || (csr_value != 0)) {
+      if (JVT_READ_ONLY || (csr_value.MODE != 0)) {
         raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
       return 0;
