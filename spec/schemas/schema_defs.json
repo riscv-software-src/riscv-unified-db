@@ -342,7 +342,7 @@
     "cert_normative_rules": {
       "description": "Architecturally visible behaviors requiring validation by certification tests",
       "type": "array",
-      "required": ["id", "name", "links", "description"],
+      "required": ["id", "name", "doc_links", "description"],
       "properties": {
         "id": {
           "type": "string"
