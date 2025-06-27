@@ -43,7 +43,7 @@ operation(): |
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][21:16];
   if (width > 0) {
-    X[rd] = (pair >> shamt) & ((32'b1 << width) - 1);
+    X[rd] = (pair >> shamt) & ((33'b1 << width) - 1);
   } else {
     X[rd] = 0;
   }
