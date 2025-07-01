@@ -17,7 +17,7 @@ format:
     - inst_subtype/R/R-x.yaml#/data
   opcodes:
     funct7:
-      display_name: CLMULH
+      display_name: CLMUL
       value: 0b0000101
     funct3:
       display_name: CLMULH
