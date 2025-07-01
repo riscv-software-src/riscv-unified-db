@@ -14,7 +14,7 @@ assembly: xd, xs1, vtypei
 encoding:
   match: 0----------------111-----1010111
   variables:
-    - name: xs1
+    - name: zimm
       location: 30-20
     - name: xs1
       location: 19-15

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "udb/bits.hpp"
 #include <cstdint>
 #include <concepts>
 #include <string>
@@ -25,6 +26,9 @@ namespace udb {
     // constructors
     constexpr <%= enum.name %>() = default;
     constexpr <%= enum.name %>(const <%= underlying_type %>& value) : m_value(value) {}
+
+    template <BitsType BitsClass>
+    constexpr <%= enum.name %>(const BitsClass& value) : m_value(value.get()) {}
 
     static const <%= enum.name %> from_s(const std::string_view& value);
 

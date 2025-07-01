@@ -59,16 +59,16 @@ namespace udb {
     template <unsigned _Size>
     using BitsType = PossiblyUnknownBits<_Size>;
 
-    BitfieldMember(Bitfield<ParentSize> &parent) : m_parent(parent) {}
-    BitfieldMember(const BitfieldMember &other) : m_parent(other.m_parent) {}
+    explicit BitfieldMember(Bitfield<ParentSize> &parent) : m_parent(parent) {}
+    explicit BitfieldMember(const BitfieldMember &other) : m_parent(other.m_parent) {}
 
     static constexpr Bits<Size> MaximumValue =
         (Bits<1>(1).template widening_sll<Size>()) - 1_b;
     static constexpr Bits<ParentSize> Mask = MaximumValue.template widening_sll<Start>();
 
-    template <unsigned N>
-      requires(N >= Size)
-    operator BitsType<N>() const;
+    template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+      requires ((N >= Size) && (BitsClass<N, Signed>::IsABits))
+    operator BitsClass<N, Signed>() const;
 
     Bits<Size>::StorageType get() const { return this.operator BitsType<Size>().get(); }
 
@@ -144,7 +144,7 @@ namespace udb {
     Bitfield() = default;
 
     template <template <unsigned, bool> class OtherBitsType, unsigned N, bool Signed>
-    Bitfield(const OtherBitsType<N, Signed> &value) : m_value(value) {}
+    explicit Bitfield(const OtherBitsType<N, Signed> &value) : m_value(value) {}
 
     Bitfield &operator=(const BitsType<Size> &value) {
       m_value = value;
@@ -165,10 +165,10 @@ namespace udb {
   static_assert(std::is_copy_constructible_v<BitfieldMember<64, 0, 1>>);
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
-  template <unsigned N>
-    requires(N >= Size)
-  BitfieldMember<ParentSize, Start, Size>::template operator BitfieldMember<ParentSize, Start, Size>::template BitsType<N>() const {
-    return static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue;
+  template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+    requires ((N >= Size) && (BitsClass<N, Signed>::IsABits))
+  BitfieldMember<ParentSize, Start, Size>::template operator BitsClass<N, Signed>() const {
+    return BitsClass<N, Signed> {static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue};
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>

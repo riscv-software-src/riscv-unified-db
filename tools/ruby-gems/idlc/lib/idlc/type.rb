@@ -45,6 +45,14 @@ module Idl
       @kind == :bits
     end
 
+    def runtime?
+      if @kind == :array
+        @sub_type.runtime?
+      else
+        @kind == :bits && @width == :unknown
+      end
+    end
+
     def default
       case @kind
       when :bits, :bitfield
@@ -105,7 +113,7 @@ module Idl
       end
     end
 
-    def initialize(kind, qualifiers: [], width: nil, max_width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
+    def initialize(kind, qualifiers: [], width: nil, width_ast: nil, max_width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
@@ -118,6 +126,7 @@ module Idl
 
       raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer) || width == :unknown
       @width = width
+      @width_ast = width_ast
       @max_width = max_width
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
@@ -354,38 +363,45 @@ module Idl
       when :bits
         raise "@width is a #{@width.class}" unless @width.is_a?(Integer) || @width == :unknown
 
-        width_cxx =
+        if known?
           if @width.is_a?(Integer)
-            @width
-          elsif @width == :unknown
-            "BitsInfinitePrecision"
-          else
-            @width.to_cxx
-          end
-
-        if signed?
-          if known?
-            "SignedBits<#{width_cxx}>"
-          else
-            "_PossiblyUnknownBits<#{width_cxx}, true>"
-          end
-        else
-          if known?
-            if @width.is_a?(Integer)
-              "Bits<#{width_cxx}>"
+            if signed?
+              "SignedBits<#{@width}>"
             else
-              if @max_width.nil?
-                "RuntimeBits"
+              "Bits<#{@width}>"
+            end
+          else
+            if @max_width.nil?
+              if signed?
+                "SignedRuntimeBits<>"
+              else
+                "RuntimeBits<>"
+              end
+            else
+              if signed?
+                "SignedRuntimeBits<#{@max_width}>"
               else
                 "RuntimeBits<#{@max_width}>"
               end
             end
-          else
-            if @width.is_a?(Integer)
-              "PossiblyUnknownBits<#{width_cxx}>"
+          end
+        else
+          if @width.is_a?(Integer)
+            if signed?
+              "_PossiblyUnknownBits<#{@width}, true>"
             else
-              if @max_width.nil?
-                "PossiblyUnknownRuntimeBits"
+              "_PossiblyUnknownBits<#{@width}, false>"
+            end
+          else
+            if @max_width.nil?
+              if signed?
+                "_PossiblyUnknownRuntimeBits<BitsInfinitePrecision, true>"
+              else
+                "_PossiblyUnknownRuntimeBits<BitsInfinitePrecision, false>"
+              end
+            else
+              if signed?
+                "_PossiblyUnknownRuntimeBits<#{@max_width}, true>"
               else
                 "_PossiblyUnknownRuntimeBits<#{@max_width}, false>"
               end
@@ -629,6 +645,11 @@ module Idl
       raise "No member named '#{member_name}'" if idx.nil?
 
       @member_types[idx]
+    end
+
+    # does this struct have any members whose type depends on a runtime parameter?
+    def runtime?
+      @member_types.any?(&:runtime?)
     end
   end
 
