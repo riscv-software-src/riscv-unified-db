@@ -212,7 +212,7 @@ class DecodeGen
     idx = 0
     efs = []
     dv.encoding_fields.reverse.each do |ef|
-      bits = "extract<#{ef.range.first}, #{ef.range.size}>(#{encoding_var_name}.get())"
+      bits = "#{encoding_var_name}.extract<#{ef.range.last}, #{ef.range.first}>()"
       efs <<
         if idx.zero?
           bits
@@ -309,16 +309,16 @@ class DecodeGen
             end
           end
           if !conds.empty?
-            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}) == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
+            code += "#{' '*indent}#{els}if ((#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
           else
-            code += "#{' '*indent}#{els}if (extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}) == 0b#{child.value.reverse}_b) {\n"
+            code += "#{' '*indent}#{els}if (#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) {\n"
           end
           code += decode_c(encoding_var_name, xlen, inst_list, child, indent + 2)
           code += "#{' '*indent}}\n"
           els = "else "
         end
       else
-        code += "#{' ' * indent}switch(extract<#{node.children.first.range.first}, #{node.children.first.range.size}>(#{encoding_var_name}).get()) {\n"
+        code += "#{' ' * indent}switch(#{encoding_var_name}.extract<#{node.children.first.range.last}, #{node.children.first.range.first}>().get()) {\n"
         node.children.each do |child|
           code += comment_tree(child, indent + 2)
           code += "#{' ' * (indent + 2)}case 0b#{child.value.reverse}:\n"

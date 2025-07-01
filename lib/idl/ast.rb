@@ -1468,7 +1468,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      @type = StructType.new(@name, @member_types.map do |t|
+      StructType.new(@name, @member_types.map do |t|
         member_type = t.type(symtab)
         type_error "Type #{t.text_value} is not known" if member_type.nil?
 
@@ -2809,7 +2809,7 @@ module Idl
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
       elsif ["`+", "`-"].include?(op)
-        qualifiers << :known if lhs_type.known? && rhs_type.known?
+        qualifiers << :known # +/- raises exception if either lhs or rhs has undefined state
         # widening addition/subtraction: result is 1 more bit than the largest operand to
         # capture the carry
         value_result = value_try do
@@ -4726,7 +4726,7 @@ module Idl
           return Type.new(:bits, width: bits_expression.value(symtab))
         end
         value_else(value_result) do
-          return Type.new(:bits, width: :unknown)
+          return Type.new(:bits, width: :unknown, width_ast: bits_expression)
         end
       else
         internal_error "TODO: #{text_value}"
@@ -5519,7 +5519,7 @@ module Idl
       @reachable_functions_cache ||= {}
     end
 
-    attr_reader :reachable_functions_cache
+    attr_reader :reachable_functions_cache, :argument_nodes
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)

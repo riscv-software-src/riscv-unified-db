@@ -71,3 +71,7 @@ struct TemplateString {
 #endif
 
 #endif  // __has_cpp_attribute( assume )
+
+namespace udb {
+  constexpr inline unsigned MAX_POSSIBLE_XLEN = 64;
+}
