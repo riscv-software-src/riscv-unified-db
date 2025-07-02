@@ -227,7 +227,9 @@ namespace udb {
   mpz_class operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
   mpz_class operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
     return lhs op to_gmp(rhs);                                                                    \
-  }
+  } \
+  mpz_class operator op(const __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \
+  mpz_class operator op(const unsigned __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \
 
   GMP_OP(+)
   GMP_OP(-)
@@ -241,7 +243,9 @@ namespace udb {
   bool operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
   bool operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
     return lhs op to_gmp(rhs);                                                               \
-  }
+  } \
+  bool operator op(const __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \
+  bool operator op(const unsigned __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \
 
   GMP_BOOL_OP(==)
   GMP_BOOL_OP(!=)
@@ -351,6 +355,27 @@ namespace udb {
   concept SignedBitsType = requires(T a) {
     requires BitsType<T>;
     T::IsSigned == true;
+  };
+
+  // ValueArg, WidthArg, and UndefinedMaskArg are used to distinguish
+  // constructor types
+  template <typename T>
+  struct ValueArg {
+    const T value;
+    explicit ValueArg(const T& v) : value(v) {}
+    explicit ValueArg(T&& v) : value(std::move(v)) {}
+  };
+
+  struct WidthArg {
+    const unsigned width;
+    explicit WidthArg(const unsigned& w) : width(w) {}
+  };
+
+  template <typename T>
+  struct UndefinedMaskArg {
+    const T mask;
+    explicit UndefinedMaskArg(const T& m) : mask(m) {}
+    explicit UndefinedMaskArg(T&& m) : mask(std::move(m)) {}
   };
 
   // The _Bits class represents an arbitrary-width integer.
@@ -718,7 +743,7 @@ namespace udb {
   template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>  \
     requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)                                     \
   constexpr bool operator op(const RhsBitsType<RhsN, RhsSigned> &rhs) const noexcept {   \
-    return get() op rhs.get();                                                           \
+    return get() op rhs.to_defined().get();                                                           \
   }
 
     BITS_COMPARISON_OPERATOR(==)
@@ -950,7 +975,7 @@ namespace udb {
 
         return _RuntimeBits<addsat_v<N, RhsN>, Signed && RhsSigned>{lhs * rhs, result_width};
       } else {
-        RhsBitsType<addsat_v<N, RhsN>, RhsSigned> rhs{_rhs.get()};
+        RhsBitsType<addsat_v<N, RhsN>, RhsSigned> rhs{_rhs};
 
         return _Bits<addsat_v<N, RhsN>, Signed && RhsSigned>{lhs * rhs};
       }
@@ -989,7 +1014,7 @@ namespace udb {
     constexpr _RuntimeBits<InfinitePrecision, Signed> widening_sll(
         const ShiftBitsType<ShiftN, false> &shamt) const {
       using ReturnType = _RuntimeBits<InfinitePrecision, Signed>;
-      return ReturnType{ReturnType{get()}.get() << shamt.get(), addsat_unsigned(N, shamt.get())};
+      return ReturnType{ReturnType{*this}.get() << shamt.get(), addsat_unsigned(N, shamt.get())};
     }
 
     template <template <unsigned, bool> class ShiftBitsType, unsigned ShiftN>
@@ -1153,7 +1178,7 @@ namespace udb {
           ptr++;
           if (*ptr != '1' && *ptr != '0' && *ptr != 'x' && *ptr != 'X' && *ptr != '\0') {
             // bad character
-            return 0;
+            throw std::runtime_error("bad literal");
           }
         }
         width = strlen(ptr);
@@ -1202,6 +1227,7 @@ namespace udb {
       return width;
     }
 
+    template <bool AllowUnknown>
     static consteval unsigned __int128 get_val(const char *str) {
       unsigned __int128 val = 0;
       auto len = strlen(str);
@@ -1223,6 +1249,10 @@ namespace udb {
         for (int i = len - 1; i >= 0; i--) {
           if (ptr[i] == '1') {
             val += pow;
+          } else if (ptr[i] != '0') {
+            if (!AllowUnknown || (ptr[i] != 'x' && ptr[i] != 'X')) {
+              throw std::runtime_error("Bad literal");
+            }
           }
           pow *= 2;
         }
@@ -1231,6 +1261,9 @@ namespace udb {
         // to know bitwidth at compile time)
         unsigned __int128 pow = 1;
         for (int i = len - 1; i >= 0; i--) {
+          if (ptr[i] < '0' || ptr[i] > '9') {
+            throw std::runtime_error("Bad literal");
+          }
           val += ((unsigned __int128)(ptr[i] - '0')) * pow;
           pow *= 10;
         }
@@ -1243,6 +1276,10 @@ namespace udb {
             val += ((unsigned __int128)(ptr[i] - 'A' + 10)) * pow;
           } else if (ptr[i] >= 'a' && ptr[i] <= 'f') {
             val += ((unsigned __int128)(ptr[i] - 'a' + 10)) * pow;
+          } else {
+            if (!AllowUnknown || (ptr[i] != 'x' && ptr[i] != 'X')) {
+              throw std::runtime_error("Bad literal");
+            }
           }
           pow *= 16;
         }
@@ -1297,7 +1334,7 @@ namespace udb {
     static constexpr unsigned width = BitsStrHelpers::get_width<AllowUnknown>(str);
     static_assert(width <= 128,
                   "Cannot create bits literal of width >= 128 (use \"\"_mpz instead)");
-    static constexpr _Bits<128, false> val{BitsStrHelpers::get_val(str)};
+    static constexpr _Bits<128, false> val{BitsStrHelpers::get_val<AllowUnknown>(str)};
     static constexpr _Bits<128, false> unknown_mask{BitsStrHelpers::get_unknown_mask(str)};
   };
 
@@ -1306,7 +1343,7 @@ namespace udb {
     static constexpr unsigned width = BitsStrHelpers::get_width<AllowUnknown>(Str.cstr_value);
     static_assert(width <= 128,
                   "Cannot create bits literal of width >= 128 (use \"\"_mpz instead)");
-    static constexpr _Bits<128, false> val{BitsStrHelpers::get_val(Str.cstr_value)};
+    static constexpr _Bits<128, false> val{BitsStrHelpers::get_val<AllowUnknown>(Str.cstr_value)};
     static constexpr _Bits<128, false> unknown_mask{
         BitsStrHelpers::get_unknown_mask(Str.cstr_value)};
   };
@@ -1478,6 +1515,7 @@ namespace udb {
   // parameter-dependent)
   template <unsigned MaxN, bool Signed>
   class _RuntimeBits {
+
     // befriend all bits
     template <unsigned, bool>
     friend class _RuntimeBits;
@@ -1493,6 +1531,54 @@ namespace udb {
 
     using StorageType = BitsStorageType<MaxN>::type;
     using SignedStorageType = _Bits<MaxN, Signed>::SignedStorageType;
+
+    // m_val and m_width are the underlying storage of the type
+    StorageType m_val;
+    const unsigned m_width;
+
+    template <typename T>
+    struct StorageCast {
+      const StorageType val;
+
+      template <typename _T = T>
+        requires (std::same_as<_T, StorageType> || MaxN > BitsMaxNativePrecision)
+      explicit StorageCast(const T& v)
+        : val(v)
+      {}
+
+      template <typename _T = T>
+        requires (std::same_as<_T, SignedStorageType> && MaxN <= BitsMaxNativePrecision)
+      explicit StorageCast(const T& v)
+        : val(*(reinterpret_cast<StorageType*>(&v)))
+      {}
+
+      template <std::integral _T>
+        requires(std::is_unsigned_v<_T>)
+      explicit StorageCast(const T& v)
+        : val(v)
+      {}
+
+      template <std::integral _T>
+        requires(std::is_signed_v<_T>)
+      explicit StorageCast(const T& v)
+        : val(*reinterpret_cast<StorageType*>(&v))
+      {}
+
+      template <typename _T = StorageType>
+        requires(std::integral<_T>)
+      explicit StorageCast(const mpz_class& v)
+        : val(from_gmp<MaxN>(v))
+      {}
+
+      template <typename _T = StorageType>
+        requires(std::same_as<_T, mpz_class>)
+      explicit StorageCast(const mpz_class& v)
+        : val(v)
+      {}
+
+    };
+    template <typename T>
+    static StorageType storage_cast(const T& v) { return StorageCast<T>(v).val; }
 
     static constexpr unsigned MaxNativePrecision = BitsMaxNativePrecision;
     static constexpr unsigned InfinitePrecision = BitsInfinitePrecision;
@@ -1606,9 +1692,38 @@ namespace udb {
 
     // must have a width to construct a RuntimeBits
     _RuntimeBits() = delete;
-    _RuntimeBits(const _RuntimeBits &) = default;
-    _RuntimeBits(_RuntimeBits &&) = default;
-    _RuntimeBits(unsigned width) : m_width() {}
+    constexpr _RuntimeBits(const _RuntimeBits &) = default;
+    constexpr _RuntimeBits(_RuntimeBits &&) = default;
+    constexpr _RuntimeBits(unsigned width) : m_width() {}
+    constexpr _RuntimeBits(const WidthArg& arg)
+      : m_width(arg.width)
+    {}
+    constexpr _RuntimeBits(
+      const std::variant<WidthArg, ValueArg<StorageType>>& arg1,
+      const std::variant<WidthArg, ValueArg<StorageType>>& arg2
+    )
+      : m_width(
+          std::holds_alternative<WidthArg>(arg1)
+            ? std::get<WidthArg>(arg1).width
+            : std::get<WidthArg>(arg2).width
+        ),
+        m_val(
+          std::holds_alternative<ValueArg<StorageType>>(arg1)
+            ? std::get<ValueArg<StorageType>>(arg1).value
+            : std::get<ValueArg<StorageType>>(arg2).value
+        )
+    {
+      if (m_width > MaxN) {
+        throw std::runtime_error("width is larger than MaxN");
+      }
+      apply_mask();
+
+      if constexpr (MaxN == InfinitePrecision && !Signed) {
+        if ((m_width == InfinitePrecision) && (m_val < 0)) {
+          throw std::runtime_error("Cannot represent a negative number in infinite precision");
+        }
+      }
+    }
 
     template <template <unsigned, bool> class OtherBitsType, unsigned OtherN, bool OtherSigned>
       requires(KnownBitsType<OtherBitsType<OtherN, OtherSigned>>)
@@ -1703,6 +1818,40 @@ namespace udb {
       }
     }
 
+    // from GMP, if that isn't StorageType
+    // needed since GMP doesn't interact with uint128 very well
+    template <unsigned _MaxN = MaxN>
+      requires (_MaxN <= BitsMaxNativePrecision)
+    _RuntimeBits(const mpz_class &val, unsigned width) : m_val(from_gmp<MaxN>(val)), m_width(width) {
+      if (m_width > MaxN) {
+        throw std::runtime_error("width is larger than MaxN");
+      }
+      apply_mask();
+
+      if constexpr (MaxN == InfinitePrecision && !Signed) {
+        if ((m_width == InfinitePrecision) && m_val < 0) {
+          throw std::runtime_error("Cannot represent a negative number in infinite precision");
+        }
+      }
+    }
+
+    // from integral, if StorageType is GMP
+    // needed since GMP doesn't interact with uint128 very well
+    template <std::integral IntType, unsigned _MaxN = MaxN>
+      requires (_MaxN > BitsMaxNativePrecision)
+    _RuntimeBits(const IntType &val, unsigned width) : m_val(to_gmp(val)), m_width(width) {
+      if (m_width > MaxN) {
+        throw std::runtime_error("width is larger than MaxN");
+      }
+      apply_mask();
+
+      if constexpr (MaxN == InfinitePrecision && !Signed) {
+        if ((m_width == InfinitePrecision) && m_val < 0) {
+          throw std::runtime_error("Cannot represent a negative number in infinite precision");
+        }
+      }
+    }
+
    public:
     std::conditional_t<Signed, SignedStorageType, const StorageType &> get() const {
       if constexpr (Signed) {
@@ -1738,7 +1887,10 @@ namespace udb {
         mpz_class shft_val = m_val << shamt.get().get_ui();
         return _RuntimeBits{shft_val, m_width};
       } else {
-        return _RuntimeBits{m_val << shamt.get(), m_width};
+        return _RuntimeBits(
+          ValueArg<StorageType>(m_val << shamt.get()),
+          WidthArg(m_width)
+        );
       }
     }
 
@@ -1746,7 +1898,15 @@ namespace udb {
     _RuntimeBits<addsat_v<MaxN, shamt>, Signed> widening_sll() const {
       using ReturnType = _RuntimeBits<addsat_v<MaxN, shamt>, Signed>;
       unsigned result_width = addsat_unsigned(m_width, shamt);
-      return {ReturnType{get(), m_width}.get() << shamt, result_width};
+      return ReturnType(
+        ValueArg<typename ReturnType::StorageType>(
+          ReturnType(
+            ValueArg<typename ReturnType::StorageType>(get()),
+            WidthArg(m_width)
+          ).get() << shamt
+        ),
+        WidthArg(result_width)
+      );
     }
 
     template <typename T>
@@ -1763,9 +1923,44 @@ namespace udb {
       requires(BitsType<BitsClass<N, false>>)
     _RuntimeBits operator>>(const BitsClass<N, false> &shamt) const {
       if (shamt.get() >= m_width) {
-        return _RuntimeBits{0, m_width};
+        return _RuntimeBits(
+          ValueArg<StorageType>(0),
+          WidthArg(m_width)
+        );
       } else {
-        return {m_val >> shamt.get(), m_width};
+        return _RuntimeBits(
+          ValueArg<StorageType>(m_val >> shamt.get()),
+          WidthArg(m_width)
+        );
+      }
+    }
+
+    template <template <unsigned, bool> class BitsClass, unsigned N>
+      requires(BitsType<BitsClass<N, false>>)
+    _RuntimeBits sra(const BitsClass<N, false> &shamt) const {
+      if (shamt.get() >= m_width) {
+        if (m_width == 1) {
+          // sign bit is the only bit, so just return it
+          return *this;
+        } else {
+          if (m_val >> (m_width-1)) {
+            return ~_RuntimeBits(static_cast<StorageType>(0), m_width);
+          } else {
+            return _RuntimeBits(static_cast<StorageType>(0), m_width);
+          }
+        }
+      } else {
+        if constexpr (std::integral<StorageType>) {
+          return _RuntimeBits(
+            ValueArg<StorageType>(std::bit_cast<StorageType, SignedStorageType>(cast_to_signed() >> shamt.get())),
+            WidthArg(m_width)
+          );
+        } else {
+          return _RuntimeBits(
+            ValueArg<StorageType>(cast_to_signed() >> shamt.get()),
+            WidthArg(m_width)
+          );
+        }
       }
     }
 
@@ -1854,8 +2049,10 @@ namespace udb {
       const RhsBitsType<RhsN, RhsSigned> &_rhs) const {                                 \
     _RuntimeBits<constmax_v<MaxN, RhsN>, Signed> lhs{*this};                            \
     RhsBitsType<constmax_v<MaxN, RhsN>, RhsSigned> rhs{_rhs};                           \
-    return _RuntimeBits<constmax_v<MaxN, RhsN>, Signed && RhsSigned>{                   \
-        lhs.get() op rhs.get(), std::max(m_width, _rhs.width())};                       \
+    return _RuntimeBits<constmax_v<MaxN, RhsN>, Signed && RhsSigned>(                   \
+             ValueArg<StorageType>(storage_cast(lhs.get() op rhs.get())),   \
+             WidthArg(std::max(m_width, _rhs.width()))\
+    );                       \
   }
 
     RUNTIME_BITS_BINARY_OP(+)
@@ -1885,11 +2082,49 @@ namespace udb {
       }
     }
 
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed && RhsSigned> widening_add(
+        const RhsBitsType<RhsN, RhsSigned> &other) const {
+      unsigned result_width = addsat_unsigned(std::max(m_width, other.width()), 1);
+      _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed> lhs{
+          m_val, result_width};
+
+      if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other, result_width};
+
+        return {lhs.value() + rhs.value(), result_width};
+      } else {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other};
+
+        return {lhs.value() + rhs.value(), result_width};
+      }
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed && RhsSigned> widening_sub(
+        const RhsBitsType<RhsN, RhsSigned> &other) const {
+      unsigned result_width = addsat_unsigned(std::max(m_width, other.width()), 1);
+      _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed> lhs{
+          m_val, result_width};
+
+      if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other, result_width};
+
+        return {lhs.value() - rhs.value(), result_width};
+      } else {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other};
+
+        return {lhs.value() - rhs.value(), result_width};
+      }
+    }
+
 #define RUNTIME_BITS_BINARY_OP(op)                                                     \
   template <template <unsigned, bool> typename BitsType, unsigned _MaxN, bool _Signed> \
     requires(BitsType<_MaxN, _Signed>::IsABits)                                        \
   bool operator op(const BitsType<_MaxN, _Signed> &other) const {                      \
-    return get() op other.get();                                                       \
+    return get() op other.to_defined().get();                                                       \
   }
 
     RUNTIME_BITS_BINARY_OP(==)
@@ -1901,13 +2136,19 @@ namespace udb {
 
 #undef RUNTIME_BITS_BINARY_OP
 
-    _RuntimeBits operator~() { return {~m_val, m_width}; }
+    _RuntimeBits operator~() const { return _RuntimeBits(~m_val, m_width); }
 
-    _RuntimeBits operator-() {
+    _RuntimeBits operator-() const {
       if constexpr (Signed) {
-        return {-sign_extend(), m_width};
+        return _RuntimeBits(
+          ValueArg<StorageType>(-sign_extend()),
+          WidthArg(m_width)
+        );
       } else {
-        return {-m_val, m_width};
+        return _RuntimeBits(
+          ValueArg<StorageType>(-m_val),
+          WidthArg(m_width)
+        );
       }
     }
 
@@ -2023,10 +2264,6 @@ namespace udb {
       m_val = (m_val & ~pos_mask) | (value.widening_sll(idx) & pos_mask);
       return *this;
     }
-
-   private:
-    StorageType m_val;
-    const unsigned m_width;
   };
 
   template <unsigned MaxN = BitsInfinitePrecision>
@@ -2224,7 +2461,7 @@ namespace udb {
         (BitsType<M, _Signed>::PossiblyUnknown && (rhs.unknown_mask() != 0_b))) { \
       throw UndefinedValueError("Cannot compare unknown value");                  \
     }                                                                             \
-    return get() op rhs.get();                                                    \
+    return get() op rhs.to_defined().get();                                       \
   }
 
     BITS_COMPARISON_OPERATOR(==)
@@ -2440,6 +2677,88 @@ namespace udb {
         addsat_unsigned(N, shamt.get()),
         BigBitsType{m_unknown_mask} << shamt
       };
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(KnownBitsType<RhsBitsType<RhsN, RhsSigned>>)
+    using WideningAddReturnType =
+        std::conditional_t<RhsBitsType<RhsN, RhsSigned>::RuntimeWidth,
+                           _RuntimeBits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>,
+                           _Bits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>>;
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    constexpr WideningAddReturnType<RhsBitsType, RhsN, RhsSigned> widening_add(
+        const RhsBitsType<RhsN, RhsSigned> &_rhs) const {
+      // have to widen ahead of the computation to make sure we don't lose bits
+      _Bits<constmax_v<N, RhsN> + 1, Signed> lhs{*this};
+
+      if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Addition is not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
+        const unsigned result_width = addsat_unsigned(std::max(N, _rhs.width()), 1);
+        RhsBitsType<addsat_v<constmax_v<N, RhsN>, 1>, RhsSigned> rhs{_rhs.get(), result_width};
+
+        return _RuntimeBits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>{
+            lhs.get() + rhs.get(), result_width};
+      } else {
+        RhsBitsType<addsat_v<constmax_v<N, RhsN>, 1>, RhsSigned> rhs{_rhs};
+        return _Bits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>{lhs.get() + rhs.get()};
+      }
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    constexpr WideningAddReturnType<RhsBitsType, RhsN, RhsSigned> widening_sub(
+        const RhsBitsType<RhsN, RhsSigned> &_rhs) const {
+      // have to widen ahead of the computation to make sure we don't lose bits
+      _Bits<constmax_v<N, RhsN> + 1, Signed> lhs{*this};
+
+      if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Addition is not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
+        const unsigned result_width = addsat_unsigned(std::max(N, _rhs.width()), 1);
+        RhsBitsType<addsat_v<constmax_v<N, RhsN>, 1>, RhsSigned> rhs{_rhs.get(), result_width};
+
+        return _RuntimeBits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>{
+            lhs.get() - rhs.get(), result_width};
+      } else {
+        RhsBitsType<addsat_v<constmax_v<N, RhsN>, 1>, RhsSigned> rhs{_rhs};
+        return _Bits<addsat_v<constmax_v<N, RhsN>, 1>, Signed && RhsSigned>{lhs.get() - rhs.get()};
+      }
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(KnownBitsType<RhsBitsType<RhsN, RhsSigned>>)
+    using WideningMulReturnType =
+        std::conditional_t<RhsBitsType<RhsN, RhsSigned>::RuntimeWidth,
+                           _RuntimeBits<addsat_v<N, RhsN>, Signed && RhsSigned>,
+                           _Bits<addsat_v<N, RhsN>, Signed && RhsSigned>>;
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(KnownBitsType<RhsBitsType<RhsN, RhsSigned>>)
+    constexpr WideningMulReturnType<RhsBitsType, RhsN, RhsSigned> widening_mul(
+        const RhsBitsType<RhsN, RhsSigned> &_rhs) const {
+      _Bits<addsat_v<N, RhsN>, Signed> lhs{*this};
+
+      if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Addition is not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
+        const unsigned result_width = addsat_unsigned(N, _rhs.width());
+        RhsBitsType<addsat_v<N, RhsN>, RhsSigned> rhs{_rhs.get(), result_width};
+
+        return _RuntimeBits<addsat_v<N, RhsN>, Signed && RhsSigned>{lhs * rhs, result_width};
+      } else {
+        RhsBitsType<addsat_v<N, RhsN>, RhsSigned> rhs{_rhs};
+
+        return _Bits<addsat_v<N, RhsN>, Signed && RhsSigned>{lhs * rhs};
+      }
     }
 
     friend std::ostream &operator<<(std::ostream &stream, const _PossiblyUnknownBits &val) {
@@ -2792,13 +3111,123 @@ namespace udb {
               result_width};
     }
 
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    _RuntimeBits<addsat_v<MaxN, RhsN>, Signed && RhsSigned> widening_mul(
+        const RhsBitsType<RhsN, RhsSigned> &other) const {
+      unsigned result_width = addsat_unsigned(m_width, other.width());
+      _RuntimeBits<addsat_v<MaxN, RhsN>, Signed> lhs{
+          m_val, result_width};
+
+      if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Multiplication not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<addsat_v<MaxN, RhsN>, RhsSigned>::RuntimeWidth) {
+        RhsBitsType<addsat_v<MaxN, RhsN>, RhsSigned> rhs{other, result_width};
+
+        return {lhs.value() * rhs.value(), result_width};
+      } else {
+        RhsBitsType<addsat_v<MaxN, RhsN>, RhsSigned> rhs{other};
+
+        return {lhs.value() * rhs.value(), result_width};
+      }
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed && RhsSigned> widening_add(
+        const RhsBitsType<RhsN, RhsSigned> &other) const {
+      unsigned result_width = addsat_unsigned(std::max(m_width, other.width()), 1);
+      _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed> lhs{
+          m_val, result_width};
+
+      if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Addition not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other, result_width};
+
+        return {lhs.value() + rhs.value(), result_width};
+      } else {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other};
+
+        return {lhs.value() + rhs.value(), result_width};
+      }
+    }
+
+    template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
+      requires(BitsType<RhsBitsType<RhsN, RhsSigned>>)
+    _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed && RhsSigned> widening_sub(
+        const RhsBitsType<RhsN, RhsSigned> &other) const {
+      unsigned result_width = addsat_unsigned(std::max(m_width, other.width()), 1);
+      _RuntimeBits<constmax_v<MaxN, RhsN> + 1, Signed> lhs{
+          m_val, result_width};
+
+      if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
+        throw UndefinedValueError("Subtraction not defined on undefined values");
+      }
+
+      if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other, result_width};
+
+        return {lhs.value() - rhs.value(), result_width};
+      } else {
+        RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned> rhs{other};
+
+        return {lhs.value() - rhs.value(), result_width};
+      }
+    }
+
     template <template <unsigned, bool> class BitsClass, unsigned N>
       requires (BitsType<BitsClass<N, false>>)
     _PossiblyUnknownRuntimeBits operator>>(const BitsClass<N, false> &shamt) const {
       if (shamt.get() >= m_width) {
-        return _PossiblyUnknownRuntimeBits{0};
+        return _PossiblyUnknownRuntimeBits{0_b, m_width};
       } else {
         return _PossiblyUnknownRuntimeBits{m_val >> shamt, m_width};
+      }
+    }
+
+    template <template <unsigned, bool> class BitsClass, unsigned N>
+      requires (BitsType<BitsClass<N, false>>)
+    _PossiblyUnknownRuntimeBits sra(const BitsClass<N, false> &shamt) const {
+      if (shamt.get() >= m_width) {
+        if ((m_val.unknown_mask().get() >> (m_width-1)) & 1) {
+          // entire result is unknown
+          return _PossiblyUnknownRuntimeBits{0, m_width, ~_Bits<MaxN, false>{0}};
+        } else {
+          // entire result is known
+          if ((m_val.value().get() >> (m_width - 1)) & 1) {
+            return _PossiblyUnknownRuntimeBits{(~_Bits<MaxN, false>{0}).get(), m_width, 0_b};
+          } else {
+            return _PossiblyUnknownRuntimeBits{0, m_width, 0_b};
+          }
+        }
+      } else {
+        if ((unknown_mask().get() >> (m_width - 1)) & 1) {
+          // shift in x
+          return _PossiblyUnknownRuntimeBits(
+            m_val.sra(shamt).get_ignore_unknown(),
+            m_width,
+            (unknown_mask() >> shamt) | (~_Bits<MaxN, false>{0} << _Bits<32, false>(m_width))
+          );
+        } else if ((m_val.value().get() >> (m_width - 1)) & 1) {
+          // shift in 1
+          return _PossiblyUnknownRuntimeBits(
+            (m_val.sra(shamt) | (~_Bits<MaxN, false>{0} << _Bits<32, false>(m_width))).get_ignore_unknown(),
+            m_width,
+            unknown_mask() >> shamt
+          );
+        } else {
+          // shift in 0
+          return _PossiblyUnknownRuntimeBits(
+            m_val.sra(shamt).get_ignore_unknown(),
+            m_width,
+            unknown_mask() >> shamt
+          );
+        }
       }
     }
 
@@ -2856,7 +3285,7 @@ namespace udb {
   template <template <unsigned, bool> class BitsClass, unsigned OtherN, bool OtherSigned>    \
     requires (BitsType<BitsClass<OtherN, OtherSigned>>)                     \
   bool operator op(const BitsClass<OtherN, OtherSigned> &other) const { \
-    return m_val op other.to_defined().value();                                           \
+    return m_val.get() op other.to_defined().get();                                              \
   }
 
     RUNTIME_BITS_BINARY_OP(==)
