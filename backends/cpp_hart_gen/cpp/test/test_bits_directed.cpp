@@ -12,8 +12,10 @@
 
 using Catch::Matchers::Equals;
 
-constexpr __uint128_t operator""_u128(const char *x) {
+consteval __uint128_t operator""_u128(const char *x) {
   __uint128_t y = 0;
+  auto len = strlen(x);
+
   if (x[0] == '0' && (x[1] == 'x' || x[1] == 'X')) {
     for (int i = 2; x[i] != '\0'; ++i) {
       if (x[i] == '\'') {
@@ -33,7 +35,7 @@ constexpr __uint128_t operator""_u128(const char *x) {
         continue;
       }
       y *= 8ull;
-      if ('0' <= x[i] && x[i] <= '8') y += x[i] - '0';
+      if ('0' <= x[i] && x[i] <= '7') y += x[i] - '0';
     }
   } else if (x[0] == '0' && (x[1] == 'b' || x[1] == 'B')) {
     for (int i = 2; x[i] != '\0'; ++i) {
@@ -44,12 +46,14 @@ constexpr __uint128_t operator""_u128(const char *x) {
       if ('0' <= x[i] && x[i] <= '1') y += x[i] - '0';
     }
   } else {
-    for (int i = 0; x[i] != '\0'; ++i) {
+    __uint128_t pow = 1;
+    for (int i = len - 1; i >= '\0'; i--) {
       if (x[i] == '\'') {
         continue;
       }
-      y *= 10ull;
-      if ('0' <= x[i] && x[i] <= '8') y += x[i] - '0';
+      if ('0' <= x[i] && x[i] <= '9') y += ((unsigned __int128)(x[i] - '0')) * pow;
+      else throw std::runtime_error("bad literal");
+      pow *= 10;
     }
   }
   return y;
@@ -80,6 +84,10 @@ static_assert(Bits<31>{Bits<31>{-1}}.get() == 2147483647);
 static_assert(Bits<31>{Bits<31>{1234}}.get() == 1234);
 static_assert(Bits<32>{Bits<32>{-1}}.get() == 4294967295);
 static_assert(Bits<32>{Bits<32>{1234}}.get() == 1234);
+
+static_assert((0b010101_b).width() == 5);
+static_assert(("0b010101"_xb).width() == 5);
+static_assert(("0bx10101"_xb).width() == 6);
 
 TEST_CASE("InifitePrecision conversion", "[bits]") {
   Bits<InfinitePrecision> a{Bits<InfinitePrecision>{0x7fff'ffffu}};
