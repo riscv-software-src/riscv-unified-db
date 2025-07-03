@@ -5,6 +5,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "sorbet-runtime"
 require "treetop"
 
 require_relative "idlc/syntax_node"
@@ -44,6 +45,8 @@ Treetop.load((Pathname.new(__FILE__).dirname / "idlc" / "idl").to_s)
 module Idl
   # the Idl compiler
   class Compiler
+    extend T::Sig
+
     attr_reader :parser
 
     def initialize
@@ -276,6 +279,43 @@ module Idl
         raise e if pass_error
 
         warn "Compiling #{expression}"
+        warn e.what
+        warn T.must(e.backtrace).to_s
+        exit 1
+      end
+
+      ast
+    end
+
+    sig { params(body: String, symtab: SymbolTable, pass_error: T::Boolean).returns(ConstraintBodyAst) }
+    def compile_constraint(body, symtab, pass_error: false)
+      m = @parser.parse(body, root: :constraint_body)
+      if m.nil?
+        raise SyntaxError, <<~MSG
+          While parsing #{body}:#{@parser.failure_line}:#{@parser.failure_column}
+
+          #{@parser.failure_reason}
+        MSG
+      end
+
+      # fix up left recursion
+      ast = m.to_ast
+      ast.set_input_file("[CONSTRAINT]", 0)
+      ast.freeze_tree(symtab)
+
+      begin
+        ast.type_check(symtab)
+      rescue AstNode::TypeError => e
+        raise e if pass_error
+
+        warn "Compiling #{body}"
+        warn e.what
+        warn T.must(e.backtrace).to_s
+        exit 1
+      rescue AstNode::InternalError => e
+        raise e if pass_error
+
+        warn "Compiling #{body}"
         warn e.what
         warn T.must(e.backtrace).to_s
         exit 1

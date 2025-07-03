@@ -393,6 +393,24 @@ grammar Idl
     e:template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
   end
 
+  rule implication_expression
+    antecedent:p9_binary_expression space* '->' space* consequent:p9_binary_expression <Idl::ImplicationExpressionSyntaxNode>
+  end
+
+  rule implication_for_loop
+    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+      stmts:(s:(implication_statement / implication_for_loop) space*)+
+    '}' <Idl::ForLoopSyntaxNode>
+  end
+
+  rule implication_statement
+    implication_expression space* ';' <Idl::ImplicationStatementSyntaxNode>
+  end
+
+  rule constraint_body
+    (i:(implication_statement / implication_for_loop) space*)+ <Idl::ConstraintBodySyntaxNode>
+  end
+
   rule expression
     (
      ternary_expression

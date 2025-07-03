@@ -2993,6 +2993,123 @@ module Idl
     end
   end
 
+  class ImplicationExpressionSyntaxNode < SyntaxNode
+    sig { override.returns(ImplicationExpressionAst) }
+    def to_ast
+      ImplicationExpressionAst.new(
+        input, interval,
+        antecedent.to_ast, consequent.to_ast
+      )
+    end
+  end
+
+  class ImplicationExpressionAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        antecedent: RvalueAst,
+        consequent: RvalueAst
+      ).void
+    }
+    def initialize(input, interval, antecedent, consequent)
+      super(input, interval, [antecedent, consequent])
+    end
+
+    sig { returns(RvalueAst) }
+    def antecedent = @children[0]
+
+    sig { returns(RvalueAst) }
+    def consequent = @children[1]
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      antecedent.type_error "Antecedent must a boolean" unless antecedent.type(symtab).kind == :boolean
+      consequent.type_error "Consequent must a boolean" unless consequent.type(symtab).kind == :boolean
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      return true if antecedent.value(symtab) == false
+      consequent.value(symtab)
+    end
+
+  end
+
+  class ImplicationStatementSyntaxNode < SyntaxNode
+    sig { override.returns(ImplicationStatementAst) }
+    def to_ast
+      ImplicationStatementAst.new(input, interval, implication_expression.to_ast)
+    end
+  end
+
+  class ImplicationStatementAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        implication_expression: ImplicationExpressionAst
+      ).void
+    }
+    def initialize(input, interval, implication_expression)
+      super(input, interval, [implication_expression])
+    end
+
+    sig { returns(ImplicationExpressionAst) }
+    def expression = @children[0]
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      expression.type_check(symtab)
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      expression.satisfied?(symtab)
+    end
+  end
+
+  class ConstraintBodySyntaxNode < SyntaxNode
+    sig { override.returns(ConstraintBodyAst) }
+    def to_ast
+      stmts = []
+      elements.each do |e|
+        stmts << e.i.to_ast
+      end
+      ConstraintBodyAst.new(input, interval, stmts)
+    end
+  end
+
+  class ConstraintBodyAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        stmts: T::Array[T.any(ImplicationStatementAst, ForLoopAst)]
+      ).void
+    }
+    def initialize(input, interval, stmts)
+      super(input, interval, stmts)
+    end
+
+    sig { returns(T::Array[T.any(ImplicationStatementAst, ForLoopAst)]) }
+    def stmts = T.cast(@children, T::Array[T.any(ImplicationStatementAst, ForLoopAst)])
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      stmts.each do |stmt|
+        stmt.type_check(symtab)
+      end
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      stmts.all? do |stmt|
+        stmt.satisfied?(symtab)
+      end
+    end
+  end
+
   class WidthRevealSyntaxNode < SyntaxNode
     def to_ast
       WidthRevealAst.new(input, interval, send(:expression).to_ast)
@@ -6427,6 +6544,23 @@ module Idl
       stmts.each { |stmt| stmt.type_check(symtab) }
 
       symtab.pop
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      symtab.push(self)
+      begin
+        init.execute(symtab)
+        while condition.value(symtab)
+          stmts.each do |s|
+            return false unless s.satisfied?(symtab)
+          end
+          update.execute(symtab)
+        end
+        return true
+      ensure
+        symtab.pop
+      end
     end
 
     # @!macro return_value
