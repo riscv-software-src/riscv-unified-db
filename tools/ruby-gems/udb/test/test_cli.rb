@@ -62,4 +62,12 @@ class TestCli < Minitest::Test
     assert_match "  lui", out
     assert_empty err
   end
+
+  def test_list_csrs
+    out, err = capture_io do
+      run_cmd("list csrs")
+    end
+    assert_empty err
+  end
+
 end
