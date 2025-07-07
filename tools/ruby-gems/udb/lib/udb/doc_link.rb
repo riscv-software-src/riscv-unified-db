@@ -31,14 +31,66 @@
 #                 TODO for CSR and CSR Fields
 #
 # Use underscores to replace blanks in names between colons since RISC-V uses minus signs in the names.
-# For example use "_":
-#   "manual:ext:I:R-type_operands"
-#                       ^
-#                       ^
-# and not "-"
-#   "manual:ext:I:R-type-operands"
-#                       ^
-#                       ^
+#
+# Adding anchors into AsciiDoc files
+# ==================================
+#  1) Anchor to part of a paragraph
+#     Syntax:      [#<anchor-name>]# ... #
+#     Example:     Here is an example of [#foo]#anchoring part# of a paragraph
+#                  and can have [#bar]multiple anchors# if needed.
+#     Tagged text: "anchoring part" and "multiple anchors"
+#     HTML:        <div class="paragraph">
+#                  <p>Here is an example of <span id="foo">anchoring part</span> of a paragraph
+#                  and can have [<mark>bar]multiple anchors</mark> if needed.</p>
+#                  </div>
+#     Example:    [#monkey]#Anchoring part of a paragraph#
+#                 [#zebra]#and can have multiple anchors# if needed.
+#                 and create a span for each one.
+#     HTML:       <div class="paragraph">
+#                 <p><span id="monkey">Anchoring part of a paragraph</span>
+#                 <span id="zebra">and can have multiple anchors</span> if needed.
+#                 and create a span for each one.</p>
+#                 </div>
+#     Limitations:
+#       - Can't anchor text across multiple paragraphs.
+#       - Must have text next to the 2nd hash symbol (i.e., can't have newline after [#<anchor-name]#).
+#       - Can't put inside admonitions such as [NOTE] (see #3 below for solution).
+#       - Seems to just use <span> for first anchor in paragraph and then either <span> or <mark> if more.
+#         Still allows a tool to pull out the anchored text but has to handle both <span> and <mark>.
+#
+#  2) Anchor to entire paragraph
+#     Syntax:     [[<anchor-name]]
+#     Example:    [[zort]]
+#                 Here is an example of anchoring a whole paragraph.
+#     Tagged text: Entire paragraph
+#     HTML:       <div id="zort" class="paragraph">
+#                 <p>Here is an example of anchoring a whole paragraph.</p>
+#                 </div>
+#
+#  3) Anchor inside admonition (e.g. [NOTE])
+#     - Must use [[<anchor-name]] before each paragraph (with unique anchor names of course) being tagged
+#     - Can't use [#<anchor-name]## since it just shows up in HTML as normal text
+#     - Don't put [[<<anchor-name]] anchor before admonition to apply to entire admonition (one or more paragraphs)
+#       since the HTML won't tag the text, just its location.
+#
+#  4) Anchor in table cell
+#     - Must use [[<anchor-name]] after "|" and before cell contents and will tag all text in the cell.
+#     Example:    |===
+#                 |name|number
+#
+#                 |Bob|[[BobNumber]]415-555-1212
+#                 |Pat| [[PatNumber]]  408-555-1212
+#                 |===
+#     Tagged text: "415-555-1212" and "  408-555-1212"
+#     HTML:       <tr>
+#                 <td class="tableblock"><p class="tableblock">Bob</p></td>
+#                 <td class="tableblock"><p class="tableblock"><a id="BobNumber"></a>413-555-1212</p></td>
+#                 </tr>
+#                 <tr>
+#                 <td class="tableblock"><p class="tableblock">Pat</p></td>
+#                 <td class="tableblock"><p class="tableblock"><a id="PatNumber"></a>  408-555-1212</p></td>
+#                 </tr>
+
 class Udb::DocLink
   # @param dst_link [String] The documentation link provided in the YAML
   # @param db_obj [String] Database object
