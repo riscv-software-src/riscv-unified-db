@@ -151,7 +151,6 @@ fields:
     definedBy: M
     cert_normative_rules:
       - id: csr_field.misa.M.disabled
-        name: Disabling `misa.M` bit
         description: What happens when you turn off `misa.M`
         doc_links:
           - manual:csr:misa:disabling-extension
@@ -247,7 +246,6 @@ sw_read(): |
     CSR[misa].A);
 cert_normative_rules:
   - id: csr.misa.disabling_bits
-    name: Disabling `misa` bits
     description: What happens when you turn off bits
     doc_links:
       - manual:csr:misa:disabling-extension

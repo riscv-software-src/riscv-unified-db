@@ -3,14 +3,14 @@
 
 # frozen_string_literal: true
 
-# Creates links into RISC-V documentation with the following formats for the destination link:
+# Creates links into RISC-V documentation with the following formats for the destination link.
 #
-#   Documenation  Format
+#   Documentation Format
 #   ============  ===============================================================
 #   ISA manuals   manual:ext:<ext_name>:<identifier>
 #                 manual:inst:<inst_name>:<identifier>
-#                 manual:insts:<inst_name>[-<inst_name>]+:<identifier>
-#                 manual:inst_group:<group_name>:<identifier>
+#                 manual:insts:<inst_name>[_<inst_name>]+:<identifier>      List of instructions separated by "_"
+#                 manual:instgrp:<group_name>:<identifier>                  Named group of insts (e.g., branch, load, store, etc.)
 #                 manual:csr:<csr_name>:<identifier>
 #                 manual:csr_field:<csr_name>:<field_name>:<identifier>
 #                 manual:param:<ext_name>:<param_name>:<identifier>
@@ -27,8 +27,18 @@
 #                      combo for UDB documentation that "combines" normative rules with test plans
 #                      appendix for UDB documentation that has normative rules and test plans in appendices
 #                   where <id> is the ID of the normative rule
-#   IDL code      idl:code:inst:<inst-name>:<location>
+#   IDL code      idl:code:inst:<inst_name>:<location>
 #                 TODO for CSR and CSR Fields
+#
+# Use underscores to replace blanks in names between colons since RISC-V uses minus signs in the names.
+# For example use "_":
+#   "manual:ext:I:R-type_operands"
+#                       ^
+#                       ^
+# and not "-"
+#   "manual:ext:I:R-type-operands"
+#                       ^
+#                       ^
 class Udb::DocLink
   # @param dst_link [String] The documentation link provided in the YAML
   # @param db_obj [String] Database object

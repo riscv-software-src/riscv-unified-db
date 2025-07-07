@@ -14,8 +14,8 @@ class CertNormativeRule
     @data = data
     @db_obj = db_obj
 
-    raise ArgumentError, "Missing certification normative rule description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-    raise ArgumentError, "Missing certification normative rule ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
+    raise ArgumentError, "Missing certification normative rule ID for object of kind #{db_obj.kind}" if id.nil?
+    raise ArgumentError, "Missing certification normative rule description for ID #{db_obj.id} of kind #{db_obj.kind}" if description.nil?
   end
 
   # @return [String] Description of normative rule (could be multiple lines)
@@ -24,7 +24,7 @@ class CertNormativeRule
   # @return [String] Unique ID of the normative rule
   def id = @data["id"]
 
-  # @return [Array<DocLink>] List of certification point documentation links
+  # @return [Array<DocLink>] List of certification point documentation links. Could be empty.
   def doc_links
     return @doc_links unless @doc_links.nil?
 
@@ -32,8 +32,6 @@ class CertNormativeRule
     @data["doc_links"]&.each do |dst|
       @doc_links << DocLink.new(dst, @db_obj)
     end
-
-    raise "Missing doc_links for certification normative rule ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
 
     @doc_links
   end

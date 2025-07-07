@@ -342,12 +342,12 @@
     "cert_normative_rules": {
       "description": "Architecturally visible behaviors requiring validation by certification tests",
       "type": "array",
-      "required": ["id", "name", "doc_links", "description"],
+      "required": ["id", "description"],
       "properties": {
         "id": {
           "type": "string"
         },
-        "name": {
+        "description": {
           "type": "string"
         },
         "doc_links": {
@@ -356,9 +356,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "description": {
-          "type": "string"
         }
       },
       "additionalProperties": false
@@ -366,15 +363,15 @@
     "cert_test_procedures": {
       "description": "Procedure test must follow to test certification normative rules",
       "type": "array",
-      "required": ["id", "name", "description", "normative_rules"],
+      "required": ["id", "description", "test_file_name", "normative_rules"],
       "properties": {
         "id": {
           "type": "string"
         },
-        "test_file_name": {
+        "description": {
           "type": "string"
         },
-        "description": {
+        "test_file_name": {
           "type": "string"
         },
         "normative_rules": {

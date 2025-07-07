@@ -74,17 +74,14 @@ sail(): |
 
 cert_normative_rules:
   - id: inst.mul.encoding
-    name: Encoding
-    description: Encoding of `mul` instruction
+    description: Encoding
     doc_links:
       - manual:inst:mul:encoding
   - id: inst.mul.basic_op
-    name: Basic operation
-    description: Basic operation of `mul` instruction
+    description: Basic operation
     doc_links:
       - manual:inst:mul:operation
   - id: inst.mul.ill_exc_misa_M_disabled
-    name: Illegal instruction exception when misa.M is 0
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.

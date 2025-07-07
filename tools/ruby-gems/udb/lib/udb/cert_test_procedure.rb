@@ -57,7 +57,7 @@ class CertTestProcedure
     @cert_normative_rules
   end
 
-  # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
+  # @return [String] String (likely multi-line) of certification test procedure steps using Asciidoc lists
   def cert_steps = @data["steps"]
 end
 end

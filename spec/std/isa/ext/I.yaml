@@ -16,3 +16,9 @@ versions:
       - ratified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
 description: |
   Base integer instructions -- TODO
+
+cert_normative_rules:
+  - id: ext.I:R-type_operands
+    description: R-type instruction source and destination operands
+    doc_links:
+      - manual:ext:I:R-type_operands
