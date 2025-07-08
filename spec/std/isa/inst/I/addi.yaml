@@ -52,3 +52,18 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.addi.encoding
+    description: Encoding
+    doc_links:
+      - manual:inst:addi:encoding
+  - id: inst.addi.basic_op
+    description: Basic operation
+    doc_links:
+      - manual:inst:addi:operation
+  - id: inst.addi.overflow
+    description: Treatment of overflow
+    doc_links:
+      - manual:inst:addi:overflow
+      
