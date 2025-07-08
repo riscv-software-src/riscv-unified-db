@@ -191,7 +191,7 @@ module Udb::Helpers::TemplateHelpers
   # @param param_name [String] Name of the parameter
   def anchor_for_udb_doc_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "[#udb:doc:ext_param:#{ext_name.sanitize}:#{param_name}]"
+    "[#udb:doc:param:#{ext_name.sanitize}:#{param_name}]"
   end
 
   # @return [String] An anchor for UDB instruction documentation
@@ -275,7 +275,7 @@ module Udb::Helpers::AsciidocUtils
           "<<udb:doc:ext:#{name},#{link_text}>>"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "<<udb:doc:ext_param:#{ext_name}:#{param_name},#{link_text}>>"
+          "<<udb:doc:param:#{ext_name}:#{param_name},#{link_text}>>"
         when "inst"
           "<<udb:doc:inst:#{name},#{link_text}>>"
         when "csr"
@@ -354,7 +354,7 @@ module Udb::Helpers::AntoraUtils
           "xref:exts:#{name}.adoc#udb:doc:ext:#{name}[#{link_text}]"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "xref:exts:#{ext_name}.adoc#udb:doc:ext_param:#{ext_name}:#{param_name}[#{link_text}]"
+          "xref:exts:#{ext_name}.adoc#udb:doc:param:#{ext_name}:#{param_name}[#{link_text}]"
         when "inst"
           "xref:insts:#{name}.adoc#udb:doc:inst:#{name}[#{link_text}]"
         when "csr"

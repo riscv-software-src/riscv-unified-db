@@ -15,11 +15,12 @@
 #                 manual:csr_field:<csr_name>:<field_name>:<identifier>
 #                 manual:param:<ext_name>:<param_name>:<identifier>
 #                   where <identifier> is a string that describes the tagged text
+#   UDB encoding  udb:enc:inst:<inst_name>
 #   UDB doc       udb:doc:ext:<ext_name>
-#                 udb:doc:ext_param:<ext_name>:<param_name>
 #                 udb:doc:inst:<inst_name>
 #                 udb:doc:csr:<csr_name>
 #                 udb:doc:csr_field:<csr_name>:<field_name>
+#                 udb:doc:param:<ext_name>:<param_name>
 #                 udb:doc:func:<func_name>  (Documentation of common/built-in IDL functions)
 #                 udb:doc:cov_pt:<org>:<id>
 #                   where <org> is:
