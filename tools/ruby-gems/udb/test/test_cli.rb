@@ -68,6 +68,8 @@ class TestCli < Minitest::Test
       run_cmd("list csrs")
     end
     assert_empty err
+    # assert_match "misa", out
+    assert_equal 371, out.split.length
   end
 
 end
