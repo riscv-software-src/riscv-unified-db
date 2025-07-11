@@ -224,8 +224,8 @@ namespace udb {
   }
 
 #define GMP_OP(op)                                                                                \
-  mpz_class operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
-  mpz_class operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
+  static mpz_class operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
+  static mpz_class operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
     return lhs op to_gmp(rhs);                                                                    \
   } \
   mpz_class operator op(const __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \
@@ -240,8 +240,8 @@ namespace udb {
 #undef GMP_OP
 
 #define GMP_BOOL_OP(op)                                                                      \
-  bool operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
-  bool operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
+  static bool operator op(const mpz_class &lhs, const __int128 &rhs) { return lhs op to_gmp(rhs); } \
+  static bool operator op(const mpz_class &lhs, const unsigned __int128 &rhs) {                     \
     return lhs op to_gmp(rhs);                                                               \
   } \
   bool operator op(const __int128 &lhs, const mpz_class &rhs) { return to_gmp(lhs) op rhs; } \

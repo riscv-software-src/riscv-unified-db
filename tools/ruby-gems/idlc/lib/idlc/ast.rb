@@ -5479,6 +5479,10 @@ module Idl
             end
           else
             if unsigned_value.bit_length > width
+              puts input_file
+              puts text_value
+              puts unsigned_value.bit_length
+              puts width
               value_error("Value does not fit in literal")
             end
             if !signed.empty? && ((unsigned_value >> (width - 1)) == 1)
