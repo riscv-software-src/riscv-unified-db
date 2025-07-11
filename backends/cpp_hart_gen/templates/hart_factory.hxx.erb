@@ -39,6 +39,15 @@ namespace udb {
       uint64_t m_testnum;
     };
 
+    class TestnumUnInit : public udb::ExitEvent {
+     public:
+      TestnumUnInit() : udb::ExitEvent(-1) {}
+
+      const char* what() const noexcept override {
+        return "Test failed, testnum unitialized";
+      }
+    };
+
   public:
     RiscvTestsTracer(HartBase<SocType>* hart)
       : udb::AbstractTracer(),
@@ -51,15 +60,19 @@ namespace udb {
       <%- else -%>
       auto cause = m_hart->_csrContainer().mcause._hw_read();
       <%- end -%>
-      if (cause == udb::ExceptionCode::Mcall || cause == udb::ExceptionCode::Scall || cause == udb::ExceptionCode::Ucall) {
+      if (cause.get() == udb::ExceptionCode::Mcall || cause.get() == udb::ExceptionCode::Scall || cause.get() == udb::ExceptionCode::Ucall) {
         auto a7 = m_hart->_xreg(17);
-        if (a7 == 93) {
+        if (a7 == 93_b) {
           auto gp = m_hart->_xreg(3);
-          if (gp == 1) {
+          if (gp == 1_b) {
             throw Pass();
           } else {
-            auto testnum = m_hart->_xreg(10) >> 1;
-            throw Fail(testnum);
+            auto testnum = m_hart->_xreg(10) >> 1_b;
+            if(testnum.unknown_mask() != 0_b) {
+              throw Fail(testnum.get());
+            } else {
+             throw TestnumUnInit();
+            }
           }
         }
       }
