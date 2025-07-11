@@ -68,8 +68,21 @@ class TestCli < Minitest::Test
       run_cmd("list csrs")
     end
     assert_empty err
+
+    # Matching just one or a few CSRs is a weak check!
     # assert_match "misa", out
-    assert_equal 371, out.split.length
+
+    # The number of reported CSRs for an Unconfigured config should match
+    # the number of yaml files under csr directory.
+    num_csr_yaml_files = `find spec/std/isa/csr/ -name '*.yaml' | wc -l`.to_i
+    puts num_csr_yaml_files
+    assert_equal num_csr_yaml_files, out.split.length
+    # The puts above is reported when the individual test is run in the VSCode
+    # terminal from the root of the riscv-unified-db repo with:
+    # ./bin/ruby -Itest tools/ruby-gems/udb/test/test_cli.rb --name test_list_csrs
+
+    # Don't hard code the number of reported CSRs!
+    # assert_equal 371, out.split.length
   end
 
 end
