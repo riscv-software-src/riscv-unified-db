@@ -12,9 +12,10 @@ description: |
   It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.
 
 definedBy:
-  allOf:
-    - Zcb
-    - Zbb
+  extension:
+    allOf:
+      - name: Zcb
+      - name: Zbb
 assembly: xd
 base: 64
 encoding:
@@ -27,7 +28,7 @@ access:
   u: always
   vs: always
   vu: always
-operation(): |
+operation(): |2
 
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);

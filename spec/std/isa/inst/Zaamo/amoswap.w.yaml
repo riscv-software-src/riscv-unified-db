@@ -13,7 +13,9 @@ description: |
     * Load the word at address _rs1_
     * Write the sign-extended value into _rd_
     * Store the least-significant word of register _rs2_ to the address in _rs1_
-definedBy: Zaamo
+definedBy:
+  extension:
+    name: Zaamo
 assembly: xd, xs2, (xs1)
 encoding:
   match: 00001------------010-----0101111

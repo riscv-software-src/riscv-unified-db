@@ -9,7 +9,9 @@ long_name: Machine Indirect Register Alias 6
 address: 0x357
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-mireg6-purpose
     normative: true

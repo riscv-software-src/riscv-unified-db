@@ -8,7 +8,7 @@ require_relative "database_obj"
 require_relative "certifiable_obj"
 require_relative "parameter"
 require_relative "../schema"
-require_relative "../req_expression"
+require_relative "../condition"
 require_relative "../presence"
 require_relative "../version_spec"
 
@@ -117,13 +117,13 @@ class Extension < TopLevelDatabaseObject
   end
 
   # @return [ExtensionRequirementExpression] Logic expression for conflicts
-  sig { returns(AbstractRequirement) }
+  sig { returns(AbstractCondition) }
   def conflicts_condition
     @conflicts_condition ||=
       if @data["conflicts"].nil?
-        AlwaysFalseExtensionRequirementExpression.new
+        AlwaysFalseCondition.new
       else
-        ExtensionRequirementExpression.new(@data["conflicts"], @cfg_arch)
+        Condition.new(@data["conflicts"], @cfg_arch)
       end
   end
 
@@ -270,14 +270,15 @@ class ExtensionVersion
     raise "All ext_vers must be of the same extension" unless ext_vers.all? { |ev| ev.name == ext_vers.fetch(0).name }
 
     sorted = ext_vers.sort
-    unless T.must(sorted.min).compatible?(sorted.max)
+    unless T.must(sorted.min).compatible?(T.must(sorted.max))
       raise "Impossible to combine because the set contains incompatible versions"
     end
 
     ExtensionRequirement.new(ext_vers.fetch(0).name, "~> #{T.must(sorted.min).version_str}", arch: ext_vers.fetch(0).arch)
   end
 
-  # @return [Array<ExtensionVersions>] List of known ExtensionVersions that are compatible with this ExtensionVersion (i.e., have larger version number and are not breaking)
+  # @return List of known ExtensionVersions that are compatible with this ExtensionVersion (i.e., have larger version number and are not breaking)
+  sig { returns(T::Array[ExtensionVersion]) }
   def compatible_versions
     return @compatible_versions unless @compatible_versions.nil?
 
@@ -293,40 +294,48 @@ class ExtensionVersion
 
   # @param other [ExtensionVersion]
   # @return [Boolean] Whether or not +other+ is compatible with self
+  sig { params(other: ExtensionVersion).returns(T::Boolean) }
   def compatible?(other) = compatible_versions.include?(other)
 
   # @return [Boolean] Whether or not this is a breaking version (i.e., incompatible with all prior versions)
+  sig { returns(T::Boolean) }
   def breaking?
     !@data["breaking"].nil?
   end
 
   # @return [String] Canonical version string
+  sig { returns(String) }
   def canonical_version = @version_spec.canonical
 
   # @param other [ExtensionVersion] An extension name and version
   # @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
+  sig { params(other: ExtensionVersion).returns(T::Boolean) }
   def eql?(other)
-    raise "ExtensionVersion is not comparable to #{other.class}" unless other.is_a?(ExtensionVersion)
-
     @ext.name == other.ext.name && @version_spec.eql?(other.version_spec)
   end
 
   # @param other [ExtensionVersion] An extension name and version
   # @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
+  sig { params(other: ExtensionVersion).returns(T::Boolean) }
   def ==(other)
     eql?(other)
   end
 
   # @return [String] The state of the extension version ('ratified', 'developemnt', etc)
-  def state = @data["state"]
+  sig { returns(String) }
+  def state = T.cast(@data.fetch("state"), String)
 
-  def ratification_date = @data["ratification_date"]
+  sig { returns(T.nilable(String)) }
+  def ratification_date = T.cast(@data.fetch("ratification_date"), String)
 
-  def changes = @data["changes"].nil? ? [] : @data["changes"]
+  sig { returns(T.nilable(T::Array[String])) }
+  def changes = @data["changes"].nil? ? [] : T.cast(@data.fetch("changes"), T::Array[String])
 
+  sig { returns(T.nilable(String)) }
   def url = @data["url"]
 
   # @return [Array<Person>] List of contributors to this extension version
+  sig { returns(T::Array[Person]) }
   def contributors
     return @contributors unless @contributors.nil?
 
@@ -355,35 +364,30 @@ class ExtensionVersion
   #
   # @example
   #   ExtensionVersion.new("A", "2.2").to_rvi_s #=> "A2p2"
+  sig { returns(String) }
   def to_rvi_s
     "#{name}#{@version_spec.to_rvi_s}"
   end
 
   # @return [String] Ext@Version
+  sig { returns(String) }
   def to_s
     "#{name}@#{@version_spec.canonical}"
   end
 
-  # @return [ExtensionRequirementExpression] Condition that must be met for this version to be allowed.
+  # @return Condition that must be met for this version to be allowed.
+  sig { returns(Condition) }
   def requirement_condition
     @requirement_condition ||=
-      begin
-        r = case @data["requires"]
-            when nil
-              AlwaysTrueExtensionRequirementExpression.new
-            when Hash
-              ExtensionRequirementExpression.new(@data["requires"], @arch)
-            else
-              ExtensionRequirementExpression.new({ "oneOf" => [@data["requires"]] }, @arch)
-            end
-        r
+      if @data.key?("requires")
+        AlwaysTrueCondition.new
+      else
+        Condition.new(@data["requires"], @arch)
       end
   end
 
-  # @return [Array<Extension>] List of extensions that conflict with this ExtensionVersion
-  #                            The list is *not* transitive; if conflict C1 implies C2,
-  #                            only C1 shows up in the list
-  sig { returns(AbstractRequirement) }
+  # @return Condition with extensions that conflict with this version
+  sig { returns(Condition) }
   def conflicts_condition
     ext.conflicts_condition
   end
@@ -398,11 +402,11 @@ class ExtensionVersion
   #      List of extension versions that this ExtensionVersion implies
   #      This list is *not* transitive; if an implication I1 implies another extension I2,
   #      only I1 shows up in the list
-  sig { returns(ConditionalExtensionVersionList) }
+  sig { returns(T::Array[Requirements::ConditionalExtensionVersion]) }
   def implications
-    return ConditionalExtensionVersionList.new([], @arch) if @data["implies"].nil?
+    return [] if @data["requires"].nil?
 
-    ConditionalExtensionVersionList.new(@data["implies"], @arch)
+    Requirements.new(@data["requires"], @arch).implied_extension_versions
   end
 
   # @return [Array<ExtensionVersion>] List of extension versions that might imply this ExtensionVersion
@@ -434,6 +438,7 @@ class ExtensionVersion
   #
   # @example
   #   zba_ext_ver.implied_by_with_condition #=> [{ ext_ver: "B 1.0", cond: AlwaysTrueExtensionRequirementExpression}]
+  sig { returns(T::Array[Requirements::ConditionalExtensionVersion]) }
   def implied_by_with_condition
     return @implied_by_with_condition unless @implied_by_with_condition.nil?
 
@@ -444,7 +449,10 @@ class ExtensionVersion
       ext.versions.each do |ext_ver|
         raise "????" if ext_ver.arch.nil?
         ext_ver.implications.each do |implication|
-          @implied_by_with_condition << { ext_ver: ext_ver, cond: implication.cond } if implication.ext_ver == self
+          puts implication.ext_ver
+          if implication.ext_ver == self
+            @implied_by_with_condition << Requirements::ConditionalExtensionVersion.new(ext_ver: ext_ver, cond: implication.cond)
+          end
         end
       end
     end
@@ -462,14 +470,6 @@ class ExtensionVersion
     else
       @version_spec <=> other.version_spec
     end
-  end
-
-  def eql?(other)
-    unless other.is_a?(ExtensionVersion)
-      raise ArgumentError, "ExtensionVersions are only comparable to other extension versions"
-    end
-
-    @name == other.name && @version_spec == other.version_spec
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
@@ -624,6 +624,23 @@ class ExtensionRequirement
     @extension ||= @arch.extension(@name)
   end
 
+  # create an ExtensionRequirement from YAML
+  sig {
+    params(
+      yaml: T::Hash[String, T.untyped],
+      cfg_arch: ConfiguredArchitecture
+    ).returns(ExtensionRequirement)
+  }
+  def self.create(yaml, cfg_arch)
+    requirements =
+      if yaml.key?("version")
+        yaml.fetch("version")
+      else
+        ">= 0"
+      end
+    ExtensionRequirement.new(yaml.fetch("name"), requirements, arch: cfg_arch)
+  end
+
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
@@ -670,6 +687,7 @@ class ExtensionRequirement
   end
 
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
+  sig { returns(T::Array[ExtensionVersion]) }
   def satisfying_versions
     return @satisfying_versions unless @satisfying_versions.nil?
 
@@ -684,6 +702,7 @@ class ExtensionRequirement
 
   # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
   #                            If none, raises an error.
+  sig { returns(ExtensionVersion) }
   def min_satisfying_ext_ver
     if satisfying_versions.empty?
       warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
@@ -698,7 +717,7 @@ class ExtensionRequirement
       raise "Cannot satisfy extension requirement '#{self}'"
     end
 
-    satisfying_versions.min
+    T.must(satisfying_versions.min)
   end
 
   # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
@@ -718,7 +737,7 @@ class ExtensionRequirement
       raise "Cannot satisfy extension requirement '#{self}'"
     end
 
-    satisfying_versions.max
+    T.must(satisfying_versions.max)
   end
 
   # returns true if this extension requirement is a superset of other_ext_req
@@ -797,6 +816,7 @@ class ExtensionRequirement
   end
 
   # @return [Array<Csr>] List of CSRs defined by any extension satisfying this requirement
+  sig { returns(T::Array[Csr]) }
   def csrs
     @csrs ||= @arch.csrs.select do |csr|
       satisfying_versions.any? do |ext_ver|
@@ -805,10 +825,15 @@ class ExtensionRequirement
     end
   end
 
-  # sorts by name
-  def <=>(other)
-    raise ArgumentError, "ExtensionRequirements are only comparable to other extension requirements" unless other.is_a?(ExtensionRequirement)
+  sig { params(other: ExtensionRequirement).returns(T::Boolean) }
+  def ==(other)
+    (satisfying_versions.size == other.satisfying_versions.size) && \
+      satisfying_versions.all? { |version| other.satisfying_versions.include?(version) }
+  end
 
+  # sorts by name
+  sig { params(other: ExtensionRequirement).returns(T.nilable(Integer)) }
+  def <=>(other)
     @name <=> other.name
   end
 end

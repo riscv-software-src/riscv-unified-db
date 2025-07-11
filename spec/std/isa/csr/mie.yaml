@@ -11,7 +11,9 @@ address: 0x304
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 description: "mip.yaml#/description"
 fields:
   SSIE:
@@ -23,7 +25,9 @@ fields:
 
       Alias of `sie.SSIE` when `mideleg.SSI` is set. Otherwise, `sie.SSIE` is read-only 0.
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: 0
   VSSIE:
     location: 2
@@ -41,7 +45,9 @@ fields:
       Alias of `sie.SSIE` when `hideleg.VSSI` is set and the current mode is VS or VU
       (Because `mie` is inaccessible in VS or VU mode, this alias can never be observed by software).
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     reset_value: 0
   MSIE:
     location: 3
@@ -56,7 +62,9 @@ fields:
 
       Alias of `sip.STIE` when `mideleg.STI` is set. Otherwise, `sip.STIE` is read-only 0.
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: 0
   VSTIE:
     location: 6
@@ -74,7 +82,9 @@ fields:
       Alias of `sie.STIE` when `hideleg.VSTI` is set and the current mode is VS or VU
       (Because `mie` is inaccessible in VS or VU mode, this alias can never be observed by software).
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     reset_value: 0
   MTIE:
     location: 7
@@ -89,7 +99,9 @@ fields:
 
       Alias of `sie.SEIE` when `mideleg.SEI` is set. Otherwise, `sie.SEIE` is read-only 0.
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: 0
   VSEIE:
     location: 10
@@ -107,7 +119,9 @@ fields:
       Alias of `sie.SEIE` when `hideleg.VSEI` is set and the current mode is VS or VU
       (Because `mie` is inaccessible in VS or VU mode, this alias can never be observed by software).
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     reset_value: 0
   MEIE:
     location: 11
@@ -122,7 +136,9 @@ fields:
 
       Alias of `hie.SGEIE`.
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     reset_value: 0
   LCOFIE:
     location: 13
@@ -136,5 +152,7 @@ fields:
 
       Alias of `vsip.LCOFIE` when `hideleg.LCOFI` is set. Otherwise, `vsip.LCOFIE` is read-only 0.
     type: RW
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
     reset_value: 0

@@ -13,7 +13,9 @@ description:
     text: |
       `fcvt.l.s` converts a floating-point number in floating-point register `fs1` to a unsigned
       64-bit integer, in integer register `xd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 base: 64
 assembly: xd, fs1, rm
 encoding:

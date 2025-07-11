@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -121,7 +121,9 @@ versions:
       - name: Paul Donahue
       - name: Ved Shanbhogue
         company: Rivos, Inc.
-conflicts: Svade
+conflicts:
+  extension:
+    name: Svade
 doc_license:
   name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
   url: https://creativecommons.org/licenses/by/4.0/

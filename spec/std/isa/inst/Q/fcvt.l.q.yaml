@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.l.q` converts a quad-precision floating-point number to a signed 64-bit integer.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 base: 64
 assembly: xd, fs1, rm
 encoding:

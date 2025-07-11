@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -15,14 +15,16 @@ versions:
     ratification_date: 2023-06
     url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf
     requires:
-      name: S
-      version: ">= 1.12"
+      extension:
+        name: S
+        version: ">= 1.12"
 
 params:
   MSTATEEN_AIA_TYPE:
-    when:
-      name: Smstateen
-      version: ~> 1.0
+    definedBy:
+      extension:
+        name: Smstateen
+        version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
@@ -33,28 +35,37 @@ params:
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
   HSTATEEN_AIA_TYPE:
-    when:
-      allOf:
-        - name: H
-          version: ~> 1.0
-        - name: Ssstateen
-          version: ~> 1.0
+    definedBy:
+      extension:
+        allOf:
+          - name: H
+            version: ~> 1.0
+          - name: Ssstateen
+            version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
+    restrictions:
+      allOf:
+        - constraint(): |
+            MSTATEEN_AIA_TYPE == "read-only-0" -> HSTATEEN_AIA_TYPE == "read-only-0";
+          reason:
+            HSTATEEN cannot have more options that MSTATEEN
+        - constraint(): |
+            MSTATEEN_AIA_TYPE == "read-only-1" -> HSTATEEN_AIA_TYPE == "read-only-1";
+          reason:
+            HSTATEEN cannot have more options that MSTATEEN
     description: |
       Behavior of the hstateen0.AIA bit:
 
         * 'rw': read-write
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
-    extra_validation: |
-      assert HSTATEEN_AIA_TYPE == 'read-only-0' if MSTATEEN_AIA_TYPE == 'read-only-0'
-      assert HSTATEEN_AIA_TYPE == 'read-only-1' if MSTATEEN_AIA_TYPE == 'read-only-1'
   MSTATEEN_IMSIC_TYPE:
-    when:
-      name: Smstateen
-      version: ~> 1.0
+    definedBy:
+      extension:
+        name: Smstateen
+        version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
@@ -65,21 +76,30 @@ params:
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
   HSTATEEN_IMSIC_TYPE:
-    when:
+    definedBy:
       allOf:
-        - name: H
-          version: ~> 1.0
-        - name: Ssstateen
-          version: ~> 1.0
+        - extension:
+            name: Ssaia
+        - extension:
+            name: H
+        - extension:
+            name: Ssstateen
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
+    restrictions:
+      allOf:
+        - constraint(): |
+            MSTATEEN_IMSIC_TYPE == "read-only-0" -> HSTATEEN_IMSIC_TYPE == "read-only-0";
+          reason:
+            HSTATEEN cannot have more options that MSTATEEN
+        - constraint(): |
+            MSTATEEN_IMSIC_TYPE == "read-only-1" -> HSTATEEN_IMSIC_TYPE == "read-only-1";
+          reason:
+            HSTATEEN cannot have more options that MSTATEEN
     description: |
       Behavior of the hstateen0.IMSIC bit:
 
         * 'rw': read-write
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
-    extra_validation: |
-      assert HSTATEEN_IMSIC_TYPE == 'read-only-0' if MSTATEEN_IMSIC_TYPE == 'read-only-0'
-      assert HSTATEEN_IMSIC_TYPE == 'read-only-1' if MSTATEEN_IMSIC_TYPE == 'read-only-1'

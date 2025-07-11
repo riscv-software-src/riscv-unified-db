@@ -12,9 +12,10 @@ description: |
   The rd register index should be used as rd+8 (registers x8-x15).
   C.ANDI expands into `andi rd, rd, imm`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, imm
 encoding:
   match: 100-10--------01

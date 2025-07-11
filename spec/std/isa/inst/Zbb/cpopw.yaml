@@ -21,7 +21,9 @@ description: |
   function `__builtin_popcountl (unsigned long x)` for LP64 is
   implemented by cpop on RV64.
   ----
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 base: 64
 assembly: xd, xs1
 encoding:

@@ -10,7 +10,9 @@ address: 0x251
 virtual_address: 0x251
 priv_mode: VS
 length: VSXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-vsireg-purpose
     normative: true

@@ -106,7 +106,8 @@ module Udb
         gen_path_override: T.nilable(Pathname),
         std_path_override: T.nilable(Pathname),
         custom_path_override: T.nilable(Pathname),
-        python_path_override: T.nilable(Pathname)
+        python_path_override: T.nilable(Pathname),
+        quiet: T::Boolean
       ).void
     }
     def initialize(
@@ -116,7 +117,8 @@ module Udb
       gen_path_override: nil,
       std_path_override: nil,
       custom_path_override: nil,
-      python_path_override: nil
+      python_path_override: nil,
+      quiet: false
     )
       @repo_root = repo_root
       @schemas_path = schemas_path_override || (@repo_root / "spec" / "schemas")
@@ -125,6 +127,7 @@ module Udb
       @std_path = std_path_override || (@repo_root / "spec" / "std" / "isa")
       @custom_path = custom_path_override || (@repo_root / "spec" / "custom" / "isa")
       @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
+      @quiet = quiet
 
       FileUtils.mkdir_p @gen_path
     end
@@ -142,9 +145,13 @@ module Udb
     # run command in the shell. raise if exit is not zero
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
-      puts cmd.join(" ")
-      T.unsafe(self).send(:system, *cmd)
-      raise unless $?.success?
+      puts cmd.join(" ") unless @quiet
+      if @quiet
+        T.unsafe(self).send(:system, *cmd, :out=>"/dev/null", :err=>"/dev/null")
+      else
+        T.unsafe(self).send(:system, *cmd)
+      end
+      raise "data resolution error" unless $?.success?
     end
 
     # resolve config file and write it to gen_path
@@ -218,6 +225,8 @@ module Udb
         ]
         FileUtils.touch(gen_path / "resolved_spec" / config_yaml["name"] / ".stamp")
       end
+
+      FileUtils.cp_r(std_path / "isa", gen_path / "resolved_spec" / config_yaml["name"])
     end
 
     # resolve the specification for a config, and return a ConfiguredArchitecture
@@ -242,7 +251,6 @@ module Udb
       config_name = config_yaml["name"]
 
       resolve_arch(config_yaml)
-
       @cfg_archs[config_path] = Udb::ConfiguredArchitecture.new(
         config_name,
         Udb::AbstractConfig.create(gen_path / "cfgs" / "#{config_name}.yaml"),

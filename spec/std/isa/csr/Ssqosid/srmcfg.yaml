@@ -9,7 +9,9 @@ long_name: Supervisor Resource Management Configuration
 address: 0x181
 priv_mode: S
 length: SXLEN
-definedBy: Ssqosid
+definedBy:
+  extension:
+    name: Ssqosid
 description:
   - id: csr-srmcfg-purpose
     normative: true

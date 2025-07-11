@@ -28,6 +28,41 @@ module Udb
     class Validate < SubCommandBase
       include Thor::Actions
 
+      desc "spec", "Validate that the spec follows the schema"
+      long_desc <<~DESC
+         Validate that all of the files in the spec conform to the data schema.
+
+         The specification is determined by --config.
+      DESC
+      method_option :std, aliases: "-a", type: :string, desc: "Path to standard specification database", default: Udb.default_std_isa_path.to_s
+      method_option :custom, type: :string, desc: "Path to custom specification directory, if needed", default: Udb.default_custom_isa_path.to_s
+      method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+      def spec
+
+        cfg_file =
+          if File.file?(options[:config])
+            Pathname.new(options[:config])
+          elsif File.file?("#{options[:config_dir]}/#{options[:config]}.yaml")
+            Pathname.new("#{options[:config_dir]}/#{options[:config]}.yaml")
+          else
+            raise ArgumentError, "Cannot find config: #{options[:config]}"
+          end
+
+        resolver =
+          Udb::Resolver.new(
+            std_path_override: Pathname.new(options[:std]),
+            gen_path_override: Pathname.new(options[:gen]),
+            custom_path_override: Pathname.new(options[:custom])
+          )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+
+        puts "Checking arch files against schema.."
+        cfg_arch.validate($resolver, show_progress: true)
+        puts "All files validate against their schema"
+      end
+
       desc "cfg NAME_OR_PATH", "Validate a configuration file"
       long_desc <<~DESC
         Check that a configuration file is valid for the given spec.

@@ -20,7 +20,9 @@ description:
       machine-level CSRs there is a corresponding set of high-half CSRs for the upper 32 bits of each register:
       `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`.
 
-definedBy: Smstateen
+definedBy:
+  extension:
+    name: Smstateen
 fields:
   SE0:
     long_name: hstateen2, hstateen2h, and sstateen2 access control

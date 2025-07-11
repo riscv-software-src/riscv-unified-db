@@ -12,10 +12,12 @@ description: |
 
   `fsw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fs2, imm(xs1)
 encoding:
-  match: -----------------010-----0100111
+  match: "-----------------010-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

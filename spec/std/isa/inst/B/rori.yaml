@@ -11,7 +11,10 @@ description: |
   Performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
   For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 definedBy:
-  anyOf: [Zbb, Zbkb]
+  extension:
+    anyOf:
+      - name: Zbb
+      - name: Zbkb
 assembly: xd, xs1, shamt
 encoding:
   RV32:

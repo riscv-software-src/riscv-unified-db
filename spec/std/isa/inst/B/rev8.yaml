@@ -18,7 +18,10 @@ description: |
   and halfword-sized byte-reversal, perform a `rev8 rd,rs` followed by a `srai rd,rd,K`, where K
   is XLEN-32 and XLEN-16, respectively.
 definedBy:
-  anyOf: [Zbb, Zbkb]
+  extension:
+    anyOf:
+      - name: Zbb
+      - name: Zbkb
 assembly: xd, xs1
 encoding:
   RV32:

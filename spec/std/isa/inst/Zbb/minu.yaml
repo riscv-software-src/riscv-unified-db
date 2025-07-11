@@ -9,7 +9,9 @@ name: minu
 long_name: Unsigned minimum
 description: |
   Returns the smaller of two unsigned integers.
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------101-----0110011

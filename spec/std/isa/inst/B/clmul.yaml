@@ -10,7 +10,10 @@ long_name: Carry-less multiply (low-part)
 description: |
   `clmul` produces the lower half of the 2*XLEN carry-less product
 definedBy:
-  anyOf: [Zbc, Zbkc]
+  extension:
+    anyOf:
+      - name: Zbc
+      - name: Zbkc
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------001-----0110011

@@ -20,10 +20,12 @@ description: |
   Note that if `rs1` specifies a register other than `x0`, and that register holds a zero value,
   the instruction will not action any attendant per-field side effects, but will action any
   side effects caused by writing to the entire CSR.
-definedBy: Zicsr
+definedBy:
+  extension:
+    name: Zicsr
 assembly: xd, csr, xs1
 encoding:
-  match: -----------------011-----1110011
+  match: "-----------------011-----1110011"
   variables:
     - name: csr
       location: 31-20

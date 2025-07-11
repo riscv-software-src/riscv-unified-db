@@ -23,7 +23,7 @@ grammar Idl
         fetch
         /
         space+
-      )+ <Idl::IsaSyntaxNode>
+      )* <Idl::IsaSyntaxNode>
   end
 
   rule include_statement

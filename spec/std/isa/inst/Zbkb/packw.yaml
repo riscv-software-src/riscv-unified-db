@@ -9,7 +9,9 @@ name: packw
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zbkb
+definedBy:
+  extension:
+    name: Zbkb
 base: 64
 assembly: xd, xs1, xs2
 encoding:

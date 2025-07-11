@@ -13,9 +13,10 @@ description: |
   to the base address in register rs1.
   It expands to `sw` `rs2, offset(rs1)`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xs2, imm(xs1)
 encoding:
   match: 110-----------00

@@ -10,10 +10,12 @@ long_name: Load doubleword to even/odd register pair
 description: |
   Loads a 64-bit value into registers rd and rd+1. The effective address is obtained by adding
   register rs1 to the sign-extended 12-bit offset.
-definedBy: Zilsd
+definedBy:
+  extension:
+    name: Zilsd
 assembly: rd, offset(rs1)
 encoding:
-  match: -----------------011-----0000011
+  match: "-----------------011-----0000011"
   variables:
     - name: rd
       location: 11-7

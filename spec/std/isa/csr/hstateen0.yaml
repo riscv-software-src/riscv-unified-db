@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -57,10 +57,11 @@ description:
       in the matching `mstateen` CSR.
 
 definedBy:
-  allOf:
-    - H
-    - Smstateen
-    - Ssstateen
+  extension:
+    allOf:
+      - name: H
+      - name: Smstateen
+      - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen0 access control
@@ -78,8 +79,9 @@ fields:
     long_name: senvcfg access control
     location: 62
     definedBy:
-      name: S
-      version: ">= 1.11"
+      extension:
+        name: S
+        version: ">= 1.11"
     description: |
       The ENVCFG bit in `hstateen0` controls access to the `senvcfg` CSRs.
     type: RW
@@ -92,7 +94,9 @@ fields:
   CSRIND:
     long_name: siselect and sireg* access control
     location: 60
-    definedBy: Sscsrind
+    definedBy:
+      extension:
+        name: Sscsrind
     description: |
       The CSRIND bit in `hstateen0` controls access to the `siselect` and the
       `sireg*`, (really `vsiselect` and `vsireg*`) CSRs provided by the Sscsrind
@@ -107,7 +111,9 @@ fields:
   AIA:
     long_name: Ssaia state access control
     location: 59
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     description: |
       The AIA bit in `hstateen0` controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
@@ -122,7 +128,9 @@ fields:
   IMSIC:
     long_name: IMSIC state access control
     location: 58
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     description: |
       The IMSIC bit in `hstateen0` controls access to the guest IMSIC state,
       including CSRs `stopei` (really `vstopei`), provided by the Ssaia extension.
@@ -139,7 +147,9 @@ fields:
   CONTEXT:
     long_name: scontext access control
     location: 57
-    definedBy: Sdtrig
+    definedBy:
+      extension:
+        name: Sdtrig
     description: |
       The CONTEXT bit in `hstateen0` controls access to the `scontext` CSR provided
       by the Sdtrig extension.
@@ -168,7 +178,9 @@ fields:
   JVT:
     long_name: jvt access control
     location: 2
-    definedBy: Zcmt
+    definedBy:
+      extension:
+        name: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW

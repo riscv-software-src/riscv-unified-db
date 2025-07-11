@@ -10,11 +10,13 @@ long_name: Load doubleword
 description: |
   Load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 base: 64
 assembly: xd, imm(xs1)
 encoding:
-  match: -----------------011-----0000011
+  match: "-----------------011-----0000011"
   variables:
     - name: imm
       location: 31-20

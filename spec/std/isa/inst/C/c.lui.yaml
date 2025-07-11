@@ -6,16 +6,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.lui
-long_name: Load the non-zero 6-bit immediate field into bits 17-12 of the destination register
+long_name:
+  Load the non-zero 6-bit immediate field into bits 17-12 of the destination
+  register
 description: |
   C.LUI loads the non-zero 6-bit immediate field into bits 17-12 of the destination register, clears the bottom 12 bits, and sign-extends bit 17 into all higher bits of the destination.
   C.LUI expands into `lui rd, imm`.
   C.LUI is only valid when rd&ne;x0 and rd&ne;x2, and when the immediate is not equal to zero.
   The code points with imm=0 are reserved; the remaining code points with rd=x0 are HINTs; and the remaining code points with rd=x2 correspond to the C.ADDI16SP instruction
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, imm
 encoding:
   match: 011-----------01

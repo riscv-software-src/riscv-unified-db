@@ -9,7 +9,9 @@ long_name: Machine Indirect Register Select
 address: 0x350
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-miselect-purpose
     normative: true

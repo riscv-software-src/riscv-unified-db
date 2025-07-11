@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -13,20 +13,23 @@ versions:
   state: ratified
   ratification_date: 2019-06
   requires:
-    name: U
-    version: "= 1.0.0"
+    extension:
+      name: U
+      version: "= 1.0.0"
 - version: "1.12.0"
   state: ratified
   ratification_date: 2021-12
   requires:
-    name: U
-    version: "= 1.0.0"
+    extension:
+      name: U
+      version: "= 1.0.0"
 - version: "1.13.0"
   state: ratified
   ratification_date: null
   requires:
-    name: U
-    version: "= 1.0.0"
+    extension:
+      name: U
+      version: "= 1.0.0"
 description: |
   This chapter describes the RISC-V supervisor-level architecture, which
   contains a common core that is used with various supervisor-level
@@ -50,19 +53,26 @@ params:
       Indicates whether or not the `S` extension can be disabled with the `misa.S` bit.
     schema:
       type: boolean
-    extra_validation: |
-      # If U mode can be disabled, then S mode must also be disabled since you can't
-      # be in S mode without U mode
-      assert MUTABLE_MISA_S if MUTABLE_MISA_U
+    restrictions:
+      constraint(): |
+        MUTABLE_MISA_U -> MUTABLE_MISA_S;
+      reason:
+        If U-mode can be disabled, then S must also be disabled since S cannot exist
+        without U (and thus there is no option for MUTABLE_MISA_S).
+
   ASID_WIDTH:
     description: |
       Number of implemented ASID bits. Maximum is 16 for XLEN==64, and 9 for XLEN==32
     schema:
-      type: integer
-      minimum: 0
-      maximum: 16
-    extra_validation: |
-      assert ASID_WIDTH <= 9 if XLEN == 32
+      RV32:
+        type: integer
+        minimum: 0
+        maximum: 9
+      RV64:
+        type: integer
+        minimum: 0
+        maximum: 16
+
   S_MODE_ENDIANNESS:
     description: |
       Endianness of data in S-mode. Can be one of:
@@ -74,6 +84,7 @@ params:
     schema:
       type: string
       enum: [little, big, dynamic]
+
   SXLEN:
     description: |
       Set of XLENs supported in S-mode. Can be one of:
@@ -82,11 +93,18 @@ params:
         * 64:   SXLEN is always 64
         * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
     schema:
-      type: integer
-      enum: [32, 64, 3264]
-    extra_validation: |
-      assert SXLEN == 32 if XLEN == 32
-      assert (SXLEN != 32) if UXLEN != 32
+      type: array
+      items:
+        enum: [32, 64]
+      minItems: 1
+      maxItems: 2
+      uniqueItems: true
+    restrictions:
+      constraint(): |
+        !$ary_includes?(MXLEN, 64) -> !$ary_includes?(SXLEN, 64);
+      reason: |
+        XLEN in S-mode can never be larger than XLEN in M-mode
+
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT:
     description: |
       When true, `mtval` is written with the virtual address of a load when it causes a
@@ -95,6 +113,7 @@ params:
       WHen false, `mtval` is written with 0 when a load causes a `LoadPageFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT:
     description: |
       When true, `mtval` is written with the virtual address of a store when it causes a
@@ -103,6 +122,7 @@ params:
       WHen false, `mtval` is written with 0 when a store causes a `StoreAmoPageFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT:
     description: |
       When true, `mtval` is written with the virtual PC of an instructino when fetch causes an
@@ -112,6 +132,7 @@ params:
       `InstructionPageFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_BREAKPOINT:
     description: |
       When true, `stval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
@@ -121,6 +142,7 @@ params:
       Regardless, `stval` is always written with a virtual PC when an external breakpoint is generated
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED:
     description: |
       When true, `stval` is written with the virtual address of a load instruction when the
@@ -130,6 +152,7 @@ params:
       MISALIGNED_LDST is false.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED:
     description: |
       When true, `stval` is written with the virtual address of a store instruction when the
@@ -139,6 +162,7 @@ params:
       MISALIGNED_LDST is false.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED:
     description: |
       When true, `stval` is written with the virtual PC when an instruction fetch is misaligned.
@@ -149,6 +173,7 @@ params:
       it is impossible to generate a misaligned fetch, and so this parameter has no effect.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT:
     description: |
       When true, `stval` is written with the virtual address of a load when it causes a
@@ -157,6 +182,7 @@ params:
       WHen false, `stval` is written with 0 when a load causes a `LoadAccessFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT:
     description: |
       When true, `stval` is written with the virtual address of a store when it causes a
@@ -165,6 +191,7 @@ params:
       WHen false, `stval` is written with 0 when a store causes a `StoreAmoAccessFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT:
     description: |
       When true, `stval` is written with the virtual PC of an instructino when fetch causes an
@@ -174,6 +201,7 @@ params:
       `InstructionAccessFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT:
     description: |
       When true, `stval` is written with the virtual address of a load when it causes a
@@ -182,6 +210,7 @@ params:
       WHen false, `stval` is written with 0 when a load causes a `LoadPageFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT:
     description: |
       When true, `stval` is written with the virtual address of a store when it causes a
@@ -190,6 +219,7 @@ params:
       WHen false, `stval` is written with 0 when a store causes a `StoreAmoPageFault`.
     schema:
       type: boolean
+
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT:
     description: |
       When true, `stval` is written with the virtual PC of an instructino when fetch causes an
@@ -199,6 +229,7 @@ params:
       `InstructionPageFault`.
     schema:
       type: boolean
+
   REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION:
     description: |
       When true, `stval` is written with the encoding of an instruction that causes an
@@ -207,6 +238,7 @@ params:
       When false `stval` is written with 0 when an `IllegalInstruction` exception occurs.
     schema:
       type: boolean
+
   STVAL_WIDTH:
     description: |
       The number of implemented bits in `stval`.
@@ -215,6 +247,7 @@ params:
     schema:
       type: integer
       maximum: 0xffffffffffffffff
+
   SCOUNTENABLE_EN:
     description: |
       Indicates which counters can delegated via `scounteren`
@@ -225,35 +258,66 @@ params:
 
       SCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
       SCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+    definedBy:
+      extension:
+        anyOf:
+          - name: Zicntr
+          - name: Zihpm
     schema:
       type: array
       items:
         type: boolean
       maxItems: 32
       minItems: 32
-    extra_validation: |
-      SCOUNTENABLE_EN[0..2].all? { |en| !en } unless ext?(:Zicntr)
-      SCOUNTENABLE_EN[3..].all? { |en| !en } unless ext?(:Zihpm)
+    restrictions:
+      allOf:
+        - constraint(): |
+            for (U32 i = 0; i < 3; i++) {
+              !implemented?(ExtensionName::Zicntr) -> !SCOUNTENABLE_EN[i];
+            }
+          reason:
+            Counters 0-2 are defined by Zicntr
+        - constraint(): |
+            for (U32 i = 3; i < 32; i++) {
+              !implemented?(ExtensionName::Zihpm) -> !SCOUNTENABLE_EN[i];
+            }
+          reason:
+            Counters 3..31 are defined by Zihpm
+        - constraint(): |
+            for (U32 i = 3; i < 32; i++) {
+              !HPM_COUNTER_EN -> !SCOUNTENABLE_EN[i];
+            }
+          reason:
+            When mhpmcounter[i] does not exist, it cannot be enabled.
 
-      # SCOUNTEN_EN can only be writable if the hpm counter exists
-      SCOUNTENABLE_EN.each_with_index { |scounten, idx| next if idx < 3; assert (!scounten || HPM_COUNTER_EN[idx]) }
   STVEC_MODE_DIRECT:
     description: |
       Whether or not `stvec.MODE` supports Direct (0).
     schema:
       type: boolean
-    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    restrictions:
+      constraint(): |
+        !STVEC_MODE_VECTORED -> STVEC_MODE_DIRECT;
+      reason:
+        stvec must support at least one mode
+
   STVEC_MODE_VECTORED:
     description: |
       Whether or not `stvec.MODE` supports Vectored (1).
     schema:
       type: boolean
-    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    restrictions:
+      constraint(): |
+        !STVEC_MODE_DIRECT -> STVEC_MODE_VECTORED;
+      reason:
+        stvec must support at least one mode
+
   SATP_MODE_BARE:
     description: |
       Whether or not satp.MODE == Bare is supported.
     schema:
       type: boolean
+
   TRAP_ON_ECALL_FROM_S:
     description: |
       Whether or not an ECALL-from-S-mode causes a synchronous exception.
@@ -263,6 +327,7 @@ params:
     schema:
       type: boolean
       default: true
+
   TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY:
     description: |
       For implementations that make `satp`.MODE read-only zero
@@ -277,37 +342,46 @@ params:
       some virtual translation mode is supported.
     schema:
       type: boolean
-      default: false
-    extra_validation: assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
-  MSTATUS_FS_WRITABLE:
-    description: |
-      When `S` is enabled but `F` is not, mstatus.FS is optionally writable.
-    schema:
-      type: boolean
-    extra_validation: |
-      assert MSTATUS_FS_WRITABLE == true  if ext?(:F)
-      assert MSTATUS_FS_WRITABLE == false if (!ext?(:S) && !ext?(:F))
+
+    definedBy:
+      extension:
+        # Parameter only applies when the only supported translation mode is Bare
+        noneOf:
+        - name: Sv32
+        - name: Sv39
+        - name: Sv48
+        - name: Sv57
+
   MSTATUS_VS_WRITABLE:
     description: |
       When `S` is enabled but `V` is not, mstatus.VS is optionally writable.
     schema:
       type: boolean
-    extra_validation: |
-      assert MSTATUS_VS_WRITABLE == true  if ext?(:V)
-      assert MSTATUS_VS_WRITABLE == false if (!ext?(:S) && !ext?(:V))
+    restrictions:
+      constraint(): |
+        implemented?(ExtensionName::V) -> MSTATUS_VS_WRITABLE;
+      reason:
+        mstatus.VS must be writeable if V is present
+
   MSTATUS_FS_LEGAL_VALUES:
     description: |
-      The set of values that mstatus.FS will accept from a software write.
+      The set of values that mstatus.FS supports.
     schema:
       type: array
       items:
         type: integer
         enum: [0, 1, 2, 3]
       maxItems: 4
+      minItems: 1
       uniqueItems: true
-    also_defined_in: F
-    extra_validation: |
-      assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)
+    restrictions:
+      constraint(): |
+        implemented?(ExtensionName::F) && HW_MSTATUS_FS_DIRTY_UPDATE == "never"
+          -> $ary_includes?(MSTATUS_FS_LEGAL_VALUES, 3);
+      reason:
+        If there is a hardware update to mstatus.FS, then the Dirty state must be supported
+    also_defined_in: S
+
   MSTATUS_VS_LEGAL_VALUES:
     description: |
       The set of values that mstatus.VS will accept from a software write.
@@ -316,14 +390,16 @@ params:
       items:
         type: integer
         enum: [0, 1, 2, 3]
+      minItems: 1
       maxItems: 4
       uniqueItems: true
+    restrictions:
+      constraint(): |
+        implemented?(ExtensionName::V) && HW_MSTATUS_VS_DIRTY_UPDATE == "never"
+          -> $ary_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
+      reason:
+        If there is a hardware update to mstatus.VS, then the Dirty state must be supported
     also_defined_in: V
-    extra_validation: |
-      assert MSTATUS_VS_LEGAL_VALUES.include?(0) && MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V)
-
-      # if HW is writing VS, then Dirty (3) better be a supported value
-      assert MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")
   MSTATUS_TVM_IMPLEMENTED:
     description: |
       Whether or not mstatus.TVM is implemented.
@@ -332,9 +408,10 @@ params:
     schema:
       type: boolean
   MSTATEEN_ENVCFG_TYPE:
-    when:
-      name: Smstateen
-      version: ~> 1.0
+    definedBy:
+      extension:
+        name: Smstateen
+        version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
@@ -345,21 +422,30 @@ params:
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
   HSTATEEN_ENVCFG_TYPE:
-    when:
+    definedBy:
       allOf:
-        - name: H
-          version: ~> 1.0
-        - name: Ssstateen
-          version: ~> 1.0
+        - extension:
+            name: H
+            version: ~> 1.0
+        - extension:
+            name: Ssstateen
+            version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
+    restrictions:
+      allOf:
+        - constraint(): |
+            MSTATEEN_ENVCFG_TYPE == "read-only-0" -> HSTATEEN_ENVCFG_TYPE == "read-only-0";
+          reason:
+             When mstateen0.ENVCFG is read-only-0, hstateen0.ENVCFG must also be read-only-0
+        - constraint(): |
+            MSTATEEN_ENVCFG_TYPE == "read-only-1" -> HSTATEEN_ENVCFG_TYPE == "read-only-1";
+          reason:
+            When mstateen1.ENVCFG is read-only-1, hstateen0.ENVCFG must also be read-only-1
     description: |
       Behavior of the hstateen0.ENVCFG bit:
 
         * 'rw': read-write
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
-    extra_validation: |
-      assert HSTATEEN_ENVCFG_TYPE == 'read-only-0' if MSTATEEN_ENVCFG_TYPE == 'read-only-0'
-      assert HSTATEEN_ENVCFG_TYPE == 'read-only-1' if MSTATEEN_ENVCFG_TYPE == 'read-only-1'

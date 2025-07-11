@@ -16,7 +16,9 @@ length: MXLEN
 description:
   The mnstatus register tracks and controls the hart's current NMI operating
   state.
-definedBy: Smrnmi
+definedBy:
+  extension:
+    name: Smrnmi
 fields:
   MNPP:
     location: 12-11
@@ -69,7 +71,9 @@ fields:
       Can also be written by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   NMIE:
     location: 3
     description: |

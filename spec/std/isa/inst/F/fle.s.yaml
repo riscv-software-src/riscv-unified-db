@@ -15,7 +15,9 @@ description: |
 
   Positive zero and negative zero are considered equal.
 
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------000-----1010011

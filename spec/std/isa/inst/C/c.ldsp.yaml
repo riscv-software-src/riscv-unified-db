@@ -15,9 +15,10 @@ description: |
   It expands to `ld xd, offset(x2)`.
   C.LDSP is only valid when xd ≠ x0; code points with xd=x0 are reserved.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, imm(sp)
 encoding:
   RV32:

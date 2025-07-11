@@ -134,10 +134,11 @@ description: |
 priv_mode: M
 length: 64
 definedBy:
-  allOf:
-    - name: Sm
-      version: ">=1.12"
-    - name: U
+  extension:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: U
 fields:
   STCE:
     location: 63
@@ -148,7 +149,9 @@ fields:
 
       When clear, `stimecmp` access in a mode other than M-mode raises an `Illegal Instruction` trap.
       S-mode timer interrupts will not be generated when clear, and `mip` and `sip` revert to their prior behavior without `Sstc`.
-    definedBy: Sstc
+    definedBy:
+      extension:
+        name: Sstc
     type: RW
     reset_value: UNDEFINED_LEGAL
   PBMTE:
@@ -170,7 +173,9 @@ fields:
       _rs2_=_x0_ suffices to synchronize address-translation caches with respect to the altered
       interpretation of page-table entries' PBMT fields.
 
-    definedBy: Svpbmt
+    definedBy:
+      extension:
+        name: Svpbmt
     type: RW
     reset_value: UNDEFINED_LEGAL
   ADUE:
@@ -192,7 +197,9 @@ fields:
 
       Furthermore, for implementations with the hypervisor extension, henvcfg.ADUE is read-only
       zero if menvcfg.ADUE is zero.
-    definedBy: Svadu
+    definedBy:
+      extension:
+        name: Svadu
     type(): |
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
     reset_value(): |
@@ -212,7 +219,9 @@ fields:
         * `0`: The instruction raises an illegal instruction or virtual instruction exception
         * `1`: The instruction is executed
 
-    definedBy: Zicboz
+    definedBy:
+      extension:
+        name: Zicboz
     type: RW
     reset_value: UNDEFINED_LEGAL
   CBCFE:
@@ -231,7 +240,9 @@ fields:
         * `0`: The instruction raises an illegal instruction or virtual instruction exception
         * `1`: The instruction is executed
 
-    definedBy: Zicbom
+    definedBy:
+      extension:
+        name: Zicbom
     type: RW
     reset_value: UNDEFINED_LEGAL
   CBIE:
@@ -250,7 +261,9 @@ fields:
         * `01`: The instruction is executed and performs a flush operation
         * `10`: _Reserved_
         * `11`: The instruction is executed and performs an invalidate operation
-    definedBy: Zicbom
+    definedBy:
+      extension:
+        name: Zicbom
     type: RW-R
     sw_write(csr_value): |
       if ((csr_value.CBIE == 0) ||

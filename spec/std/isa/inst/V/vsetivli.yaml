@@ -9,7 +9,9 @@ name: vsetivli
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: xd, uimm, vtypei
 encoding:
   match: 11---------------111-----1010111

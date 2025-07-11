@@ -16,7 +16,9 @@ description: |
   Hypervisor-related interrupts (VS-mode interrupts and Supervisor Guest interrupts) are not reflected
   in `sip` even though those interrupts can be taken in HS-mode. Instead, they are reported through `hip`.
 length: 64
-definedBy: S
+definedBy:
+  extension:
+    name: S
 fields:
   SSIP:
     location: 1
@@ -59,7 +61,9 @@ fields:
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Smaia
   STIP:
     location: 5
@@ -92,7 +96,9 @@ fields:
       !===
     type: RO-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Sstc
   SEIP:
     location: 9
@@ -117,7 +123,9 @@ fields:
       !===
 
     type: RO-H
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Smaia
     reset_value: UNDEFINED_LEGAL
   LCOFIP:
@@ -147,4 +155,6 @@ fields:
       !===
     type: RW-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf

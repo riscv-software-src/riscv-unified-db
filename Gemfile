@@ -33,6 +33,7 @@ group :development do
   gem "awesome_print"
   gem "debug"
   gem "rdbg"
+  gem "ruby-debug-ide"
   gem "rubocop-github"
   gem "rubocop-minitest"
   gem "rubocop-performance"

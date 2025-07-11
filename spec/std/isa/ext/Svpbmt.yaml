@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -19,7 +19,8 @@ versions:
     state: ratified
     ratification_date: null
     requires:
-      name: Sv39
+      extension:
+        name: Sv39
     param_constraints:
       SATP_MODE_BARE:
         schema:

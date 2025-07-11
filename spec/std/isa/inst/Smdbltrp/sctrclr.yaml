@@ -9,7 +9,9 @@ name: sctrclr
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Smdbltrp
+definedBy:
+  extension:
+    name: Smdbltrp
 assembly: sctrclr
 encoding:
   match: "00010000010000000000000001110011"

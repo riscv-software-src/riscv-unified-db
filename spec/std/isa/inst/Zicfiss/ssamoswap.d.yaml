@@ -9,7 +9,9 @@ name: ssamoswap.d
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zicfiss
+definedBy:
+  extension:
+    name: Zicfiss
 assembly: xd, xs2, xs1
 encoding:
   match: 01001------------011-----0101111

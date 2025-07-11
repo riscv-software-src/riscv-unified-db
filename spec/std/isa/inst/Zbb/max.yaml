@@ -17,7 +17,9 @@ description: |
   common sequence, it is suggested that they are scheduled with no intervening
   instructions so that implementations that are so optimized can fuse them
   together.
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------110-----0110011

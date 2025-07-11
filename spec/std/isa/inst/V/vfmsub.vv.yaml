@@ -9,7 +9,9 @@ name: vfmsub.vv
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs1, vs2, vm
 encoding:
   match: 101010-----------001-----1010111

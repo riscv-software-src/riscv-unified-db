@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -13,8 +13,9 @@ versions:
     state: ratified
     ratification_date: 2019-12
     requires:
-      name: S
-      version: ">= 1.12.0"
+      extension:
+        name: S
+        version: ">= 1.12.0"
 interrupt_codes:
   - num: 2
     name: Virtual supervisor software interrupt
@@ -157,22 +158,26 @@ params:
       Indicates whether or not the `H` extension can be disabled with the `misa.H` bit.
     schema:
       type: boolean
-    extra_validation: |
-      # If S mode can be disabled, then H mode must also be disabled since you can't
-      # be in H mode without S mode
-      assert MUTABLE_MISA_H if MUTABLE_MISA_S
+    restrictions:
+      constraint(): |
+        MUTABLE_MISA_S -> MUTABLE_MISA_H;
+      reason: |
+        If S mode can be disabled, then H mode must also be disabled since you can't be in H mode
+        without S mode (and thus MUTABLE_MISA_H is not an option -- it's always true)
   NUM_EXTERNAL_GUEST_INTERRUPTS:
     description: |
       Number of supported virtualized guest interrupts
 
       Corresponds to the `GEILEN` parameter in the RVI specs
     schema:
-      type: integer
-      minimum: 1
-      maximum: 63
-    extra_validation: |
-      # GEILEN must be <= 31 for RV32
-      assert NUM_EXTERNAL_GUEST_INTERRUPTS <= 31 if SXLEN == 32
+      RV32:
+        type: integer
+        minimum: 1
+        maximum: 63
+      RV64:
+        type: integer
+        minimum: 1
+        maximum: 31
   VS_MODE_ENDIANNESS:
     description: |
       Endianness of data in VS-mode. Can be one of:
@@ -197,18 +202,21 @@ params:
       enum: [little, big, dynamic]
   VUXLEN:
     description: |
-      Set of XLENs supported in VU-mode. Can be one of:
-
-        * 32:   VUXLEN is always 32
-        * 64:   VUXLEN is always 64
-        * 3264: VUXLEN can be changed (via `vsstatus.UXL`) between 32 and 64
+      Set of XLENs supported in VU-mode. When both 32 and 64 are supported, VUXLEN can be changed
+      via `vsstatus.UXL`.
     schema:
-      type: integer
-      enum: [32, 64, 3264]
-    extra_validation: |
-      assert VUXLEN == 32 if XLEN == 32
-      assert (SXLEN != 32) if VUXLEN != 32
-      assert (VSXLEN != 32) if VUXLEN != 32
+      type: array
+      items:
+        enum: [32, 64]
+      minItems: 1
+      maxItems: 2
+      uniqueItems: true
+    restrictions:
+      constraint(): |
+        !$ary_includes?(VSXLEN, 64) -> !$ary_includes?(VUXLEN, 64)
+      reason: |
+        XLEN in VU-mode can never be larger than XLEN in VS-mode
+        (and, transitively, cannot be larger than XLEN in S-mode or M-mode).
   VSXLEN:
     description: |
       Set of XLENs supported in VS-mode. Can be one of:
@@ -217,18 +225,25 @@ params:
         * 64:   VSXLEN is always 64
         * 3264: VSXLEN can be changed (via `hstatus.VSXL`) between 32 and 64
     schema:
-      type: integer
-      enum: [32, 64, 3264]
-    extra_validation: |
-      assert VSXLEN == 32 if XLEN == 32
-      assert (SXLEN != 32) if VSXLEN != 32
+      type: array
+      items:
+        enum: [32, 64]
+      minItems: 1
+      maxItems: 2
+      uniqueItems: true
+    restrictions:
+      constraint(): |
+        !$ary_includes?(SXLEN, 64) -> !$ary_includes?(VSXLEN, 64)
+      reason: |
+        XLEN in VS-mode can never be larger than XLEN in S-mode
+        (and, transitively, cannot be larger than XLEN in M-mode).
   REPORT_VA_IN_VSTVAL_ON_BREAKPOINT:
     description: |
       When true, `vstval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
 
       When false, `vstval` is written with 0 on an EBREAK instruction.
 
-      Regardless, `vstval` is always written with a virtual PC when an external breakpoint is generated
+      Regardless, `vstval` is always written with a virtual PC when an external breakpoint is generated.
     schema:
       type: boolean
   REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED:
@@ -322,7 +337,7 @@ params:
       When true, `htval` is written with the Guest Physical Address, shifted right by 2, that
       caused a `GuestPageFault` exception.
 
-      When false, `htval` is written with0 when a `GuestPageFault` exception occurs.
+      When false, `htval` is written with 0 when a `GuestPageFault` exception occurs.
     schema:
       type: boolean
   HCOUNTENABLE_EN:
@@ -353,84 +368,88 @@ params:
       Whether or not writing mode=Bare is supported in the `hgatp` register.
     schema:
       type: boolean
-  SV32_VSMODE_TRANSLATION:
-    description: |
-      Whether or not Sv32 translation is supported in first-stage (VS-stage)
-      translation.
-    schema:
-      type: boolean
-    extra_validation: |
-      # Sv32 is only valid if VS-mode can get into XLEN=32 mode
-      assert (VSXLEN == 32 || VSXLEN == 3264) if SV32_VSMODE_TRANSLATION
+
   SV39_VSMODE_TRANSLATION:
     description: |
       Whether or not Sv39 translation is supported in first-stage (VS-stage)
       translation.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv39 is only valid if VS-mode can get into XLEN=64 mode
-      assert (VSXLEN == 64 || VSXLEN == 3264) if SV39_VSMODE_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(VSXLEN, 64) -> !SV39_VSMODE_TRANSLATION;
+      reason:
+        Sv39 in VS-mode is only valid if VS-mode can get into RV64 mode
+
   SV48_VSMODE_TRANSLATION:
     description: |
       Whether or not Sv48 translation is supported in first-stage (VS-stage)
       translation.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv48 is only valid if VS-mode can get into XLEN=64 mode
-      assert (VSXLEN == 64 || VSXLEN == 3264) if SV48_VSMODE_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(VSXLEN, 64) -> !SV48_VSMODE_TRANSLATION;
+      reason:
+        Sv48 in VS-mode is only valid if VS-mode can get into RV64 mode
+
   SV57_VSMODE_TRANSLATION:
     description: |
       Whether or not Sv57 translation is supported in first-stage (VS-stage)
       translation.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv57 is only valid if VS-mode can get into XLEN=64 mode
-      assert (VSXLEN == 64 || VSXLEN == 3264) if SV57_VSMODE_TRANSLATION
-  SV32X4_TRANSLATION:
-    description: |
-      Whether or not Sv32x4 translation mode is supported.
-    schema:
-      type: boolean
-    extra_validation: |
-      # Sv32x4 is only valid if S-mode can get into XLEN=32 mode
-      assert SXLEN == 32 || SXLEN == 3264 if SV32X4_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(VSXLEN, 64) -> !SV57_VSMODE_TRANSLATION;
+      reason:
+        Sv57 in VS-mode is only valid if VS-mode can get into RV64 mode
+
   SV39X4_TRANSLATION:
     description: |
       Whether or not Sv39x4 translation mode is supported.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv39x4 is only valid if S-mode can get into XLEN=64 mode
-      assert SXLEN == 64 || SXLEN == 3264 if SV39X4_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(SXLEN, 64) -> !SV39X4_VSMODE_TRANSLATION;
+      reason:
+        Sv39x4 is only valid if S-mode can get into RV64 mode
+
   SV48X4_TRANSLATION:
     description: |
       Whether or not Sv48x4 translation mode is supported.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv48x4 is only valid if S-mode can get into XLEN=64 mode
-      assert SXLEN == 64 || SXLEN == 3264 if SV48X4_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(SXLEN, 64) -> !SV48X4_VSMODE_TRANSLATION;
+      reason:
+        Sv48x4 is only valid if S-mode can get into RV64 mode
+
   SV57X4_TRANSLATION:
     description: |
       Whether or not Sv57x4 translation mode is supported.
     schema:
       type: boolean
-    extra_validation: |
-      # Sv57x4 is only valid if S-mode can get into XLEN=64 mode
-      assert SXLEN == 64 || SXLEN == 3264 if SV57X4_TRANSLATION
+    restrictions:
+      constraint(): |
+        !$ary_includes?(SXLEN, 64) -> !SV57X4_VSMODE_TRANSLATION;
+      reason:
+        Sv48x4 is only valid if S-mode can get into RV64 mode
+
   VMID_WIDTH:
     description: |
       Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID).
     schema:
-      type: integer
-      minimum: 0
-      maximum: 14
-    extra_validation: |
-      # if XLEN = 32, then VMID MAX is actually 7
-      assert VMID_WIDTH <= 7 if SXLEN == 32
+      RV32:
+        type: integer
+        minimum: 0
+        maximum: 7
+      RV64:
+        type: integer
+        minimum: 0
+        maximum: 14
   REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT:
     description: |
       Whether or not GPA >> 2 is written into htval/mtval2 when a load guest page fault occurs.
@@ -656,10 +675,16 @@ params:
       Whether or not `vstvec.MODE` supports Direct (0).
     schema:
       type: boolean
-    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    restrictions:
+      constraint(): |
+        !VSTVEC_MODE_VECTORED -> VSTVEC_MODE_DIRECT;
+      reason: At least one vstvec mode must be supported
   VSTVEC_MODE_VECTORED:
     description: |
       Whether or not `stvec.MODE` supports Vectored (1).
     schema:
       type: boolean
-    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    restrictions:
+      constraint(): |
+        !VSTVEC_MODE_DIRECT -> VSTVEC_MODE_VECTORED;
+      reason: At least one vstvec mode must be supported

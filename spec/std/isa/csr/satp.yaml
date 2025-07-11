@@ -14,7 +14,9 @@ description:
   current ASID and page table base pointer.
 priv_mode: S
 length: SXLEN
-definedBy: S
+definedBy:
+  extension:
+    name: S
 fields:
   MODE:
     location_rv64: 63-60

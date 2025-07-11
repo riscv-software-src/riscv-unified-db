@@ -8,7 +8,9 @@ long_name: Machine Exception Return
 description: |
   Returns from an exception in M-mode.
 assembly: ""
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 access:
   s: never
   u: never

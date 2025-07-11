@@ -13,7 +13,9 @@ description: |
   The remainder is discarded.
 
   If the value in rs2 is zero, rd is written with all 1s.
-definedBy: M
+definedBy:
+  extension:
+    name: M
 base: 64
 assembly: xd, xs1, xs2
 encoding:

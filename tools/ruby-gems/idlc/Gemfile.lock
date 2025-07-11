@@ -157,6 +157,7 @@ DEPENDENCIES
   rubocop-sorbet
   simplecov
   sorbet
+  spoom
   tapioca
   yard
   yard-sorbet

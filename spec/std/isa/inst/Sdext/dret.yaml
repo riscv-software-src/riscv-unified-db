@@ -9,7 +9,9 @@ name: dret
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Sdext
+definedBy:
+  extension:
+    name: Sdext
 assembly: dret
 encoding:
   match: "01111011001000000000000001110011"

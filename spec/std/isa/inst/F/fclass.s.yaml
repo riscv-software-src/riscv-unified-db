@@ -34,7 +34,9 @@ description: |
   |9 |_fs1_ is a quiet NaN.
   |===
 
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1
 encoding:
   match: 111000000000-----001-----1010011

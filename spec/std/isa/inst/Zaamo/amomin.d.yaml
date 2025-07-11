@@ -14,7 +14,9 @@ description: |
     * Write the loaded value into _rd_
     * Signed compare the value of register _rs2_ to the loaded value, and select the minimum value
     * Write the minimum to the address in _rs1_
-definedBy: Zaamo
+definedBy:
+  extension:
+    name: Zaamo
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:

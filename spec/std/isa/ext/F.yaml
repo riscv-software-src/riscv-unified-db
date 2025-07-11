@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -260,17 +260,22 @@ params:
       enum: ["never", "precise", "imprecise"]
   MSTATUS_FS_LEGAL_VALUES:
     description: |
-      The set of values that mstatus.FS will accept from a software write.
+      The set of values that mstatus.FS supports.
     schema:
       type: array
       items:
         type: integer
         enum: [0, 1, 2, 3]
       maxItems: 4
+      minItems: 1
       uniqueItems: true
+    restrictions:
+      constraint(): |
+        implemented?(ExtensionName::F) &&
+          (HW_MSTATUS_FS_DIRTY_UPDATE == "precise") ||
+           HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise")
+        ->
+          $ary_includes?(MSTATUS_FS_LEGAL_VALUES, 3);
+      reason:
+        If there is a hardware update to mstatus.FS, then the Dirty state must be supported
     also_defined_in: S
-    extra_validation: |
-      assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)
-
-      # if HW is writing FS, then Dirty (3) better be a supported value
-      assert MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F) && (HW_MSTATUS_FS_DIRTY_UPDATE != "never")

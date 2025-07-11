@@ -16,7 +16,9 @@ description: |
 
   Unlike fields in `sstatus`, which are all aliases of fields `mstatus`,
   bits in `hstatus` are independent bits and do not have aliases.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   VSXL:
     long_name: VS-mode XLen

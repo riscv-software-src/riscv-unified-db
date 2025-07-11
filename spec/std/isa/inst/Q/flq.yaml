@@ -9,10 +9,12 @@ name: flq
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, xs1, imm
 encoding:
-  match: -----------------100-----0000111
+  match: "-----------------100-----0000111"
   variables:
     - name: imm
       location: 31-20

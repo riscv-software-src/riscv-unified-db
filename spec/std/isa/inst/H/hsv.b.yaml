@@ -9,7 +9,9 @@ name: hsv.b
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 assembly: xs1, xs2
 encoding:
   match: 0110001----------100000001110011

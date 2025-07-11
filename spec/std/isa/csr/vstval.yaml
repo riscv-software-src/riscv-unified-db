@@ -13,7 +13,9 @@ virtual_address: 0x143
 description: Holds trap-specific information
 priv_mode: S
 length: VSXLEN
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   VALUE:
     location_rv32: 31-0

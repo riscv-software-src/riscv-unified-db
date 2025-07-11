@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.s.lu` converts a 64-bit unsigned integer into a single-precision floating-point number.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 base: 64
 assembly: fd, xs1, rm
 encoding:

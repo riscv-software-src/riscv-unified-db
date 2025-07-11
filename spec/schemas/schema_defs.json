@@ -221,22 +221,34 @@
     },
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
-      "oneOf": [
-        { "$ref": "#/$defs/extension_name" },
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "$ref": "#/$defs/extension_name"
-            },
-            "version": {
-              "$ref": "#/$defs/version_requirements"
-            }
-          },
-          "required": ["name"],
-          "additionalProperties": false
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/extension_name"
+        },
+        "version": {
+          "$ref": "#/$defs/version_requirements"
         }
-      ]
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "param_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z_0-9]*$"
+    },
+    "param_requirement": {
+      "type": "object",
+      "required": ["name", "schema"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/param_name"
+        },
+        "schema": {
+          "$ref": "json-schema-draft-07.json#"
+        }
+      },
+      "additionalProperties": false
     },
     "requires_entry": {
       "oneOf": [
@@ -453,6 +465,174 @@
           "items": {
             "$ref": "#/$defs/ref_url"
           }
+        }
+      ]
+    },
+    "extension_condition": {
+      "description": "A logic condition specifying certain extension version requirements",
+      "type": "object",
+      "required": ["extension"],
+      "properties": {
+        "extension": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/extension_requirement"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 1
+                },
+                "anyOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 1
+                },
+                "oneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 1
+                },
+                "noneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 1
+                },
+                "not": {
+                  "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                }
+              },
+              "minProperties": 1,
+              "maxProperties": 1
+            },
+            {
+              "type": "object",
+              "required": ["if", "then"],
+              "properties": {
+                "if": {
+                  "$ref": "schema_defs.json#/$defs/condition"
+                },
+                "then": {
+                  "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "param_condition": {
+      "type": "object",
+      "required": ["param"],
+      "properties": {
+        "param": {
+          "$ref": "#/$defs/param_requirement"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "idl": {
+      "description": "IDL code",
+      "type": "string"
+    },
+
+    "constraint": {
+      "description": "A constraint, along with an English reasoning",
+      "type": "object",
+      "required": ["constraint()", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "constraint()": {
+          "description": "IDL function containing one or more implications (e.g., A -> B).",
+          "$ref": "#/$defs/idl"
+        },
+        "reason": {
+          "description": "Why the constraint exists",
+          "type": "string"
+        }
+      }
+    },
+    "constraint_list": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/constraint"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/constraint_list"
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    "condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            },
+            "anyOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            },
+            "oneOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            },
+            "noneOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            },
+            "not": {
+              "$ref": "#/$defs/condition"
+            }
+          },
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/extension_condition"
+        },
+        {
+          "$ref": "#/$defs/param_condition"
         }
       ]
     }

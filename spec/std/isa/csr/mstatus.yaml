@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -19,7 +19,9 @@ length: MXLEN
 description:
   The mstatus register tracks and controls the hart's current operating
   state.
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   SD:
     location_rv32: 31
@@ -30,7 +32,11 @@ fields:
       Read-only bit that summarizes whether either the FS, XS, or VS
       fields signal the presence of some dirty state.
     definedBy:
-      anyOf: [F, V] # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
+      extension:
+        anyOf:
+          - name: F
+          - name: V
+          # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
     type(): |
       # this is read-only if FS and VS are both read-only
       # otherwise, it is read-only with hardware update
@@ -62,7 +68,9 @@ fields:
       When returning via an MRET instruction, the bit is written to 0.
       On reset in set to 1, and software should write it to 0 when boot sequence is done.
       When mstatus.MDT=1, direct write by CSR instruction cannot set mstatus.MIE to 1, if not written together.
-    definedBy: Smdbltrp
+    definedBy:
+      extension:
+        name: Smdbltrp
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   MPV:
@@ -76,7 +84,9 @@ fields:
       Can also be written by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   GVA:
     location: 38
     base: 64
@@ -87,7 +97,9 @@ fields:
       When a trap is taken and a guest virtual address is written into mtval, GVA is cleared.
     type: RW-H
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   MBE:
     location: 37
     base: 64
@@ -112,7 +124,9 @@ fields:
   SBE:
     location: 36
     base: 64
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     description: |
       *S-mode Big Endian*
 
@@ -139,7 +153,9 @@ fields:
   SXL:
     location: 35-34
     base: 64
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     description: |
       *S-mode XLEN*
 
@@ -188,7 +204,9 @@ fields:
   UXL:
     location: 33-32
     base: 64
-    definedBy: U
+    definedBy:
+      extension:
+        name: U
     description: |
       U-mode XLEN.
 
@@ -251,7 +269,9 @@ fields:
       [when,"ext?(:H)"]
       Does not affect the behavior of `sret` in VS_mode (see `hstatus.VTSR`).
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
   TW:
     location: 21
@@ -264,7 +284,9 @@ fields:
       When 0, the `wfi` instruction is permitted to wait forever in (H)S-mode but must
       trap after an implementation-defined wait period in U-mode.
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
   TVM:
     location: 20
@@ -287,7 +309,9 @@ fields:
       } else {
         return CsrFieldType::RW;
       }
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value(): |
       if (CSR[misa].S == 1'b0) {
         return 0;
@@ -311,7 +335,9 @@ fields:
 
       When 1, loads from pages marked readable *or executable* are allowed.
       When 0, loads from pages marked executable raise a Page Fault exception.
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     type: RW
     reset_value: UNDEFINED_LEGAL
   SUM:
@@ -321,7 +347,9 @@ fields:
 
       When 0, an S-mode read or an M-mode read with mstatus.MPRV=1 and mstatus.MPP=01
       to a 'U' (user) page will cause an ILLEGAL INSTRUCTION exception.
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     type(): |
       # only writable if there is some translation supported
       if (has_virt_mem?()) {
@@ -345,7 +373,9 @@ fields:
       `mstatus.MPV`:`mstatus.MPP`.
 
       `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
-    definedBy: U
+    definedBy:
+      extension:
+        name: U
     type(): |
       return (CSR[misa].U == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
     reset_value: 0
@@ -370,37 +400,30 @@ fields:
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
       other than to possibly enable a previously-disabled floating point unit.
     type(): |
-      if (CSR[misa].F == 1'b1){
+      if (implemented?(ExtensionName::F) && (!MISA_CSR_IMPLEMENTED || CSR[misa].F == 1'b1)) {
+        # "If the F extension is implemented, the FS field shall not be read-only zero."
         return CsrFieldType::RWH;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
-        # must be read-only-0
+      } else if (MISA_CSR_IMPLEMENTED && (CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+        # "If neither the F extension nor S-mode is implemented, then FS is read-only zero"
         return CsrFieldType::RO;
       } else {
+        # " If S-mode is implemented but the F extension is not, FS may optionally be read-only zero."
         # there will be no hardware update in this case because we know the F extension isn't implemented
-        return MSTATUS_FS_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
+        return $array_size(MSTATUS_FS_LEGAL_VALUES) == 1 ? CsrFieldType::RO : CsrFieldType::RW;
       }
     definedBy:
-      anyOf: [F, S]
+      extension:
+        anyOf:
+          - name: F
+          - name: S
     reset_value(): |
-      if (CSR[misa].F == 1'b1){
-        return UNDEFINED_LEGAL;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
-        # must be read-only-0
-        return 0;
-      } else {
-        # there will be no hardware update in this case because we know the F extension isn't implemented
-        return MSTATUS_FS_WRITABLE ? UNDEFINED_LEGAL : 0;
-      }
+      return $array_size(MSTATUS_FS_LEGAL_VALUES) == 1 ? MSTATUS_FS_LEGAL_VALUES[0] : UNDEFINED_LEGAL;
     sw_write(csr_value): |
-      if (CSR[misa].F == 1'b1){
-        return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+      if (MISA_CSR_IMPLEMENTED && (CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
         # must be read-only-0
         return 0;
-      } else {
-        # there will be no hardware update in this case because we know the F extension isn't implemented
-        return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
       }
+      return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
   MPP:
     location: 12-11
     description: |
@@ -452,7 +475,10 @@ fields:
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
       other than to possibly enable a previously-disabled vector unit.
     definedBy:
-      anyOf: [V, S]
+      extension:
+        anyOf:
+          - name: V
+          - name: S
     type(): |
       if (CSR[misa].V == 1'b1){
         return CsrFieldType::RWH;
@@ -503,7 +529,9 @@ fields:
       Notably, `mstatus.SPP` does not affect exception return in VS-mode (see `vsstatus.SPP`).
 
     type: RW-H
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
       if (csr_value.SPP == 2'b10) {
@@ -531,7 +559,9 @@ fields:
     reset_value: UNDEFINED_LEGAL
   UBE:
     location: 6
-    definedBy: U
+    definedBy:
+      extension:
+        name: U
     description: |
       *U-mode Big Endian*
 
@@ -570,7 +600,9 @@ fields:
       Other than serving as a record of nested traps as described above, `mstatus.SPIE` does not affect execution.
     type(): |
       return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value(): |
       return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
   MIE:
@@ -607,6 +639,8 @@ fields:
 
     type(): |
       return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value(): |
       return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;

@@ -13,9 +13,10 @@ description: |
   The immediate can be zero for C.ADDIW, where this corresponds to `sext.w rd`.
   C.ADDIW is only valid when rd &ne; x0; the code points with rd=x0 are reserved.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 base: 64
 assembly: xd, imm
 encoding:

@@ -9,7 +9,9 @@ name: sha512sig1h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zknh
+definedBy:
+  extension:
+    name: Zknh
 base: 32
 assembly: xd, xs1, xs2
 encoding:

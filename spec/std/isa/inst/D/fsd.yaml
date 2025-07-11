@@ -9,10 +9,12 @@ name: fsd
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fs2, imm(xs1)
 encoding:
-  match: -----------------011-----0100111
+  match: "-----------------011-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

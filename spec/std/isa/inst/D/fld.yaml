@@ -9,10 +9,12 @@ name: fld
 long_name: Load Double-precision Floating-Point
 description: |
   No description available.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, imm(xs1)
 encoding:
-  match: -----------------011-----0000111
+  match: "-----------------011-----0000111"
   variables:
     - name: imm
       location: 31-20

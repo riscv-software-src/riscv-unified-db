@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -41,4 +41,5 @@ versions:
     state: ratified
     ratification_date: "2024-11"
     url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
-    requires: { name: S, version: "~> 1.13" }
+    requires:
+      extension: { name: S, version: "~> 1.13" }

@@ -12,10 +12,12 @@ description: |
 
   `flw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, imm(xs1)
 encoding:
-  match: -----------------010-----0000111
+  match: "-----------------010-----0000111"
   variables:
     - name: imm
       location: 31-20

@@ -14,7 +14,9 @@ length: 64
 description: |
   Programmable hardware performance counter event selector
   <% if ext?(:Sscofpmf) %> and overflow/filtering control<% end %>
-definedBy: Smhpm
+definedBy:
+  extension:
+    name: Smhpm
 fields:
   OF:
     location: 63
@@ -41,7 +43,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   MINH:
     location: 62
     description: When set, mhpmcounter16 does not increment while the hart in operating in M-mode.
@@ -57,7 +61,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   SINH:
     location: 61
     description: When set, mhpmcounter16 does not increment while the hart in operating in (H)S-mode.
@@ -74,7 +80,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [S, Sscofpmf]
+      extension:
+        allOf:
+          - name: S
+          - name: Sscofpmf
   UINH:
     location: 60
     description: When set, mhpmcounter16 does not increment while the hart in operating in U-mode.
@@ -91,7 +100,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [U, Sscofpmf]
+      extension:
+        allOf:
+          - name: U
+          - name: Sscofpmf
   VSINH:
     location: 59
     description: When set, mhpmcounter16 does not increment while the hart in operating in VS-mode.
@@ -108,7 +120,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [H, Sscofpmf]
+      extension:
+        allOf:
+          - name: H
+          - name: Sscofpmf
   VUINH:
     location: 58
     description: When set, mhpmcounter16 does not increment while the hart in operating in VU-mode.
@@ -125,7 +140,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [H, Sscofpmf]
+      extension:
+        allOf:
+          - name: H
+          - name: Sscofpmf
   EVENT:
     location: 57-0
     description: Event selector for performance counter `mhpmcounter16`.

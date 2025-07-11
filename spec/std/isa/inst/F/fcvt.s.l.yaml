@@ -13,7 +13,9 @@ description:
     text: |
       `fcvt.s.l` converts a 64-bit signed integer in integer register `rs1` into a floating-point
       number in floating-point register `rd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 base: 64
 assembly: fd, xs1, rm
 encoding:

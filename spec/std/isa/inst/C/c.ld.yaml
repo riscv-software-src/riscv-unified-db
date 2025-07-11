@@ -14,10 +14,11 @@ description: |
   It expands to `ld` `xd, offset(xs1)`.
   For RV32, if the Zclsd extension is enabled, this instruction loads a 64-bit value into registers xd and xd+1. It computes an effective address by adding the zero-extended imm, scaled by 8, to the base address in register xs1.
 definedBy:
-  anyOf:
-    - C
-    - Zca
-    - Zclsd
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
+      - name: Zclsd
 assembly: xd, imm(xs1)
 encoding:
   RV32:

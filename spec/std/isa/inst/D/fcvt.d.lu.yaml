@@ -13,7 +13,9 @@ description:
     text: |
       `fcvt.d.lu` converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
       floating-point number in floating-point register `fd`.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, xs1, rm
 encoding:
   match: 110100100011-------------1010011

@@ -12,7 +12,9 @@ address: 0xB1B
 priv_mode: M
 length: 64
 description: Programmable hardware performance counter.
-definedBy: Smhpm
+definedBy:
+  extension:
+    name: Smhpm
 fields:
   COUNT:
     location: 63-0

@@ -14,7 +14,9 @@ description:
       The instruction applies the inverse MixColumns transformation to two columns of the state array,
       packed into a single 64-bit register. It is used to create the inverse cipher KeySchedule, according to
       the equivalent inverse cipher construction in (NIST, 2001) (Page 23, Section 5.3.5).
-definedBy: Zknd
+definedBy:
+  extension:
+    name: Zknd
 base: 64
 assembly: xd, xs1
 encoding:

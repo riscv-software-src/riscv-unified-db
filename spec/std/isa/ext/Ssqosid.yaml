@@ -1,7 +1,7 @@
 # Copyright (c) Syed Owais Ali Shah
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -55,4 +55,5 @@ versions:
     state: ratified
     ratification_date: "2024-06"
     url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-5308687-2025-04-22"
-    requires: { name: S, version: ~> 1.13 }
+    requires:
+      extension: { name: S, version: ~> 1.13 }

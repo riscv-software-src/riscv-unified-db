@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -42,11 +42,20 @@ params:
       items:
         type: integer
         enum: [0, 1, 2, 3]
+      minItems: 1
       maxItems: 4
       uniqueItems: true
+    restrictions:
+      allOf:
+        - constraint(): |
+            implemented?(ExtensionName::V) ->
+              ary_includes?(MSTATUS_VS_LEGAL_VALUES, 0) &&
+              ary_includes?(MSTATUS_VS_LEGAL_VALUES, 1);
+          reason:
+            If V is supported, both Off (0) and Dirty (3) must be supported
+        - constraint(): |
+            HW_MSTATUS_VS_DIRTY_UPDATE == "precise" || HW_MSTATUS_VS_DIRTY_UPDATE == "imprecise" ->
+              ary_includes?(MSTATUS_VS_LEGAL_VALUES, 3)
+          reason:
+            If there is a hardware update to mstatus.VS, then the Dirty state must be supported
     also_defined_in: S
-    extra_validation: |
-      assert MSTATUS_VS_LEGAL_VALUES.include?(0) && MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V)
-
-      # if HW is writing VS, then Dirty (3) better be a supported value
-      assert MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")

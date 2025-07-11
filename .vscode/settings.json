@@ -1,7 +1,8 @@
 {
-  "solargraph.bundlerPath": "bin/bundle",
+  "solargraph.bundlerPath": "./bin/bundle",
   "solargraph.useBundler": true,
   "sorbet.lspConfigs": [
+
 
     {
       "id": "container",
@@ -34,13 +35,13 @@
       "name": "Sorbet (Host)",
       "description": "Sorbet on the host",
       "command": [
-        "/usr2/dhower/.rbenv/shims/bundle",
+        "bundle",
         "exec",
         "srb",
         "typecheck",
         "--lsp",
         "--dir",
-        "tools/gems",
+        "tools/ruby-gems",
         "--ignore",
         "api_doc",
         "--ignore",
@@ -66,5 +67,11 @@
       ]
     }
   ],
-  "sorbet.selectedLspConfigId": "host"
+  "sorbet.selectedLspConfigId": "host",
+  "rubyTestExplorer.debugCommand": "bundle exec rdebug-ide",
+  "rubyTestExplorer.minitestCommand": "bundle exec rake",
+  "rubyTestExplorer.rspecCommand": "bundle exec rspec",
+  "rubyTestExplorer.testFramework": "minitest",
+  "rubyTestExplorer.minitestDirectory": "./tools/ruby-gems/idlc/test/",
+  "ipynb.experimental.serialization": false
 }

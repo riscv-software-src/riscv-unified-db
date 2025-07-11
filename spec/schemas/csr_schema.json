@@ -99,7 +99,7 @@
           "description": "When specified, indicates that this field aliases (a portion of) another CSR field"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "$ref": "schema_defs.json#/$defs/condition",
           "description": "Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR"
         },
         "affectedBy": {
@@ -222,7 +222,7 @@
           "description": "Function of the field"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "$ref": "schema_defs.json#/$defs/condition",
           "description": "Extension(s) that define the CSR"
         },
         "address": {

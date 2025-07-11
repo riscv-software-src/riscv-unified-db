@@ -9,7 +9,9 @@ name: fmul.s
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0001000------------------1010011

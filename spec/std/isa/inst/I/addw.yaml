@@ -10,7 +10,9 @@ long_name: Add word
 description: |
   Add the 32-bit values in xs1 to xs2, and store the sign-extended result in xd.
   Any overflow is thrown away.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 base: 64
 assembly: xd, xs1, xs2
 encoding:

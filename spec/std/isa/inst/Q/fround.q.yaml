@@ -10,7 +10,10 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010001100100-------------1010011

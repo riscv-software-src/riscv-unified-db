@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -34,16 +34,26 @@ params:
       enum: [little, big, dynamic]
   UXLEN:
     description: |
-      Set of XLENs supported in U-mode. Can be one of:
-
-        * 32:   SXLEN is always 32
-        * 64:   SXLEN is always 64
-        * 3264: SXLEN can be changed (via mstatus.UXL) between 32 and 64
+      Set of XLENs supported in U-mode. When both 32 and 64 are supported, SXLEN can be changed,
+      via mstatus.UXL, between 32 and 64.
     schema:
-      type: integer
-      enum: [32, 64, 3264]
-    extra_validation: |
-      assert UXLEN == 32 if MXLEN == 32
+      type: array
+      items:
+        enum: [32, 64]
+      minItems: 1
+      maxItems: 2
+      uniqueItems: true
+    restrictions:
+      allOf:
+        - constraint(): |
+            !$ary_includes?(MXLEN, 64) -> !$ary_includes?(UXLEN, 64);
+          reason: |
+            XLEN in U-mode can never be larger than XLEN in M-mode
+        - constraint(): |
+            $ary_includes?(SXLEN, 32) -> $ary_includes?(UXLEN, 32);
+          reason: |
+            If S-mode supports RV32, then U mode must also support it.
+
   TRAP_ON_ECALL_FROM_U:
     description: |
       Whether or not an ECALL-from-U-mode causes a synchronous exception.

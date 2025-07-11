@@ -11,7 +11,9 @@ description: |
   Performs an XLEN-wide addition of two addends. The first addend is rs2.
   The second addend is the unsigned value formed by extracting the least-significant word of rs1
   and shifting it left by 3 places.
-definedBy: Zba
+definedBy:
+  extension:
+    name: Zba
 base: 64
 assembly: xd, xs1, xs2
 encoding:

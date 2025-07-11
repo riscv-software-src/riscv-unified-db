@@ -2998,7 +2998,7 @@ module Idl
     def to_ast
       ImplicationExpressionAst.new(
         input, interval,
-        antecedent.to_ast, consequent.to_ast
+        send(:antecedent).to_ast, send(:consequent).to_ast
       )
     end
   end
@@ -3016,11 +3016,17 @@ module Idl
       super(input, interval, [antecedent, consequent])
     end
 
-    sig { returns(RvalueAst) }
-    def antecedent = @children[0]
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      antecedent.const_eval?(symtab) && consequent.const_eval?(symtab)
+    end
 
     sig { returns(RvalueAst) }
-    def consequent = @children[1]
+    def antecedent = T.cast(@children.fetch(0), RvalueAst)
+
+    sig { returns(RvalueAst) }
+    def consequent = T.cast(@children.fetch(1), RvalueAst)
 
     sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
@@ -3031,15 +3037,18 @@ module Idl
     sig { params(symtab: SymbolTable).returns(T::Boolean) }
     def satisfied?(symtab)
       return true if antecedent.value(symtab) == false
-      consequent.value(symtab)
+      T.cast(consequent.value(symtab), T::Boolean)
     end
+
+    sig { override.returns(String) }
+    def to_idl = "#{antecedent.to_idl} -> #{consequent.to_idl}"
 
   end
 
   class ImplicationStatementSyntaxNode < SyntaxNode
     sig { override.returns(ImplicationStatementAst) }
     def to_ast
-      ImplicationStatementAst.new(input, interval, implication_expression.to_ast)
+      ImplicationStatementAst.new(input, interval, send(:implication_expression).to_ast)
     end
   end
 
@@ -3055,8 +3064,11 @@ module Idl
       super(input, interval, [implication_expression])
     end
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = expression.const_eval?(symtab)
+
     sig { returns(ImplicationExpressionAst) }
-    def expression = @children[0]
+    def expression = T.cast(@children.fetch(0), ImplicationExpressionAst)
 
     sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
@@ -3067,6 +3079,9 @@ module Idl
     def satisfied?(symtab)
       expression.satisfied?(symtab)
     end
+
+    sig { override.returns(String) }
+    def to_idl = "#{expression.to_idl};"
   end
 
   class ConstraintBodySyntaxNode < SyntaxNode
@@ -3092,6 +3107,9 @@ module Idl
       super(input, interval, stmts)
     end
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = stmts.all? { |stmt| stmt.const_eval?(symtab) }
+
     sig { returns(T::Array[T.any(ImplicationStatementAst, ForLoopAst)]) }
     def stmts = T.cast(@children, T::Array[T.any(ImplicationStatementAst, ForLoopAst)])
 
@@ -3107,6 +3125,11 @@ module Idl
       stmts.all? do |stmt|
         stmt.satisfied?(symtab)
       end
+    end
+
+    sig { override.returns(String) }
+    def to_idl
+      stmts.map { |stmt| stmt.to_idl }.join("\n")
     end
   end
 

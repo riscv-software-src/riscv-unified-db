@@ -15,7 +15,9 @@ description:
        This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
        registers. The `rs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype
        of the destination. `fcvt.s.d` rounds according to the RM field
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, fs1, rm
 encoding:
   match: 010000000001-------------1010011

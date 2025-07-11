@@ -13,7 +13,9 @@ description: |
   If the value in register rs2 is zero, write the value in rs1 into rd;
 
   If the result of the division overflows, write zero into rd;
-definedBy: M
+definedBy:
+  extension:
+    name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0110011

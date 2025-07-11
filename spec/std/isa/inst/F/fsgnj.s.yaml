@@ -12,7 +12,9 @@ description: |
 
   Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
 
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2
 encoding:
   match: 0010000----------000-----1010011

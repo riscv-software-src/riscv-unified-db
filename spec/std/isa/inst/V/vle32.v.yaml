@@ -9,7 +9,9 @@ name: vle32.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, (xs1), vm
 encoding:
   match: 000000-00000-----110-----0000111

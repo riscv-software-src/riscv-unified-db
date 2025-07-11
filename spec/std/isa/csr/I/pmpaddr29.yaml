@@ -12,7 +12,9 @@ address: 0x3CD
 priv_mode: M
 length: MXLEN
 description: PMP entry address
-definedBy: Smpmp
+definedBy:
+  extension:
+    name: Smpmp
 fields:
   ADDR:
     location_rv32: 31-0

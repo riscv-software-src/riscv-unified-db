@@ -10,7 +10,10 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  anyOf: [Zks, Zksh]
+  extension:
+    anyOf:
+      - name: Zks
+      - name: Zksh
 assembly: xd, xs1
 encoding:
   match: 000100001000-----001-----0010011

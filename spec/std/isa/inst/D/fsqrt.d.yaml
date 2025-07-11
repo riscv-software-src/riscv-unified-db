@@ -9,7 +9,9 @@ name: fsqrt.d
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, fs1, rm
 encoding:
   match: 010110100000-------------1010011

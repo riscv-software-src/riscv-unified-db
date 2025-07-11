@@ -12,9 +12,10 @@ description: |
   It computes an effective address by adding the zero-extended offset, to the base address in register rs1.
   It expands to `lbu` `rd, offset(rs1)`.
 definedBy:
-  anyOf:
-    - Zcb
-    - Zce
+  extension:
+    anyOf:
+      - name: Zcb
+      - name: Zce
 assembly: xd, imm(xs1)
 encoding:
   match: 100000--------00

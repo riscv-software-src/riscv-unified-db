@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -18,21 +18,25 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    implies:
-      - name: Zca
-        version: "1.0.0"
-      - if:
-          name: F
-          version: ~> 2.2
-        then:
-          name: Zcf
-          version: "1.0.0"
-      - if:
-          name: D
-          version: ~> 2.2
-        then:
-          name: Zcd
-          version: "1.0.0"
+    requires:
+      extension:
+        allOf:
+          - name: Zca
+            version: = 1.0.0
+          - if:
+              extension:
+                name: F
+                version: ~> 2.2
+            then:
+              name: Zcf
+              version: = 1.0.0
+          - if:
+              extension:
+                name: D
+                version: ~> 2.2
+            then:
+              name: Zcd
+              version: = 1.0.0
 description: |
   The `C` extension reduces static and dynamic code size by
   adding short 16-bit instruction encodings for common operations. The C

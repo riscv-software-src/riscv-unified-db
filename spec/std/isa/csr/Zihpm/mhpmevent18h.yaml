@@ -17,7 +17,9 @@ description: |
 
   Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
   32-bits of `mhpmevent#{hpm_num}`.
-definedBy: Sscofpmf
+definedBy:
+  extension:
+    name: Sscofpmf
 fields:
   OF:
     location: 31
@@ -36,7 +38,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   MINH:
     location: 30
     alias: mhpmevent18.MINH
@@ -54,7 +58,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   SINH:
     location: 29
     alias: mhpmevent18.SINH
@@ -72,7 +78,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   UINH:
     location: 28
     alias: mhpmevent18.UINH
@@ -90,7 +98,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   VSINH:
     location: 27
     alias: mhpmevent18.VSINH
@@ -108,7 +118,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   VUINH:
     location: 26
     alias: mhpmevent18.VUINH
@@ -126,7 +138,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   EVENT:
     location: 25-0
     description: High part of event selector for performance counter `mhpmcounter18`.

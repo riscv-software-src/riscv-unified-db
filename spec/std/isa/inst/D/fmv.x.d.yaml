@@ -9,7 +9,9 @@ name: fmv.x.d
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: xd, fs1
 encoding:
   match: 111000100000-----000-----1010011

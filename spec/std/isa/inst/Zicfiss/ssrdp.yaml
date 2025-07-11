@@ -9,7 +9,9 @@ name: ssrdp
 long_name: Read ssp into a Register
 description: |
   No description available.
-definedBy: Zicfiss
+definedBy:
+  extension:
+    name: Zicfiss
 assembly: xd
 encoding:
   match: 11001101110000000100-----1110011

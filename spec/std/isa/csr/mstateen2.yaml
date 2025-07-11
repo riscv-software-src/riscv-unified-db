@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -66,7 +66,9 @@ description:
       the same bit is read-only one in the matching `mstateen` CSR. Bit 63 of each `mstateen` CSR may be read-only zero only if
       the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
 
-definedBy: Smstateen
+definedBy:
+  extension:
+    name: Smstateen
 fields:
   SE0:
     long_name: hstateen2, hstateen2h, and sstateen2 access control

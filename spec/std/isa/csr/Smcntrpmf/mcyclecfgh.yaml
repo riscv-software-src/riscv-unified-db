@@ -9,7 +9,9 @@ long_name: Machine Cycle Counter Configuration High
 address: 0x721
 priv_mode: M
 length: 32
-definedBy: Smcntrpmf
+definedBy:
+  extension:
+    name: Smcntrpmf
 description: |
   Upper 32 bits of the 64-bit `mcyclecfg` CSR, used for RV32 systems to access
   the privilege mode filtering inhibit bits.
@@ -19,7 +21,9 @@ fields:
     alias: mcyclecfg.MINH
     location: 30
     type: RW
-    definedBy: M
+    definedBy:
+      extension:
+        name: M
     description: If set, then counting of events in M-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -27,7 +31,9 @@ fields:
     alias: mcyclecfg.SINH
     location: 29
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     description: If set, then counting of events in S/HS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -35,7 +41,9 @@ fields:
     alias: mcyclecfg.UINH
     location: 28
     type: RW
-    definedBy: U
+    definedBy:
+      extension:
+        name: U
     description: If set, then counting of events in U-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -43,7 +51,9 @@ fields:
     alias: mcyclecfg.VSINH
     location: 27
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     description: If set, then counting of events in VS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -51,6 +61,8 @@ fields:
     alias: mcyclecfg.VUINH
     location: 26
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     description: If set, then counting of events in VU-mode is inhibited.
     reset_value: UNDEFINED_LEGAL

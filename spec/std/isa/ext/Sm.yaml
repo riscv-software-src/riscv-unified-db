@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -258,8 +258,13 @@ params:
     schema:
       type: string
       enum: ["low", "high"]
-      extra_validation: |
-        assert (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") if MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE.positive?
+    restrictions:
+      constraint(): |
+        MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 1 -> MISALIGNED_LDST_EXCEPTION_PRIORITY == "low";
+      reason:
+        MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+        is non-zero, since the atomicity of an access cannot be determined in that case until after
+        address translation.
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE:
     description: |
       The maximum granule size, in bytes, that the hart can atomically perform a
@@ -406,9 +411,10 @@ params:
       type: integer
       minimum: 0
       maximum: 0xFFFFFFFFFFFFFFFF
-    when:
-      name: Sm
-      version: ">= 1.12.0"
+    definedBy:
+      extension:
+        name: Sm
+        version: ">= 1.12.0"
   PMA_GRANULARITY:
     description: |
       log2 of the smallest supported PMA region.
@@ -472,22 +478,11 @@ params:
 
       Cannot be less than 4-byte alignment.
     schema:
-      type: integer
-      minimum: 4
-      maximum: 64
-      default: 4
-      extra_validation: |
-        # must be a power of two
-        assert MTVEC_BASE_ALIGNMENT_DIRECT.to_s(2).count('1') == 1
+      enum: [4, 8, 16, 32, 64]
   MTVEC_BASE_ALIGNMENT_VECTORED:
     description: |
       Byte alignment for `mtvec.BASE` when `mtvec.MODE` is Vectored.
 
       Cannot be less than 4-byte alignment.
     schema:
-      type: integer
-      minimum: 4
-      default: 4
-      extra_validation: |
-        # must be a power of two
-        assert MTVEC_BASE_ALIGNMENT_VECTORED.to_s(2).count('1') == 1
+      enum: [4, 8, 16, 32, 64]

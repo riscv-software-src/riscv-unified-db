@@ -13,7 +13,9 @@ description: |
   The remainder is discarded.
 
   If the value in rs2 is zero, rd gets the largest unsigned value.
-definedBy: M
+definedBy:
+  extension:
+    name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------101-----0110011

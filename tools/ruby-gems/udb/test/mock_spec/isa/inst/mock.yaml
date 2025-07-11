@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
@@ -14,7 +14,9 @@ description: |
   [NOTE]
   Computing PI to an infinite number of decicial places is impossible, but hey, why not?
 
-definedBy: Xmock
+definedBy:
+  extension:
+    name: A
 assembly: xd, xs1, xs2
 encoding:
   # Use custom-0 opcode to avoid conflicts with RISC-V defined instructions.
@@ -79,7 +81,7 @@ cert_normative_rules:
       and `misa.M` is 0.
     doc_links:
       - manual:csr:misa:disabling-extension
-      # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
+        # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
 cert_test_procedures:
   - id: inst.mock.enc_and_basic

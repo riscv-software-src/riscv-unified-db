@@ -13,7 +13,9 @@ virtual_address: 0x105
 priv_mode: S
 length: 64
 description: Controls where traps jump.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   BASE:
     location: 63-2

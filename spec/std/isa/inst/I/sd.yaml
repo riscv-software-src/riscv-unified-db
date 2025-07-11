@@ -10,11 +10,13 @@ long_name: Store doubleword
 description: |
   Store 64 bits of data from register `xs2` to an
   address formed by adding `xs1` to a signed offset.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 base: 64
 assembly: xs2, imm(xs1)
 encoding:
-  match: -----------------011-----0100011
+  match: "-----------------011-----0100011"
   variables:
     - name: imm
       location: 31-25|11-7

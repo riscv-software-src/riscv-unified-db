@@ -16,7 +16,9 @@ description:
       instruction since the field was last reset by software.
   - id: csr-fflags-fptrap
     normative: false
-    text: The base RISC-V ISA does not support generating a trap on the setting of a floating-point exception flag.
+    text:
+      The base RISC-V ISA does not support generating a trap on the setting of a
+      floating-point exception flag.
   - id: csr-fflags-reasoning
     normative: false
     text: |
@@ -27,7 +29,9 @@ description:
 
 priv_mode: U
 length: 32
-definedBy: F
+definedBy:
+  extension:
+    name: F
 fields:
   NV:
     alias: fcsr.NV

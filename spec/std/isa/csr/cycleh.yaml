@@ -29,7 +29,9 @@ description: |
   !===
 priv_mode: U
 length: 32
-definedBy: Zicntr
+definedBy:
+  extension:
+    name: Zicntr
 fields:
   COUNT:
     location: 31-0

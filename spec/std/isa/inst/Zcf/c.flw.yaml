@@ -13,11 +13,12 @@ description: |
   to the base address in register xs1.
   It expands to `flw` `fd, offset(xs1)`.
 definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - F
-    - Zcf
+  extension:
+    anyOf:
+      - allOf:
+          - name: C
+          - name: F
+      - name: Zcf
 assembly: fd, imm(xs1)
 base: 32
 encoding:

@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.q.lu` converts a 64-bit unsigned integer, into a quad-precision floating-point number.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 base: 64
 assembly: fd, xs1, rm
 encoding:

@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -19,19 +19,33 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    param_constraints:
-      SV32X4_TRANSLATION:
-        extra_validation: |
-          (SV32X4_TRANSLATION && ext?(:Sv32)) || (!SV32X4_TRANSLATION && !ext?(:Sv32))
-      SV39X4_TRANSLATION:
-        extra_validation: |
-          (SV39X4_TRANSLATION && ext?(:Sv39)) || (!SV39X4_TRANSLATION && !ext?(:Sv39))
-      SV48X4_TRANSLATION:
-        extra_validation: |
-          (SV48X4_TRANSLATION && ext?(:Sv48)) || (!SV48X4_TRANSLATION && !ext?(:Sv48))
-      SV57X4_TRANSLATION:
-        extra_validation: |
-          (SV57X4_TRANSLATION && ext?(:Sv57)) || (!SV57X4_TRANSLATION && !ext?(:Sv57))
-      GSTAGE_MODE_BARE:
-        schema:
-          const: true
+    requires:
+      extension:
+        name: H
+        version: "= 1.0.0"
+    restrictions:
+      allOf:
+        - constraint(): |
+            implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
+          reason:
+            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+        - constraint(): |
+            implemented?(ExtensionName:Sv39) -> SV39X4_TRANSLATION;
+          reason:
+            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+        - constraint(): |
+            implemented?(ExtensionName:Sv48) -> SV48X4_TRANSLATION;
+          reason:
+            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+        - constraint(): |
+            implemented?(ExtensionName:Sv57) -> SV57X4_TRANSLATION;
+          reason:
+            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+        - constraint(): |
+            true -> GSTAGE_MODE_BARE;
+          reason:
+            Shgatpa mandates that `hgatp` mode Bare must also be supported.

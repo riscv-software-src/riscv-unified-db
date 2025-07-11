@@ -10,10 +10,12 @@ long_name: Store doubleword from even/odd register pair
 description: |
   Stores a 64-bit value from registers xs2 and xs2+1. The effective address is obtained by adding
   register xs1 to the sign-extended 12-bit offset.
-definedBy: Zilsd
+definedBy:
+  extension:
+    name: Zilsd
 assembly: xs2, offset(xs1)
 encoding:
-  match: -----------------011-----0100011
+  match: "-----------------011-----0100011"
   variables:
     - name: xs1
       location: 19-15

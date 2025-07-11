@@ -14,7 +14,9 @@ description: |
   If the value in register rs2 is zero, write the sign-extended 32-bit value in rs1 into rd;
 
   If the result of the division overflows, write zero into rd;
-definedBy: M
+definedBy:
+  extension:
+    name: M
 base: 64
 assembly: xd, xs1, xs2
 encoding:

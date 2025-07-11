@@ -11,7 +11,9 @@ description: |
   The xperm8 instruction operates on bytes. The rs1 register contains a vector of XLEN/8 8-bit
   elements. The rs2 register contains a vector of XLEN/8 8-bit indexes. The result is each element in
   rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.
-definedBy: Zbkx
+definedBy:
+  extension:
+    name: Zbkx
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------100-----0110011

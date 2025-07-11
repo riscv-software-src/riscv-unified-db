@@ -9,7 +9,9 @@ name: fround.s
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfa
+definedBy:
+  extension:
+    name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010000000100-------------1010011

@@ -11,9 +11,10 @@ description: |
   Add the value in xs2 to xd, and store the result in xd.
   C.ADD expands into `add xd, xd, xs2`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, xs2
 encoding:
   match: 1001----------10

@@ -12,7 +12,9 @@ description: |
   and store the sign-extended result in rd.
 
   If the value in rs2 is zero, rd gets the sign-extended value in rs1.
-definedBy: M
+definedBy:
+  extension:
+    name: M
 base: 64
 assembly: xd, xs1, xs2
 encoding:

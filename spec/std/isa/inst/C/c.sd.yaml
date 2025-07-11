@@ -13,10 +13,11 @@ description: |
   to the base address in register xs1.
   It expands to `sd` `xs2, offset(xs1)`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
-    - Zclsd
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
+      - name: Zclsd
 assembly: xs2, imm(xs1)
 encoding:
   RV32:

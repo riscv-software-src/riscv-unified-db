@@ -13,7 +13,9 @@ address: 0x3A3
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
-definedBy: Smpmp
+definedBy:
+  extension:
+    name: Smpmp
 fields:
   pmp12cfg:
     location: 7-0

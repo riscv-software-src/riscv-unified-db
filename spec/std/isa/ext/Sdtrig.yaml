@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -34,9 +34,10 @@ versions:
 
 params:
   MSTATEEN_CONTEXT_TYPE:
-    when:
-      name: Smstateen
-      version: ~> 1.0
+    definedBy:
+      extension:
+        name: Smstateen
+        version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
@@ -47,12 +48,14 @@ params:
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
   HSTATEEN_CONTEXT_TYPE:
-    when:
+    definedBy:
       allOf:
-        - name: H
-          version: ~> 1.0
-        - name: Ssstateen
-          version: ~> 1.0
+        - extension:
+            name: H
+            version: ~> 1.0
+        - extension:
+            name: Ssstateen
+            version: ~> 1.0
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
@@ -62,6 +65,13 @@ params:
         * 'rw': read-write
         * 'read-only-0': read-only, fixed to 0
         * 'read-only-1': read-only, fixed to 1
-    extra_validation: |
-      assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
-      assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'
+    restrictions:
+      allOf:
+        - constraint(): |
+            MSTATEEN_CONTEXT_TYPE == "read-only-0" -> HSTATEEN_CONTEXT_TYPE == "read-only-0";
+          reason:
+            When mstateen0.CONTEXT is read-only-0, hstateen0.CONTEXT must also be read-only-0
+        - constraint(): |
+            MSTATEEN_CONTEXT_TYPE == "read-only-1" -> HSTATEEN_CONTEXT_TYPE == "read-only-1";
+          reason:
+            When mstateen0.CONTEXT is read-only-1, hstateen0.CONTEXT must also be read-only-1

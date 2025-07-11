@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.d.q` converts a double-precision floating-point number to a quad-precision floating-point number.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, rm
 encoding:
   match: 010001100001-------------1010011

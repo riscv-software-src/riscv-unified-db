@@ -20,7 +20,9 @@ description:
       machine-level CSRs there is a corresponding set of high-half CSRs for the upper 32 bits of each register:
       `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`.
 
-definedBy: Smstateen
+definedBy:
+  extension:
+    name: Smstateen
 fields:
   SE0:
     long_name: hstateen0, hstateen0h, and sstateen0 access control
@@ -37,8 +39,9 @@ fields:
     long_name: henvcfg, henvcfgh, and senvcfg access control
     location: 30
     definedBy:
-      name: S
-      version: ">= 1.11"
+      extension:
+        name: S
+        version: ">= 1.11"
     alias: mstateen0.ENVCFG
     sw_write(csr_value): |
       CSR[mstateen0].ENVCFG = csr_value.ENVCFG;
@@ -50,7 +53,9 @@ fields:
   CSRIND:
     long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 28
-    definedBy: Sscsrind
+    definedBy:
+      extension:
+        name: Sscsrind
     alias: mstateen0.CSRIND
     sw_write(csr_value): |
       CSR[mstateen0].CSRIND = csr_value.CSRIND;
@@ -63,7 +68,9 @@ fields:
   AIA:
     long_name: Ssaia state access control
     location: 27
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: mstateen0.AIA
     sw_write(csr_value): |
       CSR[mstateen0].AIA = csr_value.AIA;
@@ -76,7 +83,9 @@ fields:
   IMSIC:
     long_name: IMSIC state access control
     location: 26
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: mstateen0.IMSIC
     sw_write(csr_value): |
       CSR[mstateen0].IMSIC = csr_value.IMSIC;
@@ -89,7 +98,9 @@ fields:
   CONTEXT:
     long_name: scontext and hcontext access control
     location: 25
-    definedBy: Sdtrig
+    definedBy:
+      extension:
+        name: Sdtrig
     alias: mstateen0.CONTEXT
     sw_write(csr_value): |
       CSR[mstateen0].CONTEXT = csr_value.CONTEXT;
@@ -114,7 +125,9 @@ fields:
   SRMCFG:
     long_name: srmcfg access control
     location: 23
-    definedBy: Ssqosid
+    definedBy:
+      extension:
+        name: Ssqosid
     alias: mstateen0.SRMCFG
     sw_write(csr_value): |
       CSR[mstateen0].SRMCFG = csr_value.SRMCFG;

@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.w.h` converts a half-precision floating-point number to a signed 32-bit integer.
-definedBy: Zfh
+definedBy:
+  extension:
+    name: Zfh
 assembly: xd, fs1, rm
 encoding:
   match: 110001000000-------------1010011

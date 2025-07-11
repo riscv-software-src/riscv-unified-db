@@ -9,7 +9,9 @@ long_name: Machine Indirect Register Alias 2
 address: 0x352
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-mireg2-purpose
     normative: true

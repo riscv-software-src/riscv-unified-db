@@ -44,7 +44,9 @@ description:
 
 priv_mode: U
 length: 32
-definedBy: F
+definedBy:
+  extension:
+    name: F
 fields:
   ROUNDINGMODE:
     alias: fcsr.FRM

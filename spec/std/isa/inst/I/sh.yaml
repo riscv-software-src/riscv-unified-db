@@ -10,10 +10,12 @@ long_name: Store halfword
 description: |
   Store 16 bits of data from register `xs2` to an
   address formed by adding `xs1` to a signed offset.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xs2, imm(xs1)
 encoding:
-  match: -----------------001-----0100011
+  match: "-----------------001-----0100011"
   variables:
     - name: imm
       location: 31-25|11-7

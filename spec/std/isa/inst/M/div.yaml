@@ -14,7 +14,9 @@ description: |
 
   Division resulting in signed overflow (when most negative number is divided by -1)
   will put the most negative number into rd;
-definedBy: M
+definedBy:
+  extension:
+    name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------100-----0110011

@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -23,13 +23,15 @@ versions:
         email: ved@rivosinc.com
         company: Rivos, Inc.
     url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
-    implies:
-      - name: Zba
-        version: "1.0.0"
-      - name: Zbb
-        version: "1.0.0"
-      - name: Zbs
-        version: "1.0.0"
+    requires:
+      extension:
+        allOf:
+          - name: Zba
+            version: "= 1.0.0"
+          - name: Zbb
+            version: "= 1.0.0"
+          - name: Zbs
+            version: "= 1.0.0"
 description: |
   The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 

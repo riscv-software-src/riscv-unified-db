@@ -46,7 +46,9 @@ description: |
   variants of a design.
   ====
 
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   Architecture:
     location_rv32: 31-0

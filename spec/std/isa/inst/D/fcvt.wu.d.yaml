@@ -13,7 +13,9 @@ description:
     text: |
       `fcvt.wu.d` converts a double-precision floating-point number in floating-point register `xs1` to an
       unsigned 32-bit integer, in integer register `fd`.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: xd, fs1, rm
 encoding:
   match: 110000100001-------------1010011

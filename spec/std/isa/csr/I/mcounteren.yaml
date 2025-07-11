@@ -84,7 +84,9 @@ description: |
   <%- end -%>
   .
   <%- end -%>
-definedBy: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
+definedBy: # actually, defined by RV64, but must implement U-mode for this CSR to exist
+  extension:
+    name: U
 fields:
   CY:
     location: 0

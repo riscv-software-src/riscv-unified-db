@@ -9,7 +9,9 @@ name: vwsll.vi
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvbb
+definedBy:
+  extension:
+    name: Zvbb
 assembly: vd, vs2, imm, vm
 encoding:
   match: 110101-----------011-----1010111

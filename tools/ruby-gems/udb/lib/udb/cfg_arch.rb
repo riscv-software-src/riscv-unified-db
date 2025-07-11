@@ -491,7 +491,7 @@ class ConfiguredArchitecture < Architecture
       end
 
     custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
-    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : Udb.repo_root / "spec" / "std" / "isa" / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : @arch_dir / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
       idl_path
     )

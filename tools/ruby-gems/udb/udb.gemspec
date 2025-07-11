@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
     "mailing_list_uri" => "https://lists.riscv.org/g/tech-unifieddb",
     "bug_tracker_uri" => "https://github.com/riscv-software-src/riscv-unified-db/issues"
   }
-  s.required_ruby_version = "~> 3.2" # only supported in UDB container
+  s.required_ruby_version = "~> 3.2"
 
   s.require_paths = ["lib"]
   s.bindir = "bin"
@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tilt"
   s.add_dependency "udb_helpers"
 
+  s.add_development_dependency "ruby-debug-ide"
   s.add_development_dependency "rubocop-github"
   s.add_development_dependency "rubocop-minitest"
   s.add_development_dependency "rubocop-performance"

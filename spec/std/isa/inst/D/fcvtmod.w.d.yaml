@@ -21,7 +21,10 @@ description:
       This instruction is only provided if the D extension is implemented. It is encoded like FCVT.W.D, but
       with the `xs2` field set to 8 and the `rm` field set to 1 (RTZ). Other `rm` values are reserved.
 definedBy:
-  allOf: [D, Zfa]
+  extension:
+    allOf:
+      - name: D
+      - name: Zfa
 assembly: xd, fs1, rm
 encoding:
   match: 110000101000-------------1010011

@@ -12,7 +12,9 @@ description: |
   instruction copies the contents of rs1 to rd.
   This instruction carries a syntactic dependency from both rs1 and rs2 to rd. Furthermore, if the Zkt
   extension is implemented, this instruction's timing is independent of the data values in rs1 and rs2.
-definedBy: Zicond
+definedBy:
+  extension:
+    name: Zicond
 assembly: xd, xs1, xs2
 encoding:
   match: 0000111----------111-----0110011

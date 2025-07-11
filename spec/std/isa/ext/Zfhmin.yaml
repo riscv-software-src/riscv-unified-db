@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -51,5 +51,6 @@ versions:
     state: ratified
     ratification_date: 2021-11
     requires:
-      name: F
-      version: ">= 2.2"
+      extension:
+        name: F
+        version: ">= 2.2"
