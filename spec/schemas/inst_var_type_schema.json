@@ -17,7 +17,7 @@
       "type": "string"
     },
     "type": {
-      "enum": ["register_reference"]
+      "enum": ["register_reference", "immediate"]
     }
   },
   "allOf": [
