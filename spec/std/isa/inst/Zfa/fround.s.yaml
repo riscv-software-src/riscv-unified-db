@@ -35,12 +35,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-  if ((is_sp_neg_inf?(f[fs1])) || (is_sp_pos_inf?(f[fs1])) || (is_sp_pos_zero?(f[fs1]))
-      || (is_sp_neg_zero?(f[fs1]))) {
-    f[fd] = f[fs1];
-  } else {
-    f[fd] = round_f32(f[fs1], rounding_mode);
-  }
+  f[fd] = round_f32_to_integral(f[fs1], rounding_mode);
   mark_f_state_dirty();
 
 # SPDX-SnippetBegin

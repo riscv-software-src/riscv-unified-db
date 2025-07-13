@@ -997,7 +997,6 @@ function i32_to_f32 {
     RoundingMode mode
   description {
     Converts 32-bit signed integer to 32-bit floating point number
-    Converts 32-bit signed integer to 32-bit floating point number
   }
   body {
     # sign of integer, it is 1 when negative
@@ -1016,7 +1015,6 @@ function ui32_to_f32 {
     U32 a,
     RoundingMode mode
   description {
-    Converts 32-bit unsigned integer to 32-bit floating point number
     Converts 32-bit unsigned integer to 32-bit floating point number
   }
   body {
@@ -1106,7 +1104,175 @@ function f32_to_ui32 {
   }
 }
 
-function round_f32 {
+function softfloat_roundPackToF32_no_flag {
+  returns Bits<32>     # single precision value
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig,
+    RoundingMode mode
+  description {
+    Round FP value according to +mdode+ and then pack it in IEEE format.
+    No flags to be set
+  }
+  body {
+    Bits<8> roundIncrement = 0x40;
+    if ( (mode != RoundingMode::RNE) && (mode != RoundingMode::RMM)) {
+      roundIncrement =
+        (mode == ((sign != 0) ? RoundingMode::RDN : RoundingMode::RUP))
+          ? 0x7F
+          : 0;
+    }
+    Bits<8> roundBits = sig & 0x7f;
+
+    if ( 0xFD <= exp ) {
+      if ($signed(exp) < 's0) {
+        Boolean isTiny =
+          ($signed(exp) < -8's1) || (sig + roundIncrement < 0x80000000);
+        sig = softfloat_shiftRightJam32( sig, -exp );
+        exp = 0;
+        roundBits = sig & 0x7F;
+      } else if ('shFD < $signed(exp) || (0x80000000 <= sig + roundIncrement)) {
+        return packToF32UI(sign, 0xFF, 0) - ((roundIncrement == 0) ? 1 : 0);
+      }
+    }
+
+    sig = (sig + roundIncrement) >> 7;
+    sig = sig & ~((roundBits ^ 0x40) & ((mode == RoundingMode::RNE) ? 1 : 0));
+    if ( sig == 0 ) {
+      exp = 0;
+    }
+    return packToF32UI(sign, exp, sig);
+  }
+}
+
+function softfloat_normRoundPackToF32_no_flag {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig,
+    RoundingMode mode
+  description {
+    Normalize, round, and pack into a 32-bit floating point value
+    No flags to be set
+  }
+  body {
+    Bits<8> shiftDist = count_leading_zeros<32>(sig) - 1;
+    exp = exp - shiftDist;
+    if ((7 <= shiftDist) && (exp < 0xFD)) {
+      return packToF32UI(sign, (sig != 0) ? exp : 0, sig << (shiftDist - 7));
+    } else {
+      return softfloat_roundPackToF32_no_flag(sign, exp, sig << shiftDist, mode);
+    }
+  }
+}
+
+function i32_to_f32_no_flag {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit signed integer to 32-bit floating point number
+    No flags to be set
+  }
+  body {
+    # sign of integer, it is 1 when negative
+    Bits<1> sign = a[31];
+    if ((a & 0x7FFFFFFF) == 0) {
+      return (sign == 1) ? packToF32UI(1, 0x9E, 0) : packToF32UI(0, 0, 0);
+    }
+    U32 magnitude_of_A = returnMag(a);
+    return softfloat_normRoundPackToF32_no_flag(sign, 0x9C, magnitude_of_A, mode);
+  }
+}
+
+function softfloat_roundToI32_no_flag {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<64> sig,
+    RoundingMode roundingMode
+  description {
+    Round to signed 32-bit integer, using +rounding_mode+
+    No flag to be set
+  }
+  body {
+    Bits<16> roundIncrement = 0x800;
+    if (
+      (roundingMode != RoundingMode::RMM)
+      && (roundingMode != RoundingMode::RNE)
+    ) {
+      roundIncrement = 0;
+      if (
+        sign == 1
+          ? (roundingMode == RoundingMode::RDN)
+          : (roundingMode == RoundingMode::RUP)
+      ) {
+        roundIncrement = 0xFFF;
+      }
+    }
+    Bits<16> roundBits = sig & 0xFFF;
+    sig = sig + roundIncrement;
+    if ((sig & 0xFFFFF00000000000) != 0) {
+      return sign == 1 ? WORD_NEG_OVERFLOW : WORD_POS_OVERFLOW;
+    }
+
+    Bits<32> sig32 = sig >> 12;
+    if (
+      (roundBits == 0x800 && (roundingMode == RoundingMode::RNE))
+    ) {
+      sig32 = sig32 & ~32'b1;
+    }
+
+    Bits<32> z = (sign == 1) ? -sig32 : sig32;
+    if ((z != 0) && (($signed(z) < 's0) != (sign == 1))) {
+      return sign == 1 ? WORD_NEG_OVERFLOW : WORD_POS_OVERFLOW;
+    }
+
+    return z;
+  }
+}
+
+function f32_to_i32_no_flag {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit floating point number to a signed 32-bit integer
+    No flags to be set
+  }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<8> exp  = expF32UI(a);
+    Bits<23> sig = fracF32UI(a);
+    Bits<8> shiftDist;
+    U64 sig64;
+    # for NaN return the highest positive value and set floating-point flag to invalid.
+    if ((exp == 8'hFF) && (sig != 0)) {
+      sign = 0;
+      return I32_NAN;
+    }
+
+    # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
+    if (exp != 0) {
+      sig = sig | 32'h00800000;
+    }
+
+    sig64 = sig << 32;
+    shiftDist = 8'hAA - exp;
+
+    if (shiftDist > 0) {
+      sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
+    }
+
+    return softfloat_roundToI32_no_flag(sign, sig64, mode);
+  }
+}
+
+function round_f32_to_integral {
   returns U32
   arguments
     U32 a,
@@ -1116,11 +1282,19 @@ function round_f32 {
     This 32-bit integer is represented as a floating point number and returned.
   }
   body {
+    if ((is_sp_neg_inf?(a)) || (is_sp_pos_inf?(a)) || (is_sp_pos_zero?(a)) || (is_sp_neg_zero?(a))) {
+      # Return zero or infinity respectively for zero or infinity inputs
+      return a;
+    } else if is_sp_signaling_nan?(a) {
+      # set invalid flag for signaling NaN
+      set_fp_flag(FpFlag::NV);
+      return a;
+    }
     # intermediate variable for storing 32-bit rounded integer
     U32 intermediate;
-    # round 32-bit floating point number to integer
-    intermediate = f32_to_i32(a, mode);
+    # round 32-bit floating point number to integer, no flags to be set
+    intermediate = f32_to_i32_no_flag(a, mode);
     # represent the integer as floating point number
-    return i32_to_f32(intermediate, mode);
+    return i32_to_f32_no_flag(intermediate, mode);
   }
 }
