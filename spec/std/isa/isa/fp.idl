@@ -23,8 +23,8 @@ Bits<32> SP_NEG_ZERO      = 32'b1_00000000_00000000000000000000000;
 Bits<32> SP_CANONICAL_NAN = 32'b0_11111111_10000000000000000000000;
 Bits<16> HP_CANONICAL_NAN = 16'b0_11111_1000000000;
 
-Bits<32> WORD_NEG_OVERFLOW = 32'h8000_0000; # minimum signed signed 32-bit integer
-Bits<32> WORD_POS_OVERFLOW = 32'h7FFF_FFFF; # maximum signed signed 32-bit integer
+Bits<32> WORD_NEG_OVERFLOW = 32'h8000_0000; # minimum signed 32-bit integer
+Bits<32> WORD_POS_OVERFLOW = 32'h7FFF_FFFF; # maximum signed 32-bit integer
 
 Bits<32> UI32_NEG_OVERFLOW = 32'h0000_0000; # minimum unsigned 32-bit integer
 Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
