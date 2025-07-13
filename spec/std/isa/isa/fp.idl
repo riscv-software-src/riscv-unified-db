@@ -32,14 +32,6 @@ Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
 Bits<32> UI32_NAN          = 32'hFFFF_FFFF; # NaN to unsigned 32-bit integer
 Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer
 
-
-Bits<32> UI32_NEG_OVERFLOW = 32'h0000_0000; # minimum unsigned 32-bit integer
-Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
-
-Bits<32> UI32_NAN          = 32'hFFFF_FFFF; # NaN to unsigned 32-bit integer
-Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer
-
-
 enum RoundingMode {
   RNE 0b000 # Round to Nearest, ties to Even
   RTZ 0b001 # Round toward Zero
