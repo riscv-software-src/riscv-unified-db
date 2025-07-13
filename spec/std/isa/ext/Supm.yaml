@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Supm
+long_name: Pointer masking available in user mode
+description: |
+  Indicates that there is pointer-masking support available in user mode,
+  with some facility provided in the application execution environment to control pointer masking.
+
+  This extension describes an execution environment but has no bearing on hardware implementations.
+  It is intended to be used in profile specifications where a User profile
+  can only reference User level pointer masking functionality,
+  and not the associated CSR controls that exist at a higher privilege level (i.e., in the execution environment).
+
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

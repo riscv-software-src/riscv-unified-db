@@ -1,0 +1,1108 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+%version: 1.0
+
+# Many functions in this file (and all prefixed with softfloat_*) are
+# adapted from berkeley-softfloat-3 by John R. Hauser
+# (https://github.com/ucb-bar/berkeley-softfloat-3)
+# Files in berkely-softfloat-3 repository are licensed under BSD-3-clause.
+
+# floating point register file
+U32 FLEN = 64; # implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
+Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0];
+
+# FP constants
+Bits<32> SP_POS_INF       = 32'b0_11111111_00000000000000000000000;
+Bits<32> SP_NEG_INF       = 32'b1_11111111_00000000000000000000000;
+Bits<32> SP_POS_ZERO      = 32'b0_00000000_00000000000000000000000;
+Bits<32> SP_NEG_ZERO      = 32'b1_00000000_00000000000000000000000;
+Bits<32> SP_CANONICAL_NAN = 32'b0_11111111_10000000000000000000000;
+Bits<16> HP_CANONICAL_NAN = 16'b0_11111_1000000000;
+
+Bits<32> WORD_NEG_OVERFLOW = 32'h8000_0000; # minimum signed signed 32-bit integer
+Bits<32> WORD_POS_OVERFLOW = 32'h7FFF_FFFF; # maximum signed signed 32-bit integer
+
+Bits<32> UI32_NEG_OVERFLOW = 32'h0000_0000; # minimum unsigned 32-bit integer
+Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
+
+Bits<32> UI32_NAN          = 32'hFFFF_FFFF; # NaN to unsigned 32-bit integer
+Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer
+
+
+Bits<32> UI32_NEG_OVERFLOW = 32'h0000_0000; # minimum unsigned 32-bit integer
+Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
+
+Bits<32> UI32_NAN          = 32'hFFFF_FFFF; # NaN to unsigned 32-bit integer
+Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer
+
+
+enum RoundingMode {
+  RNE 0b000 # Round to Nearest, ties to Even
+  RTZ 0b001 # Round toward Zero
+  RDN 0b010 # Round Down (towards -&infin;)
+  RUP 0b011 # Round Up (towards +&infin;)
+  RMM 0b100 # Round to Nearest, ties to Max Magnitude
+  DYN 0b111 # Dynamic; use rm field in instruction
+}
+
+enum FpFlag {
+  NX 0b00001 # Inexact
+  UF 0b00010 # Underflow
+  OF 0b00100 # Overflow
+  DZ 0b01000 # Divide by zero
+  NV 0b10000 # Invalid Operation
+}
+
+function set_fp_flag {
+  arguments
+    FpFlag flag
+  description {
+    Add +flag+ to the sticky flags bits in CSR[fcsr]
+  }
+  body {
+    if (flag == FpFlag::NX) {
+      CSR[fcsr].NX = 1;
+    } else if (flag == FpFlag::UF) {
+      CSR[fcsr].UF = 1;
+    } else if (flag == FpFlag::OF) {
+      CSR[fcsr].OF = 1;
+    } else if (flag == FpFlag::DZ) {
+      CSR[fcsr].DZ = 1;
+    } else if (flag == FpFlag::NV) {
+      CSR[fcsr].NV = 1;
+    }
+  }
+}
+
+function rm_to_mode {
+  returns RoundingMode
+  arguments
+    Bits<3> rm,       # rm field from an instruction encoding
+    Bits<32> encoding # instruction encoding, needed to raise an exception
+  description {
+    Convert +rm+ to a RoundingMode.
+
+    +encoding+ is the full encoding of the instruction +rm+ comes from.
+
+    Will raise an IllegalInstruction exception if rm is a
+    reserved encoding.
+  }
+  body {
+    if (rm == $bits(RoundingMode::RNE)) {
+      return RoundingMode::RNE;
+    } else if (rm == $bits(RoundingMode::RTZ)) {
+      return RoundingMode::RTZ;
+    } else if (rm == $bits(RoundingMode::RDN)) {
+      return RoundingMode::RDN;
+    } else if (rm == $bits(RoundingMode::RUP)) {
+      return RoundingMode::RUP;
+    } else if (rm == $bits(RoundingMode::RMM)) {
+      return RoundingMode::RMM;
+    } else if (rm == $bits(RoundingMode::DYN)) {
+      return $enum(RoundingMode, CSR[fcsr].FRM);
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function mark_f_state_dirty {
+  description {
+    Potentially updates `mstatus.FS` to the Dirty (3) state, depending on configuration settings.
+  }
+  body {
+    if (HW_MSTATUS_FS_DIRTY_UPDATE== "precise") {
+      CSR[mstatus].FS = 3; # set dirty state
+    } else if (HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise") {
+      unpredictable("The hart may or may not update mstatus.FS now");
+    }
+  }
+}
+
+function nan_box {
+  template U32 FROM_SIZE, U32 TO_SIZE
+  returns Bits<TO_SIZE>
+  arguments Bits<FROM_SIZE> from_value
+  description {
+    Produces a properly NaN-boxed floating-point value from a floating-point value
+    of smaller size by adding all 1's to the upper bits.
+  }
+  body {
+    assert(FROM_SIZE < TO_SIZE, "Bad template arguments; FROM_SIZE must be less than TO_SIZE");
+
+    return {{TO_SIZE - FROM_SIZE{1'b1}}, from_value};
+  }
+}
+
+function check_f_ok {
+  arguments
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Checks if instructions from the `F` extension can be executed, and, if not,
+    raise an exception.
+  }
+  body {
+    if (MUTABLE_MISA_F && CSR[misa].F == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+
+    if (CSR[mstatus].FS == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function is_sp_neg_inf? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Return true if +sp_value+ is negative infinity.
+  }
+  body {
+    return sp_value == SP_NEG_INF;
+  }
+}
+
+function is_sp_pos_inf? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Return true if +sp_value+ is positive infinity.
+  }
+  body {
+    return sp_value == SP_POS_INF;
+  }
+}
+
+function is_sp_neg_norm? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a negative normal number.
+  }
+  body {
+    return
+      (sp_value[31] == 1)                 # negative
+      && (sp_value[30:23] != 0b11111111)  # not inf/NaN
+      && !(                               # not subnornmal
+        (sp_value[30:23] == 0b00000000)
+        && sp_value[22:0] != 0
+      );
+  }
+}
+
+function is_sp_pos_norm? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a positive normal number.
+  }
+  body {
+    return
+      (sp_value[31] == 0)                # positive
+      && (sp_value[30:23] != 0b11111111)  # not inf/NaN
+      && !(                              # not subnornmal
+        (sp_value[30:23] == 0b00000000)
+        && sp_value[22:0] != 0
+      );
+  }
+}
+
+function is_sp_neg_subnorm? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a negative subnormal number.
+  }
+  body {
+    return
+      (sp_value[31] == 1)        # negative
+      && (sp_value[30:23] == 0)  # subnormal exponent
+      && (sp_value[22:0] != 0);  # not zero
+  }
+}
+
+function is_sp_pos_subnorm? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a positive subnormal number.
+  }
+  body {
+    return
+      (sp_value[31] == 0)        # positive
+      && (sp_value[30:23] == 0)  # subnormal exponent
+      && (sp_value[22:0] != 0);  # not zero
+  }
+}
+
+function is_sp_neg_zero? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is negative zero.
+  }
+  body {
+    return sp_value == SP_NEG_ZERO;
+  }
+}
+
+function is_sp_pos_zero? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is positive zero.
+  }
+  body {
+    return sp_value == SP_POS_ZERO;
+  }
+}
+
+function is_sp_nan? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a NaN (quiet or signaling)
+  }
+  body {
+    return
+      (sp_value[30:23] == 0b11111111)
+      && (sp_value[22:0] != 0);    # signaling bit
+  }
+}
+
+function is_sp_signaling_nan? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a signaling NaN
+  }
+  body {
+    return
+      (sp_value[30:23] == 0b11111111)
+      && (sp_value[22] == 0)    # signaling bit
+      && (sp_value[21:0] != 0); # not infinity
+  }
+}
+
+function is_sp_quiet_nan? {
+  returns Boolean
+  arguments Bits<32> sp_value
+  description {
+    Returns true if +sp_value+ is a quiet NaN
+  }
+  body {
+    return
+      (sp_value[30:23] == 0b11111111)
+      && (sp_value[22] == 1);    # signaling bit
+  }
+}
+
+function softfloat_shiftRightJam32 {
+  returns Bits<32>
+  arguments
+    Bits<32> a,
+    Bits<32> dist
+  description {
+    Shifts +a+ right by the number of bits given in +dist+, which must not
+    be zero.  If any nonzero bits are shifted off, they are "jammed" into the
+    least-significant bit of the shifted value by setting the least-significant
+    bit to 1.  This shifted-and-jammed value is returned.
+    The value of +dist+ can be arbitrarily large.  In particular, if +dist+ is
+    greater than 32, the result will be either 0 or 1, depending on whether +a+
+    is zero or nonzero.
+  }
+  body {
+    return (dist < 31) ? a>>dist | (((a<<(-dist & 31)) != 0) ? 1 : 0) : ((a != 0) ? 1 : 0);
+  }
+}
+
+function softfloat_shiftRightJam64 {
+  returns Bits<64>
+  arguments
+    Bits<64> a,
+    Bits<32> dist
+  description {
+     Shifts +a+ right by the number of bits given in +dist+, which must not
+     be zero.  If any nonzero bits are shifted off, they are "jammed" into the
+     least-significant bit of the shifted value by setting the least-significant
+     bit to 1.  This shifted-and-jammed value is returned.
+
+     The value of 'dist' can be arbitrarily large.  In particular, if +dist+ is
+     greater than 64, the result will be either 0 or 1, depending on whether +a+
+     is zero or nonzero.
+  }
+  body {
+    return (dist < 63) ? a>>dist | (((a<<(-dist & 63)) != 0) ? 1 : 0) : ((a != 0) ? 1 : 0);
+  }
+}
+
+function softfloat_roundToI32 {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<64> sig,
+    RoundingMode roundingMode
+  description {
+    Round to signed 32-bit integer, using +rounding_mode+
+    Round to signed 32-bit integer, using +rounding_mode+
+  }
+  body {
+    Bits<16> roundIncrement = 0x800;
+    if (
+      (roundingMode != RoundingMode::RMM)
+      && (roundingMode != RoundingMode::RNE)
+    ) {
+      roundIncrement = 0;
+      if (
+        sign == 1
+          ? (roundingMode == RoundingMode::RDN)
+          : (roundingMode == RoundingMode::RUP)
+      ) {
+        roundIncrement = 0xFFF;
+      }
+    }
+    Bits<16> roundBits = sig & 0xFFF;
+    sig = sig + roundIncrement;
+    if ((sig & 0xFFFFF00000000000) != 0) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? WORD_NEG_OVERFLOW : WORD_POS_OVERFLOW;
+    }
+
+    Bits<32> sig32 = sig >> 12;
+    if (
+      (roundBits == 0x800 && (roundingMode == RoundingMode::RNE))
+    ) {
+      sig32 = sig32 & ~32'b1;
+    }
+
+    Bits<32> z = (sign == 1) ? -sig32 : sig32;
+    if ((z != 0) && (($signed(z) < 's0) != (sign == 1))) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? WORD_NEG_OVERFLOW : WORD_POS_OVERFLOW;
+    }
+
+    if (roundBits != 0) {
+      set_fp_flag(FpFlag::NX);
+    }
+    return z;
+  }
+}
+
+function softfloat_roundToUI32 {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<64> sig,
+    RoundingMode roundingMode
+  description {
+    Round to unsigned 32-bit integer, using +rounding_mode+
+  }
+  body {
+    Bits<16> roundIncrement = 0x800;
+    if (
+      (roundingMode != RoundingMode::RMM)
+      && (roundingMode != RoundingMode::RNE)
+    ) {
+      roundIncrement = 0;
+      if ( sign == 1) {
+        if (sig == 0) { return 0; }
+        if (roundingMode == RoundingMode::RDN) { set_fp_flag(FpFlag::NV); }
+      } else {
+        if (roundingMode == RoundingMode::RUP) { roundIncrement = 0xFFF; }
+      }
+    }
+
+    Bits<16> roundBits = sig & 0xFFF;
+    sig = sig + roundIncrement;
+    if ((sig & 0xFFFFF00000000000) != 0) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
+    }
+
+    Bits<32> z = sig >> 12;
+    if (
+      (roundBits == 0x800 && (roundingMode == RoundingMode::RNE))
+    ) {
+      z = z & ~32'b1;
+    }
+
+
+
+    if ((z != 0) && (sign == 1)) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
+    }
+
+    if (roundBits != 0) {
+      set_fp_flag(FpFlag::NX);
+    }
+    return z;
+  }
+}
+
+function softfloat_roundToUI32 {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<64> sig,
+    RoundingMode roundingMode
+  description {
+    Round to unsigned 32-bit integer, using +rounding_mode+
+  }
+  body {
+    Bits<16> roundIncrement = 0x800;
+    if (
+      (roundingMode != RoundingMode::RMM)
+      && (roundingMode != RoundingMode::RNE)
+    ) {
+      roundIncrement = 0;
+      if ( sign == 1) {
+        if (sig == 0) return 0;
+        if (roundingMode == RoundingMode::RDN) set_fp_flag(FpFlag::NV);
+      } else {
+        if (roundingMode == RoundingMode::RUP) roundIncrement = 0xFFF;
+      }
+    }
+
+    Bits<16> roundBits = sig & 0xFFF;
+    sig = sig + roundIncrement;
+    if ((sig & 0xFFFFF00000000000) != 0) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
+    }
+
+    Bits<32> z = sig >> 12;
+    if (
+      (roundBits == 0x800 && (roundingMode == RoundingMode::RNE))
+    ) {
+      z = z & ~32'b1;
+    }
+
+
+
+    if ((z != 0) && (sign == 1)) {
+      set_fp_flag(FpFlag::NV);
+      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
+    }
+
+    if (roundBits != 0) {
+      set_fp_flag(FpFlag::NX);
+    }
+    return z;
+  }
+}
+
+function packToF32UI {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig
+  description {
+    Pack components into a 32-bit value
+  }
+  body {
+    return {sign, exp, sig};
+  }
+}
+
+function packToF16UI {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<5> exp,
+    Bits<10> sig
+  description {
+    Pack components into a 16-bit value
+  }
+  body {
+    return {sign, exp, sig};
+  }
+}
+
+function softfloat_normSubnormalF16Sig {
+  returns Bits<5>, Bits<10>
+  arguments
+    Bits<16> hp_value
+  description {
+    normalize subnormal half-precision value
+  }
+  body {
+    Bits<8> shift_dist = count_leading_zeros<16>(hp_value);
+    return 1 - shift_dist, hp_value << shift_dist;
+  }
+}
+
+function softfloat_roundPackToF32 {
+  returns Bits<32>     # single precision value
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig,
+    RoundingMode mode
+  description {
+    Round FP value according to +mdode+ and then pack it in IEEE format.
+  }
+  body {
+    Bits<8> roundIncrement = 0x40;
+    if ( (mode != RoundingMode::RNE) && (mode != RoundingMode::RMM)) {
+      roundIncrement =
+        (mode == ((sign != 0) ? RoundingMode::RDN : RoundingMode::RUP))
+          ? 0x7F
+          : 0;
+    }
+    Bits<8> roundBits = sig & 0x7f;
+
+    if ( 0xFD <= exp ) {
+      if ($signed(exp) < 's0) {
+        Boolean isTiny =
+          ($signed(exp) < -8's1) || (sig + roundIncrement < 0x80000000);
+        sig = softfloat_shiftRightJam32( sig, -exp );
+        exp = 0;
+        roundBits = sig & 0x7F;
+        if (isTiny && (roundBits != 0)) {
+          set_fp_flag(FpFlag::UF);
+        }
+      } else if ('shFD < $signed(exp) || (0x80000000 <= sig + roundIncrement)) {
+        set_fp_flag(FpFlag::OF);
+        set_fp_flag(FpFlag::NX);
+        return packToF32UI(sign, 0xFF, 0) - ((roundIncrement == 0) ? 1 : 0);
+      }
+    }
+
+    sig = (sig + roundIncrement) >> 7;
+    if (roundBits != 0) {
+      set_fp_flag(FpFlag::NX);
+    }
+    sig = sig & ~((roundBits ^ 0x40) & ((mode == RoundingMode::RNE) ? 1 : 0));
+    if ( sig == 0 ) {
+      exp = 0;
+    }
+    return packToF32UI(sign, exp, sig);
+  }
+}
+
+function softfloat_normRoundPackToF32 {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig,
+    RoundingMode mode
+  description {
+    Normalize, round, and pack into a 32-bit floating point value
+  }
+  body {
+    Bits<8> shiftDist = count_leading_zeros<32>(sig) - 1;
+    exp = exp - shiftDist;
+    if ((7 <= shiftDist) && (exp < 0xFD)) {
+      return packToF32UI(sign, (sig != 0) ? exp : 0, sig << (shiftDist - 7));
+    } else {
+      return softfloat_roundPackToF32(sign, exp, sig << shiftDist, mode);
+    }
+  }
+}
+
+function signF32UI {
+  returns Bits<1>
+  arguments
+    Bits<32> a
+  description {
+    Extract sign-bit of a 32-bit floating point number
+  }
+  body {
+    return a[31];
+  }
+}
+
+function expF32UI {
+  returns Bits<8>
+  arguments
+    Bits<32> a
+  description {
+    Extract exponent of a 32-bit floating point number
+  }
+  body {
+    return a[30:23];
+  }
+}
+
+function fracF32UI {
+  returns Bits<23>
+  arguments
+    Bits<32> a
+  description {
+    Extract significand of a 32-bit floating point number
+  }
+  body {
+    return a[22:0];
+  }
+}
+
+function returnNonSignalingNaN {
+  returns U32
+  arguments
+    U32 a
+  description {
+    Returns a non-signalling NaN version of the floating-point number
+    Does not modify the input
+  }
+  body {
+    U32 a_copy = a;
+    a_copy[22] = 1'b1;
+    return a_copy;
+  }
+}
+
+function returnMag {
+  returns U32
+  arguments
+    U32 a
+  description {
+    Returns magnitude of the given number
+    Does not modify the input
+  }
+  body {
+    U32 a_copy = a;
+    # make sign bit zero
+    a_copy[31] = 1'b0;
+    return a_copy;
+  }
+}
+
+function returnLargerMag {
+  returns U32
+  arguments
+    U32 a,
+    U32 b
+  description {
+    Returns the larger number between a and b by magnitude
+    If either number is signaling NaN then that is made quiet
+  }
+  body {
+    U32 mag_a = returnMag(a);
+    U32 mag_b = returnMag(b);
+    U32 nonsig_a = returnNonSignalingNaN(a);
+    U32 nonsig_b = returnNonSignalingNaN(b);
+    if (mag_a < mag_b) {
+      return nonsig_b;
+    }
+    if (mag_b < mag_a) {
+      return nonsig_a;
+    }
+    return (nonsig_a < nonsig_b) ? nonsig_a : nonsig_b;
+  }
+}
+
+function softfloat_propagateNaNF32UI {
+  returns U32
+  arguments
+    U32 a,
+    U32 b
+  description {
+    Interpreting 'a' and 'b' as the bit patterns of two 32-bit floating-
+|   point values, at least one of which is a NaN, returns the bit pattern of
+|   the combined NaN result.  If either 'a' or 'b' has the pattern of a
+|   signaling NaN, the invalid exception is raised.
+  }
+  body {
+    # check if a and b are signalling
+    Boolean isSigNaN_a = is_sp_signaling_nan?(a);
+    Boolean isSigNaN_b = is_sp_signaling_nan?(b);
+
+    if (isSigNaN_a || isSigNaN_b) {
+      # raise invalid flag if either number is NaN
+      set_fp_flag(FpFlag::NV);
+    }
+    return SP_CANONICAL_NAN;
+  }
+}
+
+function softfloat_addMagsF32 {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns sum of the magnitudes of 2 floating point numbers
+  }
+  body {
+
+    # extract exponents and significands of a and b
+    Bits<8> expA = expF32UI(a);
+    Bits<23> sigA = fracF32UI(a);
+    Bits<8> expB = expF32UI(b);
+    Bits<23> sigB = fracF32UI(b);
+
+    # declare a variable to store significand of sum
+    U32 sigZ;
+    # declare a variable to store sum of the magnitudes of the 2 numbers
+    U32 z;
+    # declare a variable to store sign of sum
+    Bits<1> signZ;
+
+    # declare a variable to store the exponent part of sum
+    Bits<8> expZ;
+
+    # calculate difference of exponents
+    Bits<8> expDiff = expA - expB;
+
+    if (expDiff == 8'd0) {
+      if (expA == 8'd0) {
+        z = a + b;
+        return z; # if exponents of both numbers are zero, then return sum of both numbers
+      }
+
+      # check if A is infinity or NaN
+      if (expA == 8'hFF) {
+        # A is NaN if significand is non-zero and exponent is 8'hFF
+        if ((sigA != 8'd0) || (sigB != 8'd0)) {
+          return softfloat_propagateNaNF32UI(a, b);
+        }
+        # return infinity if A is infinity
+        return a;
+      }
+
+      signZ = signF32UI(a);
+      expZ = expA;
+      sigZ = 32'h01000000 + sigA + sigB;
+
+      # check if significand is even and exponent is less than 8'FE
+      if (((sigZ & 0x1) == 0) && (expZ < 8'hFE)) {
+        # if significand is even, remove trailing zero
+        sigZ = sigZ >> 1;
+        # pack the sign, exponent and significand
+        return (32'h0 + (signZ << 31) + (expZ << 23) + sigZ);
+      }
+
+      sigZ = sigZ << 6;
+    } else {
+
+      signZ = signF32UI(a);
+
+      U32 sigA_32 = 32'h0 + (sigA << 6);
+      U32 sigB_32 = 32'h0 + (sigA << 6);
+
+      # check if B has a bigger exponent value than A
+      if (expDiff < 0) {
+        # check if B is infinity or NaN
+        if (expB == 8'hFF) {
+          # B is NaN if exponent is 8'hFF and significand is non-zero
+          if (sigB != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+          # return infinity with same sign as A
+          return packToF32UI(signZ, 8'hFF, 23'h0);
+        }
+        expZ  = expB;
+
+        sigA_32 = (expA == 0) ? 2*sigA_32 : (sigA_32 + 0x20000000);
+        sigA_32 = softfloat_shiftRightJam32(sigA_32, (32'h0 - expDiff));
+      } else {
+        # check if A is infinity or NaN
+        if (expA == 8'hFF) {
+          # A is NaN if exponent is 8'hFF and significand is non-zero
+          if (sigA != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+            # return infinity with same sign as A
+            return a;
+        }
+
+        expZ = expA;
+        sigB_32 = (expB == 0) ? 2*sigB_32 : (sigB_32 + 0x20000000);
+        sigB_32 = softfloat_shiftRightJam32(sigB_32, (32'h0 + expDiff));
+      }
+
+      U32 sigZ = 0x20000000 + sigA + sigB;
+      if ( sigZ < 0x40000000 ) {
+            expZ = expZ - 1;
+            sigZ =  sigZ << 1;
+        }
+    }
+    return softfloat_roundPackToF32(signZ, expZ, sigZ[22:0], mode);
+  }
+}
+
+function softfloat_subMagsF32 {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns difference of the magnitudes of 2 floating point numbers
+  }
+  body {
+
+    # extract exponents and significands of a and b
+    Bits<8> expA = expF32UI(a);
+    Bits<23> sigA = fracF32UI(a);
+    Bits<8> expB = expF32UI(b);
+    Bits<23> sigB = fracF32UI(b);
+
+    # declare a variable to store significand of difference
+    U32 sigZ;
+    # declare a variable to store difference of the magnitudes of the 2 numbers
+    U32 z;
+    # declare a variable to store sign of difference
+    Bits<1> signZ;
+
+    # declare a variable to store the exponent part of difference
+    Bits<8> expZ;
+
+    # declare a variable to store the difference in significand
+    U32 sigDiff;
+
+    # declare a sigX and sigY
+    U32 sigX;
+    U32 sigY;
+
+    # declare a U32 sigA and sigB
+    U32 sigA_32;
+    U32 sigB_32;
+
+    # declare a variable to store shift distance
+    Bits<8> shiftDist;
+
+    # calculate difference of exponents
+    Bits<8> expDiff = expA - expB;
+
+    if (expDiff == 8'd0) {
+
+      # check if A is infinity or NaN
+      if (expA == 8'hFF) {
+        # A is NaN if significand is non-zero and exponent is 8'hFF
+        if ((sigA != 8'd0) || (sigB != 8'd0)) {
+          return softfloat_propagateNaNF32UI(a, b);
+        }
+        # return infinity if A is infinity
+        return a;
+      }
+
+      sigDiff = sigA - sigB;
+
+      # check if no difference in significand
+      if (sigDiff == 0) {
+        # return -0 if rounding mode is round down, else return +0
+        return packToF32UI(((mode == RoundingMode::RDN) ? 1 : 0),0,0);
+      }
+
+      if (expA != 0) {
+        expA = expA - 1;
+      }
+
+      signZ = signF32UI(a);
+
+      # if difference is negative, change the sign of the result
+      if (sigDiff < 0) {
+        signZ = ~signZ;
+        sigDiff = -32'sh1 * sigDiff;
+      }
+
+      shiftDist = count_leading_zeros<32>(sigDiff) - 8;
+      expZ = expA - shiftDist;
+
+      if (expZ < 0) {
+        shiftDist = expA;
+        expZ       = 0;
+      }
+
+      return packToF32UI(signZ, expZ, sigDiff << shiftDist);
+
+    } else {
+      # when difference in exponents are not zero
+      signZ = signF32UI(a);
+      sigA_32 = 32'h0 + (sigA << 7);
+      sigB_32 = 32'h0 + (sigB << 7);
+      if (expDiff < 0) {
+        signZ = ~signZ;
+        if (expB == 0xFF) {
+          if (sigB_32 != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+          return packToF32UI(signZ, expB, 0);
+        }
+        expZ = expB - 1;
+        sigX = sigB_32 | 0x40000000;
+        sigY = sigA_32 + ((expA != 0) ? 0x40000000 : sigA_32);
+        expDiff = - expDiff;
+      } else {
+        if (expA == 0xFF) {
+          if (sigA_32 != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+          return a;
+        }
+        expZ = expA - 1;
+        sigX = sigA_32 | 0x40000000;
+        sigY = sigB_32 + ((expB != 0) ? 0x40000000 : sigB_32);
+      }
+      return softfloat_normRoundPackToF32(signZ, expZ, sigX - softfloat_shiftRightJam32(sigY, expDiff), mode);
+    }
+  }
+}
+
+function f32_add {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns sum of 2 floating point numbers
+  }
+  body {
+    U32 a_xor_b = a ^ b;
+    if (signF32UI(a_xor_b) == 1) {
+      # subtract if signs are different
+      return softfloat_subMagsF32(a,b,mode);
+    } else {
+      # add if signs are the same
+      return softfloat_addMagsF32(a,b,mode);
+    }
+  }
+}
+
+function f32_sub {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns difference of 2 floating point numbers
+  }
+  body {
+    U32 a_xor_b = a ^ b;
+    if (signF32UI(a_xor_b) == 1) {
+      # add if signs are different
+      return softfloat_addMagsF32(a,b,mode);
+    } else {
+      # subtract if signs are the same
+      return softfloat_subMagsF32(a,b,mode);
+    }
+  }
+}
+
+function i32_to_f32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit signed integer to 32-bit floating point number
+    Converts 32-bit signed integer to 32-bit floating point number
+  }
+  body {
+    # sign of integer, it is 1 when negative
+    Bits<1> sign = a[31];
+    if ((a & 0x7FFFFFFF) == 0) {
+      return (sign == 1) ? packToF32UI(1, 0x9E, 0) : packToF32UI(0, 0, 0);
+    }
+    U32 magnitude_of_A = returnMag(a);
+    return softfloat_normRoundPackToF32(sign, 0x9C, magnitude_of_A, mode);
+  }
+}
+
+function ui32_to_f32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit unsigned integer to 32-bit floating point number
+    Converts 32-bit unsigned integer to 32-bit floating point number
+  }
+  body {
+    # sign of integer, it is 1 when negative
+    if (a == 0) {
+      return a;
+    }
+    if (a[31] == 1) {
+      return softfloat_roundPackToF32(0, 0x9D, a>>1 | (a & 1), mode);
+    } else {
+      return softfloat_normRoundPackToF32(0, 0x9C, a, mode);
+    }
+  }
+}
+
+function f32_to_i32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit floating point number to a signed 32-bit integer
+  }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<8> exp  = expF32UI(a);
+    Bits<23> sig = fracF32UI(a);
+    Bits<8> shiftDist;
+    U64 sig64;
+    # for NaN return the highest positive value and set floating-point flag to invalid.
+    if ((exp == 8'hFF) && (sig != 0)) {
+      sign = 0;
+      set_fp_flag(FpFlag::NV);
+      return I32_NAN;
+    }
+
+    # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
+    if (exp != 0) {
+      sig = sig | 32'h00800000;
+    }
+
+    sig64 = sig << 32;
+    shiftDist = 8'hAA - exp;
+
+    if (shiftDist > 0) {
+      sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
+    }
+
+    return softfloat_roundToI32(sign, sig64, mode);
+  }
+}
+
+function f32_to_ui32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit floating point number to an unsigned 32-bit integer
+  }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<8> exp  = expF32UI(a);
+    Bits<23> sig = fracF32UI(a);
+    Bits<8> shiftDist;
+    U64 sig64;
+    # for NaN return the highest positive value and set floating-point flag to invalid.
+    if ((exp == 8'hFF) && (sig != 0)) {
+      sign = 0;
+      set_fp_flag(FpFlag::NV);
+      return UI32_NAN;
+    }
+
+    # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
+    if (exp != 0) {
+      sig = sig | 32'h00800000;
+    }
+
+    sig64 = sig << 32;
+    shiftDist = 8'hAA - exp;
+
+    if (shiftDist > 0) {
+      sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
+    }
+
+    return softfloat_roundToUI32(sign, sig64, mode);
+  }
+}

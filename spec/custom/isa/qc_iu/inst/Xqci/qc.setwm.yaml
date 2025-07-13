@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.setwm
+long_name: Set word multiple (Register)
+description: |
+  Stores the value of `rs3` multiple times into the address starting at (`rs1` + `imm`).
+  The number of writes is in `rs2` bits [4:0] (0..31).
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcilsm
+base: 32
+encoding:
+  match: 10---------------111-----0101011
+  variables:
+    - name: imm
+      location: 29-25
+      left_shift: 2
+    - name: rs1
+      location: 19-15
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs3
+      location: 11-7
+assembly: " xs3, xs2, imm(xs1)"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg vaddr = X[rs1] + imm;
+  Bits<32> write_value = X[rs3][31:0];
+  XReg num_words = X[rs2][4:0];
+  for (U32 i = 0; i < num_words; i++) {
+    write_memory<32>(vaddr, write_value, $encoding);
+    vaddr = vaddr + 4;
+  }

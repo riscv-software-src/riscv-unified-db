@@ -6,6 +6,7 @@ class Array
   end
 end
 
+module Udb
 class Instruction
   def assembly_fmt(xlen)
     fmt = assembly.dup
@@ -35,27 +36,37 @@ class Instruction
     end
   end
 end
+end
 
-class ExtensionRequirementExpression
-  class LogicNode
-    def to_cxx(&block)
-      if type == :term
-        yield @children[0].name, @children[0].requirement_specs_to_s
-      elsif type == :not
-        "!(#{@children[0].to_cxx(&block)})"
-      elsif type == :and
-        "(#{@children[0].to_cxx(&block)} && #{@children[1].to_cxx(&block)})"
-      elsif type == :or
-        "(#{@children[0].to_cxx(&block)} || #{@children[1].to_cxx(&block)})"
+module Udb
+  class ExtensionRequirementExpression
+
+    class LogicNode
+      sig { params(block: T.proc.params(arg0: String, arg1: String).returns(String)).returns(String) }
+      def to_cxx(&block)
+        if type == TYPES::Term
+          yield @children[0].name, @children[0].requirement_specs_to_s
+        elsif type == TYPES::Not
+          "!(#{@children[0].to_cxx(&block)})"
+        elsif type == TYPES::And
+          "(#{@children[0].to_cxx(&block)} && #{@children[1].to_cxx(&block)})"
+        elsif type == TYPES::Or
+          "(#{@children[0].to_cxx(&block)} || #{@children[1].to_cxx(&block)})"
+        elsif type == TYPES::If
+          raise "huh?"
+        else
+          T.absurd(type)
+        end
       end
     end
-  end
 
-  def to_cxx(&block)
-    raise ArgumentError, "Missing block" unless block_given?
-    raise ArgumentError, "Block expects two arguments" unless block.arity == 2
+    sig { params(block: T.proc.params(arg0: String, arg1: String).returns(String)).returns(String) }
+    def to_cxx(&block)
+      raise ArgumentError, "Missing block" unless block_given?
+      raise ArgumentError, "Block expects two arguments" unless block.arity == 2
 
-    to_logic_tree(expand: false).to_cxx(&block)
+      to_logic_tree(expand: false).to_cxx(&block)
+    end
   end
 end
 
@@ -69,7 +80,7 @@ module CppHartGen
     # name_of(:hart, cfg_arch)
     # name_of(:params, "rv64")
     def name_of(kind, cfg_arch_or_config_name, *extras)
-      config_name = cfg_arch_or_config_name.is_a?(ConfiguredArchitecture) ? cfg_arch.name : cfg_arch_or_config_name
+      config_name = cfg_arch_or_config_name.is_a?(Udb::ConfiguredArchitecture) ? cfg_arch.name : cfg_arch_or_config_name
       config_name = config_name.gsub("-", "_")
       case kind
       when :cfg

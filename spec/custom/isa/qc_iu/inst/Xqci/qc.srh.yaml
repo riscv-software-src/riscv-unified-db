@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.srh
+long_name: Store indexed halfword
+description: |
+  Store 16 bits of data from register `rs3` to an
+  address formed by adding `rs1` to `rs2`, shifted by `shamt`.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisls
+assembly: " xs3, xs1, xs2, shamt"
+base: 32
+encoding:
+  match: 1110-------------110-----0101011
+  variables:
+    - name: shamt
+      location: 27-25
+    - name: rs1
+      location: 19-15
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs3
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg virtual_address = X[rs1] + (X[rs2] << shamt);
+  write_memory<16>(virtual_address, X[rs3][15:0], $encoding);

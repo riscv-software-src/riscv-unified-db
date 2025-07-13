@@ -1,0 +1,52 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: minstret
+long_name: Machine Instructions Retired Counter
+address: 0xB02
+writable: true
+description: |
+  Counts the number of instructions retired by this hart from some arbitrary start point in the past.
+
+  [NOTE]
+  Instructions that cause synchronous exceptions, including `ecall` and `ebreak`, are not
+  considered to retire and hence do not increment the `minstret` CSR.
+priv_mode: M
+length: 64
+fields:
+  COUNT:
+    location: 63-0
+    type: RW-H
+    description: |
+      Instructions retired counter.
+
+      <%- if ext?(:Zicntr) -%>
+      Aliased as `instret.COUNT`.
+      <%- end -%>
+
+      Increments every time an instruction retires unless:
+
+        * `mcountinhibit.IR` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.IR`<%- end -%> is set
+        <%- if ext?(:Smcntrpmf) -%>
+        * `minstretcfg.MINH` is set and the current privilege level is M
+        <%- if ext?(:S) -%>
+        * `minstretcfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is (H)S
+        <%- end -%>
+        <%- if ext?(:U) -%>
+        * `minstretcfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is U
+        <%- end -%>
+        <%- if ext?(:H) -%>
+        * `minstretcfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VS
+        * `minstretcfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VU
+        <%- end -%>
+        <%- end -%>
+
+      An instruction that causes an exception, notably including MRET/SRET,
+      does not retire and does not cause `minstret.COUNT` to increment.
+    reset_value: UNDEFINED_LEGAL
+    affectedBy: [Zicntr, Smcntrpmf, Smcdeleg, Ssccfg]
+definedBy: Zicntr

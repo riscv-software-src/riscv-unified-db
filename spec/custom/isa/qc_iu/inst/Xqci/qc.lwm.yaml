@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.lwm
+long_name: Load word multiple
+description: |
+  Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
+  The number of words is in `rs2` bits [4:0].
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcilsm
+base: 32
+encoding:
+  match: 00---------------111-----0001011
+  variables:
+    - name: imm
+      location: 29-25
+      left_shift: 2
+    - name: rs1
+      location: 19-15
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs2, imm(xs1)"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg vaddr = X[rs1] + imm;
+  XReg num_words = X[rs2][4:0];
+  raise (ExceptionCode::IllegalInstruction, effective_ldst_mode(), $encoding) if ((rd + num_words) > 32);
+  for (U32 i = 0; i < num_words; i++) {
+    X[rd + i] = read_memory<32>(vaddr, $encoding);
+    vaddr = vaddr + 4;
+  }

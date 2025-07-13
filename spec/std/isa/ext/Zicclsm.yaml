@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zicclsm
+long_name: Main memory misaligned requirement for RVA profiles
+type: unprivileged
+description: |
+  Misaligned loads and stores to main memory regions with both the cacheability and coherence
+  PMAs must be supported.
+
+  [NOTE]
+  This extension was ratified as part of the RVA20 profile.
+
+  [NOTE]
+  This requires misaligned support for all regular load and store instructions (including
+  scalar and vector) but not AMOs or other specialized forms of memory access.
+  Even though mandated, misaligned loads and stores might execute extremely slowly.
+  Standard software distributions should assume their existence only for correctness,
+  not for performance.
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      MISALIGNED_LDST:
+        schema:
+          const: true

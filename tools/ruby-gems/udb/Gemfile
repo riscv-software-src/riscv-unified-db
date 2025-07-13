@@ -1,0 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# frozen_string_literal: true
+# typed: true
+
+source "https://rubygems.org"
+
+# explicit require the local gems so that bundler can find them
+gem "idlc", path: "../idlc"
+gem "udb_helpers", path: "../udb_helpers"
+
+gemspec
