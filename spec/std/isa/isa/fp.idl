@@ -461,10 +461,16 @@ function softfloat_roundToUI32 {
     ) {
       roundIncrement = 0;
       if ( sign == 1) {
-        if (sig == 0) return 0;
-        if (roundingMode == RoundingMode::RDN) set_fp_flag(FpFlag::NV);
+        if (sig == 0) {
+          return 0;
+        }
+        if (roundingMode == RoundingMode::RDN) {
+          set_fp_flag(FpFlag::NV);
+        }
       } else {
-        if (roundingMode == RoundingMode::RUP) roundIncrement = 0xFFF;
+        if (roundingMode == RoundingMode::RUP) {
+          roundIncrement = 0xFFF;
+        }
       }
     }
 
@@ -1056,7 +1062,7 @@ function f32_to_i32 {
       sig = sig | 32'h00800000;
     }
 
-    sig64 = sig << 32;
+    sig64 = sig `<< 32;
     shiftDist = 8'hAA - exp;
 
     if (shiftDist > 0) {
@@ -1093,7 +1099,7 @@ function f32_to_ui32 {
       sig = sig | 32'h00800000;
     }
 
-    sig64 = sig << 32;
+    sig64 = sig `<< 32;
     shiftDist = 8'hAA - exp;
 
     if (shiftDist > 0) {
@@ -1261,7 +1267,7 @@ function f32_to_i32_no_flag {
       sig = sig | 32'h00800000;
     }
 
-    sig64 = sig << 32;
+    sig64 = sig `<< 32;
     shiftDist = 8'hAA - exp;
 
     if (shiftDist > 0) {
@@ -1285,7 +1291,7 @@ function round_f32_to_integral {
     if ((is_sp_neg_inf?(a)) || (is_sp_pos_inf?(a)) || (is_sp_pos_zero?(a)) || (is_sp_neg_zero?(a))) {
       # Return zero or infinity respectively for zero or infinity inputs
       return a;
-    } else if is_sp_signaling_nan?(a) {
+    } else if (is_sp_signaling_nan?(a)) {
       # set invalid flag for signaling NaN
       set_fp_flag(FpFlag::NV);
       return a;
