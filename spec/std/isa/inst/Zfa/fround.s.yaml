@@ -6,9 +6,15 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fround.s
-long_name: No synopsis available
+long_name: Rounds single-precision float to integer
 description: |
-  No description available.
+  Rounds the single-precision floating-point number in floating-point register _fs1_ to an integer, according to the rounding mode specified in the instruction’s _rm_ field.
+
+  It then writes that integer, represented as a single-precision floating-point number, to floating-point register _fd_.
+
+  Zero and infinite inputs are copied to _fd_ unmodified.
+
+  Signaling NaN inputs cause the invalid operation exception flag to be set; no other exception flags are set. FROUND.S is encoded like FCVT.S.D, but with rs2=4.
 definedBy: Zfa
 assembly: fd, fs1, rm
 encoding:
@@ -27,6 +33,15 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
+  check_f_ok($encoding);
+  RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
+  if ((is_sp_neg_inf?(f[fs1])) || (is_sp_pos_inf?(f[fs1])) || (is_sp_pos_zero?(f[fs1]))
+      || (is_sp_neg_zero?(f[fs1]))) {
+    f[fd] = f[fs1];
+  } else {
+    f[fd] = round_f32(f[fs1], rounding_mode);
+  }
+  mark_f_state_dirty();
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

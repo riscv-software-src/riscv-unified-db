@@ -349,7 +349,6 @@ function softfloat_roundToI32 {
     RoundingMode roundingMode
   description {
     Round to signed 32-bit integer, using +rounding_mode+
-    Round to signed 32-bit integer, using +rounding_mode+
   }
   body {
     Bits<16> roundIncrement = 0x800;
@@ -1104,5 +1103,24 @@ function f32_to_ui32 {
     }
 
     return softfloat_roundToUI32(sign, sig64, mode);
+  }
+}
+
+function round_f32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Rounds 32-bit floating point number to a signed 32-bit integer.
+    This 32-bit integer is represented as a floating point number and returned.
+  }
+  body {
+    # intermediate variable for storing 32-bit rounded integer
+    U32 intermediate;
+    # round 32-bit floating point number to integer
+    intermediate = f32_to_i32(a, mode);
+    # represent the integer as floating point number
+    return i32_to_f32(intermediate, mode);
   }
 }
