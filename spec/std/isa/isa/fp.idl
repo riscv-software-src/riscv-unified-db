@@ -422,66 +422,6 @@ function softfloat_roundToUI32 {
       z = z & ~32'b1;
     }
 
-
-
-    if ((z != 0) && (sign == 1)) {
-      set_fp_flag(FpFlag::NV);
-      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
-    }
-
-    if (roundBits != 0) {
-      set_fp_flag(FpFlag::NX);
-    }
-    return z;
-  }
-}
-
-function softfloat_roundToUI32 {
-  returns Bits<32>
-  arguments
-    Bits<1> sign,
-    Bits<64> sig,
-    RoundingMode roundingMode
-  description {
-    Round to unsigned 32-bit integer, using +rounding_mode+
-  }
-  body {
-    Bits<16> roundIncrement = 0x800;
-    if (
-      (roundingMode != RoundingMode::RMM)
-      && (roundingMode != RoundingMode::RNE)
-    ) {
-      roundIncrement = 0;
-      if ( sign == 1) {
-        if (sig == 0) {
-          return 0;
-        }
-        if (roundingMode == RoundingMode::RDN) {
-          set_fp_flag(FpFlag::NV);
-        }
-      } else {
-        if (roundingMode == RoundingMode::RUP) {
-          roundIncrement = 0xFFF;
-        }
-      }
-    }
-
-    Bits<16> roundBits = sig & 0xFFF;
-    sig = sig + roundIncrement;
-    if ((sig & 0xFFFFF00000000000) != 0) {
-      set_fp_flag(FpFlag::NV);
-      return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
-    }
-
-    Bits<32> z = sig >> 12;
-    if (
-      (roundBits == 0x800 && (roundingMode == RoundingMode::RNE))
-    ) {
-      z = z & ~32'b1;
-    }
-
-
-
     if ((z != 0) && (sign == 1)) {
       set_fp_flag(FpFlag::NV);
       return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
