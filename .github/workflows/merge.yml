@@ -6,9 +6,12 @@ on:
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
+env:
+  SINGULARITY: 1
 jobs:
   build-reuse-manifest:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
