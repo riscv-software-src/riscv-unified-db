@@ -7146,9 +7146,6 @@ Included in::
 Synopsis::
 No synopsis available
 
-Assembly::
-dret dret
-
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -15642,9 +15639,6 @@ Included in::
 Synopsis::
 Machine mode resume from the RNMI or Double Trap handler
 
-Assembly::
-mnret mnret
-
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -17190,9 +17184,6 @@ Included in::
 
 Synopsis::
 No synopsis available
-
-Assembly::
-sctrclr sctrclr
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -19593,27 +19584,34 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspopchk_x1]
-== sspopchk.x1
+[#udb:doc:inst:sspopchk]
+== sspopchk
 
 Synopsis::
-No synopsis available
+Shadow Stack Pop
 
 Assembly::
-sspopchk.x1 sspopchk_x1
+sspopchk xs1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":32,"name": 0xcdc0c073,"type":2}]}
+{"reg":[{"bits":15,"name": 0x4073,"type":2},{"bits":5,"name": "xs1 != {0,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":12,"name": 0xcdc,"type":2}]}
 ....
 
 Description::
-No description available.
+A shadow stack pop operation is defined as an XLEN wide read from the current
+top of the shadow stack followed by an increment of the ssp by XLEN/8.
+
+Only x1 and x5 registers are supported as xs1 for SSPOPCHK.
 
 
 Decode Variables::
-sspopchk.x1 has no decode variables.
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs1 |$encoding[19:15]
+|===
 
 Included in::
 [options="autowrap,autowidth"]
@@ -19625,91 +19623,35 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspopchk_x5]
-== sspopchk.x5
+[#udb:doc:inst:sspush]
+== sspush
 
 Synopsis::
-No synopsis available
+Shadow Stack Push
 
 Assembly::
-sspopchk.x5 sspopchk_x5
+sspush xs2
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":32,"name": 0xcdc2c073,"type":2}]}
+{"reg":[{"bits":20,"name": 0x4073,"type":2},{"bits":5,"name": "xs2 != {0,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":7,"name": 0x67,"type":2}]}
 ....
 
 Description::
-No description available.
+A shadow stack push operation is defined as decrement of the ssp by XLEN/8
+followed by a store of the value in the link register to memory at the new
+top of the shadow stack.
+
+Only x1 and x5 registers are supported as xs2 for SSPUSH.
 
 
 Decode Variables::
-sspopchk.x5 has no decode variables.
-
-Included in::
-[options="autowrap,autowidth"]
+[width="100%", cols="1,2", options="header"]
 |===
-| Extension | Version
-
-| *Zicfiss* | ~> 1.0.0
-
+|Variable Name |Location
+|xs2 |$encoding[24:20]
 |===
-
-
-[#udb:doc:inst:sspush_x1]
-== sspush.x1
-
-Synopsis::
-No synopsis available
-
-Assembly::
-sspush.x1 sspush_x1
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":32,"name": 0xce104073,"type":2}]}
-....
-
-Description::
-No description available.
-
-
-Decode Variables::
-sspush.x1 has no decode variables.
-
-Included in::
-[options="autowrap,autowidth"]
-|===
-| Extension | Version
-
-| *Zicfiss* | ~> 1.0.0
-
-|===
-
-
-[#udb:doc:inst:sspush_x5]
-== sspush.x5
-
-Synopsis::
-No synopsis available
-
-Assembly::
-sspush.x5 sspush_x5
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":32,"name": 0xce504073,"type":2}]}
-....
-
-Description::
-No description available.
-
-
-Decode Variables::
-sspush.x5 has no decode variables.
 
 Included in::
 [options="autowrap,autowidth"]
@@ -20641,7 +20583,7 @@ vaeskf1.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
 ....
 
 Description::
@@ -20653,7 +20595,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -20679,7 +20621,7 @@ vaeskf2.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
 ....
 
 Description::
@@ -20691,7 +20633,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -38558,7 +38500,7 @@ vsm3c.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
 ....
 
 Description::
@@ -38570,7 +38512,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -38638,7 +38580,7 @@ vsm4k.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
 ....
 
 Description::
@@ -38650,7 +38592,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -45241,7 +45183,7 @@ vwsll.vi vd, vs2, imm, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
 ....
 
 Description::
@@ -45254,7 +45196,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 

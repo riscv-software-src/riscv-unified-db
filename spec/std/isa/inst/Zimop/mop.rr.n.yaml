@@ -31,8 +31,7 @@ access:
   vu: always
 data_independent_timing: false
 hints:
-  - { $ref: inst/Zicfilp/sspush.x1.yaml# }
-  - { $ref: inst/Zicfilp/sspush.x5.yaml# }
+  - { $ref: inst/Zicfiss/sspush.yaml# }
 pseudoinstructions:
   - when: n == 0
     to: mop.rr.0
