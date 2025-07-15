@@ -8,6 +8,7 @@ import sys
 import logging
 import argparse
 import yaml
+import re
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +28,54 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 def calculate_mask(match_str):
     """Convert the bit pattern string to a mask (1 for fixed bits, 0 for variable bits)."""
     return int("".join("0" if c == "-" else "1" for c in match_str), 2)
+
+
+def process_erb_conditionals(text, enabled_extensions=None, include_all=False):
+    """Process ERB conditional syntax in text strings.
+
+    Args:
+        text: The text containing ERB conditionals
+        enabled_extensions: List of enabled extensions
+        include_all: If True, include all conditional content
+
+    Returns:
+        List of processed text variants (both with and without conditionals)
+    """
+    if enabled_extensions is None:
+        enabled_extensions = []
+
+    # Pattern to match ERB conditionals like <%- if ext?(:H) -%>content<%- end -%>
+    erb_pattern = r'<%- if ext\?\(:([^)]+)\) -%>([^<]*)<%- end -%>'
+
+    results = []
+
+    if include_all:
+        # Generate both variants: with and without the conditional content
+        # First variant: without conditional content (H extension not present)
+        text_without = re.sub(erb_pattern, '', text)
+        if text_without.strip():
+            results.append(text_without.strip())
+
+        # Second variant: with conditional content (H extension present)
+        text_with = re.sub(erb_pattern, r'\2', text)
+        if text_with.strip() and text_with != text_without:
+            results.append(text_with.strip())
+    else:
+        # Process based on enabled extensions
+        def replace_conditional(match):
+            ext_name = match.group(1)
+            content = match.group(2)
+            # Check if extension is enabled (case-insensitive)
+            if any(ext.upper() == ext_name.upper() for ext in enabled_extensions):
+                return content
+            else:
+                return ""
+
+        processed_text = re.sub(erb_pattern, replace_conditional, text)
+        if processed_text.strip():
+            results.append(processed_text.strip())
+
+    return results if results else [text]
 
 
 def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
@@ -78,10 +127,16 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
                     name = code.get("name")
 
                     if num is not None and name is not None:
-                        sanitized_name = (
-                            name.lower().replace(" ", "_").replace("/", "_")
+                        # Process ERB conditionals in the name
+                        processed_names = process_erb_conditionals(
+                            name, enabled_extensions, include_all
                         )
-                        exception_codes.append((num, sanitized_name))
+
+                        for processed_name in processed_names:
+                            sanitized_name = (
+                                processed_name.lower().replace(" ", "_").replace("/", "_")
+                            )
+                            exception_codes.append((num, sanitized_name, processed_name))
 
             except Exception as e:
                 logging.error(f"Error processing file {path}: {e}")
@@ -94,13 +149,14 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
     else:
         logging.warning(f"No extension definitions found in {ext_dir}")
 
-    # Sort by exception code number and deduplicate
-    seen_nums = set()
+    # Sort by exception code number and deduplicate by (num, sanitized_name) pair
+    seen_pairs = set()
     unique_codes = []
-    for num, name in sorted(exception_codes, key=lambda x: x[0]):
-        if num not in seen_nums:
-            seen_nums.add(num)
-            unique_codes.append((num, name))
+    for num, sanitized_name, display_name in sorted(exception_codes, key=lambda x: (x[0], x[1])):
+        pair = (num, sanitized_name)
+        if pair not in seen_pairs:
+            seen_pairs.add(pair)
+            unique_codes.append((num, sanitized_name, display_name))
 
     return unique_codes
 
@@ -366,10 +422,10 @@ def main():
 
     causes_str = ""
     declare_cause_str = ""
-    for num, name in causes:
-        sanitized_name = name.upper()
-        causes_str += f"#define CAUSE_{sanitized_name} 0x{num:x}\n"
-        declare_cause_str += f'DECLARE_CAUSE("{name}", CAUSE_{sanitized_name})\n'
+    for num, sanitized_name, display_name in causes:
+        sanitized_name_upper = sanitized_name.upper()
+        causes_str += f"#define CAUSE_{sanitized_name_upper} 0x{num:x}\n"
+        declare_cause_str += f'DECLARE_CAUSE("{display_name}", CAUSE_{sanitized_name_upper})\n'
 
     field_str = ""
     for field_name, details in sorted(field_dict.items()):
