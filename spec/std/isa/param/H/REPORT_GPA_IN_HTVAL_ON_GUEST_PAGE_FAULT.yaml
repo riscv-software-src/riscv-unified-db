@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+description: |
+  When true, `htval` is written with the Guest Physical Address, shifted right by 2, that
+  caused a `GuestPageFault` exception.
+
+  When false, `htval` is written with 0 when a `GuestPageFault` exception occurs.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: H

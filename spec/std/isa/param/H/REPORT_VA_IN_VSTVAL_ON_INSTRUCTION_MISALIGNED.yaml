@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED
+description: |
+  When true, `vstval` is written with the virtual PC when an instruction fetch is misaligned.
+
+  When false, `vstval` is written with 0 when an instruction fetch is misaligned.
+
+  Note that when IALIGN=16 (i.e., when the `C` or one of the `Zc*` extensions are implemented),
+  it is impossible to generate a misaligned fetch, and so this parameter has no effect.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: H

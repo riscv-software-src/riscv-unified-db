@@ -1,0 +1,63 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MTVAL_WIDTH
+long_name: |
+  Width of the `mtval` CSR
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  The number of implemented bits in the `mtval` CSR.
+  This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+  assist software in handling the trap (e.g., address associated with exception).
+
+  Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
+
+schema:
+  rv32:
+    type: integer
+    minimum: 0
+    maximum: 32
+  rv64:
+    type: integer
+    minimum: 0
+    maximum: 64
+
+restrictions:
+  constraint(): |
+    (
+      implemented?(ExtensionName::Sdext) ||
+      REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+      REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+      REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+    ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
+
+    (
+      implemented?(ExtensionName::S) &&
+      (
+        implemented?(ExtensionName::Sdext) ||
+        REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+        REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+        REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+        REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+      )
+    ) -> (MTVAL_WIDTH >= VA_SIZE);
+
+    REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION -> (MTVAL_WIDTH >= INSTR_ENC_SIZE);
+  reason: |
+    `mtval` must be able to hold physical and/or virtual addresses

@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: PRECISE_SYNCHRONOUS_EXCEPTIONS
+long_name: Whether or not all synchronous exceptions are precise.
+definedBy:
+  extension:
+    name: Sm
+description: |
+  If false, any exception not otherwise mandated to precise (e.g., PMP violation)
+  will cause execution to enter an unpredictable state.
+schema:
+  type: boolean

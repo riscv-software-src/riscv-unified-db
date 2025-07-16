@@ -1,0 +1,27 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT
+description: |
+  Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+  Possible values:
+    * "always zero": Always write the value zero
+    * "always pseudoinstruction": Always write the pseudoinstruction
+    * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
+    * "custom": A custom value, which will cause an UNPREDICTABLE event.
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - always zero
+    - always pseudoinstruction
+    - always transformed standard instruction
+    - custom
+definedBy:
+  extension:
+    name: H

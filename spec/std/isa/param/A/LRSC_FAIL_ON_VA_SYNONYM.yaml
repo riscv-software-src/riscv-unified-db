@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: LRSC_FAIL_ON_VA_SYNONYM
+description: |
+  Whether or not an `sc.l`/`sc.d` will fail if its VA does not match the VA of the prior
+  `lr.l`/`lr.d`, even if the physical address of the SC and LR are the same
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: A

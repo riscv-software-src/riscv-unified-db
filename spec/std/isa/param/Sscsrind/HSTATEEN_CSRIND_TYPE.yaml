@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HSTATEEN_CSRIND_TYPE
+description: |
+  Behavior of the hstateen0.CSRIND bit:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+restrictions:
+  allOf:
+    - constraint():
+        'MSTATEEN_CSRIND_TYPE == "read-only-0" -> HSTATEEN_CSRIND_TYPE ==
+        "read-only-0"
+
+        '
+      reason: HSTATEEN cannot have more options that MSTATEEN
+    - constraint():
+        'MSTATEEN_CSRIND_TYPE == "read-only-1" -> HSTATEEN_CSRIND_TYPE ==
+        "read-only-1"
+
+        '
+      reason: HSTATEEN cannot have more options that MSTATEEN
+definedBy:
+  allOf:
+    - extension:
+        :name: Sscsrind
+    - extension:
+        allOf:
+          - name: H
+            version: "~> 1.0"
+          - name: Ssstateen
+            version: "~> 1.0"

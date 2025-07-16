@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MUTABLE_MISA_V
+description:
+  "Indicates whether or not the `V` extension can be disabled with the
+  `misa.V` bit.
+
+  "
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: V

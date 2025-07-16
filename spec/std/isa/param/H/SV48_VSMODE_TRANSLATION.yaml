@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SV48_VSMODE_TRANSLATION
+description: |
+  Whether or not Sv48 translation is supported in first-stage (VS-stage)
+  translation.
+long_name: TODO
+schema:
+  type: boolean
+restrictions:
+  constraint(): "!$ary_includes?(VSXLEN, 64) -> !SV48_VSMODE_TRANSLATION;\n"
+  reason: Sv48 in VS-mode is only valid if VS-mode can get into RV64 mode
+definedBy:
+  extension:
+    name: H

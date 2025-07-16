@@ -2567,7 +2567,7 @@ function read_memory {
     } else {
 
       # misaligned, must break into multiple reads
-      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+      if (MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
         Bits<LEN> result = 0;
         for (U32 i = 0; i <= (LEN/8); i++) {
           result = result | (read_memory_aligned<8>(virtual_address + i, encoding) << (8*i));
@@ -2954,7 +2954,7 @@ function write_memory {
       raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
     } else {
       # misaligned, must break into multiple reads
-      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+      if (MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
         for (U32 i = 0; i <= (LEN/8); i++) {
           write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0], encoding);
         }

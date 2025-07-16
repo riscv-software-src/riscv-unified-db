@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: STVEC_MODE_DIRECT
+description: "Whether or not `stvec.MODE` supports Direct (0).
+
+  "
+long_name: TODO
+schema:
+  type: boolean
+restrictions:
+  constraint(): "!STVEC_MODE_VECTORED -> STVEC_MODE_DIRECT;\n"
+  reason: stvec must support at least one mode
+definedBy:
+  extension:
+    name: S

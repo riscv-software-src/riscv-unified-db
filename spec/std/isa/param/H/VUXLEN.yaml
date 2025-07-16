@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VUXLEN
+description: |
+  Set of XLENs supported in VU-mode. When both 32 and 64 are supported, VUXLEN can be changed
+  via `vsstatus.UXL`.
+long_name: TODO
+schema:
+  type: array
+  items:
+    enum:
+      - 32
+      - 64
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true
+restrictions:
+  constraint(): "!$ary_includes?(VSXLEN, 64) -> !$ary_includes?(VUXLEN, 64)\n"
+  reason: |
+    XLEN in VU-mode can never be larger than XLEN in VS-mode
+    (and, transitively, cannot be larger than XLEN in S-mode or M-mode).
+definedBy:
+  extension:
+    name: H

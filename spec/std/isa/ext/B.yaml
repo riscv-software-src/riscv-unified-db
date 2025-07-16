@@ -39,9 +39,3 @@ description: |
   the implementation supports the instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
   When `misa.B` is 0, it indicates that the implementation may not support one or more of the
   `Zba`, `Zbb`, or `Zbs` extensions.
-params:
-  MUTABLE_MISA_B:
-    description: |
-      Indicates whether or not the `B` extension can be disabled with the `misa.B` bit.
-    schema:
-      type: boolean

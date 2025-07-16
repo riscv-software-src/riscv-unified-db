@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MARCHID_IMPLEMENTED
+long_name: Whether or not the `marchid` CSR is implemented.
+definedBy:
+  extension:
+    name: Sm
+description: |
+  * false: `marchid` is not implemented, and must be read-only-0
+  * true: `marchid` is implemented, and the value is determined by `ARCH_ID_VALUE`
+schema:
+  type: boolean

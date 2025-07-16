@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSXLEN
+description: |
+  Set of XLENs supported in VS-mode. Can be one of:
+
+    * 32:   VSXLEN is always 32
+    * 64:   VSXLEN is always 64
+    * 3264: VSXLEN can be changed (via `hstatus.VSXL`) between 32 and 64
+long_name: TODO
+schema:
+  type: array
+  items:
+    enum:
+      - 32
+      - 64
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true
+restrictions:
+  constraint(): "!$ary_includes?(SXLEN, 64) -> !$ary_includes?(VSXLEN, 64)\n"
+  reason: |
+    XLEN in VS-mode can never be larger than XLEN in S-mode
+    (and, transitively, cannot be larger than XLEN in M-mode).
+definedBy:
+  extension:
+    name: H

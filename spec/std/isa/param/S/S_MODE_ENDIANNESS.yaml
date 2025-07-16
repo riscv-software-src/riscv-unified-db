@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: S_MODE_ENDIANNESS
+description: |
+  Endianness of data in S-mode. Can be one of:
+
+   * little:  S-mode data is always little endian
+   * big:     S-mode data is always big endian
+   * dynamic: S-mode data can be either little or big endian,
+              depending on the CSR field `mstatus.SBE`
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - little
+    - big
+    - dynamic
+definedBy:
+  extension:
+    name: S

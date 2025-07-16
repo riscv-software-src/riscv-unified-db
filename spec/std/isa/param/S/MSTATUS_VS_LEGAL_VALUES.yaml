@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MSTATUS_VS_LEGAL_VALUES
+description:
+  "The set of values that mstatus.VS will accept from a software write.
+
+  "
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+  minItems: 1
+  maxItems: 4
+  uniqueItems: true
+restrictions:
+  constraint(): |
+    implemented?(ExtensionName::V) && HW_MSTATUS_VS_DIRTY_UPDATE == "never"
+      -> $ary_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
+  reason:
+    If there is a hardware update to mstatus.VS, then the Dirty state must be
+    supported
+definedBy:
+  extension:
+    name: S

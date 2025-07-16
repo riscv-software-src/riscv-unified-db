@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: PMLEN
+description: |
+  The number of high-order bits of an address that are masked by the
+  pointer masking facility.
+long_name: TODO
+schema:
+  type: integer
+definedBy:
+  extension:
+    anyOf:
+      - name: Smmpm
+      - name: Smnpm
+      - name: Ssnpm

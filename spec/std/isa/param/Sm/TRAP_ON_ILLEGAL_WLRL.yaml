@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TRAP_ON_ILLEGAL_WLRL
+long_name: |
+  Whether or not writing an illegal value to a WLRL CSR field causes a trap.
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  Options:
+
+    * true: Writing an illegal value to a WLRL CSR field will cause an IllegalInstruction exception.
+    * false: Writing an illegal value to a WLRL CSR field causes unpredictable behavior.
+
+schema:
+  type: boolean

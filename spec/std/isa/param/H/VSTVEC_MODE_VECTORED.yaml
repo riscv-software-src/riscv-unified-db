@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSTVEC_MODE_VECTORED
+description: "Whether or not `stvec.MODE` supports Vectored (1).
+
+  "
+long_name: TODO
+schema:
+  type: boolean
+restrictions:
+  constraint(): "!VSTVEC_MODE_DIRECT -> VSTVEC_MODE_VECTORED;\n"
+  reason: At least one vstvec mode must be supported
+definedBy:
+  extension:
+    name: H

@@ -1,0 +1,49 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SCOUNTENABLE_EN
+description: |
+  Indicates which counters can delegated via `scounteren`
+
+  An unimplemented counter cannot be specified, i.e., if
+  HPM_COUNTER_EN[3] is false, it would be illegal to set
+  SCOUNTENABLE_EN[3] to true.
+
+  SCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+  SCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 32
+  minItems: 32
+restrictions:
+  allOf:
+    - constraint(): |
+        for (U32 i = 0; i < 3; i++) {
+          !implemented?(ExtensionName::Zicntr) -> !SCOUNTENABLE_EN[i];
+        }
+      reason: Counters 0-2 are defined by Zicntr
+    - constraint(): |
+        for (U32 i = 3; i < 32; i++) {
+          !implemented?(ExtensionName::Zihpm) -> !SCOUNTENABLE_EN[i];
+        }
+      reason: Counters 3..31 are defined by Zihpm
+    - constraint(): |
+        for (U32 i = 3; i < 32; i++) {
+          !HPM_COUNTER_EN -> !SCOUNTENABLE_EN[i];
+        }
+      reason: When mhpmcounter[i] does not exist, it cannot be enabled.
+definedBy:
+  allOf:
+    - extension:
+        :name: S
+    - extension:
+        anyOf:
+          - name: Zicntr
+          - name: Zihpm

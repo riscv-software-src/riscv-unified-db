@@ -1,48 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
 
-  "$defs": {
-    "param_data": {
-      "type": "object",
-      "required": ["description", "schema"],
-      "properties": {
-        "description": {
-          "$ref": "schema_defs.json#/$defs/spec_text",
-          "description": "Parameter description, including list of valid values"
-        },
-        "also_defined_in": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_name"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_name"
-              }
-            }
-          ],
-          "description": "When a parameter is defined by multiple extensions, declare the other extensions here. The parameter *must* mean the same thing in all extensions."
-        },
-        "schema": {
-          "$ref": "json-schema-draft-07.json#"
-        },
-        "restrictions": {
-          "$ref": "schema_defs.json#/$defs/constraint_list"
-        },
-        "definedBy": {
-          "description": "Extension requirement condition that must be met for parameter to exist. The condition that the defining extension is implemented is implicit, and does not need to be explicitly listed",
-          "$ref": "schema_defs.json#/$defs/condition"
-        },
-        "extra_validation": {
-          "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
-
   "type": "object",
   "required": [
     "$schema",
@@ -268,15 +226,6 @@
         },
         "additionalProperties": false
       }
-    },
-    "params": {
-      "type": "object",
-      "patternProperties": {
-        "^[A-Z][A-Z_0-9]*$": {
-          "$ref": "#/$defs/param_data"
-        }
-      },
-      "additionalProperties": false
     },
     "$source": {
       "type": "string",

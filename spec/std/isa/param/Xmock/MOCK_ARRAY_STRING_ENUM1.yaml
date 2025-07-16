@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MOCK_ARRAY_STRING_ENUM1
+description: foo
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: string
+    enum:
+      - ABC
+      - DEF
+      - GHI
+definedBy:
+  extension:
+    name: Xmock

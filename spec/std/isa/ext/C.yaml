@@ -317,9 +317,3 @@ description: |
   !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5`
   !===
   |===
-params:
-  MUTABLE_MISA_C:
-    description: |
-      Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.
-    schema:
-      type: boolean

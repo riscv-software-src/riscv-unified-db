@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MTVEC_MODES
+long_name: |
+  Modes supported by `mtvec.MODE`
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  Options:
+
+    0::
+      Direct; All traps set `pc` to `mtvec.BASE`
+    1::
+      Vectored; Asynchronous interrupts set `pc` to `mtvec.BASE` + 4 x cause.
+
+  If only one mode is given, `mtvec.MODE` is assumed to be read-only with that value.
+  Otherwise, `mtvec.MODE` is read-write.
+schema:
+  type: array
+  items:
+    type: integer
+    enum: [0, 1]
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true
+restrictions:
+  constraint(): |
+    (MTVEC_ACCESS == "read-only") -> ($ary_size(MTVEC_MODES) == 1);
+  reason: If `mtvec` is read-only, the mode cannot be changed.
