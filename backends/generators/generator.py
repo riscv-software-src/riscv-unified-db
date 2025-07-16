@@ -5,7 +5,7 @@ import logging
 import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:: %(message)s")
 
 
 def check_requirement(req, exts):
@@ -177,12 +177,40 @@ def load_instructions(
 
             encoding = data.get("encoding", {})
             if not encoding:
-                logging.error(
-                    f"Missing 'encoding' field in instruction {name} in {path}"
-                )
-                encoding_filtered += 1
-                continue
+                format_data = data.get("format", {})
+                opcodes = format_data.get("opcodes", {})
 
+                if not opcodes:
+                    logging.error(f"Missing both 'encoding' and 'format.opcodes' for {name} in {path}")
+                    encoding_filtered += 1
+                    continue
+
+                match_bits = ["-" for _ in range(32)]
+                try:
+                    for field, info in opcodes.items():
+                        if not isinstance(info, dict):
+                            continue  
+
+                        value = info.get("value")
+                        location = info.get("location")
+                        if value is None or location is None:
+                            continue
+
+                        if isinstance(location, str) and "-" in location:
+                            hi, lo = map(int, location.split("-"))
+                            width = hi - lo + 1
+                            val_int = int(value, 0) if isinstance(value, str) else value
+                            val_bin = bin(val_int)[2:].zfill(width)
+
+                            match_bits[31 - hi : 32 - lo + 1] = list(val_bin)
+                    match_str = "".join(match_bits)
+                    instr_dict[name] = {"match": match_str}
+                except Exception as e:
+                    logging.error(f"Failed to construct match string for {name} in {path}: {e}")
+                    encoding_filtered += 1
+                    continue
+
+                continue 
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
             if base is not None:
@@ -255,14 +283,30 @@ def load_instructions(
                 encoding_filtered += 1
                 continue
 
-            match_str = encoding_to_use.get("match")
+            match_str = encoding_to_use.get("match") if encoding_to_use else None
+            mask_str = encoding_to_use.get("mask") if encoding_to_use else None
+
+            if not match_str:
+                subtype = data.get("subtype", {})
+                if isinstance(subtype, dict):
+                    match_str = subtype.get("match")
+                    mask_str = subtype.get("mask")
+                    if match_str:
+                        logging.debug(f"Using subtype.match for instruction {name}")
+
             if not match_str:
                 msg = f"Skipping {name} because 'match' field is missing in {path}"
                 logging.warning(msg)
                 encoding_filtered += 1
                 continue
 
-            instr_dict[instr_key] = {"match": match_str}
+            entry = {"match": match_str}
+            if mask_str:
+                entry["mask"] = mask_str
+            else:
+                logging.debug(f"No mask found for instruction {name}")
+
+            instr_dict[instr_key] = entry
 
     if found_instructions > 0:
         logging.info(
