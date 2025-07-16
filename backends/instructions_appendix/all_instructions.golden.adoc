@@ -12951,7 +12951,7 @@ Included in::
 == fround.s
 
 Synopsis::
-Rounds single-precision float to integer
+Floating-point round single-precision float to integer
 
 Assembly::
 fround.s fd, fs1, rm
