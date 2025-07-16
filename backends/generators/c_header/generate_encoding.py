@@ -79,7 +79,10 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
 
                     if num is not None and name is not None:
                         sanitized_name = (
-                            name.lower().replace(" ", "_").replace("/", "_")
+                            name.lower()
+                            .replace(" ", "_")
+                            .replace("/", "_")
+                            .replace("-", "_")
                         )
                         exception_codes.append((num, sanitized_name))
 
@@ -369,8 +372,8 @@ def main():
     csr_names_str = ""
     declare_csr_str = ""
     for addr, name in sorted(csrs.items()):
-        csr_names_str += f"#define CSR_{name.upper()} 0x{addr:x}\n"
-        declare_csr_str += f"DECLARE_CSR({name.lower()}, CSR_{name.upper()})\n"
+        csr_names_str += f"#define CSR_{name.upper().replace(".","_")} 0x{addr:x}\n"
+        declare_csr_str += f"DECLARE_CSR({name.lower().replace(".","_")}, CSR_{name.upper().replace(".","_")})\n"
 
     causes_str = ""
     declare_cause_str = ""
