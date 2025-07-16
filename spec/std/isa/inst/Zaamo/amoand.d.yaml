@@ -10,10 +10,10 @@ long_name: Atomic fetch-and-and doubleword
 description: |
   Atomically:
 
-    * Load the doubleword at address _rs1_
-    * Write the loaded value into _rd_
-    * AND the value of register _rs2_ to the loaded value
-    * Write the result to the address in _rs1_
+    * Load the doubleword at address _xs1_
+    * Write the loaded value into _xd_
+    * AND the value of register _xs2_ to the loaded value
+    * Write the result to the address in _xs1_
 definedBy: Zaamo
 base: 64
 assembly: xd, xs2, (xs1)
@@ -24,11 +24,11 @@ encoding:
       location: 26
     - name: rl
       location: 25
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -42,9 +42,9 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1];
+  XReg virtual_address = X[xs1];
 
-  X[rd] = amo<64>(virtual_address, X[rs2], AmoOperation::And, aq, rl, $encoding);
+  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::And, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
