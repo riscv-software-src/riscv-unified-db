@@ -40,5 +40,56 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # Vector quad widening signed-unsigned dot product (vector-vector)
+  # SEW must be 32, vs2 is signed, vs1 is unsigned
+  if (SEW != 32) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  let SEW = 32;
+  let LMUL_pow = get_lmul_pow();
+  let num_elem = get_num_elem(LMUL_pow, SEW);
+
+  let 'n = num_elem;
+  let 'm = SEW;
+
+  let vm_val  : vector('n, dec, bool)     = read_vmask(num_elem, vm, 0b00000);
+  let vs1_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vs1);
+  let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vs2);
+  let vd_val  : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vd);
+  result      : vector('n, dec, bits('m)) = undefined;
+  mask        : vector('n, dec, bool)     = undefined;
+
+  (result, mask) = init_masked_result(num_elem, SEW, LMUL_pow, vd_val, vm_val);
+
+  foreach (i from 0 to (num_elem - 1)) {
+    if mask[i] then {
+      # Extract 4 8-bit elements: vs2 signed, vs1 unsigned
+      let vs2_elem0 : bits(8) = vs2_val[i][7:0];
+      let vs2_elem1 : bits(8) = vs2_val[i][15:8];
+      let vs2_elem2 : bits(8) = vs2_val[i][23:16];
+      let vs2_elem3 : bits(8) = vs2_val[i][31:24];
+
+      let vs1_elem0 : bits(8) = vs1_val[i][7:0];
+      let vs1_elem1 : bits(8) = vs1_val[i][15:8];
+      let vs1_elem2 : bits(8) = vs1_val[i][23:16];
+      let vs1_elem3 : bits(8) = vs1_val[i][31:24];
+
+      # Compute dot product: signed * unsigned
+      let dot_product : bits(32) = to_bits(32,
+        signed(vs2_elem0) * unsigned(vs1_elem0) +
+        signed(vs2_elem1) * unsigned(vs1_elem1) +
+        signed(vs2_elem2) * unsigned(vs1_elem2) +
+        signed(vs2_elem3) * unsigned(vs1_elem3)
+      );
+
+      # Accumulate into destination
+      result[i] = to_bits(32, signed(vd_val[i]) + signed(dot_product));
+    }
+  };
+
+  write_vreg(num_elem, SEW, LMUL_pow, vd, result);
+  vstart = zeros();
+  RETIRE_SUCCESS
 
 sail(): |

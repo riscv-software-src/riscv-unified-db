@@ -40,5 +40,57 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # Vector quad widening signed-unsigned dot product (vector-scalar)
+  # SEW must be 32, vs2 is signed, xs1 is unsigned
+  if (SEW != 32) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  let SEW = 32;
+  let LMUL_pow = get_lmul_pow();
+  let num_elem = get_num_elem(LMUL_pow, SEW);
+
+  let 'n = num_elem;
+  let 'm = SEW;
+
+  let vm_val  : vector('n, dec, bool)     = read_vmask(num_elem, vm, 0b00000);
+  let xs1_val : bits(MXLEN)               = X[xs1];
+  let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vs2);
+  let vd_val  : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vd);
+  result      : vector('n, dec, bits('m)) = undefined;
+  mask        : vector('n, dec, bool)     = undefined;
+
+  (result, mask) = init_masked_result(num_elem, SEW, LMUL_pow, vd_val, vm_val);
+
+  # Extract 4 8-bit unsigned elements from scalar register (lower 32 bits)
+  let xs1_elem0 : bits(8) = xs1_val[7:0];
+  let xs1_elem1 : bits(8) = xs1_val[15:8];
+  let xs1_elem2 : bits(8) = xs1_val[23:16];
+  let xs1_elem3 : bits(8) = xs1_val[31:24];
+
+  foreach (i from 0 to (num_elem - 1)) {
+    if mask[i] then {
+      # Extract 4 8-bit signed elements from vector bundle
+      let vs2_elem0 : bits(8) = vs2_val[i][7:0];
+      let vs2_elem1 : bits(8) = vs2_val[i][15:8];
+      let vs2_elem2 : bits(8) = vs2_val[i][23:16];
+      let vs2_elem3 : bits(8) = vs2_val[i][31:24];
+
+      # Compute dot product: signed * unsigned
+      let dot_product : bits(32) = to_bits(32,
+        signed(vs2_elem0) * unsigned(xs1_elem0) +
+        signed(vs2_elem1) * unsigned(xs1_elem1) +
+        signed(vs2_elem2) * unsigned(xs1_elem2) +
+        signed(vs2_elem3) * unsigned(xs1_elem3)
+      );
+
+      # Accumulate into destination
+      result[i] = to_bits(32, signed(vd_val[i]) + signed(dot_product));
+    }
+  };
+
+  write_vreg(num_elem, SEW, LMUL_pow, vd, result);
+  vstart = zeros();
+  RETIRE_SUCCESS
 
 sail(): |
