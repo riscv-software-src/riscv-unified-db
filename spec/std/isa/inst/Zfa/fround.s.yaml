@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fround.s
-long_name: Rounds single-precision float to integer
+long_name: Floating-point round single-precision float to integer
 description: |
   Rounds the single-precision floating-point number in floating-point register _fs1_ to an integer, according to the rounding mode specified in the instruction’s _rm_ field.
 
