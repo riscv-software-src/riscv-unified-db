@@ -394,10 +394,10 @@ class ConfiguredArchitecture < Architecture
   # @param name [:to_s]      The name associated with this ConfiguredArchitecture
   # @param config [AbstractConfig]   The configuration object
   # @param arch_path [Pathnam] Path to the resolved architecture directory corresponding to the configuration
-  sig { params(name: String, config: AbstractConfig, arch_path: Pathname).void }
-  def initialize(name, config, arch_path)
+  sig { params(name: String, config: AbstractConfig).void }
+  def initialize(name, config)
 
-    super(arch_path)
+    super(config.info.resolved_spec_path)
 
     @name = name.to_s.freeze
     @name_sym = @name.to_sym.freeze
@@ -481,17 +481,10 @@ class ConfiguredArchitecture < Architecture
         name: @name,
         csrs:
       )
-    overlay_path =
-      if config.arch_overlay.nil?
-        "/does/not/exist"
-      elsif File.exist?(config.arch_overlay)
-        File.realpath(T.must(config.arch_overlay))
-      else
-        "#{$root}/arch_overlay/#{config.arch_overlay}"
-      end
+    overlay_path = config.info.overlay_path
 
     custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
-    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : Udb.repo_root / "spec" / "std" / "isa" / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : config.resolved_spec_path / "isa" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
       idl_path
     )
