@@ -1,0 +1,249 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Expressing Conditions in UDB Data
+
+There are many instances where there is a conditional relation among data in UDB.
+For example:
+
+* the `Zfinx` extension is only allowed if the `F` extension is not implemented.
+* the `C` extension only implies the `Zcd` extension if the `D` extension is also implemented.
+* the `MTVEC_BASE_ALIGNMENT_DIRECT` parameter only applies when `MTVEC_MODES` indicates support for 'direct'.
+* ... and many more
+
+Conditions are consistently represented using a common subschema throughout UDB, regardless of the context that they appear.
+
+== Condition Tests
+
+There are three types of things that can be tested by a condition:
+
+* an *extension requirement*
+** For example, extension `Sm`, version `>= 1.12`
+* a *parameter requirement*
+** For example, `MXLEN` equals `32`
+* a *generic constraint*
+** For example, if `MXLEN` is `32`, then `Sv39` must not be implemented
+
+The three test types can be combined arbitrarily using <<bool_ops,boolean operators>>.
+
+[#ext_reqs]
+=== Extension Requirements
+
+An extension requirement is identified by the key `extension`.
+It expects an extension `name` and an optional `version`.
+If no `version` is given, then it defaults to all versions (`>= 0`).
+
+The `version` is a list of range specifiers, using the following operators:
+
+|===
+| op   | Meaning               | Example
+
+| `=`  | Exactly equals        | `= 1.0`
+| `>`  | Greater than          | `> 1.0`
+| `<`  | Less than             | `< 1.0`
+| `>=` | Greater than or equal | `>= 1.0`
+| `<=` | Less than or equal    | `<= 1.0`
+| '~>' | Compatible with       | `~> 1.0`
+|===
+
+The "compatible with" operator will accept any version that is greater than or equal to the target and that has not been marked as a breaking version change in the database.
+Note that RISC-V does not follow semantic versioning, so `2.0` may be compatible with `1.0` for a given extension as long as `2.0` (or any version between `1.0` and `2.0`) is not marked as a breaking version.
+
+For example:
+
+[source,yaml]
+----
+# require C, version >= 0
+extension:
+  name: C
+----
+
+[source,yaml]
+----
+# require D, version == 1.0
+extension:
+  name: D
+  version: = 1.0
+----
+
+[source,yaml]
+----
+# require D, version _compatible with_ 1.0
+extension:
+  name: D
+  version: ~> 1.0
+----
+
+[source,yaml]
+----
+# require D, version greater than or equal to 1.0 and less than 2.0
+extension:
+  name: D
+  version: [">= 1.0", "< 2.0"]
+----
+
+Extension requirements can also take logic expression of multiple requrements using the `allOf`, `anyOf`, `noneOf`, or `not` operators. See <<bool_ops,Boolean Operators>> and <<Examples>>.
+
+[#param_reqs]
+=== Parameter Requirements
+
+A parameter requirement is identified by the key `param`.
+It expects a parameter `name`, a single comparison, and a `reason` description.
+
+The comparison is one of:
+
+|===
+| Key                     | Meaning                | Example
+
+| `equal`                 | Parameter value equals                      | `equal: 5`, `equal: "string value"`
+| `not_equal`             | Parameter value is not equal to             | `not_equal: 5`, `not_equal: "string value"`
+| `less_than`             | Parameter value is less than                | `less_than`: 5
+| `greater_than`          | Parameter value is greater than             | `greater_than`: 5
+| `less_than_or_equal`    | Parameter value is less than or equal to    | `less_than`: 5
+| `greater_than_or_equal` | Parameter value is greater than or equal to | `greater_than`: 5
+| `includes`              | Array parameter includes a value            | `includes: 5`, `includes: "string value"`
+|===
+
+For example:
+
+[source,yaml]
+----
+param:
+  name: MXLEN
+  equal: 32
+  reason: Extension is only defined in RV32
+----
+
+[source,yaml]
+----
+param:
+  name: MTVEC_MODES
+  includes: 0
+  reason: Only relevant when direct mode is supported
+----
+
+Like <<Extension Requirements>>, parameter requirements can be combined aribtrarily using boolean logic operations. See <<bool_ops,Boolean Operators>> and <<Examples>>
+
+=== Generic Constraints
+
+Generic constraints provide an escape hatch when a condition is difficult to express when using <<ext_reqs,Extension Requirements>> or <<param_reqs,Parameter Requirements>>.
+A generic constraint is an IDL function containing one or more link:../idl.adoc#implications[implications].
+The constraint holds if all the implications are true.
+The constraint function does not return a value.
+
+All global functions (for example, `implemented?(...)`) and parameters are in scope for the constraint function.
+
+For example:
+
+[source,yaml]
+----
+constraint:
+  idl(): |
+    implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
+  reason:
+    `Shgatpa` mandates that or each supported virtual memory scheme SvNN supported in
+    `satp`, the corresponding `hgatp` SvNNx4 mode must be supported.
+----
+
+[source,yaml]
+----
+constraint:
+  idl(): |
+    for (U32 i = 3; i < 32; i++){
+      HPM_COUNTER_EN[i] -> HCOUNTENABLE_EN[i];
+    }
+  reason:
+    Shcounterenw requires that all non-read-only-0 counters can enabled with hcounteren.
+----
+
+[#bool_ops]
+== Boolean Operators
+
+UDB adopts the same schema used by link:https://json-schema.org[JSON Schema] for boolean logic.
+The logic can be applied either at the top level of a condition (before any `extension`, `param`, or `constraint` keys) or within a particular type.
+
+The following operators are supported:
+
+|===
+| Op       | Meaning | Example
+
+| `allOf`      | Logical AND           | `allOf: [ { name: C }, { name: D} ]`
+| `anyOf`      | Logical OR            | `anyOf: [ { name: C }, { name: D} ]`
+| `noneOf`     | Logical NOR           | `noneOf: [ { name: C }, { name: D} ]`
+| `not`        | Logical NOT           | `not: { name: C }`
+| `if`, `then` | Logical implicaiton   | `if: { name: C }, then: { name: D }`
+|===
+
+For example:
+
+[source,yaml]
+----
+extension:
+  allOf:
+    - name: C
+    - name: D
+----
+
+[source,yaml]
+----
+allOf:
+  - extension:
+      name: C
+  - param:
+      name: MXLEN
+      equal: 32
+      reason: Only applies with RV32
+----
+
+[source,yaml]
+----
+if:
+  extension:
+    name: F
+    version: ~> 2.2
+  then:
+    name: Zcf
+    version: = 1.0.0
+----
+
+== Examples
+
+The following are real examples from the database:
+
+.mstatus CSR is defined by the Sm extension
+[source,yaml]
+----
+# mstatus.yaml
+definedBy:
+  extension:
+    name: Sm
+----
+
+.C implies Zcf/d only if F/D are implemented
+[source,yaml]
+----
+# C.yaml
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    requires:
+      extension:
+        allOf:
+          - name: Zca
+            version: = 1.0.0
+          - if:
+              extension:
+                name: F
+                version: ~> 2.2
+            then:
+              name: Zcf
+              version: = 1.0.0
+          - if:
+              extension:
+                name: D
+                version: ~> 2.2
+            then:
+              name: Zcd
+              version: = 1.0.0
+----
