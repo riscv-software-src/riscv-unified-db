@@ -145,7 +145,7 @@ def main():
 
     # Load instructions filtered by extensions or all instructions
     instr_dict = load_instructions(
-        args.inst_dir, enabled_extensions, include_all, args.arch
+    args.inst_dir, args.csr_dir, enabled_extensions, include_all, args.arch
     )
     if not instr_dict:
         logging.error("No instructions found or all were filtered out.")
