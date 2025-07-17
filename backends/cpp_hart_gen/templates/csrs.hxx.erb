@@ -9,6 +9,7 @@
 #include "udb/bits.hpp"
 #include "udb/csr.hpp"
 #include "udb/cpp_exceptions.hpp"
+#include "udb/version.hpp"
 
 <%- csrs = cfg_arch.not_prohibited_csrs -%>
 
@@ -213,10 +214,20 @@ namespace udb {
     PrivilegeMode mode() const override { return PrivilegeMode::<%= csr.priv_mode %>; }
     bool writable() const override { return <%= csr.writable %>; }
 
+    bool defined() const {
+      return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_req|
+        # check that (1) the extension is implemented and (2) that the implemented version is compatible with the requirement
+        "(m_parent->m_implemented_exts.find(ExtensionName::#{ext_name}) != m_parent->m_implemented_exts.end()) \
+        && (VersionRequirement(\"#{ext_req}\"sv).satisfied_by(m_parent->m_implemented_exts.find(ExtensionName::#{ext_name})->second))"
+        } %>;
+    }
+
     void reset() override {
-      <%- fields_for_xlen.each do |field| -%>
-      m_<%= field.name %>.reset();
-      <%- end -%>
+      if(this->defined()) {
+        <%- fields_for_xlen.each do |field| -%>
+        m_<%= field.name %>.reset();
+        <%- end -%>
+      }
     }
 
     PossiblyUnknownBits<MAX_POSSIBLE_XLEN> hw_read(const Bits<8>& xlen) const override {
