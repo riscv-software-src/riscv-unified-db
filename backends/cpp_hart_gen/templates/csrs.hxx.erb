@@ -223,7 +223,7 @@ namespace udb {
     }
 
     void reset() override {
-      if(this->defined()) {
+      if(defined()) {
         <%- fields_for_xlen.each do |field| -%>
         m_<%= field.name %>.reset();
         <%- end -%>
