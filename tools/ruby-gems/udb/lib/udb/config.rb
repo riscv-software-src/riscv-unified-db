@@ -50,20 +50,15 @@ class AbstractConfig
   sig { returns(T.nilable(String)) }
   def arch_overlay = @data["arch_overlay"]
 
-  # @return [String] Absolute path to the arch_overlay
-  # @return [nil] No arch_overlay for this config
-  sig { returns(T.nilable(String)) }
+  # @return Absolute path to the arch_overlay
+  # @return No arch_overlay for this config
+  sig { returns(T.nilable(Pathname)) }
   def arch_overlay_abs
-    return nil unless @data.key?("arch_overlay")
-
-    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
-      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
-    elsif File.directory?(@data['arch_overlay'])
-      @data['arch_overlay']
-    else
-      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
-    end
+    @info.overlay_path
   end
+
+  sig { returns(Resolver::ConfigInfo) }
+  attr_reader :info
 
   sig { abstract.returns(T.nilable(Integer)) }
   def mxlen; end
@@ -84,9 +79,10 @@ class AbstractConfig
   # use AbstractConfig#create instead
   private_class_method :new
 
-  sig { params(data: T::Hash[String, T.untyped]).void }
-  def initialize(data)
+  sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+  def initialize(data, info)
     @data = data
+    @info = info
     @name = @data.fetch("name")
     @name.freeze
     @type = ConfigType.deserialize(T.cast(@data.fetch("type"), String))
@@ -120,8 +116,8 @@ class AbstractConfig
   # on the contents of cfg_file_path_or_portfolio_grp
   #
   # @return [AbstractConfig] A new AbstractConfig object
-  sig { params(cfg_file_path_or_portfolio_grp: T.any(Pathname, PortfolioGroup)).returns(AbstractConfig) }
-  def self.create(cfg_file_path_or_portfolio_grp)
+  sig { params(cfg_file_path_or_portfolio_grp: T.any(Pathname, PortfolioGroup), info: Resolver::ConfigInfo).returns(AbstractConfig) }
+  def self.create(cfg_file_path_or_portfolio_grp, info)
     if cfg_file_path_or_portfolio_grp.is_a?(Pathname)
       cfg_file_path = T.cast(cfg_file_path_or_portfolio_grp, Pathname)
       raise ArgumentError, "Cannot find #{cfg_file_path}" unless cfg_file_path.exist?
@@ -133,11 +129,11 @@ class AbstractConfig
 
       case data["type"]
       when "fully configured"
-        FullConfig.send(:new, data)
+        FullConfig.send(:new, data, info)
       when "partially configured"
-        PartialConfig.send(:new, data)
+        PartialConfig.send(:new, data, info)
       when "unconfigured"
-        UnConfig.send(:new, data)
+        UnConfig.send(:new, data, info)
       else
         raise "Unexpected type (#{data['type']}) in config"
       end
@@ -159,7 +155,7 @@ class AbstractConfig
       }
       data.fetch("params")["MXLEN"] = portfolio_grp.max_base
       freeze_data(data)
-      PartialConfig.send(:new, data)
+      PartialConfig.send(:new, data, info)
     else
       T.absurd(cfg_file_path_or_portfolio_grp)
     end
@@ -175,9 +171,9 @@ class UnConfig < AbstractConfig
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(data: T::Hash[String, T.untyped]).void }
+  sig { params(data: T::Hash[String, T.untyped], resolver: Resolver).void }
   def initialize(data)
-    super(data)
+    super(data, resolver)
 
     @param_values = {}.freeze
   end
@@ -211,9 +207,9 @@ class PartialConfig < AbstractConfig
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(data: T::Hash[String, T.untyped]).void }
-  def initialize(data)
-    super(data)
+  sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+  def initialize(data, info)
+    super(data, info)
 
     @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
@@ -285,9 +281,9 @@ class FullConfig < AbstractConfig
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(data: T::Hash[String, T.untyped]).void }
-  def initialize(data)
-    super(data)
+  sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+  def initialize(data, info)
+    super(data, info)
 
     @param_values = @data["params"]
 

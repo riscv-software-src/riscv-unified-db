@@ -201,3 +201,14 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
+  regress-xqci-doc:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run cpp unit tests
+        run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest

@@ -2061,9 +2061,9 @@ module Idl
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab)
-      return false if !lhs.const_eval?
+      return false if !lhs.const_eval?(symtab)
 
-      if idx.const_eval? && rhs.const_eval?
+      if idx.const_eval?(symtab) && rhs.const_eval?(symtab)
         true
       else
         lhs_var = symtab.get(lhs.name)
@@ -4000,14 +4000,21 @@ module Idl
 
     # @!macro type
     def type(symtab)
+      is_const = true
       total_width = expressions.reduce(0) do |sum, exp|
         e_type = exp.type(symtab)
         return BitsUnknownType if e_type.width == :unknown
 
+        is_const &&= e_type.const?
+
         sum + e_type.width
       end
 
-      Type.new(:bits, width: total_width)
+      if is_const
+        Type.new(:bits, width: total_width, qualifiers: [:const])
+      else
+        Type.new(:bits, width: total_width)
+      end
     end
 
     # @!macro value
