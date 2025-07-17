@@ -105,7 +105,7 @@ def parse_extension_requirements(extensions_spec):
 
 
 def load_instructions(
-    root_dir, enabled_extensions, include_all=False, target_arch="RV64"
+    root_dir, csr_root, enabled_extensions, include_all=False, target_arch="RV64"
 ):
     """
     Recursively walk through root_dir, load YAML files that define an instruction,
@@ -145,6 +145,36 @@ def load_instructions(
             if not name:
                 logging.error(f"Missing 'name' field in {path}")
                 continue
+
+            fields = data.get("fields", {})
+            for field_name, field_def in fields.items():
+                if "alias" in field_def:
+                    alias_path = field_def["alias"]
+                    try:
+                        alias_csr_name, alias_field_name = alias_path.split(".")
+                        alias_file_path = None
+                        for root, _, files in os.walk(csr_root):
+                            for file in files:
+                                if file == f"{alias_csr_name}.yaml":
+                                    alias_file_path = os.path.join(root, file)
+                                    break
+                            if alias_file_path:
+                                break
+                        if not alias_file_path or not os.path.exists(alias_file_path):
+                            logging.warning(f"[CSR] Alias file not found for {alias_path} in CSR {name}")
+                            continue
+                        with open(alias_file_path, encoding="utf-8") as alias_file:
+                            alias_data = yaml.safe_load(alias_file)
+                            alias_fields = alias_data.get("fields", {})
+                            alias_field_def = alias_fields.get(alias_field_name)
+                            if not alias_field_def:
+                                logging.warning(f"[CSR] Alias field {alias_field_name} not found in {alias_file_path}")
+                                continue
+                            for attr in ["description", "type()", "reset_value()"]:
+                                if attr not in field_def and attr in alias_field_def:
+                                    field_def[attr] = alias_field_def[attr]
+                    except Exception as e:
+                        logging.warning(f"[CSR] Failed to resolve alias for field '{field_name}' in CSR {name}: {e}")
 
             # If include_all is True, skip extension filtering
             if not include_all:
