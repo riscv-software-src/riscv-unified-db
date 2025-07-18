@@ -18,6 +18,7 @@ definedBy:
     - C
     - Zca
     - Zclsd
+base: 32
 assembly: xd, imm(xs1)
 encoding:
   RV32:
