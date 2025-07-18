@@ -27,8 +27,7 @@ description: |
   number of supported interrupt identities.
 fields:
   INTERRUPT_IDENTITY:
-    location_rv32: 26-16
-    location_rv64: 26-16
+    location: 26-16
     description: |
       Interrupt Identity.
       
@@ -39,8 +38,7 @@ fields:
     reset_value: 0
     definedBy: Ssaia
   PRIORITY:
-    location_rv32: 7-0
-    location_rv64: 7-0
+    location: 7-0
     description: |
       Interrupt Priority.
       
