@@ -99,8 +99,9 @@ namespace udb {
           m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
           <%- if cfg_arch.mxlen.nil? -%>
           m_xregs {
-            <%- 32.times do |i| -%>
-            { m_params.MXLEN },
+            { ValueArg(0), WidthArg(m_params.MXLEN.get())},
+            <%- 31.times do |i| -%>
+            { WidthArg(m_params.MXLEN.get()) },
             <%- end -%>
           },
           <%- end -%>

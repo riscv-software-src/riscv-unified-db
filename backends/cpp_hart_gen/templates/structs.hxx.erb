@@ -32,7 +32,7 @@ namespace udb {
         -%>
       template <class HartType>
       <%= name_of(:struct, cfg_arch, struct.name) %>(const HartType& hart)
-        : <%= runtime_members.map { |a| "#{a[0]}(#{a[1].nil? ? "__UDB_HART" : a[1].gen_cpp(cfg_arch.symtab)})" }.join(", ") %>
+        : <%= runtime_members.map { |a| "#{a[0]}(#{a[1].nil? ? "__UDB_HART" : "WidthArg(#{a[1].gen_cpp(cfg_arch.symtab)}.get())" })" }.join(", ") %>
       {
 
       }
