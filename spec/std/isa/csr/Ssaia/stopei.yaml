@@ -38,9 +38,10 @@ fields:
     reset_value: 0
     definedBy: Ssaia
     sw_write(csr_value): |
-      if (csr_value != 0) {
-        clear_imsic_interrupt(PrivilegeMode::S, csr_value);
+      if (csr_value.INTERRUPT_IDENTITY != 0) {
+        clear_imsic_interrupt(PrivilegeMode::S, csr_value.INTERRUPT_IDENTITY);
       }
+      return csr_value.INTERRUPT_IDENTITY;
   PRIORITY:
     location: 7-0
     description: |
