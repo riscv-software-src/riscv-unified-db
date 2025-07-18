@@ -47,8 +47,6 @@ fields:
     type: RW
     reset_value: 0
     definedBy: Ssaia
-sw_read(): |
-  return current_s_topei;
 sw_write(csr_value): |
   # Writing to stopei claims and clears the interrupt
   Bits<32> interrupt_id = (csr_value >> 16) & 32'h7FF;
