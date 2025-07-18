@@ -519,6 +519,40 @@ class Portfolio < TopLevelDatabaseObject
   def optional_type_ext_reqs = in_scope_ext_reqs(Presence.optional)
 
   # @param desired_presence [String, Hash, Presence]
+  # Derive extension version from ISA manual revisions
+  # @param ext_name [String] Extension name
+  # @return [String, nil] Compatible version string (e.g., "~> 2.0.0") or nil if not found
+  def derive_extension_version_from_manual(ext_name)
+    # UDB-only extensions that should not be derived from manuals
+    udb_only_extensions = ["Sm", "Smhpm", "Smpmp"].freeze
+    return nil if udb_only_extensions.include?(ext_name)
+
+    # Custom extensions (starting with X) should not be derived
+    return nil if ext_name.start_with?("X")
+
+    # Try to find the extension in the ISA manual revisions
+    unpriv_manual_revision = @data["unpriv_isa_manual_revision"]
+    priv_manual_revision = @data["priv_isa_manual_revision"]
+
+    # Look for the extension in manual versions
+    [unpriv_manual_revision, priv_manual_revision].compact.each do |manual_revision|
+      # Find manual version that matches this revision
+      @arch.manual_versions.each do |manual_version|
+        if manual_version.marketing_version == manual_revision
+          # Check if this extension is in this manual version
+          manual_version.extensions.each do |ext_version|
+            if ext_version.name == ext_name
+              # Convert exact version to compatible version range
+              return "~> #{ext_version.version_str}"
+            end
+          end
+        end
+      end
+    end
+
+    nil
+  end
+
   # @return [Array<ExtensionRequirements>] Sorted list of extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
   # If desired_presence is a String, only the presence portion of an Presence is compared.
@@ -558,16 +592,20 @@ class Portfolio < TopLevelDatabaseObject
           end
 
         if match
-          in_scope_ext_reqs <<
+          # Determine version to use
+          version_to_use =
             if ext_data.key?("version")
-              ExtensionRequirement.new(
-                ext_name, ext_data["version"], arch: @arch,
-                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+              # Use explicit version from YAML
+              ext_data["version"]
             else
-              ExtensionRequirement.new(
-                ext_name, [], arch: @arch,
-                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+              # Try to derive version from ISA manual revisions
+              derived_version = derive_extension_version_from_manual(ext_name)
+              derived_version || []  # Use empty array if no version can be derived
             end
+
+          in_scope_ext_reqs << ExtensionRequirement.new(
+            ext_name, version_to_use, arch: @arch,
+            presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
         end
       end
     end
