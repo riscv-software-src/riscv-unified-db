@@ -9,6 +9,9 @@
   "containerEnv": {
     "DEVCONTAINER_ENV": "true"
   },
+  "mounts": [
+    "source=/local/mnt/workspace/dhower/riscv-unified-db/main,target=/local/mnt/workspace/dhower/riscv-unified-db/main,type=bind,consistency=cached"
+  ],
   // vscode extensions
   "customizations": {
     "vscode": {

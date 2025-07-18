@@ -12,6 +12,7 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
+      "miDebuggerPath": "${workspaceFolder}/bin/gdb",
       "setupCommands": [
           {
               "description": "Enable pretty-printing for gdb",
@@ -21,6 +22,11 @@
           {
               "description": "Set Disassembly Flavor to Intel",
               "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set default value display to hex",
+              "text": "-gdb-set output-radix 16",
               "ignoreFailures": true
           }
       ]

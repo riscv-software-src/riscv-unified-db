@@ -362,14 +362,30 @@ namespace udb {
   template <typename T>
   struct ValueArg {
     const T value;
+
+    ValueArg() = delete;
+    ValueArg(const ValueArg&) = delete;
+
     explicit ValueArg(const T& v) : value(v) {}
     explicit ValueArg(T&& v) : value(std::move(v)) {}
+
+    operator T() const = delete;
   };
 
 
   struct WidthArg {
     const unsigned width;
+
+    WidthArg() = delete;
+    WidthArg(const WidthArg&) = delete;
+
     explicit WidthArg(const unsigned& w) : width(w) {}
+
+    template <class T>
+      requires (BitsType<T>)
+    explicit WidthArg(const T& w) : width(w.get()) {}
+
+    operator unsigned() const = delete;
   };
 
   template <typename T>
@@ -1693,26 +1709,39 @@ namespace udb {
 
     // must have a width to construct a RuntimeBits
     _RuntimeBits() = delete;
-    constexpr _RuntimeBits(const _RuntimeBits &) = default;
-    constexpr _RuntimeBits(_RuntimeBits &&) = default;
-    constexpr _RuntimeBits(unsigned width) : m_width() {}
-    constexpr _RuntimeBits(const WidthArg& arg)
+    explicit constexpr _RuntimeBits(const _RuntimeBits &) = default;
+    explicit constexpr _RuntimeBits(_RuntimeBits &&) = default;
+    explicit constexpr _RuntimeBits(unsigned width) : m_width() {}
+    explicit constexpr _RuntimeBits(const WidthArg& arg)
       : m_width(arg.width)
-    {}
+    {
+      if (m_width > MaxN) {
+        throw std::runtime_error("width is larger than MaxN");
+      }
+    }
     constexpr _RuntimeBits(
-      const std::variant<WidthArg, ValueArg<StorageType>>& arg1,
-      const std::variant<WidthArg, ValueArg<StorageType>>& arg2
+      const ValueArg<StorageType>& arg1,
+      const WidthArg& arg2
     )
-      : m_width(
-          std::holds_alternative<WidthArg>(arg1)
-            ? std::get<WidthArg>(arg1).width
-            : std::get<WidthArg>(arg2).width
-        ),
-        m_val(
-          std::holds_alternative<ValueArg<StorageType>>(arg1)
-            ? std::get<ValueArg<StorageType>>(arg1).value
-            : std::get<ValueArg<StorageType>>(arg2).value
-        )
+      : m_val(arg1.value), m_width(arg2.width)
+    {
+      if (m_width > MaxN) {
+        throw std::runtime_error("width is larger than MaxN");
+      }
+      apply_mask();
+
+      if constexpr (MaxN == InfinitePrecision && !Signed) {
+        if ((m_width == InfinitePrecision) && (m_val < 0)) {
+          throw std::runtime_error("Cannot represent a negative number in infinite precision");
+        }
+      }
+    }
+
+    constexpr _RuntimeBits(
+      const WidthArg& arg1,
+      const ValueArg<StorageType>& arg2
+    )
+      : m_val(arg2.value), m_width(arg1.width)
     {
       if (m_width > MaxN) {
         throw std::runtime_error("width is larger than MaxN");
@@ -1728,7 +1757,7 @@ namespace udb {
 
     template <template <unsigned, bool> class OtherBitsType, unsigned OtherN, bool OtherSigned>
       requires(KnownBitsType<OtherBitsType<OtherN, OtherSigned>>)
-    _RuntimeBits(const OtherBitsType<OtherN, OtherSigned> &initial_value)
+    explicit _RuntimeBits(const OtherBitsType<OtherN, OtherSigned> &initial_value)
         : m_width(initial_value.width()) {
       if constexpr (OtherN > MaxNativePrecision) {
         m_val = from_gmp<MaxN>(initial_value.get());
@@ -1942,7 +1971,7 @@ namespace udb {
       if (shamt.get() >= m_width) {
         if (m_width == 1) {
           // sign bit is the only bit, so just return it
-          return *this;
+          return _RuntimeBits(*this);
         } else {
           if (m_val >> (m_width-1)) {
             return ~_RuntimeBits(static_cast<StorageType>(0), m_width);
@@ -2289,7 +2318,7 @@ namespace udb {
     for (unsigned i = 1; i < repl.get(); i++) {
       result = result | (value << _Bits<BitsInfinitePrecision, false>(i * N));
     }
-    return result;
+    return _RuntimeBits(result);
   }
 
   template <unsigned N, bool Signed>
@@ -2975,6 +3004,7 @@ namespace udb {
     constexpr explicit _PossiblyUnknownRuntimeBits(unsigned width) : m_width(width) {}
     constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width) : m_width(width.width) {}
     constexpr explicit _PossiblyUnknownRuntimeBits(const ValueArg<StorageType> val, const WidthArg& width)  : m_val(val.value), m_width(width.width) {}
+    constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width, const ValueArg<StorageType> val)  : m_val(val.value), m_width(width.width) {}
 
     // template <std::integral T>
     // constexpr _PossiblyUnknownRuntimeBits(const T &initial_value, unsigned width)
@@ -2982,6 +3012,7 @@ namespace udb {
     //   apply_mask();
     // }
 
+    // copy from another Bits type
     template <template <unsigned, bool> class RhsBitsType, unsigned RhsN, bool RhsSigned>
       requires (BitsType<RhsBitsType<RhsN, RhsSigned>>)
     explicit _PossiblyUnknownRuntimeBits(const RhsBitsType<RhsN, RhsSigned>& other)
