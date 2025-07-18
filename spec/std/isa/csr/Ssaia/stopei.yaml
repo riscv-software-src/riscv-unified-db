@@ -30,13 +30,17 @@ fields:
     location: 26-16
     description: |
       Interrupt Identity.
-      
+
       This field contains the identity of the highest-priority pending and
       enabled external interrupt. A value of 0 indicates no interrupt is
       pending.
     type: RW
     reset_value: 0
     definedBy: Ssaia
+    sw_write(csr_value): |
+      if (csr_value != 0) {
+        clear_imsic_interrupt(PrivilegeMode::S, csr_value);
+      }
   PRIORITY:
     location: 7-0
     description: |
@@ -47,10 +51,3 @@ fields:
     type: RW
     reset_value: 0
     definedBy: Ssaia
-sw_write(csr_value): |
-  # Writing to stopei claims and clears the interrupt
-  Bits<32> interrupt_id = (csr_value >> 16) & 32'h7FF;
-  if (interrupt_id != 0) {
-    clear_imsic_interrupt(PrivilegeMode::S, interrupt_id);
-  }
-  return csr_value;
