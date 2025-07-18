@@ -243,11 +243,7 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Possibly
       <%- symtab.release -%>
     };
     auto wr_val = wr_val_fn();
-    if (wr_val == UNDEFINED_LEGAL_DETERMINISTIC) {
-      m_<%= field.name %>.makeUndefined();
-    } else {
-      m_<%= field.name %>._hw_write(wr_val);
-    }
+    m_<%= field.name %>._hw_write(wr_val);
   }
   <%- else -%>
   m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);

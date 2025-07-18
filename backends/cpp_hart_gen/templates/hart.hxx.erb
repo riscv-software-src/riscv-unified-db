@@ -99,8 +99,7 @@ namespace udb {
           m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
           <%- if cfg_arch.mxlen.nil? -%>
           m_xregs {
-            { ValueArg(0), WidthArg(m_params.MXLEN.get())},
-            <%- 31.times do |i| -%>
+            <%- 32.times do |i| -%>
             { WidthArg(m_params.MXLEN.get()) },
             <%- end -%>
           },
@@ -129,6 +128,7 @@ namespace udb {
           },
           m_implemented_exts(expand_implemented_extensions(cfg["implemented_extensions"]))
       {
+        m_xregs[0] = 0_b; // set x0
       }
 
       void reset(uint64_t reset_pc) override {
