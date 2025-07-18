@@ -18,9 +18,14 @@ Bits<MXLEN> pending_and_enabled_interrupts = 0;
 
 # AIA-specific state for IMSIC (Incoming Message-Signaled Interrupt Controller)
 # These variables track the state of external interrupts managed by the IMSIC
-Bits<32> imsic_m_interrupt_file[2048] = {0, ...};  # Machine-level interrupt file
-Bits<32> imsic_s_interrupt_file[2048] = {0, ...};  # Supervisor-level interrupt file
-Bits<32> imsic_vs_interrupt_file[2048] = {0, ...}; # Virtual supervisor-level interrupt file
+
+# IMSIC interrupt file size (number of 32-bit words)
+# This supports up to 65536 interrupt identities (2048 * 32 bits)
+const Bits<32> IMSIC_INTERRUPT_FILE_SIZE = 2048;
+
+Bits<32> imsic_m_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...};  # Machine-level interrupt file
+Bits<32> imsic_s_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...};  # Supervisor-level interrupt file
+Bits<32> imsic_vs_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...}; # Virtual supervisor-level interrupt file
 
 # Current highest priority external interrupt for each privilege level
 Bits<32> current_m_topei = 0;
@@ -59,7 +64,7 @@ external function set_imsic_interrupt {
       # Set the interrupt in the machine-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_m_interrupt_file[file_index] = imsic_m_interrupt_file[file_index] | (32'b1 << bit_index);
         update_topei_m();
       }
@@ -67,7 +72,7 @@ external function set_imsic_interrupt {
       # Set the interrupt in the supervisor-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_s_interrupt_file[file_index] = imsic_s_interrupt_file[file_index] | (32'b1 << bit_index);
         update_topei_s();
       }
@@ -75,7 +80,7 @@ external function set_imsic_interrupt {
       # Set the interrupt in the virtual supervisor-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_vs_interrupt_file[file_index] = imsic_vs_interrupt_file[file_index] | (32'b1 << bit_index);
         update_topei_vs();
       }
@@ -95,7 +100,7 @@ external function clear_imsic_interrupt {
       # Clear the interrupt in the machine-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_m_interrupt_file[file_index] = imsic_m_interrupt_file[file_index] & ~(32'b1 << bit_index);
         update_topei_m();
       }
@@ -103,7 +108,7 @@ external function clear_imsic_interrupt {
       # Clear the interrupt in the supervisor-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_s_interrupt_file[file_index] = imsic_s_interrupt_file[file_index] & ~(32'b1 << bit_index);
         update_topei_s();
       }
@@ -111,7 +116,7 @@ external function clear_imsic_interrupt {
       # Clear the interrupt in the virtual supervisor-level interrupt file
       Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
       Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
-      if (file_index < 2048) {
+      if (file_index < IMSIC_INTERRUPT_FILE_SIZE) {
         imsic_vs_interrupt_file[file_index] = imsic_vs_interrupt_file[file_index] & ~(32'b1 << bit_index);
         update_topei_vs();
       }
@@ -156,7 +161,7 @@ function update_topei_m {
     Bits<32> highest_id = 0;
 
     # Scan through interrupt files to find highest priority pending interrupt
-    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+    for (Bits<32> file_idx = 0; file_idx < IMSIC_INTERRUPT_FILE_SIZE; file_idx = file_idx + 1) {
       if (imsic_m_interrupt_file[file_idx] != 0) {
         for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
           if ((imsic_m_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
@@ -189,7 +194,7 @@ function update_topei_s {
     Bits<32> highest_id = 0;
 
     # Scan through interrupt files to find highest priority pending interrupt
-    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+    for (Bits<32> file_idx = 0; file_idx < IMSIC_INTERRUPT_FILE_SIZE; file_idx = file_idx + 1) {
       if (imsic_s_interrupt_file[file_idx] != 0) {
         for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
           if ((imsic_s_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
@@ -222,7 +227,7 @@ function update_topei_vs {
     Bits<32> highest_id = 0;
 
     # Scan through interrupt files to find highest priority pending interrupt
-    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+    for (Bits<32> file_idx = 0; file_idx < IMSIC_INTERRUPT_FILE_SIZE; file_idx = file_idx + 1) {
       if (imsic_vs_interrupt_file[file_idx] != 0) {
         for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
           if ((imsic_vs_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
