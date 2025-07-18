@@ -1,0 +1,61 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvip
+long_name: Machine Virtual Interrupt Pending
+address: 0x309
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy: Smaia
+description: |
+  The `mvip` register indicates which virtual interrupts are pending in M-mode.
+  This register shows the current state of virtual interrupt requests.
+  
+  The `mvip` register is a WARL register. Bits corresponding to unimplemented
+  virtual interrupts are hardwired to zero.
+  
+  A virtual interrupt is pending when the corresponding bit in `mvip` is set.
+  The interrupt will be taken if it is also enabled in `mvien` and not masked
+  by global interrupt enables.
+fields:
+  VSSIP:
+    location: 2
+    description: |
+      Virtual Supervisor Software Interrupt Pending.
+      
+      When set, indicates a virtual supervisor software interrupt is pending.
+    type: RW
+    reset_value: 0
+    definedBy: Smaia
+  VSTIP:
+    location: 6
+    description: |
+      Virtual Supervisor Timer Interrupt Pending.
+      
+      When set, indicates a virtual supervisor timer interrupt is pending.
+    type: RW
+    reset_value: 0
+    definedBy: Smaia
+  VSEIP:
+    location: 10
+    description: |
+      Virtual Supervisor External Interrupt Pending.
+      
+      When set, indicates a virtual supervisor external interrupt is pending.
+    type: RW
+    reset_value: 0
+    definedBy: Smaia
+  SGEIP:
+    location: 12
+    description: |
+      Supervisor Guest External Interrupt Pending.
+      
+      When set, indicates a supervisor guest external interrupt is pending.
+    type: RW
+    reset_value: 0
+    definedBy: Smaia
