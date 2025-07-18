@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sieh
+long_name: Supervisor Interrupt Enable High
+address: 0x114
+writable: true
+priv_mode: S
+length: 32
+definedBy: Ssaia
+description: |
+  The `sieh` register is the high-order 32 bits of the supervisor interrupt
+  enable register for RV32 systems. For RV64 systems, this register provides
+  access to interrupt enable bits 63-32.
+  
+  This register extends the interrupt enable capabilities beyond the standard
+  `sie` register to support additional interrupt sources introduced by the
+  Advanced Interrupt Architecture.
+  
+  The `sieh` register is a WARL register. Bits corresponding to unimplemented
+  interrupt sources are hardwired to zero.
+fields:
+  RESERVED_63_32:
+    location: 31-0
+    description: |
+      Reserved interrupt enable bits 63-32.
+      
+      These bits are reserved for future interrupt sources or implementation-
+      specific interrupt enables. The behavior of these bits is implementation-
+      defined and may be hardwired to zero.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia

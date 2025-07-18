@@ -16,6 +16,17 @@ Boolean pending_vsmode_timer_interrupt = false;
 # updated by calls to refresh_pending_interrupts()
 Bits<MXLEN> pending_and_enabled_interrupts = 0;
 
+# AIA-specific state for IMSIC (Incoming Message-Signaled Interrupt Controller)
+# These variables track the state of external interrupts managed by the IMSIC
+Bits<32> imsic_m_interrupt_file[2048] = {0, ...};  # Machine-level interrupt file
+Bits<32> imsic_s_interrupt_file[2048] = {0, ...};  # Supervisor-level interrupt file
+Bits<32> imsic_vs_interrupt_file[2048] = {0, ...}; # Virtual supervisor-level interrupt file
+
+# Current highest priority external interrupt for each privilege level
+Bits<32> current_m_topei = 0;
+Bits<32> current_s_topei = 0;
+Bits<32> current_vs_topei = 0;
+
 external function set_external_interrupt {
   arguments PrivilegeMode target_mode
   description {
@@ -31,6 +42,79 @@ external function set_external_interrupt {
       CSR[mip].VSEIP = 1'b1;
     } else {
       assert(false, "Invalid target_mode");
+    }
+
+    refresh_pending_interrupts();
+  }
+}
+
+# AIA-specific functions for IMSIC support
+external function set_imsic_interrupt {
+  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
+  description {
+    Set an IMSIC interrupt with the given interrupt_id targeting target_mode
+  }
+  body {
+    if (implemented?(ExtensionName::Smaia) && (target_mode == PrivilegeMode::M)) {
+      # Set the interrupt in the machine-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_m_interrupt_file[file_index] = imsic_m_interrupt_file[file_index] | (32'b1 << bit_index);
+        update_topei_m();
+      }
+    } else if (implemented?(ExtensionName::Ssaia) && (target_mode == PrivilegeMode::S)) {
+      # Set the interrupt in the supervisor-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_s_interrupt_file[file_index] = imsic_s_interrupt_file[file_index] | (32'b1 << bit_index);
+        update_topei_s();
+      }
+    } else if (implemented?(ExtensionName::Ssaia) && (target_mode == PrivilegeMode::VS)) {
+      # Set the interrupt in the virtual supervisor-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_vs_interrupt_file[file_index] = imsic_vs_interrupt_file[file_index] | (32'b1 << bit_index);
+        update_topei_vs();
+      }
+    }
+
+    refresh_pending_interrupts();
+  }
+}
+
+external function clear_imsic_interrupt {
+  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
+  description {
+    Clear an IMSIC interrupt with the given interrupt_id targeting target_mode
+  }
+  body {
+    if (implemented?(ExtensionName::Smaia) && (target_mode == PrivilegeMode::M)) {
+      # Clear the interrupt in the machine-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_m_interrupt_file[file_index] = imsic_m_interrupt_file[file_index] & ~(32'b1 << bit_index);
+        update_topei_m();
+      }
+    } else if (implemented?(ExtensionName::Ssaia) && (target_mode == PrivilegeMode::S)) {
+      # Clear the interrupt in the supervisor-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_s_interrupt_file[file_index] = imsic_s_interrupt_file[file_index] & ~(32'b1 << bit_index);
+        update_topei_s();
+      }
+    } else if (implemented?(ExtensionName::Ssaia) && (target_mode == PrivilegeMode::VS)) {
+      # Clear the interrupt in the virtual supervisor-level interrupt file
+      Bits<32> file_index = interrupt_id >> 5;  # Divide by 32
+      Bits<32> bit_index = interrupt_id & 32'h1F;  # Modulo 32
+      if (file_index < 2048) {
+        imsic_vs_interrupt_file[file_index] = imsic_vs_interrupt_file[file_index] & ~(32'b1 << bit_index);
+        update_topei_vs();
+      }
     }
 
     refresh_pending_interrupts();
@@ -55,6 +139,106 @@ external function clear_external_interrupt {
     }
 
     refresh_pending_interrupts();
+  }
+}
+
+# Helper functions to update TOPEI registers
+function update_topei_m {
+  description {
+    Update the machine-level TOPEI register with the highest priority pending interrupt
+  }
+  body {
+    if (!implemented?(ExtensionName::Smaia)) {
+      return;
+    }
+
+    Bits<32> highest_priority = 0;
+    Bits<32> highest_id = 0;
+
+    # Scan through interrupt files to find highest priority pending interrupt
+    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+      if (imsic_m_interrupt_file[file_idx] != 0) {
+        for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
+          if ((imsic_m_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
+            Bits<32> interrupt_id = (file_idx << 5) | bit_idx;
+            # Priority is typically the interrupt ID itself (implementation-defined)
+            if (interrupt_id > highest_id) {
+              highest_id = interrupt_id;
+              highest_priority = interrupt_id;  # Simplified priority scheme
+            }
+          }
+        }
+      }
+    }
+
+    # Update the current TOPEI value
+    current_m_topei = (highest_priority << 16) | (highest_priority & 32'hFF);
+  }
+}
+
+function update_topei_s {
+  description {
+    Update the supervisor-level TOPEI register with the highest priority pending interrupt
+  }
+  body {
+    if (!implemented?(ExtensionName::Ssaia)) {
+      return;
+    }
+
+    Bits<32> highest_priority = 0;
+    Bits<32> highest_id = 0;
+
+    # Scan through interrupt files to find highest priority pending interrupt
+    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+      if (imsic_s_interrupt_file[file_idx] != 0) {
+        for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
+          if ((imsic_s_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
+            Bits<32> interrupt_id = (file_idx << 5) | bit_idx;
+            # Priority is typically the interrupt ID itself (implementation-defined)
+            if (interrupt_id > highest_id) {
+              highest_id = interrupt_id;
+              highest_priority = interrupt_id;  # Simplified priority scheme
+            }
+          }
+        }
+      }
+    }
+
+    # Update the current TOPEI value
+    current_s_topei = (highest_priority << 16) | (highest_priority & 32'hFF);
+  }
+}
+
+function update_topei_vs {
+  description {
+    Update the virtual supervisor-level TOPEI register with the highest priority pending interrupt
+  }
+  body {
+    if (!implemented?(ExtensionName::Ssaia)) {
+      return;
+    }
+
+    Bits<32> highest_priority = 0;
+    Bits<32> highest_id = 0;
+
+    # Scan through interrupt files to find highest priority pending interrupt
+    for (Bits<32> file_idx = 0; file_idx < 2048; file_idx = file_idx + 1) {
+      if (imsic_vs_interrupt_file[file_idx] != 0) {
+        for (Bits<32> bit_idx = 0; bit_idx < 32; bit_idx = bit_idx + 1) {
+          if ((imsic_vs_interrupt_file[file_idx] & (32'b1 << bit_idx)) != 0) {
+            Bits<32> interrupt_id = (file_idx << 5) | bit_idx;
+            # Priority is typically the interrupt ID itself (implementation-defined)
+            if (interrupt_id > highest_id) {
+              highest_id = interrupt_id;
+              highest_priority = interrupt_id;  # Simplified priority scheme
+            }
+          }
+        }
+      }
+    }
+
+    # Update the current TOPEI value
+    current_vs_topei = (highest_priority << 16) | (highest_priority & 32'hFF);
   }
 }
 
@@ -163,6 +347,12 @@ function refresh_pending_interrupts {
   body {
     # by using sw_read, we'll get, e.g., the combined value of mip.SEIP
     Bits<MXLEN> pending_ints = CSR[mip].sw_read() & $bits(CSR[mie]);
+
+    # Add AIA virtual interrupts if implemented
+    if (implemented?(ExtensionName::Smaia)) {
+      pending_ints = pending_ints | (CSR[mvip].sw_read() & CSR[mvien].sw_read());
+    }
+
     if (pending_ints == 0) {
       # there are no pending interrupts
       pending_and_enabled_interrupts = 0;

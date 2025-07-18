@@ -1,0 +1,66 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopi
+long_name: Supervisor Top Interrupt
+address: 0x15B
+writable: true
+priv_mode: S
+length: SXLEN
+definedBy: Ssaia
+description: |
+  The `stopi` register provides information about the highest-priority
+  interrupt (both local and external) that is currently enabled and pending
+  for S-mode.
+  
+  This register extends beyond external interrupts to include all interrupt
+  sources, providing a unified view of the highest-priority pending interrupt.
+  
+  Reading this register returns the interrupt identity and priority of the
+  highest-priority pending and enabled interrupt. The register can be used
+  to efficiently determine which interrupt should be serviced next.
+  
+  The format of this register includes both the interrupt identity and
+  priority information.
+fields:
+  INTERRUPT_IDENTITY:
+    location_rv32: 26-16
+    location_rv64: 26-16
+    description: |
+      Interrupt Identity.
+      
+      This field contains the identity of the highest-priority pending and
+      enabled interrupt. A value of 0 indicates no interrupt is pending.
+      
+      The encoding includes both local interrupts (software, timer) and
+      external interrupts from the IMSIC.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia
+  PRIORITY:
+    location_rv32: 7-0
+    location_rv64: 7-0
+    description: |
+      Interrupt Priority.
+      
+      This field contains the priority level of the highest-priority pending
+      and enabled interrupt. Higher numerical values indicate higher priority.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia
+sw_read(): |
+  # stopi includes both local and external interrupts
+  # For now, return the external interrupt info (same as stopei)
+  # A full implementation would prioritize between local and external
+  return current_s_topei;
+sw_write(csr_value): |
+  # Writing to stopi claims and clears the interrupt
+  Bits<32> interrupt_id = (csr_value >> 16) & 32'h7FF;
+  if (interrupt_id != 0) {
+    clear_imsic_interrupt(PrivilegeMode::S, interrupt_id);
+  }
+  return csr_value;

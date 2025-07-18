@@ -1,0 +1,60 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopei
+long_name: Supervisor Top External Interrupt
+address: 0x15C
+writable: true
+priv_mode: S
+length: SXLEN
+definedBy: Ssaia
+description: |
+  The `stopei` register provides information about the highest-priority
+  external interrupt that is currently enabled and pending for S-mode.
+  
+  This register is used in conjunction with the IMSIC (Incoming Message-Signaled
+  Interrupt Controller) to efficiently handle external interrupts in supervisor mode.
+  
+  Reading this register returns the interrupt identity of the highest-priority
+  pending and enabled external interrupt. Writing to this register can be used
+  to claim and clear the interrupt.
+  
+  The format of this register depends on the IMSIC implementation and the
+  number of supported interrupt identities.
+fields:
+  INTERRUPT_IDENTITY:
+    location_rv32: 26-16
+    location_rv64: 26-16
+    description: |
+      Interrupt Identity.
+      
+      This field contains the identity of the highest-priority pending and
+      enabled external interrupt. A value of 0 indicates no interrupt is
+      pending.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia
+  PRIORITY:
+    location_rv32: 7-0
+    location_rv64: 7-0
+    description: |
+      Interrupt Priority.
+      
+      This field contains the priority level of the highest-priority pending
+      and enabled external interrupt.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia
+sw_read(): |
+  return current_s_topei;
+sw_write(csr_value): |
+  # Writing to stopei claims and clears the interrupt
+  Bits<32> interrupt_id = (csr_value >> 16) & 32'h7FF;
+  if (interrupt_id != 0) {
+    clear_imsic_interrupt(PrivilegeMode::S, interrupt_id);
+  }
+  return csr_value;
