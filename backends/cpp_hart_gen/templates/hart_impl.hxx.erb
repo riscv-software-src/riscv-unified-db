@@ -24,12 +24,12 @@ namespace udb {
     if constexpr (sizeof(XReg) == 8) {
       fmt::print(out, "PC: {:#18x}\n", m_pc);
       for (int i=0; i<16; i++) {
-        fmt::print(out, "x{:2}: {:#18x}\tx{:2}: {:#18x}\n", i, m_xregs[i], i + 16, m_xregs[16 + 1]);
+        fmt::print(out, "x{:2}: {:#18x}\tx{:2}: {:#18x}\n", i, _xreg(i), i + 16, _xreg(16 + 1));
       }
     } else if constexpr (sizeof(XReg) == 4) {
       fmt::print(out, "PC: {:#10x}\n", m_pc);
       for (int i=0; i<16; i++) {
-        fmt::print(out, "x{:2}: {:#10x}\tx{:2}: {:#10x}\n", i, m_xregs[i], i + 16, m_xregs[16 + 1]);
+        fmt::print(out, "x{:2}: {:#10x}\tx{:2}: {:#10x}\n", i, _xreg(i), i + 16, _xreg(16 + 1));
       }
     } else {
       udb_assert(false, "unsupported xlen");
@@ -176,7 +176,7 @@ namespace udb {
 
           fmt::print("PC {:x} {}\n", m_pc, inst->disassemble());
           for (auto r : inst->srcRegs()) {
-            fmt::print("R {} {:x}\n", r.to_string(), m_xregs[r.get_num()]);
+            fmt::print("R {} {:x}\n", r.to_string(), _xreg(r.get_num()));
           }
 
           // set the fall-through next pc
@@ -185,7 +185,7 @@ namespace udb {
           inst->execute();
 
           for (auto r : inst->dstRegs()) {
-            fmt::print("R= {} {:x}\n", r.to_string(), m_xregs[r.get_num()]);
+            fmt::print("R= {} {:x}\n", r.to_string(), _xreg(r.get_num()));
           }
 
           if (this->m_exit_requested) {

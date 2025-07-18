@@ -366,6 +366,7 @@ namespace udb {
     explicit ValueArg(T&& v) : value(std::move(v)) {}
   };
 
+
   struct WidthArg {
     const unsigned width;
     explicit WidthArg(const unsigned& w) : width(w) {}
@@ -2972,6 +2973,8 @@ namespace udb {
     constexpr _PossiblyUnknownRuntimeBits(_PossiblyUnknownRuntimeBits&&) = default;
 
     constexpr explicit _PossiblyUnknownRuntimeBits(unsigned width) : m_width(width) {}
+    constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width) : m_width(width.width) {}
+    constexpr explicit _PossiblyUnknownRuntimeBits(const ValueArg<StorageType> val, const WidthArg& width)  : m_val(val.value), m_width(width.width) {}
 
     // template <std::integral T>
     // constexpr _PossiblyUnknownRuntimeBits(const T &initial_value, unsigned width)
