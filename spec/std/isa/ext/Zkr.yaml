@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Qualcomm Technologies, Inc.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/ext_schema.json
@@ -6,12 +6,64 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zkr
-long_name: Entropy Source
+long_name: Entropy Source Extension
 description: |
-  Defines the `seed` CSR.
-  This CSR provides up to 16 physical entropy bits that can be used to seed cryptographic random bit generators.
+  The Zkr extension defines the `seed` CSR, which provides physical entropy directly to software.
+  This register is useful for cryptographic applications and random number generation.
+  It is a read-only, WARL register visible to unprivileged software.
+
 type: unprivileged
+
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+
+csrs:
+  - name: seed
+    long_name: Physical Entropy Seed Register
+    address: 0x015
+    priv_mode: U
+    length: XLEN
+    definedBy: Zkr
+    description:
+      - id: csr-seed-purpose
+        normative: true
+        text: |
+          The `seed` register provides access to up to 16 bits of physical entropy. It is intended to be used
+          by cryptographic algorithms or system-level entropy collection mechanisms to seed deterministic
+          random bit generators (DRBGs) or perform other security functions.
+      - id: csr-seed-behavior
+        normative: false
+        text: |
+          The value returned by `seed` may vary across reads, or remain constant if no new entropy is available.
+          Implementations may return zero if no entropy is currently ready, or return an implementation-defined value.
+    fields:
+      SEED:
+        location_rv64: 63-0
+        location_rv32: 31-0
+        description: |
+          Contains the entropy bits. The least significant 16 bits are valid entropy data, while the remaining
+          bits are reserved or undefined.
+        type(): return CsrFieldType::RO;
+        reset_value: UNDEFINED
+        sw_write(_): raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    sw_read(): |
+      if (!implemented?(ExtensionName::Zkr)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      return entropy_device.read() & 0xffff;
+
+params:
+  ZKR_SEED_WIDTH:
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 16
+    description: |
+      Defines the number of valid entropy bits returned in the `seed` CSR. Must be ≤ 16.
+  ZKR_READ_SIDE_EFFECTS:
+    schema:
+      type: boolean
+    description: |
+      If true, reading the `seed` CSR consumes entropy and may affect future read values (e.g., advancing a ring buffer).
