@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc.
+# Copyright (c) Anirudh Narang
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -12,6 +12,7 @@ type: unprivileged
 priv_mode: U
 length: XLEN
 definedBy: Zkr
+
 description:
   - id: csr-seed-purpose
     normative: true
@@ -25,23 +26,34 @@ description:
       The entropy value returned by `seed` may change between reads. Some implementations may repeat values,
       return zero if entropy is not available, or exhibit other implementation-defined behavior.
       The returned value must never cause traps or undefined instruction behavior.
-      Only bits [15:0] are guaranteed to contain valid entropy.
+      Only bits [15:0] are guaranteed to contain valid entropy. Bits [31:30] may indicate entropy status.
 
 fields:
   SEED:
     location_rv64: 63-0
     location_rv32: 31-0
     description: |
-      Contains the physical entropy bits. Bits [15:0] are valid entropy; upper bits are zero or undefined.
-      This field is read-only. Reading it may consume entropy.
-    type(): return CsrFieldType::RO;
-    reset_value: UNDEFINED_LEGAL
-    sw_write(_): raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      Contains the physical entropy bits. Bits [15:0] are valid entropy. Bits [31:30] may indicate entropy availability state.
+      Upper bits are reserved or undefined. This field may be read/write with hardware update (RW-H), but writes are ignored.
+    type: RW-H
+    reset_value: UNDEFINED
+    sw_write(_): |
+      # Check permission via mseccfg.USEED or mseccfg.SSEED (implementation-defined)
+      if (!has_seed_write_permission(mode())) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      # Ignore all written values (read-only from software perspective)
 
 sw_read(): |
-  if (!implemented?(ExtensionName::Zkr)) {
+  # Check access permission via mseccfg.USEED or mseccfg.SSEED
+  if (!has_seed_read_permission(mode())) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  # Provide only the entropy bits in [15:0], rest are zero/undefined
-  return entropy_device.read() & ((1 << ZKR_SEED_WIDTH) - 1);
+  # Optionally: disallow CSRRS/CSRRC reads
+  if (is_read_modify_write_encoding($encoding)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  # Return entropy value; get_random() is assumed to be a defined IDL function
+  return get_random() & ((1 << ZKR_SEED_WIDTH) - 1);
