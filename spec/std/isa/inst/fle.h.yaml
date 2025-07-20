@@ -1,0 +1,17 @@
+$schema: inst_schema.json#
+kind: instruction
+name: fle.h
+long_name: Floating-point Less or Equal Compare Half-Precision
+isa: zhinx
+encoding:
+  match: 0xa0000053
+  mask: 0xfe00707f
+  funct7: 0x50
+  funct3: 0x0
+  rs1: x
+  rs2: x
+  rd: x
+  fmt: H
+  rm: 0
+description: |
+  Compares two half-precision floats to check if rs1 ≤ rs2 using x registers.

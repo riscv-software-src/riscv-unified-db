@@ -1,0 +1,16 @@
+$schema: inst_schema.json#
+kind: instruction
+name: fsqrt.h
+long_name: Floating-point Square Root Half-Precision
+isa: zhinx
+encoding:
+  match: 0x58000053
+  mask: 0xfff0007f
+  funct7: 0x2c
+  funct3: 0x0
+  rs1: x
+  rd: x
+  fmt: H
+  rs2: 0
+description: |
+  Computes the square root of a half-precision float using integer x registers.

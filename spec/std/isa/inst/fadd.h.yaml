@@ -1,0 +1,17 @@
+$schema: inst_schema.json#
+kind: instruction
+name: fadd.h
+long_name: Floating-point Add Half-Precision
+isa: zhinx
+encoding:
+  match: 0x53
+  mask: 0xfe00007f
+  funct7: 0x00
+  funct3: 0x0
+  rs1: x
+  rs2: x
+  rd: x
+  fmt: H
+description: |
+  Performs half-precision floating-point addition using integer x registers.
+  Equivalent to FADD.H from Zfh, but using x registers instead of f.
