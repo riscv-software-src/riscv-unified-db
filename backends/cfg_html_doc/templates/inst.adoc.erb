@@ -42,21 +42,48 @@ RV64::
 <%= inst.description %>
 
 == Access
-<%- if cfg_arch.ext?(:H) -%>
-[cols="^,^,^,^,^"]
-<%- else -%>
-[cols="^,^,^"]
-<%- end -%>
-|===
-| M | <%- if cfg_arch.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if cfg_arch.ext?(:H) -%> | VS | VU <%- end -%>
+<%-
+  # Determine which privilege modes to display based on implemented extensions
+  modes = ["M"]  # M-mode is always present
+  mode_headers = ["M"]
+  mode_values = ["[.access-always]#Always#"]
 
-| [.access-always]#Always#
-| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
-| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if cfg_arch.ext?(:H) %>
-| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
-| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
-<% end %>
+  # Add S-mode if S extension is implemented
+  if cfg_arch.ext?(:S)
+    if cfg_arch.ext?(:H)
+      modes << "HS"
+      mode_headers << "HS"
+    else
+      modes << "S"
+      mode_headers << "S"
+    end
+    mode_values << "[.access-#{inst.access['s']}]##{inst.access['s'].capitalize}#"
+  end
+
+  # Add U-mode if U extension is implemented
+  if cfg_arch.ext?(:U)
+    modes << "U"
+    mode_headers << "U"
+    mode_values << "[.access-#{inst.access['u']}]##{inst.access['u'].capitalize}#"
+  end
+
+  # Add virtual modes if H extension is implemented
+  if cfg_arch.ext?(:H)
+    modes << "VS" << "VU"
+    mode_headers << "VS" << "VU"
+    mode_values << "[.access-#{inst.access['vs']}]##{inst.access['vs'].capitalize}#"
+    mode_values << "[.access-#{inst.access['vu']}]##{inst.access['vu'].capitalize}#"
+  end
+
+  # Generate column specification
+  col_spec = "^," * modes.size
+  col_spec = col_spec.chomp(",")
+-%>
+[cols="<%= col_spec %>"]
+|===
+| <%= mode_headers.join(" | ") %>
+
+| <%= mode_values.join("\n| ") %>
 |===
 
 <%- if inst.access_detail? -%>

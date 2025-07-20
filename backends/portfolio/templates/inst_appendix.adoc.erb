@@ -47,21 +47,53 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>
-[cols="^,^,^,^,^"]
-<% else -%>
-[cols="^,^,^"]
-<% end -%>
-|===
-| M | <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+<%-
+  # Determine which privilege modes to display based on in-scope extensions
+  modes = ["M"]  # M-mode is always present
+  mode_headers = ["M"]
+  mode_values = ["[.access-always]#Always#"]
 
-| [.access-always]#Always#
-| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
-| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } %>
-| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
-| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
-<% end %>
+  # Check for S extension
+  has_s_ext = portfolio_design.in_scope_extensions.any? { |e| e.name == "S" }
+  has_h_ext = portfolio_design.in_scope_extensions.any? { |e| e.name == "H" }
+  has_u_ext = portfolio_design.in_scope_extensions.any? { |e| e.name == "U" }
+
+  # Add S-mode if S extension is in scope
+  if has_s_ext
+    if has_h_ext
+      modes << "HS"
+      mode_headers << "HS"
+    else
+      modes << "S"
+      mode_headers << "S"
+    end
+    mode_values << "[.access-#{inst.access['s']}]##{inst.access['s'].capitalize}#"
+  end
+
+  # Add U-mode if U extension is in scope
+  if has_u_ext
+    modes << "U"
+    mode_headers << "U"
+    mode_values << "[.access-#{inst.access['u']}]##{inst.access['u'].capitalize}#"
+  end
+
+  # Add virtual modes if H extension is in scope
+  if has_h_ext
+    modes << "VS" << "VU"
+    mode_headers << "VS" << "VU"
+    mode_values << "[.access-#{inst.access['vs']}]##{inst.access['vs'].capitalize}#"
+    mode_values << "[.access-#{inst.access['vu']}]##{inst.access['vu'].capitalize}#"
+  end
+
+  # Generate column specification
+  col_spec = "^," * modes.size
+  col_spec = col_spec.chomp(",")
+-%>
+[cols="<%= col_spec %>"]
+|===
+| <%= mode_headers.join(" | ") %>
+
+| <%= mode_values.join("\n| ") %>
 |===
 
 <% if inst.access_detail? -%>
