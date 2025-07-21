@@ -1,12 +1,12 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
 name: Zaamo
-long_name: Load-acquire/Store-release atomic instructions
+long_name: Atomic Memory Operations
 type: unprivileged
 versions:
   - version: "1.0.0"
@@ -114,6 +114,26 @@ description: |
           amoswap.w.rl x0, x0, (a0) # Release lock by storing 0.
 
   [NOTE]
+  ====
+  We recommend the use of the AMO Swap idiom shown above for both lock
+  acquire and release to simplify the implementation of speculative lock
+  elision. cite:[Rajwar:2001:SLE]
+  ====
+
+  [NOTE]
+  ====
+  The instructions in the `A` extension can be used to provide sequentially
+  consistent loads and stores, but this constrains hardware
+  reordering of memory accesses more than necessary.
+  A C++ sequentially consistent load can be implemented as
+  an LR with _aq_ set. However, the LR/SC eventual
+  success guarantee may slow down concurrent loads from the same effective
+  address. A sequentially consistent store can be implemented as an AMOSWAP
+  that writes the old value to `x0` and has _rl_ set. However the superfluous
+  load may impose ordering constraints that are unnecessary for this use case.
+  Specific compilation conventions may require both the _aq_ and _rl_
+  bits to be set in either or both the LR and AMOSWAP instructions.
+  ====
   ====
   We recommend the use of the AMO Swap idiom shown above for both lock
   acquire and release to simplify the implementation of speculative lock

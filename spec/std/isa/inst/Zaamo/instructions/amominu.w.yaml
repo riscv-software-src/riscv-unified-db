@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amominuN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: amominu.w
+long_name: Atomic MIN unsigned word
+description: |
+  Atomically:
+
+    * Load the word at address _xs1_
+    * Write the sign-extended value into _xd_
+    * Unsigned compare the least-significant word of register _xs2_ to the loaded word, and select the minimum value
+    * Write the minimum to the address in _xs1_
+definedBy: Zaamo
+assembly: xd, xs2, (xs1)
+encoding:
+  match: 11000------------010-----0101111
+  variables:
+    - name: aq
+      location: 26
+    - name: rl
+      location: 25
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg virtual_address = X[xs1];
+  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::MinU, aq, rl, $encoding);
+
+# ...existing sail() implementation...
