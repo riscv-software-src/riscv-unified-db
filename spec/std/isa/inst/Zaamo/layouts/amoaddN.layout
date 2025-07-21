@@ -1,23 +1,35 @@
+<%# This is an ERB template that generates AMO add instruction variants %>
+<%# Variables: size = "w" or "d", match_bits, mask_bits %>
+<%
+  size = @size || "w"
+  bit_size = size == "w" ? 32 : 64
+  encoding_suffix = size == "w" ? "010" : "011"
+%>
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+<%- raise "'size' must be defined as 'w' or 'd'" if size.nil? -%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amomaxu.w
-long_name: Atomic MAX unsigned word
+name: amoadd.<%= size %>
+long_name: Atomic fetch-and-add <%= size == "w" ? "word" : "doubleword" %>
 description: |
   Atomically:
 
-    * Load the word at address _xs1_
-    * Write the sign-extended value into _xd_
-    * Unsigned compare the least-significant word of register _xs2_ to the loaded value, and select the maximum value
-    * Write the maximum to the address in _xs1_
+    * Load the <%= size == "w" ? "word" : "doubleword" %> at address _xs1_
+    * Write the <%= size == "w" ? "sign-extended value" : "loaded value" %> into _xd_
+    * Add the <%= size == "w" ? "least-significant word of register" : "value of register" %> _xs2_ to the loaded value
+    * Write the <%= size == "w" ? "sum" : "result" %> to the address in _xs1_
 definedBy: Zaamo
+<%- if size == "d" -%>
+base: 64
+<%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 11100------------010-----0101111
+  match: 00000------------<%= size == "w" ? "010" : "011" %>-----0101111
   variables:
     - name: aq
       location: 26
@@ -43,7 +55,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
 
-  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Maxu, aq, rl, $encoding);
+  X[xd] = amo<<%= size == "w" ? "32" : "64" %>>(virtual_address, X[xs2]<%= size == "w" ? "[31:0]" : "" %>, AmoOperation::Add, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

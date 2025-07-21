@@ -1,0 +1,50 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+<%- raise "'size' must be defined as 'w' or 'd'" if size.nil? -%>
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: amoand.<%= size %>
+long_name: Atomic fetch-and-and <%= size == "w" ? "word" : "doubleword" %>
+description: |
+  Atomically:
+
+    * Load the <%= size == "w" ? "word" : "doubleword" %> at address _xs1_
+    * Write the <%= size == "w" ? "sign-extended value" : "loaded value" %> into _xd_
+    * AND the <%= size == "w" ? "least-significant word of register" : "value of register" %> _xs2_ to the loaded value
+    * Write the result to the address in _xs1_
+definedBy: Zaamo
+<%- if size == "d" -%>
+base: 64
+<%- end -%>
+assembly: xd, xs2, (xs1)
+encoding:
+  match: 01100------------<%= size == "w" ? "010" : "011" %>-----0101111
+  variables:
+    - name: aq
+      location: 26
+    - name: rl
+      location: 25
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg virtual_address = X[xs1];
+  X[xd] = amo<<%= size == "w" ? "32" : "64" %>>(virtual_address, X[xs2]<%= size == "w" ? "[31:0]" : "" %>, AmoOperation::And, aq, rl, $encoding);
+
+# ...existing sail() implementation...

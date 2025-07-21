@@ -5,6 +5,9 @@ require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
 extend T::Sig
 
+require 'pathname'
+require 'erb'
+
 Encoding.default_external = "UTF-8"
 
 $jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
@@ -15,6 +18,9 @@ require "etc"
 
 $root = Pathname.new(__dir__).realpath
 $lib = $root / "lib"
+
+# Add lib directory to load path
+$LOAD_PATH.unshift($lib) unless $LOAD_PATH.include?($lib)
 
 require "udb/resolver"
 $resolver = Udb::Resolver.new($root)
@@ -356,6 +362,20 @@ file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+# AMO instruction generation from layouts
+%w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+  ["w", "d"].each do |size|
+    file "#{$resolver.std_path}/inst/Zaamo/instructions/#{op}.#{size}.yaml" => [
+      "#{$resolver.std_path}/inst/Zaamo/layouts/#{op}N.layout",
+      __FILE__
+    ] do |t|
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/layouts/#{op}N.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zaamo/layouts/#{op}N.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+    end
+  end
+end
+
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
@@ -381,6 +401,13 @@ namespace :gen do
 
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+    end
+
+    # Generate AMO instructions
+    %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+      ["w", "d"].each do |size|
+        Rake::Task["#{$resolver.std_path}/inst/Zaamo/instructions/#{op}.#{size}.yaml"].invoke
+      end
     end
   end
 end
@@ -535,6 +562,22 @@ task "MockProcessorCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MockCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
 task "MockProcessorCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
+task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
+task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
+task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
+task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"
+task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
+task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
+task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
+task "AC100-CRD": "#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"
+task "AC200-CRD": "#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"
+task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
+task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
+task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
+task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
+task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
