@@ -30,32 +30,32 @@ fields:
       
       When set, enables virtual supervisor software interrupts in M-mode.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   VSTIE:
     location: 6
     description: |
       Virtual Supervisor Timer Interrupt Enable.
-      
+
       When set, enables virtual supervisor timer interrupts in M-mode.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   VSEIE:
     location: 10
     description: |
       Virtual Supervisor External Interrupt Enable.
-      
+
       When set, enables virtual supervisor external interrupts in M-mode.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   SGEI:
     location: 12
     description: |
       Supervisor Guest External Interrupt Enable.
-      
+
       When set, enables supervisor guest external interrupts in M-mode.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia

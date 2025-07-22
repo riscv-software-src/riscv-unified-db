@@ -33,14 +33,13 @@ description: |
 fields:
   INTERRUPT_IDENTITY:
     location: 26-16
+    long_name: Interrupt Identity
     description: |
-      Interrupt Identity.
-
       This field contains the identity of the highest-priority pending and
       enabled external interrupt. A value of 0 indicates no interrupt is
       pending.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
     sw_write(csr_value): |
       if (csr_value.INTERRUPT_IDENTITY != 0) {
@@ -49,11 +48,10 @@ fields:
       return csr_value.INTERRUPT_IDENTITY;
   PRIORITY:
     location: 7-0
+    long_name: Interrupt Priority
     description: |
-      Interrupt Priority.
-      
       This field contains the priority level of the highest-priority pending
       and enabled external interrupt.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia

@@ -30,32 +30,32 @@ fields:
       
       When set, indicates a virtual supervisor software interrupt is pending.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   VSTIP:
     location: 6
     description: |
       Virtual Supervisor Timer Interrupt Pending.
-      
+
       When set, indicates a virtual supervisor timer interrupt is pending.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   VSEIP:
     location: 10
     description: |
       Virtual Supervisor External Interrupt Pending.
-      
+
       When set, indicates a virtual supervisor external interrupt is pending.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
   SGEIP:
     location: 12
     description: |
       Supervisor Guest External Interrupt Pending.
-      
+
       When set, indicates a supervisor guest external interrupt is pending.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Smaia

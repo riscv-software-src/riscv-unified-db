@@ -11,19 +11,7 @@ address: 0x154
 writable: true
 priv_mode: S
 length: 32
+base: 32
 definedBy: Ssaia
 description: |
-  The `siph` register is the high-order 32 bits of the supervisor interrupt
-  pending register for RV32 systems. For RV64 systems, this register provides
-  access to interrupt pending bits 63-32.
-  
-  This register extends the interrupt pending capabilities beyond the standard
-  `sip` register to support additional interrupt sources introduced by the
-  Advanced Interrupt Architecture.
-  
-  The `siph` register is a WARL register. Bits corresponding to unimplemented
-  interrupt sources are hardwired to zero.
-
-  All bits in this register are currently reserved for future interrupt sources
-  or implementation-specific interrupt pending indicators. The behavior of these
-  bits is implementation-defined and may be hardwired to zero.
+  Upper 32 bits of `sip`.

@@ -20,30 +20,21 @@ description: |
   This register extends beyond external interrupts to include all interrupt
   sources, providing a unified view of the highest-priority pending interrupt.
   
-  Reading this register returns the interrupt identity and priority of the
-  highest-priority pending and enabled interrupt. The register can be used
-  to efficiently determine which interrupt should be serviced next.
-
-  A read of stopi returns zero either if no interrupt is both pending and
-  enabled, or if eithreshold is not zero and no pending-and-enabled interrupt
-  has an identity number less than the value of eithreshold. Otherwise, the
-  value returned has this format:
-  - bits 26:16 Interrupt identity
-  - bits 10:0 Interrupt priority (same as identity)
-  - All other bit positions are zeros.
+  A read of stopi returns zero if no interrupt is both pending and enabled.
+  Otherwise, the value returned encodes the identity and priority of the
+  highest-priority pending and enabled interrupt.
 fields:
   INTERRUPT_IDENTITY:
     location: 26-16
+    long_name: Interrupt Identity
     description: |
-      Interrupt Identity.
-
       This field contains the identity of the highest-priority pending and
       enabled interrupt. A value of 0 indicates no interrupt is pending.
 
       The encoding includes both local interrupts (software, timer) and
       external interrupts from the IMSIC.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
     sw_write(csr_value): |
       if (csr_value.INTERRUPT_IDENTITY != 0) {
@@ -52,11 +43,10 @@ fields:
       return csr_value.INTERRUPT_IDENTITY;
   PRIORITY:
     location: 7-0
+    long_name: Interrupt Priority
     description: |
-      Interrupt Priority.
-      
       This field contains the priority level of the highest-priority pending
       and enabled interrupt. Higher numerical values indicate higher priority.
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia

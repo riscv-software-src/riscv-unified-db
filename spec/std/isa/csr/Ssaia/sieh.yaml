@@ -11,19 +11,7 @@ address: 0x114
 writable: true
 priv_mode: S
 length: 32
+base: 32
 definedBy: Ssaia
 description: |
-  The `sieh` register is the high-order 32 bits of the supervisor interrupt
-  enable register for RV32 systems. For RV64 systems, this register provides
-  access to interrupt enable bits 63-32.
-  
-  This register extends the interrupt enable capabilities beyond the standard
-  `sie` register to support additional interrupt sources introduced by the
-  Advanced Interrupt Architecture.
-  
-  The `sieh` register is a WARL register. Bits corresponding to unimplemented
-  interrupt sources are hardwired to zero.
-
-  All bits in this register are currently reserved for future interrupt sources
-  or implementation-specific interrupt enables. The behavior of these bits is
-  implementation-defined and may be hardwired to zero.
+  Upper 32 bits of `sie`.
