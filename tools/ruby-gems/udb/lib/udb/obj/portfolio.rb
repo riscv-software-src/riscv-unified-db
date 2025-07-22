@@ -523,10 +523,14 @@ class Portfolio < TopLevelDatabaseObject
   # @param ext_name [String] Extension name
   # @return [String, nil] Compatible version string (e.g., "~> 2.0.0") or nil if not found
   def derive_extension_version_from_manual(ext_name)
-    # Check if extension is defined by UDB (should not be derived from ISA manuals)
+    # Check if extension has any UDB-defined versions (should not be derived from ISA manuals)
     ext = @arch.extension(ext_name)
-    if ext && ext.data["defined_by"] == "UDB"
-      return nil  # UDB-defined extensions should not be derived from ISA manuals
+    if ext
+      # Check if any version is UDB-defined
+      udb_defined = ext.data["versions"]&.any? { |version| version["defined_by"] == "UDB" }
+      if udb_defined
+        return nil  # Extensions with UDB-defined versions should not be derived from ISA manuals
+      end
     end
 
     # Custom extensions (starting with X) should not be derived

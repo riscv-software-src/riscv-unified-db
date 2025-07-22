@@ -9,13 +9,14 @@ name: Xmock
 type: privileged
 long_name: Mock Extension (for testing database)
 description: This is just for testing
-defined_by: UDB
 versions:
   - version: "0.9.9"
     state: development
+    defined_by: UDB
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-04
+    defined_by: UDB
 params:
   MOCK_ENUM_2_INTS:
     description: foo

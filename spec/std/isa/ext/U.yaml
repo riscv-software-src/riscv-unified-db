@@ -11,11 +11,11 @@ description: |
   User-mode privilege level is supported by an implementation if the U extension is present.
   Note that the RISC-V ISA doesn't formally define a U extension and it is only discussed in the Privileged ISA manual.
 type: privileged
-defined_by: UDB
 versions:
 - version: "1.0.0"
   state: ratified
   ratification_date: 2019-12
+  defined_by: UDB
 params:
   MUTABLE_MISA_U:
     description: |

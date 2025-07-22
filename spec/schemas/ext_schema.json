@@ -115,12 +115,6 @@
           "enum": ["unprivileged", "privileged"],
           "description": "Either unprivileged or privileged"
         },
-        "defined_by": {
-          "type": "string",
-          "enum": ["ISA Manual", "UDB"],
-          "default": "ISA Manual",
-          "description": "Who defines this extension: 'ISA Manual' for RISC-V International Privileged or Unprivileged ISA Manual, 'UDB' for UDB-defined extensions"
-        },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
           "$ref": "schema_defs.json#/$defs/requires_entry"
@@ -254,6 +248,12 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "defined_by": {
+                "type": "string",
+                "enum": ["ISA Manual", "UDB"],
+                "default": "ISA Manual",
+                "description": "Who defines this extension version: 'ISA Manual' for RISC-V International Privileged or Unprivileged ISA Manual, 'UDB' for UDB-defined extensions. This allows extensions to evolve from UDB-defined to ISA Manual-defined over time."
               }
             },
             "additionalProperties": false
