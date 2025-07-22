@@ -212,3 +212,7 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest
+  call-deploy:
+    uses: ./.github/workflows/merge.yml
+    with:
+      dry-run: true
