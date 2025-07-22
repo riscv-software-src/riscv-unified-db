@@ -253,7 +253,7 @@
                 "type": "string",
                 "enum": ["ISA Manual", "UDB"],
                 "default": "ISA Manual",
-                "description": "Who defines this extension version: 'ISA Manual' for RISC-V International Privileged or Unprivileged ISA Manual, 'UDB' for UDB-defined extensions. This allows extensions to evolve from UDB-defined to ISA Manual-defined over time."
+                "description": "Who defines this extension version: 'ISA Manual' (default) for extensions defined by RISC-V International through the standards process, 'UDB' for extensions that are ratified but not officially named or versioned in ISA manuals. This distinguishes three states: ratified (state attribute), unratified (state attribute), and ratified-but-not-named-or-versioned (defined_by: UDB)."
               }
             },
             "additionalProperties": false
