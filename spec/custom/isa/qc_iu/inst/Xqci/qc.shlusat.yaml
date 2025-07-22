@@ -34,9 +34,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<xlen()`*2> zext_double_width_rs1 = {{xlen(){1'b0}}, X[rs1]};
-  Bits<xlen()`*2> shifted_value = zext_double_width_rs1 << X[rs2][4:0];
-  Bits<xlen()`*2> largest_unsigned_value = {{xlen(){1'b0}}, {xlen(){1'b1}}};
+  Bits<MXLEN`*2> zext_double_width_rs1 = {{xlen(){1'b0}}, X[rs1]};
+  Bits<MXLEN`*2> shifted_value = zext_double_width_rs1 << X[rs2][4:0];
+  Bits<MXLEN`*2> largest_unsigned_value = {{xlen(){1'b0}}, {xlen(){1'b1}}};
 
   if (shifted_value > largest_unsigned_value) {
     X[rd] = largest_unsigned_value[(xlen() - 1):0];
