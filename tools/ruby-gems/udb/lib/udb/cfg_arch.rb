@@ -483,8 +483,8 @@ class ConfiguredArchitecture < Architecture
       )
     overlay_path = config.info.overlay_path
 
-    custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
-    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : config.resolved_spec_path / "isa" / "isa" / "globals.isa"
+    custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : config.info.spec_path /  "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
       idl_path
     )

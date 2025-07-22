@@ -171,9 +171,9 @@ class UnConfig < AbstractConfig
   # NON-ABSTRACT METHODS #
   ########################
 
-  sig { params(data: T::Hash[String, T.untyped], resolver: Resolver).void }
-  def initialize(data)
-    super(data, resolver)
+  sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+  def initialize(data, info)
+    super(data, info)
 
     @param_values = {}.freeze
   end

@@ -4000,7 +4000,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      is_const = true
+      is_const = T.let(true, T::Boolean)
       total_width = expressions.reduce(0) do |sum, exp|
         e_type = exp.type(symtab)
         return BitsUnknownType if e_type.width == :unknown
