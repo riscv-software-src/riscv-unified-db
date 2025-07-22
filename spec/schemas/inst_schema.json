@@ -430,6 +430,20 @@
           "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
           "type": "string"
         },
+        "all_bases_format": {
+          "oneOf": [
+            { "$ref": "#/$defs/format" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["RV32", "RV64"],
+              "properties": {
+                "RV32": { "$ref": "#/$defs/format" },
+                "RV64": { "$ref": "#/$defs/format" }
+              }
+            }
+          ]
+        },
         "format": {
           "type": "object",
           "oneOf": [

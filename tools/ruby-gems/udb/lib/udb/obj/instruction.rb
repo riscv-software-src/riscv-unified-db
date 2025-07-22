@@ -184,7 +184,8 @@ class Instruction < TopLevelDatabaseObject
 
     return @opcodes[base] unless @opcodes[base].nil?
 
-    @opcodes[base] = @data["format"]["opcodes"].map do |opcode_name, opcode_data|
+    format = @data["format"].key?("RV32") ? @data["format"]["RV#{base}"] : @data["format"]
+    @opcodes[base] = format["opcodes"].map do |opcode_name, opcode_data|
         next if opcode_name[0] == "$"
 
         raise "unexpected: opcode field is not contiguous" if opcode_data["location"].include?("|")
