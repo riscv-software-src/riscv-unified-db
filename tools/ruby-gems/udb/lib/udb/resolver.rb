@@ -70,8 +70,12 @@ module Udb
     class ConfigInfo < T::Struct
       const :name, String
       const :path, Pathname
+      prop :overlay_path, T.nilable(Pathname)
       const :unresolved_yaml, T::Hash[String, T.untyped]
       prop :resolved_yaml, T.nilable(T::Hash[String, T.untyped])
+      const :spec_path, Pathname
+      const :merged_spec_path, Pathname
+      const :resolved_spec_path, Pathname
     end
 
     # path to find database schema files
@@ -266,11 +270,30 @@ module Udb
         end
 
       config_yaml = YAML.safe_load_file(config_path)
-      info = ConfigInfo.new(name: config_yaml["name"], path: config_path, unresolved_yaml: config_yaml)
+
+      overlay_path =
+        if config_yaml["arch_overlay"].nil?
+          nil
+        elsif Pathname.new(config_yaml["arch_overlay"]).exist?
+          Pathname.new(config_yaml["arch_overlay"])
+        elsif (@custom_path / config_yaml["arch_overlay"]).exist?
+          @custom_path / config_yaml["arch_overlay"]
+        else
+          raise "Cannot resolve path to overlay (#{config_yaml["arch_overlay"]})"
+        end
+
+      info = ConfigInfo.new(
+        name: config_yaml["name"],
+        path: config_path,
+        overlay_path:,
+        unresolved_yaml: config_yaml,
+        spec_path: std_path,
+        merged_spec_path: @gen_path / "spec" / config_yaml["name"],
+        resolved_spec_path: @gen_path / "resolved_spec" / config_yaml["name"]
+      )
       @cfg_info[config_path] = info
       @cfg_info[info.name] = info
     end
-    private :cfg_info
 
     # resolve the specification for a config, and return a ConfiguredArchitecture
     sig { params(config_path_or_name: T.any(Pathname, String)).returns(Udb::ConfiguredArchitecture) }
