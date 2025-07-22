@@ -14,7 +14,7 @@ priv_mode: M
 length: MXLEN
 description: |
   Reports the XLEN and "major" extensions supported by the ISA.
-  [when,"MISA_CSR_IMPLEMENTED == false"]
+  [when,"MISA_CSR_IMPLEMENTED == false"] 
   This CSR is read-only-0 (all bits hardwired to zero) and cannot be written.
 definedBy: Sm
 fields:
