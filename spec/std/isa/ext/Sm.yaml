@@ -8,6 +8,7 @@ kind: extension
 name: Sm
 type: privileged
 long_name: Machine mode
+defined_by: UDB
 versions:
   - version: "1.11.0"
     state: ratified

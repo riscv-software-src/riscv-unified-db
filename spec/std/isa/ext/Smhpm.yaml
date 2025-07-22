@@ -9,6 +9,7 @@ name: Smhpm
 long_name: M-mode programmable hardware performance counters
 description: M-mode programmable hardware performance counters
 type: privileged
+defined_by: UDB
 versions:
   - version: "1.11.0"
     state: ratified
