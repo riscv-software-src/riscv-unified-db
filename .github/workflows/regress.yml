@@ -201,3 +201,7 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
+  call-deploy:
+    uses: ./.github/workflows/merge.yml
+    with:
+      dry-run: true
