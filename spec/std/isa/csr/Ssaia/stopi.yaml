@@ -23,9 +23,14 @@ description: |
   Reading this register returns the interrupt identity and priority of the
   highest-priority pending and enabled interrupt. The register can be used
   to efficiently determine which interrupt should be serviced next.
-  
-  The format of this register includes both the interrupt identity and
-  priority information.
+
+  A read of stopi returns zero either if no interrupt is both pending and
+  enabled, or if eithreshold is not zero and no pending-and-enabled interrupt
+  has an identity number less than the value of eithreshold. Otherwise, the
+  value returned has this format:
+  - bits 26:16 Interrupt identity
+  - bits 10:0 Interrupt priority (same as identity)
+  - All other bit positions are zeros.
 fields:
   INTERRUPT_IDENTITY:
     location: 26-16

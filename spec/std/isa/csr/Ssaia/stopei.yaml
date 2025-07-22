@@ -22,9 +22,14 @@ description: |
   Reading this register returns the interrupt identity of the highest-priority
   pending and enabled external interrupt. Writing to this register can be used
   to claim and clear the interrupt.
-  
-  The format of this register depends on the IMSIC implementation and the
-  number of supported interrupt identities.
+
+  A read of stopei returns zero either if no interrupt is both pending in the
+  interrupt file's eiparray and enabled in its eie array, or if eithreshold is
+  not zero and no pending-and-enabled interrupt has an identity number less than
+  the value of eithreshold. Otherwise, the value returned has this format:
+  - bits 26:16 Interrupt identity
+  - bits 10:0 Interrupt priority (same as identity)
+  - All other bit positions are zeros.
 fields:
   INTERRUPT_IDENTITY:
     location: 26-16
