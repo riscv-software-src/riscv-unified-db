@@ -96,6 +96,8 @@ namespace udb {
     // CSR name
     virtual const std::string name() const = 0;
 
+    virtual bool defined() = 0;
+
     virtual void reset() = 0;
 
     // read the raw bits of a CSR value

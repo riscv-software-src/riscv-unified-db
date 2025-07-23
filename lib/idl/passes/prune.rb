@@ -283,7 +283,7 @@ module Idl
         elsif rhs_value == 0
           # anything & 0 == 0
           create_literal(symtab, 0, type(symtab))
-        elsif (lhs.type(symtab).width != :unknown) && rhs_value == (1 << lhs.type(symtab).width - 1)
+        elsif (lhs.type(symtab).width != :unknown) && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # lhs identity
           lhs.prune(symtab)
         else
@@ -303,7 +303,7 @@ module Idl
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
-        elsif lhs_type.width != :unknown && rhs_value == (1 << lhs.type(symtab).width - 1)
+        elsif lhs_type.width != :unknown && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # anything | ~0 == ~0
           create_literal(symtab, rhs_value, type(symtab))
         else
