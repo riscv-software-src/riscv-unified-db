@@ -58,11 +58,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 24) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg6].pmp24cfg & 0x80) == 0) {
         # entry is not locked
@@ -120,11 +116,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 25) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg6].pmp25cfg & 0x80) == 0) {
         # entry is not locked
@@ -182,11 +174,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 26) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg6].pmp26cfg & 0x80) == 0) {
         # entry is not locked
@@ -244,11 +232,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 27) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg6].pmp27cfg & 0x80) == 0) {
         # entry is not locked
@@ -307,11 +291,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 28) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg6].pmp28cfg & 0x80) == 0) {
         # entry is not locked
@@ -370,11 +350,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 29) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg6].pmp29cfg & 0x80) == 0) {
         # entry is not locked
@@ -433,11 +409,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 30) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg6].pmp30cfg & 0x80) == 0) {
         # entry is not locked
@@ -496,11 +468,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 31) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg6].pmp31cfg & 0x80) == 0) {
         # entry is not locked

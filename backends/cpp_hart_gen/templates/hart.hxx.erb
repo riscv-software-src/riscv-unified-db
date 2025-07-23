@@ -266,7 +266,7 @@ namespace udb {
           csr_handle.valid = false;
           return csr_handle;
         } else {
-          csr_handle.valid = true;
+          csr_handle.valid = csr->second->defined();
           csr_handle.name = csr->second->name();
           csr_handle.addr_type = CsrAddressType::Direct;
           csr_handle.address = csr_addr;
@@ -465,10 +465,12 @@ namespace udb {
 
     <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const PossiblyUnknownBits<64>& vaddr, const MemoryOperation& op) const {
       <%- if cfg_arch.symtab.get("CachedTranslationResult").runtime? -%>
-      return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{this};
+      <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cachedTranslationresult(this);
       <%- else -%>
-      return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};
+      <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cachedTranslationresult;
       <%- end -%>
+      cachedTranslationresult.valid = false;
+      return cachedTranslationresult;
     }
 
     <%= name_of(:csr_container, cfg_arch) %><SocType>& _csrContainer() { return m_csrs; }

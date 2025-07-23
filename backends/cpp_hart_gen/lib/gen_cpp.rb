@@ -480,12 +480,9 @@ module Idl
         end
       else
         if t.known?
-          if t.signed?
-            "#{' ' * indent}(#{v}_sb)"
-          else
-            "#{' ' * indent}(#{v}_b)"
-          end
+          "#{' ' * indent}_Bits<#{t.width}, #{t.signed?}>(#{v}_b)"
         else
+          # this is broken. it doesn't account for the known width
           if t.signed?
             "#{' ' * indent}(\"#{v}\"_xsb)"
           else

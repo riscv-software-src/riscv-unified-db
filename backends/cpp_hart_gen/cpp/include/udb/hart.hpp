@@ -127,9 +127,15 @@ namespace udb {
       throw AbortInstruction();
     }
 
-    void wfi() { throw WfiException(); }
+    void wfi() {
+      //Do nothing for now
+      //throw WfiException();
+    }
 
-    void pause() { throw PauseException(); }
+    void pause() {
+      //Do nothing for now
+      //throw PauseException();
+    }
 
     // SoC functions
     PossiblyUnknownBits<64> read_hpm_counter(const PossiblyUnknownBits<64>& counternum) {
