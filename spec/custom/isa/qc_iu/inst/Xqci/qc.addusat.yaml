@@ -34,8 +34,8 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<xlen()+1> sum = X[rs1] `+ X[rs2];
-  Bits<xlen()+1> largest_unsigned_value = {1'b0, {xlen(){1'b1}}};
+  Bits<MXLEN+1> sum = X[rs1] `+ X[rs2];
+  Bits<MXLEN+1> largest_unsigned_value = {1'b0, {xlen(){1'b1}}};
 
   if (sum > largest_unsigned_value) {
     X[rd] = largest_unsigned_value[(xlen() - 1):0];
