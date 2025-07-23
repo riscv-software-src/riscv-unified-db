@@ -340,6 +340,57 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
             try:
                 with open(path, encoding="utf-8") as f:
                     data = yaml.safe_load(f)
+                                       
+                    inherits_path = data.get("$inherits")
+                    if inherits_path:
+                        if not inherits_path.endswith(".yaml"):
+                            inherits_path += ".yaml"
+                        inherits_full_path = os.path.join(os.path.dirname(path), inherits_path)
+                        if os.path.exists(inherits_full_path):
+                            try:
+                                with open(inherits_full_path, encoding="utf-8") as parent_file:
+                                    parent_data = yaml.safe_load(parent_file)
+                                    for key, value in parent_data.items():
+                                        if key not in data:
+                                            data[key] = value
+                                        elif isinstance(value, dict) and isinstance(data[key], dict):
+                                            for subkey, subval in value.items():
+                                                data[key].setdefault(subkey, subval)
+                            except Exception as e:
+                                logging.warning(f"Failed to load inherited file {inherits_full_path}: {e}")
+                        else:
+                            logging.warning(f"Cannot find inherited file: {inherits_full_path}")
+
+                    fields = data.get("fields", {})
+                    for field_name, field_def in fields.items():
+                        if "alias" in field_def:
+                            alias_path = field_def["alias"]
+                            try:
+                                alias_csr_name, alias_field_name = alias_path.split(".")
+                                alias_file_path = None
+                                for root, _, files in os.walk(csr_root):
+                                    for file in files:
+                                        if file == f"{alias_csr_name}.yaml":
+                                            alias_file_path = os.path.join(root, file)
+                                            break
+                                    if alias_file_path:
+                                        break
+                                if not alias_file_path or not os.path.exists(alias_file_path):
+                                    logging.warning(f"[CSR] Alias file not found for {alias_path} in CSR {data.get('name', 'UNKNOWN')}")
+                                    continue
+                                with open(alias_file_path, encoding="utf-8") as alias_file:
+                                    alias_data = yaml.safe_load(alias_file)
+                                    alias_fields = alias_data.get("fields", {})
+                                    alias_field_def = alias_fields.get(alias_field_name)
+                                    if not alias_field_def:
+                                        logging.warning(f"[CSR] Alias field {alias_field_name} not found in {alias_file_path}")
+                                        continue
+                                    # Copy attributes except 'location' and 'alias' itself
+                                    for attr_key, attr_value in alias_field_def.items():
+                                        if attr_key not in ("location", "alias") and attr_key not in field_def:
+                                            field_def[attr_key] = attr_value
+                            except Exception as e:
+                                logging.warning(f"[CSR] Failed to resolve alias for field '{field_name}' in CSR {data.get('name', 'UNKNOWN')}: {e}")
             except Exception as e:
                 logging.error(f"Error parsing CSR file {path}: {e}")
                 continue
