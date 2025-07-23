@@ -28,6 +28,7 @@ PATH
       concurrent-ruby
       idlc
       json_schemer
+      ruby-minisat
       sorbet-runtime
       terminal-table
       thor
@@ -229,6 +230,7 @@ GEM
       rubocop (>= 1)
     ruby-debug-ide (0.7.5)
       rake (>= 0.8.1)
+    ruby-minisat (2.2.0.2)
     ruby-prof (1.7.2)
       base64
     ruby-progressbar (1.13.0)

@@ -31,6 +31,7 @@ From: ubuntu:24.04
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
+    minisat \
     nodejs \
     npm \
     parallel \
@@ -40,6 +41,22 @@ From: ubuntu:24.04
     ruby \
     ruby-dev \
     shellcheck
+
+  # build/install eqntott
+  git clone --depth=1 https://github.com/TheProjecter/eqntott.git
+  cd eqntott
+  ./configure
+  make && make install
+  cd ..
+  rm -rf eqntott
+
+  # build/install espresso
+  git clone --depth=1 https://github.com/psksvp/espresso-ab-1.0.git
+  cd espresso-ab-1.0
+  ./configure
+  make && make install
+  cd ..
+  rm -rf espresso-ab-1.0
 
 # cleanup
   apt-get clean autoclean

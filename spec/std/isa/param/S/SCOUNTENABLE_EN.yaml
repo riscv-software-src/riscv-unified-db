@@ -22,28 +22,27 @@ schema:
     type: boolean
   maxItems: 32
   minItems: 32
-restrictions:
-  allOf:
-    - constraint(): |
-        for (U32 i = 0; i < 3; i++) {
-          !implemented?(ExtensionName::Zicntr) -> !SCOUNTENABLE_EN[i];
-        }
-      reason: Counters 0-2 are defined by Zicntr
-    - constraint(): |
-        for (U32 i = 3; i < 32; i++) {
-          !implemented?(ExtensionName::Zihpm) -> !SCOUNTENABLE_EN[i];
-        }
-      reason: Counters 3..31 are defined by Zihpm
-    - constraint(): |
-        for (U32 i = 3; i < 32; i++) {
-          !HPM_COUNTER_EN -> !SCOUNTENABLE_EN[i];
-        }
-      reason: When mhpmcounter[i] does not exist, it cannot be enabled.
+requirements:
+  idl(): |
+    for (U32 i = 0; i < 3; i++) {
+      !implemented?(ExtensionName::Zicntr) -> !SCOUNTENABLE_EN[i];
+    }
+    for (U32 i = 3; i < 32; i++) {
+      !implemented?(ExtensionName::Zihpm) -> !SCOUNTENABLE_EN[i];
+    }
+    for (U32 i = 3; i < 32; i++) {
+      !HPM_COUNTER_EN[i] -> !SCOUNTENABLE_EN[i];
+    }
+  reason: |
+    Counters 0-2 are defined by Zicntr
+
+    Counters 3..31 are defined by Zihpm
+
+    When mhpmcounter[i] does not exist, it cannot be enabled.
 definedBy:
-  allOf:
-    - extension:
-        :name: S
-    - extension:
-        anyOf:
+  extension:
+    allOf:
+      - name: S
+      - anyOf:
           - name: Zicntr
           - name: Zihpm

@@ -12,8 +12,9 @@ description: "Whether or not `vstvec.MODE` supports Direct (0).
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!VSTVEC_MODE_VECTORED -> VSTVEC_MODE_DIRECT;\n"
+requirements:
+  idl(): |
+    !VSTVEC_MODE_VECTORED -> VSTVEC_MODE_DIRECT;
   reason: At least one vstvec mode must be supported
 definedBy:
   extension:

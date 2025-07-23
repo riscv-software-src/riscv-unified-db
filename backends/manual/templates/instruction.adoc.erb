@@ -139,11 +139,11 @@ RV64::
 <%-
   in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
     ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.could_be_satisfied_by_ext_ver_list?([ext_ver]) }
   end
   in_profile_optional = !in_profile_mandatory && profile.optional_ext_reqs.any? do |ext_req|
     ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.could_be_satisfied_by_ext_ver_list?([ext_ver]) }
   end
   if in_profile_mandatory
 -%>

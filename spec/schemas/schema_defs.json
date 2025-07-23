@@ -556,6 +556,9 @@
                     },
                     {
                       "type": "string"
+                    },
+                    {
+                      "type": "boolean"
                     }
                   ]
                 },
@@ -566,6 +569,9 @@
                     },
                     {
                       "type": "string"
+                    },
+                    {
+                      "type": "boolean"
                     }
                   ]
                 },
@@ -650,13 +656,12 @@
       "type": "string"
     },
 
-    "constraint": {
-      "description": "A constraint, along with an English reasoning",
+    "idl_condition": {
+      "description": "A condition expressed with IDL",
       "type": "object",
-      "required": ["constraint()", "reason"],
-      "additionalProperties": false,
+      "required": ["idl()", "reason"],
       "properties": {
-        "constraint()": {
+        "idl()": {
           "description": "IDL function containing one or more implications (e.g., A -> B).",
           "$ref": "#/$defs/idl"
         },
@@ -664,29 +669,11 @@
           "description": "Why the constraint exists",
           "type": "string"
         }
-      }
-    },
-    "constraint_list": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/constraint"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "allOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/constraint_list"
-              }
-            }
-          }
-        }
-      ]
+      },
+      "additionalProperties": false
     },
 
-    "condition": {
+    "yaml_condition": {
       "oneOf": [
         {
           "type": "object",
@@ -694,33 +681,33 @@
             "allOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/condition"
+                "$ref": "#/$defs/yaml_condition"
               },
               "minItems": 1
             },
             "anyOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/condition"
+                "$ref": "#/$defs/yaml_condition"
               },
               "minItems": 1
             },
             "oneOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/condition"
+                "$ref": "#/$defs/yaml_condition"
               },
               "minItems": 1
             },
             "noneOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/condition"
+                "$ref": "#/$defs/yaml_condition"
               },
               "minItems": 1
             },
             "not": {
-              "$ref": "#/$defs/condition"
+              "$ref": "#/$defs/yaml_condition"
             }
           },
           "minProperties": 1,
@@ -732,9 +719,64 @@
         },
         {
           "$ref": "#/$defs/param_condition"
+        }
+      ]
+    },
+
+    "condition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/yaml_condition"
         },
         {
-          "$ref": "#/$defs/constraint"
+          "$ref": "#/$defs/idl_condition"
+        }
+      ]
+    },
+
+    "extension_requirement_list_item": {
+      "description": "A list of extension requirements, possibly with a condition",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/extension_requirement"
+        },
+        {
+          "description": "A conditional extension requirement",
+          "type": "object",
+          "properties": {
+            "name": {
+              "$ref": "#/$defs/extension_name"
+            },
+            "version": {
+              "$ref": "#/$defs/version_requirements"
+            },
+            "when": {
+              "$comment": "Using 'when' instead of 'if' to distinguish it from 'if' in a condition",
+              "$ref": "#/$defs/condition"
+            }
+          },
+          "required": ["name", "when"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "extension_requirement_list": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/extension_requirement_list_item"
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/extension_requirement_list_item"
         }
       ]
     },

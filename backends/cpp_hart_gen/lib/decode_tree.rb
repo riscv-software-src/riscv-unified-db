@@ -236,14 +236,11 @@ class DecodeGen
 
   def needs_to_check_implemented?(inst)
     if @cfg_arch.unconfigured?
-      !inst.defined_by_condition.satisfied_by? { |ext_req| @cfg_arch.extension("I").versions.all? { |i_ver| ext_req.satisfied_by?(i_ver) } }
+      !inst.defined_by_condition.satisfied_by_ext_ver_list?(@cfg_arch.extension("I").versions)
     elsif @cfg_arch.partially_configured?
-      !inst.defined_by_condition.satisfied_by? do |ext_req|
-        # this is conservative
-        @cfg_arch.mandatory_extension_reqs.any? do |ext_req2|
-          ext_req.satisfied_by?(ext_req2)
-        end
-      end
+      # this is conservative
+      possible_mand_ext_vers = @cfg_arch.mandatory_extension_reqs.map(&:satisfying_versions).flatten
+      !inst.defined_by_condition.satisfied_by_ext_ver_list?(possible_mand_ext_vers)
     else
       false # fully configured, inst_list is already prunned for the config
     end

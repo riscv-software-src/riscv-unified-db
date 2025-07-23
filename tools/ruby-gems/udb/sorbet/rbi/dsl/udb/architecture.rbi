@@ -51,6 +51,33 @@ class Udb::Architecture
   sig { returns(T::Array[Udb::Instruction]) }
   def instructions; end
 
+  sig { params(name: String).returns(T.nilable(Udb::Parameter)) }
+  def param(name); end
+
+  sig { returns(T::Hash[String, Udb::Parameter]) }
+  def param_hash; end
+
+  sig { returns(T::Array[Udb::Parameter]) }
+  def params; end
+
+  sig { params(name: String).returns(T.nilable(Udb::ExceptionCode)) }
+  def exception_code(name); end
+
+  sig { returns(T::Hash[String, Udb::ExceptionCode]) }
+  def exception_code_hash; end
+
+  sig { returns(T::Array[Udb::ExceptionCode]) }
+  def exception_codes; end
+
+  sig { params(name: String).returns(T.nilable(Udb::InterruptCode)) }
+  def interrupt_code(name); end
+
+  sig { returns(T::Hash[String, Udb::InterruptCode]) }
+  def interrupt_code_hash; end
+
+  sig { returns(T::Array[Udb::InterruptCode]) }
+  def interrupt_codes; end
+
   sig { params(name: String).returns(T.nilable(Udb::Manual)) }
   def manual(name); end
 

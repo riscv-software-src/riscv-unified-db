@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zclsd
-conflicts:
+conflicts_with:
   extension:
     name: Zcf
 long_name: Compressed Load/Store Pair for RV32
@@ -19,8 +19,7 @@ versions:
   - version: "1.0"
     state: ratified
     ratification_date: "2025-02"
-    requires:
-      extension:
-        allOf:
-          - name: Zilsd
-          - name: Zca
+    required_extensions:
+      allOf:
+        - name: Zilsd
+        - name: Zca

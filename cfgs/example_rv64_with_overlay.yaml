@@ -62,7 +62,7 @@ params:
 
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
 
-  MISALIGNED_SPLIT_STRATEGY: by_byte
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
 
   # whether or not the implementation supports misaligned atomics
   MISALIGNED_AMO: false

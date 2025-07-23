@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "concurrent-ruby"
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
+  s.add_dependency "ruby-minisat"
   s.add_dependency "sorbet-runtime"
   s.add_dependency "terminal-table"
   s.add_dependency "thor"

@@ -129,11 +129,19 @@ module Idl
 
       m = @parser.parse(body, root: :function_body)
       if m.nil?
-        raise SyntaxError, <<~MSG
-          While parsing #{name} at #{input_file}:#{input_line + @parser.failure_line}
+        unless input_file.nil? || input_line.nil?
+          raise SyntaxError, <<~MSG
+            While parsing #{name} at #{input_file}:#{input_line + @parser.failure_line}
 
-          #{@parser.failure_reason}
-        MSG
+            #{@parser.failure_reason}
+          MSG
+        else
+          raise SyntaxError, <<~MSG
+            While parsing #{name}
+
+            #{@parser.failure_reason}
+          MSG
+        end
       end
 
       # fix up left recursion

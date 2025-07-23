@@ -175,6 +175,5 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires:
-      extension:
-        name: Sv39
+    required_extensions:
+      name: Sv39

@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shgatpa
-long_name: hgtap profile requirements
+long_name: hgatp profile requirements
 description: |
   For each supported virtual memory scheme SvNN supported in
   `satp`, the corresponding hgatp SvNNx4 mode must be supported.  The
@@ -19,33 +19,26 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        name: H
-        version: "= 1.0.0"
-    restrictions:
-      allOf:
-        - constraint(): |
-            implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
-          reason:
-            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
-            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
-        - constraint(): |
-            implemented?(ExtensionName:Sv39) -> SV39X4_TRANSLATION;
-          reason:
-            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
-            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
-        - constraint(): |
-            implemented?(ExtensionName:Sv48) -> SV48X4_TRANSLATION;
-          reason:
-            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
-            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
-        - constraint(): |
-            implemented?(ExtensionName:Sv57) -> SV57X4_TRANSLATION;
-          reason:
-            Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
-            `satp`, the corresponding hgatp SvNNx4 mode must be supported.
-        - constraint(): |
-            true -> GSTAGE_MODE_BARE;
-          reason:
-            Shgatpa mandates that `hgatp` mode Bare must also be supported.
+    required_extensions:
+      name: H
+      version: "= 1.0.0"
+requirements:
+  idl(): |
+    implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
+    implemented?(ExtensionName:Sv39) -> SV39X4_TRANSLATION;
+    implemented?(ExtensionName:Sv48) -> SV48X4_TRANSLATION;
+    implemented?(ExtensionName:Sv57) -> SV57X4_TRANSLATION;
+  reason: |
+    Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+    `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+
+    Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+    `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+
+    Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+    `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+
+    Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
+    `satp`, the corresponding hgatp SvNNx4 mode must be supported.
+
+    Shgatpa mandates that `hgatp` mode Bare must also be supported.

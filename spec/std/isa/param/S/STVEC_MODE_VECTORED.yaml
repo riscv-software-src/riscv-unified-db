@@ -6,14 +6,13 @@
 $schema: param_schema.json#
 kind: parameter
 name: STVEC_MODE_VECTORED
-description: "Whether or not `stvec.MODE` supports Vectored (1).
-
-  "
+description: Whether or not `stvec.MODE` supports Vectored (1).
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!STVEC_MODE_DIRECT -> STVEC_MODE_VECTORED;\n"
+requirements:
+  idl(): |
+    !STVEC_MODE_DIRECT -> STVEC_MODE_VECTORED;
   reason: stvec must support at least one mode
 definedBy:
   extension:

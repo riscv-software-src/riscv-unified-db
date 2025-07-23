@@ -151,7 +151,7 @@ module Udb
       else
         T.unsafe(self).send(:system, *cmd)
       end
-      raise "data resolution error" unless $?.success?
+      raise "data resolution error while executing '#{cmd.join(' ')}'" unless $?.success?
     end
 
     # resolve config file and write it to gen_path
@@ -239,7 +239,7 @@ module Udb
 
           config_path_or_name
         when String
-          @repo_root / "cfgs" / "#{config_path_or_name}.yaml"
+          @cfgs_path / "#{config_path_or_name}.yaml"
         else
           T.absurd(config_path_or_name)
         end

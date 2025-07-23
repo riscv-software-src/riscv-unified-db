@@ -23,7 +23,7 @@ schema:
     type: integer
     minimum: 1
     maximum: 64
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     (MXLEN == 32) && !implemented?(ExtensionName::Sv32) -> (PHYS_ADDR_WIDTH <= 32);
   reason: without Sv32 translation, there is no way to create an address > 32 bits

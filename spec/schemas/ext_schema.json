@@ -47,9 +47,13 @@
       "enum": ["unprivileged", "privileged"],
       "description": "Either unprivileged or privileged"
     },
-    "conflicts": {
-      "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
-      "$ref": "schema_defs.json#/$defs/extension_condition"
+    "conflicts_with": {
+      "description": "Condition represeting all the conflicts with this extension. If the condition is true, the extension cannot be implemented",
+      "$ref": "schema_defs.json#/$defs/condition"
+    },
+    "requirements": {
+      "description": "Condition represeting requirements of this extension. If the condition is false, the extension cannot be implemented",
+      "$ref": "schema_defs.json#/$defs/condition"
     },
     "versions": {
       "type": "array",
@@ -121,9 +125,9 @@
             "format": "uri",
             "description": "Link to ratified document"
           },
-          "requires": {
+          "required_extensions": {
             "description": "Extension(s) required by this extension",
-            "$ref": "schema_defs.json#/$defs/condition"
+            "$ref": "schema_defs.json#/$defs/extension_requirement_list"
           },
           "contributors": {
             "description": "List of contributors to this version of the extension",
@@ -146,30 +150,6 @@
                 }
               }
             }
-          },
-          "restrictions": {
-            "describe": "Any restrictions imposed by this extension version",
-            "$ref": "schema_defs.json#/$defs/constraint_list"
-          },
-          "param_constraints": {
-            "type": "object",
-            "patternProperties": {
-              "[A-Z][a-zA-Z0-9_]": {
-                "type": "object",
-                "properties": {
-                  "schema": {
-                    "$ref": "json-schema-draft-07.json#",
-                    "description": "Extra schema constraints for the parameter"
-                  },
-                  "extra_validation": {
-                    "type": "string",
-                    "description": "Extra validation to be performed in Ruby after JSON schema validation. Useful for complex conditions JSON Schema cannot handle (e.g., cross-parameter, data-dependent validation)"
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "additionalProperties": false
           }
         },
         "additionalProperties": false
@@ -194,13 +174,7 @@
             "description": "Field name for the InterruptCode enum in IDL"
           },
           "when": {
-            "type": "object",
-            "properties": {
-              "version": {
-                "$ref": "schema_defs.json#/$defs/version_requirements"
-              }
-            },
-            "additionalProperties": false
+            "$ref": "schema_defs.json#/$defs/condition"
           }
         },
         "additionalProperties": false

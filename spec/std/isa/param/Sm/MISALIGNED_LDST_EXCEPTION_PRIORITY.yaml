@@ -31,8 +31,8 @@ description: |
 schema:
   type: string
   enum: ["low", "high"]
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     (MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 1) -> (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low");
   reason:
     MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE

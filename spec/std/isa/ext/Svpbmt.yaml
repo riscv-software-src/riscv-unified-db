@@ -8,20 +8,9 @@ kind: extension
 name: Svpbmt
 long_name: Page-based memory types
 description: |
-  This extension mandates that the `satp` mode Bare must
-  be supported.
-
-  [NOTE]
-  This extension was ratified as part of the RVA22 profile.
+  TODO
 type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        name: Sv39
-    param_constraints:
-      SATP_MODE_BARE:
-        schema:
-          const: true

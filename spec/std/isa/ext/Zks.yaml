@@ -21,18 +21,17 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        allOf:
-          - name: Zbkb
-            version: "= 1.0.0"
-          - name: Zbkc
-            version: "= 1.0.0"
-          - name: Zbkx
-            version: "= 1.0.0"
-          - name: Zkne
-            version: "= 1.0.0"
-          - name: Zknd
-            version: "= 1.0.0"
-          - name: Zknh
-            version: "= 1.0.0"
+    required_extensions:
+      allOf:
+        - name: Zbkb
+          version: "= 1.0.0"
+        - name: Zbkc
+          version: "= 1.0.0"
+        - name: Zbkx
+          version: "= 1.0.0"
+        - name: Zkne
+          version: "= 1.0.0"
+        - name: Zknd
+          version: "= 1.0.0"
+        - name: Zknh
+          version: "= 1.0.0"

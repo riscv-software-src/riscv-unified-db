@@ -22,8 +22,8 @@ schema:
   maxItems: 4
   minItems: 1
   uniqueItems: true
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     implemented?(ExtensionName::F) &&
       (HW_MSTATUS_FS_DIRTY_UPDATE == "precise") ||
        HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise")

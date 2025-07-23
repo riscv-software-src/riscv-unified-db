@@ -13,10 +13,9 @@ description:
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "implemented?(ExtensionName::V) -> MSTATUS_VS_WRITABLE;
-
-    "
+requirements:
+  idl(): |
+    implemented?(ExtensionName::V) -> MSTATUS_VS_WRITABLE;
   reason: mstatus.VS must be writeable if V is present
 definedBy:
   extension:

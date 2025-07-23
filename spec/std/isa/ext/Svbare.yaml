@@ -18,10 +18,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        name: S
-    param_constraints:
-      SATP_MODE_BARE:
-        schema:
-          const: true
+    required_extensions:
+      name: S
+requirements:
+  param:
+    name: SATP_MODE_BARE
+    equal: true
+    reason: Svbare mandates that the `satp` mode Bare must be supported.

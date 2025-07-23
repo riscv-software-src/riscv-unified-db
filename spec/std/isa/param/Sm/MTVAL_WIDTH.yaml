@@ -29,8 +29,8 @@ schema:
     minimum: 0
     maximum: 64
 
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     (
       implemented?(ExtensionName::Sdext) ||
       REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||

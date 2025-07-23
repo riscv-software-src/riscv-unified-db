@@ -19,16 +19,14 @@ schema:
   minItems: 1
   maxItems: 2
   uniqueItems: true
-restrictions:
-  allOf:
-    - constraint(): "!$ary_includes?(MXLEN, 64) -> !$ary_includes?(UXLEN, 64);\n"
-      reason: "XLEN in U-mode can never be larger than XLEN in M-mode
+requirements:
+  idl(): |
+    !$ary_includes?(MXLEN, 64) -> !$ary_includes?(UXLEN, 64);
+    $ary_includes?(SXLEN, 32) -> $ary_includes?(UXLEN, 32);
+  reason: |
+    XLEN in U-mode can never be larger than XLEN in M-mode
 
-        "
-    - constraint(): "$ary_includes?(SXLEN, 32) -> $ary_includes?(UXLEN, 32);\n"
-      reason: "If S-mode supports RV32, then U mode must also support it.
-
-        "
+    If S-mode supports RV32, then U mode must also support it.
 definedBy:
   extension:
     name: U

@@ -19,12 +19,11 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        allOf:
-          - name: "Zkn"
-            version: "= 1.0.0"
-          - name: "Zkr"
-            version: "= 1.0.0"
-          - name: "Zkt"
-            version: "= 1.0.0"
+    required_extensions:
+      allOf:
+        - name: "Zkn"
+          version: "= 1.0.0"
+        - name: "Zkr"
+          version: "= 1.0.0"
+        - name: "Zkt"
+          version: "= 1.0.0"

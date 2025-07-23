@@ -30,7 +30,7 @@ schema:
   minItems: 1
   maxItems: 2
   uniqueItems: true
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     (MTVEC_ACCESS == "read-only") -> ($ary_size(MTVEC_MODES) == 1);
   reason: If `mtvec` is read-only, the mode cannot be changed.

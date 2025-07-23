@@ -14,10 +14,8 @@ description:
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "MUTABLE_MISA_U -> MUTABLE_MISA_S;
-
-    "
+requirements:
+  idl(): MUTABLE_MISA_U -> MUTABLE_MISA_S;
   reason:
     If U-mode can be disabled, then S must also be disabled since S cannot exist
     without U (and thus there is no option for MUTABLE_MISA_S).

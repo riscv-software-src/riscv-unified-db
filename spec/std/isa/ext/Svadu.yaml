@@ -121,7 +121,7 @@ versions:
       - name: Paul Donahue
       - name: Ved Shanbhogue
         company: Rivos, Inc.
-conflicts:
+conflicts_with:
   extension:
     name: Svade
 doc_license:

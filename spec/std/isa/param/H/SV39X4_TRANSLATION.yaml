@@ -12,8 +12,9 @@ description: "Whether or not Sv39x4 translation mode is supported.
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!$ary_includes?(SXLEN, 64) -> !SV39X4_VSMODE_TRANSLATION;\n"
+requirements:
+  idl(): |
+    !$ary_includes?(SXLEN, 64) -> !SV39X4_VSMODE_TRANSLATION;
   reason: Sv39x4 is only valid if S-mode can get into RV64 mode
 definedBy:
   extension:

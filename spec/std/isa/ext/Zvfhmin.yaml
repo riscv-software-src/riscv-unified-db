@@ -21,6 +21,5 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        name: Zve32f
+    required_extensions:
+      name: Zve32f

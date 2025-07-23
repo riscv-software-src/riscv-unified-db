@@ -140,7 +140,7 @@ extensions:
       MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
       MISALIGNED_SPLIT_STRATEGY:
         schema:
-          const: by_byte
+          const: sequential_bytes
       PRECISE_SYNCHRONOUS_EXCEPTIONS:
         schema:
           const: true

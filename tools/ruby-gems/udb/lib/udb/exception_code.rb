@@ -11,36 +11,89 @@ module Udb
   class TopLevelDatabaseObject < DatabaseObject; end
   class Extension < TopLevelDatabaseObject; end
 
-  # a synchroncous exception code
-  class ExceptionCode
+  module Code
     extend T::Sig
 
     # @return [String] Long-form display name (can include special characters)
     sig { returns(String) }
-    attr_reader :name
+    def display_name = T.unsafe(self).data.fetch("display_name")
 
     # @return [String] Field name for an IDL enum
     sig { returns(String) }
-    attr_reader :var
+    def var = T.unsafe(self).name
 
     # @return [Integer] Code, written into *mcause
     sig { returns(Integer) }
-    attr_reader :num
-
-    # @return [Extension] Extension that defines this code
-    sig { returns(Extension) }
-    attr_reader :ext
-
-    sig { params(name: String, var: String, number: Integer, ext: Extension).void }
-    def initialize(name, var, number, ext)
-      @name = T.let(name, String)
-      @name.freeze
-      @var = T.let(var, String)
-      @num = T.let(number, Integer)
-      @ext = T.let(ext, Extension)
-    end
+    def num = T.unsafe(self).data.fetch("num")
   end
 
-  # all the same information as ExceptinCode, but for interrupts
-  InterruptCode = Class.new(ExceptionCode)
+  # a synchroncous exception code
+  class ExceptionCode < TopLevelDatabaseObject
+    extend T::Sig
+    include Code
+    include Comparable
+
+    sig { override.params(resolver: Resolver).void }
+    def validate(resolver)
+      super(resolver)
+
+      @arch.exception_codes.each do |code|
+        next if code == self
+
+        if num == code.num
+          raise ValidationError, "Duplicate exception code #{num} for #{name}, #{code.name}"
+        end
+      end
+    end
+
+    sig { override.params(other: BasicObject).returns(T.nilable(Integer)) }
+    def <=>(other)
+      return nil unless T.cast(other, Object).is_a?(ExceptionCode)
+
+      num <=> T.cast(other, ExceptionCode).num
+    end
+
+    sig { override.params(other: BasicObject).returns(T::Boolean) }
+    def eql?(other)
+      (self <=> other) == 0
+    end
+
+    sig { override.returns(Integer) }
+    def hash = [ExceptionCode, num].hash
+  end
+
+  # an asynchroncous interrupt code
+  class InterruptCode < TopLevelDatabaseObject
+    extend T::Sig
+    include Code
+    include Comparable
+
+    sig { override.params(resolver: Resolver).void }
+    def validate(resolver)
+      super(resolver)
+
+      @arch.interrupt_codes.each do |code|
+        next if code == self
+
+        if num == code.num
+          raise ValidationError, "Duplicate interrupt code #{num} for #{name}, #{code.name}"
+        end
+      end
+    end
+
+    sig { override.params(other: BasicObject).returns(T.nilable(Integer)) }
+    def <=>(other)
+      return nil unless T.cast(other, Object).is_a?(ExceptionCode)
+
+      num <=> T.cast(other, ExceptionCode).num
+    end
+
+    sig { override.params(other: BasicObject).returns(T::Boolean) }
+    def eql?(other)
+      (self <=> other) == 0
+    end
+
+    sig { override.returns(Integer) }
+    def hash = [ExceptionCode, num].hash
+  end
 end

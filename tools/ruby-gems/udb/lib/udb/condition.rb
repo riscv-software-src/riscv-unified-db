@@ -1,29 +1,70 @@
-#!/usr/bin/env ruby
-
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # typed: true
 # frozen_string_literal: true
 
+require "minisat"
 require "sorbet-runtime"
 
 require "idlc/symbol_table"
+require "udb/logic"
 require "udb/obj/extension"
+
+require "udb/idl/condition_to_udb"
 
 module Udb
 
+  class ExtensionVersion; end
+
+  # wrapper around an IDL function containing constraints
   class Constraint
     extend T::Sig
 
-    sig { params(idl: String, input_file: String, input_line: Integer, cfg_arch: ConfiguredArchitecture).void }
-    def initialize(idl, input_file:, input_line:, cfg_arch:)
-      @ast = cfg_arch.idl_compiler.compile_func_body(idl, symtab: cfg_arch.symtab, input_file:, input_line:)
+    sig { returns(T.nilable(String)) }
+    attr_reader :reason
+
+    sig {
+      params(
+        idl: String,
+        input_file: T.nilable(Pathname),
+        input_line: T.nilable(Integer),
+        cfg_arch: ConfiguredArchitecture,
+        reason: T.nilable(String)
+      ).void
+    }
+    def initialize(idl, input_file:, input_line:, cfg_arch:, reason: nil)
+      @cfg_arch = cfg_arch
+      symtab = cfg_arch.symtab.global_clone
+      @ast = @cfg_arch.idl_compiler.compile_constraint(idl, symtab)
+      symtab.release
+      @reason = reason
     end
 
     sig { params(symtab: Idl::SymbolTable).returns(T::Boolean) }
     def eval(symtab)
       @ast.satisfied?(symtab)
+    end
+
+    # convert into a pure UDB condition
+    sig { returns(T::Hash[String, T.untyped]) }
+    def to_h
+      symtab = @cfg_arch.symtab.global_clone
+      yaml = @ast.to_udb_h(symtab)
+      symtab.release
+
+      yaml
+    end
+
+    # convert into a pure UDB condition
+    sig { returns(String) }
+    def to_yaml
+      YAML.dump(to_h)
+    end
+
+    sig { returns(LogicNode) }
+    def to_logic_tree
+      Condition.new(to_h, @cfg_arch).to_logic_tree
     end
   end
 
@@ -36,149 +77,10 @@ module Udb
     end
   end
 
-  class LogicNodeType < T::Enum
-    enums do
-      True = new
-      False = new
-      Term = new
-      Not = new
-      And = new
-      Or = new
-      None = new
-      If = new
-    end
-  end
-
-  # Abstract syntax tree of the condition logic
-  class LogicNode
-    extend T::Sig
-
-    sig { returns(LogicNodeType) }
-    attr_accessor :type
-
-    TermType = T.type_alias { T.any(ExtensionRequirement, Constraint) }
-    sig { params(type: LogicNodeType, children: T::Array[T.any(LogicNode, TermType)]).void }
-    def initialize(type, children)
-      raise ArgumentError, "Children must be singular" if [LogicNodeType::Term, LogicNodeType::Not].include?(type) && children.size != 1
-      raise ArgumentError, "Children must have at least two elements" if [LogicNodeType::And, LogicNodeType::Or, LogicNodeType::None, LogicNodeType::If].include?(type) && children.size < 2
-
-      @children = children
-      if [LogicNodeType::True, LogicNodeType::False].include?(type)
-        raise ArgumentError, "Children must be empty" unless children.empty?
-      elsif type == LogicNodeType::Term
-        # ensure the children are TermType
-        raise "Children must be either ExtensionRequirements or Constraints" unless children.all? { |c| c.is_a?(ExtensionRequirement) || c.is_a?(Constraint) }
-      else
-        raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
-        if type == LogicNodeType::Not
-          @children = children
-        else
-          if children.size == 2
-            @children = children
-          else
-            @children = [children.fetch(0), LogicNode.new(type, T.must(children[1..]))]
-          end
-        end
-      end
-
-      @type = type
-    end
-
-    # @return The terms (leafs) of this tree
-    sig { returns(T::Array[T.any(ExtensionRequirement, Constraint)]) }
-    def terms
-      @terms ||=
-        if @type == LogicNodeType::Term
-          [@children.fetch(0)]
-        else
-          @children.map { |child| T.cast(child, LogicNode).terms }.flatten.uniq
-        end
-    end
-
-    EvalCallbackType = T.type_alias { T.proc.params(arg0: T.any(ExtensionRequirement, Constraint)).returns(T::Boolean) }
-    sig { params(blk: EvalCallbackType).returns(EvalCallbackType) }
-    def make_eval_cb(&blk)
-      blk
-    end
-    private :make_eval_cb
-
-    # evaluate the logic tree using +symtab+ to evaluate any constraints and +ext_vers+ to evaluate any extension requirements
-    sig { params(symtab: Idl::SymbolTable, ext_vers: T::Array[ExtensionVersion]).returns(T::Boolean) }
-    def eval(symtab, ext_vers)
-      cb = make_eval_cb do |term|
-        if term.is_a?(ExtensionRequirement)
-          ext_vers.any? do |term_value|
-            next unless term_value.is_a?(ExtensionVersion)
-
-            ext_ver = T.cast(term_value, ExtensionVersion)
-            term.satisfied_by?(ext_ver)
-          end
-        elsif term.is_a?(Constraint)
-          term.eval(symtab)
-        else
-          T.absurd(term)
-        end
-      end
-      eval_cb(cb)
-    end
-
-    sig { params(callback: EvalCallbackType).returns(T::Boolean) }
-    def eval_cb(callback)
-      if @type == LogicNodeType::True
-        true
-      elsif @type == LogicNodeType::False
-        false
-      elsif @type == LogicNodeType::Term
-        ext_req = T.cast(@children[0], ExtensionRequirement)
-        callback.call(ext_req)
-      elsif @type == LogicNodeType::If
-        cond_ext_ret = T.cast(@children[0], LogicNode)
-        if cond_ext_ret.eval_cb(callback)
-          T.cast(@children[1], LogicNode).eval_cb(callback)
-        else
-          true
-        end
-      elsif @type == LogicNodeType::Not
-        !T.cast(@children[0], LogicNode).eval_cb(callback)
-      elsif @type == LogicNodeType::And
-        @children.all? { |child| T.cast(child, LogicNode).eval_cb(callback) }
-      elsif @type == LogicNodeType::Or
-        @children.any? { |child| T.cast(child, LogicNode).eval_cb(callback) }
-      elsif @type == LogicNodeType::None
-        @children.none? { |child| T.cast(child, LogicNode).eval_cb(callback) }
-      else
-        T.absurd(@type)
-      end
-    end
-
-    sig { returns(String) }
-    def to_s
-      if @type == LogicNodeType::True
-        "true"
-      elsif @type == LogicNodeType::False
-        "false"
-      elsif @type == LogicNodeType::Term
-        "(#{@children[0]})"
-      elsif @type == LogicNodeType::Not
-        "!#{@children[0]}"
-      elsif @type == LogicNodeType::And
-        "(#{@children[0]} ^ #{@children[1]})"
-      elsif @type == LogicNodeType::Or
-        "(#{@children[0]} v #{@children[1]})"
-      elsif @type == LogicNodeType::None
-        "!(#{@children[0]} v #{@children[1]})"
-      elsif @type == LogicNodeType::If
-        "(#{@children[0]} -> #{@children[1]})"
-      else
-        T.absurd(@type)
-      end
-    end
-  end
-
-  module AbstractCondition
+  class AbstractCondition
     extend T::Sig
     extend T::Helpers
-    interface!
+    abstract!
 
     sig { abstract.returns(T::Boolean) }
     def empty?; end
@@ -186,34 +88,61 @@ module Udb
     sig { abstract.params(expand: T::Boolean).returns(LogicNode) }
     def to_logic_tree(expand: true); end
 
-    sig { abstract.params(_other: T.untyped).returns(T::Boolean) }
-    def compatible?(_other); end
+    sig { returns(T::Boolean) }
+    def satisfiable?
+      to_logic_tree.satisfiable?
+    end
 
-    sig { abstract.returns(T.any(String, T::Hash[String, T.untyped])) }
-    def to_h; end
+    sig { params(other: AbstractCondition).returns(T::Boolean) }
+    def compatible?(other)
+      LogicNode.new(LogicNodeType::And, [to_logic_tree, other.to_logic_tree]).satisfiable?
+    end
 
     sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(_cfg_arch); end
 
-    sig { abstract.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(T::Boolean) }
+    sig { abstract.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(SatisfiedResult) }
     def satisfied_by_ext_ver_list?(_ext_ver_list); end
 
     sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
     def could_be_true?(_cfg_arch); end
 
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
+    def could_be_satisfied_by_cfg_arch?(cfg_arch) = could_be_true?(cfg_arch)
+
+    sig { params(ext_ver_list: T::Array[ExtensionVersion]).returns(T::Boolean) }
+    def could_be_satisfied_by_ext_ver_list?(ext_ver_list)
+      [SatisfiedResult::Yes, SatisfiedResult::Maybe].include?(satisfied_by_ext_ver_list?(ext_ver_list))
+    end
+
+    sig { params(other: AbstractCondition).returns(T::Boolean) }
+    def equivalent?(other)
+      to_logic_tree.equivalent?(other.to_logic_tree)
+    end
+
     sig { abstract.returns(T::Boolean) }
-    def has_constraint?; end
+    def has_param?; end
 
     sig { abstract.returns(T::Boolean) }
     def has_extension_requirement?; end
+
+    sig { abstract.returns(T::Hash[String, T.untyped]) }
+    def to_h; end
+
+    sig { overridable.returns(String) }
+    def to_yaml
+      YAML.dump(to_h)
+    end
+
+    sig { abstract.returns(String) }
+    def to_idl; end
   end
 
   # represents a condition in the UDB data, which could include conditions involving
   # extensions and/or parameters
-  class Condition
+  class Condition < AbstractCondition
     extend T::Sig
     extend T::Helpers
-    include AbstractCondition
 
     sig {
       params(
@@ -232,14 +161,21 @@ module Udb
       end
     end
 
-    sig { params(yaml: T::Hash[String, T.untyped], cfg_arch: ConfiguredArchitecture).void }
-    def initialize(yaml, cfg_arch)
+    sig {
+      params(
+        yaml: T::Hash[String, T.untyped],
+        cfg_arch: ConfiguredArchitecture,
+        input_file: T.nilable(Pathname),
+        input_line: T.nilable(Integer)
+      )
+      .void
+    }
+    def initialize(yaml, cfg_arch, input_file: nil, input_line: nil)
       @yaml = yaml
       @cfg_arch = cfg_arch
+      @input_file = input_file
+      @input_line = input_line
     end
-
-    sig { override.returns(T::Hash[String, T.untyped]) }
-    def to_h = @yaml
 
     sig { override.returns(T::Boolean) }
     def empty? = @yaml.empty?
@@ -263,26 +199,32 @@ module Udb
         LogicNode.new(LogicNodeType::Or, yaml["anyOf"].map { |node| to_logic_tree_helper(node, expand:) })
       elsif yaml.key?("noneOf")
         LogicNode.new(LogicNodeType::None, yaml["noneOf"].map { |node| to_logic_tree_helper(node, expand:) })
+      elsif yaml.key?("oneOf")
+        LogicNode.new(LogicNodeType::Xor, yaml["oneOf"].map { |node| to_logic_tree_helper(node, expand:) })
       elsif yaml.key?("not")
-        LogicNode.new(LogicNodeType::Not, [to_logic_tree_helper(yaml["not"], expand:)])
+        LogicNode.new(LogicNodeType::Not, [to_logic_tree_helper(yaml.fetch("not"), expand:)])
+      elsif yaml.key?("if")
+        LogicNode.new(LogicNodeType::If, [to_logic_tree_helper(yaml.fetch("if"), expand:), to_logic_tree_helper(yaml.fetch("then"), expand:)])
       elsif yaml.key?("extension")
         ExtensionCondition.new(yaml["extension"], @cfg_arch).to_logic_tree
       elsif yaml.key?("param")
-        ConstraintCondition.new(yaml["param"], @cfg_arch).to_logic_tree
+        ParamCondition.new(yaml["param"], @cfg_arch).to_logic_tree
+      elsif yaml.key?("idl()")
+        IdlCondition.new(yaml, @cfg_arch, input_file: nil, input_line: nil).to_logic_tree
       else
-        raise "Unexpected"
+        raise "Unexpected: #{yaml.keys}"
       end
     end
     private :to_logic_tree_helper
 
     sig { override.returns(T::Boolean) }
-    def has_constraint?
-      to_logic_tree.terms.any? { |t| t.is_a?(Constraint) }
+    def has_param?
+      to_logic_tree.terms.any? { |t| t.is_a?(ParameterTerm) }
     end
 
     sig { override.returns(T::Boolean) }
     def has_extension_requirement?
-      to_logic_tree.terms.any? { |t| t.is_a?(ExtensionRequirement) }
+      to_logic_tree.terms.any? { |t| t.is_a?(ExtensionVersion) }
     end
 
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
@@ -291,7 +233,7 @@ module Udb
       r == SatisfiedResult::Yes || r == SatisfiedResult::Maybe
     end
 
-    EvalCallbackType = T.type_alias { T.proc.params(term: T.any(ExtensionRequirement, Constraint)).returns(T::Boolean) }
+    EvalCallbackType = T.type_alias { T.proc.params(term: T.any(ExtensionTerm, ParameterTerm)).returns(SatisfiedResult) }
     sig { params(blk: EvalCallbackType).returns(EvalCallbackType) }
     def make_cb_proc(&blk)
       blk
@@ -301,37 +243,27 @@ module Udb
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(cfg_arch)
       if cfg_arch.fully_configured?
-        if to_logic_tree.eval(cfg_arch.symtab, cfg_arch.transitive_implemented_extension_versions)
+        if to_logic_tree.eval(cfg_arch, cfg_arch.symtab, cfg_arch.transitive_implemented_extension_versions) == SatisfiedResult::Yes
           SatisfiedResult::Yes
         else
           SatisfiedResult::No
         end
       elsif cfg_arch.partially_configured?
         mandatory_ext_cb = make_cb_proc do |term|
-          if term.is_a?(ExtensionRequirement)
-            cond_ext_req = T.cast(term, ExtensionRequirement)
-            cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cond_ext_req.satisfied_by?(cfg_ext_req) }
-          elsif term.is_a?(Constraint)
-            constraint = T.cast(term, Constraint)
-            constraint.eval(cfg_arch.symtab)
+          if term.is_a?(ExtensionTerm)
+            if cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cfg_ext_req.satisfied_by?(term.to_ext_ver(cfg_arch)) }
+              SatisfiedResult::Yes
+            else
+              SatisfiedResult::No
+            end
           else
-            T.absurd(term)
+            term.eval(cfg_arch.symtab)
           end
         end
-        possible_ext_cb = make_cb_proc do |term|
-          if term.is_a?(ExtensionRequirement)
-            cond_ext_req = T.cast(term, ExtensionRequirement)
-            cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| cond_ext_req.satisfied_by?(cfg_ext_ver) }
-          elsif term.is_a?(Constraint)
-            constraint = T.cast(term, Constraint)
-            constraint.eval(cfg_arch.symtab)
-          else
-            T.absurd(term)
-          end
-        end
-        if to_logic_tree.eval_cb(mandatory_ext_cb)
+
+        if to_logic_tree.eval_cb(mandatory_ext_cb) == SatisfiedResult::Yes
           SatisfiedResult::Yes
-        elsif to_logic_tree.eval_cb(possible_ext_cb)
+        elsif to_logic_tree.eval(cfg_arch, cfg_arch.symtab, cfg_arch.possible_extension_versions) == SatisfiedResult::Yes
           SatisfiedResult::Maybe
         else
           SatisfiedResult::No
@@ -342,34 +274,25 @@ module Udb
       end
     end
 
-    sig { override.params(ext_ver_list: T::Array[ExtensionVersion]).returns(T::Boolean) }
+    sig { override.params(ext_ver_list: T::Array[ExtensionVersion]).returns(SatisfiedResult) }
     def satisfied_by_ext_ver_list?(ext_ver_list)
-      to_logic_tree.eval(@cfg_arch.symtab, ext_ver_list)
+      to_logic_tree.eval(@cfg_arch, @cfg_arch.symtab, ext_ver_list)
     end
 
-    sig { override.params(other: AbstractCondition).returns(T::Boolean) }
-    def compatible?(other)
-      tree1 = to_logic_tree
-      tree2 = other.to_logic_tree
+    sig { override.returns(T::Hash[String, T.untyped]) }
+    def to_h
+      T.cast(to_logic_tree.to_h, T::Hash[String, T.untyped])
+    end
 
-      extensions = (tree1.terms + tree2.terms).map(&:extension).uniq
-
-      extension_versions = extensions.map(&:versions)
-
-      combos = combos_for(extension_versions)
-      combos.each do |combo|
-        return true if tree1.eval(combo) && tree2.eval(combo)
-      end
-
-      # there is no combination in which both self and other can be true
-      false
+    sig { override.returns(String) }
+    def to_idl
+      to_logic_tree.to_idl
     end
 
   end
 
-  class AlwaysTrueCondition
+  class AlwaysTrueCondition < AbstractCondition
     extend T::Sig
-    include AbstractCondition
 
     sig { override.returns(T::Boolean) }
     def empty? = true
@@ -382,28 +305,37 @@ module Udb
     sig { override.params(_other: T.untyped).returns(T::Boolean) }
     def compatible?(_other) = true
 
-    sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
-    def to_h = {}
+    sig { override.returns(T::Hash[String, T.untyped]) }
+    def to_h
+      {
+        "constraint" => {
+          "if" => true,
+          "then" => true
+        }
+      }
+    end
 
     sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::Yes
 
-    sig { override.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(T::Boolean) }
-    def satisfied_by_ext_ver_list?(_ext_ver_list) = true
+    sig { override.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(SatisfiedResult) }
+    def satisfied_by_ext_ver_list?(_ext_ver_list) = SatisfiedResult::Yes
 
     sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
     def could_be_true?(_cfg_arch) = true
 
     sig { override.returns(T::Boolean) }
-    def has_constraint? = false
+    def has_extension_requirement? = false
 
     sig { override.returns(T::Boolean) }
-    def has_extension_requirement? = false
+    def has_param? = false
+
+    sig { override.returns(String) }
+    def to_idl = "true"
   end
 
-  class AlwaysFalseCondition
+  class AlwaysFalseCondition < AbstractCondition
     extend T::Sig
-    include AbstractCondition
 
     sig { override.returns(T::Boolean) }
     def empty? = true
@@ -416,23 +348,78 @@ module Udb
     sig { override.params(_other: T.untyped).returns(T::Boolean) }
     def compatible?(_other) = false
 
-    sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
-    def to_h = {}
+    sig { override.returns(T::Hash[String, T.untyped]) }
+    def to_h
+      {
+        "constraint" => {
+          "if" => true,
+          "then" => false
+        }
+      }
+    end
 
     sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::No
 
-    sig { override.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(T::Boolean) }
-    def satisfied_by_ext_ver_list?(_ext_ver_list) = true
+    sig { override.params(_ext_ver_list: T::Array[ExtensionVersion]).returns(SatisfiedResult) }
+    def satisfied_by_ext_ver_list?(_ext_ver_list) = SatisfiedResult::No
 
     sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
     def could_be_true?(_cfg_arch) = false
 
     sig { override.returns(T::Boolean) }
-    def has_constraint? = false
+    def has_extension_requirement? = false
 
     sig { override.returns(T::Boolean) }
-    def has_extension_requirement? = false
+    def has_param? = false
+
+    sig { override.returns(String) }
+    def to_idl = "false"
+  end
+
+  class ParamCondition < Condition
+    extend T::Sig
+
+    sig { params(yaml: T::Hash[String, T.untyped], cfg_arch: ConfiguredArchitecture).void }
+    def initialize(yaml, cfg_arch)
+      super(yaml, cfg_arch)
+    end
+
+    sig { params(yaml: T::Hash[String, T.untyped]).returns(LogicNode) }
+    def to_param_logic_tree_helper(yaml)
+      if yaml.key?("name")
+        LogicNode.new(LogicNodeType::Term, [ParameterTerm.new(yaml)])
+      elsif yaml.key?("allOf")
+        LogicNode.new(LogicNodeType::And, yaml.fetch("allOf").map { |y| to_param_logic_tree_helper(y) })
+      elsif yaml.key?("anyOf")
+        LogicNode.new(LogicNodeType::Or, yaml.fetch("allOf").map { |y| to_param_logic_tree_helper(y) })
+      elsif yaml.key?("oneOf")
+        LogicNode.new(LogicNodeType::Xor, yaml.fetch("allOf").map { |y| to_param_logic_tree_helper(y) })
+      elsif yaml.key?("noneOf")
+        LogicNode.new(LogicNodeType::Not,
+          [
+            LogicNode.new(LogicNodeType::Or, yaml.fetch("noneOf").map { |y| to_param_logic_tree_helper(y) })
+          ]
+        )
+      elsif yaml.key?("not")
+        LogicNode.new(LogicNodeType::Not, [to_param_logic_tree_helper(yaml.fetch("not"))])
+      elsif yaml.key?("if")
+        LogicNode.new(LogicNodeType::If,
+          [
+            Condition.new(yaml.fetch("if"), @cfg_arch).to_logic_tree,
+            to_param_logic_tree_helper(yaml.fetch("then"))
+          ]
+        )
+
+      else
+        raise "unexpected key #{yaml.keys}"
+      end
+    end
+
+    sig { override.params(expand: T::Boolean).returns(LogicNode) }
+    def to_logic_tree(expand: true)
+      @logic_tree ||= to_param_logic_tree_helper(@yaml)
+    end
   end
 
   class ExtensionCondition < Condition
@@ -457,7 +444,13 @@ module Udb
     }
     def ext_req_to_logic_node(yaml, cfg_arch, expand: true)
       ext_req = ExtensionRequirement.create(yaml, cfg_arch)
-      n = LogicNode.new(LogicNodeType::Term, [ext_req])
+
+      n =
+        if ext_req.satisfying_versions.size == 1
+          LogicNode.new(LogicNodeType::Term, [ext_req.satisfying_versions.fetch(0).to_term])
+        else
+          LogicNode.new(LogicNodeType::Or, ext_req.satisfying_versions.map { |v| LogicNode.new(LogicNodeType::Term, [v.to_term]) })
+        end
 
       if expand
         c = ext_req.extension.conflicts_condition
@@ -508,7 +501,47 @@ module Udb
     private :to_logic_tree_helper
   end
 
-  class ConstraintCondition
+  class IdlCondition < Condition
+
+    sig { returns(String) }
+    def reason = @yaml.fetch("reason")
+
+    sig {
+      params(
+        yaml: T::Hash[String, T.untyped],
+        cfg_arch: ConfiguredArchitecture,
+        input_file: T.nilable(Pathname),
+        input_line: T.nilable(Integer)
+      )
+      .void
+    }
+    def initialize(yaml, cfg_arch, input_file:, input_line:)
+      super(yaml, cfg_arch, input_file:, input_line:)
+
+      raise "missing required key" unless @yaml.key?("idl()")
+    end
+
+    sig { returns(Constraint) }
+    def constraint
+      @constraint ||= Constraint.new(
+          @yaml.fetch("idl()"),
+          input_file: @input_file,
+          input_line: @input_line,
+          cfg_arch: @cfg_arch
+        )
+    end
+
+    sig { override.params(expand: T::Boolean).returns(LogicNode) }
+    def to_logic_tree(expand: true)
+      @logic_tree ||= constraint.to_logic_tree
+    end
+
+    sig { override.returns(T::Hash[String, T.untyped]) }
+    def to_h = constraint.to_h
+
+    sig { override.returns(String) }
+    def to_idl = @yaml.fetch("idl()")
+
   end
 
   # represents a `requires:` entry for an extension version
@@ -541,16 +574,19 @@ module Udb
   #           name: Zcd
   #           version: "1.0.0"
   #
-  # This is because:
-  #
-  #
-  # zero or more of which
-  # may be conditional (via an ExtensionRequirementExpression)
-  class Requirements < Condition
+
+
+  # a conditional list of extension requirements
+  class ExtensionRequirementList
     extend T::Sig
 
     class ConditionalExtensionVersion < T::Struct
       prop :ext_ver, ExtensionVersion
+      prop :cond, AbstractCondition
+    end
+
+    class ConditionalExtensionRequirement < T::Struct
+      prop :ext_req, ExtensionRequirement
       prop :cond, AbstractCondition
     end
 
@@ -561,82 +597,61 @@ module Udb
       end
     end
 
-    sig { params(yaml: T.nilable(T::Hash[String, T.untyped]), cfg_arch: ConfiguredArchitecture).void }
+    sig { params(yaml: T::Hash[String, T.untyped], cfg_arch: ConfiguredArchitecture).void }
     def initialize(yaml, cfg_arch)
-      super(yaml || {}, cfg_arch)
+      @yaml = yaml
+      @cfg_arch = cfg_arch
+      @list = T.let(nil, T.nilable(T::Array[ConditionalExtensionRequirement]))
+      @implied_extension_versions = T.let(nil, T.nilable(T::Array[ConditionalExtensionVersion]))
     end
 
-    sig {
-      params(
-        yaml: T::Hash[String, T.untyped],
-        state: ParseState,
-        cond_thus_far: T.nilable(T.all(AbstractCondition, Object)),
-        result_ary: T::Array[ConditionalExtensionVersion]
-      ).returns(T::Array[ConditionalExtensionVersion])
-    }
-    def implied_extension_versions_helper(yaml, state, cond_thus_far, result_ary)
-      case (state)
-      when ParseState::Condition
-        if yaml.key?("extension")
-          implied_extension_versions_helper(yaml.fetch("extension"), ParseState::ExtensionCondition, cond_thus_far, result_ary)
-        elsif yaml.key?("allOf")
-          yaml.fetch("allOf").each do |cond_yaml|
-            implied_extension_versions_helper(yaml.fetch("allOf"), ParseState::Condition, cond_thus_far, result_ary)
-          end
-        elsif yaml.key?("anyOf") || yaml.key?("oneOf") || yaml.key?("noneOf")
-          # nothing is certain below here, so just return results thus far
-          return result_ary
+    sig { params(yaml: T::Hash[String, T.untyped]).returns(ConditionalExtensionRequirement) }
+    def make_cond_ext_req(yaml)
+      ext_req = ExtensionRequirement.create(yaml, @cfg_arch)
+      cond =
+        if yaml.key?("when")
+          Condition.new(yaml.fetch("when"), @cfg_arch)
         else
-          raise "unexpected key(s): #{yaml.keys}"
+          AlwaysTrueCondition.new
         end
+      ConditionalExtensionRequirement.new(ext_req:, cond:)
+    end
 
-      when ParseState::ExtensionCondition
-        if yaml.key?("name")
-          req_spec =
-            if yaml.key?("version")
-              RequirementSpec.new(yaml.fetch("version"))
-            else
-              RequirementSpec.new(">= 0")
-            end
-          if req_spec.op == "="
-            cond = cond_thus_far.nil? ? AlwaysTrueCondition.new : T.must(cond_thus_far)
-            ext_ver = ExtensionVersion.new(yaml.fetch("name"), req_spec.version_spec.to_s, @cfg_arch)
-            result_ary << ConditionalExtensionVersion.new(cond:, ext_ver:)
-          end
-
-        elsif yaml.key?("allOf")
-          yaml.fetch("allOf").each do |ext_cond_yaml|
-            implied_extension_versions_helper(ext_cond_yaml, ParseState::ExtensionCondition, cond_thus_far, result_ary)
-          end
-
-        elsif yaml.key?("if")
-          if_cond = Condition.new(yaml.fetch("if"), @cfg_arch)
-          cond = cond_thus_far.nil? ? if_cond : Condition.join(@cfg_arch, [cond_thus_far, if_cond])
-          implied_extension_versions_helper(yaml.fetch("then"), ParseState::ExtensionCondition, cond, result_ary)
-
-        elsif yaml.key?("anyOf") || yaml.key("oneOf") || yaml.key("noneOf")
-          # there are not going to be specific requirements down an anyOf/oneOf/noneOf path
-          # be required
-          return result_ary
-        else
-          raise "Unexpected key(s): #{yaml.keys}"
-        end
-
+    sig { params(yaml: T::Hash[String, T.untyped], l: T::Array[ConditionalExtensionRequirement]).void }
+    def do_list(yaml, l)
+      if yaml.key?("name")
+        l << make_cond_ext_req(yaml)
+      elsif yaml.key?("allOf")
+        yaml.fetch("allOf").each { |item| do_list(item, l) }
       else
-        T.absurd(state)
+        raise "unexpected key #{yaml.keys}"
       end
-
-      result_ary
     end
-    private :implied_extension_versions_helper
+
+    sig { returns(T::Array[ConditionalExtensionRequirement]) }
+    def list
+      return @list unless @list.nil?
+
+      @list = []
+      do_list(@yaml, @list)
+      @list
+    end
 
     sig { returns(T::Array[ConditionalExtensionVersion]) }
     def implied_extension_versions
-      if empty?
-        []
-      else
-        implied_extension_versions_helper(T.must(@yaml), ParseState::Condition, nil, [])
+      return @implied_extension_versions unless @implied_extension_versions.nil?
+
+      @implied_extension_versions = []
+      list.each do |cond_ext_req|
+        ext_req = cond_ext_req.ext_req
+        puts ext_req.requirement_specs.fetch(0).op
+        puts ext_req.requirement_specs.size
+        if (ext_req.requirement_specs.size == 1) && (ext_req.requirement_specs.fetch(0).op == "=")
+          ext_ver = ext_req.satisfying_versions.fetch(0)
+          @implied_extension_versions << ConditionalExtensionVersion.new(ext_ver:, cond: cond_ext_req.cond)
+        end
       end
+      @implied_extension_versions
     end
   end
 end

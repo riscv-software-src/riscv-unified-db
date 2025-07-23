@@ -247,14 +247,14 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 |===
 | RV32 | RV64 | Mnemonic | Instruction <%- if versions.size > 1 -%>| <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
 
-<%- inst_list = ext.instructions.select { |inst| versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) } } -%>
+<%- inst_list = ext.instructions -%>
 <%- inst_list.each do |i| -%>
 | <%= i.rv32? ? "&#x2713;" : "" %>
 | <%= i.rv64? ? "&#x2713;" : "" %>
 | `<%= i.name %> <%= i.assembly.gsub("x", "r").strip %>`
 | xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
 <%- if versions.size > 1 -%>
-| <%= ext.versions.map { |v| i.defined_by_condition.possibly_satisfied_by?(v) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= ext.versions.map { |v| v.instructions.include?(i) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 <%- end -%>
 |===
@@ -270,7 +270,7 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 <%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e.ext_ver) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by_condition.could_be_satisfied_by_ext_ver_list?([e.ext_ver]) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 

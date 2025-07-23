@@ -50,7 +50,6 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires:
-      extension:
-        name: F
-        version: ">= 2.2"
+    required_extensions:
+      name: F
+      version: ">= 2.2"

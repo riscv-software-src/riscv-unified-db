@@ -5372,7 +5372,7 @@ module Idl
   #
   # @example
   #   ">= 1.0"
-  #   "by_byte"
+  #   "sequential_bytes"
   class StringLiteralAst < AstNode
     include Rvalue
 

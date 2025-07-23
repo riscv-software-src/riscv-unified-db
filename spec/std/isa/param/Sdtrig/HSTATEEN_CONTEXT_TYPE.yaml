@@ -19,32 +19,17 @@ schema:
     - rw
     - read-only-0
     - read-only-1
-restrictions:
-  allOf:
-    - constraint():
-        'MSTATEEN_CONTEXT_TYPE == "read-only-0" -> HSTATEEN_CONTEXT_TYPE
-        == "read-only-0";
+requirements:
+  idl():
+    MSTATEEN_CONTEXT_TYPE == "read-only-0" -> HSTATEEN_CONTEXT_TYPE == "read-only-0";
+    MSTATEEN_CONTEXT_TYPE == "read-only-1" -> HSTATEEN_CONTEXT_TYPE == "read-only-1";
+  reason: |
+    When mstateen0.CONTEXT is read-only-0, hstateen0.CONTEXT must also be read-only-0
 
-        '
-      reason:
-        When mstateen0.CONTEXT is read-only-0, hstateen0.CONTEXT must also be
-        read-only-0
-    - constraint():
-        'MSTATEEN_CONTEXT_TYPE == "read-only-1" -> HSTATEEN_CONTEXT_TYPE
-        == "read-only-1";
-
-        '
-      reason:
-        When mstateen0.CONTEXT is read-only-1, hstateen0.CONTEXT must also be
-        read-only-1
+    When mstateen0.CONTEXT is read-only-1, hstateen0.CONTEXT must also be read-only-1
 definedBy:
-  allOf:
-    - extension:
-        :name: Sdtrig
-    - allOf:
-        - extension:
-            name: H
-            version: "~> 1.0"
-        - extension:
-            name: Ssstateen
-            version: "~> 1.0"
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: H
+      - name: Ssstateen

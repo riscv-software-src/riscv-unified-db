@@ -55,8 +55,12 @@
         }
       ]
     },
-    "restrictions": {
-      "$ref": "schema_defs.json#/$defs/constraint_list"
+    "requirements": {
+      "$ref": "schema_defs.json#/$defs/condition"
+    },
+    "$source": {
+      "type": "string",
+      "description": "Source file where this parameter was defined"
     }
   },
   "additionalProperties": false

@@ -18,25 +18,22 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    requires:
-      extension:
-        allOf:
-          - name: Zca
-            version: = 1.0.0
-          - if:
-              extension:
-                name: F
-                version: ~> 2.2
-            then:
-              name: Zcf
-              version: = 1.0.0
-          - if:
-              extension:
-                name: D
-                version: ~> 2.2
-            then:
-              name: Zcd
-              version: = 1.0.0
+    required_extensions:
+      allOf:
+        - name: Zca
+          version: = 1.0.0
+        - name: Zcf
+          version: = 1.0.0
+          when:
+            extension:
+              name: F
+              version: ~> 2.2
+        - name: Zcd
+          version: = 1.0.0
+          when:
+            extension:
+              name: D
+              version: ~> 2.2
 description: |
   The `C` extension reduces static and dynamic code size by
   adding short 16-bit instruction encodings for common operations. The C

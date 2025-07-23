@@ -13,6 +13,5 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      extension:
-        name: Smhpm
+    required_extensions:
+      name: Smhpm

@@ -17,13 +17,12 @@ versions:
     ratification_date: 2019-06
     changes:
       - Change 1
-    requires:
-      extension:
-        if:
-          extension:
-            name: C
-        then:
-          name: A
-          version: = 1.0
+    required_extensions:
+      name: A
+      version: = 1.0
+      when:
+        extension:
+          name: C
+
 description: |
   Something descriptive

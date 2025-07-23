@@ -22,8 +22,9 @@ schema:
   minItems: 1
   maxItems: 2
   uniqueItems: true
-restrictions:
-  constraint(): "!$ary_includes?(SXLEN, 64) -> !$ary_includes?(VSXLEN, 64)\n"
+requirements:
+  idl(): |
+    !$ary_includes?(SXLEN, 64) -> !$ary_includes?(VSXLEN, 64)
   reason: |
     XLEN in VS-mode can never be larger than XLEN in S-mode
     (and, transitively, cannot be larger than XLEN in M-mode).

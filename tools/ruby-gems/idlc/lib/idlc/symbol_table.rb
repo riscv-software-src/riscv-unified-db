@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -322,7 +322,7 @@ module Idl
     end
 
     def keys_pretty
-      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k }}
+      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k } }
     end
 
     # searches the symbol table scope-by-scope to find 'name'
@@ -427,6 +427,7 @@ module Idl
     end
 
     # pretty-print the symbol table contents
+    sig { void }
     def print
       @scopes.each do |s|
         s.each do |name, obj|

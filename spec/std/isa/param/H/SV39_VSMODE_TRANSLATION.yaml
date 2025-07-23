@@ -12,8 +12,9 @@ description: |
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!$ary_includes?(VSXLEN, 64) -> !SV39_VSMODE_TRANSLATION;\n"
+requirements:
+  idl(): |
+    !$ary_includes?(VSXLEN, 64) -> !SV39_VSMODE_TRANSLATION;
   reason: Sv39 in VS-mode is only valid if VS-mode can get into RV64 mode
 definedBy:
   extension:

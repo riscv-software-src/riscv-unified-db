@@ -23,8 +23,8 @@ schema:
   minItems: 1
   maxItems: 4
   uniqueItems: true
-restrictions:
-  constraint(): |
+requirements:
+  idl(): |
     implemented?(ExtensionName::V) && HW_MSTATUS_VS_DIRTY_UPDATE == "never"
       -> $ary_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
   reason:

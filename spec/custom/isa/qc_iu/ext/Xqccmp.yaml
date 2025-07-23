@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
 
 $schema: ext_schema.json#
 kind: extension
@@ -25,7 +25,7 @@ versions:
   - name: James Ball
     company: Qualcomm Technologies, Inc.
     email: jameball@qti.qualcomm.com
-  requires:
+  required_extensions:
     name: Zca
     version: ">= 1.0.0"
 - version: "0.2.0"
@@ -50,7 +50,7 @@ versions:
     - Add CSRs qc.mstkbottomaddr and qc.mstktopaddr to support cache range checking
     - Add list of supported custom exceptions - stack alignment check and stack range check
     - Add stack exception checks in all push/pop instructions
-  requires:
+  required_extensions:
     name: Zca
     version: ">= 1.0.0"
 - version: "0.3.0"
@@ -72,7 +72,7 @@ versions:
   changes:
     - Fix all push and pop instructions IDL code to take in consideration that xlen() returns bits and not bytes
     - Declare state of extension as "frozen"
-  requires:
+  required_extensions:
     name: Zca
     version: ">= 1.0.0"
 description: |
@@ -148,8 +148,12 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
-conflicts:
-  anyOf:
-    - allOf: [C, D]
-    - Zcd
-    - Zcmp
+conflicts_with:
+  # cannot be implemented with Zcd or Zcmp
+  extension:
+    anyOf:
+      - allOf:
+        - name: C
+        - name: D
+      - name: Zcd
+      - name: Zcmp

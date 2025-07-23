@@ -12,8 +12,9 @@ description: "Whether or not `stvec.MODE` supports Vectored (1).
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!VSTVEC_MODE_DIRECT -> VSTVEC_MODE_VECTORED;\n"
+requirements:
+  idl(): |
+    !VSTVEC_MODE_DIRECT -> VSTVEC_MODE_VECTORED;
   reason: At least one vstvec mode must be supported
 definedBy:
   extension:

@@ -12,8 +12,9 @@ description: "Whether or not `stvec.MODE` supports Direct (0).
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "!STVEC_MODE_VECTORED -> STVEC_MODE_DIRECT;\n"
+requirements:
+  idl(): |
+    !STVEC_MODE_VECTORED -> STVEC_MODE_DIRECT;
   reason: stvec must support at least one mode
 definedBy:
   extension:

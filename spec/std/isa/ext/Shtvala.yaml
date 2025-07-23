@@ -17,15 +17,14 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    requires:
-      extension:
-        name: H
-        version: "1.0.0"
+    required_extensions:
+      name: H
+      version: "1.0.0"
     ratification_date: null
-    restrictions:
-      constraint(): |
-        implemented?(ExtensionName::Shtvala) ->
-          REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT;
-      reason: |
-        When Shtvala is implemented, htval must be written with the faulting guest physical address in all circumstances permitted by
-        the ISA.
+requirements:
+  idl(): |
+    implemented?(ExtensionName::Shtvala) ->
+      REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT;
+  reason: |
+    When Shtvala is implemented, htval must be written with the faulting guest physical address in all circumstances permitted by
+    the ISA.

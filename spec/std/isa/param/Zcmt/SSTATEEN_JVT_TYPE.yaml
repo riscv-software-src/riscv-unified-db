@@ -19,35 +19,20 @@ schema:
     - rw
     - read-only-0
     - read-only-1
-restrictions:
-  allOf:
-    - constraint():
-        'MSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
+requirements:
+  idl():
+    MSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
+    MSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
 
-        '
-      reason: SSTATEEN cannot have more options that MSTATEEN
-    - constraint():
-        'MSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
+    HSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
+    HSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
+  reason: |
+    SSTATEEN cannot have more options that MSTATEEN
 
-        '
-      reason: SSTATEEN cannot have more options that MSTATEEN
-    - constraint():
-        'HSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
-
-        '
-      reason: SSTATEEN cannot have more options that HSTATEEN
-    - constraint():
-        'HSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
-
-        '
-      reason: SSTATEEN cannot have more options that HSTATEEN
+    SSTATEEN cannot have more options that HSTATEEN
 definedBy:
-  allOf:
-    - extension:
-        :name: Zcmt
-    - extension:
-        allOf:
-          - name: S
-            version: "~> 1.0"
-          - name: Ssstateen
-            version: "~> 1.0"
+  extension:
+    allOf:
+      - name: Zcmt
+      - name: S
+      - name: Ssstateen

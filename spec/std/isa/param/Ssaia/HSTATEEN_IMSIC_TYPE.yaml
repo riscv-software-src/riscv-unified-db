@@ -19,28 +19,16 @@ schema:
     - rw
     - read-only-0
     - read-only-1
-restrictions:
-  allOf:
-    - constraint():
-        'MSTATEEN_IMSIC_TYPE == "read-only-0" -> HSTATEEN_IMSIC_TYPE ==
-        "read-only-0";
-
-        '
-      reason: HSTATEEN cannot have more options that MSTATEEN
-    - constraint():
-        'MSTATEEN_IMSIC_TYPE == "read-only-1" -> HSTATEEN_IMSIC_TYPE ==
-        "read-only-1";
-
-        '
-      reason: HSTATEEN cannot have more options that MSTATEEN
+requirements:
+  idl():
+    MSTATEEN_IMSIC_TYPE == "read-only-0" -> HSTATEEN_IMSIC_TYPE == "read-only-0";
+    MSTATEEN_IMSIC_TYPE == "read-only-1" -> HSTATEEN_IMSIC_TYPE == "read-only-1";
+  reason: |
+    HSTATEEN cannot have more options that MSTATEEN
+    HSTATEEN cannot have more options that MSTATEEN
 definedBy:
-  allOf:
-    - extension:
-        :name: Ssaia
-    - allOf:
-        - extension:
-            name: Ssaia
-        - extension:
-            name: H
-        - extension:
-            name: Ssstateen
+  extension:
+    allOf:
+      - name: Ssaia
+      - name: H
+      - name: Ssstateen

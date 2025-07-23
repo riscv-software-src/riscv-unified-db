@@ -91,12 +91,8 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
-    requires:
-      extension: { name: Zca, version: ">= 1.0.0" }
-conflicts:
+    required_extensions:
+      { name: Zca, version: ">= 1.0.0" }
+conflicts_with:
   extension:
-    anyOf:
-      - allOf:
-        - name: C
-        - name: D
-      - name: Zcd
+    name: Zcd

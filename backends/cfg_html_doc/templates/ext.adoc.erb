@@ -26,7 +26,7 @@ Implemented Version:: <%= ext_version.version_str %>
   <%- unless v.implications.empty? -%>
   Implies:::
     <%- v.implications.each do |i| -%>
-    <%-   next unless i.cond.satisfied_by? { |ext_req| cfg_arch.transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver)}} -%>
+    <%-   next unless i.cond.satisfied_by_cfg_arch?(cfg_arch) -%>
     * `<%= i.ext_ver.name %>` version <%= i.ext_ver.version_str %>
     <%- end -%>
   <%- end -%>

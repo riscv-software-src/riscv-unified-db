@@ -415,6 +415,7 @@ module Idl
 
     # @return [Idl::Type] Type of a scalar
     # @param schema [Hash] JSON Schema description of a scalar
+    sig { params(schema: T::Hash[String, T.untyped]).returns(Type) }
     def self.from_json_schema_scalar_type(schema)
       if schema.key?("type")
         case schema["type"]
@@ -448,6 +449,19 @@ module Idl
         else
           raise "Unhandled const type"
         end
+      elsif schema.key?("enum")
+        raise "Mixed types in enum" unless schema["enum"].all? { |e| e.class == schema["enum"].fetch(0).class }
+
+        case schema["enum"].fetch(0)
+        when TrueClass, FalseClass
+          Type.new(:boolean)
+        when Integer
+          Type.new(:bits, width: schema["enum"].map { |e| e.bit_length }.max)
+        when String
+          Type.new(:string, width: schema["enum"].map { |e| e.length }.max)
+        else
+          raise "unhandled enum type"
+        end
       else
         raise "unhandled scalar schema"
       end
@@ -456,6 +470,7 @@ module Idl
 
     # @return [Idl::Type] Type of array
     # @param schema [Hash] JSON Schema description of an array
+    sig { params(schema: T::Hash[String, T.untyped]).returns(Type) }
     def self.from_json_schema_array_type(schema)
       width = schema["minItems"]
       if !schema.key?("minItems") || !schema.key?("maxItems") || (schema["minItems"] != schema["maxItems"])
@@ -496,13 +511,18 @@ module Idl
     private_class_method :from_json_schema_array_type
 
     # @returns [Idl::Type] Type described by JSON +schema+
+    sig { params(schema: T::Hash[String, T.untyped]).returns(Type) }
     def self.from_json_schema(schema)
       hsh = schema.to_h
-      case hsh["type"]
-      when "boolean", "integer", "string"
+      if hsh.key?("type")
+        case hsh["type"]
+        when "boolean", "integer", "string"
+          from_json_schema_scalar_type(hsh)
+        when "array"
+          from_json_schema_array_type(hsh)
+        end
+      else
         from_json_schema_scalar_type(hsh)
-      when "array"
-        from_json_schema_array_type(hsh)
       end
     end
   end

@@ -19,28 +19,18 @@ schema:
     - rw
     - read-only-0
     - read-only-1
-restrictions:
-  allOf:
-    - constraint():
-        'MSTATEEN_ENVCFG_TYPE == "read-only-0" -> HSTATEEN_ENVCFG_TYPE ==
-        "read-only-0";
+requirements:
+  idl(): |
+    MSTATEEN_ENVCFG_TYPE == "read-only-0" -> HSTATEEN_ENVCFG_TYPE == "read-only-0";
+    MSTATEEN_ENVCFG_TYPE == "read-only-1" -> HSTATEEN_ENVCFG_TYPE == "read-only-1";
+  reason: |
+    When mstateen0.ENVCFG is read-only-0, hstateen0.ENVCFG must also be read-only-0
 
-        '
-      reason: When mstateen0.ENVCFG is read-only-0, hstateen0.ENVCFG must also be read-only-0
-    - constraint():
-        'MSTATEEN_ENVCFG_TYPE == "read-only-1" -> HSTATEEN_ENVCFG_TYPE ==
-        "read-only-1";
-
-        '
-      reason: When mstateen1.ENVCFG is read-only-1, hstateen0.ENVCFG must also be read-only-1
+    When mstateen1.ENVCFG is read-only-1, hstateen0.ENVCFG must also be read-only-1
 definedBy:
-  allOf:
-    - extension:
-        :name: S
-    - allOf:
-        - extension:
-            name: H
-            version: "~> 1.0"
-        - extension:
-            name: Ssstateen
-            version: "~> 1.0"
+  extension:
+    allOf:
+      - name: H
+        version: "~> 1.0"
+      - name: Ssstateen
+        version: "~> 1.0"

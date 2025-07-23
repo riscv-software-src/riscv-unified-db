@@ -14,10 +14,8 @@ description:
 long_name: TODO
 schema:
   type: boolean
-restrictions:
-  constraint(): "MUTABLE_MISA_S -> MUTABLE_MISA_H;
-
-    "
+requirements:
+  idl(): MUTABLE_MISA_S -> MUTABLE_MISA_H;
   reason: |
     If S mode can be disabled, then H mode must also be disabled since you can't be in H mode
     without S mode (and thus MUTABLE_MISA_H is not an option -- it's always true)
