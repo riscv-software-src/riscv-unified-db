@@ -38,6 +38,6 @@ operation(): |
   XReg rs1_value = X[rs1];
   X[rd] = ($signed(rs1_value) >= $signed(X[rs2]))
     ? rs1_value - X[rs2]
-    : (($signed(rs1_value) < 0)
+    : (($signed(rs1_value) < 's0)
        ? (rs1_value + X[rs2])
        : rs1_value);
