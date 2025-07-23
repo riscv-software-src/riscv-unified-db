@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: pseudoinstruction
+name: ntl.all
+long_name: No synopsis available.
+description: |
+      No description available.
+definedBy: Zihintntl
+assembly: ntl_all
+origin_instruction: add
+encoding:
+  match: '00000000010100000000000000110011'
+  variables: []
+operation(): |
+      
