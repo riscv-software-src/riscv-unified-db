@@ -212,12 +212,16 @@ def extract_instruction_fields(instructions):
                 continue
 
             # Process location format
-            if isinstance(location, str) and "-" in location:
+            if isinstance(location, str):
                 try:
-                    high, low = map(int, location.split("-"))
+                    if "-" in location:
+                        high, low = map(int, location.split("-"))
+                    else:
+                        high = low = int(location)
+
                     mask = ((1 << (high - low + 1)) - 1) << low
                     field_dict[std_field_name] = {
-                        "location": f"{high}-{low}",
+                        "location": f"{high}-{low}" if high != low else f"{high}",
                         "mask": f"0x{mask:x}",
                         "source": "instruction",
                         "original_name": (

@@ -5,7 +5,7 @@ import logging
 import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s:: %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
 
 def check_requirement(req, exts):
@@ -206,9 +206,8 @@ def load_instructions(
                     match_str = "".join(match_bits)
                     instr_dict[name] = {"match": match_str}
                 except Exception as e:
-                    logging.error(f"Failed to construct match string for {name} in {path}: {e}")
-                    encoding_filtered += 1
-                    continue
+                    logging.error(f"Critical error constructing match string for {name} in {path}: {e}")
+                    raise
 
                 continue 
             # Check if the instruction specifies a base architecture constraint
