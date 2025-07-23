@@ -9,21 +9,21 @@ name: vqdotu.vv
 long_name: Vector quad widening unsigned dot product (vector-vector)
 description: |
   Vector quad widening unsigned dot product instruction performing the dot product between two 4-element vectors of 8-bit unsigned integer elements and accumulating it into a 32-bit unsigned integer accumulator.
-  
+
   This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
-  
+
   The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
-  
+
   The operation performed is:
   ```
   vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
   ```
-  
+
   Where vs2[i] and vs1[i] are 32-bit bundles containing four 8-bit unsigned integers each.
 definedBy: Zvqdotq
 assembly: vd, vs2, vs1, vm
 encoding:
-  match: 101000-----------010-----1010111
+  match: 101001-----------010-----1010111
   variables:
     - name: vm
       location: 25-25
@@ -40,6 +40,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+
+sail(): |
   # Vector quad widening unsigned dot product (vector-vector)
   # SEW must be 32, operates on 4-element vectors of 8-bit unsigned integers
   if (SEW != 32) {
@@ -83,7 +85,7 @@ operation(): |
         unsigned(vs1_elem3) * unsigned(vs2_elem3)
       );
 
-      # Accumulate into destination (unsigned)
+      # Accumulate into destination
       result[i] = to_bits(32, unsigned(vd_val[i]) + unsigned(dot_product));
     }
   };
@@ -91,5 +93,3 @@ operation(): |
   write_vreg(num_elem, SEW, LMUL_pow, vd, result);
   vstart = zeros();
   RETIRE_SUCCESS
-
-sail(): |
