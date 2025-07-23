@@ -138,7 +138,7 @@ extension:
 ----
 
 Note that RISC-V does not follow semantic versioning, so `2.0` may be compatible with `1.0` for a given extension as long as `2.0` (or any version between `1.0` and `2.0`) is not marked as a breaking version
-when defined.
+when it was defined.
 
 For example:
 
@@ -203,9 +203,9 @@ The comparison is one of:
 
 [cols="m,d,m"]
 |===
-| Key                     | Meaning                | Example
+| Key                   | Meaning                                     | Example
 
-| `equal`                 | Parameter value equals                    | equal: 5 +
+| `equal`               | Parameter value equals                      | equal: 5 +
                                                                         equal: "string value" +
                                                                         equal: true
 | not_equal             | Parameter value is not equal to             | not_equal: 5 +
@@ -432,32 +432,35 @@ extension:
 [[idl-subset]]
 === IDL Subset for Conditions
 
-Generic constraints provide an escape hatch when a condition is difficult to express when using <<ext_reqs,Extension Requirements>> or <<param_reqs,Parameter Requirements>>.
-A generic constraint is an IDL function containing one or more link:../idl.adoc#implications[implications].
-The constraint holds if all the implications are true.
-The constraint function does not return a value.
+Only a subset of IDL is available for use in conditions.
 
-All global functions (for example, `implemented?(...)`) and parameters are in scope for the constraint function.
+==== In-scope variables
 
-The following is equivalent to the examples above:
+All parameters are in scope.
+Globals defined in IDL files that are normally in scope in other contexts (_e.g._, current_mode) are not in scope for conditions.
+This is true whether or not the global is constant.
 
-[source,yaml]
-----
-constraint:
-  idl(): |
-    implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
-  reason:
-    `Shgatpa` mandates that or each supported virtual memory scheme SvNN supported in
-    `satp`, the corresponding `hgatp` SvNNx4 mode must be supported.
-----
+==== Statements
 
-[source,yaml]
-----
-constraint:
-  idl(): |
-    for (U32 i = 3; i < 32; i++){
-      HPM_COUNTER_EN[i] -> HCOUNTENABLE_EN[i];
-    }
-  reason:
-    Shcounterenw requires that all non-read-only-0 counters can enabled with hcounteren.
-----
+The only allowed statements in a condition are:
+
+* link:../idl.adoc#implications[Implications]
+* For loops
+
+Notably, if/else statements are permitted. Implications should be used instead.
+
+==== Expressions
+
+In the limited set of statements available in a condition, expressions appear on either side of an implication or in the bounds of a for loop.
+Generally, expressions are only limited by the fact that only a small set of built-in functions are available, and no user-defined functions are available.
+
+The available functions are:
+
+* `implemented?(ExtensionName::A)`
+** True if ExtensionName::A is either listed as an implemented extension in the config, or if A is implied by an implemented extension.
+* `implemented_version?(ExtensionName::A, ">= 1.0")`
+** True if ExtensionName::A, version greater than or equal to 1.0 is either listed as an implemented extension in the config, or if A, version greater than or equal to 1.0 is implied by an implemented extension.
+* `$ary_includes?(ARY_PARAM, 1)`
+** True if ARY_PARAM includes the value 1
+* `$ary_size(ARY_PARAM)`
+** Returns the number of elements in ARY_PARAM
