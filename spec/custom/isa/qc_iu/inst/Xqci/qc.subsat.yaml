@@ -34,14 +34,14 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<xlen()+1> result = X[rs1] `- X[rs2];
-  Bits<xlen()+1> most_negative_number = {2'b11,{(xlen()-1){1'b0}}};
-  Bits<xlen()+1> most_positive_number = {2'b00,{(xlen()-1){1'b1}}};
+  Bits<MXLEN+1> result = X[rs1] `- X[rs2];
+  Bits<MXLEN+1> most_negative_number = {2'b11,{(xlen()-1){1'b0}}};
+  Bits<MXLEN+1> most_positive_number = {2'b00,{(xlen()-1){1'b1}}};
 
   # overflow occurs if the operands have different signs and the result is a different sign than the first operand
   if (X[rs1][xlen()-1] != X[rs2][xlen()-1]) {
     if (result[xlen()-1] != X[rs1][xlen()-1]) {
-      if ($signed(X[rs1]) < 0) {
+      if ($signed(X[rs1]) < 's0) {
         result = most_negative_number;
       } else {
         result = most_positive_number;
