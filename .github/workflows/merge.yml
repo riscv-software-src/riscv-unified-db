@@ -15,16 +15,17 @@ env:
   SINGULARITY: 1
 jobs:
   build-reuse-manifest:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: run reuse
         run: ./bin/reuse spdx
   build-udb-api-doc:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -34,7 +35,7 @@ jobs:
       - name: Generate UDB API Docs
         run: ./do gen:udb:api_doc
   build-isa-explorer-csr:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -44,7 +45,7 @@ jobs:
       - name: Generate ISA Explorer CSR
         run: ./do gen:isa_explorer_browser_csr
   build-isa-explorer-ext:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -54,7 +55,7 @@ jobs:
       - name: Generate ISA Explorer Extension
         run: ./do gen:isa_explorer_browser_ext
   build-isa-explorer-inst:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -62,9 +63,9 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Instructions
-        run: ./do gen:isa_explorer_browser_insts
+        run: ./do gen:isa_explorer_browser_inst
   build-isa-explorer-spreadsheet:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -72,9 +73,9 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Spreadsheet
-        run: ./do gen:isa_explorer_browser_spreadsheet
+        run: ./do gen:isa_explorer_spreadsheet
   build-html-isa-manual:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     env:
       MANUAL_NAME: isa
@@ -87,7 +88,7 @@ jobs:
       - name: Generate HTML ISA manual
         run: ./do gen:html_manual
   build-html-cfg-isa-manual:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -97,7 +98,7 @@ jobs:
       - name: Generate HTML ISA manual for a config
         run: ./do gen:html[example_rv64_with_overlay]
   build-instruction-appendix:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -107,7 +108,7 @@ jobs:
       - name: Generate instruction appendix
         run: ./do gen:instruction_appendix
   build-rvi20-profile:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -117,7 +118,7 @@ jobs:
       - name: Generate RVI20
         run: ./do gen:profile_release_pdf[RVI20]
   build-rva20-profile:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -127,7 +128,7 @@ jobs:
       - name: Generate RVA20
         run: ./do gen:profile_release_pdf[RVA20]
   build-rva22-profile:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -137,7 +138,7 @@ jobs:
       - name: Generate RVA22
         run: ./do gen:profile_release_pdf[RVA22]
   build-rva23-profile:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -147,7 +148,7 @@ jobs:
       - name: Generate RVA23
         run: ./do gen:profile_release_pdf[RVA23]
   build-rvb23-profile:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -157,7 +158,7 @@ jobs:
       - name: Generate RVB23
         run: ./do gen:profile_release_pdf[RVB23]
   build-ac100-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -167,7 +168,7 @@ jobs:
       - name: Generate AC100 CRD
         run: ./do gen:proc_crd_pdf[AC100]
   build-ac200-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -177,7 +178,7 @@ jobs:
       - name: Generate AC200 CRD
         run: ./do gen:proc_crd_pdf[AC200]
   build-mc100-32-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -187,7 +188,7 @@ jobs:
       - name: Generate MC100-32 CRD
         run: ./do gen:proc_crd_pdf[MC100-32]
   build-mc100-64-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -197,7 +198,7 @@ jobs:
       - name: Generate MC100-64 CRD
         run: ./do gen:proc_crd_pdf[MC100-64]
   build-mc200-32-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -207,7 +208,7 @@ jobs:
       - name: Generate MC200-32 CRD
         run: ./do gen:proc_crd_pdf[MC200-32]
   build-mc200-64-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -217,7 +218,7 @@ jobs:
       - name: Generate MC200-64 CRD
         run: ./do gen:proc_crd_pdf[MC200-64]
   build-mc300-32-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -227,7 +228,7 @@ jobs:
       - name: Generate MC300-32 CRD
         run: ./do gen:proc_crd_pdf[MC300-32]
   build-mc300-64-crd:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
@@ -237,7 +238,7 @@ jobs:
       - name: Generate MC300-64 CRD
         run: ./do gen:proc_crd_pdf[MC300-64]
   build-mc100-32-ctp:
-    if: inputs.dry-run == false
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
