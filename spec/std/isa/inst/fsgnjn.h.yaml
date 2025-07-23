@@ -1,0 +1,16 @@
+$schema: inst_schema.json#
+kind: instruction
+name: fsgnjn.h
+long_name: Floating-point Sign Negate Inject Half-Precision
+isa: zhinx
+encoding:
+  match: 0x20001053
+  mask: 0xfe00707f
+  funct7: 0x10
+  funct3: 0x1
+  rs1: x
+  rs2: x
+  rd: x
+  fmt: H
+description: |
+  Inverts sign bit from rs2 and injects into rs1 (half-precision), using x registers.

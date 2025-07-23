@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../schemas/isa_schema.json
+
+$schema: "isa_schema.json#"
+kind: isa
+name: zhinx
+display_name: Zhinx
+description: |
+  The Zhinx extension provides half-precision floating-point instructions using the integer register file (x registers),
+  analogous to the Zfh extension but without requiring the F extension. Zhinx depends on the Zfinx extension.
+version: "1.0.0"
+groups: [Zhinx]
+extensions: [zfinx]
