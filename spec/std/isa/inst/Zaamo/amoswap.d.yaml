@@ -2,22 +2,23 @@
 
 # WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amoswapN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amoswap.w
-long_name: Atomic SWAP word
+name: amoswap.d
+long_name: Atomic SWAP doubleword
 description: |
   Atomically:
 
-    * Load the word at address _xs1_
-    * Write the sign-extended value into _xd_
-    * Store the least-significant word of register _xs2_ to the address in _xs1_
+    * Load the doubleword at address _xs1_
+    * Write the value into _xd_
+    * Store the value of register _xs2_ to the address in _xs1_
 definedBy: Zaamo
+base: 64
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 00001------------010-----0101111
+  match: 00001------------011-----0101111
   variables:
     - name: aq
       location: 26
@@ -40,6 +41,6 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Swap, aq, rl, $encoding);
+  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Swap, aq, rl, $encoding);
 
 # ...existing sail() implementation...

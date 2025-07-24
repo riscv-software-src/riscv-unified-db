@@ -27,19 +27,3 @@ sorbet
 !tools/ruby-gems/idlc/sorbet
 !tools/ruby-gems/udb/sorbet
 coverage
-
-# Generated files from layout templates - DO NOT COMMIT
-spec/std/isa/csr/Zihpm/mhpmcounter*.yaml
-spec/std/isa/csr/Zihpm/hpmcounter*.yaml
-spec/std/isa/csr/Zihpm/mhpmevent*.yaml
-spec/std/isa/csr/I/pmpaddr*.yaml
-spec/std/isa/csr/I/pmpcfg*.yaml
-spec/std/isa/csr/I/mcounteren.yaml
-spec/std/isa/csr/S/scounteren.yaml
-spec/std/isa/csr/H/hcounteren.yaml
-spec/std/isa/csr/Zicntr/mcountinhibit.yaml
-spec/std/isa/csr/Sscofpmf/scountovf.yaml
-
-# Generated AMO instruction files are in instructions/ subdirectory
-# (Commented out since you want to commit them)
-# spec/std/isa/inst/Zaamo/instructions/amo*.yaml
