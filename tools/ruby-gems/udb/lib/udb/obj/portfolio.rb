@@ -400,12 +400,12 @@ class Portfolio < TopLevelDatabaseObject
 
     is_mandatory = mandatory_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| inst.specification_source_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     is_optional = optional_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| inst.specification_source_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     @instruction_presence_obj[inst_name] =
@@ -443,12 +443,12 @@ class Portfolio < TopLevelDatabaseObject
 
     is_mandatory = mandatory_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| csr.specification_source_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     is_optional = optional_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| csr.specification_source_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     @csr_presence_obj[csr_name] =
@@ -527,7 +527,7 @@ class Portfolio < TopLevelDatabaseObject
     ext = @arch.extension(ext_name)
     if ext
       # Check if any version is UDB-defined
-      udb_defined = ext.data["versions"]&.any? { |version| version["defined_by"] == "UDB" }
+      udb_defined = ext.data["versions"]&.any? { |version| version["specification_source"] == "UDB" }
       if udb_defined
         return nil  # Extensions with UDB-defined versions should not be derived from ISA manuals
       end
@@ -895,3 +895,4 @@ class Portfolio < TopLevelDatabaseObject
 end
 
 end
+

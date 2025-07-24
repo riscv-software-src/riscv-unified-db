@@ -13,14 +13,14 @@ versions:
   - version: "1.11.0"
     state: ratified
     ratification_date: 2019-12
-    defined_by: UDB
+    specification_source: UDB
     changes:
       - Defined the `mcountinhibit` CSR, which stops performance counters from
         incrementing to reduce energy consumption.
   - version: "1.12.0"
     state: ratified
     ratification_date: 2021-12
-    defined_by: UDB
+    specification_source: UDB
     changes:
       - PMP changes require an SFENCE.VMA on any hart that implements
         page-based virtual memory, even if VM is not currently enabled.
@@ -29,7 +29,7 @@ versions:
   - version: "1.13.0"
     state: frozen
     ratification_date: 2023-12
-    defined_by: UDB
+    specification_source: UDB
 params:
   HPM_COUNTER_EN:
     description: |
@@ -95,3 +95,4 @@ params:
         type: boolean
       maxItems: 32
       minItems: 32
+

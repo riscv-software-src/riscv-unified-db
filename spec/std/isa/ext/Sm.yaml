@@ -12,7 +12,7 @@ versions:
   - version: "1.11.0"
     state: ratified
     ratification_date: 2019-12
-    defined_by: UDB
+    specification_source: UDB
     changes:
       - Moved Machine spec to *Ratified* status.
       - Improvements to the description and commentary.
@@ -36,7 +36,7 @@ versions:
   - version: "1.12.0"
     state: ratified
     ratification_date: 2021-12
-    defined_by: UDB
+    specification_source: UDB
     changes:
       - Changed MRET to clear `mstatus`.MPRV when leaving M-mode.
       - Relaxed I/O regions have been specified to follow RVWMO. The previous
@@ -67,7 +67,7 @@ versions:
   - version: "1.13.0"
     state: frozen
     ratification_date: 2023-12
-    defined_by: UDB
+    specification_source: UDB
     changes:
       - Redefined `misa`.MXL to be read-only, making MXLEN a constant.
       - Defined the `misa`.B field to reflect that the B extension has been
@@ -494,3 +494,4 @@ params:
       extra_validation: |
         # must be a power of two
         assert MTVEC_BASE_ALIGNMENT_VECTORED.to_s(2).count('1') == 1
+

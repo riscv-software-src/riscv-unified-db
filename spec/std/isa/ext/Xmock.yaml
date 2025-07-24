@@ -12,11 +12,11 @@ description: This is just for testing
 versions:
   - version: "0.9.9"
     state: development
-    defined_by: UDB
+    specification_source: UDB
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-04
-    defined_by: UDB
+    specification_source: UDB
 params:
   MOCK_ENUM_2_INTS:
     description: foo
@@ -190,3 +190,4 @@ cert_test_procedures:
       number continues rather than being reset to 1.
       . Compare rainful. See this number is continued, not 1.
       .. Fail unless more rain falls on the plains than other regions
+

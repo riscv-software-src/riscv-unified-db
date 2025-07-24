@@ -15,7 +15,7 @@ versions:
 - version: "1.0.0"
   state: ratified
   ratification_date: 2019-12
-  defined_by: UDB
+  specification_source: UDB
 params:
   MUTABLE_MISA_U:
     description: |
@@ -54,3 +54,4 @@ params:
     schema:
       type: boolean
       default: true
+
