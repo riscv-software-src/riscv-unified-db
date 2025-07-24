@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -215,3 +215,4 @@ fields:
       * When 1, VS-mode interrupts that are not otherwise disabled with a field in `vsie` are enabled.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+

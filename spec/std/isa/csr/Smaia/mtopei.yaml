@@ -1,0 +1,58 @@
+# Copyright (c) Kallal Mukherjee.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mtopei
+long_name: Machine Top External Interrupt
+address: 0x35C
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy: Smaia
+description: |
+  The `mtopei` register provides information about the highest-priority
+  external interrupt that is currently enabled and pending for M-mode.
+  
+  This register is used in conjunction with the IMSIC (Incoming Message-Signaled
+  Interrupt Controller) to efficiently handle external interrupts.
+  
+  Reading this register returns the interrupt identity of the highest-priority
+  pending and enabled external interrupt. Writing to this register can be used
+  to claim and clear the interrupt.
+
+  A read of mtopei returns zero either if no interrupt is both pending in the
+  interrupt file's eiparray and enabled in its eie array, or if eithreshold is
+  not zero and no pending-and-enabled interrupt has an identity number less than
+  the value of eithreshold. Otherwise, the value returned has this format:
+  - bits 26:16 Interrupt identity
+  - bits 10:0 Interrupt priority (same as identity)
+  - All other bit positions are zeros.
+fields:
+  INTERRUPT_IDENTITY:
+    location: 26-16
+    long_name: Interrupt Identity
+    description: |
+      This field contains the identity of the highest-priority pending and
+      enabled external interrupt. A value of 0 indicates no interrupt is
+      pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+    sw_write(csr_value): |
+      if (csr_value.INTERRUPT_IDENTITY != 0) {
+        clear_imsic_interrupt(PrivilegeMode::M, csr_value.INTERRUPT_IDENTITY);
+      }
+      return csr_value.INTERRUPT_IDENTITY;
+  PRIORITY:
+    location: 7-0
+    long_name: Interrupt Priority
+    description: |
+      This field contains the priority level of the highest-priority pending
+      and enabled external interrupt.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+

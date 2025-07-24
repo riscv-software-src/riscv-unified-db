@@ -153,3 +153,4 @@ sw_read(): |
     }
   }
   return $bits(CSR[mstateen0]);
+

@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -610,3 +610,4 @@ fields:
     definedBy: S
     reset_value(): |
       return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
+

@@ -1,0 +1,47 @@
+# Copyright (c) Kallal Mukherjee.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvip
+long_name: Machine Virtual Interrupt Pending
+address: 0x309
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy: Smaia
+description: |
+  The `mvip` register indicates which virtual interrupts are pending for M-mode.
+  This register is part of the Advanced Interrupt Architecture (AIA) and works
+  in conjunction with the `mvien` register to manage virtual interrupts.
+
+  When a bit in `mvip` is set, the corresponding virtual interrupt is pending.
+  The actual interrupt behavior depends on the corresponding enable bit in
+  `mvien` and global interrupt enable settings.
+fields:
+  VSSIP:
+    location: 2
+    long_name: Virtual Supervisor Software Interrupt Pending
+    description: |
+      When set, indicates a virtual supervisor software interrupt is pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSTIP:
+    location: 6
+    long_name: Virtual Supervisor Timer Interrupt Pending
+    description: |
+      When set, indicates a virtual supervisor timer interrupt is pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSEIP:
+    location: 10
+    long_name: Virtual Supervisor External Interrupt Pending
+    description: |
+      When set, indicates a virtual supervisor external interrupt is pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia

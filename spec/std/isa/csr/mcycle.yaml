@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -63,3 +63,4 @@ sw_read(): |
   # since the counter may be shared among harts, reads must be handled
   # as a builtin function
   return read_mcycle();
+

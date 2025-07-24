@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 
 # WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/hpmcounterN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -103,3 +103,4 @@ sw_read(): |
   }
 
   return read_hpm_counter(14);
+

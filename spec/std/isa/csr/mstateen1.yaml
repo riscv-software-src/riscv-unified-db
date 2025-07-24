@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -75,3 +75,4 @@ fields:
       The SE0 bit in `mstateen1` controls access to the `hstateen1`, `hstateen1h`, and the `sstateen1` CSRs.
     type: RW
     reset_value: 0
+

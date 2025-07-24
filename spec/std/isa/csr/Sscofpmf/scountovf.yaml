@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 
 # WARNING: This file is auto-generated from spec/std/isa/csr/Sscofpmf/scountovf.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -448,3 +448,4 @@ sw_read(): |
     value = value | (CSR[mhpmevent31].OF << 31);
 
   return value & mask;
+

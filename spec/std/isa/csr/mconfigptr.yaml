@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -58,3 +58,4 @@ fields:
     legal?(csr_value): |
       # pointer must be naturally aligned to MXLEN
       return ((MXLEN-1) | csr_value.ADDRESS) == 0;
+

@@ -1,0 +1,48 @@
+# Copyright (c) Kallal Mukherjee.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvien
+long_name: Machine Virtual Interrupt Enable
+address: 0x308
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy: Smaia
+description: |
+  The `mvien` register controls which virtual interrupts are enabled for M-mode.
+  This register is part of the Advanced Interrupt Architecture (AIA) and works
+  in conjunction with the `mvip` register to manage virtual interrupts.
+
+  When a bit in `mvien` is clear, the corresponding virtual interrupt is disabled
+  and will not cause a trap to M-mode. When a bit in `mvien` is set, the
+  corresponding virtual interrupt is enabled and may cause a trap to M-mode
+  if the interrupt is also pending and not masked by global interrupt enables.
+fields:
+  VSSIE:
+    location: 2
+    long_name: Virtual Supervisor Software Interrupt Enable
+    description: |
+      When set, enables virtual supervisor software interrupts in M-mode.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSTIE:
+    location: 6
+    long_name: Virtual Supervisor Timer Interrupt Enable
+    description: |
+      When set, enables virtual supervisor timer interrupts in M-mode.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSEIE:
+    location: 10
+    long_name: Virtual Supervisor External Interrupt Enable
+    description: |
+      When set, enables virtual supervisor external interrupts in M-mode.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
