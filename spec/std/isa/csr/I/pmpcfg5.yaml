@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 
 # WARNING: This file is auto-generated from spec/std/isa/csr/I/pmpcfgN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -263,3 +263,4 @@ fields:
       }
       # fall through: keep old value
       return CSR[pmpcfg5].pmp23cfg;
+

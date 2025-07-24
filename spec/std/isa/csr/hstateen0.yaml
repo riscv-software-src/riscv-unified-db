@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../schemas/csr_schema.json
@@ -220,3 +220,4 @@ sw_read(): |
   Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
   Bits<64> hstateen0_value = $bits(CSR[hstateen0]) & mstateen0_mask;
   return hstateen0_value;
+
