@@ -1,9 +1,11 @@
-﻿# Copyright (c) Kallal Mukherjee.
+﻿# vqdotus.vx.yaml - unsigned vs2, signed xs1
+@"
+# Copyright (c) Kallal Mukherjee.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+# yaml-language-server: `$schema=../../../../schemas/inst_schema.json
 
-$schema: "inst_schema.json#"
+`$schema: "inst_schema.json#"
 kind: instruction
 name: vqdotus.vx
 long_name: Vector quad widening unsigned-signed dot product (vector-scalar)
@@ -12,12 +14,12 @@ description: |
 
   This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
 
-  The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+  The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by ``vl``. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
 
   The operation performed is:
-  ```
+  ``````
   vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
-  ```
+  ``````
 
   Where vs2[i] is a 32-bit bundle containing four 8-bit unsigned integers and xs1 contains four 8-bit signed integers in its lower 32 bits.
 definedBy: Zvqdotq
@@ -72,3 +74,4 @@ operation(): |
       vd[i] = signed_word(vd[i]) + dot_product;
     }
   }
+"@ | Out-File -FilePath "spec\std\isa\inst\Zvqdotq\vqdotus.vx.yaml" -Encoding UTF8
