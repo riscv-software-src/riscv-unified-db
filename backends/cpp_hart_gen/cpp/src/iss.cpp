@@ -71,22 +71,21 @@ int main(int argc, char **argv) {
   auto entry_pc = elf_reader.loadLoadableSegments(soc);
   hart->reset(entry_pc);
 
-  // get the first instruction
   while (true) {
     auto stop_reason = hart->run_n(100);
     if (stop_reason != StopReason::InstLimitReached &&
         stop_reason != StopReason::Exception) {
       if (stop_reason == StopReason::ExitSuccess) {
-        fmt::print("SUCCESS");
-        return 0;
+        fmt::print("SUCCESS - {}\n", hart->exit_reason());
+        break;
       } else if (stop_reason == StopReason::ExitFailure) {
-        fmt::print(stderr, "{}", hart->exit_reason());
-        return hart->exit_code();
+        fmt::print(stderr, "FAIL - {}\n", hart->exit_reason());
+        break;
       } else {
-        udb_assert(false, "TODO: stop_reason");
+        fmt::print("EXIT - {}\n", hart->exit_reason());
+        break;
       }
     }
   }
-
-  return 0;
+  return hart->exit_code();
 }
