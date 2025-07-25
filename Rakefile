@@ -364,14 +364,26 @@ end
 
 # AMO instruction generation from layouts
 %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
-  ["w", "d"].each do |size|
-    file "#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}.yaml" => [
-      "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout",
-      __FILE__
-    ] do |t|
-      erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}N.layout"), trim_mode: "-")
-      erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout"
-      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+  ["b", "h", "w", "d"].each do |size|
+    # Define all acquire/release combinations
+    aq_rl_variants = [
+      { suffix: "", aq: false, rl: false },           # base instruction
+      { suffix: ".aq", aq: true, rl: false },         # acquire only
+      { suffix: ".rl", aq: false, rl: true },         # release only
+      { suffix: ".aq.rl", aq: true, rl: true }        # both acquire and release
+    ]
+
+    aq_rl_variants.each do |variant|
+      file "#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{variant[:suffix]}.yaml" => [
+        "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout",
+        __FILE__
+      ] do |t|
+        aq = variant[:aq]
+        rl = variant[:rl]
+        erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}N.layout"), trim_mode: "-")
+        erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout"
+        File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+      end
     end
   end
 end
@@ -405,8 +417,11 @@ namespace :gen do
 
     # Generate AMO instructions
     %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
-      ["w", "d"].each do |size|
-        Rake::Task["#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}.yaml"].invoke
+      ["b", "h", "w", "d"].each do |size|
+        # Generate all acquire/release variants
+        ["", ".aq", ".rl", ".aq.rl"].each do |suffix|
+          Rake::Task["#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{suffix}.yaml"].invoke
+        end
       end
     end
   end

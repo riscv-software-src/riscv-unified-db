@@ -1,40 +1,51 @@
-<%# This is an ERB template that generates AMO add instruction variants %>
-<%# Variables: size = "w" or "d", match_bits, mask_bits %>
-<%
-  size = @size || "w"
-  bit_size = size == "w" ? 32 : 64
-  encoding_suffix = size == "w" ? "010" : "011"
-%>
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
-<%- raise "'size' must be defined as 'w' or 'd'" if size.nil? -%>
+<%-
+  raise "'size' must be defined as 'b', 'h', 'w', or 'd'" unless %w[b h w d].include?(size)
+  raise "'aq' must be defined as true or false" unless [true, false].include?(aq)
+  raise "'rl' must be defined as true or false" unless [true, false].include?(rl)
+
+  size_info = {
+    "b" => { name: "byte", bits: 8, funct3: "000", operation_bits: "8" },
+    "h" => { name: "halfword", bits: 16, funct3: "001", operation_bits: "16" },
+    "w" => { name: "word", bits: 32, funct3: "010", operation_bits: "32" },
+    "d" => { name: "doubleword", bits: 64, funct3: "011", operation_bits: "64" }
+  }
+
+  current_size = size_info[size]
+
+  # Generate instruction name suffix based on aq/rl
+  aq_rl_suffix = ""
+  aq_rl_suffix += ".aq" if aq
+  aq_rl_suffix += ".rl" if rl
+
+  # Generate match string with fixed aq/rl bits
+  aq_bit = aq ? "1" : "0"
+  rl_bit = rl ? "1" : "0"
+-%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amoadd.<%= size %>
-long_name: Atomic fetch-and-add <%= size == "w" ? "word" : "doubleword" %>
+name: amoadd.<%= size %><%= aq_rl_suffix %>
+long_name: Atomic fetch-and-add <%= current_size[:name] %><%= aq ? " (acquire)" : "" %><%= rl ? " (release)" : "" %><%= aq && rl ? " (acquire-release)" : "" %>
 description: |
-  Atomically:
+  Atomically<%= aq ? " with acquire ordering" : "" %><%= rl ? " with release ordering" : "" %>:
 
-    * Load the <%= size == "w" ? "word" : "doubleword" %> at address _xs1_
-    * Write the <%= size == "w" ? "sign-extended value" : "loaded value" %> into _xd_
-    * Add the <%= size == "w" ? "least-significant word of register" : "value of register" %> _xs2_ to the loaded value
-    * Write the <%= size == "w" ? "sum" : "result" %> to the address in _xs1_
+    * Load the <%= current_size[:name] %> at address _xs1_
+    * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_
+    * Add the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value
+    * Write the result to the address in _xs1_
 definedBy: Zaamo
 <%- if size == "d" -%>
 base: 64
 <%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 00000------------<%= size == "w" ? "010" : "011" %>-----0101111
+  match: 00000<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111
   variables:
-    - name: aq
-      location: 26
-    - name: rl
-      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -48,14 +59,11 @@ access:
   vu: always
 operation(): |
   if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
-    # even though this is a memory operation, the exception occurs before that would be known,
-    # so mode() is the correct reporting mode rathat than effective_ldst_mode()
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   XReg virtual_address = X[xs1];
-
-  X[xd] = amo<<%= size == "w" ? "32" : "64" %>>(virtual_address, X[xs2]<%= size == "w" ? "[31:0]" : "" %>, AmoOperation::Add, aq, rl, $encoding);
+  X[xd] = amo<%= current_size[:operation_bits] %>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Add, <%= aq ? "true" : "false" %>, <%= rl ? "true" : "false" %>, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
