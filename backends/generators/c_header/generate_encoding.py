@@ -43,23 +43,6 @@ def resolve_erb_template(template_str):
     return template_str.strip()
 
 
-def resolve_erb_template(template_str):
-    """
-    Simple ERB template resolver for exception names.
-    Resolves patterns like '<%- if ext?(:H) -%>V<%- end -%>U-mode' to 'U-mode'.
-    """
-    if not template_str:
-        return template_str
-    
-    # Handle <%- if ext?(:H) -%>V<%- end -%> pattern (VU-mode -> U-mode)
-    template_str = re.sub(r'<%- if ext\?\(:H\) -%>V<%- end -%>', '', template_str)
-    
-    # Handle <%- if ext?(:H) -%>H<%- end -%> pattern (HS-mode -> S-mode)  
-    template_str = re.sub(r'<%- if ext\?\(:H\) -%>H<%- end -%>', '', template_str)
-    
-    return template_str.strip()
-
-
 def calculate_mask(match_str):
     """Convert the bit pattern string to a mask (1 for fixed bits, 0 for variable bits)."""
     return int("".join("0" if c == "-" else "1" for c in match_str), 2)
