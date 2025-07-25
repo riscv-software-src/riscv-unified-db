@@ -119,7 +119,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
   sh "chmod +x #{run_pname}"
 
   # Now run the actual command.
-  sh cmd
+  sh(cmd)
 
   $logger.info "Generated PDF in #{target_pname}"
 end
@@ -154,7 +154,56 @@ def pf_adoc2html(adoc_file, target_pname)
   sh "chmod +x #{run_pname}"
 
   # Now run the actual command.
-  sh cmd
+  sh(cmd)
 
   $logger.info "Generated HTML in #{target_pname}"
+end
+
+# @param adoc_file [String] Full pathname of source adoc file
+# @param target_pname [String] Full name of tags file being generated
+# @param isa_manual_dirname [String] Full pathname of ISA manual root directory
+def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
+  target_dirname = File.dirname(target_pname)
+
+  # Ensure target directory is present.
+  FileUtils.mkdir_p(target_dirname)
+
+  # The tags backend will put the tags file in the same directory as the input adoc file.
+  backend_tags_pname = adoc_file.sub(/\.adoc$/, "-norm-tags.json")
+
+  $logger.info "Extracting normative rule tags (AKA anchors) from #{adoc_file} into #{backend_tags_pname}"
+  cmd = [
+    "asciidoctor",
+    "-w",
+    "-v",
+    "-a toc",
+    "-a imagesdir=#{isa_manual_dirname}/docs-resources/images",
+    "-r asciidoctor-diagram",
+    "-r idl_highlighter",
+    "--require=#{isa_manual_dirname}/docs-resources/converters/tags.rb",
+    "--backend tags",
+    "-a tags-match-prefix='norm:'",
+    "-a tags-output-suffix='-norm-tags.json'",
+    adoc_file
+  ].join(" ")
+
+  $logger.info "bundle exec #{cmd}"
+
+  # Write out command used to extract tags to allow running this manually during development.
+  run_pname = "#{target_dirname}/adoc2norm_tags.sh"
+  sh "rm -f #{run_pname}"
+  sh "echo '#!/bin/bash' >#{run_pname}"
+  sh "echo >>#{run_pname}"
+  sh "echo bundle exec #{cmd} >>#{run_pname}"
+  sh "chmod +x #{run_pname}"
+
+  # Now run the actual command.
+  sh(cmd)
+
+  $logger.info "Done extracting normative rule tags from #{adoc_file} into #{backend_tags_pname}"
+
+  # Now move the tags to the target_pname.
+  FileUtils.mv(backend_tags_pname, target_pname)
+
+  $logger.info "Moved normative rule tags to #{target_pname}"
 end

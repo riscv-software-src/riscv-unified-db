@@ -64,12 +64,12 @@ cert_normative_rules:
   - id: inst.add.encoding
     description: Encoding
     doc_links:
-      - manual:inst:add:encoding
+      - norm:enc:insttable:add
   - id: inst.add.basic_op
     description: Basic operation
     doc_links:
-      - manual:inst:add:operation
+      - norm:inst:add:operation
   - id: inst.add.overflow
     description: Treatment of overflow
     doc_links:
-      - manual:insts:add_sub:overflow
+      - norm:insts:add_sub:overflow

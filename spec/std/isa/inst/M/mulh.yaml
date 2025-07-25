@@ -75,3 +75,9 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.mulh.encoding
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:mulh

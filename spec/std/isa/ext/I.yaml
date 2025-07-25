@@ -21,4 +21,4 @@ cert_normative_rules:
   - id: ext.I:R-type_operands
     description: R-type instruction source and destination operands
     doc_links:
-      - manual:ext:I:R-type_operands
+      - norm:base:all:R-type_operands

@@ -153,7 +153,7 @@ fields:
       - id: csr_field.misa.M.disabled
         description: What happens when you turn off `misa.M`
         doc_links:
-          - manual:csr:misa:disabling-extension
+          - norm:csr:misa:disabling-extension
     cert_test_procedures:
       - id: csr.misa.M.muldiv_with_M_on&off
         description: Execute with M on/off
@@ -248,7 +248,7 @@ cert_normative_rules:
   - id: csr.misa.disabling_bits
     description: What happens when you turn off bits
     doc_links:
-      - manual:csr:misa:disabling-extension
+      - norm:csr:misa:disabling-extension
 cert_test_procedures:
   - id: csr.misa.off&on
     description: Turn on/off each bit and see what happens
