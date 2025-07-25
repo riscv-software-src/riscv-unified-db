@@ -6,54 +6,25 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: seed
-long_name: Physical Entropy Seed Register
+long_name: Entropy Seed Register
 address: 0x015
-type: unprivileged
 priv_mode: U
-length: XLEN
-definedBy: Zkr
-
-description:
-  - id: csr-seed-purpose
-    normative: true
-    text: |
-      The `seed` register is an XLEN-bit WARL read-only CSR that provides up to 16 bits of physical entropy.
-      Software can read this CSR to obtain entropy for cryptographic use. If no entropy is available, the value
-      may return 0 or an undefined pattern. Reading from `seed` may have side effects, depending on implementation.
-  - id: csr-seed-behavior
-    normative: false
-    text: |
-      The entropy value returned by `seed` may change between reads. Some implementations may repeat values,
-      return zero if entropy is not available, or exhibit other implementation-defined behavior.
-      The returned value must never cause traps or undefined instruction behavior.
-      Only bits [15:0] are guaranteed to contain valid entropy. Bits [31:30] may indicate entropy status.
+length: 64
+writable: false
+definedBy:
+  name: Zkr
+  version: ">=1.0.0"
+description: |
+  The `seed` CSR exposes physical entropy directly to software. This register is useful for cryptographic
+  applications and random number generation. Reads may have side effects depending on the implementation.
 
 fields:
-  SEED:
-    location_rv64: 63-0
+  seed_value:
     location_rv32: 31-0
+    location_rv64: 63-0
+    type: RO
     description: |
-      Contains the physical entropy bits. Bits [15:0] are valid entropy. Bits [31:30] may indicate entropy availability state.
-      Upper bits are reserved or undefined. This field may be read/write with hardware update (RW-H), but writes are ignored.
-    type: RW-H
-    reset_value: UNDEFINED
-    sw_write(_): |
-      # Check permission via mseccfg.USEED or mseccfg.SSEED (implementation-defined)
-      if (!has_seed_write_permission(mode())) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-      }
-      # Ignore all written values (read-only from software perspective)
-
-sw_read(): |
-  # Check access permission via mseccfg.USEED or mseccfg.SSEED
-  if (!has_seed_read_permission(mode())) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
-  # Optionally: disallow CSRRS/CSRRC reads
-  if (is_read_modify_write_encoding($encoding)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
-  # Return entropy value; get_random() is assumed to be a defined IDL function
-  return get_random() & ((1 << ZKR_SEED_WIDTH) - 1);
+      Entropy bits returned from the physical entropy source.
+      This field is WARL and read-only. On each read, the value may be consumed
+      or updated depending on platform behavior (see `ZKR_READ_SIDE_EFFECTS`).
+    reset_value: UNDEFINED_LEGAL
