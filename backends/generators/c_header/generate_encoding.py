@@ -9,6 +9,7 @@ import logging
 import argparse
 import yaml
 import re
+import re
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,6 +24,23 @@ from generator import (
 )
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
+
+
+def resolve_erb_template(template_str):
+    """
+    Simple ERB template resolver for exception names.
+    Resolves patterns like '<%- if ext?(:H) -%>V<%- end -%>U-mode' to 'U-mode'.
+    """
+    if not template_str:
+        return template_str
+
+    # Handle <%- if ext?(:H) -%>V<%- end -%> pattern (VU-mode -> U-mode)
+    template_str = re.sub(r'<%- if ext\?\(:H\) -%>V<%- end -%>', '', template_str)
+
+    # Handle <%- if ext?(:H) -%>H<%- end -%> pattern (HS-mode -> S-mode)
+    template_str = re.sub(r'<%- if ext\?\(:H\) -%>H<%- end -%>', '', template_str)
+
+    return template_str.strip()
 
 
 def resolve_erb_template(template_str):
@@ -433,7 +451,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
