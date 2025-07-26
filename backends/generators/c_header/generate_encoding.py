@@ -212,12 +212,16 @@ def extract_instruction_fields(instructions):
                 continue
 
             # Process location format
-            if isinstance(location, str) and "-" in location:
+            if isinstance(location, str):
                 try:
-                    high, low = map(int, location.split("-"))
+                    if "-" in location:
+                        high, low = map(int, location.split("-"))
+                    else:
+                        high = low = int(location)
+
                     mask = ((1 << (high - low + 1)) - 1) << low
                     field_dict[std_field_name] = {
-                        "location": f"{high}-{low}",
+                        "location": f"{high}-{low}" if high != low else f"{high}",
                         "mask": f"0x{mask:x}",
                         "source": "instruction",
                         "original_name": (
@@ -328,6 +332,12 @@ def main():
     instr_dict = {}
     for name, instr_data in instructions.items():
         match_str = instr_data.get("match")
+
+        if not match_str:
+            subtype = instr_data.get("subtype")
+            if isinstance(subtype, dict):
+                match_str = subtype.get("match")
+
         if match_str:
             try:
                 match_val = parse_match(match_str)
@@ -343,6 +353,8 @@ def main():
                 }
             except Exception as e:
                 logging.error(f"Error processing {name}: {e}")
+        else:
+            logging.error(f"Missing 'match' or 'subtype.match' for instruction {name}")
 
     # Extract field information
     field_dict = extract_instruction_fields(instructions)
