@@ -1,0 +1,429 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# Hypervisor extension (H) IDL functions
+# This file contains hypervisor-specific functions and utilities
+
+# Check if hypervisor extension is enabled
+function hypervisor_enabled {
+  returns Boolean
+  description {
+    Check if the hypervisor extension is enabled via misa.H bit
+  }
+  body {
+    return implemented?(ExtensionName::H);
+  }
+}
+
+# Get current virtualization mode (V bit)
+function get_virtualization_mode {
+  returns Boolean
+  description {
+    Get the current virtualization mode (V bit)
+  }
+  body {
+    return V;
+  }
+}
+
+# Set virtualization mode
+function set_virtualization_mode {
+  arguments Boolean new_v
+  description {
+    Set the virtualization mode (V bit)
+  }
+  body {
+    V = new_v;
+  }
+}
+
+# Check if currently in VS-mode
+function in_vs_mode {
+  returns Boolean
+  description {
+    Check if currently in VS-mode
+  }
+  body {
+    return (mode() == PrivilegeMode::VS);
+  }
+}
+
+# Check if currently in VU-mode  
+function in_vu_mode {
+  returns Boolean
+  description {
+    Check if currently in VU-mode
+  }
+  body {
+    return (mode() == PrivilegeMode::VU);
+  }
+}
+
+# Check if currently in HS-mode
+function in_hs_mode {
+  returns Boolean
+  description {
+    Check if currently in HS-mode
+  }
+  body {
+    return (mode() == PrivilegeMode::HS);
+  }
+}
+
+# Get guest physical address from virtual address
+function translate_guest_physical {
+  arguments XReg vaddr, MemoryOperation op, PrivilegeMode mode
+  returns TranslationResult
+  description {
+    Perform two-stage address translation: virtual to guest physical
+  }
+  body {
+    # First stage translation: virtual to guest physical (VS-stage)
+    # Use the existing translate function which handles VS-stage translation
+    TranslationResult vs_result = translate(vaddr, op, mode, 0);  # 0 is placeholder for encoding
+    
+    # Second stage translation: guest physical to supervisor physical (G-stage)
+    if (V == 1) {
+      TranslationResult gs_result = translate_gstage(vs_result.paddr, vaddr, op, mode, 0);
+      return gs_result;
+    } else {
+      return vs_result;
+    }
+  }
+}
+
+# Two-stage address translation for hypervisor
+function translate_two_stage {
+  arguments XReg vaddr, MemoryOperation op, PrivilegeMode mode
+  returns TranslationResult
+  description {
+    Perform two-stage address translation for hypervisor operations
+  }
+  body {
+    # First stage: virtual to guest physical (VS-stage)
+    # Use the existing translate function which handles VS-stage translation
+    TranslationResult vs_result = translate(vaddr, op, mode, 0);  # 0 is placeholder for encoding
+    
+    # Second stage: guest physical to supervisor physical (G-stage)
+    if (V == 1) {
+      TranslationResult gs_result = translate_gstage(vs_result.paddr, vaddr, op, mode, 0);
+      return gs_result;
+    } else {
+      return vs_result;
+    }
+  }
+}
+
+# G-stage address translation (hypervisor wrapper)
+function h_translate_gstage {
+  arguments XReg gpaddr, MemoryOperation op, PrivilegeMode mode
+  returns TranslationResult
+  description {
+    Perform G-stage address translation using hgatp
+  }
+  body {
+    # Use the existing translate_gstage function from globals.isa
+    # This function handles all the proper page table walking and exception handling
+    return translate_gstage(gpaddr, 0, op, mode, 0);  # 0 is placeholder for vaddr and encoding
+  }
+}
+
+# Handle hypervisor exceptions
+function handle_hypervisor_exception {
+  arguments ExceptionCode code, XReg tval, XReg tval2, XReg tinst
+  description {
+    Handle hypervisor exceptions by setting up appropriate CSRs
+  }
+  body {
+    # Set up exception handling for hypervisor mode
+    if (V == 1) {
+      # In virtual mode, use virtual CSRs
+      vstval = tval;
+      vsepc = pc;
+      # Set up virtual trap vector
+      pc = vstvec;
+    } else {
+      # In HS mode, use regular CSRs
+      stval = tval;
+      sepc = pc;
+      # Set up trap vector
+      pc = stvec;
+    }
+  }
+}
+
+# Hypervisor fence operations
+function hfence_vvma {
+  description {
+    Invalidate VS-stage address translations
+  }
+  body {
+    # Invalidate VS-stage address translations
+    VmaOrderType inval_type;
+    inval_type.global = false;
+    inval_type.smode = false;
+    inval_type.vsmode = true;
+    inval_type.gstage = false;
+    inval_type.single_vmid = false;
+    inval_type.single_asid = false;
+    inval_type.single_vaddr = false;
+    inval_type.single_gpaddr = false;
+    invalidate_translations(inval_type);
+  }
+}
+
+function hfence_gvma {
+  description {
+    Invalidate G-stage address translations
+  }
+  body {
+    # Invalidate G-stage address translations
+    VmaOrderType inval_type;
+    inval_type.global = false;
+    inval_type.smode = false;
+    inval_type.vsmode = false;
+    inval_type.gstage = true;
+    inval_type.single_vmid = false;
+    inval_type.single_asid = false;
+    inval_type.single_vaddr = false;
+    inval_type.single_gpaddr = false;
+    invalidate_translations(inval_type);
+  }
+}
+
+# Hypervisor load operations
+function hlv_b {
+  arguments XReg rs1, XReg rd
+  description {
+    Load byte from guest physical address
+  }
+  body {
+    # Load byte from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = sign_extend(read_physical_memory<8>(result.paddr), 8);
+  }
+}
+
+function hlv_bu {
+  arguments XReg rs1, XReg rd
+  description {
+    Load unsigned byte from guest physical address
+  }
+  body {
+    # Load unsigned byte from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = zero_extend(read_physical_memory<8>(result.paddr), 8);
+  }
+}
+
+function hlv_h {
+  arguments XReg rs1, XReg rd
+  description {
+    Load halfword from guest physical address
+  }
+  body {
+    # Load halfword from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = sign_extend(read_physical_memory<16>(result.paddr), 16);
+  }
+}
+
+function hlv_hu {
+  arguments XReg rs1, XReg rd
+  description {
+    Load unsigned halfword from guest physical address
+  }
+  body {
+    # Load unsigned halfword from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = zero_extend(read_physical_memory<16>(result.paddr), 16);
+  }
+}
+
+function hlv_w {
+  arguments XReg rs1, XReg rd
+  description {
+    Load word from guest physical address
+  }
+  body {
+    # Load word from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = sign_extend(read_physical_memory<32>(result.paddr), 32);
+  }
+}
+
+function hlv_wu {
+  arguments XReg rs1, XReg rd
+  description {
+    Load unsigned word from guest physical address
+  }
+  body {
+    # Load unsigned word from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = zero_extend(read_physical_memory<32>(result.paddr), 32);
+  }
+}
+
+function hlv_d {
+  arguments XReg rs1, XReg rd
+  description {
+    Load doubleword from guest physical address
+  }
+  body {
+    # Load doubleword from guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Read, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = read_physical_memory<64>(result.paddr);
+  }
+}
+
+# Hypervisor store operations
+function hsv_b {
+  arguments XReg rs1, XReg rs2
+  description {
+    Store byte to guest physical address
+  }
+  body {
+    # Store byte to guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Write, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    write_physical_memory<8>(result.paddr, X[rs2]);
+  }
+}
+
+function hsv_h {
+  arguments XReg rs1, XReg rs2
+  description {
+    Store halfword to guest physical address
+  }
+  body {
+    # Store halfword to guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Write, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    write_physical_memory<16>(result.paddr, X[rs2]);
+  }
+}
+
+function hsv_w {
+  arguments XReg rs1, XReg rs2
+  description {
+    Store word to guest physical address
+  }
+  body {
+    # Store word to guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Write, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    write_physical_memory<32>(result.paddr, X[rs2]);
+  }
+}
+
+function hsv_d {
+  arguments XReg rs1, XReg rs2
+  description {
+    Store doubleword to guest physical address
+  }
+  body {
+    # Store doubleword to guest physical address
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Write, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    write_physical_memory<64>(result.paddr, X[rs2]);
+  }
+}
+
+# Hypervisor load with execute permission check
+function hlvx_hu {
+  arguments XReg rs1, XReg rd
+  description {
+    Load unsigned halfword from guest physical address with execute permission check
+  }
+  body {
+    # Load unsigned halfword from guest physical address with execute permission check
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Fetch, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = zero_extend(read_physical_memory<16>(result.paddr), 16);
+  }
+}
+
+function hlvx_wu {
+  arguments XReg rs1, XReg rd
+  description {
+    Load unsigned word from guest physical address with execute permission check
+  }
+  body {
+    # Load unsigned word from guest physical address with execute permission check
+    XReg gpaddr = X[rs1];
+    TranslationResult result = h_translate_gstage(gpaddr, MemoryOperation::Fetch, mode());
+    
+    # translate_gstage will raise exceptions on translation failure
+    X[rd] = zero_extend(read_physical_memory<32>(result.paddr), 32);
+  }
+}
+
+# Check if hypervisor mode is supported
+function supports_hypervisor {
+  returns Boolean
+  description {
+    Check if hypervisor mode is supported
+  }
+  body {
+    return implemented?(ExtensionName::H) && implemented?(ExtensionName::S);
+  }
+}
+
+# Get current VMID
+function get_current_vmid {
+  returns Bits<VMID_WIDTH>
+  description {
+    Get the current VMID from hgatp
+  }
+  body {
+    if (V == 1) {
+      return hgatp.VMID;
+    } else {
+      return 0;
+    }
+  }
+}
+
+# Set current VMID
+function set_current_vmid {
+  arguments Bits<VMID_WIDTH> vmid
+  description {
+    Set the current VMID in hgatp
+  }
+  body {
+    if (V == 1) {
+      hgatp.VMID = vmid;
+    }
+  }
+} 
