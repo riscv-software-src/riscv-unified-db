@@ -236,6 +236,7 @@ sw_read(): |
     (CSR[misa].V << 21) |
     (CSR[misa].U << 20) |
     (CSR[misa].S << 18) |
+    (CSR[misa].Q << 16) |
     (CSR[misa].M << 12) |
     (CSR[misa].I << 7) |
     (CSR[misa].H << 6) |
