@@ -19,8 +19,13 @@
 
   # Generate instruction name suffix based on aq/rl
   aq_rl_suffix = ""
-  aq_rl_suffix += ".aq" if aq
-  aq_rl_suffix += ".rl" if rl
+  if aq && rl
+    aq_rl_suffix = ".aqrl"
+  elsif aq
+    aq_rl_suffix = ".aq"
+  elsif rl
+    aq_rl_suffix = ".rl"
+  end
 
   # Generate match string with fixed aq/rl bits
   aq_bit = aq ? "1" : "0"
