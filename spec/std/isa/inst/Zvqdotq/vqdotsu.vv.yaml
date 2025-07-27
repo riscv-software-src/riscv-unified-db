@@ -40,34 +40,16 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  # Vector 8-bit Signed-Unsigned Dot Product (vector-vector)
-  # SEW must be 32, vs2 is signed, vs1 is unsigned
-
-  if (SEW != 32) {
-    raise(ExceptionCode::IllegalInstruction, $encoding);
-  }
-
-  # Process each vector element
-  for (i in 0..<vl) {
-    if (vm[i] || vm == 1) {  # Check mask
-      # Extract 4 8-bit elements: vs2 signed, vs1 unsigned
-      vs2_elem0 = signed(vs2[i][7:0]);
-      vs2_elem1 = signed(vs2[i][15:8]);
-      vs2_elem2 = signed(vs2[i][23:16]);
-      vs2_elem3 = signed(vs2[i][31:24]);
-
-      vs1_elem0 = unsigned(vs1[i][7:0]);
-      vs1_elem1 = unsigned(vs1[i][15:8]);
-      vs1_elem2 = unsigned(vs1[i][23:16]);
-      vs1_elem3 = unsigned(vs1[i][31:24]);
-
-      # Compute dot product: signed * unsigned
-      dot_product = vs2_elem0 * vs1_elem0 +
-                    vs2_elem1 * vs1_elem1 +
-                    vs2_elem2 * vs1_elem2 +
-                    vs2_elem3 * vs1_elem3;
-
-      # Accumulate into destination
-      vd[i] = signed(vd[i]) + dot_product;
-    }
-  }
+  # IDL implementation not yet available due to missing vector register file and CSR definitions.
+  # See https://github.com/riscv-software-src/riscv-unified-db/pull/467 for vector infrastructure work.
+  #
+  # This instruction performs a vector quad widening signed-unsigned dot product:
+  # - SEW must be 32
+  # - vs2 contains 8-bit signed integers, vs1 contains 8-bit unsigned integers
+  # - Accumulates results into 32-bit signed integer accumulators
+  # - Supports masking operations
+  #
+  # Operation: vd[i] = signed(vs2[i][0]) * unsigned(vs1[i][0]) +
+  #                    signed(vs2[i][1]) * unsigned(vs1[i][1]) +
+  #                    signed(vs2[i][2]) * unsigned(vs1[i][2]) +
+  #                    signed(vs2[i][3]) * unsigned(vs1[i][3]) + vd[i]

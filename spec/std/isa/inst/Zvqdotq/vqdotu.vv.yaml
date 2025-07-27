@@ -40,34 +40,14 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  # Vector 8-bit Unsigned-Unsigned Dot Product (vector-vector)
-  # SEW must be 32, operates on 4-element vectors of 8-bit unsigned integers
-
-  if (SEW != 32) {
-    raise(ExceptionCode::IllegalInstruction, $encoding);
-  }
-
-  # Process each vector element
-  for (i in 0..<vl) {
-    if (vm[i] || vm == 1) {  # Check mask
-      # Extract 4 8-bit unsigned elements from each 32-bit bundle
-      vs1_elem0 = unsigned(vs1[i][7:0]);
-      vs1_elem1 = unsigned(vs1[i][15:8]);
-      vs1_elem2 = unsigned(vs1[i][23:16]);
-      vs1_elem3 = unsigned(vs1[i][31:24]);
-
-      vs2_elem0 = unsigned(vs2[i][7:0]);
-      vs2_elem1 = unsigned(vs2[i][15:8]);
-      vs2_elem2 = unsigned(vs2[i][23:16]);
-      vs2_elem3 = unsigned(vs2[i][31:24]);
-
-      # Compute dot product: sum of element-wise products
-      dot_product = vs1_elem0 * vs2_elem0 +
-                    vs1_elem1 * vs2_elem1 +
-                    vs1_elem2 * vs2_elem2 +
-                    vs1_elem3 * vs2_elem3;
-
-      # Accumulate into destination
-      vd[i] = unsigned(vd[i]) + dot_product;
-    }
-  }
+  # IDL implementation not yet available due to missing vector register file and CSR definitions.
+  # See https://github.com/riscv-software-src/riscv-unified-db/pull/467 for vector infrastructure work.
+  #
+  # This instruction performs a vector quad widening unsigned dot product:
+  # - SEW must be 32
+  # - Operates on 4-element vectors of 8-bit unsigned integers
+  # - Accumulates results into 32-bit unsigned integer accumulators
+  # - Supports masking operations
+  #
+  # Operation: vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] +
+  #                    vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
