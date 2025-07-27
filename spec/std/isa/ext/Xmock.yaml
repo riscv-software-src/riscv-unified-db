@@ -190,4 +190,3 @@ cert_test_procedures:
       number continues rather than being reset to 1.
       . Compare rainful. See this number is continued, not 1.
       .. Fail unless more rain falls on the plains than other regions
-
