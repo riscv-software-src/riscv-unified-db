@@ -24,7 +24,8 @@ versions:
         company: Tenstorrent
     url: https://github.com/riscv/riscv-dot-product
     implies:
-      - [V, "1.0.0"]
+      - name: V
+        version: "1.0.0"
 description: |
   Vector quad widening 4D Dot Product 8-bit Integer dot-product instructions performing the dot product between two 4-element vectors of 8-bit integer elements and accumulating it into a 32-bit integer accumulator.
   
