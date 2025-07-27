@@ -143,10 +143,17 @@ RV64::
 
   # Add virtual modes if H extension is implemented
   if cfg_arch.ext?(:H)
-    modes << "VS" << "VU"
-    mode_headers << "VS" << "VU"
+    # Always add VS mode when H extension is present
+    modes << "VS"
+    mode_headers << "VS"
     mode_values << "[.access-#{inst.access['vs']}]##{inst.access['vs'].capitalize}#"
-    mode_values << "[.access-#{inst.access['vu']}]##{inst.access['vu'].capitalize}#"
+
+    # Only add VU mode if both H and U extensions are present
+    if cfg_arch.ext?(:U)
+      modes << "VU"
+      mode_headers << "VU"
+      mode_values << "[.access-#{inst.access['vu']}]##{inst.access['vu'].capitalize}#"
+    end
   end
 
   # Generate column specification
