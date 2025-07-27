@@ -370,7 +370,7 @@ end
       { suffix: "", aq: false, rl: false },           # base instruction
       { suffix: ".aq", aq: true, rl: false },         # acquire only
       { suffix: ".rl", aq: false, rl: true },         # release only
-      { suffix: ".aq.rl", aq: true, rl: true }        # both acquire and release
+      { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
     ]
 
     aq_rl_variants.each do |variant|
@@ -419,7 +419,7 @@ namespace :gen do
     %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
       ["b", "h", "w", "d"].each do |size|
         # Generate all acquire/release variants
-        ["", ".aq", ".rl", ".aq.rl"].each do |suffix|
+        ["", ".aq", ".rl", ".aqrl"].each do |suffix|
           Rake::Task["#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{suffix}.yaml"].invoke
         end
       end
