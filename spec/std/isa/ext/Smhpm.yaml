@@ -95,4 +95,3 @@ params:
         type: boolean
       maxItems: 32
       minItems: 32
-
