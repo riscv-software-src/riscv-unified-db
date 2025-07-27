@@ -1,3 +1,8 @@
+<!--
+Copyright (c) Kallal Mukherjee.
+SPDX-License-Identifier: BSD-3-Clause-Clear
+-->
+
 # Golden File Update Required for PR #902
 
 ## Issue
