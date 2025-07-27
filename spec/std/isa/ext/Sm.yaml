@@ -494,4 +494,3 @@ params:
       extra_validation: |
         # must be a power of two
         assert MTVEC_BASE_ALIGNMENT_VECTORED.to_s(2).count('1') == 1
-
