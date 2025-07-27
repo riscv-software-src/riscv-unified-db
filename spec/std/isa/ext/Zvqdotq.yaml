@@ -16,7 +16,7 @@ doc_license:
   url: https://creativecommons.org/licenses/by/4.0/
 versions:
   - version: "0.0.1"
-    state: unratified
+    state: development
     ratification_date: null
     contributors:
       - name: Kenneth Dockser
