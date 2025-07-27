@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zvqdotq
 type: unprivileged
-long_name: Vector quad widening 4D Dot Product 8-bit Integer
+long_name: Vector Quad Widening 4D Dot Product
 company:
   name: RISC-V International
   url: https://riscv.org
@@ -22,9 +22,6 @@ versions:
       - name: Kenneth Dockser
         email: kdockser@tenstorrent.com
         company: Tenstorrent
-      - name: Kallal Mukherjee
-        email: ritamukherje62@gmail.com
-        company: Independent
     url: https://github.com/riscv/riscv-dot-product
     implies:
       - [V, "1.0.0"]

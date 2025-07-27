@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vqdotu.vv
-long_name: Vector quad widening unsigned dot product (vector-vector)
+long_name: Vector 8-bit Unsigned-Unsigned Dot Product (vector-vector)
 description: |
   Vector quad widening unsigned dot product instruction performing the dot product between two 4-element vectors of 8-bit unsigned integer elements and accumulating it into a 32-bit unsigned integer accumulator.
 
@@ -40,34 +40,34 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  # Vector quad widening unsigned dot product (vector-vector)
+  # Vector 8-bit Unsigned-Unsigned Dot Product (vector-vector)
   # SEW must be 32, operates on 4-element vectors of 8-bit unsigned integers
-  
+
   if (SEW != 32) {
-    raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    raise(ExceptionCode::IllegalInstruction, $encoding);
   }
-  
+
   # Process each vector element
-  for (i = 0; i < vl; i++) {
+  for (i in 0..<vl) {
     if (vm[i] || vm == 1) {  # Check mask
       # Extract 4 8-bit unsigned elements from each 32-bit bundle
-      vs1_elem0 = unsigned_byte(vs1[i][7:0]);
-      vs1_elem1 = unsigned_byte(vs1[i][15:8]);
-      vs1_elem2 = unsigned_byte(vs1[i][23:16]);
-      vs1_elem3 = unsigned_byte(vs1[i][31:24]);
-      
-      vs2_elem0 = unsigned_byte(vs2[i][7:0]);
-      vs2_elem1 = unsigned_byte(vs2[i][15:8]);
-      vs2_elem2 = unsigned_byte(vs2[i][23:16]);
-      vs2_elem3 = unsigned_byte(vs2[i][31:24]);
-      
+      vs1_elem0 = unsigned(vs1[i][7:0]);
+      vs1_elem1 = unsigned(vs1[i][15:8]);
+      vs1_elem2 = unsigned(vs1[i][23:16]);
+      vs1_elem3 = unsigned(vs1[i][31:24]);
+
+      vs2_elem0 = unsigned(vs2[i][7:0]);
+      vs2_elem1 = unsigned(vs2[i][15:8]);
+      vs2_elem2 = unsigned(vs2[i][23:16]);
+      vs2_elem3 = unsigned(vs2[i][31:24]);
+
       # Compute dot product: sum of element-wise products
-      dot_product = vs1_elem0 * vs2_elem0 + 
-                    vs1_elem1 * vs2_elem1 + 
-                    vs1_elem2 * vs2_elem2 + 
+      dot_product = vs1_elem0 * vs2_elem0 +
+                    vs1_elem1 * vs2_elem1 +
+                    vs1_elem2 * vs2_elem2 +
                     vs1_elem3 * vs2_elem3;
-      
+
       # Accumulate into destination
-      vd[i] = unsigned_word(vd[i]) + dot_product;
+      vd[i] = unsigned(vd[i]) + dot_product;
     }
   }
