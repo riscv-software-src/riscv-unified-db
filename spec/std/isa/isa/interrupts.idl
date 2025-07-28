@@ -24,10 +24,10 @@ external function set_external_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MEIP = 1'b1;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # set the "hidden" bit, not the software-writable bit
       pending_smode_external_interrupt = true;
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
       CSR[mip].VSEIP = 1'b1;
     } else {
       assert(false, "Invalid target_mode");
@@ -45,10 +45,10 @@ external function clear_external_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MEIP = 1'b0;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # clear the "hidden" bit, not the software-writable bit
       pending_smode_external_interrupt = false;
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
       CSR[mip].VSEIP = 1'b0;
     } else {
       assert(false, "Invalid target_mode");
@@ -66,10 +66,10 @@ external function set_software_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MSIP = 1'b1;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # set the "hidden" bit, not the software-writable bit
       CSR[mip].SSIP = 1'b1;
-    # } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    # } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
     #   CSR[hvip].VSSIP = 1'b1;
     } else {
       assert(false, "Invalid target_mode");
@@ -87,10 +87,10 @@ external function clear_software_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MSIP = 1'b0;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # set the "hidden" bit, not the software-writable bit
       CSR[mip].SSIP = 1'b0;
-    # } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    # } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
     #   CSR[hvip].VSSIP = 1'b0;
     } else {
       assert(false, "Invalid target_mode");
@@ -108,10 +108,10 @@ external function set_timer_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MTIP = 1'b1;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # set the "hidden" bit, not the software-writable bit
       CSR[mip].STIP = 1'b1;
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
       pending_vsmode_timer_interrupt = true;
     } else {
       assert(false, "Invalid target_mode");
@@ -129,10 +129,10 @@ external function clear_timer_interrupt {
   body {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MTIP = 1'b0;
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (target_mode == PrivilegeMode::S)) {
       # set the "hidden" bit, not the software-writable bit
       CSR[mip].STIP = 1'b0;
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (target_mode == PrivilegeMode::VS)) {
       pending_vsmode_timer_interrupt = false;
     } else {
       assert(false, "Invalid target_mode");
@@ -183,7 +183,7 @@ function refresh_pending_interrupts {
       return;
     }
 
-    if (CSR[misa].S == 1'b1) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
       Bits<MXLEN> smode_enabled_ints =
         ((mode() == PrivilegeMode::M) || (CSR[mstatus].SIE == 1'b0))
           ? 0
@@ -195,7 +195,7 @@ function refresh_pending_interrupts {
       }
     }
 
-    # if (CSR[misa].H == 1'b1) {
+    # if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
     #   Boolean sgei_pending_and_enabled = ($bits(CSR[hgeip]) & $bits(CSR[heie])) != 0;
     #   if (sgei_pending_and_enabled) {
 
@@ -235,7 +235,7 @@ function highest_priority_interrupt {
     } else if (int_mask[$bits(InterruptCode::MachineTimer)] == 1'b1) {
       return InterruptCode::MachineTimer;
     }
-    if (CSR[misa].S == 1'b1) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
       if (int_mask[$bits(InterruptCode::SupervisorExternal)] == 1'b1) {
         return InterruptCode::SupervisorExternal;
       } else if (int_mask[$bits(InterruptCode::SupervisorSoftware)] == 1'b1) {
@@ -244,7 +244,7 @@ function highest_priority_interrupt {
         return InterruptCode::SupervisorTimer;
       }
     }
-    # if (CSR[misa].H == 1'b1) {
+    # if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
     #   if (int_mask[$bits(InterruptCode::SupervisorGuestExternal)] == 1'b1) {
     #     return InterruptCode::SupervisorGuestExternal;
     #   } else if (int_mask[$bits(InterruptCode::VirtualSupervisorExternal)] == 1'b1) {
@@ -288,10 +288,10 @@ function choose_interrupt {
       chosen = highest_priority_interrupt(mmode_pending_and_enabled);
 
     # check S-mode interrupts
-    } else if (CSR[misa].S == 1'b1) {
+    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
       Bits<MXLEN> smode_pending_and_enabled =
         (pending_and_enabled_interrupts & $bits(CSR[mideleg]))
-        # & ((CSR[misa].H == 1'b1) ? ~$bits(CSR[hideleg]) : ~MXLEN'0)
+        # & (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) ? ~$bits(CSR[hideleg]) : ~MXLEN'0)
         ;
 
       if (smode_pending_and_enabled != 0) {
@@ -313,7 +313,7 @@ function choose_interrupt {
       to_mode = PrivilegeMode::M;
     } else {
       # delegated from M
-      if (CSR[misa].S == 1'b1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
         to_mode = PrivilegeMode::S;
       } else {
         to_mode = PrivilegeMode::U;
@@ -338,7 +338,7 @@ function take_interrupt {
     if (to_mode == PrivilegeMode::M) {
       CSR[mepc].PC = $pc;
       CSR[mstatus].MPP = $bits(mode())[1:0];
-      if (CSR[misa].H == 1'b1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
         CSR[mstatus].MPV = $bits(mode())[2];
         CSR[mtval2].VALUE = 0;
         CSR[mtinst].VALUE = 0;
@@ -353,10 +353,10 @@ function take_interrupt {
         # vectored
         $pc = {CSR[mtvec].BASE, 2'b00} + ($bits(code)*4);
       }
-    } else if ((CSR[misa].S == 1'b1) && (to_mode == PrivilegeMode::S)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) && (to_mode == PrivilegeMode::S)) {
       CSR[sepc].PC = $pc;
       CSR[mstatus].SPP = $bits(mode())[0];
-      if (CSR[misa].H == 1'b1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
         CSR[hstatus].SPV = $bits(mode())[2];
       }
       CSR[scause].CODE = $bits(code);
@@ -369,7 +369,7 @@ function take_interrupt {
         # vectored
         $pc = {CSR[stvec].BASE, 2'b00} + ($bits(code)*4);
       }
-    } else if ((CSR[misa].H == 1'b1) && (to_mode == PrivilegeMode::VS)) {
+    } else if (((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) && (to_mode == PrivilegeMode::VS)) {
       CSR[vsepc].PC = $pc;
       CSR[vsstatus].SPP = $bits(mode())[0];
       CSR[vscause].CODE = $bits(code);

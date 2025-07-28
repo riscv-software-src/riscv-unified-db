@@ -455,6 +455,15 @@ params:
         The `misa` CSR is read-only-0.
     schema:
       type: boolean
+      default: true
+  MISA_READ_ONLY_ZERO:
+    description: |
+      When true, indicates the `misa` CSR is hardwired to read-only zero.
+      When false, the `misa` CSR behaves as a standard WARL register.
+      Only applicable when MISA_CSR_IMPLEMENTED == false.
+    schema:
+      type: boolean
+      default: false
   MTVEC_MODES:
     description: |
       Modes supported by `mtvec.MODE`. If only one, it is assumed to be read-only with that value.

@@ -282,14 +282,14 @@ fields:
       * Any additional traps in VS-mode (controlled via `hstatus.VTVM` instead).
 
     type(): |
-      if (CSR[misa].S == 1'b0) {
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) {
         return CsrFieldType::RO;
       } else {
         return CsrFieldType::RW;
       }
     definedBy: S
     reset_value(): |
-      if (CSR[misa].S == 1'b0) {
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) {
         return 0;
       } else if (MSTATUS_TVM_IMPLEMENTED) {
         return UNDEFINED_LEGAL;
@@ -297,7 +297,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if (CSR[misa].S == 1'b0) {
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) {
         return 0;
       } else if (MSTATUS_TVM_IMPLEMENTED) {
         return csr_value.TVM;
@@ -347,7 +347,7 @@ fields:
       `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
     definedBy: U
     type(): |
-      return (CSR[misa].U == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
+      return ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].U == 1'b1))) ? CsrFieldType::RWH : CsrFieldType::RO;
     reset_value: 0
   XS:
     location: 16-15
@@ -370,9 +370,9 @@ fields:
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
       other than to possibly enable a previously-disabled floating point unit.
     type(): |
-      if (CSR[misa].F == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b1))){
         return CsrFieldType::RWH;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b0)))) {
         # must be read-only-0
         return CsrFieldType::RO;
       } else {
@@ -382,9 +382,9 @@ fields:
     definedBy:
       anyOf: [F, S]
     reset_value(): |
-      if (CSR[misa].F == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b1))){
         return UNDEFINED_LEGAL;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b0)))) {
         # must be read-only-0
         return 0;
       } else {
@@ -392,9 +392,9 @@ fields:
         return MSTATUS_FS_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
     sw_write(csr_value): |
-      if (CSR[misa].F == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b1))){
         return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].F == 1'b0)))) {
         # must be read-only-0
         return 0;
       } else {
@@ -454,9 +454,9 @@ fields:
     definedBy:
       anyOf: [V, S]
     type(): |
-      if (CSR[misa].V == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b1))){
         return CsrFieldType::RWH;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b0)))) {
         # must be read-only-0
         return CsrFieldType::RO;
       } else {
@@ -464,9 +464,9 @@ fields:
         return MSTATUS_VS_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
       }
     reset_value(): |
-      if (CSR[misa].V == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b1))){
         return UNDEFINED_LEGAL;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b0)))) {
         # must be read-only-0
         return 0;
       } else {
@@ -474,9 +474,9 @@ fields:
         return MSTATUS_VS_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
     sw_write(csr_value): |
-      if (CSR[misa].V == 1'b1){
+      if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b1))){
         return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
-      } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+      } else if (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0))) && ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].V == 1'b0)))) {
         # must be read-only-0
         return 0;
       } else {
@@ -569,10 +569,10 @@ fields:
 
       Other than serving as a record of nested traps as described above, `mstatus.SPIE` does not affect execution.
     type(): |
-      return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
+      return ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1))) ? CsrFieldType::RWH : CsrFieldType::RO;
     definedBy: S
     reset_value(): |
-      return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
+      return ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1))) ? UNDEFINED_LEGAL : 0;
   MIE:
     location: 3
     description: |
@@ -606,7 +606,7 @@ fields:
       * When 1, (H)S-mode interrupts that are not otherwise disabled with a field in `sie` are enabled.
 
     type(): |
-      return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
+      return ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1))) ? CsrFieldType::RWH : CsrFieldType::RO;
     definedBy: S
     reset_value(): |
-      return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
+      return ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1))) ? UNDEFINED_LEGAL : 0;

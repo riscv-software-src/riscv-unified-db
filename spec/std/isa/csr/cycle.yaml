@@ -45,7 +45,7 @@ sw_read(): |
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   } else if (mode() == PrivilegeMode::U) {
-    if (CSR[misa].S == 1'b1) {
+    if ((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1))) {
       # S-mode is present ->
       #   mcounteren and scounteren together determine access in U-mode
       if ((CSR[mcounteren].CY & CSR[scounteren].CY) == 1'b0) {

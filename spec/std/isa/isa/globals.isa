@@ -694,7 +694,7 @@ function raise_precise {
       $pc = {CSR[mtvec].BASE, 2'b00};
       CSR[mcause].INT = 1'b0;
       CSR[mcause].CODE = $bits(exception_code);
-      if (CSR[misa].H == 1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1)) {
         # write zero into mtval2 and minst
         # (when these are non-zero values, raise_guest_page_fault should be callecd)
         CSR[mtval2].VALUE = 0;
@@ -714,7 +714,7 @@ function raise_precise {
         }
       }
       CSR[mstatus].MPP = $bits(from_mode);
-    } else if (CSR[misa].S == 1 && (handling_mode == PrivilegeMode::S)) {
+    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& (handling_mode == PrivilegeMode::S)) {
       CSR[sepc].PC = $pc;
       if (!stval_readonly?()) {
         CSR[stval].VALUE = stval_for(exception_code, tval);
@@ -723,7 +723,7 @@ function raise_precise {
       CSR[scause].INT = 1'b0;
       CSR[scause].CODE = $bits(exception_code);
       CSR[mstatus].SPP = $bits(from_mode)[0];
-      if (CSR[misa].H == 1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1)) {
         # write zero into htval and hinst
         # (when these are non-zero values, raise_guest_page_fault should be callecd)
         CSR[htval].VALUE = 0;
@@ -752,7 +752,7 @@ function raise_precise {
           CSR[hstatus].GVA = 0;
         }
       }
-    } else if (CSR[misa].H == 1 && (handling_mode == PrivilegeMode::VS)) {
+    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (handling_mode == PrivilegeMode::VS)) {
       CSR[vsepc].PC = $pc;
       if (!vstval_readonly?()) {
         CSR[vstval].VALUE = vstval_for(exception_code, tval);
@@ -775,7 +775,7 @@ function ialign {
     Returns IALIGN, the smallest instruction encoding size, in bits.
   }
   body {
-    if (implemented?(ExtensionName::C) && (CSR[misa].C == 0x1)) {
+    if (implemented?(ExtensionName::C) && ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].C == 0x1))) {
       return 16;
     } else {
       return 32;
@@ -874,9 +874,9 @@ function xlen {
       return 32;
     } else {
       if (mode() == PrivilegeMode::M) {
-        if (CSR[misa].MXL == $bits(XRegWidth::XLEN32)) {
+        if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == $bits(XRegWidth::XLEN32))) {
           return 32;
-        } else if (CSR[misa].MXL == $bits(XRegWidth::XLEN64)) {
+        } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == $bits(XRegWidth::XLEN64))) {
           return 64;
         }
       } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
@@ -1161,15 +1161,15 @@ function effective_ldst_mode {
     # when the mode is M, loads and stores can be executed as if they were done from any other mode
     # with the use of mstatus.MPRV
     if (mode() == PrivilegeMode::M) {
-      if (CSR[misa].U == 1 && CSR[mstatus].MPRV == 1) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].U == 1 )&& CSR[mstatus].MPRV == 1) {
         if (CSR[mstatus].MPP == 0b00) {
-          if (CSR[misa].H == 1 && mpv() == 0b1) {
+          if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
             return PrivilegeMode::VU;
           } else {
             return PrivilegeMode::U;
           }
-        } else if (CSR[misa].S == 1 && CSR[mstatus].MPP == 0b01) {
-          if (CSR[misa].H == 1 && mpv() == 0b1) {
+        } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& CSR[mstatus].MPP == 0b01) {
+          if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
             return PrivilegeMode::VS;
           } else {
             return PrivilegeMode::S;
@@ -1269,7 +1269,7 @@ function base32? {
     } else {
       XRegWidth xlen32 = XRegWidth::XLEN32;
       if (mode() == PrivilegeMode::M) {
-        return CSR[misa].MXL == $bits(xlen32);
+        return (!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == $bits(xlen32));
       } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
         return CSR[mstatus].SXL == $bits(xlen32);
       } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
@@ -1311,7 +1311,7 @@ function current_translation_mode {
       return SatpMode::Bare;
     }
 
-    if (CSR[misa].H == 1'b1) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
       if (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU) {
         Bits<4> mode_val = CSR[vsatp].MODE;
         if (mode_val == $bits(SatpMode::Sv32)) {
@@ -1388,7 +1388,7 @@ function current_translation_mode {
           return SatpMode::Reserved;
         }
       }
-    } else if (CSR[misa].S == 1'b1) {
+    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
 
       # if we reach here, then the effective mode is S or U
       assert(effective_mode == PrivilegeMode::S || effective_mode == PrivilegeMode::U, "unexpected priv mode");
@@ -2024,13 +2024,13 @@ function stage1_page_walk {
 
     # shadow stacks enabled?
     Boolean sse = false;
-    # if (CSR[misa].H == 1 && effective_mode == PrivilegeMode::VS) {
+    # if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VS) {
     #   sse = CSR[henvcfg].SSE == 1;
-    # } else if (CSR[misa].H == 1 && effective_mode == PrivilegeMode::VU) {
+    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU) {
     #   sse = CSR[senvcfg].SSE == 1;
-    # } else if (CSR[misa].U == 1 && effective_mode == PrivilegeMode::U) {
+    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].U == 1 )&& effective_mode == PrivilegeMode::U) {
     #   sse = CSR[senvcfg].SSE == 1;
-    # } else if (CSR[misa].S == 1 && effective_mode == PrivilegeMode::S) {
+    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& effective_mode == PrivilegeMode::S) {
     #   sse = CSR[menvcfg].SSE == 1;
     # } else {
     #   # M-mode
@@ -2039,7 +2039,7 @@ function stage1_page_walk {
 
     # access/dirty bit hardware update enable?
     Boolean adue;
-    if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
       adue = CSR[henvcfg].ADUE == 1;
     } else {
       adue = CSR[menvcfg].ADUE == 1;
@@ -2051,7 +2051,7 @@ function stage1_page_walk {
       # not Sv32 (PBMT is not defined for Sv32)
       pbmte = false;
     } else {
-      if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
+      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
         pbmte = CSR[henvcfg].PBMTE == 1;
       } else {
         pbmte = CSR[menvcfg].PBMTE == 1;
@@ -2060,7 +2060,7 @@ function stage1_page_walk {
 
     # make execute readable?
     Boolean mxr;
-    if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
       # HS-level sstatus.MXR makes execute-only pages readable for both stages of address translation
       # (VS-stage and G-stage), whereas vsstatus.MXR affects only the first translation stage (VS-stage)
       mxr = (CSR[mstatus].MXR == 1) || (CSR[vsstatus].MXR == 1);
@@ -2070,7 +2070,7 @@ function stage1_page_walk {
 
     # Supervisor access user page?
     Boolean sum;
-    if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS)) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS)) {
       sum = CSR[vsstatus].SUM == 1;
     } else {
       sum = CSR[mstatus].SUM == 1;
@@ -2164,7 +2164,7 @@ function stage1_page_walk {
           if (effective_mode == PrivilegeMode::U && pte_flags.U == 0) {
             # U-mode can never access supervisor page
             raise (page_fault_code, effective_mode, vaddr);
-          } else if (CSR[misa].H == 1 && effective_mode == PrivilegeMode::VU && pte_flags.U == 0) {
+          } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU && pte_flags.U == 0) {
             # VU-mode can never access supervisor page
             raise (page_fault_code, effective_mode, vaddr);
           } else if (effective_mode == PrivilegeMode::S && pte_flags.U == 1 && !sum) {
@@ -2400,7 +2400,7 @@ function canonical_vaddr? {
     the canonical address.
   }
   body {
-    if (CSR[misa].S == 1'b0) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0)) {
       # there is no translation, any address is canonical
       return true;
     }
@@ -2503,7 +2503,7 @@ function read_memory_aligned {
   body {
     TranslationResult result;
 
-    if (CSR[misa].S == 1) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1)) {
       result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
     } else {
       result.paddr = virtual_address;
@@ -2542,7 +2542,7 @@ function read_memory {
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
 
-      physical_address = (CSR[misa].S == 1)
+      physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
         ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2558,7 +2558,7 @@ function read_memory {
       # a page/access fault exception, depending on the configuration
       if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
         # do translation to trigger any access/page faults before raising misaligned
-        physical_address = (CSR[misa].S == 1)
+        physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
           ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
           : virtual_address;
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
@@ -2625,7 +2625,7 @@ function read_memory_xlen_aligned {
   body {
     TranslationResult result;
 
-    if (CSR[misa].S == 1) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1)) {
       result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
     } else {
       result.paddr = virtual_address;
@@ -2717,7 +2717,7 @@ function load_reserved {
   }
   body {
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      (CSR[misa].S == 1)
+      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
         ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2734,7 +2734,7 @@ function load_reserved {
 
     register_reservation_set(physical_address, N);
 
-    if (CSR[misa].S ==1 && LRSC_FAIL_ON_VA_SYNONYM) {
+    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S ==1 )&& LRSC_FAIL_ON_VA_SYNONYM) {
       # also need to remember the virtual address
       reservation_virtual_address = virtual_address;
     }
@@ -2764,7 +2764,7 @@ function store_conditional {
   }
   body {
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      (CSR[misa].S == 1)
+      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2842,7 +2842,7 @@ function amo {
     }
 
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      (CSR[misa].S == 1)
+      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
         ? translate(virtual_address, MemoryOperation::ReadModifyWrite, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2892,7 +2892,7 @@ function write_memory_aligned {
   body {
     XReg physical_address;
 
-    physical_address = (CSR[misa].S == 1)
+    physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
       ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
       : virtual_address;
 
@@ -2929,7 +2929,7 @@ function write_memory {
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
 
-      physical_address = (CSR[misa].S == 1)
+      physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2946,7 +2946,7 @@ function write_memory {
       # a page/access fault exception, depending on the configuration
       if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
         # do translation to trigger any access/page faults before raising misaligned
-        physical_address = (CSR[misa].S == 1)
+        physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
           ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
           : virtual_address;
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
@@ -2976,7 +2976,7 @@ function write_memory_xlen_aligned {
   body {
     XReg physical_address;
 
-    physical_address = (CSR[misa].S == 1)
+    physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
       ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
       : virtual_address;
 

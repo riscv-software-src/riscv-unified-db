@@ -411,6 +411,6 @@ sw_read(): |
   # OR in the hidden smode external interrupt
   return
     $bits(CSR[mip])
-    | ((CSR[misa].S == 1'b1 && pending_smode_external_interrupt)
+    | (((!MISA_CSR_IMPLEMENTED) || ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1 ))&& pending_smode_external_interrupt)
          ? 10'h200
          : 0);

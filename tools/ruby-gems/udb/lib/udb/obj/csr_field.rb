@@ -718,7 +718,7 @@ class CsrField < DatabaseObject
   def location_cond32
     case csr.priv_mode
     when "M"
-      "CSR[misa].MXL == 0"
+      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 0)"
     when "S"
       "CSR[mstatus].SXL == 0"
     when "VS"
@@ -732,7 +732,7 @@ class CsrField < DatabaseObject
   def location_cond64
     case csr.priv_mode
     when "M"
-      "CSR[misa].MXL == 1"
+      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 1)"
     when "S"
       "CSR[mstatus].SXL == 1"
     when "VS"
@@ -756,7 +756,7 @@ class CsrField < DatabaseObject
       condition =
         case csr.priv_mode
         when "M"
-          "CSR[misa].MXL == %%"
+          "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == %%)"
         when "S"
           "CSR[mstatus].SXL == %%"
         when "VS"

@@ -325,13 +325,13 @@ class Csr < TopLevelDatabaseObject
   def length_cond32
     case @data["length"]
     when "MXLEN"
-      "CSR[misa].MXL == 0"
+      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 0)"
     when "SXLEN"
       "CSR[mstatus].SXL == 0"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 0"
     when "XLEN"
-      "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 0) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 0) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 0)"
+      "(priv_mode() == PrivilegeMode::M && (!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 0)) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 0) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 0)"
     else
       raise "Unexpected length #{@data['length']} for #{name}"
     end
@@ -341,13 +341,13 @@ class Csr < TopLevelDatabaseObject
   def length_cond64
     case @data["length"]
     when "MXLEN"
-      "CSR[misa].MXL == 1"
+      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 1)"
     when "SXLEN"
       "CSR[mstatus].SXL == 1"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 1"
     when "XLEN"
-      "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 1) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 1) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 1)"
+      "(priv_mode() == PrivilegeMode::M && (!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 1)) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 1) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 1)"
     else
       raise "Unexpected length"
     end
@@ -361,13 +361,13 @@ class Csr < TopLevelDatabaseObject
       cond =
         case @data["length"]
         when "MXLEN"
-          "CSR[misa].MXL == %%"
+          "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == %%)"
         when "SXLEN"
           "CSR[mstatus].SXL == %%"
         when "VSXLEN"
           "CSR[hstatus].VSXL == %%"
         when "XLEN"
-          "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == %%) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == %%) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == %%)"
+          "(priv_mode() == PrivilegeMode::M && (!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == %%)) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == %%) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == %%)"
         else
           raise "Unexpected length '#{@data['length']}'"
         end
