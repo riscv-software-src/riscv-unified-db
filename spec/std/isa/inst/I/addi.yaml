@@ -54,16 +54,15 @@ sail(): |
 # SPDX-SnippetEnd
 
 cert_normative_rules:
-  - id: inst.addi.encoding
+  - id: inst.enc.addi
     description: Encoding
     doc_links:
-      - manual:inst:addi:encoding
+      - norm:enc:insttable:addi
   - id: inst.addi.basic_op
     description: Basic operation
     doc_links:
-      - manual:inst:addi:operation
+      - norm:inst:addi:operation
   - id: inst.addi.overflow
     description: Treatment of overflow
     doc_links:
-      - manual:inst:addi:overflow
-      
+      - norm:inst:addi:overflow

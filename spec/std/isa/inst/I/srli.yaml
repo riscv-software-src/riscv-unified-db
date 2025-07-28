@@ -61,3 +61,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.srli
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:srli
+  - id: inst.srli.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:srli:operation

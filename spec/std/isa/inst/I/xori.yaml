@@ -50,3 +50,14 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.xori
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:andi_ori_xori
+  - id: inst.xori.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:andi_ori_xori:operation
+      

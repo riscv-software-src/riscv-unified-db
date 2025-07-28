@@ -77,3 +77,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.ecall
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:ecall
+  - id: inst.ecall.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:ecall:operation

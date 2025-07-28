@@ -79,3 +79,17 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.blt
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:blt_bltu
+  - id: instgrp.branch.target
+    description: Target
+    doc_links:
+      - norm:instgrp:branch:target
+  - id: inst.blt.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:blt_bltu:operation

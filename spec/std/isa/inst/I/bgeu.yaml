@@ -74,3 +74,17 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.bgeu
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:bge_bgeu
+  - id: instgrp.branch.target
+    description: Target
+    doc_links:
+      - norm:instgrp:branch:target
+  - id: inst.bgeu.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:bge_bgeu:operation

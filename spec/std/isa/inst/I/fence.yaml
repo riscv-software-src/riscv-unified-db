@@ -235,3 +235,25 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.fence
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:fence
+  - id: inst.fence.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:fence:operation
+  - id: inst.fence.conservative_allowed
+    description: Conservative Allowed
+    doc_links:
+      - norm:inst:fence:conservative_allowed
+  - id: inst.fence.null_pred_succ_intersection
+    description: Successful Intersection
+    doc_links:
+      - norm:inst:fence:null_pred_succ_intersection
+  - id: inst.fence.unused_fields_reserved
+    description: Unused Fields are Reserved 
+    doc_links:
+      - norm:inst:fence:unused_fields_reserved

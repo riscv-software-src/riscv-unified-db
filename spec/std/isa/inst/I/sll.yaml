@@ -63,3 +63,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.sll
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:sll_srl_sra
+  - id: inst.sll.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:sll_srl_sra:operation
