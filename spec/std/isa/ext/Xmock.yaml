@@ -158,18 +158,18 @@ params:
       maxItems: 8
       minItems: 8
 cert_normative_rules:
-  - id: ext.Xmock.cov1
+  - id: ext.Xmock.nr1
     description: Let's have fun with the `Xmock` extension
     doc_links:
       - norm:enc:insttable:mul
       - udb:doc:inst:mock
-  - id: ext.Xmock.cov2
+  - id: ext.Xmock.nr2
     description: And some more fun!
 cert_test_procedures:
   - id: ext.Xmock.my_first
     test_file_name: mock.S
     description: Verify that when it rains in Spain, it rains mainly on the plains!
-    normative_rules: [ext.Xmock.cov1, ext.Xmock.cov2]
+    normative_rules: [ext.Xmock.nr1, ext.Xmock.nr2]
     steps: |
       . Wait for rain
       .. First we need some rain

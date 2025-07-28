@@ -3,7 +3,7 @@
 
 # frozen_string_literal: true
 
-# Creates links into RISC-V documentation with the following formats for the destination link.
+# Creates links into RISC-V documentation with the following formats for the link name.
 #
 #   Documentation Format                                                  Applies
 #   ============  ======================================================= ================================================
@@ -28,8 +28,8 @@
 #                 udb:doc:csr_field:<csr-name>:<field-name>
 #                 udb:doc:param:<ext-name>:<param-name>
 #                 udb:doc:func:<func-name>  (Documentation of common/built-in IDL functions)
-#                 udb:doc:covpt:<org>:<id>
-#                   where <org> is:
+#                 udb:doc:covpt:<fmt>:<id>
+#                   where <fmt> is:
 #                      sep for UDB documentation that "separates" normative rules from test plans
 #                      combo for UDB documentation that "combines" normative rules with test plans
 #                      appendix for UDB documentation that has normative rules and test plans in appendices
@@ -78,21 +78,44 @@
 #     - Don't put [[<<anchor-name]] anchor before admonition to apply to entire admonition (one or more paragraphs)
 #       since the HTML won't tag the text, just its location.
 
-class Udb::DocLink
-  # @param dst_link [String] The documentation link provided in the YAML
+module Udb
+class DocLink
+  # @return [String] Link name to normative rule
+  attr_reader :link_name
+
+  # @param link_name [String] The documentation link provided in the YAML
   # @param db_obj [String] Database object
-  def initialize(dst_link, db_obj)
-    raise ArgumentError, "Need String but was passed a #{data.class}" unless dst_link.is_a?(String)
-    @dst_link = dst_link
+  def initialize(link_name, db_obj)
+    raise ArgumentError, "Need String but was passed a #{data.class}" unless link_name.is_a?(String)
+    @link_name = link_name
 
-    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @dst_link.nil?
+    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @link_name.nil?
   end
 
-  # @return [String] Unique ID of the linked to normative rule
-  def dst_link = @dst_link
-
-  # @return [String] Asciidoc to create desired link.
-  def to_adoc
-    "<<#{@dst_link},#{@dst_link}>>"
+  # @return [Boolean] Is link to an ISA manual normative rule?
+  def is_isa_manual_norm_rule?
+    # Include all links that start with "norm:" except for those in the instruction encoding table
+    # since there isn't any point in copying the text in the link (just want a normal hypertext link into table).
+    link_name.start_with?("norm:") && !link_name.start_with?("norm:enc:insttable:")
   end
+
+  # @param normative_rule_tags [NormativeRuleTags] Provides access to text associated with normative rule tags.
+  # @return [String],[Boolean] String contains Asciidoc to create desired link and
+  #                            Boolean indicates if tried to find normative rule tag and couldn't find it.
+  def to_adoc(normative_rule_tags)
+    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
+
+    not_found = false
+    str = "<<#{@link_name},#{@link_name}>>"   # default
+
+    if is_isa_manual_norm_rule? && normative_rule_tags.tags_available? then
+      norm_rule_tag = normative_rule_tags.get_norm_rule_tag(@link_name)
+      unless norm_rule_tag.nil?
+        str = "<<#{@link_name},#{norm_rule_tag.tag_text}>>"
+      end
+    end
+
+    return str, not_found
+  end
+end
 end

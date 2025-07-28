@@ -133,8 +133,8 @@ This instruction may result in the following synchronous exceptions:
 <% end -%>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => inst, "fmt" => "appendix" }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst, "fmt" => "appendix" }) %>
 <% end # if gen_ctp_content -%>
 
 <% end # each in_scope instruction -%>

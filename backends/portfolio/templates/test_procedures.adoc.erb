@@ -15,8 +15,8 @@ Test Procedures for `<%= nice_name %>`: ::
 | *Description* | <%= tp.description %>
 | *Normative Rules*
 a|
-<% tp.cert_normative_rules.each do |cp| -%>
-* <%= defined?(org) ? link_to_udb_doc_cov_pt(org, cp.id) : cp.id %>
+<% tp.cert_normative_rules.each do |nr| -%>
+* <%= defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.id) : nr.id %>
 <% end # each cp -%>
 | *Steps*
 a|

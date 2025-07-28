@@ -55,6 +55,9 @@ Dir.glob("#{$resolver.std_path}/profile_release/*.yaml") do |f|
     $logger.info "Creating ProfileRelease with a ConfiguredArchitecture object for #{release_name}"
     profile_release_with_cfg_arch = cfg_arch.profile_release(release_name)
 
+    # No normative rule tags from stds docs available in a Profile (at the moment) so just create empty object.
+    normative_rule_tags = Udb::NormativeRuleTags.new()
+
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     $logger.info "Creating PortfolioDesign object using profile release #{release_name}"
@@ -63,7 +66,8 @@ Dir.glob("#{$resolver.std_path}/profile_release/*.yaml") do |f|
       cfg_arch,
       Udb::PortfolioDesign.profile_release_type,
       profile_release_with_cfg_arch.profiles,
-      profile_release_with_cfg_arch.profile_family
+      profile_release_with_cfg_arch.profile_family,
+      normative_rule_tags
     )
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.

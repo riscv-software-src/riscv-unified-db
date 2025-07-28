@@ -7,7 +7,14 @@ require "pathname"
 # @param erb_template_pname [String] Path to ERB template file
 # @param target_pname [String] Full name of adoc file being generated
 # @param model_name [String] Name of the processor certificate model
-def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
+# @param normative_rule_tags [NormativeRuleTags] May or may not have the tags available
+# @param extra_bindings [Hash<String, Object>]
+def proc_cert_create_adoc(erb_template_pname, target_pname, model_name, normative_rule_tags, extra_bindings = nil)
+  raise ArgumentError, "erb_template_pname must be a String but is a #{erb_template_pname.class}" unless erb_template_pname.is_a?(String)
+  raise ArgumentError, "target_pname must be a String but is a #{target_pname.class}" unless target_pname.is_a?(String)
+  raise ArgumentError, "model_name must be a String but is a #{model_name.class}" unless model_name.is_a?(String)
+  raise ArgumentError, "normative_rule_tags must be a NormativeRuleTags but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(Udb::NormativeRuleTags)
+
   # Create Architecture object without any knowledge of certificate model.
   $logger.info "Creating Architecture object for #{model_name}"
   arch = pf_create_arch
@@ -28,7 +35,7 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
   # Create the one ProcCertDesign object required for the ERB evaluation using the cfg_arch.
   $logger.info "Creating ProcCertDesign object using processor certificate model #{model_name}"
   proc_cert_design = Udb::ProcCertDesign.new(model_name, cfg_arch, Udb::ProcCertDesign.proc_ctp_type, proc_cert_model_with_cfg_arch,
-    proc_cert_model_with_cfg_arch.proc_cert_class)
+    proc_cert_model_with_cfg_arch.proc_cert_class, normative_rule_tags)
 
   # Create empty binding and then specify explicitly which variables the ERB template can access.
   # Seems to use this method name in stack backtraces (hence its name).
@@ -36,7 +43,7 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
     binding
   end
   erb_binding = evaluate_erb
-  proc_cert_design.init_erb_binding(erb_binding)
+  proc_cert_design.init_erb_binding(erb_binding, extra_bindings)
 
   pf_create_adoc(erb_template_pname, erb_binding, target_pname, proc_cert_design)
 end

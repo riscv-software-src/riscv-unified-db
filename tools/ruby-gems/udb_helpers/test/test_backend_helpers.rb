@@ -47,12 +47,12 @@ class TestBackendHelpers < Minitest::Test
     assert_equal("[#udb:doc:csr_field:fo_o:ba_r]", anchor_for_udb_doc_csr_field("fo.o","ba.r"))
   end
 
-  def test_cov_pt
-    assert_equal("%%UDB_DOC_COV_PT_LINK%sep;foo_and_bar;foo&bar%%", link_to_udb_doc_cov_pt("sep", "foo&bar"))
-    assert_equal("[[udb:doc:cov_pt:sep:foo]]", anchor_for_udb_doc_cov_pt("sep", "foo"))
-    assert_equal("%%UDB_DOC_COV_PT_LINK%combo;fo_o;fo.o%%", link_to_udb_doc_cov_pt("combo", "fo.o"))
-    assert_equal("[[udb:doc:cov_pt:combo:fo_o]]", anchor_for_udb_doc_cov_pt("combo", "fo.o"))
-    assert_raises(ArgumentError) { link_to_udb_doc_cov_pt("bad-org-value","abc") }
+  def test_norm_rule
+    assert_equal("%%UDB_DOC_NORM_RULE_LINK%sep;foo_and_bar;foo&bar%%", link_to_udb_doc_norm_rule("sep", "foo&bar"))
+    assert_equal("[[udb:doc:norm_rule:sep:foo]]", anchor_for_udb_doc_norm_rule("sep", "foo"))
+    assert_equal("%%UDB_DOC_NORM_RULE_LINK%combo;fo_o;fo.o%%", link_to_udb_doc_norm_rule("combo", "fo.o"))
+    assert_equal("[[udb:doc:norm_rule:combo:fo_o]]", anchor_for_udb_doc_norm_rule("combo", "fo.o"))
+    assert_raises(ArgumentError) { link_to_udb_doc_norm_rule("bad-org-value","abc") }
   end
 
   def test_idl_func
@@ -104,11 +104,11 @@ class TestAsciidocUtils < Minitest::Test
     assert_equal("<<udb:doc:func:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_idl_func("foo")))
   end
 
-  def test_resolve_links_cov_pt
-    assert_equal("<<udb:doc:cov_pt:sep:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_DOC_COV_PT_LINK%sep;foo;bar%%"))
-    assert_equal("<<udb:doc:cov_pt:sep:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_cov_pt("sep", "foo")))
-    assert_equal("<<udb:doc:cov_pt:combo:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_DOC_COV_PT_LINK%combo;foo;bar%%"))
-    assert_equal("<<udb:doc:cov_pt:combo:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_cov_pt("combo", "foo")))
+  def test_resolve_links_norm_rule
+    assert_equal("<<udb:doc:norm_rule:sep:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_DOC_NORM_RULE_LINK%sep;foo;bar%%"))
+    assert_equal("<<udb:doc:norm_rule:sep:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_norm_rule("sep", "foo")))
+    assert_equal("<<udb:doc:norm_rule:combo:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_DOC_NORM_RULE_LINK%combo;foo;bar%%"))
+    assert_equal("<<udb:doc:norm_rule:combo:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_norm_rule("combo", "foo")))
   end
 
   def test_resolve_links_idl_code

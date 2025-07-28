@@ -10,15 +10,22 @@ Normative Rules for `<%= nice_name %>`: ::
 |===
 | ID | Description | Documentation Links
 
-<% db_obj.cert_normative_rules.each do |cp| -%>
-| <%= defined?(org) ? anchor_for_udb_doc_cov_pt(org, cp.id) : "" %><%= cp.id %>
-| <%= cp.description %>
-<% if cp.doc_links.empty? -%>
+<% db_obj.cert_normative_rules.each do |nr| -%>
+| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
+| <%= nr.description %>
+<% if nr.doc_links.empty? -%>
 |
 <% else -%>
-a| <% cp.doc_links.each do |link| -%>
-* <%= link.to_adoc %>
-<% end # each link -%>
+<% some_not_found = false -%>
+a| <% nr.doc_links.each do |doc_link| -%>
+<% link_adoc, not_found = doc_link.to_adoc(normative_rule_tags) -%>
+* <%= link_adoc %>
+<% if not_found then -%>
+<%   some_not_found = true -%>
+<%   warn "Error: Can't find normative rule tag #{doc_link.link_name} that should be in an ISA manual" -%>
+<% end # if not_found -%>
+<% end # do each link -%>
+<% raise "Exiting due to one or more normative rule tags not found" if some_not_found -%>
 <% end # if empty -%>
 <% end # each normative rule -%>
 |===
