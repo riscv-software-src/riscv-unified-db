@@ -161,7 +161,7 @@ cert_normative_rules:
   - id: ext.Xmock.cov1
     description: Let's have fun with the `Xmock` extension
     doc_links:
-      - manual:inst:mul:encoding
+      - norm:enc:insttable:mul
       - udb:doc:inst:mock
   - id: ext.Xmock.cov2
     description: And some more fun!

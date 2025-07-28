@@ -13,9 +13,13 @@ Normative Rules for `<%= nice_name %>`: ::
 <% db_obj.cert_normative_rules.each do |cp| -%>
 | <%= defined?(org) ? anchor_for_udb_doc_cov_pt(org, cp.id) : "" %><%= cp.id %>
 | <%= cp.description %>
+<% if cp.doc_links.empty? -%>
+|
+<% else -%>
 a| <% cp.doc_links.each do |link| -%>
 * <%= link.to_adoc %>
 <% end # each link -%>
+<% end # if empty -%>
 <% end # each normative rule -%>
 |===
 

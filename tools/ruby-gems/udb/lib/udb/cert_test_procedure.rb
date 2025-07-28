@@ -40,7 +40,7 @@ class CertTestProcedure
     @test_file_name = data["test_file_name"]
 
     if test_file_name.nil?
-      warn "Warning: Missing test_file_name for certification test procedure description for ID #{id} of kind #{kind}"
+      warn "Warning: Missing test_file_name for certification test procedure description with ID #{id} of kind #{kind}"
     end
   end
 

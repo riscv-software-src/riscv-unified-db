@@ -21,7 +21,7 @@ cert_normative_rules:
   - id: ext.I:R-type_operands
     description: R-type instruction source and destination operands
     doc_links:
-      - norm:ext:I:R-type_operands
+      - norm:basegrp:all:R-type_operands
 
   - id: ext.insgrp.cti_taken.misaligned_exc
     description: cti misaligned execution

@@ -76,17 +76,17 @@ cert_normative_rules:
   - id: inst.mul.encoding
     description: Encoding
     doc_links:
-      - manual:inst:mul:encoding
+      - norm:enc:insttable:mul
   - id: inst.mul.basic_op
     description: Basic operation
     doc_links:
-      - manual:inst:mul:operation
+      - norm:inst:mul:operation
   - id: inst.mul.ill_exc_misa_M_disabled
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
     doc_links:
-      - manual:csr:misa:disabling-extension
+      - norm:csr:misa:disabling-extension
 
 cert_test_procedures:
   - id: inst.mul.encoding

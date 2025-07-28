@@ -33,6 +33,18 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
   ] do |t|
     pf_get_latest_csc_isa_manual(t.name)
+
+    # Figure out some pathnames/filenames.
+    isa_manual_dir = "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual"
+    unpriv_adoc = "#{isa_manual_dir}/src/riscv-unprivileged.adoc"
+    priv_adoc = "#{isa_manual_dir}/src/riscv-unprivileged.adoc"
+    unpriv_tags = "#{PROC_CTP_GEN_DIR}/adoc/riscv-unprivileged-norm-tags.json"
+    priv_tags = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged-norm-tags.json"
+
+    # Extract normative rule tags (AKA anchors) from ISA manuals.
+    pf_adoc2norm_tags(unpriv_adoc, unpriv_tags, isa_manual_dir)
+    pf_adoc2norm_tags(priv_adoc, priv_tags, isa_manual_dir)
+
     proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)
   end
 
