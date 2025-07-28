@@ -19,9 +19,9 @@ Bits<MXLEN> pending_and_enabled_interrupts = 0;
 # AIA-specific state for IMSIC (Incoming Message-Signaled Interrupt Controller)
 # These variables track the state of external interrupts managed by the IMSIC
 const Bits<32> IMSIC_INTERRUPT_FILE_SIZE = 2048; # Supports up to 65536 interrupt identities
-Bits<32> imsic_m_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...}; # Machine-level interrupt file
-Bits<32> imsic_s_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...}; # Supervisor-level interrupt file
-Bits<32> imsic_vs_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...}; # Virtual supervisor-level interrupt file
+Bits<32> imsic_m_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Machine-level interrupt file
+Bits<32> imsic_s_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Supervisor-level interrupt file
+Bits<32> imsic_vs_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Virtual supervisor-level interrupt file
 
 external function set_external_interrupt {
   arguments PrivilegeMode target_mode
