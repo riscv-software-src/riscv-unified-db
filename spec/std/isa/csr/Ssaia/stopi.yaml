@@ -8,6 +8,8 @@ kind: csr
 name: stopi
 long_name: Supervisor Top Interrupt
 address: 0xDB0
+priv_mode: S
+length: SXLEN
 writable: false
 description: |
   Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns

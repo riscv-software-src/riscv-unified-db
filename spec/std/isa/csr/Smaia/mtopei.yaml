@@ -8,6 +8,8 @@ kind: csr
 name: mtopei
 long_name: Machine Top External Interrupt
 address: 0x35C
+priv_mode: M
+length: MXLEN
 writable: true
 description: |
   Machine Top External Interrupt register.

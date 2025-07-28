@@ -8,6 +8,8 @@ kind: csr
 name: sieh
 long_name: Supervisor Interrupt Enable High
 address: 0x114
+priv_mode: S
+length: 32
 base: 32
 writable: true
 description: |

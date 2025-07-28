@@ -8,6 +8,8 @@ kind: csr
 name: stopei
 long_name: Supervisor Top External Interrupt
 address: 0x15C
+priv_mode: S
+length: SXLEN
 writable: true
 description: |
   Supervisor Top External Interrupt register.

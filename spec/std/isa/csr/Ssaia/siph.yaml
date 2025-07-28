@@ -8,6 +8,8 @@ kind: csr
 name: siph
 long_name: Supervisor Interrupt Pending High
 address: 0x154
+priv_mode: S
+length: 32
 base: 32
 writable: true
 description: |

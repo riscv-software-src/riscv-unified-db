@@ -8,6 +8,8 @@ kind: csr
 name: mvip
 long_name: Machine Virtual Interrupt Pending
 address: 0x309
+priv_mode: M
+length: MXLEN
 writable: true
 description: |
   Machine Virtual Interrupt Pending register.

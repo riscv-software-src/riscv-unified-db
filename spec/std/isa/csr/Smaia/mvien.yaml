@@ -8,6 +8,8 @@ kind: csr
 name: mvien
 long_name: Machine Virtual Interrupt Enable
 address: 0x308
+priv_mode: M
+length: MXLEN
 writable: true
 description: |
   Machine Virtual Interrupt Enable register.
