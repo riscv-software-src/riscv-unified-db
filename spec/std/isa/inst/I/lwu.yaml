@@ -65,3 +65,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.lwu
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:lwu
+  - id: inst.lwu.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:lwu:operation

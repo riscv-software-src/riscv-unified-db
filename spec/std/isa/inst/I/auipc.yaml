@@ -43,3 +43,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.auipc
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:auipc
+  - id: inst.auipc.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:auipc:operation

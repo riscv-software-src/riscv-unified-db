@@ -46,3 +46,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.ebreak
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:ebreak
+  - id: inst.ebreak.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:ebreak:operation

@@ -61,7 +61,7 @@ sail(): |
 # SPDX-SnippetEnd
 
 cert_normative_rules:
-  - id: inst.add.encoding
+  - id: inst.enc.add
     description: Encoding
     doc_links:
       - norm:enc:insttable:add

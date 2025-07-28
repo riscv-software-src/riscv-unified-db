@@ -63,3 +63,17 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.sub
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:sub
+  - id: inst.sub.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:sub:operation
+  - id: insts.add_sub.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:add_sub:operation

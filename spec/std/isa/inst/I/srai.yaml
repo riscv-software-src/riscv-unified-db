@@ -64,3 +64,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.srai
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:srai
+  - id: inst.srai.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:srai:operation

@@ -22,3 +22,58 @@ cert_normative_rules:
     description: R-type instruction source and destination operands
     doc_links:
       - norm:basegrp:all:R-type_operands
+
+  - id: ext.insgrp.cti_taken.misaligned_exc
+    description: cti misaligned execution
+    doc_links:
+      - norm:instgrp:cti_taken:ia_misaligned_exc
+
+  - id: ext.insgrp.load_store.addr_misaligned_or_access_fault_exc
+    description: LS add misaligned or access fault ex
+    doc_links:
+      - norm:instgrp:load_store:addr_misaligned_or_access_fault_exc
+
+  - id: ext.insgrp.load_store.atomicity_for_aligned
+    description: LS Atomoicity for Aligned
+    doc_links:
+      - norm:instgrp:load_store:atomicity_for_aligned
+
+  - id: ext.insgrp.load_store.big_endian_operation
+    description: LS Big Endian Operation
+    doc_links:
+      - norm:instgrp:load_store:big_endian_operation
+
+  - id: ext.insgrp.load_store.ea
+    description: LS EA
+    doc_links:
+      - norm:instgrp:load_store:ea
+
+  - id: ext.insgrp.load_store.endian_byte_invariant
+    description: LS Endian Byte Invariant
+    doc_links:
+      - norm:instgrp:load_store:endian_byte_invariant
+
+  - id: ext.insgrp.load_store.endian_byte_operation
+    description: LS Endian Byte Operation
+    doc_links:
+      - norm:instgrp:load_store:endian_byte_operation
+
+  - id: ext.insgrp.load_store.little_endian_operation
+    description: LS Little Endian Operation
+    doc_links:
+      - norm:instgrp:load_store:little_endian_operation
+
+  - id: ext.insgrp.load.exc_x0
+    description: Load Exc_x0
+    doc_links:
+      - norm:instgrp:load:exc_x0
+
+  - id: ext.insgrp.load.operation
+    description: Load Op
+    doc_links:
+      - norm:instgrp:load:operation
+
+  - id: ext.insgrp.store.operation
+    description: Store Op
+    doc_links:
+      - norm:instgrp:store:operation

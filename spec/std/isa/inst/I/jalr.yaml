@@ -73,3 +73,17 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.jalr
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:jalr
+  - id: inst.jalr.target
+    description: Target
+    doc_links:
+      - norm:inst:jalr:target
+  - id: inst.jalr.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:jalr:operation

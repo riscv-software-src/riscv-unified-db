@@ -77,3 +77,17 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.bne
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:beq_bne
+  - id: instgrp.branch.target
+    description: Target
+    doc_links:
+      - norm:instgrp:branch:target
+  - id: inst.bne.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:beq_bne:operation

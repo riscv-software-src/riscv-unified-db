@@ -41,3 +41,13 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.lui
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:lui
+  - id: inst.lui.op
+    description: Basic operation
+    doc_links:
+      - norm:inst:lui:operation

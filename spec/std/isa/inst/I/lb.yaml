@@ -64,3 +64,14 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+cert_normative_rules:
+  - id: inst.enc.lb
+    description: Encoding
+    doc_links:
+      - norm:enc:insttable:lb_lbu
+  - id: inst.lb.op
+    description: Basic operation
+    doc_links:
+      - norm:insts:lb_lbu:operation
+      
