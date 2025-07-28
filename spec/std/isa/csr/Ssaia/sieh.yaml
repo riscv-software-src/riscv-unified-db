@@ -1,0 +1,16 @@
+# Copyright (c) 2025 7908837174
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sieh
+long_name: Supervisor Interrupt Enable High
+address: 0x114
+base: 32
+writable: true
+description: |
+  Upper 32 bits of sie.
+reset_value: UNDEFINED_LEGAL
+definedBy: Ssaia

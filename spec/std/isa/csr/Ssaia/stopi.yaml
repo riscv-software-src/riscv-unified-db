@@ -1,0 +1,37 @@
+# Copyright (c) 2025 7908837174
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopi
+long_name: Supervisor Top Interrupt
+address: 0xDB0
+writable: false
+description: |
+  Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns 
+  information about the highest-priority pending-and-enabled interrupt for supervisor level, 
+  in this format:
+  bits 27:16 IID
+  bits 7:0 IPRIO
+  All other bits of stopi are reserved and read as zeros.
+reset_value: UNDEFINED_LEGAL
+definedBy: Ssaia
+fields:
+  IID:
+    location: 27-16
+    long_name: Interrupt Identity
+    description: |
+      Interrupt identity of the highest-priority pending-and-enabled interrupt.
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Ssaia
+  IPRIO:
+    location: 7-0
+    long_name: Interrupt Priority
+    description: |
+      Interrupt priority of the highest-priority pending-and-enabled interrupt.
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Ssaia
