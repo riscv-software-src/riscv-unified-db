@@ -11,7 +11,7 @@ address: 0x308
 writable: true
 description: |
   Machine Virtual Interrupt Enable register.
-  
+
   For interrupt numbers 13-63, implementations may freely choose which bits are writable.
   Bits corresponding to unimplemented interrupt sources should be read-only zero.
 reset_value: UNDEFINED_LEGAL

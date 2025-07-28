@@ -11,7 +11,7 @@ address: 0x15C
 writable: true
 description: |
   Supervisor Top External Interrupt register.
-  
+
   Provides information about the highest-priority pending-and-enabled external interrupt
   for supervisor level, with claim-and-clear semantics on write.
 reset_value: UNDEFINED_LEGAL

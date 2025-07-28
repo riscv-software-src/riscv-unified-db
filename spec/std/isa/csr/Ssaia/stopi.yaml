@@ -10,8 +10,8 @@ long_name: Supervisor Top Interrupt
 address: 0xDB0
 writable: false
 description: |
-  Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns 
-  information about the highest-priority pending-and-enabled interrupt for supervisor level, 
+  Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns
+  information about the highest-priority pending-and-enabled interrupt for supervisor level,
   in this format:
   bits 27:16 IID
   bits 7:0 IPRIO

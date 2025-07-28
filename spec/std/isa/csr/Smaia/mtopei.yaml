@@ -11,7 +11,7 @@ address: 0x35C
 writable: true
 description: |
   Machine Top External Interrupt register.
-  
+
   Provides information about the highest-priority pending-and-enabled external interrupt
   for machine level, with claim-and-clear semantics on write.
 reset_value: UNDEFINED_LEGAL
