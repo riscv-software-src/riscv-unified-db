@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+ROOT=$(realpath $(dirname $(dirname ${BASH_SOURCE[0]})))
+
+CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
+
+if [ -v GITHUB_ACTIONS ]; then
+  echo "ACTIONS"
+  CONTAINER_PATH=${ROOT}/.singularity/image.sif
+  HOME_PATH=${GITHUB_WORKSPACE}
+  SINGULARITY_CACHE=--disable-cache
+
+  # needed to get singularity working on Ubuntu 24.04
+  # see https://github.com/lima-vm/lima/issues/2319
+  sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
+  sudo sysctl --system
+else
+  CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
+  HOME_PATH=${HOME}
+  SINGULARITY_CACHE=
+fi
+
+# uncomment below if you have sudo permission and don't have fakeroot permission
+NEED_SUDO=0
+cat /etc/subgid | grep "^$(id -u):"
+if [ $? -ne 0 ]; then
+  NEED_SUDO=1
+fi
+cat /etc/subuid | grep "^$(id -u):"
+if [ $? -ne 0 ]; then
+  NEED_SUDO=1
+fi
+
+if [ $NEED_SUDO -eq 0 ]; then
+  SUDO=""
+  FAKEROOT=--fakeroot
+  echo "Using fakeroot"
+else
+  if [[ ! -z "$GITHUB_RUN_ID" || `groups` == *"sudo"* ]]; then
+    # user has sudo permission
+    SUDO=sudo
+    FAKEROOT=""
+  else
+    echo "You appear to have neither namespace or sudo permission. You need one to build."
+    echo "  Either: "
+    echo "    (1 - Preferred) Get your administrator to add you to /etc/subuid and /etc/subgid"
+    echo "       Note: 'singularity config fakeroot --add ${USER}' will set the appropriate values"
+    echo "              see https://docs.sylabs.io/guides/3.5/user-guide/fakeroot.html"
+    echo "    (2) Get sudo permission"
+    exit 1
+  fi
+fi
+
+# make container home directory (~)
+if [ ! -d "${ROOT}/.home" ]; then
+  mkdir -p ${ROOT}/.home
+fi
+
+
+# make sure we have singularity
+which singularity 2>&1 > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Singularity is not installed (or is not in path)" 1>&2
+  exit 1
+fi
+
+
+# build the container image
+echo "Building container..."
+if [ ! -d "${ROOT}/.singularity" ]; then
+  mkdir -p ${ROOT}/.singularity
+fi
+if [ -e ${CONTAINER_PATH} ]; then
+  rm -f ${CONTAINER_PATH}
+fi
+
+$SUDO singularity build --force \
+  $FAKEROOT \
+  ${CONTAINER_PATH} \
+  ${ROOT}/container.def
+if [ $? -ne 0 ]; then
+  echo "Container build failed." 2>&1
+  exit 1
+fi
