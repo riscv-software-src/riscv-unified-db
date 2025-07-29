@@ -117,8 +117,6 @@ module Udb::Helpers::TemplateHelpers
   # Documentation:
   #   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
   #   - How to create anchors: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/
-  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397#issuecomment-2515109936 for
-  #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
 
   # @return [String] A hyperlink to UDB extension documentation
   # @param ext_name [String] Name of the extension

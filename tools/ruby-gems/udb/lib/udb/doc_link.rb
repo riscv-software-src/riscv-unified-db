@@ -37,46 +37,55 @@
 #   IDL code      idl:code:inst:<inst-name>:<location>
 #                 TODO for CSR and CSR Fields
 #
-# Use underscores to replace blanks in names between colons since RISC-V uses minus signs in the names.
+# See the following AsciiDoc documents to understand how links and anchors work:
+#   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
+#   - How to create anchors: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/
+#   - The types of anchors we care about are are:
+#     - What I call the "inline syntax" such as "We must [#free_the_world]#free the world#."
+#     - What I call the "paragraph syntax" such as:
+#           [[foo]]
+#           This is an anchor for the entire paragraph.
+#
+#           This isn't part of the anchor since it is the next paragraph.
+#     - You can also use the "paragraph syntax" for table cells and list items as long as it begins before the text such as:
+#           | [[foo]] Here is the table cell contents | next cell
+#
+# AsciiDoc Anchor Naming Restrictions:
+#   - Start with a letter, ":", or "_" followed by letters, ":", "_", "-", ".", or digits. No spaces allowed.
+#   - However, you can't put a "." in inline anchors (see https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#block-assignment)
+#     for other reasons.
+#
+# Naming restrictions:
+#   - Start anchor names with a letter and use ":" to separate fields in the anchor name.
+#   - Use underscores to separate lists of items between colons (e.g., ":insts:add_sub") since RISC-V uses "-" same names.
+#   - Replace "." in items with "-" (e.g., fence.tso becomes fence-tso) so all anchors types used work properly.
 #
 # Adding anchors into AsciiDoc files
 # ==================================
-#  1) Anchor to part of a paragraph or inside a table cell
+#  1) Anchor to part of a paragraph
 #     Syntax:      [#<anchor-name>]# ... #
 #     Example:     Here is an example of [#foo]#anchoring part# of a paragraph
 #                  and can have [#bar]#multiple anchors# if needed.
 #     Tagged text: "anchoring part" and "multiple anchors"
-#     HTML:        <div class="paragraph">
-#                  <p>Here is an example of <span id="foo">anchoring part</span> of a paragraph
-#                  and can have <span id="bar">multiple anchors</span> if needed.</p>
-#                  </div>
-#     Example:    [#monkey]#Anchoring part of a paragraph#
-#                 [#zebra]#and can have multiple anchors# if needed.
-#                 and create a span for each one.
-#     HTML:       <div class="paragraph">
-#                 <p><span id="monkey">Anchoring part of a paragraph</span>
-#                 <span id="zebra">and can have multiple anchors</span> if needed.
-#                 and create a span for each one.</p>
-#                 </div>
 #     Limitations:
 #       - Can't anchor text across multiple paragraphs.
 #       - Must have text next to the 2nd hash symbol (i.e., can't have newline after [#<anchor-name]#).
 #       - Can't put inside admonitions such as [NOTE] (see #3 below for solution).
+#       - Can't have "." in anchor-name (replace with "-")
 #
-#  2) Anchor to entire paragraph
+#  2) Anchor to entire paragraph, inside a table cell, or inside a list entry
 #     Syntax:     [[<anchor-name]]
 #     Example:    [[zort]]
 #                 Here is an example of anchoring a whole paragraph.
 #     Tagged text: Entire paragraph
-#     HTML:       <div id="zort" class="paragraph">
-#                 <p>Here is an example of anchoring a whole paragraph.</p>
-#                 </div>
+#     Example:    | Alan Turing | [[Alan_Turing_Birthday]] June 23, 1912 | London
+#     Tagged text: None (just creates hyperlink to anchor in table/list)
 #
 #  3) Anchor inside admonition (e.g. [NOTE])
 #     - Must use [[<anchor-name]] before each paragraph (with unique anchor names of course) being tagged
-#     - Can't use [#<anchor-name]## since it just shows up in HTML as normal text
-#     - Don't put [[<<anchor-name]] anchor before admonition to apply to entire admonition (one or more paragraphs)
-#       since the HTML won't tag the text, just its location.
+#     - Can't use [#<anchor-name]#Here's some note text.# since it just shows up in HTML as normal text
+#     - Don't put [[<<anchor-name]] before the entire admonition (e.g., before [NOTE]) to apply to entire admonition
+#       (one or more paragraphs) since it will just create a hyperlink with no associated text.
 
 module Udb
 class DocLink
