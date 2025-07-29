@@ -18,7 +18,6 @@ description: |
   bits 27:16 IID
   bits 7:0 IPRIO
   All other bits of stopi are reserved and read as zeros.
-reset_value: UNDEFINED_LEGAL
 definedBy: Ssaia
 fields:
   IID:
@@ -27,7 +26,6 @@ fields:
     description: |
       Interrupt identity of the highest-priority pending-and-enabled interrupt.
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
   IPRIO:
     location: 7-0
@@ -35,5 +33,4 @@ fields:
     description: |
       Interrupt priority of the highest-priority pending-and-enabled interrupt.
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
