@@ -141,8 +141,8 @@ Reset value: ::
 <%= field.reset_value_pretty %>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => field, "org" => "appendix", "use_description_list" => true }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field, "org" => "appendix", "use_description_list" => true }) %>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => field, "fmt" => "appendix", "use_description_list" => true }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field, "fmt" => "appendix", "use_description_list" => true }) %>
 <% end # if gen_ctp_content -%>
 
 ****
@@ -182,8 +182,8 @@ This CSR may return a value that is different from what is stored in hardware.
 <% end -%>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => csr, "org" => "appendix" }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => csr, "org" => "appendix" }) %>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => csr, "fmt" => "appendix" }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => csr, "fmt" => "appendix" }) %>
 <% end # if gen_ctp_content -%>
 
 <% end # do in_scope_csrs -%>

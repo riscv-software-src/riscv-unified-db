@@ -68,9 +68,8 @@ cert_normative_rules:
   - id: inst.enc.srl
     description: Encoding
     doc_links:
-      - norm:enc:insttable:sll_srl_sra
+      - norm:enc:insttable:srl
   - id: inst.srl.op
     description: Basic operation
     doc_links:
       - norm:insts:sll_srl_sra:operation
-      

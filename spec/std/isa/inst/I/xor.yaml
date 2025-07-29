@@ -62,9 +62,8 @@ cert_normative_rules:
   - id: inst.enc.xor
     description: Encoding
     doc_links:
-      - norm:enc:insttable:and_or_xor
+      - norm:enc:insttable:xor
   - id: inst.xor.op
     description: Basic operation
     doc_links:
       - norm:insts:and_or_xor:operation
-      

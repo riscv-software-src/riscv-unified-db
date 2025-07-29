@@ -41,7 +41,7 @@ module Udb::Helpers::TemplateHelpers
   include ::Udb::Helpers::WavedromUtil
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#226
-  def anchor_for_udb_doc_cov_pt(org, id); end
+  def anchor_for_udb_doc_norm_rule(fmt, id); end
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#205
   def anchor_for_udb_doc_csr(name); end
@@ -68,7 +68,7 @@ module Udb::Helpers::TemplateHelpers
   def link_into_idl_inst_code(inst_name, id); end
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#166
-  def link_to_udb_doc_cov_pt(org, id); end
+  def link_to_udb_doc_norm_rule(fmt, id); end
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#146
   def link_to_udb_doc_csr(csr_name); end

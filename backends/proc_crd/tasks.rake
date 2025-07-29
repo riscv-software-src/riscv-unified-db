@@ -31,7 +31,11 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
     "#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb"
   ] do |t|
-    proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name)
+    # No normative rule tags from stds docs available in a CRD (at the moment) so just create empty object.
+    normative_rule_tags = Udb::NormativeRuleTags.new()
+
+    proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name,
+      normative_rule_tags)
   end
 
   file "#{PROC_CRD_GEN_DIR}/pdf/#{model_name}-CRD.pdf" => [

@@ -55,7 +55,7 @@ cert_normative_rules:
   - id: ext.instgrp.cti_taken.misaligned_exc
     description: cti misaligned execution
     doc_links:
-      - norm:instgrp:cti_taken:ia_misaligned_exc
+      - norm:instgrp:taken_cti:ia_misaligned_exc
 
   - id: ext.instgrp.load_store.addr_misaligned_or_access_fault_exc
     description: LS add misaligned or access fault ex
@@ -91,7 +91,7 @@ cert_normative_rules:
     description: LS Little Endian Operation
     doc_links:
       - norm:instgrp:load_store:little_endian_operation
-  
+
   - id: ext.instgrp.load.exc_x0
     description: Load Exc_x0
     doc_links:
@@ -106,6 +106,7 @@ cert_normative_rules:
     description: Store Op
     doc_links:
       - norm:instgrp:store:operation
+
 
 # not included in initial spreadsheet. 
 

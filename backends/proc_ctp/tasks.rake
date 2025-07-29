@@ -3,6 +3,7 @@
 # Contains Rake rules to generate adoc, PDF, and HTML for a CTP (Certification Test Plan).
 
 require "pathname"
+require "json"
 
 PROC_CTP_DOC_DIR = Pathname.new "#{$root}/backends/proc_ctp"
 PROC_CTP_GEN_DIR = $resolver.gen_path / "proc_ctp"
@@ -37,15 +38,25 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     # Figure out some pathnames/filenames.
     isa_manual_dir = "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual"
     unpriv_adoc = "#{isa_manual_dir}/src/riscv-unprivileged.adoc"
-    priv_adoc = "#{isa_manual_dir}/src/riscv-unprivileged.adoc"
-    unpriv_tags = "#{PROC_CTP_GEN_DIR}/adoc/riscv-unprivileged-norm-tags.json"
-    priv_tags = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged-norm-tags.json"
+    priv_adoc = "#{isa_manual_dir}/src/riscv-privileged.adoc"
+    unpriv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-unprivileged-norm-tags.json"
+    priv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged-norm-tags.json"
 
-    # Extract normative rule tags (AKA anchors) from ISA manuals.
-    pf_adoc2norm_tags(unpriv_adoc, unpriv_tags, isa_manual_dir)
-    pf_adoc2norm_tags(priv_adoc, priv_tags, isa_manual_dir)
+    # Extract normative rule tags (AKA anchors) from ISA manuals into JSON files.
+    pf_adoc2norm_tags(unpriv_adoc, unpriv_tags_json, isa_manual_dir)
+    pf_adoc2norm_tags(priv_adoc, priv_tags_json, isa_manual_dir)
 
-    proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)
+    # Read in tag JSON files to Ruby hashes.
+    unpriv_tags = JSON.parse(File.read(unpriv_tags_json))
+    priv_tags = JSON.parse(File.read(priv_tags_json))
+
+    # Load tags into a class to provide access to backend while generating CTP adoc.
+    normative_rule_tags = Udb::NormativeRuleTags.new()
+    normative_rule_tags.add_doc_tags("Unprivileged ISA", unpriv_tags['tags'])
+    normative_rule_tags.add_doc_tags("Privileged ISA", priv_tags['tags'])
+
+    proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name,
+      normative_rule_tags)
   end
 
   file "#{PROC_CTP_GEN_DIR}/pdf/#{model_name}-CTP.pdf" => [

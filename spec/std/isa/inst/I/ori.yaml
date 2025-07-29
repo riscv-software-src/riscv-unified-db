@@ -77,7 +77,7 @@ cert_normative_rules:
   - id: inst.enc.ori
     description: Encoding
     doc_links:
-      - norm:enc:insttable:andi_ori_xori
+      - norm:enc:insttable:ori
   - id: inst.ori.op
     description: Basic operation
     doc_links:

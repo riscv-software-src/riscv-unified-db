@@ -84,7 +84,7 @@ cert_normative_rules:
   - id: inst.enc.bge
     description: Encoding
     doc_links:
-      - norm:enc:insttable:bge_bgeu
+      - norm:enc:insttable:bge
   - id: instgrp.branch.target
     description: Target
     doc_links:

@@ -50,9 +50,9 @@ class CertTestProcedure
 
     @cert_normative_rules = []
     @data["normative_rules"]&.each do |id|
-      cp = @db_obj.cert_coverage_point(id)
-      raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
-      @cert_normative_rules << cp
+      nr = @db_obj.cert_normative_rule(id)
+      raise ArgumentError, "Can't find certification normative rule with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if nr.nil?
+      @cert_normative_rules << nr
     end
     @cert_normative_rules
   end

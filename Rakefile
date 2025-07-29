@@ -27,6 +27,7 @@ require "minitest/test_task"
 require "udb/architecture"
 require "udb/portfolio_design"
 require "udb/proc_cert_design"
+require "udb/normative_rule_tags"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO
@@ -489,6 +490,10 @@ task :portfolios do
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVI20-32-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"].invoke
+  portfolio_start_msg("RVI20-64-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CTP")
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CRD")
@@ -534,6 +539,8 @@ task "MockCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MockProcessorCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MockCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
 task "MockProcessorCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
+task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
+task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
