@@ -1,0 +1,45 @@
+# Copyright (c) 2025 7908837174
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvip
+long_name: Machine Virtual Interrupt Pending
+address: 0x309
+priv_mode: M
+length: MXLEN
+writable: true
+description: |
+  Machine Virtual Interrupt Pending register.
+
+  If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero.
+  Bits corresponding to unimplemented interrupt sources should be read-only zero.
+reset_value: UNDEFINED_LEGAL
+definedBy: Smaia
+fields:
+  VSSIP:
+    location: 1
+    long_name: Virtual Supervisor Software Interrupt Pending
+    description: |
+      Virtual supervisor software interrupt pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSTIP:
+    location: 5
+    long_name: Virtual Supervisor Timer Interrupt Pending
+    description: |
+      Virtual supervisor timer interrupt pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSEIP:
+    location: 9
+    long_name: Virtual Supervisor External Interrupt Pending
+    description: |
+      Virtual supervisor external interrupt pending.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia

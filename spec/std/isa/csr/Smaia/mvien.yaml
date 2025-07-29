@@ -1,0 +1,45 @@
+# Copyright (c) 2025 7908837174
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mvien
+long_name: Machine Virtual Interrupt Enable
+address: 0x308
+priv_mode: M
+length: MXLEN
+writable: true
+description: |
+  Machine Virtual Interrupt Enable register.
+
+  For interrupt numbers 13-63, implementations may freely choose which bits are writable.
+  Bits corresponding to unimplemented interrupt sources should be read-only zero.
+reset_value: UNDEFINED_LEGAL
+definedBy: Smaia
+fields:
+  VSSIE:
+    location: 1
+    long_name: Virtual Supervisor Software Interrupt Enable
+    description: |
+      Virtual supervisor software interrupt enable.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSTIE:
+    location: 5
+    long_name: Virtual Supervisor Timer Interrupt Enable
+    description: |
+      Virtual supervisor timer interrupt enable.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
+  VSEIE:
+    location: 9
+    long_name: Virtual Supervisor External Interrupt Enable
+    description: |
+      Virtual supervisor external interrupt enable.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia
