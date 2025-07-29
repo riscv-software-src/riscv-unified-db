@@ -63,7 +63,7 @@ cert_normative_rules:
   - id: inst.enc.sltiu
     description: Encoding
     doc_links:
-      - norm:enc:insttable:slti_sltiu
+      - norm:enc:insttable:sltiu
   - id: inst.sltiu.op
     description: Basic operation
     doc_links:

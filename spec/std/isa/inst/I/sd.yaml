@@ -110,7 +110,7 @@ cert_normative_rules:
   - id: inst.enc.sd
     description: Encoding
     doc_links:
-      - norm:enc:insttable:sw_sh_sb
+      - norm:enc:insttable:sd
   - id: inst.sd.op
     description: Basic operation
     doc_links:

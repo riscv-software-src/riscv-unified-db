@@ -57,7 +57,9 @@ cert_normative_rules:
   - id: inst.fence_tso.op
     description: Basic operation
     doc_links:
-      - norm:inst:fence.tso:operation
+      # TODO: Renamed from norm:inst:fence.tso:operation to norm:inst:fence_tso:operation
+      # to work around bug reported in https://github.com/riscv/docs-resources/issues/55.
+      - norm:inst:fence_tso:operation
   - id: inst.fence_tso.ordering_rw_rw_allowed
     description: Read Allowed
     doc_links:

@@ -68,9 +68,8 @@ cert_normative_rules:
   - id: inst.enc.sltu
     description: Encoding
     doc_links:
-      - norm:enc:insttable:slt_sltu
+      - norm:enc:insttable:sltu
   - id: inst.sltu.op
     description: Basic operation
     doc_links:
       - norm:insts:slt_sltu:operation
-      

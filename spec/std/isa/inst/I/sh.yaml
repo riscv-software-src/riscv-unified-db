@@ -83,7 +83,7 @@ cert_normative_rules:
   - id: inst.enc.sh
     description: Encoding
     doc_links:
-      - norm:enc:insttable:sw_sh_sb
+      - norm:enc:insttable:sh
   - id: inst.sh.op
     description: Basic operation
     doc_links:

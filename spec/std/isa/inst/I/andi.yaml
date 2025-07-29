@@ -55,7 +55,7 @@ cert_normative_rules:
   - id: inst.enc.andi
     description: Encoding
     doc_links:
-      - norm:enc:insttable:andi_ori_xori
+      - norm:enc:insttable:andi
   - id: inst.andi.op
     description: Basic operation
     doc_links:
