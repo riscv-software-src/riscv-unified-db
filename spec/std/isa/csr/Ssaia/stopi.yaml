@@ -26,6 +26,7 @@ fields:
     description: |
       Interrupt identity of the highest-priority pending-and-enabled interrupt.
     type: RO-H
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
   IPRIO:
     location: 7-0
@@ -33,4 +34,5 @@ fields:
     description: |
       Interrupt priority of the highest-priority pending-and-enabled interrupt.
     type: RO-H
+    reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
