@@ -16,3 +16,4 @@ description: |
   Upper 32 bits of sip.
 reset_value: UNDEFINED_LEGAL
 definedBy: Ssaia
+fields: {}
