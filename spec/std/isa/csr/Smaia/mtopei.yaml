@@ -14,7 +14,6 @@ writable: true
 description: |
   Provides information about the highest-priority pending-and-enabled external interrupt
   for machine level, with claim-and-clear semantics on write.
-reset_value: UNDEFINED_LEGAL
 definedBy: Smaia
 fields:
   INTERRUPT_IDENTITY:
