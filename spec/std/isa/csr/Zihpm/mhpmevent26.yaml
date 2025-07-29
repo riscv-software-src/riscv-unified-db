@@ -1,0 +1,149 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mhpmevent26
+long_name: Machine Hardware Performance Counter 26 Control
+address: 0x33A
+priv_mode: M
+length: 64
+description: |
+  Programmable hardware performance counter event selector
+  <% if ext?(:Sscofpmf) %> and overflow/filtering control<% end %>
+definedBy: Smhpm
+fields:
+  OF:
+    location: 63
+    description: |
+      Overflow status and interrupt disable.
+
+      The OF bit is set when the corresponding hpmcounter overflows, and remains set until written by
+      software. Since hpmcounter values are unsigned values, overflow is defined as unsigned
+      overflow of the implemented counter bits.
+
+      The OF bit is sticky; it stays set until explicitly cleared by a CSR write.
+
+      A Local Counter Overflow Interrupt (LCOFI) is generated when OF is clear and
+      mhpmcounter26 overflows.
+    type(): |
+      if (HPM_COUNTER_EN[26]) {
+        return CsrFieldType::RWH;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy: Sscofpmf
+  MINH:
+    location: 62
+    description: When set, mhpmcounter26 does not increment while the hart in operating in M-mode.
+    type(): |
+      if (HPM_COUNTER_EN[26]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy: Sscofpmf
+  SINH:
+    location: 61
+    description: When set, mhpmcounter26 does not increment while the hart in operating in (H)S-mode.
+    type(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::S)) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy:
+      allOf: [S, Sscofpmf]
+  UINH:
+    location: 60
+    description: When set, mhpmcounter26 does not increment while the hart in operating in U-mode.
+    type(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::U)) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy:
+      allOf: [U, Sscofpmf]
+  VSINH:
+    location: 59
+    description: When set, mhpmcounter26 does not increment while the hart in operating in VS-mode.
+    type(): |
+      if ((HPM_COUNTER_EN[26]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::H)) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy:
+      allOf: [H, Sscofpmf]
+  VUINH:
+    location: 58
+    description: When set, mhpmcounter26 does not increment while the hart in operating in VU-mode.
+    type(): |
+      if (HPM_COUNTER_EN[26] && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if ((HPM_COUNTER_EN[26]) && implemented?(ExtensionName::H)) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    definedBy:
+      allOf: [H, Sscofpmf]
+  EVENT:
+    location: 57-0
+    description: Event selector for performance counter `mhpmcounter26`.
+    type(): |
+      if (HPM_COUNTER_EN[26]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (HPM_COUNTER_EN[26]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+    sw_write(csr_value): |
+      if (ary_includes?<$array_size(HPM_EVENTS), 58>(HPM_EVENTS, csr_value.EVENT)) {
+        return csr_value.EVENT;
+      } else {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      }
