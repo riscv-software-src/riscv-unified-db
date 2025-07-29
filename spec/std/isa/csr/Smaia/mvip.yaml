@@ -1,4 +1,4 @@
-# Copyright (c) 2025 7908837174
+# Copyright (c) 2025 Kallal Mukherjee
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -12,8 +12,6 @@ priv_mode: M
 length: MXLEN
 writable: true
 description: |
-  Machine Virtual Interrupt Pending register.
-
   If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero.
   Bits corresponding to unimplemented interrupt sources should be read-only zero.
 reset_value: UNDEFINED_LEGAL
