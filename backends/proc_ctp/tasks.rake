@@ -52,8 +52,8 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
 
     # Load tags into a class to provide access to backend while generating CTP adoc.
     normative_rule_tags = Udb::NormativeRuleTags.new()
-    normative_rule_tags.add_doc_tags("Unprivileged ISA", unpriv_tags['tags'])
-    normative_rule_tags.add_doc_tags("Privileged ISA", priv_tags['tags'])
+    normative_rule_tags.add_doc_tags("Unpriv", unpriv_tags['tags'])
+    normative_rule_tags.add_doc_tags("Priv", priv_tags['tags'])
 
     proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name,
       normative_rule_tags)

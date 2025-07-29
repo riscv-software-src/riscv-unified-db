@@ -101,38 +101,25 @@ class DocLink
     raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @link_name.nil?
   end
 
-  # @return [Boolean] Is link to an ISA manual normative rule?
-  def is_isa_manual_norm_rule?
-    # Include all links that start with "norm:" except for those in the instruction encoding table
-    # since there isn't any point in copying the text in the link (just want a normal hypertext link into table).
-    link_name.start_with?("norm:") && !link_name.start_with?("norm:enc:insttable:")
-  end
+  # @param normative_rule_tag [NormativeRuleTag] Normative rule tag associated with link_name
+  def to_adoc(normative_rule_tag)
+    raise ArgumentError, "normative_rule_tag needs to be a NormativeRuleTag class but is a #{normative_rule_tag.class}" unless normative_rule_tag.is_a?(NormativeRuleTag)
 
-  # @param normative_rule_tags [NormativeRuleTags] Provides access to text associated with normative rule tags.
-  # @return [String],[Boolean] String contains Asciidoc to create desired link and
-  #                            Boolean indicates if tried to find normative rule tag and couldn't find it.
-  def to_adoc(normative_rule_tags)
-    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
-
-    not_found = false
     str = "<<#{@link_name},#{@link_name}>>"   # default
 
     if link_name.start_with?("norm:") then
       if link_name.start_with?("norm:enc:insttable:") then
-        # These links aren't currently useful so just make something that looks reasonable.
+        # These links are just to a table cell and the tag_text isn't available (or particulary useful).
+        # So, just create a link with a nice name.
         inst_name = link_name.delete_prefix("norm:enc:insttable:")
         str = "<<#{@link_name},Link to opcode table entry for '#{inst_name}' instruction>>"
-      elsif normative_rule_tags.tags_available? then
-        norm_rule_tag = normative_rule_tags.get_norm_rule_tag(@link_name)
-        if norm_rule_tag.nil?
-          not_found = true
-        else
-          str = "<<#{@link_name},#{norm_rule_tag.tag_text}>>"
-        end
+      else
+        # Tag text should be useful.
+        str = "<<#{@link_name},#{normative_rule_tag.tag_text}>>"
       end
     end
 
-    return str, not_found
+    return str
   end
 end
 end

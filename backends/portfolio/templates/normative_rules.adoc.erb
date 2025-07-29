@@ -8,25 +8,37 @@ Normative Rules for `<%= nice_name %>`: ::
 
 [%autowidth]
 |===
-| ID | Description | Documentation Links
+| ID | Description | Normative Rule Excerpts
 
 <% db_obj.cert_normative_rules.each do |nr| -%>
 | <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
 | <%= nr.description %>
 <% if nr.doc_links.empty? -%>
 |
-<% else -%>
+<% else # some doc_links -%>
 <% some_not_found = false -%>
-a| <% nr.doc_links.each do |doc_link| -%>
-<% link_adoc, not_found = doc_link.to_adoc(normative_rule_tags) -%>
-* <%= link_adoc %>
-<% if not_found then -%>
-<%   some_not_found = true -%>
+a|
+<% if normative_rule_tags.tags_available? -%>
+!===
+! Manual ! Section ! Excerpt
+
+<% nr.doc_links.each do |doc_link| -%>
+<% norm_rule_tag = normative_rule_tags.get_norm_rule_tag(doc_link.link_name) -%>
+<% if norm_rule_tag.nil? -%>
 <%   warn "Error: Can't find normative rule tag #{doc_link.link_name} that should be in an ISA manual" -%>
-<% end # if not_found -%>
-<% end # do each link -%>
+<%   some_not_found = true -%>
+<% else # norm_rule_tag found -%>
+! <% norm_rule_tag.doc_name %>
+! TBD
+! <% doc_link.to_adoc(norm_rule_tag) %>
+<% end # if norm_rule_tag.nil? -%>
+<% end # do each doc_link -%>
 <% raise "Exiting due to one or more normative rule tags not found" if some_not_found -%>
-<% end # if empty -%>
+!===
+<% else # tags not available -%>
+link name ='<%= doc_link.link_name %>'
+<% end # tags not available -%>
+<% end # if doc_links.empty? -%>
 <% end # each normative rule -%>
 |===
 
