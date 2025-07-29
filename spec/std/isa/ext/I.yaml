@@ -18,62 +18,150 @@ description: |
   Base integer instructions -- TODO
 
 cert_normative_rules:
-  - id: ext.I:R-type_operands
+  - id: norm.basegrp.all.R-type_operands
     description: R-type instruction source and destination operands
     doc_links:
       - norm:basegrp:all:R-type_operands
+  
+  #basegrp
 
-  - id: ext.insgrp.cti_taken.misaligned_exc
+  - id: norm.basegrp.all.imm_always_sex
+    description: place holder
+    doc_links:
+      - norm:basegrp:all:imm_always_sex
+
+  - id: norm.basegrp.all.pcreg
+    description: All PCREG
+    doc_links:
+      - norm:basegrp:all:pcreg
+
+  - id: norm.basegrp.rv32.xregwidth
+    description: rv32 xregwidth
+    doc_links:
+      - norm:basegrp:rv32:xregwidth
+
+  - id: norm.basegrp.all:x0eq0
+    description: All X0eq0
+    doc_links:
+      - norm:basegrp:all:x0eq0
+
+  - id: norm.basegrp.rv32i_rv64i.other-xregs
+    description: RV32i RV64i other xregs
+    doc_links:
+      - norm:bases:rv32i_rv64i:other-xregs
+
+  #cti and LS
+
+  - id: ext.instgrp.cti_taken.misaligned_exc
     description: cti misaligned execution
     doc_links:
       - norm:instgrp:cti_taken:ia_misaligned_exc
 
-  - id: ext.insgrp.load_store.addr_misaligned_or_access_fault_exc
+  - id: ext.instgrp.load_store.addr_misaligned_or_access_fault_exc
     description: LS add misaligned or access fault ex
     doc_links:
       - norm:instgrp:load_store:addr_misaligned_or_access_fault_exc
 
-  - id: ext.insgrp.load_store.atomicity_for_aligned
+  - id: ext.instgrp.load_store.atomicity_for_aligned
     description: LS Atomoicity for Aligned
     doc_links:
       - norm:instgrp:load_store:atomicity_for_aligned
 
-  - id: ext.insgrp.load_store.big_endian_operation
+  - id: ext.instgrp.load_store.big_endian_operation
     description: LS Big Endian Operation
     doc_links:
       - norm:instgrp:load_store:big_endian_operation
 
-  - id: ext.insgrp.load_store.ea
+  - id: ext.instgrp.load_store.ea
     description: LS EA
     doc_links:
       - norm:instgrp:load_store:ea
 
-  - id: ext.insgrp.load_store.endian_byte_invariant
+  - id: ext.instgrp.load_store.endian_byte_invariant
     description: LS Endian Byte Invariant
     doc_links:
       - norm:instgrp:load_store:endian_byte_invariant
 
-  - id: ext.insgrp.load_store.endian_byte_operation
+  - id: ext.instgrp.load_store.endian_byte_operation
     description: LS Endian Byte Operation
     doc_links:
       - norm:instgrp:load_store:endian_byte_operation
 
-  - id: ext.insgrp.load_store.little_endian_operation
+  - id: ext.instgrp.load_store.little_endian_operation
     description: LS Little Endian Operation
     doc_links:
       - norm:instgrp:load_store:little_endian_operation
   
-  - id: ext.insgrp.load.exc_x0
+  - id: ext.instgrp.load.exc_x0
     description: Load Exc_x0
     doc_links:
       - norm:instgrp:load:exc_x0
 
-  - id: ext.insgrp.load.operation
+  - id: ext.instgrp.load.operation
     description: Load Op
     doc_links:
       - norm:instgrp:load:operation
 
-  - id: ext.insgrp.store.operation
+  - id: ext.instgrp.store.operation
     description: Store Op
     doc_links:
       - norm:instgrp:store:operation
+
+# not included in initial spreadsheet. 
+
+  - id: ext.instgrp.cond_branch.no_ia_misaligned_exc_not_taken
+    description: No Ia misaligned exc not taken
+    doc_links:
+      - norm:instgrp:cond_branch:no_ia_misaligned_exc_not_taken
+
+  - id: ext.instgrp.cti.ia_fault_exc_on_target
+    description: CTI ia fault exc on target
+    doc_links:
+      - norm:instgrp:cti:ia_fault_exc_on_target
+
+  - id: ext.instgrp.cti.no_cti_delay_slots
+    description: no cti delay slots
+    doc_links:
+      - norm:instgrp:cti:no_cti_delay_slots
+
+  - id: ext.instgrp.load_store.no_exc_aligned
+    description: LS no exc aligned
+    doc_links:
+      - norm:instgrp:load_store:no_exc_aligned
+
+# params
+
+  - id: norm.param.I.endianness.little_or_big   
+    description: Param Little or big endian
+    doc_links:
+      - norm:param:I:endianness:little_or_big    
+
+  - id: norm.param.I.misaligned_ldst.contained_or_fatal_trap     
+    description: misaligned Ldst contained or fatal trap
+    doc_links:
+      - norm:param:I:misaligned_ldst:contained_or_fatal_trap   
+
+  - id: norm.param.I.misaligned_ldst.eei_dependent_behavior    
+    description: misaligned ldst eei dependent behavior
+    doc_links:
+      -norm:param:I:misaligned_ldst:eei_dependent_behavior    
+
+  - id: norm.param.I.misaligned_ldst.fully_hw_supported     
+    description: misaligned ldst fully hw supported
+    doc_links:
+      -norm:param:I:misaligned_ldst:fully_hw_supported    
+
+  - id: norm.param.I.misaligned_ldst.fully_hw_supported_or_visible_trap    
+    description: Misaigned ldst fully hw supported or visible trap
+    doc_links:
+      -norm:param:I:misaligned_ldst:fully_hw_supported_or_visible_trap    
+
+  - id: norm.param.I.misaligned_ldst.hw_or_invisible_trap_func_of_addr    
+    description: Misaligned ldst hw or invisible trap func of addr
+    doc_links:
+      -norm:param:I:misaligned_ldst:hw_or_invisible_trap_func_of_addr    
+
+  - id: norm.param.I.misaligned_ldst.invisible_trap    
+    description: Misaligned ldst invisible trap
+    doc_links:
+      -norm:param:I:misaligned_ldst:invisible_trap    
