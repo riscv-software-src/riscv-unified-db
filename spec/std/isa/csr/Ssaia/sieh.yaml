@@ -14,6 +14,5 @@ base: 32
 writable: true
 description: |
   Upper 32 bits of sie.
-reset_value: UNDEFINED_LEGAL
 definedBy: Ssaia
 fields: {}
