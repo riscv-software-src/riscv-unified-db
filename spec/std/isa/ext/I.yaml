@@ -26,7 +26,7 @@ cert_normative_rules:
   - id: ext.insgrp.cti_taken.misaligned_exc
     description: cti misaligned execution
     doc_links:
-      - norm:instgrp:cti_taken:ia_misaligned_exc
+      - norm:instgrp:taken_cti:ia_misaligned_exc
 
   - id: ext.insgrp.load_store.addr_misaligned_or_access_fault_exc
     description: LS add misaligned or access fault ex

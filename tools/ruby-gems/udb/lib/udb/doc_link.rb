@@ -108,10 +108,18 @@ class DocLink
     not_found = false
     str = "<<#{@link_name},#{@link_name}>>"   # default
 
-    if is_isa_manual_norm_rule? && normative_rule_tags.tags_available? then
-      norm_rule_tag = normative_rule_tags.get_norm_rule_tag(@link_name)
-      unless norm_rule_tag.nil?
-        str = "<<#{@link_name},#{norm_rule_tag.tag_text}>>"
+    if link_name.start_with?("norm:") then
+      if link_name.start_with?("norm:enc:insttable:") then
+        # These links aren't currently useful so just make something that looks reasonable.
+        inst_name = link_name.delete_prefix("norm:enc:insttable:")
+        str = "<<#{@link_name},Link to opcode table entry for '#{inst_name}' instruction>>"
+      elsif normative_rule_tags.tags_available? then
+        norm_rule_tag = normative_rule_tags.get_norm_rule_tag(@link_name)
+        if norm_rule_tag.nil?
+          not_found = true
+        else
+          str = "<<#{@link_name},#{norm_rule_tag.tag_text}>>"
+        end
       end
     end
 
