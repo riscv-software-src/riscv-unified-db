@@ -37,8 +37,11 @@ access:
   vu: always
 operation(): |
   XReg rs1_value = X[rs1];
-  X[rd] = ($signed(rs1_value) >= imm)
+
+  # IDL will only compare signed to signed, so $signed({1'b0, imm}) is a way to make the
+  # unsigned `imm` into a signed type
+  X[rd] = ($signed(rs1_value) >= $signed({1'b0, imm}))
     ? rs1_value - imm
-    : (($signed(rs1_value) < 0)
+    : (($signed(rs1_value) < 's0)
        ? ($signed(rs1_value) + imm)
        : rs1_value);
