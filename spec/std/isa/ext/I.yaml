@@ -22,7 +22,7 @@ cert_normative_rules:
     description: R-type instruction source and destination operands
     doc_links:
       - norm:basegrp:all:R-type_operands
-  
+
   #basegrp
 
   - id: norm.basegrp.all.imm_always_sex
@@ -108,7 +108,7 @@ cert_normative_rules:
       - norm:instgrp:store:operation
 
 
-# not included in initial spreadsheet. 
+# not included in initial spreadsheet.
 
   - id: ext.instgrp.cond_branch.no_ia_misaligned_exc_not_taken
     description: No Ia misaligned exc not taken
@@ -132,37 +132,37 @@ cert_normative_rules:
 
 # params
 
-  - id: norm.param.I.endianness.little_or_big   
+  - id: norm.param.I.endianness.little_or_big
     description: Param Little or big endian
     doc_links:
-      - norm:param:I:endianness:little_or_big    
+      - norm:param:I:endianness:little_or_big
 
-  - id: norm.param.I.misaligned_ldst.contained_or_fatal_trap     
+  - id: norm.param.I.misaligned_ldst.contained_or_fatal_trap
     description: misaligned Ldst contained or fatal trap
     doc_links:
-      - norm:param:I:misaligned_ldst:contained_or_fatal_trap   
+      - norm:param:I:misaligned_ldst:contained_or_fatal_trap
 
-  - id: norm.param.I.misaligned_ldst.eei_dependent_behavior    
+  - id: norm.param.I.misaligned_ldst.eei_dependent_behavior
     description: misaligned ldst eei dependent behavior
     doc_links:
-      -norm:param:I:misaligned_ldst:eei_dependent_behavior    
+      - norm:param:I:misaligned_ldst:eei_dependent_behavior
 
-  - id: norm.param.I.misaligned_ldst.fully_hw_supported     
+  - id: norm.param.I.misaligned_ldst.fully_hw_supported
     description: misaligned ldst fully hw supported
     doc_links:
-      -norm:param:I:misaligned_ldst:fully_hw_supported    
+      - norm:param:I:misaligned_ldst:fully_hw_supported
 
-  - id: norm.param.I.misaligned_ldst.fully_hw_supported_or_visible_trap    
+  - id: norm.param.I.misaligned_ldst.fully_hw_supported_or_visible_trap
     description: Misaigned ldst fully hw supported or visible trap
     doc_links:
-      -norm:param:I:misaligned_ldst:fully_hw_supported_or_visible_trap    
+      - norm:param:I:misaligned_ldst:fully_hw_supported_or_visible_trap
 
-  - id: norm.param.I.misaligned_ldst.hw_or_invisible_trap_func_of_addr    
+  - id: norm.param.I.misaligned_ldst.hw_or_invisible_trap_func_of_addr
     description: Misaligned ldst hw or invisible trap func of addr
     doc_links:
-      -norm:param:I:misaligned_ldst:hw_or_invisible_trap_func_of_addr    
+      - norm:param:I:misaligned_ldst:hw_or_invisible_trap_func_of_addr
 
-  - id: norm.param.I.misaligned_ldst.invisible_trap    
+  - id: norm.param.I.misaligned_ldst.invisible_trap
     description: Misaligned ldst invisible trap
     doc_links:
-      -norm:param:I:misaligned_ldst:invisible_trap    
+      - norm:param:I:misaligned_ldst:invisible_trap
