@@ -89,37 +89,84 @@
 
 module Udb
 class DocLink
-  # @return [String] Link name to normative rule
+  # @return [String] Link name to normative rule. Not allowed to have periods or whitespace.
   attr_reader :link_name
 
   # @param link_name [String] The documentation link provided in the YAML
-  # @param db_obj [String] Database object
-  def initialize(link_name, db_obj)
+  def initialize(link_name)
     raise ArgumentError, "Need String but was passed a #{data.class}" unless link_name.is_a?(String)
+    raise ArgumentError, "Link name '#{link_name}' is not allowed to contain periods. Use a hyphen instead." if link_name.include?(".")
+    raise ArgumentError, "Link name '#{link_name}' is not allowed to contain whitespace." if link_name =~ /\s/
+    raise ArgumentError, "Link name '#{link_name}' must start with a letter" unless link_name =~ /\A\p{L}/
     @link_name = link_name
-
-    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @link_name.nil?
   end
 
-  # @param normative_rule_tag [NormativeRuleTag] Normative rule tag associated with link_name
-  def to_adoc(normative_rule_tag)
-    raise ArgumentError, "normative_rule_tag needs to be a NormativeRuleTag class but is a #{normative_rule_tag.class}" unless normative_rule_tag.is_a?(NormativeRuleTag)
+  # @return [Boolean] Is doc_link expected to have a normative rule tag entry?
+  def should_have_normative_rule_tag?
+    # Include all links that start with "norm:" except for those in the instruction encoding table
+    # since they don't show up in the tags file.
+    link_name.start_with?("norm:") && !link_name.start_with?("norm:enc:insttable:")
+  end
 
-    str = "<<#{@link_name},#{@link_name}>>"   # default
+  # @param normative_rule_tags [NormativeRuleTags] Normative rule tags
+  # @return Boolean  Indicates if this doc_link should have a normative rule tag but it wasn't found.
+  def missing_normative_rule_tag?(normative_rule_tags)
+    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
 
-    if link_name.start_with?("norm:") then
-      if link_name.start_with?("norm:enc:insttable:") then
-        # These links are just to a table cell and the tag_text isn't available (or particulary useful).
-        # So, just create a link with a nice name.
-        inst_name = link_name.delete_prefix("norm:enc:insttable:")
-        str = "<<#{@link_name},Link to opcode table entry for '#{inst_name}' instruction>>"
-      else
-        # Tag text should be useful.
-        str = "<<#{@link_name},#{normative_rule_tag.tag_text}>>"
+    should_have_normative_rule_tag? && normative_rule_tags.get_normative_rule_tag(link_name).nil?
+  end
+
+  # @param normative_rule_tags [NormativeRuleTags] Normative rule tags
+  # @return String
+  def to_doc_name(normative_rule_tags)
+    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
+    doc_name = "?"
+
+    if should_have_normative_rule_tag? then
+      normative_rule_tag = normative_rule_tags.get_normative_rule_tag(link_name)
+      unless normative_rule_tag.nil?
+        doc_name = normative_rule_tag.doc_name
       end
     end
 
-    return str
+    return doc_name
+  end
+
+  # @param normative_rule_tags [NormativeRuleTags] Normative rule tags
+  # @return String
+  def to_section(normative_rule_tags)
+    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
+    section = "?"
+
+    if should_have_normative_rule_tag? then
+      normative_rule_tag = normative_rule_tags.get_normative_rule_tag(link_name)
+      unless normative_rule_tag.nil?
+        section = "TBD" # Ask Tim Hutt!
+      end
+    end
+
+    return section
+  end
+
+  # @param normative_rule_tags [NormativeRuleTags] Normative rule tags
+  # @return String
+  def to_excerpt(normative_rule_tags)
+    raise ArgumentError, "normative_rule_tags needs to be a NormativeRuleTags class but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
+    excerpt = "<<#{link_name},#{link_name}>>"   # default
+
+    if should_have_normative_rule_tag? then
+      normative_rule_tag = normative_rule_tags.get_normative_rule_tag(link_name)
+      unless normative_rule_tag.nil?
+        excerpt = "<<#{link_name},#{normative_rule_tag.tag_text}>>"
+      end
+    elsif link_name.start_with?("norm:enc:insttable:") then
+      # These links are just to a table cell and the tag_text isn't available in the normative rule tags file.
+      # So, just create a link with a nice name.
+      inst_name = link_name.delete_prefix("norm:enc:insttable:")
+      excerpt = "<<#{link_name},Link to opcode table entry for '#{inst_name}' instruction>>"
+    end
+
+    return excerpt
   end
 end
 end

@@ -36,7 +36,7 @@ class NormativeRuleTags
 
   # @param [String] Normative rule tag name
   # @return [NormativeRuleTag] Normative rule tag corresponding to tag name. Returns nil if not found.
-  def get_norm_rule_tag(tag_name)
+  def get_normative_rule_tag(tag_name)
     raise ArgumentError, "Called to lookup tag_name #{tag_name} but normative rule tags not available in this Portofolio type" unless tags_available?
     @tag_map[tag_name]
   end

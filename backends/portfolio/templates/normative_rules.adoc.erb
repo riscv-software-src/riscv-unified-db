@@ -6,7 +6,7 @@ Normative Rules for `<%= nice_name %>`: ::
 ==== Normative Rules for `<%= nice_name %>`
 <% end -%>
 
-[%autowidth]
+[cols="15%,15%,70%"]
 |===
 | ID | Description | Normative Rule Excerpts
 
@@ -19,19 +19,18 @@ Normative Rules for `<%= nice_name %>`: ::
 <% some_not_found = false -%>
 a|
 <% if normative_rule_tags.tags_available? -%>
+[cols="10%,7%,83%"]
 !===
-! Manual ! Section ! Excerpt
+! Doc ! Chap ! Excerpt
 
 <% nr.doc_links.each do |doc_link| -%>
-<% norm_rule_tag = normative_rule_tags.get_norm_rule_tag(doc_link.link_name) -%>
-<% if norm_rule_tag.nil? -%>
-<%   warn "Error: Can't find normative rule tag #{doc_link.link_name} that should be in an ISA manual" -%>
+! <%= doc_link.to_doc_name(normative_rule_tags) %>
+! <%= doc_link.to_section(normative_rule_tags) %>
+! <%= doc_link.to_excerpt(normative_rule_tags) %>
+<% if doc_link.missing_normative_rule_tag?(normative_rule_tags) then -%>
+<%   warn "Error: Normative rule tag #{doc_link.link_name} for #{db_obj.kind} '#{nice_name}' missing from standards documentation" -%>
 <%   some_not_found = true -%>
-<% else # norm_rule_tag found -%>
-! <% norm_rule_tag.doc_name %>
-! TBD
-! <% doc_link.to_adoc(norm_rule_tag) %>
-<% end # if norm_rule_tag.nil? -%>
+<% end # missing -%>
 <% end # do each doc_link -%>
 <% raise "Exiting due to one or more normative rule tags not found" if some_not_found -%>
 !===

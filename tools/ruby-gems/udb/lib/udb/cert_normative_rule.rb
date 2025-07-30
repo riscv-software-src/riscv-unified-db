@@ -29,8 +29,8 @@ class CertNormativeRule
     return @doc_links unless @doc_links.nil?
 
     @doc_links = []
-    @data["doc_links"]&.each do |dst|
-      @doc_links << DocLink.new(dst, @db_obj)
+    @data["doc_links"]&.each do |link_name|
+      @doc_links << DocLink.new(link_name)
     end
 
     @doc_links
