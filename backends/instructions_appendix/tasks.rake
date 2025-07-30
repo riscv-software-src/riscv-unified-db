@@ -44,6 +44,7 @@ file MERGED_INSTRUCTIONS_PDF.to_s => [
     "-a pdf-theme=#{ENV['THEME'] || "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"}",
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
     "-r asciidoctor-diagram",
     "-o #{t.name}",
     MERGED_INSTRUCTIONS_FILE.to_s
