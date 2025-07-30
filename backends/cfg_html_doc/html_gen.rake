@@ -110,6 +110,8 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
       extensions:
       - 'asciidoctor-kroki'
       - '@asciidoctor/tabs'
+      attributes:
+        stem: latexmath
     ui:
       bundle:
         url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
@@ -124,6 +126,19 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
           <script id="site-script" src="{{{uiRootPath}}}/js/site.js" data-ui-root-path="{{{uiRootPath}}}"></script>
           <script async src="{{{uiRootPath}}}/js/vendor/highlight.js"></script>
           <script async src="{{{uiRootPath}}}/js/vendor/tabs.js"></script>
+          <script>
+            window.MathJax = {
+              tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+              },
+              options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+              }
+            };
+          </script>
+          <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
           {{#if env.SITE_SEARCH_PROVIDER}}
           {{> search-scripts}}
           {{/if}}
