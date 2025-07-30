@@ -153,6 +153,11 @@ class ExtensionRequirementExpression
 
   sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
   def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
+    # For simple single extension at root level (indent = 0), don't show bullets
+    if indent == 0 && is_simple_single_extension?(cond)
+      return to_asciidoc_no_bullet(cond)
+    end
+    
     case cond
     when String
       "#{'*' * indent}* #{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
@@ -170,6 +175,41 @@ class ExtensionRequirementExpression
       cond.map { |e| to_asciidoc(e, indent) }.join(join)
     else
       T.absurd(cond)
+    end
+  end
+
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(T::Boolean) }
+  def is_simple_single_extension?(cond)
+    case cond
+    when String
+      true
+    when Hash
+      # Single extension with name and optional version
+      cond.key?("name") && cond.size <= 2 && (cond.size == 1 || cond.key?("version"))
+    else
+      false
+    end
+  end
+
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(String) }
+  def to_asciidoc_no_bullet(cond)
+    case cond
+    when String
+      "#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
+    when Hash
+      if cond.key?("name")
+        if cond.key?("version")
+          "#{cond['name']}, version #{cond['version']}"
+        else
+          "#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}"
+        end
+      else
+        # This shouldn't happen for simple single extensions, but fallback to original behavior
+        to_asciidoc(cond, 0)
+      end
+    else
+      # This shouldn't happen for simple single extensions, but fallback to original behavior  
+      to_asciidoc(cond, 0)
     end
   end
 
