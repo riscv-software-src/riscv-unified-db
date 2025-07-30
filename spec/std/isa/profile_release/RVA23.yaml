@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# yaml-language-server: $schema=../../../schemas/profile_release_schema.json
+
 $schema: profile_release_schema.json#
 kind: profile release
 name: RVA23
