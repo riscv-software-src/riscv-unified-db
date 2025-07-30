@@ -13,4 +13,53 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2025-02
+params:
+  DCSR_MPRVEN_TYPE:
+    schema:
+      type: string
+      enum: [read-only-0, read-only-1, rw]
+    description: |
+      Implementation of dcsr.MPRVEN is optional.
+      It may be tied to either 0 or 1.
+
+      Behavior of the dcsr.MPRVEN bit:
+        * 'read-only-0': tied to 0
+        * 'read-only-1': tied to 1
+        * 'rw': read-write
+  DCSR_STEPIE_TYPE:
+    schema:
+      type: string
+      enum: [read-only-0, read-only-1, rw]
+    description: |
+      Implementation of dcsr.STEPIE is optional.
+      It may be tied to either 0 or 1.
+
+      Behavior of the dcsr.STEPIE bit:
+        * 'read-only-0': tied to 0
+        * 'read-only-1': tied to 1
+        * 'rw': read-write
+  DCSR_STOPCOUNT_TYPE:
+    schema:
+      type: string
+      enum: [read-only-0, read-only-1, rw]
+    description: |
+      Implementation of dcsr.STOPCOUNT is optional.
+      It may be tied to either 0 or 1.
+
+      Behavior of the dcsr.STOPCOUNT bit:
+        * 'read-only-0': tied to 0
+        * 'read-only-1': tied to 1
+        * 'rw': read-write
+  DCSR_STOPTIME_TYPE:
+    schema:
+      type: string
+      enum: [read-only-0, read-only-1, rw]
+    description: |
+      Implementation of dcsr.STOPTIME is optional.
+      It may be tied to either 0 or 1.
+
+      Behavior of the dcsr.STOPTIME bit:
+        * 'read-only-0': tied to 0
+        * 'read-only-1': tied to 1
+        * 'rw': read-write
