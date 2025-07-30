@@ -268,8 +268,8 @@ module Udb
         resolver =
           Udb::Resolver.new(
             std_path_override: Pathname.new(options[:arch]),
-            custom_path_override: Pathname.new(options[:arch_overlay],
-            gen_path_override: Pathname.new(options[:gen]))
+            custom_path_override: Pathname.new(options[:arch_overlay]),
+            gen_path_override: Pathname.new(options[:gen])
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         cfg_arch.csrs.each do |csr|
