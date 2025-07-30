@@ -11,7 +11,7 @@ class:
   $ref: proc_cert_class/MockProcessor.yaml#
 
   # MXLEN used by rakefile
-base: 64
+base: 32
 
 in_scope_priv_modes:
   - M

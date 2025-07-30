@@ -1,44 +1,60 @@
 <% unless db_obj.cert_normative_rules.empty? -%>
 <% nice_name = db_obj.is_a?(Udb::CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
-<% if defined?(use_description_list) && use_description_list -%>
+<%   if defined?(use_description_list) && use_description_list -%>
 Normative Rules for `<%= nice_name %>`: ::
-<% else -%>
+<%   else -%>
 ==== Normative Rules for `<%= nice_name %>`
-<% end -%>
+<%   end -%>
 
-[cols="15%,15%,70%"]
+<%   if normative_rule_tags.tags_available? -%>
+[cols="8%,10%,70%,7%,5%"]
 |===
-| ID | Description | Normative Rule Excerpts
+| ID | Description | Documentation Links/Excerpts | Doc | Chap
 
-<% db_obj.cert_normative_rules.each do |nr| -%>
+<%     db_obj.cert_normative_rules.each do |nr| -%>
+<%     num_doc_links = nr.doc_links.length -%>
+<%     row_span = (num_doc_links > 0) ? ".#{num_doc_links}+" : "" -%>
+<%     desc_col_span = (num_doc_links == 0) ? "4+" : "" -%>
+<%= "#{row_span}" %>| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
+<%= "#{desc_col_span}#{row_span}" %>a| <%= nr.description %>
+<%       if nr.doc_links.empty? -%>
+|
+|
+|
+<%       else # some doc_links -%>
+<%         some_not_found = false -%>
+<%         nr.doc_links.each do |doc_link| -%>
+a| <%= doc_link.to_excerpt(normative_rule_tags) %>
+| <%= doc_link.to_doc_name(normative_rule_tags) %>
+| <%= doc_link.to_section(normative_rule_tags) %>
+<%           if doc_link.missing_normative_rule_tag?(normative_rule_tags) then -%>
+<%             warn "Error: Normative rule tag #{doc_link.link_name} for #{db_obj.kind} '#{nice_name}' missing from standards documentation" -%>
+<%             some_not_found = true -%>
+<%           end # missing -%>
+<%         end # each doc_link -%>
+<%         raise "Exiting due to one or more normative rule tags not found" if some_not_found -%>
+<%       end # if some doc_links -%>
+<%     end # each normative rule -%>
+|===
+
+<%   else # tags not available -%>
+[cols="20%,40%,40%"]
+|===
+| ID | Description | Documentation Links
+
+<%     db_obj.cert_normative_rules.each do |nr| -%>
 | <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
 | <%= nr.description %>
-<% if nr.doc_links.empty? -%>
+<%       if nr.doc_links.empty? -%>
 |
-<% else # some doc_links -%>
-<% some_not_found = false -%>
+<%       else -%>
 a|
-<% if normative_rule_tags.tags_available? -%>
-[cols="10%,7%,83%"]
-!===
-! Doc ! Chap ! Excerpt
-
-<% nr.doc_links.each do |doc_link| -%>
-! <%= doc_link.to_doc_name(normative_rule_tags) %>
-! <%= doc_link.to_section(normative_rule_tags) %>
-! <%= doc_link.to_excerpt(normative_rule_tags) %>
-<% if doc_link.missing_normative_rule_tag?(normative_rule_tags) then -%>
-<%   warn "Error: Normative rule tag #{doc_link.link_name} for #{db_obj.kind} '#{nice_name}' missing from standards documentation" -%>
-<%   some_not_found = true -%>
-<% end # missing -%>
-<% end # do each doc_link -%>
-<% raise "Exiting due to one or more normative rule tags not found" if some_not_found -%>
-!===
-<% else # tags not available -%>
-link name ='<%= doc_link.link_name %>'
-<% end # tags not available -%>
-<% end # if doc_links.empty? -%>
-<% end # each normative rule -%>
+<%       nr.doc_links.each do |link| -%>
+* <%= link.to_adoc %>
+<%         end # each link -%>
+<%       end # if empty -%>
+<%     end # each normative rule -%>
 |===
 
+<%   end # tags not available -%>
 <% end # unless no normative rules -%>
