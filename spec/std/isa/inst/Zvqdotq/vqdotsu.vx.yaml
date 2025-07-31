@@ -1,0 +1,55 @@
+﻿# Copyright (c) Kallal Mukherjee.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: vqdotsu.vx
+long_name: Vector 8-bit Signed-Unsigned Dot Product (vector-scalar)
+description: |
+  Vector quad widening signed-unsigned dot product instruction performing the dot product between a 4-element vector of 8-bit signed integer elements (vs2) and a scalar 4-element vector of 8-bit unsigned integer elements (xs1), accumulating the result into a 32-bit signed integer accumulator.
+
+  This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+  The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+  The operation performed is:
+  ```
+  vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
+  ```
+
+  Where vs2[i] is a 32-bit bundle containing four 8-bit signed integers and xs1 contains four 8-bit unsigned integers in its lower 32 bits.
+definedBy: Zvqdotq
+assembly: vd, vs2, xs1, vm
+encoding:
+  match: 101010-----------110-----1010111
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |
+  # IDL implementation not yet available due to missing vector register file and CSR definitions.
+  # See https://github.com/riscv-software-src/riscv-unified-db/pull/467 for vector infrastructure work.
+  #
+  # This instruction performs a vector quad widening signed-unsigned dot product (vector-scalar):
+  # - SEW must be 32
+  # - vs2 contains 8-bit signed integers, xs1 contains 8-bit unsigned integers
+  # - Accumulates results into 32-bit signed integer accumulators
+  # - Supports masking operations
+  #
+  # Operation: vd[i] = signed(vs2[i][0]) * unsigned(xs1[0]) +
+  #                    signed(vs2[i][1]) * unsigned(xs1[1]) +
+  #                    signed(vs2[i][2]) * unsigned(xs1[2]) +
+  #                    signed(vs2[i][3]) * unsigned(xs1[3]) + vd[i]
