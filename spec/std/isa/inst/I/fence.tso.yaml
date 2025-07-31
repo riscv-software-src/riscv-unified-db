@@ -49,7 +49,7 @@ sail(): |
     RETIRE_SUCCESS
   }
 
-cert_normative_rules:
+normative_rules:
   - id: inst.enc.fence_tso
     description: Encoding
     doc_links:

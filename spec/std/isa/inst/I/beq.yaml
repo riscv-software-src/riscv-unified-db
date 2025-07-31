@@ -78,7 +78,7 @@ sail(): |
 
 # SPDX-SnippetEnd
 
-cert_normative_rules:
+normative_rules:
   - id: inst.enc.beq
     description: Encoding
     doc_links:

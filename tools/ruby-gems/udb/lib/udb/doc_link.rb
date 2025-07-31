@@ -157,7 +157,7 @@ class DocLink
     if should_have_normative_rule_tag? then
       normative_rule_tag = normative_rule_tags.get_normative_rule_tag(link_name)
       unless normative_rule_tag.nil?
-        excerpt = "<<#{link_name},#{normative_rule_tag.tag_text}>>"
+        excerpt = "<<#{link_name},#{link_name}>> => #{normative_rule_tag.tag_text}"
       end
     elsif link_name.start_with?("norm:enc:insttable:") then
       # These links are just to a table cell and the tag_text isn't available in the normative rule tags file.

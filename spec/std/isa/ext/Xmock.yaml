@@ -157,7 +157,7 @@ params:
         type: boolean
       maxItems: 8
       minItems: 8
-cert_normative_rules:
+normative_rules:
   - id: ext.Xmock.nr1
     description: Normative rule with multiple doc_links
     doc_links:

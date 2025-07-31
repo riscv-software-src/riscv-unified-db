@@ -236,7 +236,7 @@ sail(): |
 
 # SPDX-SnippetEnd
 
-cert_normative_rules:
+normative_rules:
   - id: inst.enc.fence
     description: Encoding
     doc_links:
@@ -254,6 +254,6 @@ cert_normative_rules:
     doc_links:
       - norm:inst:fence:null_pred_succ_intersection
   - id: inst.fence.unused_fields_reserved
-    description: Unused Fields are Reserved 
+    description: Unused Fields are Reserved
     doc_links:
       - norm:inst:fence:unused_fields_reserved

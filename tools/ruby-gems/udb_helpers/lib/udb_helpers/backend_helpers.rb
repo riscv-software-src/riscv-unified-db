@@ -158,7 +158,7 @@ module Udb::Helpers::TemplateHelpers
     "%%UDB_DOC_LINK%func;#{func_name.sanitize};#{func_name}%%"
   end
 
-  # @return [String] A hyperlink to a UDB certification normative rule
+  # @return [String] A hyperlink to a UDB normative rule
   # @param fmt [String] Is link to normative rule defined in its own separate chapter (fmt = "sep")
   #                     or in a chapter that combines (fmt = "combo") normative rules and test procedures
   # @param id [String] ID of the normative rule

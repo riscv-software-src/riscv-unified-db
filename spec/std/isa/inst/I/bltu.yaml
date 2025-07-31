@@ -75,7 +75,7 @@ sail(): |
 
 # SPDX-SnippetEnd
 
-cert_normative_rules:
+normative_rules:
   - id: inst.enc.bltu
     description: Encoding
     doc_links:

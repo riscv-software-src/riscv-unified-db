@@ -149,7 +149,7 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::M) ? 1 : 0;
     definedBy: M
-    cert_normative_rules:
+    normative_rules:
       - id: csr_field.misa.M.disabled
         description: What happens when you turn off `misa.M`
         doc_links:
@@ -245,7 +245,7 @@ sw_read(): |
     (CSR[misa].C << 2) |
     (CSR[misa].B << 1) |
     CSR[misa].A);
-cert_normative_rules:
+normative_rules:
   - id: csr.misa.disabling_bits
     description: What happens when you turn off bits
     doc_links:

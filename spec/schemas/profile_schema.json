@@ -24,8 +24,8 @@
       "type": "integer",
       "description": "32 for RV32I or 64 for RV64I"
     },
-    "cert_normative_rules": {
-      "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+    "normative_rules": {
+      "$ref": "schema_defs.json#/$defs/normative_rules"
     },
     "cert_test_procedures": {
       "$ref": "schema_defs.json#/$defs/cert_test_procedures"

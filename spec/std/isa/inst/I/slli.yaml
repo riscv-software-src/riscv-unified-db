@@ -63,7 +63,7 @@ sail(): |
 
 # SPDX-SnippetEnd
 
-cert_normative_rules:
+normative_rules:
   - id: inst.enc.slli
     description: Encoding
     doc_links:

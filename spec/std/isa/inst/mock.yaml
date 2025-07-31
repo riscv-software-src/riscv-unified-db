@@ -65,7 +65,7 @@ sail(): |
     }
   }
 
-cert_normative_rules:
+normative_rules:
   - id: inst.mock.encoding&basic_op
     description: Encoding and basic operation for `mock` instruction
     doc_links:

@@ -6,38 +6,38 @@
 # Contains Ruby methods included in Ruby class definition for any database object that can have normative rules and
 # certification test procedures defined in the database object's YAML definition.
 
-require_relative "../cert_normative_rule"
+require_relative "../normative_rule"
 require_relative "../cert_test_procedure"
 
 module Udb
 module CertifiableObject
   # @return [Array<CertNormativeRule>] All normative rules defined by this certifiable_object
-  def cert_normative_rules
-    return @cert_normative_rules unless @cert_normative_rules.nil?
+  def normative_rules
+    return @normative_rules unless @normative_rules.nil?
 
-    @cert_normative_rules = []
-    @data["cert_normative_rules"]&.each do |cert_data|
-      @cert_normative_rules << CertNormativeRule.new(cert_data, self)
+    @normative_rules = []
+    @data["normative_rules"]&.each do |cert_data|
+      @normative_rules << CertNormativeRule.new(cert_data, self)
     end
-    @cert_normative_rules
+    @normative_rules
   end
 
   # @return [Hash<String, CertNormativeRule>] Hash with ID as key of all normative rules defined by database object
-  def cert_normative_rules_hash
-    return @cert_normative_rules_hash unless @cert_normative_rules_hash.nil?
+  def normative_rules_hash
+    return @normative_rules_hash unless @normative_rules_hash.nil?
 
-    @cert_normative_rules_hash = {}
-    cert_normative_rules.each do |nr|
-      @cert_normative_rules_hash[nr.id] = nr
+    @normative_rules_hash = {}
+    normative_rules.each do |nr|
+      @normative_rules_hash[nr.id] = nr
     end
-    @cert_normative_rules_hash
+    @normative_rules_hash
   end
 
   # @param id [String] Unique ID for the normative rule
   # @return [CertNormativeRule]
-  # @return [nil] if there is no certification normative rule with ID of +id+
-  def cert_normative_rule(id)
-    cert_normative_rules_hash[id]
+  # @return [nil] if there is no normative rule with ID of +id+
+  def normative_rule(id)
+    normative_rules_hash[id]
   end
 
   # @return [Array<CertTestProcedure>]

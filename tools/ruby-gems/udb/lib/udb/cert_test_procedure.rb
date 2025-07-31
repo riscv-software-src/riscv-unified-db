@@ -45,16 +45,16 @@ class CertTestProcedure
   end
 
   # @return [Array<CertNormativeRule>]
-  def cert_normative_rules
-    return @cert_normative_rules unless @cert_normative_rules.nil?
+  def normative_rules
+    return @normative_rules unless @normative_rules.nil?
 
-    @cert_normative_rules = []
+    @normative_rules = []
     @data["normative_rules"]&.each do |id|
-      nr = @db_obj.cert_normative_rule(id)
-      raise ArgumentError, "Can't find certification normative rule with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if nr.nil?
-      @cert_normative_rules << nr
+      nr = @db_obj.normative_rule(id)
+      raise ArgumentError, "Can't find normative rule with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if nr.nil?
+      @normative_rules << nr
     end
-    @cert_normative_rules
+    @normative_rules
   end
 
   # @return [String] String (likely multi-line) of certification test procedure steps using Asciidoc lists
