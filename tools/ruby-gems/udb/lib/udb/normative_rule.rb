@@ -4,7 +4,7 @@
 # frozen_string_literal: true
 
 module Udb
-class CertNormativeRule
+class NormativeRule
   # @return [String] Description of normative rule (could be multiple lines)
   attr_reader :description
 

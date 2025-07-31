@@ -44,7 +44,7 @@ class CertTestProcedure
     end
   end
 
-  # @return [Array<CertNormativeRule>]
+  # @return [Array<NormativeRule>]
   def normative_rules
     return @normative_rules unless @normative_rules.nil?
 

@@ -11,18 +11,18 @@ require_relative "../cert_test_procedure"
 
 module Udb
 module CertifiableObject
-  # @return [Array<CertNormativeRule>] All normative rules defined by this certifiable_object
+  # @return [Array<NormativeRule>] All normative rules defined by this certifiable_object
   def normative_rules
     return @normative_rules unless @normative_rules.nil?
 
     @normative_rules = []
     @data["normative_rules"]&.each do |cert_data|
-      @normative_rules << CertNormativeRule.new(cert_data, self)
+      @normative_rules << NormativeRule.new(cert_data, self)
     end
     @normative_rules
   end
 
-  # @return [Hash<String, CertNormativeRule>] Hash with ID as key of all normative rules defined by database object
+  # @return [Hash<String, NormativeRule>] Hash with ID as key of all normative rules defined by database object
   def normative_rules_hash
     return @normative_rules_hash unless @normative_rules_hash.nil?
 
@@ -34,7 +34,7 @@ module CertifiableObject
   end
 
   # @param id [String] Unique ID for the normative rule
-  # @return [CertNormativeRule]
+  # @return [NormativeRule]
   # @return [nil] if there is no normative rule with ID of +id+
   def normative_rule(id)
     normative_rules_hash[id]
