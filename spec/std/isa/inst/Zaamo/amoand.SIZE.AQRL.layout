@@ -35,9 +35,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amoand.<%= size %><%= aq_rl_suffix %>
-long_name: Atomic fetch-and-and <%= current_size[:name] %><%= aq ? " (acquire)" : "" %><%= rl ? " (release)" : "" %><%= aq && rl ? " (acquire-release)" : "" %>
+long_name: Atomic fetch-and-and <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
 description: |
-  Atomically<%= aq ? " with acquire ordering" : "" %><%= rl ? " with release ordering" : "" %>:
+  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
 
     * Load the <%= current_size[:name] %> at address _xs1_
     * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_

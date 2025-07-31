@@ -8,13 +8,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amoadd.d
-long_name: Atomic fetch-and-add word
+long_name: Atomic fetch-and-add doubleword
 description: |
   Atomically:
 
-    * Load the word at address _xs1_
+    * Load the doubleword at address _xs1_
     * Write the sign-extended value into _xd_
-    * Add the least-significant word of register _xs2_ to the loaded value
+    * Add the least-significant doubleword of register _xs2_ to the loaded value
     * Write the sum to the address in _xs1_
 definedBy: Zaamo
 assembly: xd, xs2, (xs1)

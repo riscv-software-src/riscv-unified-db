@@ -375,13 +375,13 @@ end
 
     aq_rl_variants.each do |variant|
       file "#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{variant[:suffix]}.yaml" => [
-        "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout",
+        "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
         __FILE__
       ] do |t|
         aq = variant[:aq]
         rl = variant[:rl]
-        erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}N.layout"), trim_mode: "-")
-        erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}N.layout"
+        erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}.SIZE.AQRL.layout"), trim_mode: "-")
+        erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
         File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
       end
     end
@@ -413,16 +413,6 @@ namespace :gen do
 
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
-    end
-
-    # Generate AMO instructions
-    %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
-      ["b", "h", "w", "d"].each do |size|
-        # Generate all acquire/release variants
-        ["", ".aq", ".rl", ".aqrl"].each do |suffix|
-          Rake::Task["#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{suffix}.yaml"].invoke
-        end
-      end
     end
   end
 end
@@ -583,22 +573,6 @@ task "MockProcessorCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
 task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
 task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
-task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
-task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
-task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
-task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"
-task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
-task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
-task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
-task "AC100-CRD": "#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"
-task "AC200-CRD": "#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"
-task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
-task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
-task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
-task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
-task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"

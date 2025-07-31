@@ -1,4 +1,6 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Qualcomm Technologieslong_name: Atomic fetch-and-max <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
+description: |
+  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:nc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -34,22 +36,22 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amoor.<%= size %><%= aq_rl_suffix %>
-long_name: Atomic fetch-and-or <%= current_size[:name] %><%= aq ? " (acquire)" : "" %><%= rl ? " (release)" : "" %><%= aq && rl ? " (acquire-release)" : "" %>
+name: amomax.<%= size %><%= aq_rl_suffix %>
+long_name: Atomic MAX <%= current_size[:name] %><%= aq ? " (acquire)" : "" %><%= rl ? " (release)" : "" %><%= aq && rl ? " (acquire-release)" : "" %>
 description: |
   Atomically<%= aq ? " with acquire ordering" : "" %><%= rl ? " with release ordering" : "" %>:
 
     * Load the <%= current_size[:name] %> at address _xs1_
     * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_
-    * OR the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value
-    * Write the result to the address in _xs1_
+    * Signed compare the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value, and select the maximum value
+    * Write the maximum to the address in _xs1_
 definedBy: Zaamo
 <%- if size == "d" -%>
 base: 64
 <%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 01000<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111
+  match: 10100<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111
   variables:
     - name: xs2
       location: 24-20
@@ -68,7 +70,7 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amo<%= current_size[:operation_bits] %>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Or, <%= aq ? "true" : "false" %>, <%= rl ? "true" : "false" %>, $encoding);
+  X[xd] = amo<%= current_size[:operation_bits] %>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Max, <%= aq ? "true" : "false" %>, <%= rl ? "true" : "false" %>, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
