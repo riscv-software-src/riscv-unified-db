@@ -15,3 +15,4 @@ require "minitest/autorun"
 
 require_relative "test_cli"
 require_relative "test_yaml_loader"
+require_relative "test_req_expression"
