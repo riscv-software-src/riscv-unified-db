@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/proc_cert_class_schema.json
+
+$schema: proc_cert_class_schema.json#
+kind: processor certificate class
+processor_kind: Generic Unprivileged
+name: RVI
+long_name: RVI Certificate Class
+
+introduction: |
+  The RVI certificate class corresponds to the RVI Profile Family.
+  This certificate class only includes the RISC-V Unprivileged ISA.
+  Certificates for the RVI certificate class are intended for internal
+  use by the RVCP (RISC-V Certification Program).
