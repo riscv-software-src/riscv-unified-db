@@ -40,7 +40,7 @@ void udb::<%= name_of(:params, cfg_arch) %>::set_param_default(const std::string
     <%- if param.default.is_a?(Integer) -%>
     <%= param.name %> = <%= param.default %>_b;
     <%- else -%>
-    <%= param.name %> = <%= param.default %>;
+    <%= param.name %> = <%= param.default.to_cxx %>;
     <%- end -%>
   }
   <%- i += 1 -%>
