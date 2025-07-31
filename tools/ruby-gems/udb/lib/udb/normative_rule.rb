@@ -37,7 +37,7 @@ class NormativeRule
     raise ArgumentError, "Missing normative rule description for ID #{db_obj.id} of kind #{db_obj.kind}" if @description.nil?
 
     @doc_links = []
-    @data["doc_links"]&.each do |link_name|
+    data["doc_links"]&.each do |link_name|
       @doc_links << DocLink.new(link_name)
     end
   end
