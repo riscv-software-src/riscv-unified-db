@@ -216,11 +216,11 @@ function update_topei_m {
 
     if (implemented?(ExtensionName::Smaia)) {
       if (highest_id != 0) {
-        CSR[mtopei].INTERRUPT_IDENTITY = highest_id;
-        CSR[mtopei].PRIORITY = highest_priority;
+        CSR[mtopei].IID = highest_id;
+        CSR[mtopei].IPRIO = highest_priority;
       } else {
-        CSR[mtopei].INTERRUPT_IDENTITY = 0;
-        CSR[mtopei].PRIORITY = 0;
+        CSR[mtopei].IID = 0;
+        CSR[mtopei].IPRIO = 0;
       }
     }
   }
@@ -245,13 +245,13 @@ function update_topei_s {
 
     if (implemented?(ExtensionName::Ssaia)) {
       if (highest_id != 0) {
-        CSR[stopei].INTERRUPT_IDENTITY = highest_id;
-        CSR[stopei].PRIORITY = highest_priority;
+        CSR[stopei].IID = highest_id;
+        CSR[stopei].IPRIO = highest_priority;
         CSR[stopi].IID = highest_id;
         CSR[stopi].IPRIO = highest_priority;
       } else {
-        CSR[stopei].INTERRUPT_IDENTITY = 0;
-        CSR[stopei].PRIORITY = 0;
+        CSR[stopei].IID = 0;
+        CSR[stopei].IPRIO = 0;
         CSR[stopi].IID = 0;
         CSR[stopi].IPRIO = 0;
       }
