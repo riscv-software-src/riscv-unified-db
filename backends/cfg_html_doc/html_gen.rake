@@ -110,7 +110,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
       extensions:
       - 'asciidoctor-kroki'
       - '@asciidoctor/tabs'
-      - #{'"asciidoctor-mathjax"'}   # auto-handles raw TeX delimiters
+      - 'asciidoctor-mathjax'   # auto-handles raw TeX delimiters
       attributes:
         stem: latexmath
     ui:
