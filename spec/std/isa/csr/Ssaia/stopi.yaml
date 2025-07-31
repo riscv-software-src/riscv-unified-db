@@ -24,7 +24,7 @@ fields:
     location: 27-16
     long_name: Interrupt Identity
     description: |
-      Interrupt identity of the highest-priority pending-and-enabled interrupt.
+      Identity of the highest-priority pending-and-enabled interrupt.
     type: RO-H
     reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
@@ -32,7 +32,7 @@ fields:
     location: 7-0
     long_name: Interrupt Priority
     description: |
-      Interrupt priority of the highest-priority pending-and-enabled interrupt.
+      Priority of the highest-priority pending-and-enabled interrupt.
     type: RO-H
     reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia

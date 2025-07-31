@@ -20,7 +20,7 @@ fields:
     location: 1
     long_name: Virtual Supervisor Software Interrupt Pending
     description: |
-      Virtual supervisor software interrupt pending.
+      Virtual supervisor software pending.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
@@ -28,7 +28,7 @@ fields:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Pending
     description: |
-      Virtual supervisor timer interrupt pending.
+      Virtual supervisor timer pending.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
@@ -36,7 +36,7 @@ fields:
     location: 9
     long_name: Virtual Supervisor External Interrupt Pending
     description: |
-      Virtual supervisor external interrupt pending.
+      Virtual supervisor external pending.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia

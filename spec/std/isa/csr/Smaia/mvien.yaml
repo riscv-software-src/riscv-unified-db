@@ -20,7 +20,7 @@ fields:
     location: 1
     long_name: Virtual Supervisor Software Interrupt Enable
     description: |
-      Virtual supervisor software interrupt enable.
+      Virtual supervisor software enable.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
@@ -28,7 +28,7 @@ fields:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Enable
     description: |
-      Virtual supervisor timer interrupt enable.
+      Virtual supervisor timer enable.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
@@ -36,7 +36,7 @@ fields:
     location: 9
     long_name: Virtual Supervisor External Interrupt Enable
     description: |
-      Virtual supervisor external interrupt enable.
+      Virtual supervisor external enable.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
