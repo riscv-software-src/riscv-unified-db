@@ -407,6 +407,45 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
         return final_obj
     else:
+        if isinstance(obj, dict) and "fields" in obj:
+            for field_name, field_def in obj["fields"].items():
+                if isinstance(field_def, dict) and "alias" in field_def:
+                    alias_value = field_def["alias"]
+                    
+                    alias_paths = alias_value if isinstance(alias_value, list) else [alias_value]
+                    
+                    for alias_path in alias_paths:
+                        try:
+                            if isinstance(alias_path, str) and "." in alias_path:
+                                alias_csr_name, alias_field_name = alias_path.split(".", 1)
+
+                                alias_file_path = None
+                                for root, _, files in os.walk(arch_root):
+                                    for file in files:
+                                        if file == f"{alias_csr_name}.yaml":
+                                            alias_file_path = os.path.join(root, file)
+                                            break
+                                    if alias_file_path:
+                                        break
+                                
+                                if alias_file_path and os.path.exists(alias_file_path):
+                                    alias_rel_path = os.path.relpath(alias_file_path, arch_root)
+                                    raw_alias_data = read_yaml(os.path.join(arch_root, alias_rel_path))
+                                    
+                                    if "fields" in raw_alias_data and alias_field_name in raw_alias_data["fields"]:
+                                        alias_field_def = raw_alias_data["fields"][alias_field_name]
+
+                                        for attr_key, attr_value in alias_field_def.items():
+                                            if (attr_key not in ("location", "alias") and 
+                                                attr_key not in field_def):
+                                                if not ((attr_key == "type" and "type()" in field_def) or
+                                                    (attr_key == "type()" and "type" in field_def) or
+                                                    (attr_key == "reset_value" and "reset_value()" in field_def) or
+                                                    (attr_key == "reset_value()" and "reset_value" in field_def)):
+                                                    field_def[attr_key] = deepcopy(attr_value)
+                                                
+                        except Exception as e:
+                            print(f"Warning: Failed to resolve alias {alias_path}: {e}", file=sys.stderr)
         for key in obj:
             obj[key] = _resolve(
                 obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks

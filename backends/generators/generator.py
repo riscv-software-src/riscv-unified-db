@@ -103,6 +103,38 @@ def parse_extension_requirements(extensions_spec):
     # that have an unrecognized format rather than excluding them
     return lambda exts: True
 
+def resolve_field_alias(field_def, alias_path, csr_root, current_name):
+    try:
+        alias_csr_name, alias_field_name = alias_path.split(".")
+        alias_file_path = None
+
+        for root, _, files in os.walk(csr_root):
+            for file in files:
+                if file == f"{alias_csr_name}.yaml":
+                    alias_file_path = os.path.join(root, file)
+                    break
+            if alias_file_path:
+                break
+
+        if not alias_file_path or not os.path.exists(alias_file_path):
+            logging.warning(f"[CSR] Alias file not found for {alias_path} in {current_name}")
+            return
+
+        with open(alias_file_path, encoding="utf-8") as alias_file:
+            alias_data = yaml.safe_load(alias_file)
+            alias_fields = alias_data.get("fields", {})
+
+            alias_field_def = alias_fields.get(alias_field_name)
+            if not isinstance(alias_field_def, dict):
+                logging.warning(f"[CSR] Alias field {alias_field_name} not found or invalid in {alias_file_path}")
+                return
+
+            for attr_key, attr_value in alias_field_def.items():
+                if attr_key not in ("location", "alias") and attr_key not in field_def:
+                    field_def[attr_key] = attr_value
+
+    except Exception as e:
+        logging.warning(f"[CSR] Failed to resolve alias {alias_path} in {current_name}: {e}")
 
 def load_instructions(
     root_dir, csr_root, enabled_extensions, include_all=False, target_arch="RV64"
@@ -149,32 +181,7 @@ def load_instructions(
             fields = data.get("fields", {})
             for field_name, field_def in fields.items():
                 if "alias" in field_def:
-                    alias_path = field_def["alias"]
-                    try:
-                        alias_csr_name, alias_field_name = alias_path.split(".")
-                        alias_file_path = None
-                        for root, _, files in os.walk(csr_root):
-                            for file in files:
-                                if file == f"{alias_csr_name}.yaml":
-                                    alias_file_path = os.path.join(root, file)
-                                    break
-                            if alias_file_path:
-                                break
-                        if not alias_file_path or not os.path.exists(alias_file_path):
-                            logging.warning(f"[CSR] Alias file not found for {alias_path} in CSR {name}")
-                            continue
-                        with open(alias_file_path, encoding="utf-8") as alias_file:
-                            alias_data = yaml.safe_load(alias_file)
-                            alias_fields = alias_data.get("fields", {})
-                            alias_field_def = alias_fields.get(alias_field_name)
-                            if not alias_field_def:
-                                logging.warning(f"[CSR] Alias field {alias_field_name} not found in {alias_file_path}")
-                                continue
-                            for attr in ["description", "type()", "reset_value()"]:
-                                if attr not in field_def and attr in alias_field_def:
-                                    field_def[attr] = alias_field_def[attr]
-                    except Exception as e:
-                        logging.warning(f"[CSR] Failed to resolve alias for field '{field_name}' in CSR {name}: {e}")
+                    resolve_field_alias(field_def, field_def["alias"], csr_root, name)
 
             # If include_all is True, skip extension filtering
             if not include_all:
@@ -364,33 +371,8 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                     fields = data.get("fields", {})
                     for field_name, field_def in fields.items():
                         if "alias" in field_def:
-                            alias_path = field_def["alias"]
-                            try:
-                                alias_csr_name, alias_field_name = alias_path.split(".")
-                                alias_file_path = None
-                                for root, _, files in os.walk(csr_root):
-                                    for file in files:
-                                        if file == f"{alias_csr_name}.yaml":
-                                            alias_file_path = os.path.join(root, file)
-                                            break
-                                    if alias_file_path:
-                                        break
-                                if not alias_file_path or not os.path.exists(alias_file_path):
-                                    logging.warning(f"[CSR] Alias file not found for {alias_path} in CSR {data.get('name', 'UNKNOWN')}")
-                                    continue
-                                with open(alias_file_path, encoding="utf-8") as alias_file:
-                                    alias_data = yaml.safe_load(alias_file)
-                                    alias_fields = alias_data.get("fields", {})
-                                    alias_field_def = alias_fields.get(alias_field_name)
-                                    if not alias_field_def:
-                                        logging.warning(f"[CSR] Alias field {alias_field_name} not found in {alias_file_path}")
-                                        continue
-                                    # Copy attributes except 'location' and 'alias' itself
-                                    for attr_key, attr_value in alias_field_def.items():
-                                        if attr_key not in ("location", "alias") and attr_key not in field_def:
-                                            field_def[attr_key] = attr_value
-                            except Exception as e:
-                                logging.warning(f"[CSR] Failed to resolve alias for field '{field_name}' in CSR {data.get('name', 'UNKNOWN')}: {e}")
+                            resolve_field_alias(field_def, field_def["alias"], csr_root, data.get("name", "UNKNOWN"))
+
             except Exception as e:
                 logging.error(f"Error parsing CSR file {path}: {e}")
                 continue
