@@ -9,7 +9,7 @@
 require_relative "../cert_test_procedure"
 
 module Udb
-module CertTestProcedure
+module CanDefineCertTestProcedures
   # @return [Array<CertTestProcedure>]
   def cert_test_procedures
     return @cert_test_procedures unless @cert_test_procedures.nil?
