@@ -17,6 +17,11 @@ asciidoc:
   extensions:
   - 'asciidoctor-kroki'
   - '@asciidoctor/tabs'
+  - 'asciidoctor-mathjax'   # auto-handles raw TeX delimiters
+  attributes:
+    stem: latexmath
+    'stem@': latexmath
+    'source-highlighter': rouge
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
