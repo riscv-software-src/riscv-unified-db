@@ -44,14 +44,14 @@ class CertTestProcedure
     end
   end
 
-  # @return [Array<NormativeRule>]
+  # @return [Array<NormativeRule>] List of normative rules referenced by this test procedure
   def normative_rules
     return @normative_rules unless @normative_rules.nil?
 
     @normative_rules = []
-    @data["normative_rules"]&.each do |id|
-      nr = @db_obj.normative_rule(id)
-      raise ArgumentError, "Can't find normative rule with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if nr.nil?
+    @data["normative_rules"]&.each do |nr_id|
+      nr = @db_obj.normative_rule(nr_id)
+      raise ArgumentError, "Can't find normative rule '#{nr_id}' for certification test procedure '#{@id}'" if nr.nil?
       @normative_rules << nr
     end
     @normative_rules

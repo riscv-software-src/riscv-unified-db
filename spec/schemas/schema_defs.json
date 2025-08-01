@@ -340,7 +340,7 @@
       }
     },
     "normative_rules": {
-      "description": "Architecturally visible behaviors requiring validation by certification tests",
+      "description": "Architecturally visible behaviors defined by the RISC-V standards",
       "type": "array",
       "required": ["id", "description"],
       "properties": {
@@ -356,6 +356,30 @@
           "items": {
             "type": "string"
           }
+        },
+        "coverage_points": {
+          "type": "array",
+          "description": "List of cover points that cover this normative rule",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "coverage_points": {
+      "description": "Coverage points used to measure coverage",
+      "type": "array",
+      "required": ["name", "description", "bins"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "bins": {
+          "type": "string"
         }
       },
       "additionalProperties": false

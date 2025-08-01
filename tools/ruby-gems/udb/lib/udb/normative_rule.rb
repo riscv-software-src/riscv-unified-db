@@ -5,9 +5,6 @@
 
 module Udb
 class NormativeRule
-  # @return [String] Description of normative rule (could be multiple lines)
-  attr_reader :description
-
   # @return [String] Unique ID of the normative rule
   #
   # Must adhere to the following naming convention:
@@ -15,13 +12,18 @@ class NormativeRule
   #   ===============   =================================   ===========================
   #   Base              B:<base-name>:<suffix>              Where <base-name> is rv32i, rv32e, or rv64i
   #   Instruction       I:<inst-name>:<suffix>
+  #   Instruction       IL:<inst-name>[:<inst-name>]:<suffix> Multiple instructions
+  #   Instruction       IG:<inst-group>:<suffix>            Named group of instructions
   #   Extension         E:<extension-name>:<suffix>
   #   CSR               C:<CSR-name>:<suffix>
   #   CSR Field         F:<CSR-name>:<field-name>:<suffix>
   #
   attr_reader :id
 
-  # @return [Array<DocLink>] List of certification point documentation links. Could be empty.
+  # @return [String] Description of normative rule (could be multiple lines)
+  attr_reader :description
+
+  # @return [Array<DocLink>] List of documentation links. Could be empty.
   attr_reader :doc_links
 
   # @param data [Hash<String, Object>] Data from YAML file
@@ -30,16 +32,31 @@ class NormativeRule
     raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
     raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
 
+    @data = data
+
     @id = data["id"]
-    raise ArgumentError, "Missing normative rule ID for object of kind #{db_obj.kind}" if @id.nil?
+    raise ArgumentError, "Missing ID for normative rule of kind #{db_obj.kind}" if @id.nil?
 
     @description = data["description"]
-    raise ArgumentError, "Missing normative rule description for ID #{db_obj.id} of kind #{db_obj.kind}" if @description.nil?
+    raise ArgumentError, "Missing normative rule description for #{@id} of kind #{db_obj.kind}" if @description.nil?
 
     @doc_links = []
     data["doc_links"]&.each do |link_name|
       @doc_links << DocLink.new(link_name)
     end
+  end
+
+  # @return [Array<CoveragePoints>] List of coverage points referenced by this normative rule
+  def coverage_points
+    return @coverage_points unless @coverage_points.nil?
+
+    @coverage_points = []
+    @data["coverage_points"]&.each do |cp_name|
+      cp = @db_obj.coverage_point(cp_name)
+      raise ArgumentError, "Can't find coverage point '#{cp_name}' for normative rule '#{@id}'" if cp.nil?
+      @coverage_points << nr
+    end
+    @coverage_points
   end
 end
 end

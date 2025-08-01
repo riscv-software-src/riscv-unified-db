@@ -22,6 +22,7 @@ normative_rules:
     description: R-type instruction source and destination operands
     doc_links:
       - norm:basegrp:all:R-type_operands
+    coverage_points: [cp_rs1, cp_rs2, cp_rd, cp_rs1_edges]
 
   #basegrp
 
@@ -44,7 +45,7 @@ normative_rules:
     description: All X0eq0
     doc_links:
       - norm:basegrp:all:x0eq0
-
+    coverage_points: [cp_rs1, cp_rs2, cp_rd]
   - id: norm.basegrp.rv32i_rv64i.other-xregs
     description: RV32i RV64i other xregs
     doc_links:
@@ -166,3 +167,56 @@ normative_rules:
     description: Misaligned ldst invisible trap
     doc_links:
       - norm:param:I:misaligned_ldst:invisible_trap
+
+coverage_points:
+  - name: cp_asm_count
+    bins: 1
+    description: Number of times the instruction is executed in the test, must be greater than 0.
+  - name: cp_rs1
+    bins: 32
+    description: The rs1 register number used in the instruction.
+  - name: cp_rs2
+    bins: 32
+    description: The rs2 register number used in the instruction.
+  - name: cp_rd
+    bins: 32
+    description: The rd register number used in the instruction.
+  - name: cp_rs1_edges
+    bins: 16
+    description: Edge values for rs1 (see <<t-integer-edge-definitions>>).
+  - name: cp_rs2_edges
+    bins: 16
+    description: Edge values for rs2 (see <<t-integer-edge-definitions>>).
+  - name: cp_imm_edges
+    bins: 16
+    description: Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
+  - name: cr_rs1_imm_edges
+    bins: 16*20
+    description: Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
+  - name: cr_rs1_rs2_edges
+    bins: 16*16
+    description: Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
+  - name: cmp_rs1_rs2
+    bins: 32
+    description: The rs1 and rs2 registers have the same register number.
+  - name: cmp_rd_rs1
+    bins: 32
+    description: The rd register has the same register number as the rs1 register.
+  - name: cmp_rd_rs2
+    bins: 32
+    description: The rd register has the same register number as the rs2 register.
+  - name: cmp_rd_rs1_rs2
+    bins: 32
+    description: The rd register has the same register number as both the rs1 and rs2 registers.
+  - name: cp_offset
+    bins: 2
+    description: A branch or jalr instruction has a positive and negative offset.
+  - name: cp_uimm
+    bins: XLEN
+    description: Exercise all XLEN unsigned immediate values, such as shift amounts.
+  - name: cp_align
+    bins: ≤ 8
+    description: Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
+  - name: cp_gpr_hazard
+    bins: 4
+    description: "General-purpose register hazard detection: RAW, WAR, WAW, and no hazard."

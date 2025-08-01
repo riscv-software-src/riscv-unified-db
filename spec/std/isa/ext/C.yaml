@@ -319,3 +319,23 @@ params:
       Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.
     schema:
       type: boolean
+
+coverage_points:
+  - name: cp_rs1p
+    bins: 8
+    description: The rs1 register number used in compressed instructions supporting x8-x15.
+  - name: cp_rs2p
+    bins: 8
+    description: The rs2 register number used in compressed instructions supporting x8-x15.
+  - name: cp_rdp
+    bins: 8
+    description: The rd register number used in compressed instructions supporting x8-x15.
+  - name: cp_fdp
+    bins: 8
+    description: The fd register number used in compressed floating-point instructions supporting x8-x15.
+  - name: cp_fs2p
+    bins: 8
+    description: The fs2 register number used in compressed floating-point instructions supporting x8-x15.
+  - name: cp_imm_mul
+    bins: 8
+    description: 7-bit immediate that is a multiple of 4 (for word-sized load/store instructions).
