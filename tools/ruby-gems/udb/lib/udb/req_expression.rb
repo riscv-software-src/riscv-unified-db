@@ -155,38 +155,22 @@ class ExtensionRequirementExpression
   def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
     case cond
     when String
-      if indent.zero?
-        "#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
-      else
-        "#{'*' * indent}* #{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
-      end
+      "#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          if indent.zero?
-            "#{cond['name']}, version #{cond['version']}#{join}"
-          else
-            "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
-          end
+          "#{cond['name']}, version #{cond['version']}#{join}"
         else
-          if indent.zero?
-            "#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
-          else
-            "#{'*' * indent}* #{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
-          end
+          "#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
         end
       else
-        if cond[T.must(cond.keys[0])].is_a?(Array) && cond[T.must(cond.keys[0])].size == 1
-          "#{cond.keys[0]}: #{to_asciidoc(cond[T.must(cond.keys[0])].first, indent + 2)}"
-        else
-          "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
-        end
+        "#{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
       end
     when Array
-      if cond.size == 1
-        to_asciidoc(cond.first, indent)
+      if cond.size > 1
+        cond.map { |e| "#{'*' * indent} #{to_asciidoc(e, indent).strip}" }.join(join)
       else
-        cond.map { |e| to_asciidoc(e, indent) }.join(join)
+        to_asciidoc(cond.first, indent, join)
       end
     else
       T.absurd(cond)
