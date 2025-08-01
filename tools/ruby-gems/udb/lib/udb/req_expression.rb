@@ -170,7 +170,7 @@ class ExtensionRequirementExpression
       if cond.size > 1
         cond.map { |e| "#{'*' * indent} #{to_asciidoc(e, indent).strip}" }.join(join)
       else
-        to_asciidoc(cond.first, indent, join)
+        to_asciidoc(cond.first, indent)
       end
     else
       T.absurd(cond)
