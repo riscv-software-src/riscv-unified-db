@@ -7,7 +7,7 @@ require "sorbet-runtime"
 require_relative "constexpr_pass"
 require_relative "control_flow_pass"
 require_relative "written_pass"
-require_relative "type"
+require "idlc/type"
 
 class TrueClass
   extend T::Sig

@@ -40,6 +40,17 @@ module Idl
     extend T::Helpers
     abstract!
 
+    Bits1Type = Type.new(:bits, width: 1, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits1Type = Type.new(:bits, width: 1).freeze
+    Bits32Type = Type.new(:bits, width: 32, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits32Type = Type.new(:bits, width: 32).freeze
+    Bits64Type = Type.new(:bits, width: 64, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits64Type = Type.new(:bits, width: 64).freeze
+    ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
+    BoolType = Type.new(:boolean).freeze
+    VoidType = Type.new(:void).freeze
+    StringType = Type.new(:string).freeze
+
     # @return [String] Source input file
     sig { returns(Pathname) }
     attr_reader :input_file
