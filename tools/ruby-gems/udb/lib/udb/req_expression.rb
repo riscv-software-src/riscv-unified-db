@@ -151,33 +151,6 @@ class ExtensionRequirementExpression
     end
   end
 
-  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
-  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
-    # For simple single extension at root level (indent = 0), don't show bullets
-    if indent == 0 && is_simple_single_extension?(cond)
-      return to_asciidoc_no_bullet(cond)
-    end
-    
-    case cond
-    when String
-      "#{'*' * indent}* #{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
-    when Hash
-      if cond.key?("name")
-        if cond.key?("version")
-          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
-        else
-          "#{'*' * indent}* #{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
-        end
-      else
-        "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
-      end
-    when Array
-      cond.map { |e| to_asciidoc(e, indent) }.join(join)
-    else
-      T.absurd(cond)
-    end
-  end
-
   sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(T::Boolean) }
   def is_simple_single_extension?(cond)
     case cond
@@ -191,25 +164,32 @@ class ExtensionRequirementExpression
     end
   end
 
-  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(String) }
-  def to_asciidoc_no_bullet(cond)
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
+  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
+    # For simple single extension at root level (indent = 0), don't show bullets
+    use_bullets = !(indent == 0 && is_simple_single_extension?(cond))
+    bullet_prefix = use_bullets ? "#{'*' * indent}* " : ""
+    
     case cond
     when String
-      "#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
+      "#{bullet_prefix}#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          "#{cond['name']}, version #{cond['version']}"
+          "#{bullet_prefix}#{cond['name']}, version #{cond['version']}#{join}"
         else
-          "#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}"
+          "#{bullet_prefix}#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
         end
       else
-        # This shouldn't happen for simple single extensions, but fallback to original behavior
-        to_asciidoc(cond, 0)
+        "#{bullet_prefix}#{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
       end
+    when Array
+      # Arrays represent multiple items, so they need bullets for clarity
+      # Use indent=1 at root level to ensure bullets are shown
+      array_indent = indent == 0 ? 1 : indent
+      cond.map { |e| to_asciidoc(e, array_indent) }.join(join)
     else
-      # This shouldn't happen for simple single extensions, but fallback to original behavior  
-      to_asciidoc(cond, 0)
+      T.absurd(cond)
     end
   end
 
