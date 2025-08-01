@@ -54,15 +54,15 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.addi
+  - name: inst.enc.addi
     description: Encoding
     doc_links:
       - norm:enc:insttable:addi
-  - id: inst.addi.basic_op
+  - name: inst.addi.basic_op
     description: Basic operation
     doc_links:
       - norm:inst:addi:operation
-  - id: inst.addi.overflow
+  - name: inst.addi.overflow
     description: Treatment of overflow
     doc_links:
       - norm:inst:addi:overflow

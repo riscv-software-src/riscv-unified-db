@@ -66,11 +66,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.srai
+  - name: inst.enc.srai
     description: Encoding
     doc_links:
       - norm:enc:insttable:srai
-  - id: inst.srai.op
+  - name: inst.srai.op
     description: Basic operation
     doc_links:
       - norm:inst:srai:operation

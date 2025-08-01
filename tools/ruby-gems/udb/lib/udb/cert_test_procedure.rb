@@ -11,9 +11,9 @@ module Udb
 class CertTestProcedure
   extend T::Sig
 
-  # @return [String] Unique ID of the test procedure
+  # @return [String] Unique name of the test procedure
   sig { returns(String) }
-  attr_reader :id
+  attr_reader :name
 
   # Description of test procedure (could be multiple lines).
   sig { returns(String) }
@@ -34,13 +34,13 @@ class CertTestProcedure
     @data = data
     @db_obj = db_obj
 
-    @id = T.must_because(data["id"]) { pp data }
+    @name = T.must_because(data["name"]) { pp data }
     @description = T.must_because(data["description"]) { pp data }
     @kind = T.must_because(db_obj.kind) { pp db_obj }
     @test_file_name = data["test_file_name"]
 
     if test_file_name.nil?
-      warn "Warning: Missing test_file_name for certification test procedure description with ID #{id} of kind #{kind}"
+      warn "Warning: Missing test_file_name for certification test procedure description #{name} of kind #{kind}"
     end
   end
 
@@ -49,9 +49,9 @@ class CertTestProcedure
     return @normative_rules unless @normative_rules.nil?
 
     @normative_rules = []
-    @data["normative_rules"]&.each do |nr_id|
-      nr = @db_obj.normative_rule(nr_id)
-      raise ArgumentError, "Can't find normative rule '#{nr_id}' for certification test procedure '#{@id}'" if nr.nil?
+    @data["normative_rules"]&.each do |nr_name|
+      nr = @db_obj.normative_rule(nr_name)
+      raise ArgumentError, "Can't find normative rule '#{nr_name}' for certification test procedure '#{@name}'" if nr.nil?
       @normative_rules << nr
     end
     @normative_rules

@@ -66,11 +66,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.lhu
+  - name: inst.enc.lhu
     description: Encoding
     doc_links:
       - norm:enc:insttable:lhu
-  - id: inst.lhu.op
+  - name: inst.lhu.op
     description: Basic operation
     doc_links:
       - norm:inst:lhu:operation

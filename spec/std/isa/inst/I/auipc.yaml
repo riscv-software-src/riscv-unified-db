@@ -45,11 +45,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.auipc
+  - name: inst.enc.auipc
     description: Encoding
     doc_links:
       - norm:enc:insttable:auipc
-  - id: inst.auipc.op
+  - name: inst.auipc.op
     description: Basic operation
     doc_links:
       - norm:inst:auipc:operation

@@ -342,9 +342,9 @@
     "normative_rules": {
       "description": "Architecturally visible behaviors defined by the RISC-V standards",
       "type": "array",
-      "required": ["id", "description"],
+      "required": ["name", "description"],
       "properties": {
-        "id": {
+        "name": {
           "type": "string"
         },
         "description": {
@@ -387,9 +387,9 @@
     "cert_test_procedures": {
       "description": "Procedure test must follow to test normative rules",
       "type": "array",
-      "required": ["id", "description", "test_file_name", "normative_rules"],
+      "required": ["name", "description", "test_file_name", "normative_rules"],
       "properties": {
-        "id": {
+        "name": {
           "type": "string"
         },
         "description": {

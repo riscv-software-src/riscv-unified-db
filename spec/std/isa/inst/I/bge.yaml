@@ -81,15 +81,15 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.bge
+  - name: inst.enc.bge
     description: Encoding
     doc_links:
       - norm:enc:insttable:bge
-  - id: instgrp.branch.target
+  - name: instgrp.branch.target
     description: Target
     doc_links:
       - norm:instgrp:branch:target
-  - id: inst.bge.op
+  - name: inst.bge.op
     description: Basic operation
     doc_links:
       - norm:insts:bge_bgeu:operation

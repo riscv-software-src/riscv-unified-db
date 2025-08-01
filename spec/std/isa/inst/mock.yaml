@@ -66,12 +66,12 @@ sail(): |
   }
 
 normative_rules:
-  - id: inst.mock.encoding&basic_op
+  - name: inst.mock.encoding&basic_op
     description: Encoding and basic operation for `mock` instruction
     doc_links:
       - norm:enc:insttable:mul
       - udb:doc:inst:mock
-  - id: inst.mock.ill_exc_misa_M_disabled
+  - name: inst.mock.ill_exc_misa_M_disabled
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
@@ -80,7 +80,7 @@ normative_rules:
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
 cert_test_procedures:
-  - id: inst.mock.enc_and_basic
+  - name: inst.mock.enc_and_basic
     description: Verify the encoding and basic operation of the `mock` instruction
     normative_rules: [inst.mock.encoding&basic_op]
     steps: |

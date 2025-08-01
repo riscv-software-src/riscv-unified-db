@@ -27,16 +27,16 @@ module CanDefineCertTestProcedures
 
     @cert_test_procedure_hash = {}
     cert_test_procedures.each do |tp|
-      @cert_test_procedure_hash[tp.id] = tp
+      @cert_test_procedure_hash[tp.name] = tp
     end
     @cert_test_procedure_hash
   end
 
-  # @param id [String] Unique ID for test procedure
+  # @param name [String] Unique name for test procedure
   # @return [CertTestProcedure]
-  # @return [nil] if there is no certification test procedure with ID +id+
-  def cert_test_procedure(id)
-    cert_test_procedure_hash[id]
+  # @return [nil] if there is no certification test procedure with name +name+
+  def cert_test_procedure(name)
+    cert_test_procedure_hash[name]
   end
 end # module
 end

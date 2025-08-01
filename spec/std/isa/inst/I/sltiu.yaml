@@ -60,11 +60,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.sltiu
+  - name: inst.enc.sltiu
     description: Encoding
     doc_links:
       - norm:enc:insttable:sltiu
-  - id: inst.sltiu.op
+  - name: inst.sltiu.op
     description: Basic operation
     doc_links:
       - norm:insts:slti_sltiu:operation

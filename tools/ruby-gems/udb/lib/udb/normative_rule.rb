@@ -5,7 +5,7 @@
 
 module Udb
 class NormativeRule
-  # @return [String] Unique ID of the normative rule
+  # @return [String] Unique name of the normative rule
   #
   # Must adhere to the following naming convention:
   #   Database Object   Naming Convention                   Notes
@@ -18,7 +18,7 @@ class NormativeRule
   #   CSR               C:<CSR-name>:<suffix>
   #   CSR Field         F:<CSR-name>:<field-name>:<suffix>
   #
-  attr_reader :id
+  attr_reader :name
 
   # @return [String] Description of normative rule (could be multiple lines)
   attr_reader :description
@@ -34,11 +34,11 @@ class NormativeRule
 
     @data = data
 
-    @id = data["id"]
-    raise ArgumentError, "Missing ID for normative rule of kind #{db_obj.kind}" if @id.nil?
+    @name = data["name"]
+    raise ArgumentError, "Missing name for normative rule for #{db_obj.name} of kind #{db_obj.kind}" if @name.nil?
 
     @description = data["description"]
-    raise ArgumentError, "Missing normative rule description for #{@id} of kind #{db_obj.kind}" if @description.nil?
+    raise ArgumentError, "Missing normative rule description #{@name} for #{db_obj.name} of kind #{db_obj.kind}" if @description.nil?
 
     @doc_links = []
     data["doc_links"]&.each do |link_name|
@@ -53,7 +53,7 @@ class NormativeRule
     @coverage_points = []
     @data["coverage_points"]&.each do |cp_name|
       cp = @db_obj.coverage_point(cp_name)
-      raise ArgumentError, "Can't find coverage point '#{cp_name}' for normative rule '#{@id}'" if cp.nil?
+      raise ArgumentError, "Can't find coverage point '#{cp_name}' for normative rule '#{@name}'" if cp.nil?
       @coverage_points << nr
     end
     @coverage_points

@@ -66,11 +66,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.lbu
+  - name: inst.enc.lbu
     description: Encoding
     doc_links:
       - norm:enc:insttable:lbu
-  - id: inst.lbu.op
+  - name: inst.lbu.op
     description: Basic operation
     doc_links:
       - norm:insts:lb_lbu:operation

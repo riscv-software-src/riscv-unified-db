@@ -8,7 +8,7 @@ Test Procedures for `<%= nice_name %>`: ::
 
 <% db_obj.cert_test_procedures.each do |tp| -%>
 [%autowidth]
-.*Test Procedure ID <%= tp.id %>*
+.*Test Procedure Name <%= tp.name %>*
 |===
 
 | *Test File Name* | <%= tp.test_file_name.nil? ? "None" : tp.test_file_name %>
@@ -16,7 +16,7 @@ Test Procedures for `<%= nice_name %>`: ::
 | *Normative Rules*
 a|
 <% tp.normative_rules.each do |nr| -%>
-* <%= defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.id) : nr.id %>
+* <%= defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.name) : nr.name %>
 <% end # each cp -%>
 | *Steps*
 a|

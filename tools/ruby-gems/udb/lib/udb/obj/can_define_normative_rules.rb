@@ -21,22 +21,22 @@ module CanDefineNormativeRules
     @normative_rules
   end
 
-  # @return [Hash<String, NormativeRule>] Hash with ID as key of all normative rules defined by database object
+  # @return [Hash<String, NormativeRule>] Hash with name as key of all normative rules defined by database object
   def normative_rules_hash
     return @normative_rules_hash unless @normative_rules_hash.nil?
 
     @normative_rules_hash = {}
     normative_rules.each do |nr|
-      @normative_rules_hash[nr.id] = nr
+      @normative_rules_hash[nr.name] = nr
     end
     @normative_rules_hash
   end
 
-  # @param id [String] Unique ID for the normative rule
+  # @param name [String] Unique name for the normative rule
   # @return [NormativeRule]
-  # @return [nil] if there is no normative rule with ID of +id+
-  def normative_rule(id)
-    normative_rules_hash[id]
+  # @return [nil] if there is no normative rule with name of +name+
+  def normative_rule(name)
+    normative_rules_hash[name]
   end
 end # module
 end

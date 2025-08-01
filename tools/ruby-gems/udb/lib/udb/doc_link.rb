@@ -28,12 +28,12 @@
 #                 udb:doc:csr_field:<csr-name>:<field-name>
 #                 udb:doc:param:<ext-name>:<param-name>
 #                 udb:doc:func:<func-name>  (Documentation of common/built-in IDL functions)
-#                 udb:doc:covpt:<fmt>:<id>
+#                 udb:doc:covpt:<fmt>:<name>
 #                   where <fmt> is:
 #                      sep for UDB documentation that "separates" normative rules from test plans
 #                      combo for UDB documentation that "combines" normative rules with test plans
 #                      appendix for UDB documentation that has normative rules and test plans in appendices
-#                   where <id> is the ID of the normative rule
+#                   where <name> is the name of the normative rule
 #   IDL code      idl:code:inst:<inst-name>:<location>
 #                 TODO for CSR and CSR Fields
 #

@@ -66,11 +66,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.lw
+  - name: inst.enc.lw
     description: Encoding
     doc_links:
       - norm:enc:insttable:lw
-  - id: inst.lw.op
+  - name: inst.lw.op
     description: Basic operation
     doc_links:
       - norm:inst:lw:operation

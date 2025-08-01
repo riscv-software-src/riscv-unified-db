@@ -21,7 +21,7 @@ class CoveragePoint
     raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
 
     @name = data["name"]
-    raise ArgumentError, "Missing name for coverage point of kind #{db_obj.kind}" if @name.nil?
+    raise ArgumentError, "Missing name for coverage point for #{db_obj.name} of kind #{db_obj.kind}" if @name.nil?
 
     @bin = data["bin"]
     raise ArgumentError, "Missing bin for coverage point #{@name} of kind #{db_obj.kind}" if @bin.nil?

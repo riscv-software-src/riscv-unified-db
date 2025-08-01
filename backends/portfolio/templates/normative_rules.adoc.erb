@@ -9,13 +9,13 @@ Normative Rules for `<%= nice_name %>`: ::
 <%   if normative_rule_tags.tags_available? -%>
 [cols="8%,10%,7%,5%,70%"]
 |===
-| ID | Description | Doc | Chap | Links/Excerpts
+| Name | Description | Doc | Chap | Links/Excerpts
 
 <%     db_obj.normative_rules.each do |nr| -%>
 <%     num_doc_links = nr.doc_links.length -%>
 <%     row_span = (num_doc_links > 0) ? ".#{num_doc_links}+" : "" -%>
 <%     desc_col_span = (num_doc_links == 0) ? "4+" : "" -%>
-<%= "#{row_span}" %>| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
+<%= "#{row_span}" %>| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.name) : "" %><%= nr.name %>
 <%= "#{desc_col_span}#{row_span}" %>a| <%= nr.description %>
 <%       if nr.doc_links.empty? -%>
 |
@@ -40,10 +40,10 @@ a| <%= doc_link.to_excerpt(normative_rule_tags) %>
 <%   else # tags not available -%>
 [cols="20%,40%,40%"]
 |===
-| ID | Description | Documentation Links
+| Name | Description | Documentation Links
 
 <%     db_obj.normative_rules.each do |nr| -%>
-| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.id) : "" %><%= nr.id %>
+| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.name) : "" %><%= nr.name %>
 | <%= nr.description %>
 <%       if nr.doc_links.empty? -%>
 |

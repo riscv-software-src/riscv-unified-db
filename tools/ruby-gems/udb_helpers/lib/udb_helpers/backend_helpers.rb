@@ -161,17 +161,17 @@ module Udb::Helpers::TemplateHelpers
   # @return [String] A hyperlink to a UDB normative rule
   # @param fmt [String] Is link to normative rule defined in its own separate chapter (fmt = "sep")
   #                     or in a chapter that combines (fmt = "combo") normative rules and test procedures
-  # @param id [String] ID of the normative rule
-  def link_to_udb_doc_norm_rule(fmt, id)
-    raise ArgumentError, "Unknown fmt value of '#{fmt}' for ID '#{id}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
-    "%%UDB_DOC_NORM_RULE_LINK%#{fmt};#{id.sanitize};#{id}%%"
+  # @param name [String] Unique name of the normative rule
+  def link_to_udb_doc_norm_rule(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "%%UDB_DOC_NORM_RULE_LINK%#{fmt};#{name.sanitize};#{name}%%"
   end
 
   # @return [String] A hyperlink into IDL instruction code
   # @param func_name [String] Name of the instruction
-  # @param id [String] ID within the instruction code
-  def link_into_idl_inst_code(inst_name, id)
-    "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{id.sanitize};#{inst_name}.#{id}%%"
+  # @param name [String] name within the instruction code
+  def link_into_idl_inst_code(inst_name, name)
+    "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{name.sanitize};#{inst_name}.#{name}%%"
   end
   # TODO: Add csr and csr_field support
 
@@ -221,18 +221,18 @@ module Udb::Helpers::TemplateHelpers
   # @return [String] An anchor for a UDB normative rule documentation
   # @param fmt [String] Is anchor in normative rule defined in its own separate chapter (fmt = "sep")
   #                     or in a chapter that combines (fmt = "combo") normative rules and test procedures
-  # @param id [String] ID of the normative rule
+  # @param name [String] name of the normative rule
   # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
-  def anchor_for_udb_doc_norm_rule(fmt, id)
-    raise ArgumentError, "Unknown fmt value of '#{fmt}' for ID '#{id}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
-    "[[udb:doc:norm_rule:#{fmt}:#{id.sanitize}]]"
+  def anchor_for_udb_doc_norm_rule(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for name '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "[[udb:doc:norm_rule:#{fmt}:#{name.sanitize}]]"
   end
 
   # @return [String] An anchor inside IDL instruction code
   # @param func_name [String] Name of the instruction
-  # @param id [String] ID within the instruction code
-  def anchor_inside_idl_inst_code(inst_name, id)
-    "[#idl:code:inst:#{inst_name.sanitize}:#{id.sanitize}]"
+  # @param name [String] name within the instruction code
+  def anchor_inside_idl_inst_code(inst_name, name)
+    "[#idl:code:inst:#{inst_name.sanitize}:#{name.sanitize}]"
   end
   # TODO: Add csr and csr_field support
 
@@ -290,12 +290,12 @@ module Udb::Helpers::AsciidocUtils
         end
       end.gsub(/%%UDB_DOC_NORM_RULE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         fmt = Regexp.last_match[1] # "sep", "combo", or "appendix"
-        id = Regexp.last_match[2]
+        name = Regexp.last_match[2]
         link_text = Regexp.last_match[3]
 
-        raise "Unhandled link fmt of '#{fmt}' for ID '#{id}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+        raise "Unhandled link fmt of '#{fmt}' for name '#{name}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
 
-        "<<udb:doc:norm_rule:#{fmt}:#{id},#{link_text}>>"
+        "<<udb:doc:norm_rule:#{fmt}:#{name},#{link_text}>>"
       end.gsub(/%%IDL_CODE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
@@ -303,8 +303,8 @@ module Udb::Helpers::AsciidocUtils
 
         case type
         when "inst"
-          inst_name, id = name.split('.')
-          "<<idl:code:inst:#{inst_name}:#{id},#{link_text}>>"
+          inst_name, name = name.split('.')
+          "<<idl:code:inst:#{inst_name}:#{name},#{link_text}>>"
         # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
@@ -375,8 +375,8 @@ module Udb::Helpers::AntoraUtils
 
         case type
         when "inst"
-          inst_name, id = name.split('.')
-          "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{id}[#{link_text}]"
+          inst_name, name = name.split('.')
+          "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{name}[#{link_text}]"
         # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"

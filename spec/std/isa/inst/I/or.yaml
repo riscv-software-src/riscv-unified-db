@@ -59,11 +59,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - id: inst.enc.or
+  - name: inst.enc.or
     description: Encoding
     doc_links:
       - norm:enc:insttable:or
-  - id: inst.or.op
+  - name: inst.or.op
     description: Basic operation
     doc_links:
       - norm:insts:and_or_xor:operation
