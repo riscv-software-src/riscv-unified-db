@@ -189,25 +189,37 @@ def load_instructions(
                 try:
                     for field, info in opcodes.items():
                         if not isinstance(info, dict):
-                            continue  
+                            continue
 
                         value = info.get("value")
                         location = info.get("location")
                         if value is None or location is None:
                             continue
 
-                        if isinstance(location, str) and "-" in location:
-                            hi, lo = map(int, location.split("-"))
-                            width = hi - lo + 1
-                            val_int = int(value, 0) if isinstance(value, str) else value
-                            val_bin = bin(val_int)[2:].zfill(width)
+                        if isinstance(location, str):
+                            try:
+                                if "-" in location:
+                                    hi, lo = map(int, location.split("-"))
+                                else:
+                                    hi = lo = int(location)
 
-                            match_bits[31 - hi : 32 - lo + 1] = list(val_bin)
+                                width = hi - lo + 1
+                                val_int = int(value, 0) if isinstance(value, str) else value
+                                val_bin = bin(val_int)[2:].zfill(width)
+
+                                match_bits[31 - hi : 32 - lo + 1] = list(val_bin)
+                            except Exception as e:
+                                logging.error(
+                                    f"Failed to parse location '{location}' for field '{field}' in instruction '{name}': {e}"
+                                )
+                                continue
+
                     match_str = "".join(match_bits)
                     instr_dict[name] = {"match": match_str}
                 except Exception as e:
                     logging.error(f"Critical error constructing match string for {name} in {path}: {e}")
                     raise
+
 
                 continue 
             # Check if the instruction specifies a base architecture constraint
