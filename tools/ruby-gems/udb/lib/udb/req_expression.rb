@@ -164,10 +164,16 @@ class ExtensionRequirementExpression
     end
   end
 
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(T::Boolean) }
+  def is_complex_condition_header?(cond)
+    # Check if this is a complex condition header (allOf, anyOf, oneOf, etc.)
+    cond.is_a?(Hash) && !cond.key?("name")
+  end
+
   sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
   def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
-    # For simple single extension at root level (indent = 0), don't show bullets
-    use_bullets = !(indent == 0 && is_simple_single_extension?(cond))
+    # For simple single extension OR complex condition headers at root level (indent = 0), don't show bullets
+    use_bullets = !(indent == 0 && (is_simple_single_extension?(cond) || is_complex_condition_header?(cond)))
     bullet_prefix = use_bullets ? "#{'*' * indent}* " : ""
     
     case cond
