@@ -373,10 +373,10 @@ class Csr < TopLevelDatabaseObject
         end
 
       if effective_xlen.nil?
-        <<~LENGTH
-          #{length(32)} when #{cond.sub('%%', '0')}
-          #{length(64)} when #{cond.sub('%%', '1')}
-        LENGTH
+        [
+          "* #{length(32)} when #{cond.sub('%%', '0')}",
+          "* #{length(64)} when #{cond.sub('%%', '1')}"
+        ].join("\n")
       else
         "#{length(effective_xlen)}-bit"
       end
