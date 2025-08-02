@@ -37,8 +37,8 @@ fields:
       [when,"MUTABLE_MISA_A == true"]
       Writing 0 to this field will cause all atomic instructions to raise an `IllegalInstruction` exception.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::A) && MUTABLE_MISA_A) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::A) && MUTABLE_MISA_A) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -57,8 +57,8 @@ fields:
       [when,"MUTABLE_MISA_B == true"]
       Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::B) && MUTABLE_MISA_B) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -78,8 +78,8 @@ fields:
       Writing 0 to this field will cause all compressed instructions to raise an `IllegalInstruction` exception.
       Additionally, IALIGN becomes 32.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::C) && MUTABLE_MISA_C) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::C) && MUTABLE_MISA_C) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -102,8 +102,8 @@ fields:
       Additionally, the upper 32-bits of the f registers will read as zero.
       --
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::D) && MUTABLE_MISA_D) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::D) && MUTABLE_MISA_D) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -126,8 +126,8 @@ fields:
       Writing 0 to this field with `misa.D` set will result in UNDEFINED behavior.
       --
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::F) && MUTABLE_MISA_F) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -190,8 +190,8 @@ fields:
       [when,"MUTABLE_MISA_H == true"]
       Writing 0 to this field will cause all attempts to enter VS- or VU- mode, execute a hypervisor instruction, or access a hypervisor CSR to raise an `IllegalInstruction` fault.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H) && MUTABLE_MISA_H) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -209,11 +209,7 @@ fields:
     type: RO
     definedBy: I
     reset_value(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return MISA_CSR_IMPLEMENTED ? 1 : 0;
   M:
     location: 12
     description: |
@@ -273,11 +269,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return MISA_CSR_IMPLEMENTED ? 1 : 0;
     definedBy: Q
     sw_write(csr_value): |
       if (MISA_CSR_IMPLEMENTED) {
@@ -304,8 +296,8 @@ fields:
       [when,"MUTABLE_MISA_S == true"]
       Writing 0 to this field will cause all attempts to enter S-mode or access S-mode state to raise an exception.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::S) && MUTABLE_MISA_S) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S) && MUTABLE_MISA_S) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -324,8 +316,8 @@ fields:
       [when,"MUTABLE_MISA_U == true"]
       Writing 0 to this field will cause all attempts to enter U-mode to raise an exception.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::U) && MUTABLE_MISA_U) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::U) && MUTABLE_MISA_U) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -347,8 +339,8 @@ fields:
       [when,"MISA_CSR_IMPLEMENTED == false"]
       This field reads as 0 and cannot be modified.
     type(): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return (implemented?(ExtensionName::V) && MUTABLE_MISA_V) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::V) && MUTABLE_MISA_V) {
+        return CsrFieldType::RW;
       } else {
         return CsrFieldType::RO;
       }
@@ -360,24 +352,23 @@ fields:
       }
     definedBy: V
 sw_read(): |
-  if (MISA_CSR_IMPLEMENTED) {
-    return (
-      (CSR[misa].MXL << (xlen() - 2)) |
-      (CSR[misa].V << 21) |
-      (CSR[misa].U << 20) |
-      (CSR[misa].S << 18) |
-      (CSR[misa].M << 12) |
-      (CSR[misa].I << 8) |
-      (CSR[misa].H << 7) |
-      ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 6) | # 'G'
-      (CSR[misa].F << 5) |
-      (CSR[misa].D << 3) |
-      (CSR[misa].C << 2) |
-      (CSR[misa].B << 1) |
-      CSR[misa].A);
-  } else {
+  if (!MISA_CSR_IMPLEMENTED) {
     return 0;
   }
+  return (
+    (CSR[misa].MXL << (xlen() - 2)) |
+    (CSR[misa].V << 21) |
+    (CSR[misa].U << 20) |
+    (CSR[misa].S << 18) |
+    (CSR[misa].M << 12) |
+    (CSR[misa].I << 8) |
+    (CSR[misa].H << 7) |
+    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 6) | # 'G'
+    (CSR[misa].F << 5) |
+    (CSR[misa].D << 3) |
+    (CSR[misa].C << 2) |
+    (CSR[misa].B << 1) |
+    CSR[misa].A);
 cert_normative_rules:
   - id: csr.misa.disabling_bits
     name: Disabling `misa` bits

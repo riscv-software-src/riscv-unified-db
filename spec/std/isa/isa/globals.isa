@@ -1388,7 +1388,7 @@ function current_translation_mode {
           return SatpMode::Reserved;
         }
       }
-    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b1)) {
+    } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1) {
 
       # if we reach here, then the effective mode is S or U
       assert(effective_mode == PrivilegeMode::S || effective_mode == PrivilegeMode::U, "unexpected priv mode");
@@ -2503,7 +2503,7 @@ function read_memory_aligned {
   body {
     TranslationResult result;
 
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1) {
       result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
     } else {
       result.paddr = virtual_address;
@@ -2542,7 +2542,7 @@ function read_memory {
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
 
-      physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+      physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
         ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2558,7 +2558,7 @@ function read_memory {
       # a page/access fault exception, depending on the configuration
       if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
         # do translation to trigger any access/page faults before raising misaligned
-        physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+        physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
           ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
           : virtual_address;
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
@@ -2625,7 +2625,7 @@ function read_memory_xlen_aligned {
   body {
     TranslationResult result;
 
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1) {
       result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
     } else {
       result.paddr = virtual_address;
@@ -2717,7 +2717,7 @@ function load_reserved {
   }
   body {
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+      ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
         ? translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2734,7 +2734,8 @@ function load_reserved {
 
     register_reservation_set(physical_address, N);
 
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S ==1 )&& LRSC_FAIL_ON_VA_SYNONYM) {
+    if (((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1) &&
+    LRSC_FAIL_ON_VA_SYNONYM) {
       # also need to remember the virtual address
       reservation_virtual_address = virtual_address;
     }
@@ -2764,7 +2765,7 @@ function store_conditional {
   }
   body {
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+      ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2842,7 +2843,7 @@ function amo {
     }
 
     Bits<PHYS_ADDR_WIDTH> physical_address =
-      ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+      ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
         ? translate(virtual_address, MemoryOperation::ReadModifyWrite, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2892,7 +2893,7 @@ function write_memory_aligned {
   body {
     XReg physical_address;
 
-    physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+    physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
       ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
       : virtual_address;
 
@@ -2929,7 +2930,7 @@ function write_memory {
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
 
-      physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+      physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1)
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
@@ -2946,7 +2947,7 @@ function write_memory {
       # a page/access fault exception, depending on the configuration
       if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
         # do translation to trigger any access/page faults before raising misaligned
-        physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+        physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
           ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
           : virtual_address;
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
@@ -2976,7 +2977,7 @@ function write_memory_xlen_aligned {
   body {
     XReg physical_address;
 
-    physical_address = ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1))
+    physical_address = ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || CSR[misa].S == 1'b1)
       ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
       : virtual_address;
 

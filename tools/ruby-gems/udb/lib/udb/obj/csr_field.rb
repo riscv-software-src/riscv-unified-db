@@ -718,7 +718,7 @@ class CsrField < DatabaseObject
   def location_cond32
     case csr.priv_mode
     when "M"
-      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 0)"
+      "CSR[misa].MXL == 0"
     when "S"
       "CSR[mstatus].SXL == 0"
     when "VS"
