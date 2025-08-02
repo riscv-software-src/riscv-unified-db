@@ -341,7 +341,7 @@ class Csr < TopLevelDatabaseObject
   def length_cond64
     case @data["length"]
     when "MXLEN"
-      "CSR[misa].MXL == 1"
+      "(!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == 1)"
     when "SXLEN"
       "CSR[mstatus].SXL == 1"
     when "VSXLEN"
