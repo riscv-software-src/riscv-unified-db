@@ -7,17 +7,28 @@ module Udb
 class NormativeRule
   # @return [String] Unique name of the normative rule
   #
-  # Must adhere to the following naming convention:
-  #   Database Object   Naming Convention                   Notes
-  #   ===============   =================================   ===========================
-  #   Base              B:<base-name>:<suffix>              Where <base-name> is rv32i, rv32e, or rv64i
-  #   Instruction       I:<inst-name>:<suffix>
-  #   Instruction       IL:<inst-name>[:<inst-name>]:<suffix> Multiple instructions
-  #   Instruction       IG:<inst-group>:<suffix>            Named group of instructions
-  #   Extension         E:<extension-name>:<suffix>
-  #   CSR               C:<CSR-name>:<suffix>
-  #   CSR Field         F:<CSR-name>:<field-name>:<suffix>
+  # Must adhere to the following naming convention.
+  # The <id> is a unique suffix that describes the normative rule.
+  # The convention is similar to the doc_link naming convention but more compact and tailored to UDB object types.
   #
+  #   Object        Naming Convention                               Associated ISA features
+  #   ============  =============================================== =========================================
+  #   Extension     E:<ext-name>:<id>                               Single extension
+  #                 EL:<ext-name>[_<ext-name>]:<id>                 List of extensions
+  #                 EG:<group-name>:<id>                            Named group of extensions
+  #   Instruction   I:<inst-name>:<id>                              Single instruction
+  #                 IL:<inst-name>[_<inst-name>]+:<id>              List of instructions
+  #                 IG:<group-name>:<id>                            Named group of insts (e.g., branch, load)
+  #   CSR           C:<csr-name>:<id>                               Single CSR
+  #                 CL:<csr-name>[_<csr-name>]+:<id>                List of CSRs
+  #                 CG:<group-name>:<id>                            Named group of CSRs
+  #   CSR Field     F:<csr-name>:<field-name>:<id>                  Single CSR field
+  #                 FL:<csr-name>:<field-name>[_<field-name>]+:<id> List of fields in the same CSR
+  #                 FG:<csr-name>:<group-name>:<id>                 Named group of CSR fields in the same CSR
+  #                 CFG:csr-name>[_<csr-name>]+:<field-name>:<id>   Same field in the listed CSRs
+  #   Parameter     P:<param-name>:<id>                             Single parameter
+  #                 PL:<param-name>[_<param-name>]+:<id>            List of parameters
+  #                 PG:<group-name>:<id>                            Named group of parameters
   attr_reader :name
 
   # @return [String] Description of normative rule (could be multiple lines)

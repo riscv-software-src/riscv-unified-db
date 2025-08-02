@@ -4,23 +4,30 @@
 # frozen_string_literal: true
 
 # Creates links into RISC-V documentation with the following formats for the link name.
+# The <id> is a unique suffix that describes the tagged text.
 #
-#   Documentation Format                                                  Applies
-#   ============  ======================================================= ================================================
-#   ISA manuals   norm:base:<base-name>:<identifier>                      Single base ISA (rv32i/rv32e/rv64i)
-#                 norm:bases:<base-name>[_<base-name>]+:<identifier>      List of bases separated by "_"
-#                 norm:basegrp:<group-name>:<identifier>                  Named group of bases (e.g., rv32, all)
-#                 norm:ext:<ext-name>:<identifier>                        Single extension
-#                 norm:exts:<ext-name>[_<ext-name>]:<identifier>          List of extensions separated by "_"
-#                 norm:extgrp:<ext-name>:<identifier>                     Named group of extensions
-#                 norm:enc:insttable:<inst-name>                          Instruction table cell for instruction encoding
-#                 norm:inst:<inst-name>:<identifier>                      Single instruction
-#                 norm:insts:<inst-name>[_<inst-name>]+:<identifier>      List of instructions separated by "_"
-#                 norm:instgrp:<group-name>:<identifier>                  Named group of insts (e.g., branch, load, store, etc.)
-#                 norm:csr:<csr-name>:<identifier>                        Single CSR
-#                 norm:csr_field:<csr-name>:<field-name>:<identifier>     Single CSR field
-#                 norm:param:<ext-name>:<param-name>:<identifier>
-#                   where <identifier> is a string that describes the tagged text
+#   Documentation Format                                                    Associated ISA features
+#   ============  =======================================================   ================================================
+#   ISA manuals   norm:base:<base-name>:<id>                                Single base ISA (rv32i/rv32e/rv64i)
+#                 norm:bases:<base-name>[_<base-name>]+:<id>                List of bases
+#                 norm:basegrp:<group-name>:<id>                            Named group of bases (e.g., rv32, all)
+#                 norm:ext:<ext-name>:<id>                                  Single extension
+#                 norm:exts:<ext-name>[_<ext-name>]:<id>                    List of extensions
+#                 norm:extgrp:<group-name>:<id>                             Named group of extensions
+#                 norm:enc:insttable:<inst-name>                            Table cell for instruction encoding
+#                 norm:inst:<inst-name>:<id>                                Single instruction
+#                 norm:insts:<inst-name>[_<inst-name>]+:<id>                List of instructions
+#                 norm:instgrp:<group-name>:<id>                            Named group of insts (e.g., branch, load)
+#                 norm:csr:<csr-name>:<id>                                  Single CSR
+#                 norm:csrs:<csr-name>[_<csr-name>]+:<id>                   List of CSRs
+#                 norm:csrgrp:<group-name>:<id>                             Named group of CSRs
+#                 norm:csrfld:<csr-name>:<field-name>:<id>                  Single CSR field
+#                 norm:csrflds:<csr-name>:<field-name>[_<field-name>]+:<id> List of fields in the same CSR
+#                 norm:csrfldgrp:<csr-name>:<group-name>:<id>               Named group of CSR fields in the same CSR
+#                 norm:csrsfld:<csr-name>[_<csr-name>]+:<field-name>:<id>   Same field in the listed CSRs
+#                 norm:param:<param-name>:<id>                              Single parameter
+#                 norm:params:<param-name>[_<param-name>]+:<id>             List of parameters
+#                 norm:paramgrp:<group-name>:<id>                           Named group of parameters
 #   UDB encoding  udb:enc:inst:<inst-name>
 #   UDB doc       udb:doc:ext:<ext-name>
 #                 udb:doc:inst:<inst-name>
