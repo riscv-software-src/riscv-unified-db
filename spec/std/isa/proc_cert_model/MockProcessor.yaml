@@ -51,6 +51,7 @@ extensions:
   I:
     note: Just added this note to I extension
   Xmock:
+    version: "~> 1.0.0"
     presence: mandatory
     param_constraints:
       MOCK_ENUM_2_INTS: {}
@@ -81,7 +82,6 @@ extensions:
         schema:
           contains: { const: DEF }
   C:
-    version: "~> 2.2"
     presence: mandatory
     param_constraints:
       MUTABLE_MISA_C:
@@ -93,10 +93,8 @@ extensions:
   M:
     presence: mandatory
   Zicsr:
-    version: "~> 2.0"
     presence: mandatory
   Zicntr:
-    version: "~> 2.0"
     presence: mandatory
     param_constraints:
       TIME_CSR_IMPLEMENTED: {} # Unconstrained
@@ -180,7 +178,6 @@ extensions:
           const: 64
   B:
     presence: mandatory
-    version: "~> 1.0"
     note: "Added this as mandatory to see if Zba, Zbb, and Zbs are included."
 
 requirement_groups:

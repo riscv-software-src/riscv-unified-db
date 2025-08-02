@@ -12,9 +12,11 @@ description: This is just for testing
 versions:
   - version: "0.9.9"
     state: development
+    specification_source: UDB
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-04
+    specification_source: UDB
 params:
   MOCK_ENUM_2_INTS:
     description: foo
