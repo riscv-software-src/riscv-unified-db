@@ -36280,32 +36280,15 @@ Included in::
 [#udb:doc:inst:vqdot_vv]
 
 == vqdot.vv
-
-
-
 Synopsis::
-
 Vector 8-bit Signed-Signed Dot Product (vector-vector)
-
-
-
 Assembly::
-
 vqdot.vv vd, vs2, vs1, vm
-
-
-
 Encoding::
-
 [wavedrom, ,svg,subs='attributes',width="100%"]
-
 ....
-
 {"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2c,"type":2}]}
-
 ....
-
-
 
 Description::
 
