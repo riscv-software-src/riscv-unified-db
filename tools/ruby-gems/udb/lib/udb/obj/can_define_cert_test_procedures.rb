@@ -16,7 +16,9 @@ module CanDefineCertTestProcedures
 
     @cert_test_procedures = []
     @data["cert_test_procedures"]&.each do |tp_data|
-      @cert_test_procedures << CertTestProcedure.new(tp_data, self)
+      tp = CertTestProcedure.new(tp_data, self)
+      arch.add_cert_test_procedure(tp)
+      @cert_test_procedures << tp
     end
     @cert_test_procedures
   end

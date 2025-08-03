@@ -5,8 +5,7 @@
 # typed: false
 
 # The Architecture class is the API to the architecture database.
-# The "database" contains RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.
+# The "database" contains RISC-V standards including extensions, instructions, CSRs, Profiles, and Certificates.
 # The Architecture class is used by backends to export the information in the
 # architecture database to create various outputs.
 #
@@ -50,12 +49,15 @@ require "yaml"
 require_relative "obj/certificate"
 require_relative "obj/csr"
 require_relative "obj/csr_field"
-require_relative "exception_code"
 require_relative "obj/extension"
 require_relative "obj/instruction"
 require_relative "obj/manual"
 require_relative "obj/portfolio"
 require_relative "obj/profile"
+require_relative "exception_code"
+require_relative "normative_rule"
+require_relative "coverage_point"
+require_relative "cert_test_procedure"
 
 module Udb
 
@@ -74,6 +76,9 @@ class Architecture
     @path = @arch_dir # alias
     @objects = Concurrent::Hash.new
     @object_hashes = Concurrent::Hash.new
+    @normative_rule_hash = {}
+    @coverage_point_hash = {}
+    @cert_test_procedure_hash = {}
   end
 
   # validate the architecture against JSON Schema and any object-specific verification
@@ -254,9 +259,71 @@ class Architecture
 
   # @return [Parameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
-  sig { params(name: String).returns(T.nilable(Parameter)) }
+  sig { param(name: String).returns(T.nilable(Parameter)) }
   def param(name)
     param_hash[name]
+  end
+
+  # @return [Hash<String, NormativeRule>] Hash of all normative rules defined in the architecture
+  attr_reader :normative_rule_hash
+
+  # @return [Array<NormativeRule>] List of all normative rules defined in the architecture
+  def normative_rules = @normative_rule_hash.values
+
+  # @return [NormativeRule] Normative rule named +name+
+  # @return [nil] if there is no normative rule named +name+
+  sig { params(name: String).returns(T.nilable(NormativeRule)) }
+  def normative_rule(name) = @normative_rule_hash[name]
+
+  # @param NormativeRule nr The normative rule defined in some database object.
+  #                         These are kept in an architecture-wide hash since the names are global.
+  def add_normative_rule(nr)
+      raise "Require a NormativeRule class but got a #{nr.class}" unless nr.is_a?(NormativeRule)
+      raise "Normative rule #{nr.name} defined multiple times" unless normative_rule(nr.name).nil?
+
+      @normative_rule_hash[nr.name] = nr
+  end
+
+  # @return [Hash<String, CoveragePoint>] Hash of all coverage points defined in the architecture
+  attr_reader :coverage_point_hash
+
+  # @return [Array<CoveragePoint>] List of all coverage points defined in the architecture
+  def coverage_points = @coverage_point_hash.values
+
+  # @return [CoveragePoint] coverage point named +name+
+  # @return [nil] if there is no coverage point named +name+
+  sig { params(name: String).returns(T.nilable(CoveragePoint)) }
+  def coverage_point(name) = @coverage_point_hash[name]
+
+  # @param CoveragePoint nr The coverage point defined in some database object.
+  #                         These are kept in an architecture-wide hash since the names are global.
+  sig { params(cp: CoveragePoint).void }
+  def add_coverage_point(cp)
+      raise "Require a CoveragePoint class but got a #{cp.class}" unless cp.is_a?(CoveragePoint)
+      raise "Coverage point #{cp.name} defined multiple times" unless coverage_point(cp.name).nil?
+
+      @coverage_point_hash[cp.name] = cp
+  end
+
+  # @return [Hash<String, CertTestProcedure>] Hash of all cert test procedures defined in the architecture
+  attr_reader :cert_test_procedure_hash
+
+  # @return [Array<CertTestProcedure>] List of all cert test procedures defined in the architecture
+  def cert_test_procedures = @cert_test_procedure_hash.values
+
+  # @return [CertTestProcedure] cert test procedure named +name+
+  # @return [nil] if there is no cert test procedure named +name+
+  sig { params(name: String).returns(T.nilable(CertTestProcedure)) }
+  def cert_test_procedure(name) = @cert_test_procedure_hash[name]
+
+  # @param CertTestProcedure nr The cert test procedure defined in some database object.
+  #                         These are kept in an architecture-wide hash since the names are global.
+  sig { params(tp: CertTestProcedure).void }
+  def add_cert_test_procedure(tp)
+      raise "Require a CertTestProcedure class but got a #{tp.class}" unless tp.is_a?(CertTestProcedure)
+      raise "Certification test procedure #{tp.name} defined multiple times" unless cert_test_procedure(tp.name).nil?
+
+      @cert_test_procedure_hash[tp.name] = tp
   end
 
   # @return [Array<PortfolioClass>] Alphabetical list of all portfolio classes defined in the architecture

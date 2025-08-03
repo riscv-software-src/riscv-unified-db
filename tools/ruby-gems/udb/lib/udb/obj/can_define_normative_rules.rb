@@ -16,7 +16,9 @@ module CanDefineNormativeRules
 
     @normative_rules = []
     @data["normative_rules"]&.each do |cert_data|
-      @normative_rules << NormativeRule.new(cert_data, self)
+      nr = NormativeRule.new(cert_data, self)
+      arch.add_normative_rule(nr)
+      @normative_rules << nr
     end
     @normative_rules
   end

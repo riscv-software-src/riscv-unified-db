@@ -16,7 +16,9 @@ module CanDefineCoveragePoints
 
     @coverage_points = []
     @data["coverage_points"]&.each do |cp_data|
-      @coverage_points << CoveragePoint.new(cp_data, self)
+      cp = CoveragePoint.new(cp_data, self)
+      arch.add_coverage_point(cp)
+      @coverage_points << cp
     end
     @coverage_points
   end

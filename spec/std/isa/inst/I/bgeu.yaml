@@ -80,7 +80,7 @@ normative_rules:
     description: Encoding
     doc_links:
       - norm:enc:insttable:bgeu
-  - name: instgrp.branch.target
+  - name: instgrp.branch.target.bgeu # Added .bgeu to make unique until rule can be moved into YAML that supports instgrps.
     description: Target
     doc_links:
       - norm:instgrp:branch:target

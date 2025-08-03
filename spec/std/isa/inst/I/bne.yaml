@@ -83,7 +83,7 @@ normative_rules:
     description: Encoding
     doc_links:
       - norm:enc:insttable:beq
-  - name: instgrp.branch.target
+  - name: instgrp.branch.target.bne # Added .bne to make unique until rule can be moved into YAML that supports instgrps.
     description: Target
     doc_links:
       - norm:instgrp:branch:target
