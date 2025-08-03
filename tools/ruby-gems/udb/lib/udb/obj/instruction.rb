@@ -603,14 +603,40 @@ class Instruction < TopLevelDatabaseObject
     # @example
     #   pretty_name #=> "rd != 0"
     #   pretty_name #=> "rd != {0,2}"
+    #   pretty_name #=> "rd = 2n" (for even register constraint)
     def pretty_name
       if excludes.empty?
         name
       elsif excludes.size == 1
         "#{name} != #{excludes[0]}"
+      elsif even_register_constraint?
+        "#{name} = 2n"  
       else
         "#{name} != {#{excludes.join(',')}}"
       end
+    end
+
+    private
+
+    # @return [Boolean] true if the excludes array represents an "even registers only" constraint
+    # This detects the pattern where all odd numbers from 1 to some max are excluded,
+    # which means only even-numbered registers are allowed
+    def even_register_constraint?
+      return false if excludes.empty?
+      
+      # Sort the excludes to ensure we can check the pattern properly
+      sorted_excludes = excludes.sort
+      
+      # Check if this is exactly the pattern [1, 3, 5, 7, 9, ...]
+      # The maximum should be an odd number, and all odd numbers from 1 to max should be present
+      max_excluded = sorted_excludes.last
+      return false unless max_excluded.odd?
+      
+      # Generate expected odd numbers from 1 to max_excluded
+      expected_odds = (1..max_excluded).step(2).to_a
+      
+      # Check if our excludes exactly match this pattern
+      sorted_excludes == expected_odds
     end
 
     def extract_location(location)
@@ -689,6 +715,8 @@ class Instruction < TopLevelDatabaseObject
       parts.map { |p| p.size == 1 ? p.first.to_s : "#{p.last}:#{p.first}"}.join("|")
     end
     private :inst_range_to_var_range
+
+    public
 
     # array of constituent encoding fields
     def grouped_encoding_fields

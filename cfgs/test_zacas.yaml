@@ -1,0 +1,84 @@
+# Test configuration to verify Zacas extension and amocas.d Wavedrom fix
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: test_zacas
+description: Test configuration with Zacas extension for verifying amocas.d fix
+implemented_extensions:
+  - [I, "2.1.0"]
+  - [A, "2.1.0"]
+  - [Zaamo, "1.0.0"]
+  - [Zacas, "1.0.0"]
+
+params:
+  MXLEN: 32
+  
+  # Minimal required parameters
+  NAME: test_zacas
+  ARCH_ID: 0x1000000000000000
+  IMP_ID: 0x0
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+  MISALIGNED_LDST: false
+  MISALIGNED_AMO: false
+  NUM_PMP_ENTRIES: 0
+  PMP_GRANULARITY: 12
+  PMA_GRANULARITY: 12
+  PHYS_ADDR_WIDTH: 32
+  ASID_WIDTH: 8
+  
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_H: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_U: false
+  MUTABLE_MISA_V: false
+  
+  CACHE_BLOCK_SIZE: 64
+  
+  M_MODE_ENDIANNESS: little
+  S_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  
+  LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: false
+  TRAP_ON_RESERVED_INSTRUCTION: false
+  TRAP_ON_UNIMPLEMENTED_CSR: false
+  
+  TIME_CSR_IMPLEMENTED: false
+  MISA_CSR_IMPLEMENTED: true
+  
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32
+  
+  CONFIG_PTR_ADDRESS: 0x1000
+  
+  MTVEC_MODES: [0]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  
+  HPM_COUNTER_EN: []
+  HPM_EVENTS: []
+  COUNTINHIBIT_EN: []
+  MCOUNTENABLE_EN: []
+  SCOUNTENABLE_EN: []
+  HCOUNTENABLE_EN: []
