@@ -36284,13 +36284,11 @@ Included in::
 
 
 Synopsis::
-
 Vector 8-bit Signed-Signed Dot Product (vector-vector)
 
 
 
 Assembly::
-
 vqdot.vv vd, vs2, vs1, vm
 
 
@@ -36316,7 +36314,6 @@ The "q" in the mnemonic indicates that the instruction is quad-widening. The num
 
 The operation performed is:
 ```
-
 vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
 ```
 
