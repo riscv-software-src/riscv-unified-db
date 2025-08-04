@@ -36450,21 +36450,17 @@ Included in::
 
 
 Synopsis::
-
 Vector 8-bit Signed-Unsigned Dot Product (vector-vector)
 
 
 
 Assembly::
-
 vqdotsu.vv vd, vs2, vs1, vm
 
 
 
 Encoding::
-
 [wavedrom, ,svg,subs='attributes',width="100%"]
-
 ....
 
 {"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2a,"type":2}]}
@@ -36474,7 +36470,6 @@ Encoding::
 
 
 Description::
-
 Vector quad widening signed-unsigned dot product instruction performing the dot product between a 4-element vector of 8-bit signed integer elements (vs2) and a 4-element vector of 8-bit unsigned integer elements (vs1), accumulating the result into a 32-bit signed integer accumulator.
 
 
@@ -36488,9 +36483,7 @@ The "q" in the mnemonic indicates that the instruction is quad-widening. The num
 
 
 The operation performed is:
-
 ```
-
 vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
 
 ```
