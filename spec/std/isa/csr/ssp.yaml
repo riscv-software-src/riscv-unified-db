@@ -1,0 +1,80 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: ssp
+long_name: Shadow Stack Pointer
+address: 0x011
+description:
+  - id: csr-ssp-purpose
+    normative: true
+    text: |
+      The `ssp` CSR is an unprivileged read-write (URW) CSR that reads and writes
+      XLEN low order bits of the shadow stack pointer.
+  - id: csr-ssp-access-criteria
+    normative: false
+    text: |
+      Attempts to access the ssp CSR may result in either an illegal-instruction
+      exception or a virtual-instruction exception, contingent upon the state of
+      the Xenvcfg.SSE fields. The conditions are specified as follows:
+
+        - If the privilege mode is less than M and menvcfg.SSE is 0, an illegal-
+          instruction exception is raised.
+
+        - Otherwise, if in U-mode and senvcfg.SSE is 0, an illegal-instruction
+          exception is raised.
+
+        - Otherwise, if in VS-mode and henvcfg.SSE is 0, a virtual-instruction
+          exception is raised.
+
+        - Otherwise, if in VU-mode and either henvcfg.SSE or senvcfg.SSE is 0, a
+          virtual-instruction exception is raised.
+
+        - Otherwise, the access is allowed.
+priv_mode: U
+length: XLEN
+definedBy: Zicfiss
+fields:
+  VALUE:
+    location_rv64: 63-3
+    location_rv32: 31-2
+    description: |
+      The `ssp` is always as wide as the XLEN of the current privilege mode.
+      The bits 1:0 of ssp are read-only zero. If the UXLEN or SXLEN may never
+      be 32, then the bit 2 is also read-only zero. The value in ssp points to
+      the top of the shadow stack, which is the address of the last element
+      stored on the shadow stack.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      else if (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      else if (mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      else if (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      else {
+        return csr_value.VALUE
+          }
+sw_read(): |
+  if (mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  else if (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  else if (mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    }
+  else if (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    }
