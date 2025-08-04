@@ -617,19 +617,14 @@ class Instruction < TopLevelDatabaseObject
     end
 
     private
-
     # @return [Boolean] true if the excludes array represents an "even registers only" constraint
     def even_register_constraint?
       return false if excludes.empty?
-      
       sorted_excludes = excludes.sort
-      
       # Check if this is exactly the pattern [1, 3, 5, 7, 9, ...]
       max_excluded = sorted_excludes.last
       return false unless max_excluded.odd?
-      
       expected_odds = (1..max_excluded).step(2).to_a
-      
       sorted_excludes == expected_odds
     end
 
@@ -711,7 +706,6 @@ class Instruction < TopLevelDatabaseObject
     private :inst_range_to_var_range
 
     public
-
     # array of constituent encoding fields
     def grouped_encoding_fields
       sorted_encoding_fields = @encoding_fields.sort { |a, b| b.range.last <=> a.range.last }
