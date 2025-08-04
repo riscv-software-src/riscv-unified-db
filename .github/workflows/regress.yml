@@ -81,13 +81,25 @@ jobs:
 
           echo "Test failed, attempting auto-fix..."
 
+          # Show the diff to understand what's different
+          echo "=== DIFF ANALYSIS ==="
+          if [ -f "gen/instructions_appendix/all_instructions.adoc" ] && [ -f "backends/instructions_appendix/all_instructions.golden.adoc" ]; then
+            echo "Files exist, showing diff (first 50 lines):"
+            diff -u backends/instructions_appendix/all_instructions.golden.adoc gen/instructions_appendix/all_instructions.adoc | head -50 || true
+          else
+            echo "One or both files missing:"
+            ls -la gen/instructions_appendix/ || echo "gen/instructions_appendix/ not found"
+            ls -la backends/instructions_appendix/all_instructions.golden.adoc || echo "golden file not found"
+          fi
+          echo "=== END DIFF ANALYSIS ==="
+
           # Check if generated file exists
           if [ ! -f "gen/instructions_appendix/all_instructions.adoc" ]; then
             echo "ERROR: Generated file not found, cannot auto-fix"
             exit 1
           fi
 
-          # Update golden file using the existing rake task
+          # Update golden file
           echo "Updating golden file..."
           cp gen/instructions_appendix/all_instructions.adoc backends/instructions_appendix/all_instructions.golden.adoc
 
@@ -100,6 +112,8 @@ jobs:
             exit 0
           else
             echo "ERROR: Test still fails after updating golden file"
+            echo "Showing final diff:"
+            diff -u backends/instructions_appendix/all_instructions.golden.adoc gen/instructions_appendix/all_instructions.adoc | head -20 || true
             exit 1
           fi
   regress-cfg-manual:
