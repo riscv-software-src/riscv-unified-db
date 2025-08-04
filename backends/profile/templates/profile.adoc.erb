@@ -350,9 +350,9 @@ associated implementation-defined parameters.
 [appendix]
 == Profile Comparisons
 
-=== <%= profile_family.processor_kind %> Profile Releases
+=== <%= profile_family.processor_kind.to_s.split('::').last.capitalize %> Profile Releases
 
-The <%= profile_family.processor_kind %> processor kind has <%= profile_family.profile_releases_matching_processor_kind.size %> processor
+The <%= profile_family.processor_kind.to_s.split('::').last.downcase %> processor kind has <%= profile_family.profile_releases_matching_processor_kind.size %> processor
 profile releases that reference a total of <%= profile_family.in_scope_extensions_matching_processor_kind.size %> extensions.
 
 .Extension Presence

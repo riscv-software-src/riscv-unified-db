@@ -12,7 +12,7 @@
 <% if portfolios.size > 1 -%>
 <%= ext.name %> Extension Presence
 |===
-| <%= portfolio_kind.to_s.split('::').last.downcase %> | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
+| <%= portfolio_kind.to_s.split('::').last.gsub(/[<>]/, '').capitalize %> | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
 
 <% portfolios.each do |portfolio| -%>
 | <%= portfolio.name %> | <%= portfolio.version_greatest_presence(ext.name, ext.versions).join(" | ") -%>
