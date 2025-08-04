@@ -1,3 +1,8 @@
+<!--
+Copyright (c) Kallal Mukherjee.
+SPDX-License-Identifier: BSD-3-Clause-Clear
+-->
+
 # Instruction Appendix Fix for PR #902
 
 ## Problem

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) Kallal Mukherjee.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # Script to fix the instruction appendix golden file
 # This script should be run when the GitHub Actions test fails
 # due to differences between generated and golden instruction appendix
