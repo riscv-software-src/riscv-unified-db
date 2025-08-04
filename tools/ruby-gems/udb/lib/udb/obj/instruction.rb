@@ -619,23 +619,17 @@ class Instruction < TopLevelDatabaseObject
     private
 
     # @return [Boolean] true if the excludes array represents an "even registers only" constraint
-    # This detects the pattern where all odd numbers from 1 to some max are excluded,
-    # which means only even-numbered registers are allowed
     def even_register_constraint?
       return false if excludes.empty?
       
-      # Sort the excludes to ensure we can check the pattern properly
       sorted_excludes = excludes.sort
       
       # Check if this is exactly the pattern [1, 3, 5, 7, 9, ...]
-      # The maximum should be an odd number, and all odd numbers from 1 to max should be present
       max_excluded = sorted_excludes.last
       return false unless max_excluded.odd?
       
-      # Generate expected odd numbers from 1 to max_excluded
       expected_odds = (1..max_excluded).step(2).to_a
       
-      # Check if our excludes exactly match this pattern
       sorted_excludes == expected_odds
     end
 
