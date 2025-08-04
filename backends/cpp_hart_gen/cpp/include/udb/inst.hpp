@@ -78,7 +78,10 @@ namespace udb {
 
     Reg(Enum r) : m_reg(r) {}
     Reg(uint64_t r, bool is_fp = false) : m_reg(Enum(is_fp ? r + 32 : r)) {}
-    Reg(Bits<64> r, bool is_fp = false) : m_reg(Enum(is_fp ? r.get() + 32 : r.get())) {}
+
+    template <typename BitsClass>
+      requires (BitsClass::IsABits)
+    Reg(const BitsClass& r, bool is_fp = false) : m_reg(Enum(is_fp ? r.get() + 32 : r.get())) {}
     operator Enum() const { return m_reg; }
     bool operator==(const Reg &other) const { return m_reg == other.m_reg; }
     bool operator==(Enum other) const { return m_reg == other; }

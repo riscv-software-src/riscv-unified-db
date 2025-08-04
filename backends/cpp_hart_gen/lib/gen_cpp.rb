@@ -433,7 +433,7 @@ module Idl
   class EnumRefAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}#{class_name}::#{member_name}"
+      "#{' '*indent}#{class_name}{#{class_name}::#{member_name}}"
     end
   end
 
@@ -454,7 +454,7 @@ module Idl
   class EnumArrayCastAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}std::array<Bits<#{enum_class.type(symtab).width}>, #{enum_class.type(symtab).element_names.size}> {#{enum_class.type(symtab).element_values.map(&:to_s).join(', ')}}"
+      "#{' '*indent}std::array<Bits<#{enum_class.type(symtab).width}>, #{enum_class.type(symtab).element_names.size}> {#{enum_class.type(symtab).element_values.map { |v| "#{v}_b"}.join(', ')}}"
     end
   end
 

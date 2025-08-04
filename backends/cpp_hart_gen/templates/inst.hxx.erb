@@ -201,7 +201,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -211,7 +211,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -222,7 +222,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -232,7 +232,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -253,7 +253,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -263,7 +263,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -274,7 +274,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -284,7 +284,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>

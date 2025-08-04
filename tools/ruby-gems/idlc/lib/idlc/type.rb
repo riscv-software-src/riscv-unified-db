@@ -85,6 +85,9 @@ module Idl
     sig { returns(T.any(Integer, Symbol)) }
     attr_reader :width
 
+    sig { returns(T.nilable(AstNode)) }
+    attr_reader :width_ast
+
     sig { returns(Type) }
     attr_reader :sub_type
 

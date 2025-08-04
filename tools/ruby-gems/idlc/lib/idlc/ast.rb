@@ -6259,6 +6259,8 @@ module Idl
       end
 
       arguments(symtab).each do |arg_type, arg_name|
+        # make the argument constant for this evaluation
+        arg_type = arg_type.make_const
         symtab.add(arg_name, Var.new(arg_name, arg_type))
       end
 

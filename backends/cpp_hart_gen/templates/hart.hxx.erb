@@ -213,16 +213,18 @@ namespace udb {
           if ((ext[0] == "<%= ext_ver.name %>") && (Version{ext[1]} == Version{"<%= ext_ver.version_str %>"sv})) {
           <%-       ext_ver.implications.each do |implied_ext_ver_and_cond| -%>
             <%-       unless implied_ext_ver_and_cond.cond.empty? -%>
-            auto implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
-              for (const auto& pair : implemented_exts) {
+            {
+              auto  implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
+              for (const auto& pair : this->m_implemented_exts) {
                 if ((pair.first == ExtensionName::from_s(ext_name)) && (VersionRequirement(req).satisfied_by(Version(pair.second)))) {
                   return true;
                 }
               }
               return false;
-            };
-            if (<%= implied_ext_ver_and_cond.cond.to_cxx { |ext_name, req| "implemented(\"#{ext_name}\"sv, \"#{req}\"sv)" } %>) {
-              implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
+              };
+              if (<%= implied_ext_ver_and_cond.cond.to_cxx { |ext_name, req| "implemented(\"#{ext_name}\"sv, \"#{req}\"sv)" } %>) {
+                implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
+              }
             }
             <%-       else -%>
             implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
