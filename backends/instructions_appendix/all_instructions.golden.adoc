@@ -36280,10 +36280,21 @@ Included in::
 [#udb:doc:inst:vqdot_vv]
 
 == vqdot.vv
+
+
+
 Synopsis::
+
 Vector 8-bit Signed-Signed Dot Product (vector-vector)
+
+
+
 Assembly::
+
 vqdot.vv vd, vs2, vs1, vm
+
+
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -36291,7 +36302,6 @@ Encoding::
 ....
 
 Description::
-
 Vector quad widening signed dot product instruction performing the dot product between two 4-element vectors of 8-bit signed integer elements and accumulating it into a 32-bit signed integer accumulator.
 
 
@@ -36305,11 +36315,9 @@ The "q" in the mnemonic indicates that the instruction is quad-widening. The num
 
 
 The operation performed is:
-
 ```
 
 vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
-
 ```
 
 
@@ -36321,37 +36329,24 @@ Where vs2[i] and vs1[i] are 32-bit bundles containing four 8-bit signed integers
 
 
 Decode Variables::
-
 [width="100%", cols="1,2", options="header"]
-
 |===
-
 |Variable Name |Location
-
 |vm |$encoding[25]
-
 |vs2 |$encoding[24:20]
-
 |vs1 |$encoding[19:15]
-
 |vd |$encoding[11:7]
-
 |===
 
 
 
 Included in::
-
 [options="autowrap,autowidth"]
-
 |===
-
 | Extension | Version
 
 
-
 | *Zvqdotq* | ~> 0.0.1
-
 
 
 |===
