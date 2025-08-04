@@ -36581,7 +36581,7 @@ Encoding::
 
 ....
 
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2a,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2e,"type":2}]}
 
 ....
 
@@ -36878,7 +36878,7 @@ Encoding::
 
 ....
 
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2b,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x39,"type":2}]}
 
 ....
 
