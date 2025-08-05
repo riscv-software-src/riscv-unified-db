@@ -34,7 +34,7 @@ fields:
           (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
         raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
-                 (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0)) {
+                 (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
         raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       } else {
         return csr_value.VALUE
@@ -44,6 +44,6 @@ sw_read(): |
       (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
-             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0)) {
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
   }
