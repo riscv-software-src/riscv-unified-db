@@ -91,7 +91,11 @@ module Idl
     end
 
     def to_cxx
-      ((@qualifiers.nil? || @qualifiers.empty?) ? '' : "#{@qualifiers.include?(:const) ? 'const' : ''} ") + \
+      (if (@qualifiers.nil? || @qualifiers.empty?)
+         ""
+else
+  "#{@qualifiers.include?(:const) ? 'const' : ''} "
+end) + \
       to_cxx_no_qualifiers
     end
   end
@@ -251,7 +255,7 @@ module Idl
   class MultiVariableAssignmentAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      lhs = "std::tie(#{variables.map { |v| v.gen_cpp(symtab, 0, indent_spaces: )}.join(', ')})"
+      lhs = "std::tie(#{variables.map { |v| v.gen_cpp(symtab, 0, indent_spaces:) }.join(', ')})"
       rhs = function_call.gen_cpp(symtab, 0, indent_spaces:)
       "#{' ' * indent}#{lhs} = #{rhs}"
     end
@@ -265,19 +269,19 @@ module Idl
       csr_obj = csr.csr_def(symtab)
       if csr_obj.nil?
         if function_name == "sw_read"
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
+          "#{' ' * indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
         else
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+          "#{' ' * indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
         end
       else
         if function_name == "sw_read"
           if symtab.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
-            "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}(__UDB_XLEN)"
+            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}(__UDB_XLEN)"
           else
-            "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}()"
+            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}()"
           end
         else
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+          "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
         end
       end
     end
@@ -349,7 +353,7 @@ module Idl
 
       symtab.pop
 
-      list.join(', ')
+      list.join(", ")
     end
 
     sig { params(symtab: SymbolTable).returns(String) }
@@ -428,9 +432,9 @@ module Idl
       # csr isn't known at runtime for sw_write...
       csr_obj = csr.csr_def(symtab)
       if csr_obj.nil?
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       end
     end
   end
@@ -440,9 +444,9 @@ module Idl
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
       if kind(symtab) == :bitfield
         # cast it to a bits
-        "#{' '*indent}static_cast<PossiblyUnknownBits<#{type(symtab).width}>>(#{obj.gen_cpp(symtab, 0, indent_spaces: )}.#{@field_name})"
+        "#{' ' * indent}static_cast<PossiblyUnknownBits<#{type(symtab).width}>>(#{obj.gen_cpp(symtab, 0, indent_spaces:)}.#{@field_name})"
       else
-        "#{' '*indent}#{obj.gen_cpp(symtab, 0, indent_spaces: )}.#{@field_name}"
+        "#{' ' * indent}#{obj.gen_cpp(symtab, 0, indent_spaces:)}.#{@field_name}"
       end
     end
   end
@@ -457,7 +461,7 @@ module Idl
   class ConcatenationExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}concat(#{expressions.map { |e| e.gen_cpp(symtab, 0, indent_spaces: )}.join(', ')})"
+      "#{' ' * indent}concat(#{expressions.map { |e| e.gen_cpp(symtab, 0, indent_spaces:) }.join(', ')})"
     end
   end
 
@@ -468,26 +472,26 @@ module Idl
 
       if t.kind == :enum_ref
         raise "?" if t.enum_class.width.nil?
-        return "Bits<#{t.enum_class.width}>{#{expr.gen_cpp(symtab, 0, indent_spaces: )}.value()}"
+        return "Bits<#{t.enum_class.width}>{#{expr.gen_cpp(symtab, 0, indent_spaces:)}.value()}"
       end
 
-      expr_cpp = expr.gen_cpp(symtab, 0, indent_spaces: )
+      expr_cpp = expr.gen_cpp(symtab, 0, indent_spaces:)
       width = t.width
 
       if width == :unknown
         # is the value also unknown?
         if t.known?
-          "#{' '*indent}RuntimeBits<BitsInfinitePrecision>(#{expr_cpp})"
+          "#{' ' * indent}RuntimeBits<BitsInfinitePrecision>(#{expr_cpp})"
         else
-          "#{' '*indent}PossiblyUnknownRuntimeBits<BitsInfinitePrecision>(#{expr_cpp})"
+          "#{' ' * indent}PossiblyUnknownRuntimeBits<BitsInfinitePrecision>(#{expr_cpp})"
         end
       else
         raise "nil" if width.nil?
         # do we know if this value has anything unknown??
         if t.known?
-          "#{' '*indent}Bits<#{width}>(#{expr_cpp})"
+          "#{' ' * indent}Bits<#{width}>(#{expr_cpp})"
         else
-          "#{' '*indent}PossiblyUnknownBits<#{width}>(#{expr_cpp})"
+          "#{' ' * indent}PossiblyUnknownBits<#{width}>(#{expr_cpp})"
         end
       end
     end
@@ -496,7 +500,7 @@ module Idl
   class EnumCastAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}#{enum_name.gen_cpp(symtab, 0, indent_spaces:)}{#{expression.gen_cpp(symtab, 0, indent_spaces: )}}"
+      "#{' ' * indent}#{enum_name.gen_cpp(symtab, 0, indent_spaces:)}{#{expression.gen_cpp(symtab, 0, indent_spaces:)}}"
     end
   end
 
@@ -506,9 +510,9 @@ module Idl
 
       field  = csr_field.field_def(symtab)
       if symtab.multi_xlen? && field.dynamic_location?
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
       end
     end
   end
@@ -516,35 +520,35 @@ module Idl
   class EnumRefAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}#{class_name}{#{class_name}::#{member_name}}"
+      "#{' ' * indent}#{class_name}{#{class_name}::#{member_name}}"
     end
   end
 
   class EnumSizeAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}#{value(symtab)}"
+      "#{' ' * indent}#{value(symtab)}"
     end
   end
 
   class EnumElementSizeAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}#{value(symtab)}"
+      "#{' ' * indent}#{value(symtab)}"
     end
   end
 
   class EnumArrayCastAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 2, indent_spaces: 2)
-      "#{' '*indent}std::array<Bits<#{enum_class.type(symtab).width}>, #{enum_class.type(symtab).element_names.size}> {#{enum_class.type(symtab).element_values.map { |v| "#{v}_b"}.join(', ')}}"
+      "#{' ' * indent}std::array<Bits<#{enum_class.type(symtab).width}>, #{enum_class.type(symtab).element_names.size}> {#{enum_class.type(symtab).element_values.map { |v| "#{v}_b" }.join(', ')}}"
     end
   end
 
   class ParenExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)})"
+      "#{' ' * indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -565,12 +569,7 @@ module Idl
         if t.known?
           "#{' ' * indent}_Bits<#{t.width}, #{t.signed?}>(#{v}_b)"
         else
-          # this is broken. it doesn't account for the known width
-          if t.signed?
-            "#{' ' * indent}(\"#{v}\"_xsb)"
-          else
-            "#{' ' * indent}(\"#{v}\"_xb)"
-          end
+          "#{' ' * indent}_PossiblyUnknownBits<#{t.width}, #{t.signed?}>(\"#{v}\"_xb)"
         end
       end
     end
@@ -608,7 +607,7 @@ module Idl
   class SignCastAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).make_signed()"
+      "#{' ' * indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).make_signed()"
     end
   end
 
@@ -616,7 +615,7 @@ module Idl
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       value_result = value_try do
-        return "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template extract<#{msb.value(symtab)}, #{lsb.value(symtab)}>()"
+        return "#{' ' * indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template extract<#{msb.value(symtab)}, #{lsb.value(symtab)}>()"
       end
       value_else(value_result) do
         # we don't know the value of something (probably a param), so we need the slow extract
@@ -733,30 +732,30 @@ module Idl
         value_result = value_try do
           v = bits_expression.value(symtab)
           # know the value, so this is safely a Bits type
-          result = "#{' '*indent}PossiblyUnknownBits<#{v}>"
+          result = "#{' ' * indent}PossiblyUnknownBits<#{v}>"
         end
         value_else(value_result) do
           if bits_expression.constexpr?(symtab)
-            result = "#{' '*indent}PossiblyUnknownBits<#{bits_expression.gen_cpp(symtab)}.get()>"
+            result = "#{' ' * indent}PossiblyUnknownBits<#{bits_expression.gen_cpp(symtab)}.get()>"
           elsif bits_expression.max_value(symtab).nil?
-            result = "#{' '*indent}PossiblyUnknownBits<BitsInfinitePrecision>"
+            result = "#{' ' * indent}PossiblyUnknownBits<BitsInfinitePrecision>"
           else
             max = bits_expression.max_value(symtab)
             max = "BitsInfinitePrecision" if max == :unknown
-            result = "#{' '*indent}_PossiblyUnknownRuntimeBits<#{max}, false>"
+            result = "#{' ' * indent}_PossiblyUnknownRuntimeBits<#{max}, false>"
           end
         end
         result
       elsif @type_name == "XReg"
-        "#{' '*indent}PossiblyUnknownBits<#{symtab.possible_xlens.max}>"
+        "#{' ' * indent}PossiblyUnknownBits<#{symtab.possible_xlens.max}>"
       elsif @type_name == "Boolean"
-        "#{' '*indent}bool"
+        "#{' ' * indent}bool"
       elsif @type_name == "U32"
-        "#{' '*indent}PossiblyUnknownBits<32>"
+        "#{' ' * indent}PossiblyUnknownBits<32>"
       elsif @type_name == "U64"
-        "#{' '*indent}PossiblyUnknownBits<64>"
+        "#{' ' * indent}PossiblyUnknownBits<64>"
       elsif @type_name == "String"
-        "#{' '*indent}std::string"
+        "#{' ' * indent}std::string"
       else
         raise "TODO: #{@type_name}"
       end
@@ -780,8 +779,8 @@ module Idl
           #{lines.join("\n  ")}
         }
       LOOP
-      symtab.pop()
-      cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join('')
+      symtab.pop
+      cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join("")
     end
   end
 
@@ -822,20 +821,20 @@ module Idl
       if var.type(symtab).integral?
         if index.constexpr?(symtab) && var.type(symtab).width != :unknown
           value_result = value_try do
-            return "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template at<#{index.value(symtab)}>()""#{' '*indent}"
+            return "#{' ' * indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template at<#{index.value(symtab)}>()""#{' ' * indent}"
           end
           value_else(value_result) do
-            return "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template at<#{index.gen_cpp(symtab, 0)}.get()>()"
+            return "#{' ' * indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.template at<#{index.gen_cpp(symtab, 0)}.get()>()"
           end
         else
-          "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.at(#{index.gen_cpp(symtab, 0)})"
+          "#{' ' * indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.at(#{index.gen_cpp(symtab, 0)})"
         end
       else
         if var.text_value.start_with?("X")
           #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
-          "#{' '*indent} __UDB_HART->_xreg(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
+          "#{' ' * indent} __UDB_HART->_xreg(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
         else
-          "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.at(#{index.gen_cpp(symtab, 0, indent_spaces:)}.get())"
+          "#{' ' * indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}.at(#{index.gen_cpp(symtab, 0, indent_spaces:)}.get())"
         end
       end
     end
@@ -845,23 +844,23 @@ module Idl
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if op == ">>>"
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+        "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       elsif op == "`<<"
         if rhs.constexpr?(symtab)
           # use template form of shift
-          "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.template widening_sll<#{rhs.value(symtab)}>())"
+          "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.template widening_sll<#{rhs.value(symtab)}>())"
         else
           # use widening shift
-          "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sll(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+          "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sll(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
         end
       elsif op == "`+"
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_add(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+        "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_add(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       elsif op == "`-"
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sub(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+        "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sub(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       elsif op == "`*"
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_mul(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+        "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_mul(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       else
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' ' * indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       end
     end
   end
@@ -869,14 +868,14 @@ module Idl
   class VariableAssignmentAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
     end
   end
 
   class PcAssignmentAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}__UDB_SET_PC(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+      "#{' ' * indent}__UDB_SET_PC(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -885,12 +884,12 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if lhs.text_value.start_with?("X")
         #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
-        "#{' '*indent}__UDB_HART->_set_xreg( #{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' ' * indent}__UDB_HART->_set_xreg( #{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       elsif lhs.type(symtab).kind == :bits
-        "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.setBit(#{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.setBit(#{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       else
         # actually an array
-        "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.at(#{idx.gen_cpp(symtab, 0, indent_spaces:)}.get()) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.at(#{idx.gen_cpp(symtab, 0, indent_spaces:)}.get()) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       end
     end
   end
@@ -905,7 +904,7 @@ module Idl
   class UnaryOperatorExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{op}(#{exp.gen_cpp(symtab, 0, indent_spaces:)})"
+      "#{' ' * indent}#{op}(#{exp.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -921,7 +920,7 @@ module Idl
           func_def = find_ancestor(FunctionDefAst)
           internal_error "Can't find function of return" if func_def.nil?
           return_values = return_value_nodes.map { |rv| rv.gen_cpp(symtab, 0, indent_spaces:) }
-          "#{' ' * indent}return std::tuple<#{func_def.return_type_nodes.map { |rt| rt.gen_cpp(symtab)}.join(', ')}>{#{return_values.join(', ')}};"
+          "#{' ' * indent}return std::tuple<#{func_def.return_type_nodes.map { |rt| rt.gen_cpp(symtab) }.join(', ')}>{#{return_values.join(', ')}};"
         end
       "#{' ' * indent}#{expression}"
     end
@@ -932,10 +931,10 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       result = ""
       value_result = value_try do
-        result = "#{' '*indent}#{v.gen_cpp(symtab, 0, indent_spaces:)}.template replicate<#{n.value(symtab)}>()"
+        result = "#{' ' * indent}#{v.gen_cpp(symtab, 0, indent_spaces:)}.template replicate<#{n.value(symtab)}>()"
       end
       value_else(value_result) do
-        result = "#{' '*indent}#{v.gen_cpp(symtab, 0, indent_spaces:)}.replicate(#{n.gen_cpp(symtab, 0, indent_spaces:)})"
+        result = "#{' ' * indent}#{v.gen_cpp(symtab, 0, indent_spaces:)}.replicate(#{n.gen_cpp(symtab, 0, indent_spaces:)})"
       end
       result
     end
@@ -1000,21 +999,21 @@ module Idl
   class ArraySizeAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size()"
+      "#{' ' * indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size()"
     end
   end
 
   class FunctionBodyAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      statements.map{ |s| "#{' ' * indent}#{s.gen_cpp(symtab, 0, indent_spaces:)}" }.join("\n")
+      statements.map { |s| "#{' ' * indent}#{s.gen_cpp(symtab, 0, indent_spaces:)}" }.join("\n")
     end
   end
 
   class CsrFieldReadExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_def(symtab).name}).#{@field_name}()._hw_read()"
+      "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_def(symtab).name}).#{@field_name}()._hw_read()"
     end
   end
 
@@ -1023,9 +1022,9 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       csr = csr_def(symtab)
       if symtab.multi_xlen? && csr.format_changes_with_xlen?
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
       end
     end
   end
