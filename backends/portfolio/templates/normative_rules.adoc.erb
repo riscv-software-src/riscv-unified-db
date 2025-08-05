@@ -7,15 +7,20 @@ Normative Rules for `<%= nice_name %>`: ::
 <%   end -%>
 
 <%   if normative_rule_tags.tags_available? -%>
-[cols="8%,10%,7%,5%,70%"]
+[cols="8%,10%,10%,7%,5%,60%"]
 |===
-| Name | Description | Doc | Chap | Links/Excerpts
+| Name | Coverage Points | Description | Doc | Chap | Links/Excerpts
 
 <%     db_obj.normative_rules.each do |nr| -%>
 <%     num_doc_links = nr.doc_links.length -%>
 <%     row_span = (num_doc_links > 0) ? ".#{num_doc_links}+" : "" -%>
 <%     desc_col_span = (num_doc_links == 0) ? "4+" : "" -%>
 <%= "#{row_span}" %>| <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.name) : "" %><%= nr.name %>
+<% cp_names = [] -%>
+<% nr.coverage_point_names.each do |cp_name| -%>
+<%   cp_names << (defined?(fmt) ? link_to_udb_doc_cover_pt(fmt, cp_name) : cp_name) -%>
+<% end -%>
+<%= "#{row_span}| #{cp_names.join(',')}" %>
 <%= "#{desc_col_span}#{row_span}" %>a| <%= nr.description %>
 <%       if nr.doc_links.empty? -%>
 |

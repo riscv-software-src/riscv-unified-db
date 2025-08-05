@@ -1,0 +1,28 @@
+<% unless db_obj.coverage_points.empty? -%>
+<% nice_name = db_obj.is_a?(Udb::CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
+<%   if defined?(use_description_list) && use_description_list -%>
+Coverage Points for `<%= nice_name %>`: ::
+<%   else -%>
+==== Coverage Points for `<%= nice_name %>`
+<%   end -%>
+
+[cols="10%,10%,60%,20%"]
+|===
+| Name | Bins | Description | Normative Rules
+
+<%   db_obj.coverage_points.each do |cp| -%>
+| <%= defined?(fmt) ? anchor_for_udb_doc_cover_pt(fmt, cp.name) : "" %><%= cp.name %>
+| <%= cp.bins %>
+| <%= cp.description %>
+<%     if cp.normative_rules(arch).empty? -%>
+|
+<%     else -%>
+a|
+<%     cp.normative_rules(arch).each do |nr| -%>
+* <%= defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.name) : nr.name %>
+<%       end # each norm rule -%>
+<%     end # if empty -%>
+<%   end # each coverage point -%>
+|===
+
+<% end # unless no coverage points -%>

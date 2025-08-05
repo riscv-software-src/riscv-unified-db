@@ -34,11 +34,9 @@ module CanDefineNormativeRules
     @normative_rules_hash
   end
 
-  # @param name [String] Unique name for the normative rule
+  # @param nr_name [String] Unique name for the normative rule
   # @return [NormativeRule]
-  # @return [nil] if there is no normative rule with name of +name+
-  def normative_rule(name)
-    normative_rules_hash[name]
-  end
+  # @return [nil] if there is no normative rule with name of +nr_name+
+  def normative_rule(nr_name) = normative_rules_hash[nr_name]
 end # module
 end

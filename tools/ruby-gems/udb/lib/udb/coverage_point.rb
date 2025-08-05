@@ -23,11 +23,27 @@ class CoveragePoint
     @name = data["name"]
     raise ArgumentError, "Missing name for coverage point for #{db_obj.name} of kind #{db_obj.kind}" if @name.nil?
 
-    @bin = data["bin"]
-    raise ArgumentError, "Missing bin for coverage point #{@name} of kind #{db_obj.kind}" if @bin.nil?
+    @bins = data["bins"]
+    raise ArgumentError, "Missing bins for coverage point #{@name} of kind #{db_obj.kind}" if @bins.nil?
 
     @description = data["description"]
     raise ArgumentError, "Missing coverage point description for #{@name} of kind #{db_obj.kind}" if @description.nil?
+  end
+
+  # @param arch [Architecture]
+  # @return [Array<NormativeRules>] Sorted list of normative rules referenced by this coverage point.
+  def normative_rules(arch)
+    raise ArgumentError, "Need Architecture but got class #{arch.class}" unless arch.is_a?(Architecture)
+
+    @normative_rules = []
+
+    arch.normative_rules.each do |nr|
+      nr.coverage_point_names.each do |cp_name|
+        @normative_rules << nr if cp_name == @name
+      end
+    end
+
+    @normative_rules.sort_by!(&:name)
   end
 end
 end

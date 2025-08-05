@@ -34,11 +34,9 @@ module CanDefineCoveragePoints
     @coverage_point_hash
   end
 
-  # @param name [String] Unique name for coverage point
+  # @param cp_name [String] Unique name for coverage point
   # @return [CoveragePoint]
-  # @return [nil] if there is no coverage point with name +name+
-  def coverage_point(name)
-    coverage_point_hash[name]
-  end
+  # @return [nil] if there is no coverage point with name +cp_name+
+  def coverage_point(cp_name) = coverage_point_hash[cp_name]
 end # module
 end

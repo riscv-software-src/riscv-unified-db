@@ -34,11 +34,11 @@ module CanDefineCertTestProcedures
     @cert_test_procedure_hash
   end
 
-  # @param name [String] Unique name for test procedure
+  # @param tp_name [String] Unique name for test procedure
   # @return [CertTestProcedure]
-  # @return [nil] if there is no certification test procedure with name +name+
-  def cert_test_procedure(name)
-    cert_test_procedure_hash[name]
+  # @return [nil] if there is no certification test procedure with name +tp_name+
+  def cert_test_procedure(tp_name)
+    cert_test_procedure_hash[tp_name]
   end
 end # module
 end

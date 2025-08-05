@@ -160,11 +160,20 @@ module Udb::Helpers::TemplateHelpers
 
   # @return [String] A hyperlink to a UDB normative rule
   # @param fmt [String] Is link to normative rule defined in its own separate chapter (fmt = "sep")
-  #                     or in a chapter that combines (fmt = "combo") normative rules and test procedures
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
   # @param name [String] Unique name of the normative rule
   def link_to_udb_doc_norm_rule(fmt, name)
     raise ArgumentError, "Unknown fmt value of '#{fmt}' for '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
     "%%UDB_DOC_NORM_RULE_LINK%#{fmt};#{name.sanitize};#{name}%%"
+  end
+
+  # @return [String] A hyperlink to a UDB coverage point
+  # @param fmt [String] Is link to coverage point defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] Unique name of the coverage point
+  def link_to_udb_doc_cover_pt(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "%%UDB_DOC_COVER_PT_LINK%#{fmt};#{name.sanitize};#{name}%%"
   end
 
   # @return [String] A hyperlink into IDL instruction code
@@ -220,12 +229,22 @@ module Udb::Helpers::TemplateHelpers
 
   # @return [String] An anchor for a UDB normative rule documentation
   # @param fmt [String] Is anchor in normative rule defined in its own separate chapter (fmt = "sep")
-  #                     or in a chapter that combines (fmt = "combo") normative rules and test procedures
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
   # @param name [String] name of the normative rule
   # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
   def anchor_for_udb_doc_norm_rule(fmt, name)
     raise ArgumentError, "Unknown fmt value of '#{fmt}' for name '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
     "[[udb:doc:norm_rule:#{fmt}:#{name.sanitize}]]"
+  end
+
+  # @return [String] An anchor for a UDB coverage point documentation
+  # @param fmt [String] Is anchor in coverage point defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] name of the coverage point
+  # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
+  def anchor_for_udb_doc_cover_pt(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for name '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "[[udb:doc:cover_pt:#{fmt}:#{name.sanitize}]]"
   end
 
   # @return [String] An anchor inside IDL instruction code
@@ -296,6 +315,14 @@ module Udb::Helpers::AsciidocUtils
         raise "Unhandled link fmt of '#{fmt}' for name '#{name}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
 
         "<<udb:doc:norm_rule:#{fmt}:#{name},#{link_text}>>"
+      end.gsub(/%%UDB_DOC_COVER_PT_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        fmt = Regexp.last_match[1] # "sep", "combo", or "appendix"
+        name = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
+
+        raise "Unhandled link fmt of '#{fmt}' for name '#{name}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+
+        "<<udb:doc:cover_pt:#{fmt}:#{name},#{link_text}>>"
       end.gsub(/%%IDL_CODE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
