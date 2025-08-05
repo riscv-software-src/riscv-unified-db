@@ -1,12 +1,14 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/inst_var_schema.json#
+# yaml-language-server: $schema=../../../schemas/inst_var_schema.json#
 
 $schema: inst_var_schema.json#
 kind: instruction_variable
 name: xd
+long_name: X destination register index in encoding bits 11:7 (xd)
 
 data:
   $inherits: inst_type/R.yaml#/variables/rd
   type: { "$ref": "inst_var_type/x_dst_reg.yaml#" }
+  display_name: xd

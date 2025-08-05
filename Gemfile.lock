@@ -28,10 +28,12 @@ PATH
       concurrent-ruby
       idlc
       json_schemer
+      numbers_and_words
       sorbet-runtime
       terminal-table
       thor
       tilt
+      tty-prompt
       udb_helpers
 
 GEM
@@ -129,12 +131,16 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
+    numbers_and_words (1.0.2)
+      i18n (<= 2)
     observer (0.1.2)
     ostruct (0.6.2)
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     pdf-core (0.9.0)
     pdf-reader (2.14.1)
       Ascii85 (>= 1.0, < 3.0, != 2.0.0)
@@ -292,6 +298,16 @@ GEM
     treetop (1.6.12)
       polyglot (~> 0.3)
     ttfunk (1.7.0)
+    tty-color (0.6.0)
+    tty-cursor (0.7.1)
+    tty-prompt (0.23.1)
+      pastel (~> 0.8)
+      tty-reader (~> 0.8)
+    tty-reader (0.9.0)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      wisper (~> 2.0)
+    tty-screen (0.8.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
@@ -299,6 +315,7 @@ GEM
     unicode-emoji (4.0.4)
     uri (1.0.3)
     webrick (1.9.1)
+    wisper (2.0.1)
     write_xlsx (1.12.1)
       nkf
       rubyzip (>= 1.0.0)

@@ -1,0 +1,56 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Creating a new extension
+
+UnifiedDB can be used to create documents suitible for the RISC-V International ratification process.
+
+== Getting Started
+
+For a new extension called `Znew`:
+
+. Create a new branch at https://github.com/riscv-software-src/riscv-unified-db.
+** The branch should be called `spec/Znew`.
+** If you do not have write permission on riscv-unified-db, reach out to mailto:help@riscv.org[help@riscv.org, Please create a fork on riscv-unified-db for {EXTENSION_NAME}].
+. Check out the branch and set it up.
+** UnifiedDB requires _either_ Docker or Signularity/Apptainer to be installed.
+** Run `./bin/setup`. It will ask which container type you want to use.
+. Create an extension file by running `./bin/udb create extension`
+** This creates a template at `spec/std/isa/ext/Znew.yaml`
+. Create a PDF for the extension by running `./do gen:ext_pdf EXT=Znew VERSION=latest`
+** A PDF will be created at `gen/ext_pdf_doc/_/pdf/Znew_extension.pdf`
+
+== Documenting the extension
+
+== Adding instructions
+
+See xref:creating-a-new-instruction.adoc[Creating New Instructions].
+Make sure you indicate that the new instruction is defined by Znew.
+
+== Adding CSRs / CSR fields
+
+== Verifying the extension
+
+To test that the new extension files conform to the UnifiedDB schema and that the IDL code is valid, run:
+
+[source,bash]
+----
+./do test:smoke
+----
+
+== Creating artifacts
+
+|===
+| Artifact | Command
+
+| Self-contained PDF extension documentation | `./do gen:ext_pdf EXT=Znew VERSIONS=latest`
+| Entire architecture with Znew included | `./do gen:html_manual`
+| Entire architecture with Znew included | `./do gen:pdf_manual`
+| An Instruction Set Simulator (ISS) implementing the extension
+a|
+Standard extension::
+`./do build:cpp_hart CFG=_`
+
+Custom extension::
+`./do build:cpp_hart CFG=[CustomCfg]`
+|===

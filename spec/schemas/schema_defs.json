@@ -194,9 +194,23 @@
       "description": "A specific day in YYYY-MM-DD format",
       "examples": ["2018-11-13", "2024-12-31"]
     },
-    "extension_name": {
+    "standard_extension_name": {
       "type": "string",
-      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
+      "pattern": "^(([A-WY])|([SZ][a-z0-9]+))$"
+    },
+    "custom_extension_name": {
+      "type": "string",
+      "pattern": "^X[a-z0-9]+$"
+    },
+    "extension_name": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/standard_extension_name"
+        },
+        {
+          "$ref": "#/$defs/custom_extension_name"
+        }
+      ]
     },
     "extension_version": {
       "$ref": "#/$defs/rvi_version"
@@ -409,6 +423,11 @@
           "description": "16-bit encoding"
         }
       ]
+    },
+    "inst_mnemonic": {
+      "type": "string",
+      "pattern": "^[a-z0-9.]+$",
+      "description": "Instruction mnemonic (must be lowercase)"
     },
     "inst_type_name": {
       "type": "string",

@@ -1,12 +1,14 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/inst_var_schema.json#
+# yaml-language-server: $schema=../../../schemas/inst_var_schema.json#
 
 $schema: inst_var_schema.json#
 kind: instruction_variable
 name: xs2
+long_name: X source register index in encoding bits 24:20 (xs2)
 
 data:
   $inherits: inst_type/R.yaml#/variables/rs2
   type: { "$ref": "inst_var_type/x_src_reg.yaml#" }
+  display_name: xs2

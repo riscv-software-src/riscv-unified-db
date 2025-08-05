@@ -63,13 +63,18 @@
               "pattern": "^inst_var_type/[^/]*\\.yaml#$"
             }
           }
+        },
+        "display_name": {
+          "type": "string",
+          "description": "How the variable should be displayed in documentation such as instruction encoding diagrams"
         }
       }
     }
   },
 
   "type": "object",
-  "required": ["$schema", "kind", "name", "data"],
+  "required": ["$schema", "kind", "name", "long_name", "data"],
+  "additionalProperties": false,
   "properties": {
     "$schema": {
       "const": "inst_var_schema.json#"
@@ -78,6 +83,9 @@
       "const": "instruction_variable"
     },
     "name": {
+      "type": "string"
+    },
+    "long_name": {
       "type": "string"
     },
     "data": {

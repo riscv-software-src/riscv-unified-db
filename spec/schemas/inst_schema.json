@@ -317,9 +317,7 @@
           "const": "instruction"
         },
         "name": {
-          "type": "string",
-          "pattern": "^[a-z0-9.]+$",
-          "description": "Instruction mnemonic (must be lowercase)"
+          "$ref": "schema_defs.json#/$defs/inst_mnemonic"
         },
         "long_name": {
           "type": "string",

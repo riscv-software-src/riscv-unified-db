@@ -5,6 +5,7 @@
 
   "type": "object",
   "required": ["$schema", "kind", "data"],
+  "additionalProperties": false,
   "properties": {
     "$schema": {
       "const": "inst_opcode_schema.json#"
@@ -18,6 +19,7 @@
     "data": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["display_name", "value", "location"],
       "properties": {
         "location": {
           "$ref": "schema_defs.json#/$defs/field_location"

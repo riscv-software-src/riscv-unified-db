@@ -38,10 +38,12 @@ Gem::Specification.new do |s|
   s.add_dependency "concurrent-ruby"
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
+  s.add_dependency "numbers_and_words"
   s.add_dependency "sorbet-runtime"
   s.add_dependency "terminal-table"
   s.add_dependency "thor"
   s.add_dependency "tilt"
+  s.add_dependency "tty-prompt"
   s.add_dependency "udb_helpers"
 
   s.add_development_dependency "rubocop-github"

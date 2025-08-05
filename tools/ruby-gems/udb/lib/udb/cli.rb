@@ -6,25 +6,21 @@
 # typed: true
 # frozen_string_literal: true
 
+require "awesome_print"
+require "erb"
+require "json"
 require "thor"
 require "terminal-table"
+require "tty-prompt"
 
 require_relative "resolver"
 
-class SubCommandBase < Thor
-  def self.banner(command, _namespace = nil, _subcommand = false)
-    "#{basename} #{subcommand_prefix} #{command.usage}"
-  end
-
-  def self.subcommand_prefix
-    T.must(name).gsub(/.*::/, "").gsub(/^[A-Z]/) { |match| T.must(match[0]).downcase }.gsub(/[A-Z]/) do |match|
-      "-#{T.must(match[0]).downcase}"
-    end
-  end
-end
+require "udb/cli/sub_command_base"
+require "udb/cli/create"
 
 module Udb
   module CliCommands
+
     class Validate < SubCommandBase
       include Thor::Actions
 
@@ -190,7 +186,7 @@ module Udb
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :extensions, aliases: "-e", type: :array, desc: "Only list parameters from extensions"
-      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: 'ascii'
+      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: "ascii"
       method_option :output, aliases: "-o", type: :string, desc: "Output file, or '-' for stdout", default: "-"
       def parameters
         raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
@@ -220,7 +216,7 @@ module Udb
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         params =
           if options[:extensions]
-            cfg_arch.possible_extensions.select{ |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
+            cfg_arch.possible_extensions.select { |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
           else
             cfg_arch.possible_extensions.map(&:params).flatten.uniq(&:name).sort
           end
@@ -295,11 +291,15 @@ module Udb
     desc "validate", "Validate "
     subcommand "validate", CliCommands::Validate
 
-    desc "list", "List "
+    desc "list", "List database objects (e.g., 'list extensions')"
     subcommand "list", CliCommands::List
 
-    desc "show", "Show "
+    desc "show", "Show information about database objects (e.g., 'show extension A')"
     subcommand "show", CliCommands::Show
+
+    desc "create", "Create database objects interactively (e.g., 'create extension')"
+    subcommand "create", CliCommands::Create
+
 
     desc "disasm ENCODING", "Disassemble an instruction encoding"
     method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s

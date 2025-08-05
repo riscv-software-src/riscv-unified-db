@@ -1,0 +1,22 @@
+# <%= copyright %>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/inst_type_schema.json#
+
+$schema: inst_type_schema.json#
+kind: instruction_type
+name: <%= name %>
+description: <%= desc %>
+length: <%= length %>
+opcodes:
+  <%- opcodes.each do |opcode| -%>
+  <%= opcode.name %>:
+    location: <%= opcode.location %>
+  <%- end -%>
+<%- unless variables.empty? %>
+variables:
+  <%- variables.each do |variable| %>
+  <%= variable.name %>
+    location: <%= variable.location %>
+  <%- end -%>
+<%- end -%>

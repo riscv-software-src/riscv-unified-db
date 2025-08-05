@@ -1,12 +1,14 @@
 # Copyright (c) 2025 Usman Akinyemi
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/inst_var_schema.json#
+# yaml-language-server: $schema=../../../schemas/inst_var_schema.json#
 
 $schema: inst_var_schema.json#
 kind: instruction_variable
 name: I-imm
+long_name: Signed immediate value in bits 31:20
 
 data:
   $inherits: inst_type/I.yaml#/variables/imm
   type: { "$ref": "inst_var_type/imm.yaml#" }
+  display_name: simm

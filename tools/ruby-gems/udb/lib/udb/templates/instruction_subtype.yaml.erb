@@ -1,0 +1,19 @@
+# <%= copyright %>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_subtype_schema.json
+
+$schema: inst_subtype_schema.json#
+kind: instruction_subtype
+name: <%= name %>
+
+data:
+  type: { "$ref": "inst_type/<%= type %>.yaml#" }
+  subtype: { "$ref": "inst_subtype/<%= type %>/<%= name %>.yaml#" }
+  opcodes:
+    $inherits: inst_type/<%= type %>.yaml#/opcodes
+  variables:
+    <%- var_type_map.each do |var_name, var_type| -%>
+    <%= var_name %>:
+      $inherits: inst_var/<%= var_type %>.yaml#/data
+    <%- end -%>
