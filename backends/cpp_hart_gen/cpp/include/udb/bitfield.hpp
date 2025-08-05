@@ -135,11 +135,10 @@ namespace udb {
 
   template <unsigned Size>
   class Bitfield {
-    public:
+   public:
 
     template <unsigned _Size>
     using BitsType = PossiblyUnknownBits<_Size>;
-
 
     Bitfield() = default;
 

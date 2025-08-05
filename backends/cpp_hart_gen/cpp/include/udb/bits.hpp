@@ -278,13 +278,9 @@ namespace udb {
   static unsigned addsat_unsigned(const T1& a, const T2& b)
   {
     auto r = a + b;
-    if (r < a || r < b) {
+    if (r < a || r < b || r > std::numeric_limits<unsigned>::max()) {
       // overflow occurred, saturate
-      return std::numeric_limits<unsigned>::max();
-    }
-
-    if (r > std::numeric_limits<unsigned>::max()) {
-      return std::numeric_limits<unsigned>::max();
+      r = std::numeric_limits<unsigned>::max();
     }
 
     return r;
