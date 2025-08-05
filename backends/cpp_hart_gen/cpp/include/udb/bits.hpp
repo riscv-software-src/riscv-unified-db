@@ -307,7 +307,7 @@ namespace udb {
     { std::remove_cvref_t<decltype(a.value())>::PossiblyUnknown == false };
     { std::same_as<std::remove_cvref_t<decltype(a.unknown_mask())>, typename T::MaskType> };
 
-    // cast the bits to a known (not undefined type). Might raise if there are undefined bits
+    // cast the bits to a known (not undefined) type. Might raise if there are undefined bits
     { std::remove_cvref_t<decltype(a.to_defined())>::PossiblyUnknown == false };
 
     { std::remove_cvref_t<decltype(a.template extract<0, 0>())>::IsABits == true };
