@@ -4023,8 +4023,8 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      all_known_values = true
-      width_known = true
+      all_known_values = T.let(true, T::Boolean)
+      width_known = T.let(true, T::Boolean)
 
       is_const = T.let(true, T::Boolean)
       total_width = expressions.reduce(0) do |sum, exp|
@@ -5409,7 +5409,7 @@ module Idl
         end
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        qualifiers << :known unless value.include?('x')
+        qualifiers << :known unless T.must(value).include?('x')
         @type = Type.new(:bits, width:, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
