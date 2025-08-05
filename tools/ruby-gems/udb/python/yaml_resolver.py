@@ -160,7 +160,6 @@ def read_yaml(file_path: str | Path):
     """
     with open(file_path) as file:
         data = yaml.load(file)
-        file.close()
     return data
 
 
@@ -573,7 +572,7 @@ def write_resolved_file_and_validate(
         except ValidationError as e:
             print(f"JSON Schema Validation Error for {rel_path}:")
             print(best_match(schema.iter_errors(resolved_obj)).message)
-            # exit(1)
+            exit(1)
 
     os.chmod(resolved_path, 0o666)
 

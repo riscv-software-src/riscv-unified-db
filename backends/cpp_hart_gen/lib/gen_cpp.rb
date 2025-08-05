@@ -259,10 +259,6 @@ module Idl
           end
         list << "#{written ? '' : 'const'} #{arg_type} #{written ? '' : '&'} #{arg_name}"
       end
-      # list = @argument_nodes.map do |arg|
-      #   written = (builtin? || generated?) || body.written?(symtab, arg.name)
-      #   "#{written ? '' : 'const'} #{arg.gen_cpp(symtab, 0, ref: !written)}"
-      # end.join(", ")
 
       symtab.pop
 

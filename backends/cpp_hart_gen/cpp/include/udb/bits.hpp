@@ -316,11 +316,6 @@ namespace udb {
     { std::remove_cvref_t<decltype(a.template at<0>())>::IsABits == true };
     { a.template at<0>().width() == 1 };
 
-    // { std::remove_cvref_t<decltype(a.template replicate<1>())>::IsABits == true };
-    // { std::remove_cvref_t<decltype(a.template replicate<2>())>::IsABits == true };
-    // { a.replicate(1).width() == a.width() };
-    // { a.replicate(2).width() == a.width() * 2 };
-
   };
 
   template <class T>

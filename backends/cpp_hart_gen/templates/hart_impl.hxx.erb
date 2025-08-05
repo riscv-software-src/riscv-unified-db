@@ -36,20 +36,6 @@ namespace udb {
     }
   }
 
-  // template <SocModel SocType>
-  // void udb::<%= name_of(:hart, cfg_arch) %><SocType>::init_csr_map()
-  // {
-  //   <%- cfg_arch.not_prohibited_csrs.each do |csr| -%>
-  //   <%- unless csr.address.nil? -%>
-  //   m_csr_addr_map[<%= csr.address %>_b] = &m_csrs.<%= csr.name %>;
-  //   <%- end -%>
-  //   <%- unless csr.indirect_address.nil? -%>
-  //   m_csr_indirect_addr_map[std::make_pair(<%= csr.indirect_address %>_b, <%= csr.indirect_slot %>_b)] = &m_csrs.<%= csr.name %>;
-  //   <%_ end -%>
-  //   m_csr_name_map["<%= csr.name %>"] = &m_csrs.<%= csr.name %>;
-  //   <%- end -%>
-  // }
-
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %><SocType>::global_name
 #define __UDB_MUTABLE_GLOBAL(global_name) this->global_name
 #define __UDB_FUNC_CALL this->
