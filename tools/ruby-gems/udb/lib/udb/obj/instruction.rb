@@ -603,14 +603,20 @@ class Instruction < TopLevelDatabaseObject
     # @example
     #   pretty_name #=> "rd != 0"
     #   pretty_name #=> "rd != {0,2}"
-    #   pretty_name #=> "rd = 2n" (for even register constraint)
+    #   pretty_name #=> "xs2:0,2,4,6..." (for even register constraint)
     def pretty_name
       if excludes.empty?
         name
       elsif excludes.size == 1
         "#{name} != #{excludes[0]}"
       elsif even_register_constraint?
-        "#{name} = 2n"  
+        allowed_values = even_register_allowed_values
+        hex_values = allowed_values.take(4).map { |v| v.to_s(16).upcase }
+        if allowed_values.size > 4
+          "#{name}:#{hex_values.join(',')}..."
+        else
+          "#{name}:#{hex_values.join(',')}"
+        end  
       else
         "#{name} != {#{excludes.join(',')}}"
       end
@@ -621,11 +627,34 @@ class Instruction < TopLevelDatabaseObject
     def even_register_constraint?
       return false if excludes.empty?
       sorted_excludes = excludes.sort
-      # Check if this is exactly the pattern [1, 3, 5, 7, 9, ...]
       max_excluded = sorted_excludes.last
       return false unless max_excluded.odd?
       expected_odds = (1..max_excluded).step(2).to_a
       sorted_excludes == expected_odds
+    end
+    def even_register_allowed_values
+      return [] unless even_register_constraint?
+      
+      max_excluded = excludes.max
+      max_register = max_excluded + 1 
+      (0..max_register).step(2).to_a
+    end
+
+    public
+    # @return [Boolean] true if the excludes array represents an "even registers only" constraint
+    def even_register_constraint?
+      return false if excludes.empty?
+      sorted_excludes = excludes.sort
+      max_excluded = sorted_excludes.last
+      return false unless max_excluded.odd?
+      expected_odds = (1..max_excluded).step(2).to_a
+      sorted_excludes == expected_odds
+    end
+    def even_register_allowed_values
+      return [] unless even_register_constraint?
+      max_excluded = excludes.max
+      max_register = max_excluded + 1  
+      (0..max_register).step(2).to_a
     end
 
     def extract_location(location)
