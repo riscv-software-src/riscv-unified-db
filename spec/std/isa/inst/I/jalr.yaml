@@ -75,15 +75,17 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.jalr
+  - name: jalr_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:jalr
-  - name: inst.jalr.target
-    description: Target
-    doc_links:
-      - norm:inst:jalr:target
-  - name: inst.jalr.op
+    doc_links: ["norm:enc:insttable:jalr"]
+
+  - name: jalr_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:jalr:operation
+    doc_links: ["norm:inst:jalr:operation"]
+
+  - name: jalr_target
+    type: instruction
+    description: Target
+    doc_links: ["norm:inst:jalr:target"]

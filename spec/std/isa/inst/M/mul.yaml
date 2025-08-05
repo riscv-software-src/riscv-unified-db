@@ -73,25 +73,27 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.mul.encoding
+  - name: mul_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:mul
-  - name: inst.mul.basic_op
+    doc_links: ["norm:enc:insttable:mul"]
+
+  - name: mul_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:mul:operation
-  - name: inst.mul.ill_exc_misa_M_disabled
+    doc_links: ["norm:inst:mul:operation"]
+
+  - name: mul_misa_M_dis
+    type: instruction
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
-    doc_links:
-      - norm:csr:misa:disabling-extension
+    doc_links: ["norm:csr:misa:disabling-extension"]
 
 cert_test_procedures:
   - name: inst.mul.encoding
     description: Verify the encoding of the `mul` instruction
-    normative_rules: [inst.mul.encoding]
+    normative_rules: [mul_enc]
     steps: |
       . Setup
       .. Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.

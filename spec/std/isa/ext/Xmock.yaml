@@ -158,12 +158,14 @@ params:
       maxItems: 8
       minItems: 8
 normative_rules:
-  - name: ext.Xmock.nr1
+  - name: Xmock_nr1
+    type: extension
     description: Normative rule with multiple doc_links
     doc_links:
       - norm:enc:insttable:mul
       - udb:doc:inst:mock
-  - name: ext.Xmock.nr2
+  - name: Xmock_nr2
+    type: extension
     description: |
       Normative rule without any doc_links.
       Should have lots of room to display this description in the CTP tables since table doesn't need space for doc_links.
@@ -171,7 +173,7 @@ cert_test_procedures:
   - name: ext.Xmock.my_first
     test_file_name: mock.S
     description: Verify that when it rains in Spain, it rains mainly on the plains!
-    normative_rules: [ext.Xmock.nr1, ext.Xmock.nr2]
+    normative_rules: [Xmock_nr1, Xmock_nr2]
     steps: |
       . Wait for rain
       .. First we need some rain

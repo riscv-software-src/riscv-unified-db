@@ -50,15 +50,17 @@ sail(): |
   }
 
 normative_rules:
-  - name: inst.enc.fence_tso
+  - name: fence_tso_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:fence-tso
-  - name: inst.fence_tso.op
+    doc_links: ["norm:enc:insttable:fence-tso"]
+
+  - name: fence_tso_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:fence-tso:operation
-  - name: inst.fence_tso.ordering_rw_rw_allowed
+    doc_links: ["norm:inst:fence-tso:operation"]
+
+  - name: fence_tso_ordering_rw_rw_allowed
+    type: instruction
     description: Read Allowed
-    doc_links:
-      - norm:inst:fence-tso:ordering_rw_rw_allowed
+    doc_links: ["norm:inst:fence-tso:ordering_rw_rw_allowed"]

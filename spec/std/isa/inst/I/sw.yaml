@@ -80,11 +80,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.sw
+  - name: sw_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:sw
-  - name: inst.sw.op
+    doc_links: ["norm:enc:insttable:sw"]
+
+  - name: sw_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:sw_sh_sb:operation
+    doc_links: ["norm:insts:sw_sh_sb:operation"]

@@ -52,11 +52,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.andi
+  - name: andi_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:andi
-  - name: inst.andi.op
+    doc_links: ["norm:enc:insttable:andi"]
+  - name: andi_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:andi_ori_xori:operation
+    doc_links: ["norm:insts:andi_ori_xori:operation"]

@@ -76,15 +76,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.bltu
+  - name: bltu_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:bltu
-  - name: instgrp.branch.target.bltu # Added .bltu to make unique until rule can be moved into YAML that supports instgrps.
-    description: Target
-    doc_links:
-      - norm:instgrp:branch:target
-  - name: inst.bltu.op
+    doc_links: ["norm:enc:insttable:bltu"]
+
+  - name: bltu_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:blt_bltu:operation
+    doc_links: ["norm:insts:blt_bltu:operation"]

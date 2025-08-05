@@ -59,11 +59,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.xor
+  - name: xor_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:xor
-  - name: inst.xor.op
+    doc_links: ["norm:enc:insttable:xor"]
+
+  - name: xor_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:and_or_xor:operation
+    doc_links: ["norm:insts:and_or_xor:operation"]

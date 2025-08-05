@@ -342,10 +342,14 @@
     "normative_rules": {
       "description": "Architecturally visible behaviors defined by the RISC-V standards",
       "type": "array",
-      "required": ["name", "description"],
+      "required": ["name", "type", "description"],
       "properties": {
         "name": {
           "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["extension", "instruction", "CSR", "CSR field", "parameter"]
         },
         "description": {
           "type": "string"
@@ -359,7 +363,7 @@
         },
         "coverage_points": {
           "type": "array",
-          "description": "List of cover points that cover this normative rule",
+          "description": "List of cover points that must be met to test this normative rule",
           "items": {
             "type": "string"
           }

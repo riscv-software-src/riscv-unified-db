@@ -70,11 +70,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.slt
+  - name: slt_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:slt
-  - name: inst.slt.op
+    doc_links: ["norm:enc:insttable:slt"]
+
+  - name: slt_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:slt_sltu:operation
+    doc_links: ["norm:insts:slt_sltu:operation"]

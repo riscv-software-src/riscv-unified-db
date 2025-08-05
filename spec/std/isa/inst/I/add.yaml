@@ -61,15 +61,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.add
+  - name: add_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:add
-  - name: inst.add.basic_op
+    doc_links: ["norm:enc:insttable:add"]
+  - name: add_basic_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:add:operation
-  - name: inst.add.overflow
-    description: Treatment of overflow
-    doc_links:
-      - norm:insts:add_sub:overflow
+    doc_links: ["norm:inst:add:operation"]

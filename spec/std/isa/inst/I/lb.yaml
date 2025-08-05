@@ -66,11 +66,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.lb
+  - name: lb_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:lb
-  - name: inst.lb.op
+    doc_links: ["norm:enc:insttable:lb"]
+
+  - name: lb_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:lb_lbu:operation
+    doc_links: ["norm:insts:lb_lbu:operation"]

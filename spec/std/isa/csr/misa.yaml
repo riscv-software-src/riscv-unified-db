@@ -150,14 +150,14 @@ fields:
       return implemented?(ExtensionName::M) ? 1 : 0;
     definedBy: M
     normative_rules:
-      - name: csr_field.misa.M.disabled
+      - name: misa_M_disabled
+        type: CSR field
         description: What happens when you turn off `misa.M`
-        doc_links:
-          - norm:csr:misa:disabling-extension
+        doc_links: ["norm:csr:misa:disabling-extension"]
     cert_test_procedures:
       - name: csr.misa.M.muldiv_with_M_on&off
         description: Execute with M on/off
-        normative_rules: [csr_field.misa.M.disabled]
+        normative_rules: [misa_M_disabled]
         steps: |
           . on
           .. Turn on `misa.M`
@@ -246,14 +246,14 @@ sw_read(): |
     (CSR[misa].B << 1) |
     CSR[misa].A);
 normative_rules:
-  - name: csr.misa.disabling_bits
+  - name: misa_disabling_bits
+    type: CSR
     description: What happens when you turn off bits
-    doc_links:
-      - norm:csr:misa:disabling-extension
+    doc_links: ["norm:csr:misa:disabling-extension"]
 cert_test_procedures:
   - name: csr.misa.off&on
     description: Turn on/off each bit and see what happens
-    normative_rules: [csr.misa.disabling_bits]
+    normative_rules: [misa_disabling_bits]
     steps: |
       . Setup
       .. Turn on all bits

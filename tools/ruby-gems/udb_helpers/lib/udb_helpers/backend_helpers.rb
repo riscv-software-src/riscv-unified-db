@@ -14,9 +14,10 @@ class String
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   #
-  # @param name [String] Some RISC-V name which might have periods in it or ampersand
-  # @return [String] New String with periods replaced with underscores and ampersands replaced with "_and_"
-  def sanitize = String.new(self).gsub(".", "_").gsub("&", "_and_")
+  # @param name [String] Some RISC-V name which might have periods in it (e.g., fence.tso) or ampersand
+  # @return [String] New String with periods replaced with hyphens and ampersands replaced with "-and-"
+  #                  Don't use underscore as a replacement character since it is used by doc_links to separate list items.
+  def sanitize = String.new(self).gsub(".", "-").gsub("&", "-and-")
 end
 
 module Udb::Helpers::WavedromUtil

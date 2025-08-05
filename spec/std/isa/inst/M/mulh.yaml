@@ -77,7 +77,7 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.mulh.encoding
+  - name: mulh_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:mulh
+    doc_links: ["norm:enc:insttable:mulh"]

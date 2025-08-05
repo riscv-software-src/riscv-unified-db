@@ -7,29 +7,21 @@ module Udb
 class NormativeRule
   # @return [String] Unique name of the normative rule
   #
-  # Must adhere to the following naming convention.
-  # The <id> is a unique suffix that describes the normative rule.
-  # The convention is similar to the doc_link naming convention but more compact and tailored to UDB object types.
   #
-  #   Object        Naming Convention                               Associated ISA features
-  #   ============  =============================================== =========================================
-  #   Extension     E:<ext-name>:<id>                               Single extension
-  #                 EL:<ext-name>[_<ext-name>]:<id>                 List of extensions
-  #                 EG:<group-name>:<id>                            Named group of extensions
-  #   Instruction   I:<inst-name>:<id>                              Single instruction
-  #                 IL:<inst-name>[_<inst-name>]+:<id>              List of instructions
-  #                 IG:<group-name>:<id>                            Named group of insts (e.g., branch, load)
-  #   CSR           C:<csr-name>:<id>                               Single CSR
-  #                 CL:<csr-name>[_<csr-name>]+:<id>                List of CSRs
-  #                 CG:<group-name>:<id>                            Named group of CSRs
-  #   CSR Field     F:<csr-name>:<field-name>:<id>                  Single CSR field
-  #                 FL:<csr-name>:<field-name>[_<field-name>]+:<id> List of fields in the same CSR
-  #                 FG:<csr-name>:<group-name>:<id>                 Named group of CSR fields in the same CSR
-  #                 CFG:csr-name>[_<csr-name>]+:<field-name>:<id>   Same field in the listed CSRs
-  #   Parameter     P:<param-name>:<id>                             Single parameter
-  #                 PL:<param-name>[_<param-name>]+:<id>            List of parameters
-  #                 PG:<group-name>:<id>                            Named group of parameters
+  # Where to put normative rules in UDB:
+  #   - If a rule is only associated with one UDB database object (extension, instruction, CSR, or CSR field) put it in the
+  #     YAML file for that database object.
+  #   - If a rule spans multiple instructions or CSRS but only belongs to one extension, put it in that extension's YAML file.
+  #     If the rule doesn't always apply when the extension is present (e.g., 64-bit instructions in I extension),
+  #     add "when" statements with expressions to limit when the rule applies (e.g., XLEN == 64).
+  #   - If a rule spans multiple extensions, put it in the I extension since it always is present and add
+  #     appropriate "when" statements to express when the rule applies (e.g., "extension?(F) || extension?(D)")
+  #     OR put it in a YAML file under the std/isa/normative_rule directory
+  #     and add "when" statements to express when the rule applies (e.g., "extension?(F) || extension?(D)")
   attr_reader :name
+
+  # @return [String] One of: "extension", "instruction", "CSR", "CSR field", or "parameter"
+  attr_reader :type
 
   # @return [String] Description of normative rule (could be multiple lines)
   attr_reader :description
@@ -44,6 +36,9 @@ class NormativeRule
 
     @name = data["name"]
     raise ArgumentError, "Missing name for normative rule for #{db_obj.name} of kind #{db_obj.kind}" if @name.nil?
+
+    @type = data["type"]
+    raise ArgumentError, "Missing type for normative rule #{@name} for #{db_obj.name} of kind #{db_obj.kind}" if @type.nil?
 
     @description = data["description"]
     raise ArgumentError, "Missing normative rule description #{@name} for #{db_obj.name} of kind #{db_obj.kind}" if @description.nil?

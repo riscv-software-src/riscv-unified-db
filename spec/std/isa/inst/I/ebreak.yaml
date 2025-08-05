@@ -48,11 +48,11 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.ebreak
+  - name: ebreak_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:ebreak
-  - name: inst.ebreak.op
+    doc_links: ["norm:enc:insttable:ebreak"]
+  - name: ebreak_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:ebreak:operation
+    doc_links: ["norm:inst:ebreak:operation"]

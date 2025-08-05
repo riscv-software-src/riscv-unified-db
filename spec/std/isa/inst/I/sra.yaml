@@ -65,11 +65,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.sra
+  - name: sra_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:sra
-  - name: inst.sra.op
+    doc_links: ["norm:enc:insttable:sra"]
+
+  - name: sra_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:sll_srl_sra:operation
+    doc_links: ["norm:insts:sll_srl_sra:operation"]

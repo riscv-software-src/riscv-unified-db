@@ -81,15 +81,7 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.bge
+  - name: bge_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:bge
-  - name: instgrp.branch.target.bge # Added .bge to make unique until rule can be moved into YAML that supports instgrps.
-    description: Target
-    doc_links:
-      - norm:instgrp:branch:target
-  - name: inst.bge.op
-    description: Basic operation
-    doc_links:
-      - norm:insts:bge_bgeu:operation
+    doc_links: ["norm:enc:insttable:bge"]

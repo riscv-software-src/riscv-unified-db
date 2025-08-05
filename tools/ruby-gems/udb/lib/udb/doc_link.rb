@@ -57,15 +57,12 @@
 #     - You can also use the "paragraph syntax" for table cells and list items as long as it begins before the text such as:
 #           | [[foo]] Here is the table cell contents | next cell
 #
-# AsciiDoc Anchor Naming Restrictions:
-#   - Start with a letter, ":", or "_" followed by letters, ":", "_", "-", ".", or digits. No spaces allowed.
-#   - However, you can't put a "." in inline anchors (see https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#block-assignment)
-#     for other reasons.
-#
 # Naming restrictions:
-#   - Start anchor names with a letter and use ":" to separate fields in the anchor name.
-#   - Use underscores to separate lists of items between colons (e.g., ":insts:add_sub") since RISC-V uses "-" same names.
-#   - Replace "." in items with "-" (e.g., fence.tso becomes fence-tso) so all anchors types used work properly.
+#   - Start anchor names with a letter and use ":" to separate fields in the anchor name. No spaces allowed in name.
+#   - Use underscores to separate lists of items between colons (e.g., ":insts:add_sub") since RISC-V uses "-" in some names
+#     (e.g., "R-type").
+#   - Replace "." in items with "-" (e.g., fence.tso becomes fence-tso) so all anchors types used work properly
+#     (see https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#block-assignment for details).
 #
 # Adding anchors into AsciiDoc files
 # ==================================

@@ -43,11 +43,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.lui
+  - name: lui_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:lui
-  - name: inst.lui.op
+    doc_links: ["norm:enc:insttable:lui"]
+
+  - name: lui_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:lui:operation
+    doc_links: ["norm:inst:lui:operation"]

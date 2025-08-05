@@ -237,23 +237,27 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.fence
+  - name: fence_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:fence
-  - name: inst.fence.op
+    doc_links: ["norm:enc:insttable:fence"]
+
+  - name: fence_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:inst:fence:operation
-  - name: inst.fence.conservative_allowed
+    doc_links: ["norm:inst:fence:operation"]
+
+  - name: fence_cons_okay
+    type: instruction
     description: Conservative Allowed
-    doc_links:
-      - norm:inst:fence:conservative_allowed
-  - name: inst.fence.null_pred_succ_intersection
+    doc_links: ["norm:inst:fence:conservative_allowed"]
+
+  - name: fence_null_pred_succ_inter
+    type: instruction
     description: Successful Intersection
-    doc_links:
-      - norm:inst:fence:null_pred_succ_intersection
-  - name: inst.fence.unused_fields_reserved
+    doc_links: ["norm:inst:fence:null_pred_succ_intersection"]
+
+  - name: fence_unused_flds_rsv
+    type: instruction
     description: Unused Fields are Reserved
-    doc_links:
-      - norm:inst:fence:unused_fields_reserved
+    doc_links: ["norm:inst:fence:unused_fields_reserved"]

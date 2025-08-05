@@ -52,11 +52,12 @@ sail(): |
 # SPDX-SnippetEnd
 
 normative_rules:
-  - name: inst.enc.slti
+  - name: slti_enc
+    type: instruction
     description: Encoding
-    doc_links:
-      - norm:enc:insttable:slti
-  - name: inst.slti.op
+    doc_links: ["norm:enc:insttable:slti"]
+
+  - name: slti_op
+    type: instruction
     description: Basic operation
-    doc_links:
-      - norm:insts:slti_sltiu:operation
+    doc_links: ["norm:insts:slti_sltiu:operation"]
