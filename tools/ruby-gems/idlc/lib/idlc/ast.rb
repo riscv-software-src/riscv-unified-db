@@ -786,13 +786,13 @@ module Idl
 
       sym = symtab.get(name)
       # @type =
-        if sym.is_a?(Type)
-          sym
-        elsif sym.is_a?(Var)
-          sym.type
-        else
-          internal_error "Unexpected object on the symbol table"
-        end
+      if sym.is_a?(Type)
+        sym
+      elsif sym.is_a?(Var)
+        sym.type
+      else
+        internal_error "Unexpected object on the symbol table"
+      end
     end
 
     # @return [Boolean] whether or not the Id represents a const
@@ -995,16 +995,16 @@ module Idl
     def enums = definitions.select { |e| e.is_a?(EnumDefinitionAst) || e.is_a?(BuiltinEnumDefinitionAst) }
 
     # @return {Array<AstNode>] List of all bitfield definitions
-    def bitfields = definitions.select { |e| e.is_a?(BitfieldDefinitionAst) }
+    def bitfields = definitions.grep(BitfieldDefinitionAst)
 
     # @return [Array<AstNode>] List of all struct definitions
-    def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
+    def structs = definitions.grep(StructDefinitionAst)
 
     # @return [Array<AstNode>] List of all function definitions
-    def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
+    def functions = definitions.grep(FunctionDefAst)
 
     # @return [FetchAst] Fetch body
-    def fetch = definitions.select { |e| e.is_a?(FetchAst )}[0]
+    def fetch = definitions.grep(FetchAst)[0]
 
     # Add all the global symbols to symtab
     #
@@ -1037,7 +1037,7 @@ module Idl
     def type_check(symtab)
       definitions.each { |d| d.type_check(symtab) }
 
-      fetch_blocks = definitions.select { |d| d.is_a?(FetchAst) }
+      fetch_blocks = definitions.grep(FetchAst)
       type_error "Multiple fetch blocks defined" if fetch_blocks.size > 1
       type_error "No fetch block defined" if fetch_blocks.size.zero?
     end
@@ -1305,7 +1305,7 @@ module Idl
     def const_eval?(symtab) = true
 
     def initialize(input, interval, user_type, element_names, element_values)
-      super(input, interval, [user_type] + element_names + element_values.reject{ |e| e.nil? })
+      super(input, interval, [user_type] + element_names + element_values.reject { |e| e.nil? })
       @user_type = user_type
       @element_name_asts = element_names
       @element_value_asts = element_values
@@ -1572,7 +1572,7 @@ module Idl
     def element_ranges(symtab)
       return @element_ranges unless @element_ranges.nil?
 
-      @element_ranges = @fields.map{ |f| f.range(symtab) }
+      @element_ranges = @fields.map { |f| f.range(symtab) }
     end
 
     # @!macro type_check
@@ -3788,7 +3788,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all <= the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value } }
               true
             else
               value_error "Some value of lhs is not <= some value of rhs"
@@ -3802,7 +3802,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all >= the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value } }
               true
             else
               value_error "Some value of lhs is not >= some value of rhs"
@@ -3816,7 +3816,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all < the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value } }
               true
             else
               value_error "Some value of lhs is not < some value of rhs"
@@ -3830,7 +3830,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all > the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value } }
               true
             else
               value_error "Some value of lhs is not > some value of rhs"
@@ -3992,7 +3992,7 @@ module Idl
 
   class ConcatenationExpressionSyntaxNode < SyntaxNode
     def to_ast
-      ConcatenationExpressionAst.new(input, interval, [send(:first).to_ast] + send(:rest).elements.map{ |e| e.expression.to_ast })
+      ConcatenationExpressionAst.new(input, interval, [send(:first).to_ast] + send(:rest).elements.map { |e| e.expression.to_ast })
     end
   end
 
@@ -4038,17 +4038,20 @@ module Idl
         sum
       end
 
+      qualifiers = is_const ? [:const] : []
+
       if all_known_values
+        qualifiers << :known
         if width_known
-          Type.new(:bits, width: total_width, qualifiers: [:known])
+          Type.new(:bits, width: total_width, qualifiers:)
         else
-          Type.new(:bits, width: :unknown, qualifiers: [:known])
+          Type.new(:bits, width: :unknown, qualifiers:)
         end
       else
         if width_known
-          Type.new(:bits, width: total_width)
+          Type.new(:bits, width: total_width, qualifiers:)
         else
-          Type.new(:bits, width: :unknown)
+          Type.new(:bits, width: :unknown, qualifiers:)
         end
       end
     end
@@ -4814,9 +4817,9 @@ module Idl
     end
 
       # @!macro execute
-      def execute_unknown(symtab)
-        action.execute_unknown(symtab)
-      end
+    def execute_unknown(symtab)
+      action.execute_unknown(symtab)
+    end
 
     # @!macro to_idl
     sig { override.returns(String) }
@@ -5007,7 +5010,7 @@ module Idl
       elsif return_value_nodes[0].type(symtab).kind == :tuple
         return_value_nodes[0].type(symtab).tuple_types
       else
-        return_value_nodes.map{ |v| v.type(symtab) }
+        return_value_nodes.map { |v| v.type(symtab) }
       end
     end
 
@@ -5335,12 +5338,12 @@ module Idl
       v = []
       ([known_str.size, x.size].max).times do |i|
         if i >= known_str.size
-          v << ((x[i] == '1') ? 'x' : '0')
+          v << ((x[i] == "1") ? "x" : "0")
         elsif i >= x.size
           v << known_str[i]
         else
-          if x[i] == '1'
-            v << 'x'
+          if x[i] == "1"
+            v << "x"
           else
             v << known_str[i]
           end
@@ -5409,7 +5412,7 @@ module Idl
         end
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        qualifiers << :known unless T.must(value).include?('x')
+        qualifiers << :known unless T.must(value).include?("x")
         @type = Type.new(:bits, width:, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
@@ -5567,16 +5570,16 @@ module Idl
           radix_id = "o" if radix_id.empty?
 
           # @unsigned_value =
-            case radix_id
-            when "b"
-              value.to_i(2)
-            when "o"
-              value.to_i(8)
-            when "d"
-              value.to_i(10)
-            when "x"
-              value.to_i(16)
-            end
+          case radix_id
+          when "b"
+            value.to_i(2)
+          when "o"
+            value.to_i(8)
+          when "d"
+            value.to_i(10)
+          when "x"
+            value.to_i(16)
+          end
 
         when /^([0-9]*)(s?)$/
           # basic decimal
@@ -5963,7 +5966,7 @@ module Idl
       stmts.each do |s|
         if s.is_a?(Returns)
           v = s.return_value(symtab)
-          return v unless v == nil
+          return v unless v.nil?
         else
           s.execute(symtab)
         end
@@ -6057,8 +6060,12 @@ module Idl
         interval,
         send(:function_name).text_value,
         (!respond_to?(:targs) || send(:targs).empty?) ? [] : [send(:targs).first.to_ast] + send(:targs).rest.elements.map { |r| r.single_declaration.to_ast },
-        send(:ret).empty? ? [] : [send(:ret).first.to_ast] + (send(:ret).respond_to?(:rest) ? send(:ret).rest.elements.map { |r| r.type_name.to_ast } : []),
-        send(:args).empty? ? [] : [send(:args).first.to_ast] + send(:args).rest.elements.map { |r| r.single_declaration.to_ast},
+        if send(:ret).empty?
+          []
+else
+  [send(:ret).first.to_ast] + (send(:ret).respond_to?(:rest) ? send(:ret).rest.elements.map { |r| r.type_name.to_ast } : [])
+end,
+        send(:args).empty? ? [] : [send(:args).first.to_ast] + send(:args).rest.elements.map { |r| r.single_declaration.to_ast },
         send(:desc).text_value,
         respond_to?(:type) ? send(:type).text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? send(:body_block).function_body.to_ast : nil
@@ -6881,7 +6888,7 @@ module Idl
     sig { returns(T::Array[ElseIfAst]) }
     def elseifs = T.cast(T.must(@children[2..-2]), T::Array[ElseIfAst])
 
-    sig { returns(IfBodyAst)}
+    sig { returns(IfBodyAst) }
     def final_else_body = T.cast(T.must(@children.last), IfBodyAst)
 
     def initialize(input, interval, if_cond, if_body, elseifs, final_else_body)
@@ -7194,7 +7201,7 @@ module Idl
       internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
 
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.possible_xlens.map{ |xlen| fd.width(xlen) }.max)
+        Type.new(:bits, width: symtab.possible_xlens.map { |xlen| fd.width(xlen) }.max)
       elsif fd.base64_only?
         if symtab.possible_xlens.include?(64)
           Type.new(:bits, width: fd.width(64))
