@@ -9,7 +9,7 @@ require_relative "control_flow_pass"
 require_relative "written_pass"
 require "idlc/type"
 
-module Idlc
+module Idl
   class Type
     def to_cxx_no_qualifiers
       case @kind
