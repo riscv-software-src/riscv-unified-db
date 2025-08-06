@@ -27,13 +27,12 @@ fields:
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |
-      Bits<11> iid_value = csr_value[26:16];
-      if (iid_value != 0) {
+      if (csr_value.IID != 0) {
         if (implemented?(ExtensionName::Smaia)) {
-          clear_imsic_interrupt(PrivilegeMode::M, iid_value);
+          clear_imsic_interrupt(PrivilegeMode::M, csr_value.IID);
         }
       }
-      return iid_value;
+      return csr_value.IID;
   IPRIO:
     location: 7-0
     long_name: Interrupt Priority
