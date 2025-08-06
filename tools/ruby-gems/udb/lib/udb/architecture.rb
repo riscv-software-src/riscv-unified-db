@@ -120,6 +120,7 @@ class Architecture
         f.flock(File::LOCK_EX)
         obj_yaml = YAML.load(f.read, filename: obj_path, permitted_classes: [Date])
         f.flock(File::LOCK_UN)
+        obj_yaml["$source"] = Pathname.new(obj_path).realpath.to_s
         @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, self)
         @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
       end
