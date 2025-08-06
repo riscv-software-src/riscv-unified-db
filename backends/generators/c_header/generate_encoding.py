@@ -30,7 +30,9 @@ def calculate_mask(match_str):
     return int("".join("0" if c == "-" else "1" for c in match_str), 2)
 
 
-def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None):
+def load_exception_codes(
+    ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
+):
     """Load exception codes from extension YAML files or pre-resolved JSON file."""
     exception_codes = []
     found_extensions = 0
@@ -42,17 +44,24 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False, re
     # If we have a resolved codes file, use it instead of processing YAML files
     if resolved_codes_file and os.path.exists(resolved_codes_file):
         try:
-            with open(resolved_codes_file, 'r', encoding='utf-8') as f:
+            with open(resolved_codes_file, encoding="utf-8") as f:
                 resolved_codes = json.load(f)
 
             for code in resolved_codes:
                 num = code.get("num")
                 name = code.get("name")
                 if num is not None and name is not None:
-                    sanitized_name = name.lower().replace(" ", "_").replace("/", "_").replace("-", "_")
+                    sanitized_name = (
+                        name.lower()
+                        .replace(" ", "_")
+                        .replace("/", "_")
+                        .replace("-", "_")
+                    )
                     exception_codes.append((num, sanitized_name))
 
-            logging.info(f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}")
+            logging.info(
+                f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}"
+            )
 
             # Sort by exception code number and deduplicate
             seen_nums = set()
@@ -65,7 +74,9 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False, re
             return unique_codes
 
         except Exception as e:
-            logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
+            logging.error(
+                f"Error loading resolved codes file {resolved_codes_file}: {e}"
+            )
             # Fall back to processing YAML files
 
     for dirpath, _, filenames in os.walk(ext_dir):
@@ -108,7 +119,12 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False, re
                     name = code.get("name")
 
                     if num is not None and name is not None:
-                        sanitized_name = name.lower().replace(" ", "_").replace("/", "_").replace("-", "_")
+                        sanitized_name = (
+                            name.lower()
+                            .replace(" ", "_")
+                            .replace("/", "_")
+                            .replace("-", "_")
+                        )
                         exception_codes.append((num, sanitized_name))
 
             except Exception as e:
@@ -350,7 +366,10 @@ def main():
     # Load exception codes
     logging.info(f"Loading exception codes from {args.ext_dir}")
     causes = load_exception_codes(
-        args.ext_dir, args.extensions, include_all=args.include_all, resolved_codes_file=args.resolved_codes
+        args.ext_dir,
+        args.extensions,
+        include_all=args.include_all,
+        resolved_codes_file=args.resolved_codes,
     )
 
     # Process instructions and calculate masks
