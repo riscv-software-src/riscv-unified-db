@@ -61,10 +61,4 @@ fields:
     sw_write(csr_value): |
       # Only allow writes to bits that are configured as writable
       # Bits not in MACHINE_VIRTUAL_INTERRUPTS are read-only zero
-      Bits<51> writable_mask = 0;
-      for (int i = 13; i <= 63; i++) {
-        if (MACHINE_VIRTUAL_INTERRUPTS.include?(i)) {
-          writable_mask[i-13] = 1;
-        }
-      }
-      return (csr_value & ~writable_mask) | (value & writable_mask);
+      return csr_value.MACHINE_VIRTUAL_INTERRUPTS_FIELD;
