@@ -8,22 +8,24 @@ kind: instruction
 name: rorw
 long_name: Rotate right word (Register)
 description: |
-  Performs a rotate right on the least-significant word of rs1 by the amount in
-  least-significant 5 bits of rs2. The resultant word is sign-extended by copying bit 31 to all
+  Performs a rotate right on the least-significant word of xs1 by the amount in
+  least-significant 5 bits of xs2. The resultant word is sign-extended by copying bit 31 to all
   of the more-significant bits.
 definedBy:
   anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, xs2
 base: 64
-encoding:
-  match: 0110000----------101-----0111011
-  variables:
-    - name: rs2
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+format:
+  $inherits:
+    - inst_subtype/R/R-x.yaml#/data
+  opcodes:
+    funct7:
+      display_name: RORW
+      value: 0b0110000
+    funct3:
+      display_name: RORW
+      value: 0b101
+    opcode: { $inherits: inst_opcode/OP-32.yaml#/data }
 access:
   s: always
   u: always
@@ -35,11 +37,11 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_word = X[rs1][31:0];
-  XReg shamt = X[rs2][4:0];
+  XReg xs1_word = X[xs1][31:0];
+  XReg shamt = X[xs2][4:0];
 
-  XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
-  X[rd] = {{32{unextended_result[31]}}, unextended_result};
+  XReg unextended_result = (X[xs1] >> shamt) | (X[xs1] << (32 - shamt));
+  X[xd] = {{32{unextended_result[31]}}, unextended_result};
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

@@ -9,7 +9,8 @@ require_relative "obj/extension"
 
 module Udb
 
-class ExtensionVersion; end
+  # sorbet needs a forward declration
+  class ExtensionVersion; end
 
   # return type for satisfied_by functions
   class SatisfiedResult < T::Enum
@@ -71,6 +72,7 @@ class ExtensionRequirementExpression
 
     @hsh = composition_hash
     @arch = cfg_arch
+    @satisfied_by_cfg_arch = T.let({}, T::Hash[String, SatisfiedResult])
   end
 
   sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
@@ -625,24 +627,25 @@ class ExtensionRequirementExpression
 
   sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def satisfied_by_cfg_arch?(cfg_arch)
-    if cfg_arch.fully_configured?
-      if satisfied_by? { |ext_req| cfg_arch.transitive_implemented_extension_versions.any? { |ev| ext_req.satisfied_by?(ev) } }
-        SatisfiedResult::Yes
+    @satisfied_by_cfg_arch[cfg_arch.name] ||=
+      if cfg_arch.fully_configured?
+        if satisfied_by? { |ext_req| cfg_arch.transitive_implemented_extension_versions.any? { |ev| ext_req.satisfied_by?(ev) } }
+          SatisfiedResult::Yes
+        else
+          SatisfiedResult::No
+        end
+      elsif cfg_arch.partially_configured?
+        if satisfied_by? { |cond_ext_req| cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cond_ext_req.satisfied_by?(cfg_ext_req) }  }
+          SatisfiedResult::Yes
+        elsif satisfied_by? { |cond_ext_req| cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| cond_ext_req.satisfied_by?(cfg_ext_ver) }  }
+          SatisfiedResult::Maybe
+        else
+          SatisfiedResult::No
+        end
       else
-        SatisfiedResult::No
-      end
-    elsif cfg_arch.partially_configured?
-      if satisfied_by? { |cond_ext_req| cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cond_ext_req.satisfied_by?(cfg_ext_req) }  }
+        # unconfig. everything flies
         SatisfiedResult::Yes
-      elsif satisfied_by? { |cond_ext_req| cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| cond_ext_req.satisfied_by?(cfg_ext_ver) }  }
-        SatisfiedResult::Maybe
-      else
-        SatisfiedResult::No
       end
-    else
-      # unconfig. everything flies
-      SatisfiedResult::Yes
-    end
   end
 
   # returns true if the list of extension requirements *can* satisfy the condition.
