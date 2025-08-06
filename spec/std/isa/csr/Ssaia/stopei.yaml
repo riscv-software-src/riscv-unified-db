@@ -27,12 +27,13 @@ fields:
     reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
     sw_write(csr_value): |
-      if (value != 0) {
+      Bits<11> iid_value = csr_value[26:16];
+      if (iid_value != 0) {
         if (implemented?(ExtensionName::Ssaia)) {
-          clear_imsic_interrupt(PrivilegeMode::S, value);
+          clear_imsic_interrupt(PrivilegeMode::S, iid_value);
         }
       }
-      return value;
+      return iid_value;
   IPRIO:
     location: 7-0
     long_name: Interrupt Priority
