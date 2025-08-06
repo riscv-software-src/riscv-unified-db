@@ -219,16 +219,16 @@ coverage_points:
     description: The rd register number used in the instruction.
   - name: cp_rs1_edges
     bins: 16
-    description: Edge values for rs1 (see <<t-integer-edge-definitions>>).
+    description: Edge values for rs1 (see Integer Edge Definitions).
   - name: cp_rs2_edges
     bins: 16
-    description: Edge values for rs2 (see <<t-integer-edge-definitions>>).
+    description: Edge values for rs2 (see Integer Edge Definitions).
   - name: cp_imm_edges
     bins: 16
-    description: Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
+    description: Edge values for 12-bit immediates (see Immediate Edge Definitions).
   - name: cr_rs1_imm_edges
     bins: 16*20
-    description: Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
+    description: Cross-product of rs1 and 12-bit immediate edges (see Immediate Edge Definitions).
   - name: cr_rs1_rs2_edges
     bins: 16*16
     description: Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
@@ -275,7 +275,7 @@ coverage_points:
     description: "5-bit unsigned immediate shift amount for {slliw/srliw/sraiw}"
   - name: cp_imm_edges_20bit
     bins: 27
-    description: "20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`."
+    description: "20-bit variant of Immediate Edge Definitions for `lui` and `auipc`."
   - name: cp_imm_edges_jal
     bins: 23
     description: |
