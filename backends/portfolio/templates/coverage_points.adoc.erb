@@ -22,11 +22,12 @@ Coverage Points for `<%= nice_name %>`: ::
 | <%= cp.description %>
 <%     if cp.normative_rules(arch).empty? -%>
 |
-<%     else -%>
-a|
-<%     cp.normative_rules(arch).each do |nr| -%>
-* <%= defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.name) : nr.name %>
+<%     else # not empty -%>
+<%       norm_rules = [] -%>
+<%       cp.normative_rules(arch).each do |nr| -%>
+<%         norm_rules << (defined?(fmt) ? link_to_udb_doc_norm_rule(fmt, nr.name) : nr.name) -%>
 <%       end # each norm rule -%>
+| <%= norm_rules.join(", ") %>
 <%     end # if empty -%>
 <%   end # each coverage point -%>
 |===
