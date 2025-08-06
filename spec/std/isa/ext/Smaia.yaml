@@ -37,15 +37,3 @@ params:
         type: integer
         minimum: 13
         maximum: 63
-    extra_validation: |
-      # Validate that MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED is a subset of MACHINE_VIRTUAL_INTERRUPTS
-      # Temporarily disabled to resolve CI issues - will be re-enabled after investigation
-      # TODO: Re-enable validation after identifying root cause of CI parameter loading issues
-      begin
-        # Skip validation for now to allow CI to pass
-        # The validation logic is sound but there appears to be a timing/loading issue in CI
-        warn "AIA parameter validation temporarily disabled for CI stability"
-      rescue => e
-        # Graceful error handling
-        warn "AIA parameter validation skipped due to error: #{e.message}"
-      end
