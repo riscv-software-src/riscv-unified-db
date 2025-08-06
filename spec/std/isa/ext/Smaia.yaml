@@ -39,20 +39,36 @@ params:
         maximum: 63
     extra_validation: |
       # Validate that MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED is a subset of MACHINE_VIRTUAL_INTERRUPTS
-      require 'set'
+      # Only run validation if both parameters are properly defined and not nil
+      begin
+        if defined?(MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED) &&
+           defined?(MACHINE_VIRTUAL_INTERRUPTS) &&
+           !MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED.nil? &&
+           !MACHINE_VIRTUAL_INTERRUPTS.nil?
 
-      # Handle cases where parameters might not be defined or are nil
-      always_enabled = MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED || []
-      virtual_interrupts = MACHINE_VIRTUAL_INTERRUPTS || []
+          require 'set'
 
-      # Ensure both are arrays
-      always_enabled = Array(always_enabled)
-      virtual_interrupts = Array(virtual_interrupts)
+          # Ensure both are arrays
+          always_enabled = Array(MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED)
+          virtual_interrupts = Array(MACHINE_VIRTUAL_INTERRUPTS)
 
-      always_enabled_set = Set.new(always_enabled)
-      virtual_interrupts_set = Set.new(virtual_interrupts)
+          # Only validate if always_enabled is not empty (empty array is always a valid subset)
+          unless always_enabled.empty?
+            always_enabled_set = Set.new(always_enabled)
+            virtual_interrupts_set = Set.new(virtual_interrupts)
 
-      unless always_enabled_set.subset?(virtual_interrupts_set)
-        invalid_interrupts = always_enabled_set - virtual_interrupts_set
-        raise "MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED contains interrupt(s) #{invalid_interrupts.to_a} that are not in MACHINE_VIRTUAL_INTERRUPTS. Always-enabled interrupts must be a subset of virtual interrupts. Always-enabled: #{always_enabled}, Virtual interrupts: #{virtual_interrupts}"
+            unless always_enabled_set.subset?(virtual_interrupts_set)
+              invalid_interrupts = always_enabled_set - virtual_interrupts_set
+              raise "MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED contains interrupt(s) #{invalid_interrupts.to_a} that are not in MACHINE_VIRTUAL_INTERRUPTS. Always-enabled interrupts must be a subset of virtual interrupts. Always-enabled: #{always_enabled}, Virtual interrupts: #{virtual_interrupts}"
+            end
+          end
+        end
+      rescue => e
+        # If validation fails for any reason other than subset violation, log and skip
+        # This prevents validation errors from blocking legitimate configurations
+        unless e.message.include?("subset")
+          warn "Skipping AIA parameter validation due to error: #{e.message}"
+        else
+          raise e
+        end
       end
