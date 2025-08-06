@@ -3,7 +3,6 @@
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
-
 $schema: "inst_schema.json#"
 kind: instruction
 name: amoadd.d.aq
@@ -38,7 +37,7 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amo64(virtual_address, X[xs2], AmoOperation::Add, true, false, $encoding);
+  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Add, true, false, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
