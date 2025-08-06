@@ -54,4 +54,3 @@ params:
     schema:
       type: boolean
       default: true
-

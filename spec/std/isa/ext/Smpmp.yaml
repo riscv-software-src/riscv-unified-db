@@ -89,4 +89,3 @@ params:
       type: integer
       minimum: 2
       maximum: 66
-
