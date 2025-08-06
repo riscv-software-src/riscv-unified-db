@@ -93,7 +93,7 @@ normative_rules:
 cert_test_procedures:
   - name: inst.mul.encoding
     description: Verify the encoding of the `mul` instruction
-    normative_rules: [mul_enc]
+    coverage_points: [mul_enc]
     steps: |
       . Setup
       .. Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.

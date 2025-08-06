@@ -74,10 +74,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:slt"]
-    normative_rules: [cr_rs1_rs2_edges]
+    coverage_points: [cr_rs1_rs2_edges]
 
   - name: slt_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:slt_sltu:operation"]
-    normative_rules: [cr_rs1_rs2_edges]
+    coverage_points: [cr_rs1_rs2_edges]
