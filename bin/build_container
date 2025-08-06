@@ -10,14 +10,20 @@ if [ -v GITHUB_ACTIONS ]; then
   HOME_PATH=${GITHUB_WORKSPACE}
   SINGULARITY_CACHE=--disable-cache
 
+  # Ensure .singularity directory exists
+  mkdir -p ${ROOT}/.singularity
+
   # needed to get singularity working on Ubuntu 24.04
   # see https://github.com/lima-vm/lima/issues/2319
-  sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
-  sudo sysctl --system
+  sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf" || echo "Failed to set apparmor config"
+  sudo sysctl --system || echo "Failed to reload sysctl"
 else
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
   HOME_PATH=${HOME}
   SINGULARITY_CACHE=
+
+  # Ensure .singularity directory exists
+  mkdir -p ${ROOT}/.singularity
 fi
 
 # uncomment below if you have sudo permission and don't have fakeroot permission

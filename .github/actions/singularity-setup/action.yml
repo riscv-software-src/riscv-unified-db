@@ -36,12 +36,23 @@ runs:
         run: |
           echo "Cache miss - installing Ruby dependencies"
           gem install bundler || true
+          bundle config set --local path .home/.gems || true
+          bundle config set --local cache_path .home/.cache || true
+          bundle config set --local with development || true
         shell: bash
       - name: Install Node dependencies if cache missed
         if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
         run: |
           echo "Cache miss - installing Node dependencies"
           npm install || true
+        shell: bash
+      - name: Ensure Python virtual environment
+        run: |
+          echo "Setting up Python virtual environment"
+          mkdir -p .home/.venv || true
+          python3 -m venv .home/.venv || true
+          source .home/.venv/bin/activate || true
+          pip install -r requirements.txt || true
         shell: bash
       - name: Setup project
         run: ./bin/setup

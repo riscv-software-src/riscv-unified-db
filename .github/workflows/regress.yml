@@ -36,12 +36,28 @@ jobs:
         continue-on-error: true
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Verify setup
+      - name: Verify setup and install missing dependencies
         run: |
           echo "Checking setup..."
           ls -la .home/.gems || echo "No .home/.gems directory"
           ls -la node_modules || echo "No node_modules directory"
           ls -la .singularity || echo "No .singularity directory"
+
+          # Ensure critical dependencies are available
+          if [ ! -d ".home/.gems" ]; then
+            echo "Installing Ruby gems as fallback..."
+            gem install bundler || true
+            bundle install --path .home/.gems || true
+          fi
+
+          if [ ! -d "node_modules" ]; then
+            echo "Installing Node modules as fallback..."
+            npm install || true
+          fi
+
+          if [ ! -f ".singularity/image.sif" ]; then
+            echo "Container image missing - this may cause issues"
+          fi
       - name: Run smoke
         run: ./do test:smoke
       - name: Upload idlc coverage reports to Codecov
