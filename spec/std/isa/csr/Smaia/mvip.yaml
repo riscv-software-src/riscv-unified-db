@@ -16,30 +16,63 @@ description: |
   Bits corresponding to unimplemented interrupt sources should be read-only zero.
 definedBy: Smaia
 fields:
+  # Fields VSSIP, VSTIP, VSEIP are defined in the RISC-V AIA specification
+  # Section 3.2.2 "Machine Virtual Interrupt Pending Register (mvip)"
+  # These correspond to virtual supervisor software, timer, and external interrupts
   VSSIP:
     location: 1
     long_name: Virtual Supervisor Software Interrupt Pending
     description: |
       Virtual supervisor software pending.
+
+      This bit can only be written if the corresponding VSSIE bit in mvien is writable and enabled.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+    sw_write(): |
+      # Check if corresponding mvien bit is enabled
+      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
+      if (current_mvien[1] == 1) {
+        return value;
+      } else {
+        return 0;  # Force to zero if mvien bit is disabled
+      }
   VSTIP:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Pending
     description: |
       Virtual supervisor timer pending.
+
+      This bit can only be written if the corresponding VSTIE bit in mvien is writable and enabled.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+    sw_write(): |
+      # Check if corresponding mvien bit is enabled
+      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
+      if (current_mvien[5] == 1) {
+        return value;
+      } else {
+        return 0;  # Force to zero if mvien bit is disabled
+      }
   VSEIP:
     location: 9
     long_name: Virtual Supervisor External Interrupt Pending
     description: |
       Virtual supervisor external pending.
+
+      This bit can only be written if the corresponding VSEIE bit in mvien is writable and enabled.
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+    sw_write(): |
+      # Check if corresponding mvien bit is enabled
+      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
+      if (current_mvien[9] == 1) {
+        return value;
+      } else {
+        return 0;  # Force to zero if mvien bit is disabled
+      }
   MACHINE_VIRTUAL_INTERRUPTS_PENDING_FIELD:
     location: 63-13
     long_name: Machine Virtual Interrupts Pending
@@ -55,3 +88,21 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+    sw_write(): |
+      # Only allow writes to bits that are also writable in mvien
+      # If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero
+      Bits<51> mvien_writable_mask = 0;
+      for (int i = 13; i <= 63; i++) {
+        if (MACHINE_VIRTUAL_INTERRUPTS.include?(i)) {
+          mvien_writable_mask[i-13] = 1;
+        }
+      }
+
+      # Get current mvien value to check which bits are actually enabled
+      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
+      Bits<51> mvien_enabled_mask = current_mvien[63:13];
+
+      # Only allow writes to bits that are both writable and enabled in mvien
+      Bits<51> effective_mask = mvien_writable_mask & mvien_enabled_mask;
+
+      return (csr_value & ~mvien_writable_mask) | (value & effective_mask);
