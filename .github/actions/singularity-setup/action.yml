@@ -5,12 +5,19 @@ runs:
   steps:
       - name: Setup apptainer
         uses: eWaterCycle/setup-apptainer@v2.0.0
+      - name: Create required directories
+        run: |
+          mkdir -p .singularity
+          mkdir -p .home/.gems
+          mkdir -p node_modules
+        shell: bash
       - name: Get container from cache
         id: cache-sif
         uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+        continue-on-error: true
       - name: Get gems and node files from cache
         id: cache-bundle-npm
         uses: actions/cache@v4
@@ -19,9 +26,22 @@ runs:
             .home/.gems
             node_modules
           key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+        continue-on-error: true
       - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
         run: ./bin/build_container
+        shell: bash
+      - name: Install Ruby dependencies if cache missed
+        if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Cache miss - installing Ruby dependencies"
+          gem install bundler || true
+        shell: bash
+      - name: Install Node dependencies if cache missed
+        if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Cache miss - installing Node dependencies"
+          npm install || true
         shell: bash
       - name: Setup project
         run: ./bin/setup
