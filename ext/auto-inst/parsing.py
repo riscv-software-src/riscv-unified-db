@@ -49,7 +49,7 @@ def get_json_path():
 
 
 def get_yaml_directory():
-    return "arch/inst/"
+    return "spec/std/isa/inst"
 
 
 def load_inherited_variable(var_path, repo_dir):

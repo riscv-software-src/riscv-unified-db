@@ -98,8 +98,8 @@ deploy_mkdir $DEPLOY_DIR/htmls
 
 deploy_log "Resolve / Create Index for base architecture"
 deploy_do "gen:resolved_arch"
-tar czf $DEPLOY_DIR/resolved_arch.tar.gz gen/resolved_arch/_
-deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
+tar czf $DEPLOY_DIR/resolved_spec.tar.gz gen/resolved_spec/_
+deploy_cp_recursive gen/resolved_spec/_ $DEPLOY_DIR/resolved_spec
 
 deploy_log "Create _site/isa_explorer"
 deploy_mkdir $DEPLOY_DIR/isa_explorer
@@ -130,6 +130,8 @@ parallel :::                                          \
   "./do gen:proc_crd_pdf[MC200-64]"                   \
   "./do gen:proc_crd_pdf[MC300-32]"                   \
   "./do gen:proc_crd_pdf[MC300-64]"                   \
+  "./do gen:proc_ctp_pdf[RVI20-32]"                   \
+  "./do gen:proc_ctp_pdf[RVI20-64]"                   \
   "./do gen:proc_ctp_pdf[MC100-32]"                   \
   "./do gen:proc_ctp_pdf[MockProcessor]"
 
@@ -160,7 +162,7 @@ for crd in AC100 AC200 MC100-32 MC100-64 MC200-32 MC200-64 MC300-32 MC300-64; do
   deploy_cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
 done
 
-for ctp in MC100-32 MockProcessor; do
+for ctp in RVI20-32 RVI20-64 MC100-32 MockProcessor; do
   deploy_log "Copy ${ctp}-CTP PDF"
   deploy_cp gen/proc_ctp/pdf/${ctp}-CTP.pdf $DEPLOY_DIR/pdfs
 done
@@ -181,17 +183,17 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <h3>Resolved architecture</h3>
     <ul>
       <li>
-        <a href="$PAGES_URL/resolved_arch/index.yaml">index.yaml</a>
-        Database index, as array of relative paths from $PAGES_URL/resolved_arch
+        <a href="$PAGES_URL/resolved_spec/index.yaml">index.yaml</a>
+        Database index, as array of relative paths from $PAGES_URL/resolved_spec
         <ul>
           <li>
-            For example, you can find <a href="$PAGES_URL/resolved_arch/ext/Sm.yaml">Sm.yaml</a> at $PAGES_URL/resolved_arch/ext/Sm.yaml
+            For example, you can find <a href="$PAGES_URL/resolved_spec/ext/Sm.yaml">Sm.yaml</a> at $PAGES_URL/resolved_spec/ext/Sm.yaml
           </li>
         </ul>
       </li>
       <li>
-        <a href="$PAGES_URL/resolved_arch.tar.gz">resolved_arch.tar.gz</a>
-        The contents of the resolved architecture as a tarball
+        <a href="$PAGES_URL/resolved_spec.tar.gz">resolved_spec.tar.gz</a>
+        The contents of the resolved specificatione as a tarball
       </li>
     </ul>
 
@@ -244,6 +246,8 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <br/>
     <h3>CSC CTPs (Certification Test Plans)</h3>
     <ul>
+      <li><a href="$PAGES_URL/pdfs/RVI20-32-CTP.pdf">RVI20-32 CTP</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVI20-64-CTP.pdf">RVI20-64 CTP</a></li>
       <li><a href="$PAGES_URL/pdfs/MC100-32-CTP.pdf">MC100-32 CTP</a></li>
       <li><a href="$PAGES_URL/pdfs/MockProcessor-CTP.pdf">MockProcessor CTP (for UDB testing)</a></li>
     </ul>

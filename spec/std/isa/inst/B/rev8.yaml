@@ -15,7 +15,7 @@ description: |
 
   [NOTE]
   The byte-reverse operation is only available for the full register width. To emulate word-sized
-  and halfword-sized byte-reversal, perform a `rev8 rd,rs` followed by a `srai rd,rd,K`, where K
+  and halfword-sized byte-reversal, perform a `rev8 xd,xs1` followed by a `srai xd,xd,K`, where K
   is XLEN-32 and XLEN-16, respectively.
 definedBy:
   anyOf: [Zbb, Zbkb]
@@ -24,16 +24,16 @@ encoding:
   RV32:
     match: 011010011000-----101-----0010011
     variables:
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 011010111000-----101-----0010011
     variables:
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -46,7 +46,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg input = X[rs1];
+  XReg input = X[xs1];
   XReg output = 0;
 
   XReg j = xlen() - 1;
@@ -56,7 +56,7 @@ operation(): |
     j = j - 8;
   }
 
-  X[rd] = output;
+  X[xd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
