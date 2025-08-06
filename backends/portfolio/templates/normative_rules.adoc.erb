@@ -3,7 +3,13 @@
 <%   if defined?(use_description_list) && use_description_list -%>
 Normative Rules for `<%= nice_name %>`: ::
 <%   else -%>
+<%     if defined?(fmt) && fmt == "combo" -%>
 ==== Normative Rules for `<%= nice_name %>`
+<%     elsif defined?(fmt) && fmt == "appendix" -%>
+==== Normative Rules
+<%     else -%>
+==== `<%= nice_name %>`
+<%     end -%>
 <%   end -%>
 
 <%   if normative_rule_tags.tags_available? -%>
@@ -45,23 +51,18 @@ a| <%= doc_link.to_excerpt(normative_rule_tags) %>
 <%   else # tags not available -%>
 [cols="20%,40%,40%"]
 |===
-| Name | Coverage Points | Description | Documentation Links
+| Name | Description | Documentation Links
 
 <%     db_obj.normative_rules.each do |nr| -%>
 | <%= defined?(fmt) ? anchor_for_udb_doc_norm_rule(fmt, nr.name) : "" %><%= nr.name %>
-<% cp_names = [] -%>
-<% nr.coverage_point_names.each do |cp_name| -%>
-<%   cp_names << (defined?(fmt) ? link_to_udb_doc_cover_pt(fmt, cp_name) : cp_name) -%>
-<% end -%>
-| <%= "#{cp_names.join(',')}" %>
 | <%= nr.description %>
 <%       if nr.doc_links.empty? -%>
 |
 <%       else -%>
 a|
-<%       nr.doc_links.each do |link| -%>
-* <%= link.to_adoc %>
-<%         end # each link -%>
+<%       nr.doc_links.each do |doc_link| -%>
+* <%= doc_link.link_name %>
+<%         end # each doc_link -%>
 <%       end # if empty -%>
 <%     end # each normative rule -%>
 |===

@@ -3,7 +3,13 @@
 <%   if defined?(use_description_list) && use_description_list -%>
 Coverage Points for `<%= nice_name %>`: ::
 <%   else -%>
+<%     if defined?(fmt) && fmt == "combo" -%>
 ==== Coverage Points for `<%= nice_name %>`
+<%     elsif defined?(fmt) && fmt == "appendix" -%>
+==== Coverage Points
+<%     else -%>
+==== `<%= nice_name %>`
+<%     end -%>
 <%   end -%>
 
 [cols="10%,10%,60%,20%"]
