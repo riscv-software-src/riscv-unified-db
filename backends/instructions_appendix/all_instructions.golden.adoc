@@ -3812,7 +3812,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** D, version >= D@2.2.0
@@ -3850,7 +3850,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** D, version >= D@2.2.0
@@ -3889,7 +3889,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** F, version >= F@2.2.0
@@ -3927,7 +3927,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** F, version >= F@2.2.0
@@ -3966,7 +3966,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** D, version >= D@2.2.0
@@ -4004,7 +4004,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** D, version >= D@2.2.0
@@ -4043,7 +4043,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** F, version >= F@2.2.0
@@ -4081,7 +4081,7 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
+anyOf:
 *** allOf:
 ***** C, version >= C@2.0.0
 ***** F, version >= F@2.2.0
@@ -46326,7 +46326,7 @@ Decode Variables::
 |===
 
 Included in::
-* allOf:
+allOf:
 *** Zbb, version >= Zbb@1.0.0
 *** not:
 ***** Zbkb, version >= Zbkb@1.0.0
