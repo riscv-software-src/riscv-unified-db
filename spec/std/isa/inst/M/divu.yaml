@@ -8,21 +8,21 @@ kind: instruction
 name: divu
 long_name: Unsigned division
 description: |
-  Divide unsigned values in rs1 by rs2, and store the result in rd.
+  Divide unsigned values in xs1 by xs2, and store the result in xd.
 
   The remainder is discarded.
 
-  If the value in rs2 is zero, rd gets the largest unsigned value.
+  If the value in xs2 is zero, xd gets the largest unsigned value.
 definedBy: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------101-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -34,15 +34,15 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg src1 = X[rs1];
-  XReg src2 = X[rs2];
+  XReg src1 = X[xs1];
+  XReg src2 = X[xs2];
 
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
-    X[rd] = {MXLEN{1'b1}};
+    X[xd] = {MXLEN{1'b1}};
   } else {
-    X[rd] = src1 / src2;
+    X[xd] = src1 / src2;
   }
 
 # SPDX-SnippetBegin
