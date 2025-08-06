@@ -35,7 +35,7 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amo<8>(virtual_address, X[xs2][7:0], AmoOperation::Swap, true, false, $encoding);
+  X[xd] = amo<8>(virtual_address, X[xs2][7:0], AmoOperation::Swap, 1'b1, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

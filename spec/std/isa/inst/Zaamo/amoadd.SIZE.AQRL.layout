@@ -68,7 +68,7 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amo<<%= current_size[:operation_bits] %>>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Add, <%= aq ? "true" : "false" %>, <%= rl ? "true" : "false" %>, $encoding);
+  X[xd] = amo<<%= current_size[:operation_bits] %>>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Add, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
