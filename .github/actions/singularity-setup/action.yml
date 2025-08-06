@@ -24,29 +24,20 @@ runs:
         name: Build container
         run: ./bin/build_container
         shell: bash
-      - name: Handle cache miss for gems and node modules
-        if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
-        run: |
-          echo "Cache miss detected for gems and node modules"
-          echo "Ensuring dependencies will be installed during setup"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - name: Install Bundler
+        run: gem install bundler
         shell: bash
-      - name: Setup project
-        run: ./bin/setup
-        shell: bash
-      - name: Verify gem installation
+      - name: Verify gems are accessible
         run: |
-          echo "Verifying Ruby gem installation..."
-          if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
-            echo "Gems directory is missing or empty, forcing reinstallation..."
-            rm -rf .home/.gems .bundle
-            ./bin/setup
-          fi
-
-          # Verify gems are accessible
           if ! bundle check --gemfile Gemfile > /dev/null 2>&1; then
             echo "Bundle check failed, reinstalling gems..."
             bundle install --gemfile Gemfile
           fi
-
-          echo "Ruby gems verified successfully"
+        shell: bash
+      - name: Setup project
+        run: ./bin/setup
         shell: bash
