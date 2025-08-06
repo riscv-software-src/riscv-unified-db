@@ -396,6 +396,8 @@ class Csr < TopLevelDatabaseObject
       ["M", "S", "U", "VS", "VU"]
     when "VS"
       ["M", "S", "VS"]
+    when "D"
+      ["M", "D"]
     else
       raise "unexpected priv mode"
     end
