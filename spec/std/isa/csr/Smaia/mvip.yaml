@@ -40,3 +40,18 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+  MACHINE_VIRTUAL_INTERRUPTS_PENDING_FIELD:
+    location: 63-13
+    long_name: Machine Virtual Interrupts Pending
+    description: |
+      Configurable virtual interrupt pending bits for interrupt numbers 13-63.
+
+      The behavior of these bits follows the corresponding mvien bits. If a bit
+      in mvien is read-only zero, the corresponding bit in mvip should also be
+      read-only zero.
+
+      This is a WARL register where the writable bits are determined by the
+      MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia

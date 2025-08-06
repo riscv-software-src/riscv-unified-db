@@ -40,3 +40,18 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
+  MACHINE_VIRTUAL_INTERRUPTS_FIELD:
+    location: 63-13
+    long_name: Machine Virtual Interrupts
+    description: |
+      Configurable virtual interrupt enable bits for interrupt numbers 13-63.
+
+      Implementations may freely choose which bits are writable based on the
+      MACHINE_VIRTUAL_INTERRUPTS parameter. Bits corresponding to unimplemented
+      interrupt sources should be read-only zero.
+
+      This is a WARL register where the writable bits are determined by the
+      MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Smaia

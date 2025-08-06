@@ -26,3 +26,14 @@ params:
         type: integer
         minimum: 13
         maximum: 63
+  MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED:
+    description: |
+      List of interrupt numbers (13-63) for which the corresponding bits in mvien are read-only-1.
+      Must be a subset of MACHINE_VIRTUAL_INTERRUPTS.
+      These interrupts are always enabled and cannot be disabled by software.
+    schema:
+      type: array
+      items:
+        type: integer
+        minimum: 13
+        maximum: 63
