@@ -24,20 +24,7 @@ runs:
         name: Build container
         run: ./bin/build_container
         shell: bash
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-      - name: Install Bundler
-        run: gem install bundler
-        shell: bash
-      - name: Verify gems are accessible
-        run: |
-          if ! bundle check --gemfile Gemfile > /dev/null 2>&1; then
-            echo "Bundle check failed, reinstalling gems..."
-            bundle install --gemfile Gemfile
-          fi
-        shell: bash
+
       - name: Setup project
         run: ./bin/setup
         shell: bash

@@ -31,9 +31,8 @@ fields:
     definedBy: Smaia
     sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
-      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
-      if (current_mvien[1] == 1) {
-        return value;
+      if (CSR[mvien].VSSIE == 1'b1) {
+        return csr_value.VSSIP;
       } else {
         return 0;  # Force to zero if mvien bit is disabled
       }
@@ -49,9 +48,8 @@ fields:
     definedBy: Smaia
     sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
-      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
-      if (current_mvien[5] == 1) {
-        return value;
+      if (CSR[mvien].VSTIE == 1'b1) {
+        return csr_value.VSTIP;
       } else {
         return 0;  # Force to zero if mvien bit is disabled
       }
@@ -67,15 +65,15 @@ fields:
     definedBy: Smaia
     sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
-      Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
-      if (current_mvien[9] == 1) {
+      if (CSR[mvien].VSEIE == 1'b1) {
         return csr_value.VSEIP;
       } else {
         return 0;  # Force to zero if mvien bit is disabled
       }
-  MACHINE_VIRTUAL_INTERRUPTS_PENDING_FIELD:
-    location: 63-13
-    long_name: Machine Virtual Interrupts Pending
+  VOTHERPIP:
+    location_rv32: 31-13
+    location_rv64: 63-13
+    long_name: Machine Other Virtual Interrupts Pending
     description: |
       Configurable virtual interrupt pending bits for interrupt numbers 13-63.
 
@@ -91,4 +89,4 @@ fields:
     sw_write(csr_value): |
       # Only allow writes to bits that are also writable in mvien
       # If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero
-      return csr_value.MACHINE_VIRTUAL_INTERRUPTS_PENDING_FIELD;
+      return csr_value.VOTHERPIP;
