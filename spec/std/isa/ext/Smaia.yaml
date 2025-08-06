@@ -37,3 +37,13 @@ params:
         type: integer
         minimum: 13
         maximum: 63
+    extra_validation: |
+      # Validate that MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED is a subset of MACHINE_VIRTUAL_INTERRUPTS
+      require 'set'
+      always_enabled_set = Set.new(MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED)
+      virtual_interrupts_set = Set.new(MACHINE_VIRTUAL_INTERRUPTS)
+
+      unless always_enabled_set.subset?(virtual_interrupts_set)
+        invalid_interrupts = always_enabled_set - virtual_interrupts_set
+        raise "MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED contains interrupt(s) #{invalid_interrupts.to_a} that are not in MACHINE_VIRTUAL_INTERRUPTS. Always-enabled interrupts must be a subset of virtual interrupts."
+      end
