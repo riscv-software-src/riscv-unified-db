@@ -175,7 +175,7 @@ class ExtensionRequirementExpression
     # For simple single extension OR complex condition headers at root level (indent = 0), don't show bullets
     use_bullets = !(indent == 0 && (is_simple_single_extension?(cond) || is_complex_condition_header?(cond)))
     bullet_prefix = use_bullets ? "#{'*' * indent}* " : ""
-    
+
     case cond
     when String
       "#{bullet_prefix}#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
