@@ -58,7 +58,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
-    sw_write(): |
+    sw_write(csr_value): |
       # Only allow writes to bits that are configured as writable
       # Bits not in MACHINE_VIRTUAL_INTERRUPTS are read-only zero
       Bits<51> writable_mask = 0;

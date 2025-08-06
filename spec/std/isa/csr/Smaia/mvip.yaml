@@ -29,7 +29,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
-    sw_write(): |
+    sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
       Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
       if (current_mvien[1] == 1) {
@@ -47,7 +47,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
-    sw_write(): |
+    sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
       Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
       if (current_mvien[5] == 1) {
@@ -65,7 +65,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
-    sw_write(): |
+    sw_write(csr_value): |
       # Check if corresponding mvien bit is enabled
       Bits<MXLEN> current_mvien = CSR[mvien].sw_read();
       if (current_mvien[9] == 1) {
@@ -88,7 +88,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
-    sw_write(): |
+    sw_write(csr_value): |
       # Only allow writes to bits that are also writable in mvien
       # If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero
       Bits<51> mvien_writable_mask = 0;
