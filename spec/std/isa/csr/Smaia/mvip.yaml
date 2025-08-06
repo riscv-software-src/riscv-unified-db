@@ -26,7 +26,7 @@ fields:
       Virtual supervisor software pending.
 
       This bit can only be written if the corresponding VSSIE bit in mvien is writable and enabled.
-    type: RW
+    type: RW-R
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |
@@ -44,7 +44,7 @@ fields:
       Virtual supervisor timer pending.
 
       This bit can only be written if the corresponding VSTIE bit in mvien is writable and enabled.
-    type: RW
+    type: RW-R
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |
@@ -62,7 +62,7 @@ fields:
       Virtual supervisor external pending.
 
       This bit can only be written if the corresponding VSEIE bit in mvien is writable and enabled.
-    type: RW
+    type: RW-R
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |
@@ -85,7 +85,7 @@ fields:
 
       This is a WARL register where the writable bits are determined by the
       MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
-    type: RW
+    type: RW-R
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |

@@ -55,7 +55,7 @@ fields:
 
       This is a WARL register where the writable bits are determined by the
       MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
-    type: RW
+    type: RW-R
     reset_value: UNDEFINED_LEGAL
     definedBy: Smaia
     sw_write(csr_value): |
