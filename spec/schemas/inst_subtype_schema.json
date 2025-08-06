@@ -4,7 +4,7 @@
   "description": "Schema for instruction subtype definitions",
 
   "type": "object",
-  "required": ["$schema", "kind", "name", "data"],
+  "required": ["$schema", "kind", "name", "long_name", "data"],
   "additionalProperties": false,
 
   "$defs": {
@@ -173,6 +173,10 @@
       "type": "string",
       "$ref": "schema_defs.json#/$defs/inst_subtype_name",
       "description": "Name of the subtype; also serves as database key"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "Descriptive name"
     },
     "data": {
       "oneOf": [

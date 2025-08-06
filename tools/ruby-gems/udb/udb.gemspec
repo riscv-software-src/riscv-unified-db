@@ -43,6 +43,8 @@ Gem::Specification.new do |s|
   s.add_dependency "terminal-table"
   s.add_dependency "thor"
   s.add_dependency "tilt"
+  s.add_dependency "tty-box", "~> 0.7"
+  s.add_dependency "tty-markdown", "~> 0.7"
   s.add_dependency "tty-prompt"
   s.add_dependency "udb_helpers"
 

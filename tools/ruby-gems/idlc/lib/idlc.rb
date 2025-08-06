@@ -34,12 +34,18 @@ module Treetop
   end
 end
 
+tt_path = Pathname.new(__dir__) / "idlc" / "idl.treetop"
+rb_path = Pathname.new(__dir__) / "idlc" / "idl_parser.rb"
+needs_grammar_recompile = !rb_path.exist? || (rb_path.mtime < tt_path.mtime)
+if needs_grammar_recompile
+  tt_compiler = Treetop::Compiler::GrammarCompiler.new
+  tt_compiler.compile(tt_path, rb_path)
+end
+
 require_relative "idlc/ast"
 require_relative "idlc/symbol_table"
+require_relative "idlc/idl_parser"
 
-# pre-declare so sorbet is happy with this dynamically-generated class
-class IdlParser < Treetop::Runtime::CompiledParser; end
-Treetop.load((Pathname.new(__FILE__).dirname / "idlc" / "idl").to_s)
 
 module Idl
   # the Idl compiler

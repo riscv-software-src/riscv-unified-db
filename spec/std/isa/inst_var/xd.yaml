@@ -6,7 +6,7 @@
 $schema: inst_var_schema.json#
 kind: instruction_variable
 name: xd
-long_name: X destination register index in encoding bits 11:7 (xd)
+long_name: X destination register index in encoding bits 11:7
 
 data:
   $inherits: inst_type/R.yaml#/variables/rd

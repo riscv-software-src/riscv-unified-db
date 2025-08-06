@@ -6,6 +6,11 @@
 # typed: true
 # frozen-string-literal: true
 
+require "tty-box"
+require "tty-markdown"
+require "tty-prompt"
+
+require "numbers_and_words"
 require "udb/cli/sub_command_base"
 
 module Udb
@@ -15,6 +20,7 @@ module Udb
     class CreatedFile < T::Struct
       const :path, Pathname
       const :contents, String
+      const :next_steps, T::Array[String]
     end
 
     class OpcodeOrVariable < T::Struct
@@ -29,15 +35,94 @@ module Udb
 
     sig { params(prompt: TTY::Prompt).returns(String) }
     def self.get_copyright(prompt)
+      prompt.say \
+        "First, let's get the legal necessities out of the way."
+
       copyright = prompt.ask \
-        "Lets get this out of the way: what copyright do you want to assign to newly created files?",
-        default: "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+      "What copyright do you want to assign to newly created files?",
+      default: "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+      required: true,
+      modify: [:trim]
+
+      license_info = <<~INFO
+        Great. The copyright will read:
+           #{copyright}
+
+        The license defaults to BSD-3-Clear.
+        Other licenses will likely not be accepted upstream.
+
+        Press key to continue
+      INFO
+
+      license_box = TTY::Box.frame(license_info, padding: 3, title: { top_left: "LICENSE" }, style: { fg: :white, bg: :blue })
+      print license_box
+      prompt.keypress
+
+      print prompt.clear_lines(17)
+
+      copyright
+    end
+
+    sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname).returns(CreatedFile) }
+    def self.create_extension(prompt, copyright, outdir)
+      schema_defs = CreationActions.schema_defs
+      spec_states = schema_defs["$defs"]["spec_state"]["enum"]
+
+      type = prompt.select \
+        "Is this a RISC-V standard extension or a custom extension?",
+        ["standard", "custom"], default: "standard"
+
+      name_regex =
+        if type == "standard"
+          /#{schema_defs["$defs"]["standard_extension_name"]["pattern"]}/
+        else
+          /#{schema_defs["$defs"]["custom_extension_name"]["pattern"]}/
+        end
+      name = prompt.ask \
+        "What is the extension name (e.g., Zibi)?",
+        validate: name_regex
+
+      state = prompt.select \
+        "What is the state of the extension?",
+        spec_states,
+        default: "development"
+
+      priv_type = prompt.select \
+        "Is this an unprivileged or privileged extension?",
+        ["unprivileged", "privileged"],
+        default: "unprivileged"
+
+      long_name = prompt.ask \
+        "What is a short description of the extension? (e.g., \"Bitmanipulation instructions\", \"Vector cryptography\", ...)",
         required: true,
         modify: [:trim]
 
-      prompt.say "Great. The license defaults to BSD-3-Clear. Other licenses will likely not be accepted upstream.\n\n"
+      version = prompt.ask \
+        "What is the initial version?",
+        validate: /#{schema_defs["$defs"]["rvi_version"]["pattern"]}/,
+        default: "0.1"
 
-      copyright
+      contributors = prompt.collect do
+        loop do
+          prompt.say "Who is the first contributor?"
+          key(:people).values do
+            key(:name).ask("Full name?", required: true, modify: [:trim])
+
+            key(:email).ask("Email?", validate: :email, modify: [:trim])
+
+            key(:company).ask("Company?", modify: [:trim])
+          end
+          break unless prompt.yes?("Add another contributor?")
+        end
+      end
+
+      template_path = Udb.gem_path / "lib" / "udb" / "templates" / "extension.yaml.erb"
+      dest_path = outdir / "ext" / "#{name}.yaml"
+
+      erb = ERB.new(template_path.read, trim_mode: "-")
+      erb.filename = template_path.to_s
+
+      CreatedFile.new(path: dest_path, contents: erb.render(binding), next_steps: [])
     end
 
     sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname, location: String).returns(CreatedFile) }
@@ -63,27 +148,42 @@ module Udb
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
 
-      CreatedFile.new(path: dest_path, contents: erb.result(binding))
+      CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
 
 
-    sig { params(prompt: TTY::Prompt, copyright: String).returns(CreatedFile) }
-    def self.create_inst_type(prompt, copyright)
+    sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname).returns(CreatedFile) }
+    def self.create_inst_type(prompt, copyright, outdir)
       name = prompt.ask \
-        "What is the instruction type name (e.g., 'R')?",
-        modify: [:trim]
+        "What is the instruction type name? It should be a single letter (e.g., 'R')",
+        modify: [:trim],
+        required: true
 
       desc = prompt.ask \
         "What is a short description (e.g., 'R-type instructions have three 5-bit operands')\n",
-        modify: [:trim]
+        modify: [:trim],
+        required: true
 
       length = prompt.select \
         "What is the instruction encoding length for #{name}-type instructions?",
         [16, 32]
 
       opcodes = []
-      prompt.say "\nNext, we will specify opcode fields."
-      prompt.say "An opcode field is a single _contiguous_ set of bits that hold fixed opcode bits (e.g., `funct7` in R-type)"
+
+      opcode_info = <<~INFO
+        Next, we will specify opcode fields.
+
+        An opcode field is a single _contiguous_ set of bits that hold fixed opcode bits.
+        For example, R-type instructions have three opcodes: `funct7`, 'funct3' and 'opcode'.
+
+        Press any key to continue.
+      INFO
+
+      opcode_box = TTY::Box.frame(opcode_info, padding: 3, title: { top_left: "Opcodes" }, style: { fg: :white, bg: :blue })
+      print opcode_box
+      prompt.keypress
+      print prompt.clear_lines(12)
+
       loop do
         opcode_name = prompt.ask \
           "What is the name of the #{(opcodes.size + 1).to_words(ordinal: true, remove_hyphen: true)} opcode field (e.g., `funct7`)?",
@@ -91,11 +191,11 @@ module Udb
 
         opcode_location = prompt.ask \
           "What is the location of the '#{opcode_name}' field (e.g., '5', '14-12')?",
-          validate: proc do |loc|
+          validate: (proc do |loc|
             # must be a valid location, and if it is a range, msb must come first
-            loc =~ /#{schema_defs["$defs"]["field_location"]}/ && \
+            loc =~ /^[0-9]+(-[0-9]+)?$/ && \
               (loc.index("-").nil? || (loc.split("-")[0].to_i >= loc.split("-")[1].to_i))
-          end
+          end)
 
         opcodes << OpcodeOrVariable.new(name: opcode_name, location: opcode_location)
 
@@ -113,40 +213,68 @@ module Udb
           "What is the name of the #{(variables.size + 1).to_words(ordinal: true, remove_hyphen: true)} variable field (e.g., `rs1`)?",
           modify: [:trim]
 
-        variable_location = prompt.ask \
-          "What is the location of the '#{variable_name}' variable (e.g., '5', '14-12', '31|7|30-25|11-8')"
+        loop do
+          variable_location = prompt.ask \
+            "What is the location of the '#{variable_name}' variable (e.g., '5', '14-12', '31|7|30-25|11-8'. Type 'help' for more)"
+
+          if variable_location == "help"
+            location_help = <<~HELP
+              Locations can be specified as:
+                * A single digit, when the field is one bit wide
+                  ex: 5
+                  ex: 31
+                * A range of digits separated by a dash ('-'), with the MSB first
+                  ex: 14-12
+                  ex: 24-20
+                * A concatenated list of digits and/or ranges joined by a pipe ('|')
+                  Used when the field is split in the encoding.
+                  The bits of the field must be listed in order from MSB to LSB _of the field_ (not of the encoding)
+                    ex: 31|7|30-25|11-8  # location of 12-bit imm in B-Type instructions;
+                                         # imm[11] is at $encoding[31]
+                                         # imm[10] is at $encoding[7]
+                                         # imm[9:4] is at $encoding[30:25]
+                                         # imm[3:0] is at $encoding[11:8]
+
+                Press any key to continue
+            HELP
+
+            help_box = TTY::Box.frame(location_help, padding: 1, title: { top_left: "Variable locations" }, style: { fg: :white, bg: :blue })
+            print help_box
+            prompt.keypress
+            print prompt.clear_lines(25)
+          else
+            break
+          end
+        end
 
         variables << OpcodeOrVariable.new(name: variable_name, location: variable_location)
       end
 
       template_path = Udb.gem_path / "lib" / "udb" / "templates" / "instruction_type.yaml.erb"
-      dest_path =
-        if type == "standard"
-          Udb.repo_root / "spec" / "std" / "isa" / "inst_type" / "#{name}.yaml"
-        else
-          raise "TODO: custom extension"
-        end
+      dest_path = outdir / "inst_type" / "#{name}.yaml"
 
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
 
-      CreatedFile.new(path: dest_path, contents: erb.result(binding))
+      CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
 
-    sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname).returns(CreatedFile) }
-    def self.create_inst_var(prompt, copyright, outdir)
+    sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname, inst_type: T.nilable(String)).returns(CreatedFile) }
+    def self.create_inst_var(prompt, copyright, outdir, inst_type)
       name = prompt.ask \
         "What is the instruction var name (e.g., 'xs1')?",
         modify: [:trim]
 
       inst_types =
         Dir[Udb.repo_root / "spec" / "std" / "isa" / "inst_type" / "*.yaml"].map do |f|
-          { name: File.basename(f, ".yaml"), content: YAML.load_file(f) }
-        end
+          next if !inst_type.nil? && inst_type != File.basename(f, ".yaml")
+          { name: File.basename(f, ".yaml"), contents: YAML.load_file(f) }
+        end.compact
+      raise if inst_types.empty?
 
       opcode_fields = {}
       inst_types.each do |itype|
-        itype[:content]["variables"].each_key do |itype_var_name|
+        itype[:contents]["variables"].each_key do |itype_var_name|
           opcode_fields["#{itype[:name]}:#{itype_var_name}"] =
             { type: itype, var: itype_var_name }
         end
@@ -160,7 +288,7 @@ module Udb
 
       var_types =
         Dir[Udb.repo_root / "spec" / "std" / "isa" / "inst_var_type" / "*.yaml"].map do |f|
-          { name: File.basename(f, ".yaml"), content: YAML.load_file(f) }
+          { name: File.basename(f, ".yaml"), contents: YAML.load_file(f) }
         end
       var_type = prompt.select \
         "What is the variable type?",
@@ -176,28 +304,12 @@ module Udb
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
 
-      CreatedFile.new(path: dest_path, contents: erb.result(binding))
+      CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
 
     sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname).returns(T::Array[CreatedFile]) }
     def self.create_inst_subtype(prompt, copyright, outdir)
       files = T.let([], T::Array[CreatedFile])
-
-      prompt.say <<~INFO
-        [INFO]
-          An instruction _type_ represents the general structure of an instruction encoding.
-          The type identifies where fixed _opcode_ fields occur (e.g., OP-32 in bits 6:0)
-          and where variable _operand_ fields occur (e.g., rd in bits 11:7).
-
-          Instruction _sub types_ refine instruction types by attaching semantic information to the
-          variable operand fields (e.g., field rd is an X destination register).
-
-          There are few instruction types (e.g., I, R, U, B, S)
-          but many instruction sub types (e.g., R-x, R-f, R-x-i)
-
-      INFO
-
-      prompt.say "With that in mind, let's get started.\n"
 
       types = Dir[Udb.repo_root / "spec" / "std" / "isa" / "inst_type" / "*.yaml"].map { |f| File.basename(f, ".yaml") }
       types << "Create new"
@@ -209,14 +321,16 @@ module Udb
       type_data =
         if type == "Create new"
           prompt.say "Ok. Let's get some information on the new instruction type"
-          files << CreationActions.create_inst_type(prompt, copyright)
+          files << CreationActions.create_inst_type(prompt, copyright, outdir)
           type = files.last.path.basename(".yaml")
           prompt.say "That's all I need for the instruction type. Back to the subtype:\n\n"
-          YAML.load(files.last.content)
+          puts files.last.contents
+          YAML.load(files.last.contents)
         else
           YAML.load_file(Udb.repo_root / "spec" / "std" / "isa" / "inst_type" / "#{type}.yaml")
         end
 
+      name = T.let(nil, T.nilable(String))
       loop do
         name = prompt.ask \
           "What is the subtype name? It should begin with the type name and then a dash (e.g., #{type_data["name"]}-new): ",
@@ -230,12 +344,10 @@ module Udb
         end
       end
 
-      prompt.say "[INFO] Instruction subtypes use the instruction type for opcode fields, so we only need information on the variables.\n"
-
       inst_vars = Dir[Udb.repo_root / "spec" / "std" / "isa" / "inst_var" / "*.yaml"].map do |f|
         var_name = File.basename(f, ".yaml")
         var_data = YAML.load_file(f)
-        [var_data["long_name"], var_name]
+        ["#{var_name.ljust(10)} (#{var_data["long_name"]})", var_name]
       end.to_h
       inst_vars["Create new kind of variable"] = "Create new"
       var_type_map = {}
@@ -247,7 +359,7 @@ module Udb
 
         if var_type == "Create new"
           prompt.say "Ok. Let's get some information on the new instruction variable type"
-          files << CreationActions.create_inst_var(prompt, copyright, outdir)
+          files << CreationActions.create_inst_var(prompt, copyright, outdir, type_data["name"])
           var_type = files.last.path.basename(".yaml")
           prompt.say "That's all I need for the instruction variable type. Back to the subtype variable.\n\n"
         end
@@ -263,7 +375,7 @@ module Udb
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
 
-      files << CreatedFile.new(path: dest_path, contents: erb.result(binding))
+      files << CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
   end
 
@@ -275,78 +387,67 @@ module Udb
       long_desc <<~DESC
         Creates a new extension file and populates fields based on interactive questions.
       DESC
+      method_option :dry_run, aliases: "-n", type: :string, lazy_default: "/dev/null", desc: "Write files to directory dry_run instead of the UDB databse"
       sig { void }
       def extension
         prompt = TTY::Prompt.new
 
         copyright = CreationActions.get_copyright(prompt)
 
-        schema_defs = CreationActions.schema_defs
-        spec_states = schema_defs["$defs"]["spec_state"]["enum"]
+        outdir = options[:dry_run].nil? ? Udb.repo_root / "spec" / "std" / "isa" : Pathname.new(options[:dry_run])
 
-        type = prompt.select \
-          "Is this a RISC-V standard extension or a custom extension?",
-          ["standard", "custom"], default: "standard"
+        file = CreationActions.create_extension(prompt, copyright, outdir)
 
-        name_regex =
-          if type == "standard"
-            /#{schema_defs["$defs"]["standard_extension_name"]["pattern"]}/
-          else
-            /#{schema_defs["$defs"]["custom_extension_name"]["pattern"]}/
-          end
-        name = prompt.ask \
-          "What is the extension name (e.g., Zibi)?",
-          validate: name_regex
-
-        state = prompt.select \
-          "What is the state of the extension?",
-          spec_states,
-          default: "development"
-
-        priv_type = prompt.select \
-          "Is this an unprivileged or privileged extension?",
-          ["unprivileged", "privileged"],
-          default: "unprivileged"
-
-        long_name = prompt.ask \
-          "What is a short description of the extension? (e.g., \"Bitmanipulation instructions\", \"Vector cryptography\", ...)",
-          required: true,
-          modify: [:trim]
-
-        version = prompt.ask \
-          "What is the initial version?",
-          validate: /#{schema_defs["$defs"]["rvi_version"]["pattern"]}/,
-          default: "0.1"
-
-        contributors = prompt.collect do
-          loop do
-            prompt.say "Who is the first contributor?"
-            key(:people).values do
-              key(:name).ask("Full name?", required: true, modify: [:trim])
-
-              key(:email).ask("Email?", validate: :email, modify: [:trim])
-
-              key(:company).ask("Company?", modify: [:trim])
-            end
-            break unless prompt.yes?("Add another contributor?")
-          end
-        end
-
-        template_path = Udb.gem_path / "lib" / "udb" / "templates" / "extension.yaml.erb"
-        dest_path =
-          if type == "standard"
-            Udb.repo_root / "spec" / "std" / "isa" / "ext" / "#{name}.yaml"
-          else
-            raise "TODO: custom extension"
-          end
-
-        erb = ERB.new(template_path.read, trim_mode: "-")
-        erb.filename = template_path.to_s
-
-        File.write dest_path, erb.result(binding)
+        File.write file.path, file.contents
 
         puts
-        puts "New file written to #{dest_path}"
+        puts "New file written to #{file.path}"
+      end
+
+      desc "instruction_type", "Create a new instruction type (e.g., R-type)"
+      long_desc <<~DESC
+        Creates a new instruction type and populates fields based on interactive questions.
+      DESC
+      method_option :dry_run, aliases: "-n", type: :string, lazy_default: "/dev/null", desc: "Write files to directory dry_run instead of the UDB databse"
+      sig { void }
+      def instruction_type
+        outdir = options[:dry_run].nil? ? Udb.repo_root / "spec" / "std" / "isa" : Pathname.new(options[:dry_run])
+        prompt = TTY::Prompt.new(input:, output:, env: { "TTY_TEST" => true })
+
+        intro_text = <<~INTRO
+          Instruction types are generic formats that instructions follow.
+          They are described in the RISC-V ISA Manual as R-type, I-type, etc.
+
+          In UDB, an instruction type identifies where fixed opcodes and variable operands are located.
+
+          An instruction _sub type_ further refines encoding fields by adding semantic information
+          to operands. For example, that type field 'rd' is an X destination register.
+
+          Press any key to continue
+        INTRO
+        intro_box = TTY::Box.frame(intro_text, padding: 3, title: { top_left: "Intro" }, style: { fg: :white, bg: :blue })
+        print prompt.cursor.clear_screen
+        print prompt.cursor.move_to
+        print intro_box
+        prompt.keypress
+        print prompt.clear_lines(17)
+
+        copyright = CreationActions.get_copyright(prompt)
+
+        file = CreationActions.create_inst_type(prompt, copyright, outdir)
+
+        File.write file.path, file.contents
+
+        prompt.say "\nBased on your answers, I've created the following file:"
+        prompt.say "   #{file.path}"
+
+        unless file.next_steps.empty?
+          prompt.say
+          prompt.say "Next steps include:"
+          file.next_steps.each do |step|
+            prompt.say "  - #{step}"
+          end
+        end
       end
 
       desc "instruction", "Create a new instruction template"
@@ -357,32 +458,54 @@ module Udb
       sig { void }
       def instruction
         outdir = options[:dry_run].nil? ? Udb.repo_root / "spec" / "std" / "isa" : Pathname.new(options[:dry_run])
-        $stderr.puts "outdir = #{outdir}"
         input = self.options.key?("input") ? self.options.fetch("input") : $stdin
         output = self.options.key?("output") ? self.options.fetch("output") : $stdout
         prompt = TTY::Prompt.new(input:, output:, env: { "TTY_TEST" => true })
+        next_steps = T.let([], T::Array[String])
+
+        intro_text = <<~INTRO
+          To create an instruction, you will provide attributes such as the defining extension,
+          encoding format, access rights, etc.
+
+          Some of the attributes, like extensions, are top-level UDB objects themselves.
+          If you need to create any of them along the way, the prompts will guide you.
+
+          Press any key to continue
+        INTRO
+        intro_box = TTY::Box.frame(intro_text, padding: 3, title: { top_left: "Intro" }, style: { fg: :white, bg: :blue })
+        print prompt.cursor.clear_screen
+        print prompt.cursor.move_to
+        print intro_box
+        prompt.keypress
+        print prompt.clear_lines(17)
 
         files = T.let([], T::Array[CreationActions::CreatedFile])
         schema_defs = CreationActions.schema_defs
 
         copyright = CreationActions.get_copyright(prompt)
 
-        $stderr.puts copyright
 
         mnemonic = prompt.ask \
           "What is the instruction mnemonic?",
           required: true,
           validate: /#{schema_defs.fetch("$defs").fetch("inst_mnemonic").fetch("pattern")}/
 
-        ext_name = prompt.ask \
-          "What extension defines this instruction? If more than one, or if it is dependent on a parameter, you can edit the template later." do |q|
-            q.validate do |name|
-              (name =~ %r{#{schema_defs["$defs"]["standard_extension_name"]["pattern"]}} || name =~ %r{#{schema_defs["$defs"]["custom_extension_name"]["pattern"]}}) && \
-                (Dir[Udb.repo_root / "spec" / "**" / "ext" / "#{name}.yaml"].size == 1)
-            end
-            q.messages[:valid?] = "Invalid extension '%{value}'. The extension must be a valid extension name and exist in the database"
-          end
+        prompt.clear_lines 2
 
+        extension_list = ["Create new"]
+        Dir.glob(Udb.repo_root / "spec" / "std" / "isa" / "ext" / "*.yaml") do |f|
+          extension_list << File.basename(f, ".yaml")
+        end
+
+        ext_name = prompt.select \
+          "What extension  defines this instruction? If more than one, or if it is dependent on a parameter, you can edit the template later.",
+          extension_list,
+          filter: true
+
+        if ext_name == "Create new"
+          files.append CreationActions.create_extension(prompt, copyright, outdir)
+          ext_name = files.last.path.basename(".yaml")
+        end
 
         long_name = prompt.ask \
           "What is a short description of the instruction? (e.g., \"Unsigned add\", \"Shift logical left immediate\", ...)",
@@ -396,8 +519,33 @@ module Udb
 
         data_independent_timing = prompt.yes?("Is this instruction required to have data-independent timing when extension Zkt and/or Zvkt is used?")
 
-        subtypes = Dir[Udb.repo_root / "spec" / "**" / "isa" / "inst_subtype" / "**" / "*.yaml"].map { |f| File.basename(f, ".yaml") }
-        subtypes << "Create new"
+        subtypes = { "Create new" => "Create new" }
+        Dir.glob(Udb.repo_root / "spec" / "**" / "isa" / "inst_subtype" / "**" / "*.yaml") do |f|
+          subtype_contents = YAML.load_file(f)
+          subtype_name = subtype_contents["name"]
+          subtypes["#{subtype_name.ljust(10)} (#{subtype_contents["long_name"]})"] = subtype_name
+        end
+
+        type_subtype_info = <<~INFO
+          Next, you will identify the instruction _subtype_, which points to an instruction _type_.
+
+          An instruction _type_ represents the general structure of an instruction encoding:
+            - where fixed _opcode_ fields occur (e.g., OP-32 in bits 6:0)
+            - where variable _operand_ fields occur (e.g., rd in bits 11:7).
+
+          An instruction _sub type_ is a child of an instruction _type_ that attaches semantic
+          information to the variable operands (e.g., rd is an X destination register).
+
+          There are few instruction types (e.g., I, R, U, B, S)
+          but many instruction sub types (e.g., R-x, R-f, R-x-i)
+
+          Press any key to continue
+        INFO
+
+        subtype_box = TTY::Box.frame(type_subtype_info, padding: 1, title: { top_left: "Subtypes" }, style: { fg: :white, bg: :blue })
+        print subtype_box
+        prompt.keypress
+        print prompt.clear_lines(19)
 
         subtype = prompt.select \
           "What is the subtype of the instruction format?",
@@ -432,11 +580,33 @@ module Udb
           end
         end
         type_name = type_contents["name"]
-        subtype_name = type_contents["name"]
+        subtype_name = subtype_contents["name"]
+
+        opcode_info = <<~INFO
+          The #{subtype_name} subtype has #{type_contents.fetch("opcodes").size} opcodes and #{subtype_contents.fetch("data").fetch("variables").size} variables.
+
+          Everything needed for variables is provided by the subtype.
+
+          For opcodes, you will provide a _display name_ for documentation (such as encoding diagrams)
+          and a specific _value_ for the instruction.
+
+          We distinguish between two classes of opcodes:
+            - Those that are shared by multiple instructions (e.g., OP, OP-32 in encoding[6:0])
+            - Those that are specific to an instruction (e.g., ADDI in encoding[14:12])
+
+          Common opcodes become their own object in the database and referenced by instructions.
+          The specific opcodes are defined directly in the instruction, and do not elevate to a
+          top-level database object.
+
+          Press any key to continue
+        INFO
+
+        opcode_box = TTY::Box.frame(opcode_info, padding: 1, title: { top_left: "Opcodes" }, style: { fg: :white, bg: :blue })
+        print opcode_box
+        prompt.keypress
+        print prompt.clear_lines(22)
 
         opcodes = {}
-        $stderr.puts type_name
-        $stderr.puts type_contents.fetch("opcodes")
         type_contents.fetch("opcodes").each do |opcode_name, opcode_data|
           opcode_type = prompt.select \
             "Is opcode '#{opcode_name}' a common/shared value among instructions (e.g., OP-32), or is it unique to this instrction (e.g., ADDI)?",
@@ -470,6 +640,11 @@ module Udb
               "What is the value of '#{opcode_name}' for '#{mnemonic}', as a binary value (e.g., 001101)? If you don't know, just hit enter.",
               validate: /^[01]*$/
 
+            if value.nil?
+              value = "0 # TODO: Replace with actual value"
+              next_steps << "Fill in the actual value of opcode '#{opcode_name}'"
+            end
+
             opcodes[opcode_name] = { display_name:, value: }
           end
         end
@@ -481,16 +656,28 @@ module Udb
         erb = ERB.new(template_path.read, trim_mode: "-")
         erb.filename = template_path.to_s
 
-        files << CreationActions::CreatedFile.new(path: dest_path, contents: erb.result(binding))
+        files << CreationActions::CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps:)
 
         files.each do |f|
           FileUtils.mkdir_p f.path.dirname
           File.write f.path, f.contents
         end
 
-        prompt.say "\nBased on your answers, I've created the following file(s):"
+        prompt.ok "\nBased on your answers, I've created the following file(s):"
         files.each do |f|
-          prompt.say "   #{f.path}"
+          prompt.say "   - #{f.path}"
+        end
+
+        unless files.all? { |f| f.next_steps.empty? }
+          prompt.say "\n\n"
+          prompt.warn "NEXT STEPS"
+          files.each do |f|
+            next if f.next_steps.empty?
+            prompt.say "  In #{f.path}:"
+            f.next_steps.each do |step|
+              prompt.say "    - #{step}"
+            end
+          end
         end
       end
     end

@@ -16,7 +16,7 @@ opcodes:
 <%- unless variables.empty? %>
 variables:
   <%- variables.each do |variable| %>
-  <%= variable.name %>
+  <%= variable.name %>:
     location: <%= variable.location %>
   <%- end -%>
 <%- end -%>

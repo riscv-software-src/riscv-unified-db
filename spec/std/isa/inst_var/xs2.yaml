@@ -6,7 +6,7 @@
 $schema: inst_var_schema.json#
 kind: instruction_variable
 name: xs2
-long_name: X source register index in encoding bits 24:20 (xs2)
+long_name: X source register index in encoding bits 24:20
 
 data:
   $inherits: inst_type/R.yaml#/variables/rs2

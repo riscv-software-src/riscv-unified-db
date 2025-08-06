@@ -6,6 +6,7 @@
 $schema: inst_subtype_schema.json#
 kind: instruction_subtype
 name: R-x
+long_name: R-type instruction with 2 X sources and 1 X destination
 
 data:
   type: { "$ref": "inst_type/R.yaml#" }
