@@ -63,7 +63,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:and"]
+    normative_rules: [cr_rs1_rs2_edges]
+
   - name: and_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:and_or_xor:operation"]
+    normative_rules: [cr_rs1_rs2_edges]

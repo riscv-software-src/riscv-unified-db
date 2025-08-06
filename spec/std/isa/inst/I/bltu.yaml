@@ -80,8 +80,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:bltu"]
+    coverage_points: [cp_offset]
 
   - name: bltu_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:blt_bltu:operation"]
+    coverage_points: [cp_offset]

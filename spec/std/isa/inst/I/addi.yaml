@@ -58,11 +58,16 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:addi"]
+    coverage_points: [cr_rs1_imm_edges]
+
   - name: addi_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:addi:operation"]
+    coverage_points: [cr_rs1_imm_edges]
+
   - name: addi_overflow
     type: instruction
     description: Treatment of overflow
     doc_links: ["norm:inst:addi:overflow"]
+    coverage_points: [cr_rs1_imm_edges]

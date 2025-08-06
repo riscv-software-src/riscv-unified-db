@@ -71,13 +71,16 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:jal"]
+    normative_rules: [cp_imm_edges_jal]
 
   - name: jal_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:jal:operation"]
+    normative_rules: [cp_imm_edges_jal]
 
   - name: jal_target
     type: instruction
     description: Target
     doc_links: ["norm:inst:jal:target"]
+    normative_rules: [cp_imm_edges_jal]

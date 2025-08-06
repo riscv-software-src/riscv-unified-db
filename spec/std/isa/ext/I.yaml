@@ -24,29 +24,29 @@ normative_rules:
     doc_links: ["norm:basegrp:all:R-type_operands"]
     coverage_points: [cp_rs1, cp_rs2, cp_rd, cp_rs1_edges]
 
-  #basegrp
+  - name: x0eq0
+    type: extension
+    description: All X0eq0
+    doc_links: ["norm:basegrp:all:x0eq0"]
+    coverage_points: [cp_rs1, cp_rs2, cp_rd]
 
   - name: imm_always_sex
     type: extension
     description: place holder
     doc_links: ["norm:basegrp:all:imm_always_sex"]
+    coverage_points: [cp_imm_edges]
 
   - name: pcreg
     type: extension
     description: All PCREG
     doc_links: ["norm:basegrp:all:pcreg"]
+    coverage_points: [cp_imm_edges]
 
   - name: rv32_xregwidth
     type: extension
     description: rv32 xregwidth
     doc_links: ["norm:basegrp:rv32:xregwidth"]
     # TODO: add "when" statement saying XLEN == 32
-
-  - name: x0eq0
-    type: extension
-    description: All X0eq0
-    doc_links: ["norm:basegrp:all:x0eq0"]
-    coverage_points: [cp_rs1, cp_rs2, cp_rd]
 
   - name: rv32i_rv64i_other_xregs
     type: extension
@@ -83,6 +83,7 @@ normative_rules:
     type: instruction
     description: LS effective address
     doc_links: ["norm:instgrp:load_store:ea"]
+    coverage_points: [cp_imm_edges]
     # TODO: add "when" statement referencing the load/store instruction group
 
   - name: endian_byte_invariant
@@ -119,12 +120,14 @@ normative_rules:
     type: instruction
     description: Load operation
     doc_links: ["norm:instgrp:load:operation"]
+    coverage_points: [cp_rd]
     # TODO: add "when" statement referencing the load instruction group
 
   - name: st_op
     type: instruction
     description: Store operation
     doc_links: ["norm:instgrp:store:operation"]
+    coverage_points: [cp_rs2]
     # TODO: add "when" statement referencing the store instruction group
 
   - name: add_sub_overflow
@@ -199,6 +202,7 @@ normative_rules:
     description: Misaligned ldst invisible trap
     doc_links: ["norm:param:I:misaligned_ldst:invisible_trap"]
 
+# Basic unprivileged coverage points
 # TODO: Add "when" statements listing instructions or instruction groups that apply to each coverage point.
 coverage_points:
   - name: cp_asm_count
@@ -252,3 +256,44 @@ coverage_points:
   - name: cp_gpr_hazard
     bins: 4
     description: "General-purpose register hazard detection: RAW, WAR, WAW, and no hazard."
+
+# Modified coverage points for the I extension
+# TODO: Add "when" statements listing instructions or instruction groups that apply to each coverage point.
+  - name: cp_rs1_nx0
+    bins: 31
+    description: |
+      The rs1 register number used in the instruction, excluding x0.  x0 is hardwired to 0, which
+      results in potentially access faults for loads, stores, and jalr.
+  - name: cmp_rd_rs1_nx0
+    bins: 31
+    description: "See cp_rs1_nx0"
+  - name: cp_offset_jalr
+    bins: 6
+    description: "cp_offset + 2*2 combinations of rs1_val[0] and imm[0] affecting lsb of jalr address"
+  - name: cp_uimm_5
+    bins: 32
+    description: "5-bit unsigned immediate shift amount for {slliw/srliw/sraiw}"
+  - name: cp_imm_edges_20bit
+    bins: 27
+    description: "20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`."
+  - name: cp_imm_edges_jal
+    bins: 23
+    description: |
+      20-bit positive and negative jump offsets for `jal`.
+      Note that testing the full 20-bit range takes a large amount of program memory,
+      so tests may cover a subset of this range.
+  - name: cp_gpr_hazard_r
+    bins: 2
+    description: "RAR and no hazard for instructions that only write a register"
+  - name: cp_gpr_hazard_w
+    bins: 3
+    description: "WAW, WAR and no hazard for instructions that only write a register"
+  - name: cp_gpr_hazard_rw
+    bins: 4
+    description: "RAW, WAW, WAR and no hazard for instructions that read and write registers"
+  - name: cp_align_{byte/hword/word}
+    bins: 8/4/2
+    description: "Alignment of naturally-aligned load/store operand within doubleword in memory"
+  - name: cp_custom_fence
+    bins: 3
+    description: "Test that fence, fence rw,rw, and fence.tso all execute without trapping."

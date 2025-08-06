@@ -79,13 +79,16 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:jalr"]
+    normative_rules: [cp_offset_jalr, cp_rd, cp_imm_edges]
 
   - name: jalr_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:jalr:operation"]
+    normative_rules: [cp_offset_jalr, cp_rd, cp_imm_edges]
 
   - name: jalr_target
     type: instruction
     description: Target
     doc_links: ["norm:inst:jalr:target"]
+    normative_rules: [cp_offset_jalr, cp_rd, cp_imm_edges]

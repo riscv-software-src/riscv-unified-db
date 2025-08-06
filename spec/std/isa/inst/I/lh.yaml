@@ -75,3 +75,4 @@ normative_rules:
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:lh:operation"]
+    coverage_points: [cp_rd]

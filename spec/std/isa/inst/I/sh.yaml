@@ -89,3 +89,4 @@ normative_rules:
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:sw_sh_sb:operation"]
+    coverage_points: [cp_rs2_edges]

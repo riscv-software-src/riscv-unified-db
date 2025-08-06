@@ -58,7 +58,7 @@ class NormativeRule
   end
 
   # This can be called before all the coverage point objects have been created.
-  # @return [Array<String>] Sorted list of coverage points names referenced by this normative rule
+  # @return [Array<String>] List of coverage points names referenced by this normative rule
   def coverage_point_names
     return @coverage_point_names unless @coverage_point_names.nil?
 

@@ -56,7 +56,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:andi"]
+    coverage_points: [cr_rs1_imm_edges]
+
   - name: andi_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:andi_ori_xori:operation"]
+    coverage_points: [cr_rs1_imm_edges]

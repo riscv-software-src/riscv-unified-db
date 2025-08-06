@@ -68,8 +68,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:slli"]
+    coverage_points: [cr_rs1_imm_edges, cp_uimm]
 
   - name: slli_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:slli:operation"]
+    coverage_points: [cr_rs1_imm_edges, cp_uimm]

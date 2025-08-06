@@ -246,6 +246,7 @@ normative_rules:
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:fence:operation"]
+    coverage_points: [cp_asm_count]
 
   - name: fence_cons_okay
     type: instruction

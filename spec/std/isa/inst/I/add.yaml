@@ -65,7 +65,10 @@ normative_rules:
     type: instruction
     description: Encoding
     doc_links: ["norm:enc:insttable:add"]
+    normative_rules: [cr_rs1_rs2_edges]
+
   - name: add_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:add:operation"]
+    normative_rules: [cr_rs1_rs2_edges]
