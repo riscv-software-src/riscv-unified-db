@@ -49,7 +49,7 @@ class DatabaseObject
   attr_reader :long_name
 
   sig { returns(String) }
-  def kind = @kind.to_s
+  def kind = @kind.serialize
 
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
