@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -70,7 +71,6 @@ class TestCli < Minitest::Test
     assert_empty err
     repo_top = Udb.repo_root
     num_csr_yaml_files = `find #{repo_top}/spec/std/isa/csr/ -name '*.yaml' | wc -l`.to_i
-    puts num_csr_yaml_files
     assert_equal num_csr_yaml_files, out.split.length
   end
 
