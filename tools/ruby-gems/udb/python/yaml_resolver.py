@@ -560,6 +560,7 @@ def write_resolved_file_and_validate(
 ):
     resolved_path = os.path.join(resolved_dir, rel_path)
     resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+    resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
     write_yaml(resolved_path, resolved_obj)
 
     if do_checks and ("$schema" in resolved_obj):
