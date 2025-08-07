@@ -2970,7 +2970,12 @@ module Idl
         end
       else
         value_result = value_try do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
+          if @for_iter_var
+            # don't add the value, because it will change across iterations
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
+          else
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
+          end
         end
         value_else(value_result) do
           symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
