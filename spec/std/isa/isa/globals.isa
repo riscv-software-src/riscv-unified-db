@@ -35,14 +35,18 @@ Bits<67> ILLEGAL_WLRL = 67'h40000000000000000;
 # maximum instruction encoding size
 U32 INSTR_ENC_SIZE = 32;
 
-# encoded as defined in the privilege spec
+# encoding defined by concatenation of { D, MPV, MPP }:
+# - D  : debug mode  (1b)
+# - MPV: mstatus.MPV (1b)
+# - MPP: mstatus.MPP (2b)
 enum PrivilegeMode {
-  M  0b011
-  S  0b001
-  HS 0b001 # alias for S when H extension is used
-  U  0b000
-  VS 0b101
-  VU 0b100
+  M  0b0011
+  S  0b0001
+  HS 0b0001 # alias for S when H extension is used
+  U  0b0000
+  VS 0b0101
+  VU 0b0100
+  D  0b1011
 }
 
 enum MemoryOperation {
