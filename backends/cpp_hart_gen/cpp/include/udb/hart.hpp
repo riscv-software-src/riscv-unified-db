@@ -169,7 +169,8 @@ namespace udb {
       m_soc.fence(pi, pr, po, pw, si, sr, so, sw);
     }
     void fence_tso() { m_soc.fence_tso(); }
-    void ifence() { m_soc.ifence(); }
+    virtual void ifence() { m_soc.ifence(); }
+
     template <typename... Args>
     void order_pgtbl_writes_before_vmafence(Args...) {
       // TODO: pass along order info (not easy now because VmaOrderType is

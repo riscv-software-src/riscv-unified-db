@@ -3,7 +3,7 @@
 $schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
 kind: architecture configuration
 type: fully configured
-name: MC100-32-Full
+name: MC100-32-riscv-tests
 description: An example MC100-32-compliant full config for riscv-tests
 implemented_extensions:
   - [Sm, "1.11.0"]
@@ -16,6 +16,7 @@ implemented_extensions:
   - [S, "1.11.0"]
   - [Smpmp, "1.11.0"]
   - [U, "1.0.0"]
+  - [Zifencei, "2.0.0"]
 
 params:
   MXLEN: 32

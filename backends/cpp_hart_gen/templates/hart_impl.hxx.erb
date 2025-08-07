@@ -142,11 +142,12 @@ namespace udb {
           m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
           inst->execute();
+
+          advance_pc();
           if (this->m_exit_requested) {
-            this->m_exit_requested = false; // reset the request
+            this->m_exit_requested = false;  // reset the request
             break;
           }
-          advance_pc();
         }
       } else {
         // miss, need to create the bb
@@ -174,12 +175,11 @@ namespace udb {
             fmt::print("R= {} {:x}\n", r.to_string(), _xreg(r.get_num()));
           }
 
+          advance_pc();
           if (this->m_exit_requested) {
             this->m_exit_requested = false; // reset the request
             break;
           }
-
-          advance_pc();
         } while (!(current_bb->full() || inst->control_flow()));
       }
     } catch (const AbortInstruction& e) {

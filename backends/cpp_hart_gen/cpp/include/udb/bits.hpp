@@ -2976,7 +2976,31 @@ namespace udb {
       }
     }
 
-    void apply_mask() { m_val = m_val & _RuntimeBits<MaxN, false>{mask(), m_width}; }
+    bool needs_mask() const {
+      if constexpr (MaxN > BitsMaxNativePrecision) {
+        if (m_width == BitsInfinitePrecision) {
+          // special case: we store infinite numbers with their sign
+          return false;
+        } else {
+          // gmp storage, without upper bound, so everything needs masked
+          return true;
+        }
+      } else {
+        if (m_width == (sizeof(StorageType) * 8)) {
+          // we fit exactly in our native storage
+          return false;
+        } else {
+          // using native storage, but there are unused bits
+          return true;
+        }
+      }
+    }
+
+    void apply_mask() {
+      if(needs_mask()) {
+        m_val = m_val & _RuntimeBits<MaxN, false>{mask(), m_width};
+      }
+    }
 
    public:
     // used for template concept resolution

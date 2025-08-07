@@ -464,6 +464,11 @@ namespace udb {
 
     uint64_t fetch() override { return _fetch().get(); }
     PossiblyUnknownBits<INSTR_ENC_SIZE.get()> _fetch();
+    void ifence() override {
+      m_bb_cache.invalidate();
+      HartBase<SocType>::ifence();
+      this->m_exit_requested = true;
+    }
 
     <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const PossiblyUnknownBits<64>& vaddr, const MemoryOperation& op) const {
       <%- if cfg_arch.symtab.get("CachedTranslationResult").runtime? -%>
