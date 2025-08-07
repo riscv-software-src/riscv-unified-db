@@ -295,13 +295,11 @@ def load_instructions(
                 continue
 
             match_str = encoding_to_use.get("match") if encoding_to_use else None
-            mask_str = encoding_to_use.get("mask") if encoding_to_use else None
 
             if not match_str:
                 subtype = data.get("subtype", {})
                 if isinstance(subtype, dict):
                     match_str = subtype.get("match")
-                    mask_str = subtype.get("mask")
                     if match_str:
                         logging.debug(f"Using subtype.match for instruction {name}")
 
@@ -312,11 +310,6 @@ def load_instructions(
                 continue
 
             entry = {"match": match_str}
-            if mask_str:
-                entry["mask"] = mask_str
-            else:
-                logging.debug(f"No mask found for instruction {name}")
-
             instr_dict[instr_key] = entry
 
     if found_instructions > 0:
