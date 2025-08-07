@@ -1,0 +1,671 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: scountinhibit
+long_name: Supervisor Counter-Inhibit Register
+address: 0x120
+writable: true
+priv_mode: S
+description: |
+  For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed
+  via `scountinhibit`. For counters not delegated to S-mode, the associated bits in
+  `scountinhibit` are read-only zero.
+length: SXLEN
+definedBy: Smcdeleg
+fields:
+  CY:
+    location: 0
+    description: |
+      Cycle inhibit. When 1, the cycle counter does not increment. Only meaningful if
+      mcycle is delegated to S-mode; otherwise reads as 0.
+    type(): |
+      return (CSR[menvcfg].CDE = 1'b1 && CSR[mcounteren].CY == 1'b1) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.CY
+      }
+  IR:
+    location: 2
+    description: |
+      Instructions-retired inhibit. When 1, the instret counter does not increment. Only
+      meaningful if minstret is delegated to S-mode; else reads 0.
+    type(): |
+      return (CSR[menvcfg].CDE = 1'b1 && CSR[mcounteren].IR == 1'b1) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.IR
+      }
+  HPM3:
+    location: 3
+    description: |
+      [when="COUNTINHIBIT_EN[3] == true"]
+      When bit is set `hpmcounter3.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[3] == false"]
+      Since hpmcounter3 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[3] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[3] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM3
+      }
+  HPM4:
+    location: 4
+    description: |
+      [when="COUNTINHIBIT_EN[4] == true"]
+      When bit is set `hpmcounter4.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[4] == false"]
+      Since hpmcounter4 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[4] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[4] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM4
+      }
+  HPM5:
+    location: 5
+    description: |
+      [when="COUNTINHIBIT_EN[5] == true"]
+      When bit is set `hpmcounter5.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[5] == false"]
+      Since hpmcounter5 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[5] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[5] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM5
+      }
+  HPM6:
+    location: 6
+    description: |
+      [when="COUNTINHIBIT_EN[6] == true"]
+      When bit is set `hpmcounter6.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[6] == false"]
+      Since hpmcounter6 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[6] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[6] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM6
+      }
+  HPM7:
+    location: 7
+    description: |
+      [when="COUNTINHIBIT_EN[7] == true"]
+      When bit is set `hpmcounter7.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[7] == false"]
+      Since hpmcounter7 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[7] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[7] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM7
+      }
+  HPM8:
+    location: 8
+    description: |
+      [when="COUNTINHIBIT_EN[8] == true"]
+      When bit is set `hpmcounter8.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[8] == false"]
+      Since hpmcounter8 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[8] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[8] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM8
+      }
+  HPM9:
+    location: 9
+    description: |
+      [when="COUNTINHIBIT_EN[9] == true"]
+      When bit is set `hpmcounter9.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[9] == false"]
+      Since hpmcounter9 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[9] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[9] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM9
+      }
+  HPM10:
+    location: 10
+    description: |
+      [when="COUNTINHIBIT_EN[10] == true"]
+      When bit is set `hpmcounter10.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[10] == false"]
+      Since hpmcounter10 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[10] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[10] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM10
+      }
+  HPM11:
+    location: 11
+    description: |
+      [when="COUNTINHIBIT_EN[11] == true"]
+      When bit is set `hpmcounter11.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[11] == false"]
+      Since hpmcounter11 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[11] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[11] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM11
+      }
+  HPM12:
+    location: 12
+    description: |
+      [when="COUNTINHIBIT_EN[12] == true"]
+      When bit is set `hpmcounter12.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[12] == false"]
+      Since hpmcounter12 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[12] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[12] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM12
+      }
+  HPM13:
+    location: 13
+    description: |
+      [when="COUNTINHIBIT_EN[13] == true"]
+      When bit is set `hpmcounter13.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[13] == false"]
+      Since hpmcounter13 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[13] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[13] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM13
+      }
+  HPM14:
+    location: 14
+    description: |
+      [when="COUNTINHIBIT_EN[14] == true"]
+      When bit is set `hpmcounter14.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[14] == false"]
+      Since hpmcounter14 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[14] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[14] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM14
+      }
+  HPM15:
+    location: 15
+    description: |
+      [when="COUNTINHIBIT_EN[15] == true"]
+      When bit is set `hpmcounter15.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[15] == false"]
+      Since hpmcounter15 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[15] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[15] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM15
+      }
+  HPM16:
+    location: 16
+    description: |
+      [when="COUNTINHIBIT_EN[16] == true"]
+      When bit is set `hpmcounter16.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[16] == false"]
+      Since hpmcounter16 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[16] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[16] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM16
+      }
+  HPM17:
+    location: 17
+    description: |
+      [when="COUNTINHIBIT_EN[17] == true"]
+      When bit is set `hpmcounter17.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[17] == false"]
+      Since hpmcounter17 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[17] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[17] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM17
+      }
+  HPM18:
+    location: 18
+    description: |
+      [when="COUNTINHIBIT_EN[18] == true"]
+      When bit is set `hpmcounter18.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[18] == false"]
+      Since hpmcounter18 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[18] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[18] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM18
+      }
+  HPM19:
+    location: 19
+    description: |
+      [when="COUNTINHIBIT_EN[19] == true"]
+      When bit is set `hpmcounter19.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[19] == false"]
+      Since hpmcounter19 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[19] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[19] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM19
+      }
+  HPM20:
+    location: 20
+    description: |
+      [when="COUNTINHIBIT_EN[20] == true"]
+      When bit is set `hpmcounter20.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[20] == false"]
+      Since hpmcounter20 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[20] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[20] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM20
+      }
+  HPM21:
+    location: 21
+    description: |
+      [when="COUNTINHIBIT_EN[21] == true"]
+      When bit is set `hpmcounter21.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[21] == false"]
+      Since hpmcounter21 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[21] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[21] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM21
+      }
+  HPM22:
+    location: 22
+    description: |
+      [when="COUNTINHIBIT_EN[22] == true"]
+      When bit is set `hpmcounter22.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[22] == false"]
+      Since hpmcounter22 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[22] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[22] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM22
+      }
+  HPM23:
+    location: 23
+    description: |
+      [when="COUNTINHIBIT_EN[23] == true"]
+      When bit is set `hpmcounter23.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[23] == false"]
+      Since hpmcounter23 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[23] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[23] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM23
+      }
+  HPM24:
+    location: 24
+    description: |
+      [when="COUNTINHIBIT_EN[24] == true"]
+      When bit is set `hpmcounter24.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[24] == false"]
+      Since hpmcounter24 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[24] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[24] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM24
+      }
+  HPM25:
+    location: 25
+    description: |
+      [when="COUNTINHIBIT_EN[25] == true"]
+      When bit is set `hpmcounter25.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[25] == false"]
+      Since hpmcounter25 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[25] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[25] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM25
+      }
+  HPM26:
+    location: 26
+    description: |
+      [when="COUNTINHIBIT_EN[26] == true"]
+      When bit is set `hpmcounter26.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[26] == false"]
+      Since hpmcounter26 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[26] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[26] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM26
+      }
+  HPM27:
+    location: 27
+    description: |
+      [when="COUNTINHIBIT_EN[27] == true"]
+      When bit is set `hpmcounter27.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[27] == false"]
+      Since hpmcounter27 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[27] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[27] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM27
+      }
+  HPM28:
+    location: 28
+    description: |
+      [when="COUNTINHIBIT_EN[28] == true"]
+      When bit is set `hpmcounter28.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[28] == false"]
+      Since hpmcounter28 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[28] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[28] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM28
+      }
+  HPM29:
+    location: 29
+    description: |
+      [when="COUNTINHIBIT_EN[29] == true"]
+      When bit is set `hpmcounter29.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[29] == false"]
+      Since hpmcounter29 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[29] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[29] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM29
+      }
+  HPM30:
+    location: 30
+    description: |
+      [when="COUNTINHIBIT_EN[30] == true"]
+      When bit is set `hpmcounter30.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[30] == false"]
+      Since hpmcounter30 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[30] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[30] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.30
+      }
+  HPM31:
+    location: 31
+    description: |
+      [when="COUNTINHIBIT_EN[31] == true"]
+      When bit is set `hpmcounter31.COUNT` does not increment; when 0, it increments normally.
+
+      [when="COUNTINHIBIT_EN[31] == false"]
+      Since hpmcounter31 is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[31] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[31] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+                 (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      } else {
+        return csr_value.HPM31
+      }
+sw_read(): |
+  if ((mode() == PrivilegeMode::M && CSR[menvcfg].CDE == 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() == PrivilegeMode::VS && CSR[menvcfg].CDE == 1'b1) ||
+             (mode() == PrivilegeMode::VU && CSR[menvcfg].CDE == 1'b1)) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }

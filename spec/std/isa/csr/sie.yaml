@@ -1,0 +1,82 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sie
+long_name: Supervisor Interrupt Enable
+address: 0x104
+writable: true
+priv_mode: S
+description: |
+  `sie` is the read/write register containing interrupt enable bits. Interrupt cause
+  number i as reported in CSR scause corresponds with bit i in both `sip` and `sie`.
+
+  An interrupt i will trap to S-mode if both of the following are true:
+    (a) Either the current privilege mode is S and the SIE bit in the sstatus register
+    is set, or the current privilege mode has less privilege than S-mode.
+    (b) Bit i is set in both `sip` and `sie`.
+
+  These conditions for an interrupt trap to occur must be evaluated in a bounded amount
+  of time from when an interrupt becomes, or ceases to be, pending in sip , and must
+  also be evaluated immediately following the execution of an SRET instruction or an
+  explicit write to a CSR on which these interrupt trap conditions expressly depend
+  (including `sip`, `sie` and `sstatus`).
+
+  Interrupts to S-mode take priority over any interrupts to lower privilege modes.
+  A bit in sie must be writable if the corresponding interrupt can ever become pending.
+  Bits of `sie` that are not writable are read-only zero.
+
+  Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented, in which
+  case the corresponding interrupt-pending and interrupt-enable bits are read-only zeros.
+  All bits in sip and sie are WARL fields. The implemented interrupts may be found by
+  writing one to every bit location in sie, then reading back to see which bit positions
+  hold a one.
+
+  [NOTE]
+  The sie register is subsets of the mie register. Reading any implemented field, or
+  writing any writable field, of sie effects a read or write of the homonymous field
+  of mie.
+length: SXLEN
+definedBy: S
+fields:
+  SSIE:
+    location: 1
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias:
+      - mie.SSIE
+    definedBy: S
+    description: |
+      sie.SSIE is the interrupt-enable bit for supervisor-level software interrupts.
+  STIE:
+    location: 5
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias:
+      - mie.STIE
+    definedBy: S
+    description: |
+      sie.STIE is the interrupt-enable bit for supervisor-level timer interrupts.
+  SEIE:
+    location: 9
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias:
+      - mie.SEIE
+    definedBy: S
+    description: |
+      sie.SEIE is the interrupt-enable bit for supervisor-level external interrupts.
+  LCOFIE:
+    location: 13
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias:
+      - mie.LCOFIE
+    description: |
+      If the Sscofpmf extension is implemented, bit sie.LCOFIE is the interrupt-enable
+      bit for local-counter-overflow interrupts. If the Sscofpmf extension is not
+      implemented, sie.LCOFIE is read-only zeros.
+    definedBy: Sscofpmf
