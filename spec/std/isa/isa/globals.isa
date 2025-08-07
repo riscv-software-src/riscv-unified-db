@@ -2569,8 +2569,8 @@ function read_memory {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
         Bits<LEN> result = 0;
-        for (U32 i = 0; i <= (LEN/8); i++) {
-          result = result | (read_memory_aligned<8>(virtual_address + i, encoding) << (8*i));
+        for (U32 I = 0; I <= (LEN/8); I++) {
+          result = result | (read_memory_aligned<8>(virtual_address + I, encoding) << (8*I));
         }
         return result;
       } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {

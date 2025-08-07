@@ -510,6 +510,8 @@ module Idl
     def execute_unknown(symtab); end
   end
 
+  ExecutableAst = T.type_alias { T.all(Executable, AstNode) }
+
   # interface for nodes that *might* return a value in a function body
   module Returns
     extend T::Sig
@@ -1998,8 +2000,11 @@ module Idl
       end
     end
 
-    def lhs = @children[0]
-    def rhs = @children[1]
+    sig { returns(IdAst) }
+    def lhs = T.cast(@children.fetch(0), IdAst)
+
+    sig { returns(RvalueAst) }
+    def rhs = T.cast(@children.fetch(1), RvalueAst)
 
     def initialize(input, interval, lhs_ast, rhs_ast)
       super(input, interval, [lhs_ast, rhs_ast])
@@ -2009,9 +2014,14 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       lhs.type_check(symtab)
-      type_error "Cannot assign to a const" if lhs.type(symtab).const?
+      lhs_var = symtab.get(lhs.name)
+      type_error "Cannot assign to a const" if lhs_var.type.const? && !lhs_var.for_loop_iter?
 
       rhs.type_check(symtab)
+      if lhs_var.type.const? && lhs_var.for_loop_iter?
+        # also check that the rhs is const_eval
+        type_error "Assignment would make iteration variable non-const" unless rhs.type(symtab).const?
+      end
       unless rhs.type(symtab).convertable_to?(lhs.type(symtab))
         type_error "Incompatible type in assignment (#{lhs.type(symtab)}, #{rhs.type(symtab)})"
       end
@@ -2806,7 +2816,19 @@ module Idl
       ary_size_ast = send(:ary_size).empty? ? nil : send(:ary_size).expression.to_ast
       VariableDeclarationWithInitializationAst.new(
         input, interval,
-        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast
+        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast,
+        false
+      )
+    end
+  end
+
+  class ForLoopIterationVariableDeclarationSyntaxNode < SyntaxNode
+    def to_ast
+      ary_size_ast = send(:ary_size).empty? ? nil : send(:ary_size).expression.to_ast
+      VariableDeclarationWithInitializationAst.new(
+        input, interval,
+        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast,
+        true
       )
     end
   end
@@ -2854,16 +2876,18 @@ module Idl
         type_name_ast: TypeNameAst,
         var_write_ast: IdAst,
         ary_size: T.nilable(RvalueAst),
-        rval_ast: RvalueAst
+        rval_ast: RvalueAst,
+        is_for_loop_iteration_var: T::Boolean
       ).void
     }
-    def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast)
+    def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast, is_for_loop_iteration_var)
       if ary_size.nil?
         super(input, interval, [type_name_ast, var_write_ast, rval_ast])
       else
         super(input, interval, [type_name_ast, var_write_ast, rval_ast, ary_size])
       end
       @global = false
+      @for_iter_var = is_for_loop_iteration_var
     end
 
     def make_global
@@ -2909,16 +2933,16 @@ module Idl
       if decl_type.const?
         # this is a constant; ensure we are assigning a constant value
         value_result = value_try do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab)))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab), for_loop_iter: @for_iter_var))
         end
         value_else(value_result) do
           unless rhs.type(symtab).const?
             type_error "Declaring constant (#{lhs.name}) with a non-constant value (#{rhs.text_value})"
           end
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, for_loop_iter: @for_iter_var))
         end
       else
-        symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
+        symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, for_loop_iter: @for_iter_var))
       end
 
       lhs.type_check(symtab)
@@ -2935,21 +2959,21 @@ module Idl
         if lhs.text_value[0] == T.must(lhs.text_value[0]).upcase
           # const, add the value if it's known
           value_result = value_try do
-            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab)))
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
           end
           value_else(value_result) do
-            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
           end
         else
           # mutable globals never have a compile-time value
-          symtab.add!(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+          symtab.add!(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
         end
       else
         value_result = value_try do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab)))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
         end
         value_else(value_result) do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
         end
       end
     end
@@ -2964,7 +2988,7 @@ module Idl
         rhs_value = rhs.value(symtab)
       end
       value_else(value_result) do
-        symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil))
+        symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil, for_loop_iter: @for_iter_var))
         value_error "value of right-hand side of variable initialization is unknown"
       end
       symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs_value))
@@ -2972,7 +2996,7 @@ module Idl
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil))
+      symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil, for_loop_iter: @for_iter_var))
     end
 
     # @!macro to_idl
@@ -3364,7 +3388,7 @@ module Idl
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for left shift: #{lhs_type}" unless lhs_type.kind == :bits
         type_error "Unsupported shift for left shift: #{rhs_type}" unless rhs_type.kind == :bits
-        type_error "Widening shift amount must be constant" unless rhs_type.const?
+        type_error "Widening shift amount must be constant (if it's not, the width of the result is unknowable)." unless rhs_type.const?
       elsif [">>", ">>>"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
@@ -4149,7 +4173,8 @@ module Idl
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = rval.const_eval?(symtab)
 
-    def rval = @children[0]
+    sig { returns(T.any(IntLiteralAst, BuiltinVariableAst, StringLiteralAst, IdAst)) }
+    def rval = T.cast(@children.fetch(0), T.any(IntLiteralAst, BuiltinVariableAst, StringLiteralAst, IdAst))
 
     def initialize(input, interval, rval)
       super(input, interval, [rval])
@@ -4157,6 +4182,9 @@ module Idl
 
     def type_check(symtab)
       rval.type_check(symtab)
+      rval_immutable =
+        rval.is_a?(IdAst) && (rval.type(symtab).const? && !symtab.get(T.cast(rval, IdAst).name).for_loop_iter?)
+      type_error "Cannot decrement a const variable" if rval_immutable
       type_error "Post decement must be integral" unless rval.type(symtab).integral?
     end
 
@@ -4268,6 +4296,9 @@ module Idl
     def type_check(symtab)
       rval.type_check(symtab)
       var = symtab.get(rval.text_value)
+      rval_immutable =
+        rval.is_a?(IdAst) && (rval.type(symtab).const? && !var.for_loop_iter?)
+      type_error "Cannot increment a const variable" if rval_immutable
       type_error "Post increment variable must be integral" unless var.type.integral?
     end
 
@@ -6482,7 +6513,7 @@ end,
     def to_ast
       ForLoopAst.new(
         input, interval,
-        send(:single_declaration_with_initialization).to_ast,
+        send(:for_loop_iteration_variable_declaration).to_ast,
         send(:condition).to_ast,
         send(:action).to_ast,
         send(:stmts).elements.map(&:s).map(&:to_ast)
@@ -6502,10 +6533,17 @@ end,
         stmts.all? { |stmt| stmt.const_eval?(symtab) }
     end
 
-    def init = @children[0]
-    def condition = @children[1]
-    def update = @children[2]
-    def stmts = @children[3..]
+    sig { returns(VariableDeclarationWithInitializationAst) }
+    def init = T.cast(@children.fetch(0), VariableDeclarationWithInitializationAst)
+
+    sig { returns(RvalueAst) }
+    def condition = T.cast(@children.fetch(1), RvalueAst)
+
+    sig { returns(ExecutableAst) }
+    def update = T.cast(@children.fetch(2), ExecutableAst)
+
+    sig { returns(T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)]) }
+    def stmts = T.cast(@children[3..], T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)])
 
     def initialize(input, interval, init, condition, update, stmts)
       super(input, interval, [init, condition, update] + stmts)
@@ -6615,7 +6653,9 @@ end,
           init.execute_unknown(symtab)
 
           stmts.each do |s|
-            s.execute_unknown(symtab)
+            unless s.is_a?(ReturnStatementAst)
+              s.execute_unknown(symtab)
+            end
           end
           update.execute_unknown(symtab)
         end
