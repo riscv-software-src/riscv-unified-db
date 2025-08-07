@@ -25,3 +25,4 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  hlv_bu(xs1, xd);
