@@ -394,4 +394,20 @@ namespace :test do
       sh "ctest -T coverage -T test"
     end
   end
+
+  task riscv_tests: ["build_riscv_tests", "build:cpp_hart"] do
+    configs_name, build_name = configs_build_name
+    tests = ["simple", "add", "addi", "and",
+    "andi", "auipc", "beq", "bge", "bgeu", "blt",
+    "bltu", "bne", "fence_i", "jal", "jalr",
+     "lb", "lbu", "lh", "lhu", "lw", "ld_st",
+     "lui", "ma_data", "or", "ori", "sb", "sh",
+     "sw", "st_ld", "sll", "slli", "slt", "slti",
+     "sltiu", "sltu", "sra", "srai", "srl",
+     "srli", "sub", "xor", "xori"]
+
+     tests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
+    end
+  end
 end
