@@ -11,7 +11,7 @@ class NormativeRule
   # Where to put normative rules in UDB:
   #   - If a rule is only associated with one UDB database object (extension, instruction, CSR, or CSR field) put it in the
   #     YAML file for that database object.
-  #   - If a rule spans multiple instructions or CSRS but only belongs to one extension, put it in that extension's YAML file.
+  #   - If a rule spans multiple instructions or CSRs but only belongs to one extension, put it in that extension's YAML file.
   #     If the rule doesn't always apply when the extension is present (e.g., 64-bit instructions in I extension),
   #     add "when" statements with expressions to limit when the rule applies (e.g., XLEN == 64).
   #   - If a rule spans multiple extensions, put it in the I extension since it always is present and add
