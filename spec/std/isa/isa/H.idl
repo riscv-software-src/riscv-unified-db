@@ -124,7 +124,7 @@ function h_translate_gstage {
   body {
     # Use the existing translate_gstage function from globals.isa
     # This function handles all the proper page table walking and exception handling
-    return translate_gstage(gpaddr, 0, op, mode, 0);  # 0 is placeholder for vaddr and encoding
+    return translate_gstage(gpaddr, gpaddr, op, mode, 0);  # Use gpaddr as both gpaddr and vaddr, 0 for encoding
   }
 }
 
@@ -139,15 +139,15 @@ function handle_hypervisor_exception {
     if (V == 1) {
       # In virtual mode, use virtual CSRs
       vstval = tval;
-      vsepc = pc;
+      vsepc = $pc;
       # Set up virtual trap vector
-      pc = vstvec;
+      $pc = vstvec;
     } else {
       # In HS mode, use regular CSRs
       stval = tval;
-      sepc = pc;
+      sepc = $pc;
       # Set up trap vector
-      pc = stvec;
+      $pc = stvec;
     }
   }
 }
@@ -160,14 +160,10 @@ function hfence_vvma {
   body {
     # Invalidate VS-stage address translations
     VmaOrderType inval_type;
-    inval_type.global = false;
+    inval_type.global = true;  # Invalidate all VS-stage translations
     inval_type.smode = false;
     inval_type.vsmode = true;
     inval_type.gstage = false;
-    inval_type.single_vmid = false;
-    inval_type.single_asid = false;
-    inval_type.single_vaddr = false;
-    inval_type.single_gpaddr = false;
     invalidate_translations(inval_type);
   }
 }
@@ -179,14 +175,10 @@ function hfence_gvma {
   body {
     # Invalidate G-stage address translations
     VmaOrderType inval_type;
-    inval_type.global = false;
+    inval_type.global = true;  # Invalidate all G-stage translations
     inval_type.smode = false;
     inval_type.vsmode = false;
     inval_type.gstage = true;
-    inval_type.single_vmid = false;
-    inval_type.single_asid = false;
-    inval_type.single_vaddr = false;
-    inval_type.single_gpaddr = false;
     invalidate_translations(inval_type);
   }
 }
@@ -402,7 +394,7 @@ function supports_hypervisor {
 
 # Get current VMID
 function get_current_vmid {
-  returns Bits<VMID_WIDTH>
+  returns Bits<14>  # Maximum VMID width is 14 bits
   description {
     Get the current VMID from hgatp
   }
@@ -417,7 +409,7 @@ function get_current_vmid {
 
 # Set current VMID
 function set_current_vmid {
-  arguments Bits<VMID_WIDTH> vmid
+  arguments Bits<14> vmid  # Maximum VMID width is 14 bits
   description {
     Set the current VMID in hgatp
   }
