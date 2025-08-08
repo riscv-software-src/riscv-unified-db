@@ -8,13 +8,15 @@ kind: extension
 name: Zihpm
 long_name: Programmable hardware performance counters
 description: 
-  The Zihpm extension comprises up to 29 additional unprivileged 64-bit hardware performance 
-  counters, hpmcounter3-hpmcounter31. When XLEN=32, the upper 32 bits of these performance 
-  counters are accessible via additional CSRs hpmcounter3h-hpmcounter31h.
+  The Zihpm extension defines the unprivileged user-mode CSRs hpmcounter3-hpmcounter31 
+  that provide read-only access to the corresponding machine-mode performance counters 
+  mhpmcounter3-mhpmcounter31.
 
-  The implemented number and width of these additional counters, and the set of events they 
-  count, is platform-specific. Accessing an unimplemented or ill-configured counter may cause 
-  an illegal-instruction exception or may return a constant value.
+  When XLEN=32, the upper 32 bits of these performance counters are accessible via 
+  additional CSRs hpmcounter3h-hpmcounter31h.
+
+  The actual performance counter implementation, configuration, and behavior is 
+  defined by the Smhpm extension.
 type: unprivileged
 versions:
   - version: "2.0.0"
@@ -22,61 +24,3 @@ versions:
     ratification_date: null
     requires:
       name: Smhpm
-params:
-  NUM_HPM_COUNTERS:
-    description: |
-      Number of additional hardware performance monitor counters implemented beyond the 
-      basic cycle, instret, and time counters.
-      
-      This corresponds to hpmcounter3 through hpmcounter<3+NUM_HPM_COUNTERS-1>.
-      
-      Valid values are 0 to 29, inclusive:
-      
-      * 0: No additional HPM counters implemented
-      * 1-29: Number of additional HPM counters starting from hpmcounter3
-      
-      All implemented HPM counters appear as 64-bit registers to software. When XLEN=32, 
-      the upper 32 bits are accessible via the hpmcounter<N>h CSRs. The actual hardware 
-      implementation may utilize fewer bits internally, but must present a 64-bit interface.
-      
-      When NUM_HPM_COUNTERS is less than 29, the unimplemented counters (hpmcounter<3+NUM_HPM_COUNTERS>
-      through hpmcounter31) will behave according to UNIMPLEMENTED_HPM_BEHAVIOR.
-    schema:
-      type: integer
-      minimum: 0
-      maximum: 29
-  UNIMPLEMENTED_HPM_BEHAVIOR:
-    description: |
-      Defines the behavior when accessing unimplemented HPM counters.
-      
-      This parameter controls what happens when software accesses hpmcounter registers
-      beyond those specified by NUM_HPM_COUNTERS.
-      
-      illegal_instruction::
-        Accessing an unimplemented HPM counter causes an illegal instruction exception.
-        
-      constant_value::
-        Accessing an unimplemented HPM counter returns the constant value specified 
-        by UNIMPLEMENTED_HPM_CONSTANT_VALUE without causing an exception.
-    schema:
-      type: string
-      enum: ["illegal_instruction", "constant_value"]
-  UNIMPLEMENTED_HPM_CONSTANT_VALUE:
-    description: |
-      The constant value returned when accessing unimplemented HPM counters.
-      
-      This parameter is only relevant when UNIMPLEMENTED_HPM_BEHAVIOR is set to 
-      "constant_value". When UNIMPLEMENTED_HPM_BEHAVIOR is "illegal_instruction", 
-      this parameter value is ignored.
-      
-      This value is returned for both the lower 32-bit and upper 32-bit portions
-      of unimplemented counters.
-      
-      Common values:
-      * 0: Most typical implementation
-      * 0xFFFFFFFF: Alternative constant value
-      * Any other 32-bit value as platform-specific
-    schema:
-      type: integer
-      minimum: 0
-      maximum: 0xFFFFFFFF
