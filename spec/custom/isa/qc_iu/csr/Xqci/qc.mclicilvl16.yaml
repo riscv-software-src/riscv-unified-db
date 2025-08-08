@@ -3,6 +3,7 @@
 
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
+$schema: csr_schema.json#
 kind: csr
 name: qc.mclicilvl16
 long_name: IRQ Level 16
@@ -16,46 +17,47 @@ definedBy:
       version: ">=0.7"
     - name: Xqciint
       version: ">=0.4"
+writable: true
 description: |
   Level bits for IRQs 128-135
 fields:
   IRQ128:
     type: RW
     reset_value: 0
-    location: 3 - 0
+    location: 3-0
     description: IRQ128 level
   IRQ129:
     type: RW
     reset_value: 0
-    location: 7 - 4
+    location: 7-4
     description: IRQ129 level
   IRQ130:
     type: RW
     reset_value: 0
-    location: 11 - 8
+    location: 11-8
     description: IRQ130 level
   IRQ131:
     type: RW
     reset_value: 0
-    location: 15 - 12
+    location: 15-12
     description: IRQ131 level
   IRQ132:
     type: RW
     reset_value: 0
-    location: 19 - 16
+    location: 19-16
     description: IRQ132 level
   IRQ133:
     type: RW
     reset_value: 0
-    location: 23 - 20
+    location: 23-20
     description: IRQ133 level
   IRQ134:
     type: RW
     reset_value: 0
-    location: 27 - 24
+    location: 27-24
     description: IRQ134 level
   IRQ135:
     type: RW
     reset_value: 0
-    location: 31 - 28
+    location: 31-28
     description: IRQ135 level

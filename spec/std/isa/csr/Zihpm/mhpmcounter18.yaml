@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter18
 long_name: Machine Hardware Performance Counter 18
 address: 0xB12
+writable: true
 priv_mode: M
 length: 64
 description: Programmable hardware performance counter.
