@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
+
+$schema: proc_cert_model_schema.json#
+kind: processor certificate model
+name: RVI20-32
+long_name: 32-bit RVI20 Certificate
+class:
+  $ref: proc_cert_class/RVI.yaml#
+
+# MXLEN
+base: 32
+
+# Semantic versions within the model
+versions:
+  - version: "1.0.0"
+
+revision_history:
+  - revision: "0.1.0"
+    date: "2025-07-03"
+    changes:
+      - Created
+
+introduction: |
+  The RVI20-32 processor certificate corresponds to the RVI20U32 profile.
+
+# Specification versions
+tsc_profile_release:
+  $ref: profile_release/RVI20.yaml#
+unpriv_isa_manual_revision: "20240411"
+
+in_scope_priv_modes:
+  - U
+
+extensions:
+  $inherits:
+    - "profile/RVI20U32.yaml#/extensions"
