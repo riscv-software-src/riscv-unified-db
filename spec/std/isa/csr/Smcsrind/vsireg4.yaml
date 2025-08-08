@@ -8,6 +8,7 @@ name: vsireg4
 long_name: Virtual Supervisor Indirect Register Alias 4
 address: 0x255
 virtual_address: 0x255
+writable: true
 priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
