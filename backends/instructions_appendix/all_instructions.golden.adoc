@@ -7338,7 +7338,7 @@ Included in::
 == fadd.q
 
 Synopsis::
-Floating-point Add Quad-precision
+Floating-point Add Quad-Precision
 
 Assembly::
 fadd.q fd, fs1, fs2, rm
@@ -7492,7 +7492,7 @@ Included in::
 == fclass.q
 
 Synopsis::
-Floating-Point Quad-Precision Classify
+Floating-Point Classify Quad-Precision
 
 Assembly::
 fclass.q xd, fs1
@@ -7769,7 +7769,7 @@ Included in::
 == fcvt.d.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Double-precision
+Floating-Point Convert Quad-Precision to Double-Precision
 
 Assembly::
 fcvt.d.q fd, fs1, rm
@@ -8283,7 +8283,7 @@ Included in::
 == fcvt.l.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Long
+Floating-Point Convert Quad-Precision to Long
 
 Assembly::
 fcvt.l.q xd, fs1, rm
@@ -8437,7 +8437,7 @@ Included in::
 == fcvt.lu.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Unsigned Long
+Floating-Point Convert Quad-Precision to Unsigned Long
 
 Assembly::
 fcvt.lu.q xd, fs1, rm
@@ -8514,7 +8514,7 @@ Included in::
 == fcvt.q.d
 
 Synopsis::
-Floating-point Convert Double-precision to Quad-precision
+Floating-Point Convert Double-Precision to Quad-Precision
 
 Assembly::
 fcvt.q.d fd, fs1, rm
@@ -8592,7 +8592,7 @@ Included in::
 == fcvt.q.l
 
 Synopsis::
-Floating-point Convert Long to Quad-precision
+Floating-Point Convert Long to Quad-Precision
 
 Assembly::
 fcvt.q.l fd, xs1, rm
@@ -8630,7 +8630,7 @@ Included in::
 == fcvt.q.lu
 
 Synopsis::
-Floating-point Convert Unsigned Long to Quad-precision
+Floating-Point Convert Unsigned Long to Quad-Precision
 
 Assembly::
 fcvt.q.lu fd, xs1, rm
@@ -8668,7 +8668,7 @@ Included in::
 == fcvt.q.s
 
 Synopsis::
-Floating-point Convert Single-precision to Quad-precision
+Floating-Point Convert Single-Precision to Quad-Precision
 
 Assembly::
 fcvt.q.s fd, fs1, rm
@@ -8706,7 +8706,7 @@ Included in::
 == fcvt.q.w
 
 Synopsis::
-Floating-point Convert Word to Quad-precision
+Floating-Point Convert Word to Quad-Precision
 
 Assembly::
 fcvt.q.w fd, xs1, rm
@@ -8744,7 +8744,7 @@ Included in::
 == fcvt.q.wu
 
 Synopsis::
-Floating-point Convert Unsigned Word to Quad-precision
+Floating-Point Convert Unsigned Word to Quad-Precision
 
 Assembly::
 fcvt.q.wu fd, xs1, rm
@@ -8981,7 +8981,7 @@ Included in::
 == fcvt.s.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Single-precision
+Floating-Point Convert Quad-Precision to Single-Precision
 
 Assembly::
 fcvt.s.q fd, fs1, rm
@@ -9371,7 +9371,7 @@ Included in::
 == fcvt.wu.q
 
 Synopsis::
-Floating-point Convert Unsigned Quad-precision to Word
+Floating-Point Convert Unsigned Quad-Precision to Word
 
 Assembly::
 fcvt.wu.q xd, fs1, rm
@@ -9600,7 +9600,7 @@ Included in::
 == fdiv.q
 
 Synopsis::
-Floating-Point Quad-Precision Divide
+Floating-Point Divide Quad-Precision
 
 Assembly::
 fdiv.q fd, fs1, fs2, rm
@@ -10019,7 +10019,7 @@ Included in::
 == feq.q
 
 Synopsis::
-Floating-Point Quad-Precision Equal
+Floating-Point Equal Quad-Precision
 
 Assembly::
 feq.q xd, fs1, fs2
@@ -10218,7 +10218,7 @@ Included in::
 == fle.q
 
 Synopsis::
-Floating-Point Quad-Precision Less Than or Equal
+Floating-Point Less Than or Equal Quad-Precision
 
 Assembly::
 fle.q xd, fs1, fs2
@@ -10384,7 +10384,7 @@ Included in::
 == fleq.q
 
 Synopsis::
-Floating-Point Quad-Precision Less Than or Equal
+Floating-Point Less Than or Equal Quad-Precision
 
 Assembly::
 fleq.q xd, fs1, fs2
@@ -10591,7 +10591,7 @@ Included in::
 == fli.q
 
 Synopsis::
-Floating-Point Quad-Precision Load Immediate
+Floating-Point Load Immediate Quad-Precision
 
 Assembly::
 fli.q fd, xs1
@@ -10789,7 +10789,7 @@ Included in::
 == flt.q
 
 Synopsis::
-Floating-Point Quad-Precision Less Than
+Floating-Point Less Than Quad-Precision
 
 Assembly::
 flt.q xd, fs1, fs2
@@ -10953,7 +10953,7 @@ Included in::
 == fltq.q
 
 Synopsis::
-Floating-Point Quad-Precision Quiet Less Than
+Floating-Point Quiet Less Than Quad-Precision
 
 Assembly::
 fltq.q fd, fs1, fs2
@@ -11156,7 +11156,7 @@ Included in::
 == fmadd.q
 
 Synopsis::
-Floating-point Quad-Precision Fused Multiply-Add
+Floating-Point Fused Multiply-Add Quad-Precision
 
 Assembly::
 fmadd.q fd, fs1, fs2, fs3, rm
@@ -11316,7 +11316,7 @@ Included in::
 == fmax.q
 
 Synopsis::
-Floating-Point Quad-Precision Maximum-Number
+Floating-Point Maximum-Number Quad-Precision
 
 Assembly::
 fmax.q fd, fs1, fs2
@@ -11476,7 +11476,7 @@ Included in::
 == fmaxm.q
 
 Synopsis::
-Floating-Point Quad-Precision Maximum-Number with _NaN_ Handling
+Floating-Point Maximum-Number with _NaN_ Handling Quad-Precision
 
 Assembly::
 fmaxm.q fd, fs1, fs2
@@ -11635,7 +11635,7 @@ Included in::
 == fmin.q
 
 Synopsis::
-Floating-Point Quad-Precision Minimum-Number
+Floating-Point Minimum-Number Quad-Precision
 
 Assembly::
 fmin.q fd, fs1, fs2
@@ -11795,7 +11795,7 @@ Included in::
 == fminm.q
 
 Synopsis::
-Floating-Point Quad-Precision Minimum-Number with _NaN_ Handling
+Floating-Point Minimum-Number with _NaN_ Handling Quad-Precision
 
 Assembly::
 fminm.q fd, fs1, fs2
@@ -11958,7 +11958,7 @@ Included in::
 == fmsub.q
 
 Synopsis::
-Floating-point Quad-Precision Fused Multiply-Subtract
+Floating-Point Fused Multiply-Subtract Quad-Precision
 
 Assembly::
 fmsub.q fd, fs1, fs2, fs3, rm
@@ -12117,7 +12117,7 @@ Included in::
 == fmul.q
 
 Synopsis::
-Floating-point Quad-Precision Multiply
+Floating-point Multiply Quad-Precision
 
 Assembly::
 fmul.q fd, fs1, fs2, rm
@@ -12478,7 +12478,7 @@ Included in::
 == fmvh.x.q
 
 Synopsis::
-Move Upper 64 Bits of Quad-Precision Floating-Point to Integer Register
+Floating-Point Move Upper 64 Bits of Quad-Precision to Integer Register
 
 Assembly::
 fmvh.x.q xd, fs1
@@ -12561,7 +12561,7 @@ Included in::
 == fmvp.q.x
 
 Synopsis::
-Floating-point Move Integer Pair to Quad-Precision
+Floating-Point Move Integer Pair Quad-Precision
 
 Assembly::
 fmvp.q.x fd, xs1, xs2
@@ -12685,7 +12685,7 @@ Included in::
 == fnmadd.q
 
 Synopsis::
-Floating-point Quad-Precision Fused Negate-Multiply-Add
+Floating-Point Fused Negate-Multiply-Add Quad-Precision
 
 Assembly::
 fnmadd.q fd, fs1, fs2, fs3, rm
@@ -12847,7 +12847,7 @@ Included in::
 == fnmsub.q
 
 Synopsis::
-Floating-point Quad-Precision Fused Negate-Multiply-Subtract
+Floating-Point Fused Negate-Multiply-Subtract Quad-Precision
 
 Assembly::
 fnmsub.q fd, fs1, fs2, fs3, rm
@@ -13009,7 +13009,7 @@ Included in::
 == fround.q
 
 Synopsis::
-Floating-point Quad-Precision Round
+Floating-Point Round Quad-Precision
 
 Assembly::
 fround.q fd, fs1, rm
@@ -13178,7 +13178,7 @@ Included in::
 == froundnx.q
 
 Synopsis::
-Floating-point Quad-Precision Round-to-Integral-Exact
+Floating-Point Round-to-Integral-Exact Quad-Precision
 
 Assembly::
 froundnx.q fd, fs1, rm
@@ -13371,7 +13371,7 @@ Included in::
 == fsgnj.q
 
 Synopsis::
-Floating-point Quad-Precision Sign-Injection
+Floating-point Sign-Injection Quad-Precision
 
 Assembly::
 fsgnj.q fd, fs1, fs2
@@ -13527,7 +13527,7 @@ Included in::
 == fsgnjn.q
 
 Synopsis::
-Floating-Point Quad-Precision Sign Inject Negate
+Floating-Point Sign Inject Negate Quad-Precision
 
 Assembly::
 fsgnjn.q fd, fs1, fs2
@@ -13683,7 +13683,7 @@ Included in::
 == fsgnjx.q
 
 Synopsis::
-Floating-Point Quad-Precision Sign Inject XOR
+Floating-Point Sign Inject XOR Quad-Precision
 
 Assembly::
 fsgnjx.q fd, fs1, fs2
@@ -13812,7 +13812,7 @@ Included in::
 == fsq
 
 Synopsis::
-Floating-point Quad-Precision Store
+Floating-point Store Quad-Precision
 
 Assembly::
 fsq fs2, imm(xs1)
@@ -13931,7 +13931,7 @@ Included in::
 == fsqrt.q
 
 Synopsis::
-Floating-point Quad-Precision Square Root
+Floating-point Square Root Quad-Precision
 
 Assembly::
 fsqrt.q fd, fs1, rm
@@ -14085,7 +14085,7 @@ Included in::
 == fsub.q
 
 Synopsis::
-Floating-point Quad-Precision Subtract
+Floating-point Subtract Quad-Precision
 
 Assembly::
 fsub.q fd, fs1, fs2, rm
