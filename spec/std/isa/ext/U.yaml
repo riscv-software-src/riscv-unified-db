@@ -32,6 +32,9 @@ params:
     schema:
       type: string
       enum: [little, big, dynamic]
+    #TBD - Add later
+    #doc_links:
+    #  - norm:param:I:endianness:little_or_big
   UXLEN:
     description: |
       Set of XLENs supported in U-mode. Can be one of:

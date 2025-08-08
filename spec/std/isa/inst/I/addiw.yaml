@@ -44,3 +44,19 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: addiw_enc
+    type: instruction
+    description: Encoding
+    doc_links: ["norm:enc:insttable:addiw"]
+
+  - name: addiw_op
+    type: instruction
+    description: Basic operation
+    doc_links: ["norm:inst:addiw:operation"]
+
+  - name: addiw_overflow
+    type: instruction
+    description: Treatment of overflow
+    doc_links: ["norm:inst:addiw:overflow"]
