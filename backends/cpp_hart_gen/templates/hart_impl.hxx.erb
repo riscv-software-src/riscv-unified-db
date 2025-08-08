@@ -24,30 +24,16 @@ namespace udb {
     if constexpr (sizeof(XReg) == 8) {
       fmt::print(out, "PC: {:#18x}\n", m_pc);
       for (int i=0; i<16; i++) {
-        fmt::print(out, "x{:2}: {:#18x}\tx{:2}: {:#18x}\n", i, m_xregs[i], i + 16, m_xregs[16 + 1]);
+        fmt::print(out, "x{:2}: {:#18x}\tx{:2}: {:#18x}\n", i, _xreg(i), i + 16, _xreg(16 + 1));
       }
     } else if constexpr (sizeof(XReg) == 4) {
       fmt::print(out, "PC: {:#10x}\n", m_pc);
       for (int i=0; i<16; i++) {
-        fmt::print(out, "x{:2}: {:#10x}\tx{:2}: {:#10x}\n", i, m_xregs[i], i + 16, m_xregs[16 + 1]);
+        fmt::print(out, "x{:2}: {:#10x}\tx{:2}: {:#10x}\n", i, _xreg(i), i + 16, _xreg(16 + 1));
       }
     } else {
       udb_assert(false, "unsupported xlen");
     }
-  }
-
-  template <SocModel SocType>
-  void udb::<%= name_of(:hart, cfg_arch) %><SocType>::init_csr_map()
-  {
-    <%- cfg_arch.not_prohibited_csrs.each do |csr| -%>
-    <%- unless csr.address.nil? -%>
-    m_csr_addr_map[<%= csr.address %>] = &m_csrs.<%= csr.name %>;
-    <%- end -%>
-    <%- unless csr.indirect_address.nil? -%>
-    m_csr_indirect_addr_map[std::make_pair(<%= csr.indirect_address %>, <%= csr.indirect_slot %>)] = &m_csrs.<%= csr.name %>;
-    <%_ end -%>
-    m_csr_name_map["<%= csr.name %>"] = &m_csrs.<%= csr.name %>;
-    <%- end -%>
   }
 
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %><SocType>::global_name
@@ -57,7 +43,7 @@ namespace udb {
 
 
   template <SocModel SocType>
-  Bits<<%= name_of(:hart, cfg_arch) %><SocType>::INSTR_ENC_SIZE> <%= name_of(:hart, cfg_arch) %><SocType>::_fetch()
+  PossiblyUnknownBits<<%= name_of(:hart, cfg_arch) %><SocType>::INSTR_ENC_SIZE.get()> <%= name_of(:hart, cfg_arch) %><SocType>::_fetch()
   {
     <%- symtab = cfg_arch.symtab.global_clone -%>
     <%- symtab.push(cfg_arch.fetch) -%>
@@ -72,7 +58,7 @@ namespace udb {
     InstBase* inst
   ) {
     <%- if cfg_arch.multi_xlen? -%>
-    if (xlen() == 32) {
+    if (xlen() == 32_b) {
       <%= DecodeGen.new(cfg_arch).generate(cfg_arch.possible_instructions.select { |i| i.rv32? }, 32, indent: 4) %>
     } else {
       <%= DecodeGen.new(cfg_arch).generate(cfg_arch.possible_instructions.select { |i| i.rv64? }, 64, indent: 4) %>
@@ -88,7 +74,7 @@ namespace udb {
   template <SocModel SocType>
   int <%= name_of(:hart, cfg_arch) %><SocType>::_run_one()
   {
-    Bits<INSTR_ENC_SIZE> enc;
+    Bits<INSTR_ENC_SIZE.get()> enc;
     try {
        enc = _fetch();
     } catch(const AbortInstruction& e) {
@@ -97,14 +83,14 @@ namespace udb {
     InstBase* inst = reinterpret_cast<InstBase*>(m_run_one_inst_storage.data());
     if (_decode(m_pc, enc, inst) == false) {
       try {
-        raise(ExceptionCode::IllegalInstruction, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? static_cast<uint64_t>(enc) : 0ull);
+        raise(ExceptionCode{ExceptionCode::IllegalInstruction}, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? enc : decltype(enc){0});
       } catch (const AbortInstruction& e) {
         return StopReason::Exception;
      }
     }
 
     // set the fall-through next pc
-    m_next_pc = m_pc + inst->enc_len();
+    m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
     try {
       inst->execute();
@@ -139,11 +125,11 @@ namespace udb {
   template <SocModel SocType>
   int <%= name_of(:hart, cfg_arch) %><SocType>::_run_bb()
   {
-    auto current_bb = m_bb_cache.get(m_pc);
+    auto current_bb = m_bb_cache.get(m_pc.get());
     InstBase* inst;
 
     try {
-      if (current_bb->start_pc() == m_pc) {
+      if (current_bb->start_pc() == m_pc.get()) {
         current_bb->reset(); // hit, reset to the top of the basic block
 
         // now execute the entire bb
@@ -153,47 +139,47 @@ namespace udb {
           inst = current_bb->pop();
 
           // set the fall-through next pc
-          m_next_pc = m_pc + inst->enc_len();
+          m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
           inst->execute();
+
+          advance_pc();
           if (this->m_exit_requested) {
-            this->m_exit_requested = false; // reset the request
+            this->m_exit_requested = false;  // reset the request
             break;
           }
-          advance_pc();
         }
       } else {
         // miss, need to create the bb
-        current_bb->recycle(m_pc);
+        current_bb->recycle(m_pc.get());
         do {
-          Bits<INSTR_ENC_SIZE> enc;
+          Bits<INSTR_ENC_SIZE.get()> enc;
           enc = _fetch();
 
           inst = current_bb->alloc_inst();
           if (_decode(m_pc, enc, inst) == false) {
-            raise(ExceptionCode::IllegalInstruction, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? static_cast<uint64_t>(enc) : 0ull);
+            raise(ExceptionCode{ExceptionCode::IllegalInstruction}, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? enc : decltype(enc){0});
           }
 
           fmt::print("PC {:x} {}\n", m_pc, inst->disassemble());
           for (auto r : inst->srcRegs()) {
-            fmt::print("R {} {:x}\n", r.to_string(), m_xregs[r.get_num()]);
+            fmt::print("R {} {:x}\n", r.to_string(), _xreg(r.get_num()));
           }
 
           // set the fall-through next pc
-          m_next_pc = m_pc + inst->enc_len();
+          m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
           inst->execute();
 
           for (auto r : inst->dstRegs()) {
-            fmt::print("R= {} {:x}\n", r.to_string(), m_xregs[r.get_num()]);
+            fmt::print("R= {} {:x}\n", r.to_string(), _xreg(r.get_num()));
           }
 
+          advance_pc();
           if (this->m_exit_requested) {
             this->m_exit_requested = false; // reset the request
             break;
           }
-
-          advance_pc();
         } while (!(current_bb->full() || inst->control_flow()));
       }
     } catch (const AbortInstruction& e) {
