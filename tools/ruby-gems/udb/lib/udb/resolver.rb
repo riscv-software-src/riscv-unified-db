@@ -222,7 +222,6 @@ module Udb
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "merge",
-          "--quiet",
           std_path.to_s,
           overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
           merged_spec_path(config_name).to_s
@@ -242,7 +241,6 @@ module Udb
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "resolve",
-          "--quiet",
           merged_spec_path(config_name).to_s,
           resolved_spec_path(config_name).to_s
         ]
