@@ -19,10 +19,12 @@ runs:
             .home/.gems
             node_modules
           key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: false
       - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
         run: ./bin/build_container
         shell: bash
+
       - name: Setup project
         run: ./bin/setup
         shell: bash

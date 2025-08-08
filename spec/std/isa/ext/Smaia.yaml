@@ -14,3 +14,26 @@ versions:
     state: ratified
     ratification_date: 2023-06
     url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf
+params:
+  MACHINE_VIRTUAL_INTERRUPTS:
+    description: |
+      List of interrupt numbers (13-63) for which the corresponding bits in mvien and mvip are writable.
+      Implementations may freely choose which bits are writable.
+      Bits corresponding to unimplemented interrupt sources should be read-only zero.
+    schema:
+      type: array
+      items:
+        type: integer
+        minimum: 13
+        maximum: 63
+  MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED:
+    description: |
+      List of interrupt numbers (13-63) for which the corresponding bits in mvien are read-only-1.
+      Must be a subset of MACHINE_VIRTUAL_INTERRUPTS.
+      These interrupts are always enabled and cannot be disabled by software.
+    schema:
+      type: array
+      items:
+        type: integer
+        minimum: 13
+        maximum: 63

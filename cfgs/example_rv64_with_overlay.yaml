@@ -418,6 +418,19 @@ params:
   # corresponds to the `GEILEN` parameter in the RVI specs
   NUM_EXTERNAL_GUEST_INTERRUPTS: 4
 
+  # AIA (Advanced Interrupt Architecture) configuration parameters
+  # Required for Smaia/Ssaia extensions
+
+  # Machine Virtual Interrupts configuration
+  # Specifies which interrupt numbers (13-63) are supported as writable bits in mvien/mvip
+  MACHINE_VIRTUAL_INTERRUPTS:
+    [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+  # Machine Virtual Interrupts that are always enabled (read-only-1)
+  # Must be a subset of MACHINE_VIRTUAL_INTERRUPTS
+  # Empty array means no interrupts are forced to always-enabled
+  MACHINE_VIRTUAL_INTERRUPTS_ALWAYS_ENABLED: []
+
   # Endianness of data in M-mode. Can be one of:
   #
   #  * little:  M-mode data is always little endian

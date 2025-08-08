@@ -1,0 +1,45 @@
+# Copyright (c) 2025 Kallal Mukherjee
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopei
+long_name: Supervisor Top External Interrupt
+address: 0x15C
+priv_mode: S
+length: SXLEN
+writable: true
+description: |
+  Provides information about the highest-priority pending-and-enabled external interrupt
+  for supervisor level, with claim-and-clear semantics on write.
+definedBy: Ssaia
+fields:
+  IID:
+    location: 26-16
+    long_name: Interrupt Identity
+    description: |
+      Identity of the highest-priority pending-and-enabled external interrupt.
+
+      When written with a non-zero value, clears the corresponding IMSIC interrupt.
+    type: RW-R
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Ssaia
+    sw_write(csr_value): |
+      if (csr_value.IID != 0) {
+        if (implemented?(ExtensionName::Ssaia)) {
+          clear_imsic_interrupt(PrivilegeMode::S, csr_value.IID);
+        }
+      }
+      return csr_value.IID;
+  IPRIO:
+    location: 7-0
+    long_name: Interrupt Priority
+    description: |
+      Priority of the highest-priority pending-and-enabled external interrupt.
+
+      Read-only field that reflects the priority of the interrupt in IID field.
+    type: RO
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Ssaia
