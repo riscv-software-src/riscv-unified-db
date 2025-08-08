@@ -8,6 +8,7 @@ kind: csr
 name: jvt
 long_name: Table Jump Base Vector and Control Register
 address: 0x017
+writable: true
 description:
   - id: csr-jvt-purpose
     normative: true
