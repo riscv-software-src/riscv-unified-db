@@ -235,7 +235,8 @@ class PortfolioDesign
       portfolio_class: @portfolio_class,
       portfolio_kind: @portfolio_kind,
       portfolios: @portfolio_grp.portfolios,
-      normative_rule_tags: @normative_rule_tags
+      normative_rule_tags: @normative_rule_tags,
+      logger: $logger
     }
 
     h.merge!(extra_inputs)

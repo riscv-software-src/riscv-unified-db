@@ -51,3 +51,14 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sraw_enc
+    type: instruction
+    description: Encoding
+    doc_links: ["norm:enc:insttable:sraw"]
+
+  - name: sraw_op
+    type: instruction
+    description: Basic operation
+    doc_links: ["norm:insts:sllw_srlw_sraw:operation"]

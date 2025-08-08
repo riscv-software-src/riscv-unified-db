@@ -74,3 +74,9 @@ normative_rules:
     type: instruction
     description: Basic operation
     doc_links: ["norm:insts:sll_srl_sra:operation"]
+
+  - name: srl_rv64i_sh_amt
+    type: instruction
+    description: RV64I shift amount
+    doc_links: ["norm:insts:sll_srl_sra:rv64i_sh_amt"]
+    # TODO: add "when" statement saying MXLEN == 64

@@ -53,3 +53,19 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: subw_enc
+    type: instruction
+    description: Encoding
+    doc_links: ["norm:enc:insttable:subw"]
+
+  - name: subw_op
+    type: instruction
+    description: Basic operation
+    doc_links: ["norm:insts:addw_subw:operation"]
+
+  - name: subw_overflow
+    type: instruction
+    description: Treatment of overflow
+    doc_links: ["norm:insts:addw_subw:overflow"]

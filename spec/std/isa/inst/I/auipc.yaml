@@ -50,8 +50,15 @@ normative_rules:
     description: Encoding
     doc_links: ["norm:enc:insttable:auipc"]
     coverage_points: [cp_imm_edges_20bit, cp_rd]
+
   - name: auipc_op
     type: instruction
     description: Basic operation
     doc_links: ["norm:inst:auipc:operation"]
     coverage_points: [cp_imm_edges_20bit, cp_rd]
+
+  - name: auipc_rv64i_op
+    type: instruction
+    description: RV64I operation
+    doc_links: ["operation"]
+    # TODO: add "when" statement saying MXLEN == 64

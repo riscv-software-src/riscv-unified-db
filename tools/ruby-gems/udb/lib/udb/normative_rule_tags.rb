@@ -15,6 +15,7 @@ class NormativeRuleTags
     # The tag names must be unique across all documents.
     # The tag_map can be empty if for some portfolio types. They never call add_doc_tags().
     @tag_map = {}
+    @missing_tags = false
   end
 
   # Add tags for specified standards document.
@@ -40,6 +41,16 @@ class NormativeRuleTags
     raise ArgumentError, "Called to lookup tag_name #{tag_name} but normative rule tags not available in this Portofolio type" unless tags_available?
     @tag_map[tag_name]
   end
+
+  # Called to indicate that at least one normative rule referenced one missing tag.
+  # Used to allow all these to be detected and then exit with a failure status
+  # instead of finding out about these all one at a time.
+  def discovered_missing_tag
+    @missing_tags = true
+  end
+
+  # @return [Boolean] Were there one or more missing tags?
+  def missing_tags? = @missing_tags
 end
 
 class NormativeRuleTag

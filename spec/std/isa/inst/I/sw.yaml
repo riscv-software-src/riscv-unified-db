@@ -90,3 +90,9 @@ normative_rules:
     description: Basic operation
     doc_links: ["norm:insts:sw_sh_sb:operation"]
     coverage_points: [cp_rs2_edges]
+
+  - name: sw_rv64i_op
+    type: instruction
+    description: RV64I operation
+    doc_links: ["norm:insts:sd_sw_sh_sb:rv64i_operation"]
+    # TODO: add "when" statement saying MXLEN == 64

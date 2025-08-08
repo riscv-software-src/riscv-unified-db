@@ -76,3 +76,9 @@ normative_rules:
     description: Basic operation
     doc_links: ["norm:inst:lw:operation"]
     coverage_points: [cp_rd]
+
+  - name: lw_rv64i_op
+    type: instruction
+    description: RV64I operation
+    doc_links: ["norm:inst:lw:rv64i_operation"]
+    # TODO: add "when" statement saying MXLEN == 64

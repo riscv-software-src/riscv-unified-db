@@ -31,11 +31,24 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
     "#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb"
   ] do |t|
-    # No normative rule tags from stds docs available in a CRD (at the moment) so just create empty object.
-    normative_rule_tags = Udb::NormativeRuleTags.new()
+    begin
+      # No normative rule tags from stds docs available in a CRD (at the moment) so just create empty object.
+      normative_rule_tags = Udb::NormativeRuleTags.new()
 
-    proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name,
-      normative_rule_tags)
+      proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name,
+        normative_rule_tags)
+    rescue => e
+      # Send to stdout since UDB sends tons of cr*p to stderr that floods one with useless information.
+      # Note that the $logger sends to stdout so anything send to $logger actually gets displayed as useful
+      # information if one just redirects stderr to /dev/null (e.g., in bash, run "./do <task-name> 2>/dev/null).
+      puts "Caught error: #{e.message}"
+
+      # Only print out 1st two lines of stack backtrace to stdout.
+      puts e.backtrace.take(2)
+
+      # Send full stacktrace to stderr with "warn".
+      warn e.backtrace
+    end
   end
 
   file "#{PROC_CRD_GEN_DIR}/pdf/#{model_name}-CRD.pdf" => [

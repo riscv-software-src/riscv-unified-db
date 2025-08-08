@@ -42,16 +42,32 @@ normative_rules:
     doc_links: ["norm:basegrp:all:pcreg"]
     coverage_points: [cp_imm_edges]
 
-  - name: rv32_xregwidth
-    type: extension
-    description: rv32 xregwidth
-    doc_links: ["norm:basegrp:rv32:xregwidth"]
-    # TODO: add "when" statement saying XLEN == 32
-
   - name: rv32i_rv64i_other_xregs
     type: extension
     description: Registers x1 to x31
     doc_links: ["norm:bases:rv32i_rv64i:other-xregs"]
+
+  # RV32I (XLEN == 32)
+
+  - name: rv32_xregwidth
+    type: extension
+    description: RV32I XLEN
+    doc_links: ["norm:base:rv32i:xregwidth"]
+    # TODO: add "when" statement saying MXLEN == 32
+
+  # RV64I (XLEN == 64)
+
+  - name: rv64_xregwidth
+    type: extension
+    description: RV64I XLEN
+    doc_links: ["norm:base:rv64i:xregwidth"]
+    # TODO: add "when" statement saying MXLEN == 64
+
+  - name: w_sex_to_64
+    type: extension
+    description: "RV64I \"W\" instructions sign-extend"
+    doc_links: ["norm:base:rv64i:w_sex_to_64"]
+    # TODO: add "when" statement saying MXLEN == 64
 
   #cti and LS
 
@@ -110,20 +126,20 @@ normative_rules:
     doc_links: ["norm:instgrp:load_store:no_exc_aligned"]
     # TODO: add "when" statement referencing the load/store instruction group
 
-  - name: ld_exc_x0
+  - name: load_exc_x0
     type: instruction
     description: Load to x0 exc
     doc_links: ["norm:instgrp:load:exc_x0"]
     # TODO: add "when" statement referencing the load instruction group
 
-  - name: ld_op
+  - name: load_op
     type: instruction
     description: Load operation
     doc_links: ["norm:instgrp:load:operation"]
     coverage_points: [cp_rd]
     # TODO: add "when" statement referencing the load instruction group
 
-  - name: st_op
+  - name: store_op
     type: instruction
     description: Store operation
     doc_links: ["norm:instgrp:store:operation"]
