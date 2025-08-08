@@ -169,7 +169,7 @@ module Udb
     # run command in the shell. raise if exit is not zero
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
-      puts cmd.join(" ")
+      # puts cmd.join(" ")  # Uncomment for debugging
       T.unsafe(self).send(:system, *cmd)
       raise unless $?.success?
     end
@@ -222,6 +222,7 @@ module Udb
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "merge",
+          "--quiet",
           std_path.to_s,
           overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
           merged_spec_path(config_name).to_s
@@ -241,6 +242,7 @@ module Udb
           python_path.to_s,
           "#{Udb.gem_path}/python/yaml_resolver.py",
           "resolve",
+          "--quiet",
           merged_spec_path(config_name).to_s,
           resolved_spec_path(config_name).to_s
         ]

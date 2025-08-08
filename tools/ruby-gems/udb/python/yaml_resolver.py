@@ -592,6 +592,9 @@ if __name__ == "__main__":
         "merged_dir", type=str, help="Merged architecture (output) directory"
     )
     merge_parser.add_argument(
+        "--quiet", action="store_true", help="Suppress all output except errors"
+    )
+    merge_parser.add_argument(
         "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
     )
 
@@ -607,6 +610,9 @@ if __name__ == "__main__":
     )
     all_parser.add_argument(
         "--no-checks", action="store_true", help="Don't verify schema"
+    )
+    all_parser.add_argument(
+        "--quiet", action="store_true", help="Suppress all output except errors"
     )
     all_parser.add_argument(
         "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
@@ -626,7 +632,13 @@ if __name__ == "__main__":
         arch_paths.extend(merged_paths)
         arch_paths = list(set(arch_paths))
 
-        for arch_path in tqdm(arch_paths, ascii=True, desc="Merging arch"):
+        for arch_path in tqdm(
+            arch_paths,
+            ascii=True,
+            desc="Merging arch",
+            file=sys.stderr,
+            disable=args.quiet,
+        ):
             merged_arch_path = (
                 os.path.join(args.merged_dir, arch_path)
                 if os.path.isabs(args.merged_dir)
@@ -635,7 +647,11 @@ if __name__ == "__main__":
             os.makedirs(os.path.dirname(merged_arch_path), exist_ok=True)
             merge_file(arch_path, args.arch_dir, args.overlay_dir, args.merged_dir)
 
-        print(f"[INFO] Merged architecture files written to {args.merged_dir}")
+        if not args.quiet:
+            print(
+                f"[INFO] Merged architecture files written to {args.merged_dir}",
+                file=sys.stderr,
+            )
 
     elif args.command == "resolve":
         arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
@@ -647,8 +663,8 @@ if __name__ == "__main__":
             arch_paths = list(set(arch_paths))
         iter = (
             arch_paths
-            if args.no_progress
-            else tqdm(arch_paths, ascii=True, desc="Resolving arch")
+            if args.no_progress or args.quiet
+            else tqdm(arch_paths, ascii=True, desc="Resolving arch", file=sys.stderr)
         )
         abs_resolved_dir = (
             f"{args.udb_root}/{args.resolved_dir}"
@@ -663,8 +679,8 @@ if __name__ == "__main__":
             )
         iter = (
             arch_paths
-            if args.no_progress
-            else tqdm(arch_paths, ascii=True, desc="Validating arch")
+            if args.no_progress or args.quiet
+            else tqdm(arch_paths, ascii=True, desc="Validating arch", file=sys.stderr)
         )
         for arch_path in iter:
             write_resolved_file_and_validate(
@@ -675,4 +691,8 @@ if __name__ == "__main__":
         write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
         write_json(f"{abs_resolved_dir}/index.json", arch_paths)
 
-        print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")
+        if not args.quiet:
+            print(
+                f"[INFO] Resolved architecture files written to {args.resolved_dir}",
+                file=sys.stderr,
+            )
