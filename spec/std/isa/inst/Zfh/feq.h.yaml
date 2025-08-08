@@ -9,7 +9,7 @@ name: feq.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy: [Zfh, Zhinx]
 assembly: xd, fs1, fs2
 encoding:
   match: 1010010----------010-----1010011
@@ -27,3 +27,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::Zhinx)) {
+    # Zhinx: use integer registers
+    X[rd] = feq_h(X[rs1], X[rs2]);
+  } else {
+    # Zfh: use floating-point registers
+    X[rd] = feq_h(F[rs1], F[rs2]);
+  }
