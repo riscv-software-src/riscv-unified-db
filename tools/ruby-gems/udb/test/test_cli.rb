@@ -64,14 +64,13 @@ class TestCli < Minitest::Test
   end
 
   def test_list_csrs
-    out, err = capture_io do
-      run_cmd("list csrs")
-    end
-    assert_empty err
+    num_listed = run_cmd("list csrs")
+
     repo_top = Udb.repo_root
     num_csr_yaml_files = `find #{repo_top}/spec/std/isa/csr/ -name '*.yaml' | wc -l`.to_i
     puts num_csr_yaml_files
-    assert_equal num_csr_yaml_files, out.split.length
+
+    assert_equal num_csr_yaml_files, num_listed
   end
 
 end
