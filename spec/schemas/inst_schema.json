@@ -71,6 +71,10 @@
                 }
               }
             },
+            "display_name": {
+              "type": "string",
+              "description": "How the variable will be displayed in documentation"
+            },
             "$child_of": {
               "type": "string",
               "pattern": "^inst_.*/.*\\.yaml#.*$"

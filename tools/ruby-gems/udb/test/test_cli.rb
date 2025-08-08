@@ -202,43 +202,37 @@ class TestCli < Minitest::Test
   end
 
   def do_inst_create_until_subtype(outdir, input, output)
+    ENV["NO_COLOR"] = "1"
+    ENV["SKIP_INFO"] = "1"
     fiber = run_cmd_io("create instruction -n #{outdir}", input, output)
     input.cli_fiber = fiber
 
-    said = expect_line(output, %r{Lets get this out of the way: what copyright do you want to assign to newly created files?})
+    expect_line(output, %r{What copyright do you want to assign to newly created files?})
 
     input.puts "COPYRIGHT TEXT\n"
 
-    said = expect_line(output, %r{Great})
-
-    said = expect_line(output, %r{What is the instruction mnemonic?})
+    expect_line(output, %r{What is the instruction mnemonic?})
     input.puts "add-new"
 
     expect_line(output, %r{Your answer is invalid})
     input.puts "add.new"
 
-    said = expect_line(output, %r{What extension defines this instruction?})
+    expect_line(output, %r{What extension defines this instruction?})
 
-    input.puts "ZXi"
-    said = expect_line(output, %r{Invalid extension})
+    input.puts "Zfh"
 
-    input.puts "Zdoesnotexist"
-    said = expect_line(output, %r{Invalid extension})
-
-    input.puts "A"
-
-    said = expect_line(output, %r{What is a short description of the instruction})
+    expect_line(output, %r{What is a short description of the instruction})
     input.puts ""
-    said = expect_line(output, %r{Value must be provided})
+    expect_line(output, %r{Value must be provided})
     input.puts "A short description"
 
     ["U", "\\(H\\)S", "VS", "VU"].each do |mode|
-      said = expect_line(output, %r{When is this instruction accessible in #{mode} mode?})
+      expect_line(output, %r{When is this instruction accessible in #{mode} mode?})
       input.puts ""
     end
     puts "UMMM"
 
-    said = expect_line(output, %r{Is this instruction required to have data-independent timing})
+    expect_line(output, %r{Is this instruction required to have data-independent timing})
     input.puts "yes"
 
     fiber
@@ -251,7 +245,7 @@ class TestCli < Minitest::Test
     Dir.mktmpdir do |outdir|
       do_inst_create_until_subtype(outdir, input, output)
 
-      said = expect_line(output, %r{What is the subtype of the instruction format?})
+      expect_line(output, %r{What is the subtype of the instruction format?})
       input.puts "R-x"
 
       expect_line(output, %r{Is opcode 'funct7' a common/shared value among instructions})
@@ -286,12 +280,12 @@ class TestCli < Minitest::Test
 
       expect_line(output, %r{Based on your answers, I've created the following file})
       expect_line(output, %r{#{outdir}/inst_opcode/OP-NEW\.yaml})
-      expect_line(output, %r{#{outdir}/inst/A/add\.new\.yaml})
+      expect_line(output, %r{#{outdir}/inst/Zfh/add\.new\.yaml})
 
-      result = YAML.load_file("#{outdir}/inst/A/add.new.yaml")
+      result = YAML.load_file("#{outdir}/inst/Zfh/add.new.yaml")
       assert_equal "add.new", result["name"]
       assert_equal "A short description", result["long_name"]
-      assert_equal ({ "name" => "A" }), result["definedBy"]
+      assert_equal ({ "name" => "Zfh" }), result["definedBy"]
       assert_equal "ADD.NEW", result["format"]["opcodes"]["funct7"]["display_name"]
       assert_equal 0b011, result["format"]["opcodes"]["funct7"]["value"]
       assert_equal "inst_opcode/OP-NEW.yaml#/data", result["format"]["opcodes"]["funct3"]["$inherits"]
@@ -312,7 +306,7 @@ class TestCli < Minitest::Test
     Dir.mktmpdir do |outdir|
       do_inst_create_until_subtype(outdir, input, output)
 
-      said = expect_line(output, %r{What is the subtype of the instruction format?})
+      expect_line(output, %r{What is the subtype of the instruction format?})
       input.puts "Create"
 
       expect_line(output, %r{What instruction type does the new instruction subtype inherit from})

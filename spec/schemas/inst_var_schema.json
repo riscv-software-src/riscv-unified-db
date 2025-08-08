@@ -7,7 +7,7 @@
     "fully_resolved_data": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["location", "type"],
+      "required": ["location", "type", "display_name"],
       "properties": {
         "location": {
           "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
@@ -28,12 +28,17 @@
         },
         "$child_of": {
           "$ref": "schema_defs.json#/$defs/ref_url_list"
+        },
+        "display_name": {
+          "type": "string",
+          "description": "How the variable should be displayed in documentation such as instruction encoding diagrams"
         }
       }
     },
     "polymorphic_data": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["location", "type", "display_name"],
       "properties": {
         "location": {
           "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
@@ -97,6 +102,10 @@
           "$ref": "#/$defs/polymorphic_data"
         }
       ]
+    },
+    "$source": {
+      "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+      "type": "string"
     }
   }
 }

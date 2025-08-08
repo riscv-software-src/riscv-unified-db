@@ -51,14 +51,9 @@ module Udb
         The license defaults to BSD-3-Clear.
         Other licenses will likely not be accepted upstream.
 
-        Press key to continue
+        Press any key to continue
       INFO
-
-      license_box = TTY::Box.frame(license_info, padding: 3, title: { top_left: "LICENSE" }, style: { fg: :white, bg: :blue })
-      print license_box
-      prompt.keypress
-
-      print prompt.clear_lines(17)
+      TtyTools.display_box(prompt, "LICENSE", license_info)
 
       copyright
     end
@@ -178,11 +173,7 @@ module Udb
 
         Press any key to continue.
       INFO
-
-      opcode_box = TTY::Box.frame(opcode_info, padding: 3, title: { top_left: "Opcodes" }, style: { fg: :white, bg: :blue })
-      print opcode_box
-      prompt.keypress
-      print prompt.clear_lines(12)
+      TtyTools.display_box(prompt, "Opcodes", opcode_info)
 
       loop do
         opcode_name = prompt.ask \
@@ -238,10 +229,7 @@ module Udb
                 Press any key to continue
             HELP
 
-            help_box = TTY::Box.frame(location_help, padding: 1, title: { top_left: "Variable locations" }, style: { fg: :white, bg: :blue })
-            print help_box
-            prompt.keypress
-            print prompt.clear_lines(25)
+            TtyTools.display_box(prompt, "Variable location", location_help)
           else
             break
           end
@@ -379,6 +367,20 @@ module Udb
     end
   end
 
+  module TtyTools
+    extend T::Sig
+
+    sig { params(prompt: TTY::Prompt, title: String, text: String).void }
+    def self.display_box(prompt, title, text)
+      unless ENV["SKIP_INFO"]
+        print TTY::Box.frame(text, padding: 1, title: { top_left: title }, style: { fg: :white, bg: :blue })
+        prompt.keypress
+        lines = text.lines.size
+        print prompt.clear_lines(lines + 6)
+      end
+    end
+  end
+
   module CliCommands
     class Create < SubCommandBase
       extend T::Sig
@@ -425,12 +427,9 @@ module Udb
 
           Press any key to continue
         INTRO
-        intro_box = TTY::Box.frame(intro_text, padding: 3, title: { top_left: "Intro" }, style: { fg: :white, bg: :blue })
         print prompt.cursor.clear_screen
         print prompt.cursor.move_to
-        print intro_box
-        prompt.keypress
-        print prompt.clear_lines(17)
+        TtyTools.display_box(prompt, "Intro", intro_text)
 
         copyright = CreationActions.get_copyright(prompt)
 
@@ -472,12 +471,9 @@ module Udb
 
           Press any key to continue
         INTRO
-        intro_box = TTY::Box.frame(intro_text, padding: 3, title: { top_left: "Intro" }, style: { fg: :white, bg: :blue })
         print prompt.cursor.clear_screen
         print prompt.cursor.move_to
-        print intro_box
-        prompt.keypress
-        print prompt.clear_lines(17)
+        TtyTools.display_box(prompt, "Intro", intro_text)
 
         files = T.let([], T::Array[CreationActions::CreatedFile])
         schema_defs = CreationActions.schema_defs
@@ -498,7 +494,7 @@ module Udb
         end
 
         ext_name = prompt.select \
-          "What extension  defines this instruction? If more than one, or if it is dependent on a parameter, you can edit the template later.",
+          "What extension defines this instruction? If more than one, or if it is dependent on a parameter, you can edit the template later.",
           extension_list,
           filter: true
 
@@ -542,10 +538,7 @@ module Udb
           Press any key to continue
         INFO
 
-        subtype_box = TTY::Box.frame(type_subtype_info, padding: 1, title: { top_left: "Subtypes" }, style: { fg: :white, bg: :blue })
-        print subtype_box
-        prompt.keypress
-        print prompt.clear_lines(19)
+        TtyTools.display_box(prompt, "Subtypes", type_subtype_info)
 
         subtype = prompt.select \
           "What is the subtype of the instruction format?",
@@ -601,10 +594,7 @@ module Udb
           Press any key to continue
         INFO
 
-        opcode_box = TTY::Box.frame(opcode_info, padding: 1, title: { top_left: "Opcodes" }, style: { fg: :white, bg: :blue })
-        print opcode_box
-        prompt.keypress
-        print prompt.clear_lines(22)
+        TtyTools.display_box(prompt, "Opcodes", opcode_info)
 
         opcodes = {}
         type_contents.fetch("opcodes").each do |opcode_name, opcode_data|

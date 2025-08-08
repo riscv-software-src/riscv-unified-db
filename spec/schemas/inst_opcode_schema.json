@@ -34,6 +34,10 @@
           "$ref": "schema_defs.json#/$defs/ref_url_list"
         }
       }
+    },
+    "$source": {
+      "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+      "type": "string"
     }
   }
 }
