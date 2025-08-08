@@ -51,6 +51,9 @@ fields:
     definedBy: S
     description: |
       sie.SSIE is the interrupt-enable bit for supervisor-level software interrupts.
+    sw_write(csr_value): |
+      CSR[mie].SSIE = csr_value.SSIE;
+      return csr_value.SSIE;
   STIE:
     location: 5
     type: RW-H
@@ -60,6 +63,9 @@ fields:
     definedBy: S
     description: |
       sie.STIE is the interrupt-enable bit for supervisor-level timer interrupts.
+    sw_write(csr_value): |
+      CSR[mie].STIE = csr_value.STIE;
+      return csr_value.STIE;
   SEIE:
     location: 9
     type: RW-H
@@ -69,14 +75,22 @@ fields:
     definedBy: S
     description: |
       sie.SEIE is the interrupt-enable bit for supervisor-level external interrupts.
+    sw_write(csr_value): |
+      CSR[mie].SEIE = csr_value.SEIE;
+      return csr_value.SEIE;
   LCOFIE:
     location: 13
     type: RW-H
     reset_value: UNDEFINED_LEGAL
     alias:
       - mie.LCOFIE
+    definedBy: Sscofpmf
     description: |
       If the Sscofpmf extension is implemented, bit sie.LCOFIE is the interrupt-enable
       bit for local-counter-overflow interrupts. If the Sscofpmf extension is not
       implemented, sie.LCOFIE is read-only zeros.
-    definedBy: Sscofpmf
+    sw_write(csr_value): |
+      CSR[mie].LCOFIE = csr_value.LCOFIE;
+      return csr_value.LCOFIE;
+sw_read(): |
+  return $bits(CSR[mie]);
