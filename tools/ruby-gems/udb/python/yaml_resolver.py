@@ -247,15 +247,12 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
     else:
         unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
         if do_checks and (not "name" in unresolved_arch_data):
-            print(
-                f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr
-            )
+            print(f"ERROR: Missing 'name' key in {arch_root}/{rel_path}")
             exit(1)
         fn_name = Path(rel_path).stem
         if do_checks and (fn_name != unresolved_arch_data["name"]):
             print(
-                f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name} in {arch_root}/{rel_path}",
-                file=sys.stderr,
+                f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name}) in {arch_root}/{rel_path}"
             )
             exit(1)
         resolved_objs[str(rel_path)] = _resolve(
