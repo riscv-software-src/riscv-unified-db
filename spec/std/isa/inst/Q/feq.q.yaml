@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: feq.q
-long_name: Floating-Point Quad-Precision Equal
+long_name: Floating-Point Equal Quad-Precision
 description:
   - id: inst-feq.q-behaviour
     normative: false

@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmvh.x.q
-long_name: Move Upper 64 Bits of Quad-Precision Floating-Point to Integer Register
+long_name: Floating-Point Move Upper 64 Bits of Quad-Precision to Integer Register
 description:
   - id: inst-fmvh.x.q-behaviour
     normative: false

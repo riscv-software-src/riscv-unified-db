@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fnmadd.q
-long_name: Floating-point Quad-Precision Fused Negate-Multiply-Add
+long_name: Floating-Point Fused Negate-Multiply-Add Quad-Precision
 description:
   - id: inst-fnmadd.q-behaviour
     normative: true

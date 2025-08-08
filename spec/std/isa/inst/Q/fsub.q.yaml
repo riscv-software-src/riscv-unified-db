@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsub.q
-long_name: Floating-point Quad-Precision Subtract
+long_name: Floating-point Subtract Quad-Precision
 description:
   - id: inst-fsub.q-behaviour
     normative: false

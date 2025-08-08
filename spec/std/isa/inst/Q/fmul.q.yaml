@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmul.q
-long_name: Floating-point Quad-Precision Multiply
+long_name: Floating-point Multiply Quad-Precision
 description:
   - id: inst-fmul.q-behaviour
     normative: false

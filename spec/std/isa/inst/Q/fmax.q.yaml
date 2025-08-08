@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmax.q
-long_name: Floating-Point Quad-Precision Maximum-Number
+long_name: Floating-Point Maximum-Number Quad-Precision
 description:
   - id: inst-fmax.q-behaviour
     normative: false

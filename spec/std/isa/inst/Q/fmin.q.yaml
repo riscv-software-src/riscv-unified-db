@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmin.q
-long_name: Floating-Point Quad-Precision Minimum-Number
+long_name: Floating-Point Minimum-Number Quad-Precision
 description:
   - id: inst-fmin.q-behaviour
     normative: false

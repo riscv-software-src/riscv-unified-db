@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsgnj.q
-long_name: Floating-point Quad-Precision Sign-Injection
+long_name: Floating-point Sign-Injection Quad-Precision
 description:
   - id: inst-fsgnj.q-behaviour
     normative: false

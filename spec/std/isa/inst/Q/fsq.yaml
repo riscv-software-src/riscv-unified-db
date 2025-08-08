@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsq
-long_name: Floating-point Quad-Precision Store
+long_name: Floating-point Store Quad-Precision
 description:
   - id: inst-fsq-behaviour
     normative: false

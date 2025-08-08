@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fdiv.q
-long_name: Floating-Point Quad-Precision Divide
+long_name: Floating-Point Divide Quad-Precision
 description:
   - id: inst-fdiv.q-behaviour
     normative: false

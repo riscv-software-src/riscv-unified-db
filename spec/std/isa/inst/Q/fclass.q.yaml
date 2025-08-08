@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fclass.q
-long_name: Floating-Point Quad-Precision Classify
+long_name: Floating-Point Classify Quad-Precision
 description:
   - id: inst-fclass.q-behaviour
     normative: false

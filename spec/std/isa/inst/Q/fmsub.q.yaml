@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmsub.q
-long_name: Floating-point Quad-Precision Fused Multiply-Subtract
+long_name: Floating-Point Fused Multiply-Subtract Quad-Precision
 description:
   - id: inst-fmsub.q-behaviour
     normative: false
