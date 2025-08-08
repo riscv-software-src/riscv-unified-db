@@ -4,7 +4,7 @@
 The RISC-V ISA functionality is formally described in a domain specific language called ISA Description Language (IDL). The language is intended to be:
 
  * *Human readable* so that it can serve as a reliable documentation source.
- * *Familiar* to both hardware and software designers. For that reason, the syntax resembles a mix of Verilog and C++ (which both share inherit a C-like syntax).
+ * *Familiar* to both hardware and software designers. For that reason, the syntax resembles a mix of Verilog and C++ (which both inherit a C-like syntax).
  * *Strongly typed* to reduce ambiguity as a documentation source.
  * *Modular* to reflect RISC-V's modular ISA structure. IDL can describe a wide range of devices, and then be customized with configuration variables to generate an implementation-specific description.
 
@@ -239,7 +239,7 @@ Bits<2> pbmt = pte.PBMT;
 
 ==== Structs
 
-A struct is a collection of unrelated types, similar to a `struct` in C/C++ or Verilog. Structs are declared using the `struct` keyword. Struct names must begin with a capital letter. Struct members can begin with either lowercase or uppercase; in the former, the member is mutable and in the former the member is const. Struct members may be any type, including other structs.
+A struct is a collection of unrelated types, similar to a `struct` in C/C++ or Verilog. Structs are declared using the `struct` keyword. Struct names must begin with a capital letter. Struct members can begin with either lowercase or uppercase; in the former, the member is mutable and in the latter the member is const. Struct members may be any type, including other structs.
 
 Struct declarations do _not_ need to be followed by a semicolon (as they are in C/C++).
 

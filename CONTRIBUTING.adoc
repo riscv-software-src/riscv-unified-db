@@ -11,7 +11,7 @@ Bug reports should be filed as a https://github.com/riscv-software-src/riscv-uni
 
 === Feature Requests
 
-Bug reports should be filed as a https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] using the `Feature request` template.
+Feature requests should be filed as a https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] using the `Feature request` template.
 
 === Bug Fixes
 
@@ -105,7 +105,7 @@ When a commit will close a GitHub Issue, it should be noted in the footer:
 
 ```
 Fixes #<issue number>
-Closes #<issue numer>
+Closes #<issue number>
 ```
 
 ==== Git trailers
@@ -170,7 +170,7 @@ Under special circumstances code may be added under a different license.
 For example, code from an existing project may be integrated after careful deliberation.
 Any contributions under a different license will receive extra review.
 When any contribution is made under a different license, it must be tracked using
-https://reuse.software/tutorial/#step-2[a Reuse-compatible identifer].
+https://reuse.software/tutorial/#step-2[a Reuse-compatible identifier].
 
 To keep UnifiedDB open to both private and commercial interests, contributions under a
 https://en.wikipedia.org/wiki/copyleft[copyleft license] will never be accepted.
