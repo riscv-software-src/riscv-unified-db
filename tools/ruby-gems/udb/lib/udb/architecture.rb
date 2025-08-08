@@ -259,7 +259,7 @@ class Architecture
 
   # @return [Parameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
-  sig { param(name: String).returns(T.nilable(Parameter)) }
+  sig { params(name: String).returns(T.nilable(Parameter)) }
   def param(name)
     param_hash[name]
   end
