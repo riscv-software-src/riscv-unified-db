@@ -248,6 +248,26 @@ fields:
         return CSR[menvcfg].CBIE;
       }
     reset_value: UNDEFINED_LEGAL
+  SSE:
+    location: 3
+    description: |
+      *Shadow Stack Enable*
+
+      If the SSE field is set to 1, the Zicfiss extension is activated in VS-mode. When the SSE
+      field is 0, the Zicfiss extension remains inactive in VS-mode, and the following rules apply
+      when V=1 :
+
+        - 32-bit Zicfiss instructions will revert to their behavior as defined by Zimop.
+
+        - 16-bit Zicfiss instructions will revert to their behavior as defined by Zcmop.
+
+        - The pte.xwr=010b encoding in VS-stage page tables becomes reserved.
+
+        - The senvcfg.SSE field will read as zero and is read-only.
+
+        - When menvcfg.SSE is one, SSAMOSWAP.W/D raises a virtual-instruction exception.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
   FIOM:
     location: 0
     description: |

@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -116,6 +116,23 @@ fields:
       } else {
         return UNDEFINED_LEGAL_DETERMINISTIC;
       }
+    reset_value: UNDEFINED_LEGAL
+  SSE:
+    location: 3
+    description: |
+      *Shadow Stack Enable*
+
+      When the SSE field is set to 1, the Zicfiss extension is
+      activated in VU/U-mode. When the SSE field is 0, the Zicfiss extension remains inactive
+      in VU/U-mode, and the following rules apply:
+
+        - 32-bit Zicfiss instructions will revert to their behavior as defined by Zimop.
+
+        - 16-bit Zicfiss instructions will revert to their behavior as defined by Zcmop.
+
+        - When menvcfg.SSE is one, SSAMOSWAP.W/D raises an illegal-instruction exception in U-mode
+          and a virtual-instruction exception in VU-mode.
+    type: RW
     reset_value: UNDEFINED_LEGAL
   FIOM:
     location: 0
