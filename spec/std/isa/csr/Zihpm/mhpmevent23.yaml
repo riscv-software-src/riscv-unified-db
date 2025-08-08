@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent23
 long_name: Machine Hardware Performance Counter 23 Control
 address: 0x337
+writable: true
 priv_mode: M
 length: 64
 description: |

@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent10
 long_name: Machine Hardware Performance Counter 10 Control
 address: 0x32A
+writable: true
 priv_mode: M
 length: 64
 description: |

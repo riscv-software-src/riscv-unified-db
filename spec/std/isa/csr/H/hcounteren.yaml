@@ -9,6 +9,7 @@ kind: csr
 name: hcounteren
 long_name: Hypervisor Counter Enable
 address: 0x606
+writable: true
 priv_mode: S
 length: 32
 description: |

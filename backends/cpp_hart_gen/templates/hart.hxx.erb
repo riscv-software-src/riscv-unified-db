@@ -63,6 +63,17 @@ namespace udb {
             end
           end.flatten.join(', ') %> });
 
+    // size (in bits) of the largest instruction encoding
+    static constexpr unsigned __MAX_INST_ENCODING_SIZE =
+      std::max({
+        <%= ilist.map do |i|
+            cfg_arch.possible_xlens.select do |xlen|
+              i.defined_in_base?(xlen)
+            end.map do |xlen|
+              "#{name_of(:inst, cfg_arch, i.name)}<#{xlen}, SocType>::EncodingLength"
+            end
+          end.flatten.join(', ') %> });
+
     static inline PoolAllocator<InstBase, <%= name_of(:hart, cfg_arch) %>::__MAX_INST_CPP_SIZE> inst_allocator;
 
     public:
@@ -86,21 +97,45 @@ namespace udb {
       <%= hart_name -%>(uint64_t hart_id, SocType& soc, const nlohmann::json& cfg)
         : HartBase<SocType>(hart_id, soc, cfg),
           m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
+          <%- if cfg_arch.mxlen.nil? -%>
+          m_xregs {
+            <%- 32.times do |i| -%>
+            { WidthArg(m_params.MXLEN.get()) },
+            <%- end -%>
+          },
+          <%- end -%>
           m_csrs(this),
+          m_csr_addr_map{
+            <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
+              <%- unless csr.address.nil? -%>
+                { PossiblyUnknownBits<12>{<%= csr.address %>_b, 0_b}, &m_csrs.<%= csr.name %> },
+              <%- end -%>
+            <%- end -%>
+          },
+          <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
+          m_csr_indirect_addr_map{
+            <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
+              <%- if csr.indirect? -%>
+                { {<%= csr.indirect_address %>_b, <%= csr.indirect_slot %>_b}, &m_csrs.<%= csr.name %> },
+              <%- end -%>
+            <%- end -%>
+          },
+          <%- end -%>
+          m_csr_name_map {
+            <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
+                { "<%= csr.name %>", &m_csrs.<%= csr.name %> },
+            <%- end -%>
+          },
           m_implemented_exts(expand_implemented_extensions(cfg["implemented_extensions"]))
       {
-        m_xregs[0].makeZeroReg();
-        init_csr_map();
+        m_xregs[0] = 0_b; // set x0
       }
 
       void reset(uint64_t reset_pc) override {
         this->HartBase<SocType>::reset(reset_pc);
         m_csrs.reset();
 
-        m_pc = reset_pc;
-        for (auto i = 1; i < m_xregs_unknown.size(); i++) {
-          m_xregs_unknown.set(i);
-        }
+        m_pc = Bits<MXLEN>{reset_pc};
 
         <%- cfg_arch.globals.each do |global| -%>
         <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
@@ -111,8 +146,6 @@ namespace udb {
         <%- end -%>
         <%- end -%>
       }
-
-      void init_csr_map();
 
       bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const override
       {
@@ -171,7 +204,7 @@ namespace udb {
         std::map<ExtensionName, Version> implemented_exts;
 
         for (auto ext : ext_ver_list) {
-          implemented_exts.emplace(ExtensionName::from_s(ext[0]), ext[1]);
+          implemented_exts.emplace(ExtensionName::from_s(ext[0].get<std::string>()), ext[1].get<std::string>());
         }
         for (auto ext : ext_ver_list) {
           <%- cfg_arch.extensions.each do |ext| -%>
@@ -180,16 +213,18 @@ namespace udb {
           if ((ext[0] == "<%= ext_ver.name %>") && (Version{ext[1]} == Version{"<%= ext_ver.version_str %>"sv})) {
           <%-       ext_ver.implications.each do |implied_ext_ver_and_cond| -%>
             <%-       unless implied_ext_ver_and_cond.cond.empty? -%>
-            auto implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
-              for (const auto& pair : implemented_ext) {
+            {
+              auto  implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
+              for (const auto& pair : this->m_implemented_exts) {
                 if ((pair.first == ExtensionName::from_s(ext_name)) && (VersionRequirement(req).satisfied_by(Version(pair.second)))) {
                   return true;
                 }
               }
               return false;
-            };
-            if (<%= implied_ext_ver_and_cond.cond.to_cxx { |ext_name, req| "implemented(\"#{ext_name}\"sv, \"#{req}\"sv)" } %>) {
-              implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
+              };
+              if (<%= implied_ext_ver_and_cond.cond.to_cxx { |ext_name, req| "implemented(\"#{ext_name}\"sv, \"#{req}\"sv)" } %>) {
+                implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
+              }
             }
             <%-       else -%>
             implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond.ext_ver.name %>, Version{"<%= implied_ext_ver_and_cond.ext_ver.version_str %>"sv}});
@@ -225,91 +260,114 @@ namespace udb {
         return m_csr_addr_map.count(csr_addr) == 1;
       }
 
-      <%= name_of(:struct, "Csr", cfg_arch) %> direct_csr_lookup(const Bits<12>& csr_addr) {
-        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
+      <%= name_of(:struct, cfg_arch, "Csr") %> direct_csr_lookup(const PossiblyUnknownBits<12>& csr_addr) {
+        <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
         auto csr = m_csr_addr_map.find(csr_addr);
         if (csr == m_csr_addr_map.end()) {
           csr_handle.valid = false;
           return csr_handle;
         } else {
-          csr_handle.valid = true;
-          csr_handle.name = csr->name();
+          csr_handle.valid = csr->second->defined();
+          csr_handle.name = csr->second->name();
           csr_handle.addr_type = CsrAddressType::Direct;
           csr_handle.address = csr_addr;
-          csr_handle.window_slot = 0;
-          csr_handle.mode = csr->mode();
-          csr_handle.writable = csr->writable();
+          csr_handle.indirect_slot = 0_b;
+          csr_handle.mode = csr->second->mode();
+          csr_handle.writable = csr->second->writable();
           return csr_handle;
         }
       }
 
-      <%= name_of(:struct, "Csr", cfg_arch) %> indirect_csr_lookup(const Bits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
-        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
+      <%= name_of(:struct, cfg_arch, "Csr") %> indirect_csr_lookup(const PossiblyUnknownBits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
+        <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
-        udb_assert((window_slot > 0) && (window_slot <= 6), "Indirect slots must be between 1-6, inclusive");
+        udb_assert((window_slot > 0_b) && (window_slot <= 6_b), "Indirect slots must be between 1-6, inclusive");
 
+        <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
         auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_indirect_addr, window_slot));
         if (csr == m_csr_indirect_addr_map.end()) {
           csr_handle.valid = false;
           return csr_handle;
         } else {
           csr_handle.valid = true;
-          csr_handle.name = csr->name();
+          csr_handle.name = csr->second->name();
           csr_handle.addr_type = CsrAddressType::Indirect;
           csr_handle.address = csr_indirect_addr;
-          csr_handle.window_slot = window_slot;
-          csr_handle.mode = csr->mode();
-          csr_handle.writable = csr->writable();
+          csr_handle.indirect_slot = window_slot;
+          csr_handle.mode = csr->second->mode();
+          csr_handle.writable = csr->second->writable();
           return csr_handle;
         }
+        <%- else -%>
+        csr_handle.valid = false;
+        return csr_handle;
+        <%- end -%>
       }
 
-      PossiblyUnknownBits<64> csr_hw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+      PossiblyUnknownBits<64> csr_hw_read(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.hw_read(xlen());
+          return csr->second->hw_read(xlen().to_defined());
         } else {
+          <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.hw_read(xlen());
+          return csr->second->hw_read(xlen().to_defined());
+          <%- else -%>
+          udb_assert(false, "There are no indirect CSRs");
+          <%- end -%>
         }
       }
 
-      PossiblyUnknownBits<64> csr_sw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+      PossiblyUnknownBits<64> csr_sw_read(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.sw_read(xlen());
+          return csr->second->sw_read(xlen().to_defined());
         } else {
+          <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.sw_read(xlen());
+          return csr->second->sw_read(xlen().to_defined());
+          <%- else -%>
+          udb_assert(false, "There are no indirect CSRs");
+          <%- end -%>
         }
       }
 
-      void csr_sw_write(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle, const Bits<<%= cfg_arch.mxlen %>>& value) {
+      void csr_sw_write(const <%= name_of(:struct, cfg_arch, "Csr") %>& csr_handle, const PossiblyUnknownBits<<%= cfg_arch.mxlen %>>& value) {
         if (csr_handle.addr_type == CsrAddressType::Direct) {
           auto csr = m_csr_addr_map.find(csr_handle.address);
           udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
-          return csr.sw_write(value, xlen());
+          csr->second->sw_write(value, xlen().to_defined());
         } else {
+          <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
           auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
-          return csr.sw_write(value, xlen());
+          csr->second->sw_write(value, xlen().to_defined());
+          <%- else -%>
+          udb_assert(false, "There are no indirect CSRs");
+          <%- end -%>
         }
       }
 
       void set_pc(uint64_t new_pc) override {
-        m_pc = new_pc;
+        m_pc = Bits<MXLEN>{new_pc};
       }
 
       void set_next_pc(uint64_t next_pc) override {
-        m_next_pc = next_pc;
+        m_next_pc = Bits<MXLEN>{next_pc};
       }
 
-      uint64_t pc() const override { return m_pc; }
+      template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+        requires (BitsType<BitsClass<N, Signed>>)
+      void set_next_pc(const BitsClass<N, Signed>& next_pc) {
+        m_next_pc = next_pc.to_defined();
+      }
+
+      uint64_t pc() const override { return m_pc.get(); }
 
       void advance_pc() override {
         m_pc = m_next_pc;
@@ -321,15 +379,19 @@ namespace udb {
         if (num >= 32) {
           throw std::out_of_range("X register indices are 0 - 31, inclusive");
         }
-        return _xreg(num);
+        return _xreg(num).get();
       }
 
-      Bits<MXLEN> _xreg(unsigned num) const {
-        if (m_xregs_unknown[num] == true) {
-          throw UndefinedValueError("X register value is uninitialized");
-        }
-        return m_xregs[num].get();
+      PossiblyUnknownBits<MXLEN> _xreg(unsigned num) const {
+        return m_xregs[num];
       }
+
+      template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+        requires (BitsType<BitsClass<N, Signed>>)
+      PossiblyUnknownBits<MXLEN> _xreg(const BitsClass<N, Signed>& num) const {
+        return m_xregs[num.get()];
+      }
+
 
       // XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
 
@@ -337,21 +399,24 @@ namespace udb {
         if (num >= 32) {
           throw std::out_of_range("X register indices are 0 - 31, inclusive");
         }
-        _set_xreg(num, value);
+        _set_xreg(Bits<8>{num}, Bits<MXLEN>{value});
       }
 
-      template <typename IdxType>
-      void _set_xreg(const IdxType& num, const Bits<MXLEN>& value) {
-        if (num != 0) {
-          m_xregs_unknown[num] = false;
-          m_xregs[static_cast<unsigned>(num)] = value;
+      template <
+        template <unsigned, bool> class IdxType, unsigned IdxN, bool IdxSigned,
+        template<unsigned, bool> class ValueType, unsigned ValueN, bool ValueSigned
+      >
+        requires (BitsType<IdxType<IdxN, IdxSigned>> && BitsType<ValueType<ValueN, ValueSigned>>)
+      void _set_xreg(const IdxType<IdxN, IdxSigned>& num, const ValueType<ValueN, ValueSigned>& value) {
+        if (num != 0_b) {
+          m_xregs[static_cast<unsigned>(num.get())] = value;
         }
       }
 
       void printState(FILE* out = stdout) const override;
 
     CsrBase* csr(unsigned address) override {
-      auto it = m_csr_addr_map.find(address);
+      auto it = m_csr_addr_map.find(Bits<12>{address});
       if (it == m_csr_addr_map.end()) {
          return nullptr;
       }
@@ -359,7 +424,7 @@ namespace udb {
     }
 
     const CsrBase* csr(unsigned address) const override {
-      auto it = m_csr_addr_map.find(address);
+      auto it = m_csr_addr_map.find(Bits<12>{address});
       if (it == m_csr_addr_map.end()) {
          return nullptr;
       }
@@ -397,11 +462,22 @@ namespace udb {
     }
     bool _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding, InstBase* obj);
 
-    uint64_t fetch() override { return _fetch(); }
-    Bits<INSTR_ENC_SIZE> _fetch();
+    uint64_t fetch() override { return _fetch().get(); }
+    PossiblyUnknownBits<INSTR_ENC_SIZE.get()> _fetch();
+    void ifence() override {
+      m_bb_cache.invalidate();
+      HartBase<SocType>::ifence();
+      this->m_exit_requested = true;
+    }
 
-    <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
-      return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};
+    <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const PossiblyUnknownBits<64>& vaddr, const MemoryOperation& op) const {
+      <%- if cfg_arch.symtab.get("CachedTranslationResult").runtime? -%>
+      <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cachedTranslationresult(this);
+      <%- else -%>
+      <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cachedTranslationresult;
+      <%- end -%>
+      cachedTranslationresult.valid = false;
+      return cachedTranslationresult;
     }
 
     <%= name_of(:csr_container, cfg_arch) %><SocType>& _csrContainer() { return m_csrs; }
@@ -417,11 +493,11 @@ namespace udb {
 
     // external interrupt interface
     void set_mmode_ext_int() {
-      m_csrs.mip.MEIP()._hw_write(1);
+      m_csrs.mip.MEIP()._hw_write(1_b);
       refresh_pending_interrupts();
     }
     void clear_mmode_ext_int() {
-      m_csrs.mip.MEIP()._hw_write(0);
+      m_csrs.mip.MEIP()._hw_write(0_b);
       refresh_pending_interrupts();
     }
     void set_smode_ext_int() {
@@ -447,13 +523,20 @@ namespace udb {
       XReg m_pc;
       XReg m_next_pc;
       InstBase* m_cur_inst;
-      std::array<XRegister<MXLEN>, 32> m_xregs;
-      std::bitset<32> m_xregs_unknown;
 
       <%= name_of(:params, cfg_arch) %> m_params;
+
+      <%- if cfg_arch.mxlen.nil? -%>
+      std::array<PossiblyUnknownRuntimeBits<64>, 32> m_xregs;
+      <%- else -%>
+      std::array<PossiblyUnknownBits<MXLEN>, 32> m_xregs;
+      <%- end -%>
+
       <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;
-      std::unordered_map<Bits<12>, CsrBase*> m_csr_addr_map;
+      std::unordered_map<PossiblyUnknownBits<12>, CsrBase*> m_csr_addr_map;
+      <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
       std::unordered_map<std::pair<Bits<64>, Bits<4>>, CsrBase*> m_csr_indirect_addr_map;
+      <%- end -%>
       std::map<std::string, CsrBase*> m_csr_name_map;
 
       std::array<uint8_t, __MAX_INST_CPP_SIZE> m_run_one_inst_storage;

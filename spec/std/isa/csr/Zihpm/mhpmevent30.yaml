@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent30
 long_name: Machine Hardware Performance Counter 30 Control
 address: 0x33E
+writable: true
 priv_mode: M
 length: 64
 description: |

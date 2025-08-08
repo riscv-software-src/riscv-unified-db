@@ -442,7 +442,8 @@ fields:
       enter the privilege level stored in MPP before clearing the field.
       * When `mstatus.MPRV` is set, loads and stores behave as if the current privilege level were MPP.
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return 2'b11;
     sw_write(csr_value): |
       if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
