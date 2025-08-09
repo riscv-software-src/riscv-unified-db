@@ -1,0 +1,17 @@
+$schema: inst_schema.json#
+kind: instruction
+name: feq.h
+long_name: Floating-point Equal Compare Half-Precision
+isa: zhinx
+encoding:
+  match: 0xa0002053
+  mask: 0xfe00707f
+  funct7: 0x50
+  funct3: 0x2
+  rs1: x
+  rs2: x
+  rd: x
+  fmt: H
+  rm: 0
+description: |
+  Compares two half-precision floats for equality using x registers.
