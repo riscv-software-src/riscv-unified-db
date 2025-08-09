@@ -31,5 +31,5 @@ access:
   vu: always
 operation(): |
   XReg return_addr = $pc + 6;
-  jump_halfword($pc + imm);
   X[1] = return_addr;
+  jump_halfword($pc + imm);
