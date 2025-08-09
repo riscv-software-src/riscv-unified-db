@@ -663,3 +663,106 @@ params:
     schema:
       type: boolean
     extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+
+
+cert_test_procedures:
+  - id: ext.H.enable_disable
+    description: Test enabling and disabling the H extension via misa.H bit
+    steps: |
+      . Setup
+      .. Ensure misa.H is mutable (MUTABLE_MISA_H is true)
+      . Enable H extension
+      .. Set misa.H = 1
+      .. Verify hypervisor_enabled() returns true
+      . Disable H extension
+      .. Set misa.H = 0
+      .. Verify hypervisor_enabled() returns false
+      . Check
+      .. Fail unless enabling/disabling H works as expected
+
+  - id: ext.H.virtualization_modes
+    description: Test entering and exiting virtualization modes (V, HS, VS, VU)
+    steps: |
+      . Setup
+      .. Enable H extension
+      . Enter VS-mode
+      .. Set V = 1, mode = S
+      .. Verify in_vs_mode() returns true
+      . Enter VU-mode
+      .. Set V = 1, mode = U
+      .. Verify in_vu_mode() returns true
+      . Enter HS-mode
+      .. Set V = 0, mode = S
+      .. Verify in_hs_mode() returns true
+      . Check
+      .. Fail unless mode transitions and checks work as expected
+
+  - id: ext.H.two_stage_translation
+    description: Test two-stage address translation (VS-stage and G-stage)
+    steps: |
+      . Setup
+      .. Enable H extension, set V = 1
+      . Translate address
+      .. Call translate_two_stage() with test vaddr, op, mode
+      .. Verify both VS-stage and G-stage translation are invoked
+      . Check
+      .. Fail unless translation result matches expected physical address
+
+  - id: ext.H.fence_operations
+    description: Test hypervisor fence operations (hfence.vvma, hfence.gvma)
+    steps: |
+      . Setup
+      .. Enable H extension
+      . Invalidate VS-stage TLB
+      .. Call hfence_vvma()
+      .. Verify VS-stage TLB entries are invalidated
+      . Invalidate G-stage TLB
+      .. Call hfence_gvma()
+      .. Verify G-stage TLB entries are invalidated
+      . Check
+      .. Fail unless TLB invalidation works as expected
+
+  - id: ext.H.hypervisor_load_store
+    description: Test hypervisor load/store instructions (hlv.*, hsv.*, hlvx.*)
+    steps: |
+      . Setup
+      .. Enable H extension, set V = 1
+      . Test hlv_b
+      .. Call hlv_b() with test rs1, rd
+      .. Verify correct value is loaded from guest physical address
+      . Test hsv_b
+      .. Call hsv_b() with test rs1, rs2
+      .. Verify correct value is stored to guest physical address
+      . Test hlvx_hu
+      .. Call hlvx_hu() with test rs1, rd
+      .. Verify correct value is loaded with execute permission check
+      . Check
+      .. Fail unless all loads/stores behave as expected
+
+  - id: ext.H.exception_handling
+    description: Test exception and interrupt handling in virtual modes
+    steps: |
+      . Setup
+      .. Enable H extension, set V = 1
+      . Trigger guest page fault
+      .. Cause a LoadGuestPageFault in VS-mode
+      .. Verify vstval, vsepc, and trap vector are set correctly
+      . Trigger virtual instruction exception
+      .. Cause a VirtualInstruction exception
+      .. Verify correct CSRs and trap vector are set
+      . Check
+      .. Fail unless exceptions are handled as specified
+
+  - id: ext.H.vmid_management
+    description: Test VMID get/set operations
+    steps: |
+      . Setup
+      .. Enable H extension, set V = 1
+      . Set VMID
+      .. Call set_current_vmid() with test value
+      .. Verify hgatp.VMID is updated
+      . Get VMID
+      .. Call get_current_vmid()
+      .. Verify returned value matches hgatp.VMID
+      . Check
+      .. Fail unless VMID management works as expected
