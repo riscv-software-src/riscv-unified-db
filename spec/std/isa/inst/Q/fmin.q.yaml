@@ -6,9 +6,16 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmin.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Minimum-Number Quad-Precision
+description:
+  - id: inst-fmin.q-behaviour
+    normative: false
+    text: |
+      The `fmin.q` instruction writes the smaller/minimum of `fs1` and `fs2` to `fd`.
+      The value `-0.0` is considered to be less than the value `+0.0`.
+      If both inputs are _NaN_s, the result is the canonical _NaN_.
+      If only one operand is a _NaN_, the result is the non-_NaN_ operand.
+      Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
 definedBy: Q
 assembly: fd, fs1, fs2
 encoding:
