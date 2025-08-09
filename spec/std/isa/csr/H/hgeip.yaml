@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hgeip
+long_name: Hypervisor Guest External Interrupt Pending Register
+description: |
+  The hgeip register is an HSXLEN-bit read-only register, formatted as that indicates pending guest external interrupts for this hart.
+
+  Guest external interrupts represent interrupts directed to individual virtual machines at VS-level.
+  If a RISC-V platform supports placing a physical device under the direct control of a guest OS with minimal hypervisor intervention (known as pass-through or direct assignment between a virtual machine and the physical device), then, in such circumstance, interrupts from the device are intended for a specific virtual machine.
+  Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as collected and reported by an interrupt controller. To distinguish specific pending interrupts from multiple devices, software must query the interrupt controller.
+
+  The number of bits implemented in hgeip and hgeie for guest external interrupts is UNSPECIFIED and may be zero.
+  This number is known as GEILEN. The least-significant bits are implemented first, apart from bit 0. Hence, if GEILEN is nonzero, bits GEILEN:1 shall be writable in hgeie, and all other bit positions shall be read-only zeros in both hgeip and hgeie
+address: 0xE12
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  GEI_PENDING:
+    location_rv32: 31-1
+    location_rv64: 63-1
+    type: RO
+    reset_value: 0
+    description: |
+      Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as collected and reported by an interrupt controller.
+      To distinguish specific pending interrupts from multiple devices, software must query the interrupt controller.
+
+      The number of bits implemented in hgeip and hgeie for guest external interrupts is UNSPECIFIED and may be zero. This number is known as GEILEN.
+      The least-significant bits are implemented first, apart from bit 0.
+      Hence, if GEILEN is nonzero, bits GEILEN:1 shall be writable in hgeie, and all other bit positions shall be read-only zeros in both hgeip and hgeie.
