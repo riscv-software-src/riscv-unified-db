@@ -19,9 +19,6 @@ require "etc"
 $root = Pathname.new(__dir__).realpath
 $lib = $root / "lib"
 
-# Add lib directory to load path
-$LOAD_PATH.unshift($lib) unless $LOAD_PATH.include?($lib)
-
 require "udb/resolver"
 $resolver = Udb::Resolver.new($root)
 
