@@ -140,7 +140,12 @@ fi
 if [ ! -d $ROOT/.home/.gems ]; then
     OLDDIR=$PWD
     cd $ROOT
-    ${RUN} bundle install
+    echo "Installing Ruby gems..."
+    ${RUN} bundle install || {
+        echo "Bundle install failed, trying alternative approach..." >&2
+        ${RUN} gem install bundler || true
+        ${RUN} bundle install --path $ROOT/.home/.gems || true
+    }
     cd $OLDDIR
 fi
 
@@ -171,7 +176,11 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
 fi
 
 if [ ! -d ${ROOT}/node_modules ]; then
-    ${RUN} npm i
+    echo "Installing Node.js dependencies..."
+    ${RUN} npm i || {
+        echo "npm install failed, trying alternative approach..." >&2
+        ${RUN} npm install --no-optional || true
+    }
 fi
 
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then

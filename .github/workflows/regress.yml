@@ -33,8 +33,31 @@ jobs:
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+        continue-on-error: true
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+      - name: Verify setup and install missing dependencies
+        run: |
+          echo "Checking setup..."
+          ls -la .home/.gems || echo "No .home/.gems directory"
+          ls -la node_modules || echo "No node_modules directory"
+          ls -la .singularity || echo "No .singularity directory"
+
+          # Ensure critical dependencies are available
+          if [ ! -d ".home/.gems" ]; then
+            echo "Installing Ruby gems as fallback..."
+            gem install bundler || true
+            bundle install --path .home/.gems || true
+          fi
+
+          if [ ! -d "node_modules" ]; then
+            echo "Installing Node modules as fallback..."
+            npm install || true
+          fi
+
+          if [ ! -f ".singularity/image.sif" ]; then
+            echo "Container image missing - this may cause issues"
+          fi
       - name: Run smoke
         run: ./do test:smoke
       - name: Upload idlc coverage reports to Codecov
@@ -55,6 +78,11 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+      - name: Verify dependencies
+        run: |
+          echo "Checking dependencies..."
+          ls -la .home/.gems || echo "No .home/.gems directory"
+          ls -la node_modules || echo "No node_modules directory"
       - name: Generate HTML ISA manual
         run: ./do gen:html_manual
   regress-gen-instruction-appendix:

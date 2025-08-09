@@ -248,6 +248,12 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "specification_source": {
+                "type": "string",
+                "enum": ["ISA Manual", "UDB"],
+                "default": "ISA Manual",
+                "description": "Who defines this extension version: 'ISA Manual' (default) for extensions defined by RISC-V International through the standards process, 'UDB' for extensions that are ratified but not officially named or versioned in ISA manuals. This distinguishes three states: ratified (state attribute), unratified (state attribute), and ratified-but-not-named-or-versioned (specification_source: UDB)."
               }
             },
             "additionalProperties": false
@@ -330,4 +336,5 @@
   },
 
   "$ref": "#/$defs/ext_data"
-}
+} 
+ 

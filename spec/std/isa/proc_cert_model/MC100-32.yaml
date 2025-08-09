@@ -102,22 +102,16 @@ unpriv_isa_manual_revision: "20191213"
 priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
 debug_manual_revision: "0.13.2"
 
-# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
 extensions:
   I:
-    version: "~> 2.1"
     presence: mandatory
   C:
-    version: "~> 2.2"
     presence: mandatory
   M:
-    version: "~> 2.0"
     presence: optional
   Zicsr:
-    version: "~> 2.0"
     presence: mandatory
   Zicntr:
-    version: "~> 2.0"
     presence: mandatory
     param_constraints:
       TIME_CSR_IMPLEMENTED: {} # Unconstrained
