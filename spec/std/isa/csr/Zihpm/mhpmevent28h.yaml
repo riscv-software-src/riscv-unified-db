@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent28h
 long_name: Machine Hardware Performance Counter 28 Control, High half
 address: 0x73C
+writable: true
 priv_mode: M
 length: 32
 base: 32
