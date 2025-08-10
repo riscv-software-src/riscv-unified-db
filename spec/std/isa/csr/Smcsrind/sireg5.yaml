@@ -7,6 +7,7 @@ kind: csr
 name: sireg5
 long_name: Supervisor Indirect Register Alias 5
 address: 0x156
+writable: true
 priv_mode: S
 length: SXLEN
 definedBy: Sscsrind
