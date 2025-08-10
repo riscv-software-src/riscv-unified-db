@@ -181,7 +181,9 @@ def load_instructions(
                 opcodes = format_data.get("opcodes", {})
 
                 if not opcodes:
-                    logging.error(f"Missing both 'encoding' and 'format.opcodes' for {name} in {path}")
+                    logging.error(
+                        f"Missing both 'encoding' and 'format.opcodes' for {name} in {path}"
+                    )
                     encoding_filtered += 1
                     continue
 
@@ -204,7 +206,9 @@ def load_instructions(
                                     hi = lo = int(location)
 
                                 width = hi - lo + 1
-                                val_int = int(value, 0) if isinstance(value, str) else value
+                                val_int = (
+                                    int(value, 0) if isinstance(value, str) else value
+                                )
                                 val_bin = bin(val_int)[2:].zfill(width)
 
                                 match_bits[31 - hi : 32 - lo + 1] = list(val_bin)
@@ -217,11 +221,14 @@ def load_instructions(
                     match_str = "".join(match_bits)
                     instr_dict[name] = {"match": match_str}
                 except Exception as e:
-                    logging.error(f"Critical error constructing match string for {name} in {path}: {e}")
+                    logging.error(
+                        f"Critical error constructing match string for {name} in {path}: {e}"
+                    )
                     raise
 
 
-                continue 
+
+                continue
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
             if base is not None:
