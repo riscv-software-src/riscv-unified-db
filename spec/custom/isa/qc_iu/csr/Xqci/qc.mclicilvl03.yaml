@@ -3,6 +3,7 @@
 
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
+$schema: csr_schema.json#
 kind: csr
 name: qc.mclicilvl03
 long_name: IRQ Level 3
@@ -16,46 +17,47 @@ definedBy:
       version: ">=0.7"
     - name: Xqciint
       version: ">=0.4"
+writable: true
 description: |
   Level bits for IRQs 24-31
 fields:
   IRQ24:
     type: RW
     reset_value: 0
-    location: 3 - 0
+    location: 3-0
     description: IRQ24 level
   IRQ25:
     type: RW
     reset_value: 0
-    location: 7 - 4
+    location: 7-4
     description: IRQ25 level
   IRQ26:
     type: RW
     reset_value: 0
-    location: 11 - 8
+    location: 11-8
     description: IRQ26 level
   IRQ27:
     type: RW
     reset_value: 0
-    location: 15 - 12
+    location: 15-12
     description: IRQ27 level
   IRQ28:
     type: RW
     reset_value: 0
-    location: 19 - 16
+    location: 19-16
     description: IRQ28 level
   IRQ29:
     type: RW
     reset_value: 0
-    location: 23 - 20
+    location: 23-20
     description: IRQ29 level
   IRQ30:
     type: RW
     reset_value: 0
-    location: 27 - 24
+    location: 27-24
     description: IRQ30 level
   IRQ31:
     type: RW
     reset_value: 0
-    location: 31 - 28
+    location: 31-28
     description: IRQ31 level

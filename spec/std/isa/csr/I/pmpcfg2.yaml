@@ -9,6 +9,7 @@ kind: csr
 name: pmpcfg2
 long_name: PMP Configuration Register 2
 address: 0x3A2
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
@@ -57,11 +58,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 8) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg2].pmp8cfg & 0x80) == 0) {
         # entry is not locked
@@ -119,11 +116,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 9) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg2].pmp9cfg & 0x80) == 0) {
         # entry is not locked
@@ -181,11 +174,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 10) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg2].pmp10cfg & 0x80) == 0) {
         # entry is not locked
@@ -243,11 +232,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 11) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg2].pmp11cfg & 0x80) == 0) {
         # entry is not locked
@@ -306,11 +291,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 12) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg2].pmp12cfg & 0x80) == 0) {
         # entry is not locked
@@ -369,11 +350,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 13) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg2].pmp13cfg & 0x80) == 0) {
         # entry is not locked
@@ -432,11 +409,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 14) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg2].pmp14cfg & 0x80) == 0) {
         # entry is not locked
@@ -495,11 +468,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 15) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((xlen() == 64) && (CSR[pmpcfg2].pmp15cfg & 0x80) == 0) {
         # entry is not locked

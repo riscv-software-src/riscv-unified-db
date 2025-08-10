@@ -10,6 +10,7 @@ long_name: Machine State Enable 2 Register
 address: 0x30E
 priv_mode: M
 length: 64
+writable: true
 description:
   - id: csr-mstateen2-purpose
     normative: true

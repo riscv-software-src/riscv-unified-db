@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter4h
 long_name: Machine Hardware Performance Counter 4, Upper half
 address: 0xB84
+writable: true
 priv_mode: M
 length: 32
 base: 32
