@@ -22,9 +22,11 @@ fields:
   seed_value:
     location_rv32: 31-0
     location_rv64: 63-0
-    type: RO
+    type: RO-H
     description: |
       Entropy bits returned from the physical entropy source.
       This field is WARL and read-only. On each read, the value may be consumed
       or updated depending on platform behavior (see `ZKR_READ_SIDE_EFFECTS`).
-    reset_value: UNDEFINED_LEGAL
+    reset_value: UNDEFINED_LEGAL  
+    sw_read: |
+      return read_entropy();
