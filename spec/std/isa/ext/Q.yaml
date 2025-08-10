@@ -27,3 +27,4 @@ params:
       Indicates whether or not the `Q` extension can be disabled with the `misa.Q` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true

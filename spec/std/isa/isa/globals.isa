@@ -694,7 +694,7 @@ function raise_precise {
       $pc = {CSR[mtvec].BASE, 2'b00};
       CSR[mcause].INT = 1'b0;
       CSR[mcause].CODE = $bits(exception_code);
-      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1)) {
+      if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1)) {
         # write zero into mtval2 and minst
         # (when these are non-zero values, raise_guest_page_fault should be callecd)
         CSR[mtval2].VALUE = 0;
@@ -714,7 +714,7 @@ function raise_precise {
         }
       }
       CSR[mstatus].MPP = $bits(from_mode);
-    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& (handling_mode == PrivilegeMode::S)) {
+    } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1 )&& (handling_mode == PrivilegeMode::S)) {
       CSR[sepc].PC = $pc;
       if (!stval_readonly?()) {
         CSR[stval].VALUE = stval_for(exception_code, tval);
@@ -723,7 +723,7 @@ function raise_precise {
       CSR[scause].INT = 1'b0;
       CSR[scause].CODE = $bits(exception_code);
       CSR[mstatus].SPP = $bits(from_mode)[0];
-      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1)) {
+      if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1)) {
         # write zero into htval and hinst
         # (when these are non-zero values, raise_guest_page_fault should be callecd)
         CSR[htval].VALUE = 0;
@@ -752,7 +752,7 @@ function raise_precise {
           CSR[hstatus].GVA = 0;
         }
       }
-    } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (handling_mode == PrivilegeMode::VS)) {
+    } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& (handling_mode == PrivilegeMode::VS)) {
       CSR[vsepc].PC = $pc;
       if (!vstval_readonly?()) {
         CSR[vstval].VALUE = vstval_for(exception_code, tval);
@@ -874,9 +874,9 @@ function xlen {
       return 32;
     } else {
       if (mode() == PrivilegeMode::M) {
-        if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == $bits(XRegWidth::XLEN32))) {
+        if (MXLEN == 32) {
           return 32;
-        } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].MXL == $bits(XRegWidth::XLEN64))) {
+        } else if (MXLEN == 64) {
           return 64;
         }
       } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
@@ -1161,15 +1161,15 @@ function effective_ldst_mode {
     # when the mode is M, loads and stores can be executed as if they were done from any other mode
     # with the use of mstatus.MPRV
     if (mode() == PrivilegeMode::M) {
-      if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].U == 1 )&& CSR[mstatus].MPRV == 1) {
+      if ((!MISA_CSR_IMPLEMENTED  && implemented?(ExtensionName::U)) || (CSR[misa].U == 1 )&& CSR[mstatus].MPRV == 1) {
         if (CSR[mstatus].MPP == 0b00) {
-          if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
+          if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
             return PrivilegeMode::VU;
           } else {
             return PrivilegeMode::U;
           }
-        } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& CSR[mstatus].MPP == 0b01) {
-          if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
+        } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1 )&& CSR[mstatus].MPP == 0b01) {
+          if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& mpv() == 0b1) {
             return PrivilegeMode::VS;
           } else {
             return PrivilegeMode::S;
@@ -1311,7 +1311,7 @@ function current_translation_mode {
       return SatpMode::Bare;
     }
 
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1'b1)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1'b1)) {
       if (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU) {
         Bits<4> mode_val = CSR[vsatp].MODE;
         if (mode_val == $bits(SatpMode::Sv32)) {
@@ -2024,13 +2024,13 @@ function stage1_page_walk {
 
     # shadow stacks enabled?
     Boolean sse = false;
-    # if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VS) {
+    # if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VS) {
     #   sse = CSR[henvcfg].SSE == 1;
-    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU) {
+    # } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU) {
     #   sse = CSR[senvcfg].SSE == 1;
-    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].U == 1 )&& effective_mode == PrivilegeMode::U) {
+    # } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::U)) || (CSR[misa].U == 1 )&& effective_mode == PrivilegeMode::U) {
     #   sse = CSR[senvcfg].SSE == 1;
-    # } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1 )&& effective_mode == PrivilegeMode::S) {
+    # } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1 )&& effective_mode == PrivilegeMode::S) {
     #   sse = CSR[menvcfg].SSE == 1;
     # } else {
     #   # M-mode
@@ -2039,7 +2039,7 @@ function stage1_page_walk {
 
     # access/dirty bit hardware update enable?
     Boolean adue;
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
       adue = CSR[henvcfg].ADUE == 1;
     } else {
       adue = CSR[menvcfg].ADUE == 1;
@@ -2060,7 +2060,7 @@ function stage1_page_walk {
 
     # make execute readable?
     Boolean mxr;
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
       # HS-level sstatus.MXR makes execute-only pages readable for both stages of address translation
       # (VS-stage and G-stage), whereas vsstatus.MXR affects only the first translation stage (VS-stage)
       mxr = (CSR[mstatus].MXR == 1) || (CSR[vsstatus].MXR == 1);
@@ -2164,7 +2164,7 @@ function stage1_page_walk {
           if (effective_mode == PrivilegeMode::U && pte_flags.U == 0) {
             # U-mode can never access supervisor page
             raise (page_fault_code, effective_mode, vaddr);
-          } else if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU && pte_flags.U == 0) {
+          } else if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H)) || (CSR[misa].H == 1 )&& effective_mode == PrivilegeMode::VU && pte_flags.U == 0) {
             # VU-mode can never access supervisor page
             raise (page_fault_code, effective_mode, vaddr);
           } else if (effective_mode == PrivilegeMode::S && pte_flags.U == 1 && !sum) {
@@ -2400,7 +2400,7 @@ function canonical_vaddr? {
     the canonical address.
   }
   body {
-    if ((!MISA_CSR_IMPLEMENTED) || (CSR[misa].S == 1'b0)) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1'b0)) {
       # there is no translation, any address is canonical
       return true;
     }

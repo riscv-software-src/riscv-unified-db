@@ -30,3 +30,4 @@ params:
       Indicates whether or not the `M` extension can be disabled with the `misa.M` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true

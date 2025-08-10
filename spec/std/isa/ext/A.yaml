@@ -128,3 +128,4 @@ params:
       the extension can be disabled in the `misa.A` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true

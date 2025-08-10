@@ -455,7 +455,6 @@ params:
         The `misa` CSR is read-only-0.
     schema:
       type: boolean
-      default: true
 MTVEC_MODES:
     description: |
       Modes supported by `mtvec.MODE`. If only one, it is assumed to be read-only with that value.

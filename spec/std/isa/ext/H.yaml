@@ -157,6 +157,7 @@ params:
       Indicates whether or not the `H` extension can be disabled with the `misa.H` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true
     extra_validation: |
       # If S mode can be disabled, then H mode must also be disabled since you can't
       # be in H mode without S mode

@@ -139,22 +139,11 @@ fields:
       }
     definedBy: F
     sw_write(csr_value): |
-      if (MISA_CSR_IMPLEMENTED) {
-        if (csr_value.F == 0 && csr_value.D == 1) {
-          return UNDEFINED_LEGAL_DETERMINISTIC;
-        }
-
-        # fall-through; write the intended value
-        return csr_value.F;
-      } else {
-        return 0;
+      if (csr_value.F == 0 && csr_value.D == 1) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
       }
-    legal?(csr_value): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return !(csr_value.F == 0 && csr_value.D == 1);
-      } else {
-        return true;
-      }
+      # fall-through; write the intended value
+      return csr_value.F;
   G:
     location: 6
     description: |
@@ -272,22 +261,12 @@ fields:
       return MISA_CSR_IMPLEMENTED ? 1 : 0;
     definedBy: Q
     sw_write(csr_value): |
-      if (MISA_CSR_IMPLEMENTED) {
-        if ((csr_value.F == 0 || csr_value.D == 0) && csr_value.Q == 1) {
-          return UNDEFINED_LEGAL_DETERMINISTIC;
-        }
+      if ((csr_value.F == 0 || csr_value.D == 0) && csr_value.Q == 1) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      }
 
-        # fall-through; write the intended value
-        return csr_value.Q;
-      } else {
-        return 0;
-      }
-    legal?(csr_value): |
-      if (MISA_CSR_IMPLEMENTED) {
-        return !(csr_value.Q == 1 && csr_value.D == 0);
-      } else {
-        return true;
-      }
+      # fall-through; write the intended value
+      return csr_value.Q;
   S:
     location: 18
     description: |
@@ -333,11 +312,8 @@ fields:
     description: |
       Indicates support for the `V` (vector) extension.
 
-      [when,"MUTABLE_MISA_V == true && MISA_CSR_IMPLEMENTED == true"]
+      [when,"MUTABLE_MISA_V == true"]
       Writing 0 to this field will cause all attempts to execute a vector instruction to raise an `IllegalInstruction` trap.
-
-      [when,"MISA_CSR_IMPLEMENTED == false"]
-      This field reads as 0 and cannot be modified.
     type(): |
       if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::V) && MUTABLE_MISA_V) {
         return CsrFieldType::RW;

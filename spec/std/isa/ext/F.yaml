@@ -245,6 +245,7 @@ params:
       Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true
   HW_MSTATUS_FS_DIRTY_UPDATE:
     description: |
       Indicates whether or not hardware will write to `mstatus.FS`
