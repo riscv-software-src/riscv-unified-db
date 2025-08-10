@@ -339,7 +339,11 @@ function take_interrupt {
       CSR[mepc].PC = $pc;
       CSR[mstatus].MPP = $bits(mode())[1:0];
       if (CSR[misa].H == 1'b1) {
-        CSR[mstatus].MPV = $bits(mode())[2];
+        if(MXLEN == 64) {
+          CSR[mstatus].MPV = $bits(mode())[2];
+        } else {
+          CSR[mstatush].MPV = $bits(mode())[2];
+        }
         CSR[mtval2].VALUE = 0;
         CSR[mtinst].VALUE = 0;
       }

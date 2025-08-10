@@ -30,8 +30,9 @@ operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
+  XReg addr = X[xs1];
   XReg returnaddr;
   returnaddr = $pc + 2;
 
-  jump(X[xs1]);
   X[1] = returnaddr;
+  jump(addr);
