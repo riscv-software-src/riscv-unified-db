@@ -8,6 +8,7 @@ kind: csr
 name: frm
 long_name: Floating-Point Dynamic Rounding Mode
 address: 0x002
+writable: true
 description:
   - id: csr-frm-encodings
     normative: false

@@ -761,6 +761,21 @@ for (U32 i = 0; i < 32; i++) {
 }
 ----
 
+for loop iterations may be declared const if and only if all assignments to the variable are const
+
+[source,idl]
+----
+# OK; all updates to I would be const in a loop unrolling
+for (U32 I = 0; I < 32; I++) {
+  X[I] = 0;
+}
+
+# raises a type error
+for (U32 I = 0; I < 32; I = I + mutable_variable) {
+  X[I] = 0;
+}
+----
+
 == Functions
 
 The basic form of a function declaration is below.

@@ -24,7 +24,7 @@ namespace udb {
     }
   }
 
-  const <%= enum.name %> <%= enum.name %>::from_s(const std::string& value) {
+  const <%= enum.name %> <%= enum.name %>::from_s(const std::string_view& value) {
     <%- element_values.each_index do |idx| -%>
     <%= idx.zero? ? "" : "else" %> if (value == "<%= element_names[idx] %>") {
       return <%= element_values[idx] %>;
