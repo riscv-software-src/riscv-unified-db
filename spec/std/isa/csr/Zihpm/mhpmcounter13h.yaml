@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter13h
 long_name: Machine Hardware Performance Counter 13, Upper half
 address: 0xB8D
+writable: true
 priv_mode: M
 length: 32
 base: 32
