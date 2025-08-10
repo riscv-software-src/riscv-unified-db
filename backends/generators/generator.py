@@ -226,8 +226,6 @@ def load_instructions(
                     )
                     raise
 
-
-
                 continue
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
