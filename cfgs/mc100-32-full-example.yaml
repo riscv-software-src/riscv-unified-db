@@ -4,7 +4,7 @@ $schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
 kind: architecture configuration
 type: fully configured
 name: MC100-32-Full
-description: An example MC100-32-copliant full config
+description: An example MC100-32-compliant full config
 implemented_extensions:
   - [Sm, "1.11.0"]
   - [I, "2.1"]
@@ -12,6 +12,7 @@ implemented_extensions:
   - [M, "2.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
+  - [Smrnmi, "1.0"]
 params:
   MXLEN: 32
   ARCH_ID: 0

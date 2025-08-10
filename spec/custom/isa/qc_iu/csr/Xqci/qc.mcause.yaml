@@ -11,6 +11,7 @@ address: 0x7c9
 base: 32
 priv_mode: M
 length: MXLEN
+writable: true
 description: |
   Machine Mode Custom Cause Register / Interrupt context register.
 definedBy:

@@ -7,6 +7,7 @@ kind: csr
 name: miselect
 long_name: Machine Indirect Register Select
 address: 0x350
+writable: true
 priv_mode: M
 length: MXLEN
 definedBy: Smcsrind

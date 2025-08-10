@@ -272,9 +272,12 @@ module Udb
             gen_path_override: Pathname.new(options[:gen])
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        count = 0
         cfg_arch.csrs.each do |csr|
           puts csr.name
+          count += 1
         end
+        count
       end
     end
   end

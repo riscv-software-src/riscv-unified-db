@@ -16,7 +16,8 @@ namespace udb {
     <%= bitfield.name %>()
       : <%= bitfield.element_names.map { |name| "#{name}(*this)" }.join(",\n#{' '*8}") %>
     {}
-    <%= bitfield.name %>(const Bits<<%= bitfield.size(cfg_arch.symtab) %>>& value)
+    template <template <unsigned, bool> class BitsClass>
+    <%= bitfield.name %>(const BitsClass<<%= bitfield.size(cfg_arch.symtab) %>, false>& value)
       : Bitfield<<%= bitfield.size(cfg_arch.symtab) %>>(value),
         <%= bitfield.element_names.map { |name| "#{name}(*this)" }.join(",\n#{' '*8}") %>
     {}

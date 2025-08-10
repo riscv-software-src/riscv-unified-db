@@ -40,6 +40,17 @@ module Idl
     extend T::Helpers
     abstract!
 
+    Bits1Type = Type.new(:bits, width: 1, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits1Type = Type.new(:bits, width: 1).freeze
+    Bits32Type = Type.new(:bits, width: 32, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits32Type = Type.new(:bits, width: 32).freeze
+    Bits64Type = Type.new(:bits, width: 64, qualifiers: [:known].freeze).freeze
+    PossiblyUnknownBits64Type = Type.new(:bits, width: 64).freeze
+    ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
+    BoolType = Type.new(:boolean).freeze
+    VoidType = Type.new(:void).freeze
+    StringType = Type.new(:string).freeze
+
     # @return [String] Source input file
     sig { returns(Pathname) }
     attr_reader :input_file
@@ -499,6 +510,8 @@ module Idl
     def execute_unknown(symtab); end
   end
 
+  ExecutableAst = T.type_alias { T.all(Executable, AstNode) }
+
   # interface for nodes that *might* return a value in a function body
   module Returns
     extend T::Sig
@@ -775,13 +788,13 @@ module Idl
 
       sym = symtab.get(name)
       # @type =
-        if sym.is_a?(Type)
-          sym
-        elsif sym.is_a?(Var)
-          sym.type
-        else
-          internal_error "Unexpected object on the symbol table"
-        end
+      if sym.is_a?(Type)
+        sym
+      elsif sym.is_a?(Var)
+        sym.type
+      else
+        internal_error "Unexpected object on the symbol table"
+      end
     end
 
     # @return [Boolean] whether or not the Id represents a const
@@ -984,16 +997,16 @@ module Idl
     def enums = definitions.select { |e| e.is_a?(EnumDefinitionAst) || e.is_a?(BuiltinEnumDefinitionAst) }
 
     # @return {Array<AstNode>] List of all bitfield definitions
-    def bitfields = definitions.select { |e| e.is_a?(BitfieldDefinitionAst) }
+    def bitfields = definitions.grep(BitfieldDefinitionAst)
 
     # @return [Array<AstNode>] List of all struct definitions
-    def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
+    def structs = definitions.grep(StructDefinitionAst)
 
     # @return [Array<AstNode>] List of all function definitions
-    def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
+    def functions = definitions.grep(FunctionDefAst)
 
     # @return [FetchAst] Fetch body
-    def fetch = definitions.select { |e| e.is_a?(FetchAst )}[0]
+    def fetch = definitions.grep(FetchAst)[0]
 
     # Add all the global symbols to symtab
     #
@@ -1026,7 +1039,7 @@ module Idl
     def type_check(symtab)
       definitions.each { |d| d.type_check(symtab) }
 
-      fetch_blocks = definitions.select { |d| d.is_a?(FetchAst) }
+      fetch_blocks = definitions.grep(FetchAst)
       type_error "Multiple fetch blocks defined" if fetch_blocks.size > 1
       type_error "No fetch block defined" if fetch_blocks.size.zero?
     end
@@ -1072,11 +1085,11 @@ module Idl
 
     def type(symtab)
       if expression.type(symtab).width == :unknown
-        Type.new(:bits, width: :unknown, qualifiers: [:const])
+        Type.new(:bits, width: :unknown, qualifiers: [:const, :known])
       else
         len = expression.type(symtab).width.bit_length
         len = len.zero? ? 1 : len
-        Type.new(:bits, width: len, qualifiers: [:const])
+        Type.new(:bits, width: len, qualifiers: [:const, :known])
       end
     end
 
@@ -1116,7 +1129,7 @@ module Idl
       Type.new(
         :bits,
         width: enum_class.type(symtab).element_names.size.bit_length,
-        qualifiers: [:const]
+        qualifiers: [:const, :known]
       )
     end
 
@@ -1152,7 +1165,7 @@ module Idl
     end
 
     def type(symtab)
-      Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const])
+      Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const, :known])
     end
 
     def value(symtab)
@@ -1241,7 +1254,7 @@ module Idl
       Type.new(
         :array,
         width: enum_class.type(symtab).element_values.size,
-        sub_type: Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const]),
+        sub_type: Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const, :known]),
         qualifiers: [:const]
       )
     end
@@ -1294,7 +1307,7 @@ module Idl
     def const_eval?(symtab) = true
 
     def initialize(input, interval, user_type, element_names, element_values)
-      super(input, interval, [user_type] + element_names + element_values.reject{ |e| e.nil? })
+      super(input, interval, [user_type] + element_names + element_values.reject { |e| e.nil? })
       @user_type = user_type
       @element_name_asts = element_names
       @element_value_asts = element_values
@@ -1561,7 +1574,7 @@ module Idl
     def element_ranges(symtab)
       return @element_ranges unless @element_ranges.nil?
 
-      @element_ranges = @fields.map{ |f| f.range(symtab) }
+      @element_ranges = @fields.map { |f| f.range(symtab) }
     end
 
     # @!macro type_check
@@ -1671,7 +1684,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      @type = StructType.new(@name, @member_types.map do |t|
+      StructType.new(@name, @member_types.map do |t|
         member_type = t.type(symtab)
         type_error "Type #{t.text_value} is not known" if member_type.nil?
 
@@ -1812,7 +1825,11 @@ module Idl
       if var_type.kind == :array
         var_type.sub_type
       elsif var_type.integral?
-        Bits1Type
+        if var_type.known?
+          Bits1Type
+        else
+          PossiblyUnknownBits1Type
+        end
       else
         internal_error "Bad ary element access"
       end
@@ -1892,7 +1909,11 @@ module Idl
         msb_value = msb.value(symtab)
         lsb_value = lsb.value(symtab)
         range_size = msb_value - lsb_value + 1
-        return Type.new(:bits, width: range_size)
+        if var.type(symtab).known?
+          return Type.new(:bits, width: range_size, qualifiers: [:known])
+        else
+          return Type.new(:bits, width: range_size)
+        end
       end
       # don't know the width at compile time....assume the worst
       value_else(value_result) { var.type(symtab) }
@@ -1979,8 +2000,11 @@ module Idl
       end
     end
 
-    def lhs = @children[0]
-    def rhs = @children[1]
+    sig { returns(IdAst) }
+    def lhs = T.cast(@children.fetch(0), IdAst)
+
+    sig { returns(RvalueAst) }
+    def rhs = T.cast(@children.fetch(1), RvalueAst)
 
     def initialize(input, interval, lhs_ast, rhs_ast)
       super(input, interval, [lhs_ast, rhs_ast])
@@ -1990,9 +2014,14 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       lhs.type_check(symtab)
-      type_error "Cannot assign to a const" if lhs.type(symtab).const?
+      lhs_var = symtab.get(lhs.name)
+      type_error "Cannot assign to a const" if lhs_var.type.const? && !lhs_var.for_loop_iter?
 
       rhs.type_check(symtab)
+      if lhs_var.type.const? && lhs_var.for_loop_iter?
+        # also check that the rhs is const_eval
+        type_error "Assignment would make iteration variable non-const" unless rhs.type(symtab).const?
+      end
       unless rhs.type(symtab).convertable_to?(lhs.type(symtab))
         type_error "Incompatible type in assignment (#{lhs.type(symtab)}, #{rhs.type(symtab)})"
       end
@@ -2787,7 +2816,19 @@ module Idl
       ary_size_ast = send(:ary_size).empty? ? nil : send(:ary_size).expression.to_ast
       VariableDeclarationWithInitializationAst.new(
         input, interval,
-        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast
+        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast,
+        false
+      )
+    end
+  end
+
+  class ForLoopIterationVariableDeclarationSyntaxNode < SyntaxNode
+    def to_ast
+      ary_size_ast = send(:ary_size).empty? ? nil : send(:ary_size).expression.to_ast
+      VariableDeclarationWithInitializationAst.new(
+        input, interval,
+        send(:type_name).to_ast, send(:id).to_ast, ary_size_ast, send(:rval).to_ast,
+        true
       )
     end
   end
@@ -2835,16 +2876,18 @@ module Idl
         type_name_ast: TypeNameAst,
         var_write_ast: IdAst,
         ary_size: T.nilable(RvalueAst),
-        rval_ast: RvalueAst
+        rval_ast: RvalueAst,
+        is_for_loop_iteration_var: T::Boolean
       ).void
     }
-    def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast)
+    def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast, is_for_loop_iteration_var)
       if ary_size.nil?
         super(input, interval, [type_name_ast, var_write_ast, rval_ast])
       else
         super(input, interval, [type_name_ast, var_write_ast, rval_ast, ary_size])
       end
       @global = false
+      @for_iter_var = is_for_loop_iteration_var
     end
 
     def make_global
@@ -2890,16 +2933,16 @@ module Idl
       if decl_type.const?
         # this is a constant; ensure we are assigning a constant value
         value_result = value_try do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab)))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab), for_loop_iter: @for_iter_var))
         end
         value_else(value_result) do
           unless rhs.type(symtab).const?
             type_error "Declaring constant (#{lhs.name}) with a non-constant value (#{rhs.text_value})"
           end
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, for_loop_iter: @for_iter_var))
         end
       else
-        symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
+        symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, for_loop_iter: @for_iter_var))
       end
 
       lhs.type_check(symtab)
@@ -2916,21 +2959,26 @@ module Idl
         if lhs.text_value[0] == T.must(lhs.text_value[0]).upcase
           # const, add the value if it's known
           value_result = value_try do
-            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab)))
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
           end
           value_else(value_result) do
-            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
           end
         else
           # mutable globals never have a compile-time value
-          symtab.add!(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+          symtab.add!(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
         end
       else
         value_result = value_try do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab)))
+          if @for_iter_var
+            # don't add the value, because it will change across iterations
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
+          else
+            symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab), for_loop_iter: @for_iter_var))
+          end
         end
         value_else(value_result) do
-          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab)))
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), for_loop_iter: @for_iter_var))
         end
       end
     end
@@ -2945,7 +2993,7 @@ module Idl
         rhs_value = rhs.value(symtab)
       end
       value_else(value_result) do
-        symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil))
+        symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil, for_loop_iter: @for_iter_var))
         value_error "value of right-hand side of variable initialization is unknown"
       end
       symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs_value))
@@ -2953,7 +3001,7 @@ module Idl
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil))
+      symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), nil, for_loop_iter: @for_iter_var))
     end
 
     # @!macro to_idl
@@ -3125,7 +3173,7 @@ module Idl
       when :bits
         etype
       when :enum_ref
-        Type.new(:bits, width: etype.enum_class.width)
+        Type.new(:bits, width: etype.enum_class.width, qualifiers: [:known])
       when :csr
         if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
@@ -3253,6 +3301,7 @@ module Idl
         # type of non-widening left/right shift is the type of the left hand side
         lhs_type
       elsif op == "`<<"
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         value_result = value_try do
           # if shift amount is known, then the result width is increased by the shift
           # otherwise, the result is the width of the left hand side
@@ -3263,6 +3312,7 @@ module Idl
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
       elsif ["`+", "`-"].include?(op)
+        qualifiers << :known # +/- raises exception if either lhs or rhs has undefined state
         # widening addition/subtraction: result is 1 more bit than the largest operand to
         # capture the carry
         value_result = value_try do
@@ -3274,6 +3324,7 @@ module Idl
           Type.new(:bits, width: :unknown, qualifiers:)
         end
       elsif op == "`*"
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         # widening multiply: result is 2x the width of the largest operand
         value_result = value_try do
           value_error "lhs width is unknown" if lhs_type.width == :unknown
@@ -3285,6 +3336,7 @@ module Idl
         end
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
+        qualifiers << :known if lhs_type.known? && (short_circuit || rhs_type.known?)
         if [lhs_type.width, rhs_type.width].include?(:unknown)
           Type.new(:bits, width: :unknown, qualifiers:)
         else
@@ -3341,7 +3393,7 @@ module Idl
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for left shift: #{lhs_type}" unless lhs_type.kind == :bits
         type_error "Unsupported shift for left shift: #{rhs_type}" unless rhs_type.kind == :bits
-        type_error "Widening shift amount must be constant" unless rhs_type.const?
+        type_error "Widening shift amount must be constant (if it's not, the width of the result is unknowable)." unless rhs_type.const?
       elsif [">>", ">>>"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
@@ -3509,7 +3561,7 @@ module Idl
           prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
 
           # check for truncation
-          prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+          prod_bits_needed = bits_needed(prod, type(symtab).signed?)
           if (type(symtab).width != :unknown)
             return prod if prod_bits_needed <= type(symtab).width
 
@@ -3653,7 +3705,7 @@ module Idl
         prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
 
         # check for truncation
-        prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+        prod_bits_needed = bits_needed(prod, type(symtab).signed?)
         if (type(symtab).width != :unknown)
           return prod if prod_bits_needed <= type(symtab).width
 
@@ -3765,7 +3817,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all <= the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value } }
               true
             else
               value_error "Some value of lhs is not <= some value of rhs"
@@ -3779,7 +3831,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all >= the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value } }
               true
             else
               value_error "Some value of lhs is not >= some value of rhs"
@@ -3793,7 +3845,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all < the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value } }
               true
             else
               value_error "Some value of lhs is not < some value of rhs"
@@ -3807,7 +3859,7 @@ module Idl
             # even if we don't know the exact value of @lhs and @rhs, we can still
             # know that != is true if the possible values of lhs are all > the possible values of rhs
             rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value} }
+            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value } }
               true
             else
               value_error "Some value of lhs is not > some value of rhs"
@@ -3969,7 +4021,7 @@ module Idl
 
   class ConcatenationExpressionSyntaxNode < SyntaxNode
     def to_ast
-      ConcatenationExpressionAst.new(input, interval, [send(:first).to_ast] + send(:rest).elements.map{ |e| e.expression.to_ast })
+      ConcatenationExpressionAst.new(input, interval, [send(:first).to_ast] + send(:rest).elements.map { |e| e.expression.to_ast })
     end
   end
 
@@ -4000,20 +4052,36 @@ module Idl
 
     # @!macro type
     def type(symtab)
+      all_known_values = T.let(true, T::Boolean)
+      width_known = T.let(true, T::Boolean)
+
       is_const = T.let(true, T::Boolean)
       total_width = expressions.reduce(0) do |sum, exp|
         e_type = exp.type(symtab)
-        return BitsUnknownType if e_type.width == :unknown
-
-        is_const &&= e_type.const?
-
-        sum + e_type.width
+        if e_type.width == :unknown
+          width_known = false
+        elsif width_known
+          sum = sum + e_type.width
+        end
+        all_known_values &= e_type.known?
+        sum
       end
 
-      if is_const
-        Type.new(:bits, width: total_width, qualifiers: [:const])
+      qualifiers = is_const ? [:const] : []
+
+      if all_known_values
+        qualifiers << :known
+        if width_known
+          Type.new(:bits, width: total_width, qualifiers:)
+        else
+          Type.new(:bits, width: :unknown, qualifiers:)
+        end
       else
-        Type.new(:bits, width: total_width)
+        if width_known
+          Type.new(:bits, width: total_width, qualifiers:)
+        else
+          Type.new(:bits, width: :unknown, qualifiers:)
+        end
       end
     end
 
@@ -4082,7 +4150,7 @@ module Idl
     def type(symtab)
       value_result = value_try do
         width = (n.value(symtab) * v.type(symtab).width)
-        return Type.new(:bits, width:)
+        return Type.new(:bits, width:, qualifiers: [:known])
       end
       value_else(value_result) do
         Type.new(:bits, width: :unknown)
@@ -4110,7 +4178,8 @@ module Idl
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = rval.const_eval?(symtab)
 
-    def rval = @children[0]
+    sig { returns(T.any(IntLiteralAst, BuiltinVariableAst, StringLiteralAst, IdAst)) }
+    def rval = T.cast(@children.fetch(0), T.any(IntLiteralAst, BuiltinVariableAst, StringLiteralAst, IdAst))
 
     def initialize(input, interval, rval)
       super(input, interval, [rval])
@@ -4118,6 +4187,9 @@ module Idl
 
     def type_check(symtab)
       rval.type_check(symtab)
+      rval_immutable =
+        rval.is_a?(IdAst) && (rval.type(symtab).const? && !symtab.get(T.cast(rval, IdAst).name).for_loop_iter?)
+      type_error "Cannot decrement a const variable" if rval_immutable
       type_error "Post decement must be integral" unless rval.type(symtab).integral?
     end
 
@@ -4185,7 +4257,7 @@ module Idl
       when "$encoding"
         sz = symtab.get("__instruction_encoding_size")
         internal_error "Forgot to set __instruction_encoding_size" if sz.nil?
-        Type.new(:bits, width: sz.value, qualifiers: [:const])
+        Type.new(:bits, width: sz.value, qualifiers: [:const, :known])
       when "$pc"
         if symtab.mxlen == 32
           Bits32Type
@@ -4229,6 +4301,9 @@ module Idl
     def type_check(symtab)
       rval.type_check(symtab)
       var = symtab.get(rval.text_value)
+      rval_immutable =
+        rval.is_a?(IdAst) && (rval.type(symtab).const? && !var.for_loop_iter?)
+      type_error "Cannot increment a const variable" if rval_immutable
       type_error "Post increment variable must be integral" unless var.type.integral?
     end
 
@@ -4611,10 +4686,19 @@ module Idl
           if true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits
             true_width = true_expression.type(symtab).width
             false_width = false_expression.type(symtab).width
+            known = true_expression.type(symtab).known? && false_expression.type(symtab).known?
             if true_width == :unknown || false_width == :unknown
-              Type.new(:bits, width: :unknown)
+              if known
+                Type.new(:bits, width: :unknown, qualifiers: [:known])
+              else
+                Type.new(:bits, width: :unknown)
+              end
             else
-              Type.new(:bits, width: [true_width, false_width].max)
+              if known
+                Type.new(:bits, width: [true_width, false_width].max, qualifiers: [:known])
+              else
+                Type.new(:bits, width: [true_width, false_width].max)
+              end
             end
           else
             true_expression.type(symtab).clone
@@ -4769,9 +4853,9 @@ module Idl
     end
 
       # @!macro execute
-      def execute_unknown(symtab)
-        action.execute_unknown(symtab)
-      end
+    def execute_unknown(symtab)
+      action.execute_unknown(symtab)
+    end
 
     # @!macro to_idl
     sig { override.returns(String) }
@@ -4962,7 +5046,7 @@ module Idl
       elsif return_value_nodes[0].type(symtab).kind == :tuple
         return_value_nodes[0].type(symtab).tuple_types
       else
-        return_value_nodes.map{ |v| v.type(symtab) }
+        return_value_nodes.map { |v| v.type(symtab) }
       end
     end
 
@@ -5191,16 +5275,18 @@ module Idl
       case @type_name
       when "XReg"
         if symtab.mxlen == 32
-          Bits32Type
+          PossiblyUnknownBits32Type
+        elsif symtab.mxlen == 64
+          PossiblyUnknownBits64Type
         else
-          Bits64Type
+          Type.new(:bits, width: :unknown, max_width: 64)
         end
       when "Boolean"
         BoolType
       when "U32"
-        Bits32Type
+        PossiblyUnknownBits32Type
       when "U64"
-        Bits64Type
+        PossiblyUnknownBits64Type
       when "String"
         StringType
       when "Bits"
@@ -5210,7 +5296,7 @@ module Idl
           return Type.new(:bits, width: bits_expression.value(symtab))
         end
         value_else(value_result) do
-          return Type.new(:bits, width: :unknown)
+          return Type.new(:bits, width: :unknown, width_ast: bits_expression)
         end
       else
         internal_error "TODO: #{text_value}"
@@ -5279,7 +5365,35 @@ module Idl
       @known_value = known_value
       @unknown_mask = unknown_mask
     end
+    def bit_length
+      [@known_value.bit_length, @unknown_mask.bit_length].max
+    end
+    def to_s
+      known_str = @known_value.to_s(2).reverse
+      x = @unknown_mask.to_s(2).reverse
+      v = []
+      ([known_str.size, x.size].max).times do |i|
+        if i >= known_str.size
+          v << ((x[i] == "1") ? "x" : "0")
+        elsif i >= x.size
+          v << known_str[i]
+        else
+          if x[i] == "1"
+            v << "x"
+          else
+            v << known_str[i]
+          end
+        end
+      end
+      "0b#{v.reverse.join("")}"
+    end
   end
+
+  # TODO: move this into a unit test
+  tmp = UnknownLiteral.new(5, 4)
+  raise tmp.to_s unless tmp.to_s == "0bx01"
+  tmp = UnknownLiteral.new(0x7fff_ffff, 0b1000_0000_0000)
+  raise tmp.to_s unless tmp.to_s == "0b1111111111111111111x11111111111"
 
   # represents an integer literal
   class IntLiteralAst < AstNode
@@ -5325,6 +5439,8 @@ module Idl
       when /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         signed = ::Regexp.last_match(4)
+        value = ::Regexp.last_match(6)
+
         width = width(symtab)
 
         unless width == :unknown
@@ -5332,18 +5448,19 @@ module Idl
         end
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers << :known unless T.must(value).include?("x")
         @type = Type.new(:bits, width:, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         signed = ::Regexp.last_match(3)
 
-        qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers = signed == "s" ? [:signed, :const, :known] : [:const, :known]
         @type = Type.new(:bits, width: width(symtab), qualifiers:)
       when /^([0-9]*)(s?)$/
         # basic decimal
         signed = ::Regexp.last_match(2)
 
-        qualifiers = signed == "s" ? [:signed, :const] : [:const]
+        qualifiers = signed == "s" ? [:signed, :const, :known] : [:const, :known]
         @type = Type.new(:bits, width: width(symtab), qualifiers:)
       else
         internal_error "Unhandled int value '#{text_value}'"
@@ -5471,13 +5588,13 @@ module Idl
             unknown_mask =
               case radix_id
               when "b"
-                value.gsub("1", "0").gsub(/xX/, "1").to_i(2)
+                value.gsub("1", "0").gsub(/[xX]/, "1").to_i(2)
               when "o"
-                value.gsub(/[0-7]/, "0").gsub(/xX/, "7").to_i(8)
+                value.gsub(/[0-7]/, "0").gsub(/[xX]/, "7").to_i(8)
               when "d"
                 raise "impossible"
               when "h"
-                value.gsub(/[0-9a-fA-F]/, "0").gsub(/xX/, "f").to_i(16)
+                value.gsub(/[0-9a-fA-F]/, "0").gsub(/[xX]/, "f").to_i(16)
               end
             UnknownLiteral.new(known_value, unknown_mask)
           end
@@ -5489,16 +5606,16 @@ module Idl
           radix_id = "o" if radix_id.empty?
 
           # @unsigned_value =
-            case radix_id
-            when "b"
-              value.to_i(2)
-            when "o"
-              value.to_i(8)
-            when "d"
-              value.to_i(10)
-            when "x"
-              value.to_i(16)
-            end
+          case radix_id
+          when "b"
+            value.to_i(2)
+          when "o"
+            value.to_i(8)
+          when "d"
+            value.to_i(10)
+          when "x"
+            value.to_i(16)
+          end
 
         when /^([0-9]*)(s?)$/
           # basic decimal
@@ -5885,7 +6002,7 @@ module Idl
       stmts.each do |s|
         if s.is_a?(Returns)
           v = s.return_value(symtab)
-          return v unless v == nil
+          return v unless v.nil?
         else
           s.execute(symtab)
         end
@@ -5979,8 +6096,12 @@ module Idl
         interval,
         send(:function_name).text_value,
         (!respond_to?(:targs) || send(:targs).empty?) ? [] : [send(:targs).first.to_ast] + send(:targs).rest.elements.map { |r| r.single_declaration.to_ast },
-        send(:ret).empty? ? [] : [send(:ret).first.to_ast] + (send(:ret).respond_to?(:rest) ? send(:ret).rest.elements.map { |r| r.type_name.to_ast } : []),
-        send(:args).empty? ? [] : [send(:args).first.to_ast] + send(:args).rest.elements.map { |r| r.single_declaration.to_ast},
+        if send(:ret).empty?
+          []
+else
+  [send(:ret).first.to_ast] + (send(:ret).respond_to?(:rest) ? send(:ret).rest.elements.map { |r| r.type_name.to_ast } : [])
+end,
+        send(:args).empty? ? [] : [send(:args).first.to_ast] + send(:args).rest.elements.map { |r| r.single_declaration.to_ast },
         send(:desc).text_value,
         respond_to?(:type) ? send(:type).text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? send(:body_block).function_body.to_ast : nil
@@ -6023,7 +6144,7 @@ module Idl
       @reachable_functions_cache ||= {}
     end
 
-    attr_reader :reachable_functions_cache
+    attr_reader :reachable_functions_cache, :argument_nodes
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
@@ -6177,6 +6298,8 @@ module Idl
       end
 
       arguments(symtab).each do |arg_type, arg_name|
+        # make the argument constant for this evaluation
+        arg_type = arg_type.make_const
         symtab.add(arg_name, Var.new(arg_name, arg_type))
       end
 
@@ -6395,7 +6518,7 @@ module Idl
     def to_ast
       ForLoopAst.new(
         input, interval,
-        send(:single_declaration_with_initialization).to_ast,
+        send(:for_loop_iteration_variable_declaration).to_ast,
         send(:condition).to_ast,
         send(:action).to_ast,
         send(:stmts).elements.map(&:s).map(&:to_ast)
@@ -6415,10 +6538,17 @@ module Idl
         stmts.all? { |stmt| stmt.const_eval?(symtab) }
     end
 
-    def init = @children[0]
-    def condition = @children[1]
-    def update = @children[2]
-    def stmts = @children[3..]
+    sig { returns(VariableDeclarationWithInitializationAst) }
+    def init = T.cast(@children.fetch(0), VariableDeclarationWithInitializationAst)
+
+    sig { returns(RvalueAst) }
+    def condition = T.cast(@children.fetch(1), RvalueAst)
+
+    sig { returns(ExecutableAst) }
+    def update = T.cast(@children.fetch(2), ExecutableAst)
+
+    sig { returns(T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)]) }
+    def stmts = T.cast(@children[3..], T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)])
 
     def initialize(input, interval, init, condition, update, stmts)
       super(input, interval, [init, condition, update] + stmts)
@@ -6528,7 +6658,9 @@ module Idl
           init.execute_unknown(symtab)
 
           stmts.each do |s|
-            s.execute_unknown(symtab)
+            unless s.is_a?(ReturnStatementAst)
+              s.execute_unknown(symtab)
+            end
           end
           update.execute_unknown(symtab)
         end
@@ -6801,7 +6933,7 @@ module Idl
     sig { returns(T::Array[ElseIfAst]) }
     def elseifs = T.cast(T.must(@children[2..-2]), T::Array[ElseIfAst])
 
-    sig { returns(IfBodyAst)}
+    sig { returns(IfBodyAst) }
     def final_else_body = T.cast(T.must(@children.last), IfBodyAst)
 
     def initialize(input, interval, if_cond, if_body, elseifs, final_else_body)
@@ -7114,7 +7246,7 @@ module Idl
       internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
 
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.possible_xlens.map{ |xlen| fd.width(xlen) }.max)
+        Type.new(:bits, width: symtab.possible_xlens.map { |xlen| fd.width(xlen) }.max)
       elsif fd.base64_only?
         if symtab.possible_xlens.include?(64)
           Type.new(:bits, width: fd.width(64))
@@ -7334,7 +7466,7 @@ module Idl
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
         end
       when "address"
-        Type.new(:bits, width: 12)
+        Type.new(:bits, width: 12, qualifiers: [:const, :known])
       when "implemented_without?"
         ConstBoolType
       else

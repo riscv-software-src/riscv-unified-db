@@ -10,6 +10,7 @@ long_name: Hypervisor State Enable 1 Register
 address: 0x60D
 priv_mode: S
 length: 64
+writable: true
 description:
   - id: csr-hstateen1-purpose
     normative: true

@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent5
 long_name: Machine Hardware Performance Counter 5 Control
 address: 0x325
+writable: true
 priv_mode: M
 length: 64
 description: |

@@ -501,6 +501,11 @@ grammar Idl
     type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
   end
 
+  # same as single_declaration_with_initialization, but treated specially for semantics (iteration variable can be treated as const even if it's written to, as long as it would be const in a loop unrolling)
+  rule for_loop_iteration_variable_declaration
+    type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::ForLoopIterationVariableDeclarationSyntaxNode>
+  end
+
   rule declaration
     type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
     /
@@ -568,9 +573,9 @@ grammar Idl
   end
 
   rule for_loop
-    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+    'for' space* '(' space* for_loop_iteration_variable_declaration space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
       stmts:(s:(statement / return_statement / function_if_block / for_loop) space*)+
-    '}' <Idl::ForLoopSyntaxNode>
+    '}' space* <Idl::ForLoopSyntaxNode>
   end
 
   rule builtin_type_name

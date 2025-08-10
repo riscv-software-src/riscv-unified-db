@@ -8,6 +8,7 @@ kind: csr
 name: fflags
 long_name: Floating-Point Accrued Exceptions
 address: 0x001
+writable: true
 description:
   - id: csr-fflags-purpose
     normative: true

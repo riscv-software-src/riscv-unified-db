@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent16h
 long_name: Machine Hardware Performance Counter 16 Control, High half
 address: 0x730
+writable: true
 priv_mode: M
 length: 32
 base: 32

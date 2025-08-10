@@ -7,6 +7,7 @@ kind: csr
 name: mcyclecfg
 long_name: Machine Cycle Counter Configuration
 address: 0x321
+writable: true
 priv_mode: M
 length: 64
 definedBy: Smcntrpmf

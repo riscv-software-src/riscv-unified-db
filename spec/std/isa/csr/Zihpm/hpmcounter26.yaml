@@ -9,6 +9,7 @@ kind: csr
 name: hpmcounter26
 long_name: User-mode Hardware Performance Counter 23
 address: 0xC1A
+writable: false
 description: |
   Alias for M-mode CSR `mhpmcounter26`.
 

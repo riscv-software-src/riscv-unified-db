@@ -10,6 +10,7 @@ long_name: Supervisor State Enable 0 Register
 address: 0x10C
 priv_mode: S
 length: MXLEN
+writable: true
 description:
   - id: csr-sstateen0-purpose
     normative: true

@@ -6,6 +6,8 @@
 // This contains all IDL functions that either templates or constexpr
 // Since either needs to be inlined, they must go in the hart header rather than a cxx file
 
+#include <type_traits>
+
 #include "udb/hart.hpp"
 
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %><SocType>::
@@ -20,13 +22,14 @@
 #define __UDB_PC m_pc
 #define __UDB_SET_PC(new_pc) m_next_pc = new_pc
 #define __UDB_XLEN xlen()
+#define __UDB_HART this
 
 namespace udb {
 
 <%# need to get symtab at function scope -%>
 <%- cfg_arch.reachable_functions.each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
-<%- next unless func.templated? || func.constexpr?(cfg_arch.symtab) # non-templated functions come next -%>
+<%# next unless func.templated? || func.constexpr?(cfg_arch.symtab) # non-templated functions come next -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(func) -%>
 
 <%- if func.name == "ary_includes?" -%>
@@ -46,6 +49,27 @@ bool <%= name_of(:hart, cfg_arch) %><SocType>::ary_includes_Q_(const std::vector
 template <SocModel SocType>
 <%= func.gen_cpp_prototype(symtab, 0, include_semi: false, qualifiers: func.constexpr?(cfg_arch.symtab) ? "constexpr" : "", cpp_class: "#{name_of(:hart, cfg_arch)}<SocType>") %> {
   <%- func.apply_template_and_arg_syms(symtab) -%>
+  <%- func.argument_nodes.each_with_index do |arg, idx| -%>
+    <%- if arg.type(symtab).kind == :bits -%>
+      <%- if arg.type(symtab).width == :unknown -%>
+        using __Arg<%= idx %>BitsType =
+          std::conditional_t<
+            _Arg<%= idx %>BitsType<_Arg<%= idx %>BitsTypeN, _Arg<%= idx %>BitsTypeSigned>::PossiblyUnknown,
+            _PossiblyUnknownRuntimeBits<BitsInfinitePrecision, _Arg<%= idx %>BitsTypeSigned>,
+            _RuntimeBits<BitsInfinitePrecision, _Arg<%= idx %>BitsTypeSigned>
+          >;
+          __Arg<%= idx %>BitsType <%= arg.name %> {_<%= arg.name %> , <%= arg.type(symtab).width_ast.gen_cpp(symtab) %>};
+      <%- else -%>
+        using __Arg<%= idx %>BitsType =
+          std::conditional_t<
+            _Arg<%= idx %>BitsType<_Arg<%= idx %>BitsTypeN, _Arg<%= idx %>BitsTypeSigned>::PossiblyUnknown,
+            _PossiblyUnknownBits<<%= arg.type(symtab).width %>, <%= arg.type(symtab).signed? %>>,
+            _Bits<<%= arg.type(symtab).width %>, <%= arg.type(symtab).signed? %>>
+          >;
+        __Arg<%= idx %>BitsType <%= arg.name %> { _<%= arg.name %> };
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
   <%- pruned_func = func.prune(symtab).freeze_tree(symtab) -%>
   <%= pruned_func.body.gen_cpp(symtab) %>
 }
@@ -54,23 +78,7 @@ template <SocModel SocType>
 <%- end -%>
 
 
-<%- cfg_arch.reachable_functions.each do |func| -%>
-<%- next if func.builtin? || func.generated? -%>
-<%- next if func.constexpr?(cfg_arch.symtab) # constexpr funcs are class methods -%>
-<%- next if func.templated? # templated functions have to go in idl_funcs_impl.hxx -%>
-<%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
 
-//
-// <%= func.description.gsub("\n", "\n// ") %>
-template <SocModel SocType>
-<%= func.gen_cpp_prototype(symtab, 0, include_semi: false, cpp_class: "#{name_of(:hart, cfg_arch)}<SocType>") %> {
-  <%- func.apply_template_and_arg_syms(symtab) -%>
-  <%- pruned_func = func.prune(symtab).freeze_tree(symtab) -%>
-  <%= pruned_func.body.gen_cpp(symtab) %>
-}
-
-<%- symtab.release -%>
-<%- end -%>
 
 } // namespace udb
 
@@ -86,3 +94,4 @@ template <SocModel SocType>
 #undef __UDB_PC
 #undef __UDB_SET_PC
 #undef __UDB_XLEN
+#undef __UDB_HART

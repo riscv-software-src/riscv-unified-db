@@ -42,7 +42,8 @@ fields:
       !===
 
       Any other value shall be ignored on a write.
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return 0;
     sw_write(csr_value): |
       if (SATP_MODE_BARE) {
         if (csr_value.MODE == 0) {

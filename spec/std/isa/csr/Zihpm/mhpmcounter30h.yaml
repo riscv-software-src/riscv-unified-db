@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter30h
 long_name: Machine Hardware Performance Counter 30, Upper half
 address: 0xB9E
+writable: true
 priv_mode: M
 length: 32
 base: 32

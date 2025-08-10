@@ -3,6 +3,7 @@
 
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
+$schema: csr_schema.json#
 kind: csr
 name: qc.mclicip4
 long_name: IRQ Pending 4
@@ -14,6 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqciint
+writable: true
 description: |
   Pending bits for IRQs 128-159
 fields:

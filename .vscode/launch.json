@@ -2,6 +2,36 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "ISS debug Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/gen/cpp_hart_gen/rv32_Debug/build/iss",
+      "args": ["-m", "rv32", "-c", "${workspaceFolder}/cfgs/mc100-32-riscv-tests.yaml", "${workspaceFolder}/ext/riscv-tests/isa/rv32ui-p-addi"],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "${workspaceFolder}/bin/gdb",
+      "setupCommands": [
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set Disassembly Flavor to Intel",
+              "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set default value display to hex",
+              "text": "-gdb-set output-radix 16",
+              "ignoreFailures": true
+          }
+      ]
+    },
+    {
       "type": "rdbg",
       "name": "Smoke test",
       "request": "launch",

@@ -35,5 +35,5 @@ operation(): |
 
   XReg return_addr = $pc + 2;
 
-  jump_halfword($pc + $signed(imm));
   X[1] = return_addr;
+  jump_halfword($pc + $signed(imm));

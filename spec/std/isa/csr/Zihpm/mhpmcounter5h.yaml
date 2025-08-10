@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter5h
 long_name: Machine Hardware Performance Counter 5, Upper half
 address: 0xB85
+writable: true
 priv_mode: M
 length: 32
 base: 32

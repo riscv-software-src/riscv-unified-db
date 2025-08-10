@@ -1,1 +1,1 @@
-This directory contains partial ERB templates shared by multiple portfolio-based backend.
+This directory contains partial ERB templates shared by multiple portfolio-based backends.

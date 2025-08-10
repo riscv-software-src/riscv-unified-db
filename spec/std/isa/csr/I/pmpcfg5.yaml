@@ -10,6 +10,7 @@ name: pmpcfg5
 base: 32 # odd numbered pmpcfg registers do not exist in RV64
 long_name: PMP Configuration Register 5
 address: 0x3A5
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
@@ -58,11 +59,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 20) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg5].pmp20cfg & 0x80) == 0) {
         # entry is not locked
@@ -120,11 +117,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 21) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg5].pmp21cfg & 0x80) == 0) {
         # entry is not locked
@@ -182,11 +175,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 22) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg5].pmp22cfg & 0x80) == 0) {
         # entry is not locked
@@ -244,11 +233,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > 23) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if ((CSR[pmpcfg5].pmp23cfg & 0x80) == 0) {
         # entry is not locked

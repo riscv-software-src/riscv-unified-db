@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent7
 long_name: Machine Hardware Performance Counter 7 Control
 address: 0x327
+writable: true
 priv_mode: M
 length: 64
 description: |

@@ -21,11 +21,11 @@
     so_far = 0
     dv.bits.each do |b|
       if b.is_a?(Integer)
-        op = "extract<#{b}, 1, #{inst.encoding_width}>(m_encoding)"
+        op = "this->m_encoding.template at<#{b}>()"
         ops << op
         so_far += 1
       elsif b.is_a?(Range)
-        op = "extract<#{b.first}, #{b.size}, #{inst.encoding_width}>(m_encoding)"
+        op = "this->m_encoding.template extract<#{b.last}, #{b.first}>()"
         ops << op
         so_far += b.size
       end
@@ -46,10 +46,10 @@ namespace udb {
 #define __UDB_FUNC_CALL m_parent->
 #define __UDB_CSR_BY_ADDR(addr) (*(m_parent->csr(addr)))
 #define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
-#define __UDB_ENCODING this->encoding()
+#define __UDB_ENCODING this->_encoding()
 #define __UDB_RUNTIME_PARAM(field) m_parent->params().field
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
-#define __UDB_STRUCT(type) <%= cfg_arch.name %> ## type ##_Struct
+#define __UDB_STRUCT(type) <%= name_of(:cfg, cfg_arch) %>_ ## type ##_Struct
 #define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
 #define __UDB_PC m_parent->m_pc
 #define __UDB_MUTABLE_GLOBAL(x) m_parent->x
@@ -62,7 +62,7 @@ namespace udb {
   <%- needs_rv32 = inst.rv32? && cfg_arch.possible_xlens.include?(32) -%>
   <%- needs_rv64 = inst.rv64? && cfg_arch.possible_xlens.include?(64) -%>
   template <unsigned XLEN, SocModel SocType>
-  class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstBase {
+  class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstWithKnownLength<XLEN, <%= inst.encoding_width %>> {
 
 
     // normal allocation is disallowed (pool allocator)
@@ -76,8 +76,9 @@ namespace udb {
 
   public:
     using XReg = Bits<<%= cfg_arch.possible_xlens.max %>>;
-    <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent, XReg pc, uint64_t encoding)
-      : InstBase(pc, encoding),
+    static constexpr unsigned EncodingLength = <%= inst.encoding_width %>;
+    <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent, XReg pc, Bits<<%= inst.encoding_width %>> encoding)
+      : InstWithKnownLength<XLEN, <%= inst.encoding_width %>>(pc, encoding),
         m_parent(parent)
     {
     }
@@ -86,7 +87,6 @@ namespace udb {
 
     <%= name_of(:hart, cfg_arch) %><SocType>* parent() { return m_parent; }
 
-    size_t enc_len() const override { return <%= inst.encoding_width / 8 %>; }
     bool control_flow() const override {
       <%- if inst.operation_ast.nil? -%>
       return false;
@@ -98,7 +98,7 @@ namespace udb {
         <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
         return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
       <%- else -%>
-        if (m_parent->xlen() == 32) {
+        if (m_parent->xlen() == 32_b) {
           <%- pruned_ast = inst.pruned_operation_ast(32) -%>
           return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
         } else {
@@ -155,7 +155,7 @@ namespace udb {
         <%= pruned_ast.gen_cpp(symtab, 6) %>
         <%- symtab.release -%>
       <%- else -%>
-        if (m_parent->xlen() == 32) {
+        if (m_parent->xlen() == 32_b) {
         <%- pruned_ast = inst.pruned_operation_ast(32) -%>
         <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
         <%= pruned_ast.gen_cpp(symtab, 8) %>
@@ -201,7 +201,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -211,18 +211,18 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
       <%- else -%>
-        if (m_parent->xlen() == 32) {
+        if (m_parent->xlen() == 32_b) {
         <%- pruned_ast = inst.pruned_operation_ast(32) -%>
         <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -232,7 +232,7 @@ namespace udb {
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -253,7 +253,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -263,18 +263,18 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
       <%- else -%>
-        if (m_parent->xlen() == 32) {
+        if (m_parent->xlen() == 32_b) {
         <%- pruned_ast = inst.pruned_operation_ast(32) -%>
         <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>
@@ -284,7 +284,7 @@ namespace udb {
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
-        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{Reg(#{r})}" }.join(", ") %>};
       <%- rescue Idl::ComplexRegDetermination -%>
         throw ComplexRegDetermination();
       <%- end -%>

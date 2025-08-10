@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-
 <%- raise "'pmpcfg_num' must be defined" if pmpcfg_num.nil? -%>
 
 $schema: csr_schema.json#
@@ -13,6 +12,7 @@ base: 32 # odd numbered pmpcfg registers do not exist in RV64
 <%- end -%>
 long_name: PMP Configuration Register <%= pmpcfg_num %>
 address: 0x<%= (0x3A0 + pmpcfg_num).to_s(16).upcase %>
+writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
@@ -65,11 +65,7 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (NUM_PMP_ENTRIES > <%= pmpcfg_num*4 + i %>) {
-        return UNDEFINED_LEGAL;
-      } else {
-        return 0;
-      }
+      return 0;
     sw_write(csr_value): |
       if (<%- if i > 4 -%>(xlen() == 64) && <%- end -%>(CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg & 0x80) == 0) {
         # entry is not locked

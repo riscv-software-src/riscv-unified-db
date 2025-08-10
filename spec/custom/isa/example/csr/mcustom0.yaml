@@ -11,5 +11,6 @@ address: 0xfc0
 length: 64
 priv_mode: M
 definedBy: Xcustom
+writable: true
 description: An example custom CSR
 fields: {}

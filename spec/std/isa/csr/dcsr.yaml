@@ -10,6 +10,7 @@ long_name: Debug Control and Status Register
 address: 0x7B0
 priv_mode: D
 length: 32
+writable: true
 description: |
   Upon entry into Debug Mode, v and prv are updated with the privilege level the hart was previously in,
   and cause is updated with the reason for Debug Mode entry. Other than these fields and nmip, the

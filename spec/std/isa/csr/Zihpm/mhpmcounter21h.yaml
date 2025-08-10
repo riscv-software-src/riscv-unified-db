@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter21h
 long_name: Machine Hardware Performance Counter 21, Upper half
 address: 0xB95
+writable: true
 priv_mode: M
 length: 32
 base: 32

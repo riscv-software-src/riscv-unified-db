@@ -192,6 +192,7 @@ namespace udb {
 
     constexpr bool satisfied_by(const Version& version) const {
       switch (m_op.kind()) {
+        case OpKind::COMPAT:
         case OpKind::GTE:
           return version >= m_version;
         case OpKind::LTE:
@@ -204,6 +205,8 @@ namespace udb {
           return version == m_version;
         case OpKind::NE:
           return version != m_version;
+        default:
+         return false;
       }
       udb_unreachable();
     }

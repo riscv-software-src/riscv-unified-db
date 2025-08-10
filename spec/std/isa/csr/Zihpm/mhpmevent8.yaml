@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent8
 long_name: Machine Hardware Performance Counter 8 Control
 address: 0x328
+writable: true
 priv_mode: M
 length: 64
 description: |

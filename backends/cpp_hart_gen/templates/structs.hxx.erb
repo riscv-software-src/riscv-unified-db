@@ -10,6 +10,9 @@
 namespace udb {
 
 #define __UDB_STRUCT(name) <%= name_of(:cfg, cfg_arch) %>_ ## name ## _Struct
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
+#define __UDB_RUNTIME_PARAM(param_name) hart->params().param_name
+#define __UDB_HART hart
 
   <%- cfg_arch.global_ast.structs.each do |struct| -%>
     struct <%= name_of(:struct, cfg_arch, struct.name) %> {
@@ -17,7 +20,27 @@ namespace udb {
       <%= struct.member_types[idx].gen_cpp(cfg_arch.symtab, 0) %> <%= struct.member_names[idx] %>;
       <%- end -%>
 
+      <%- has_runtime = struct.type(cfg_arch.symtab).runtime? -%>
+
+      <%- if has_runtime -%>
+        <%-
+          runtime_members = []
+          struct.member_types.each_with_index do |ast, idx|
+            t = ast.type(cfg_arch.symtab)
+            runtime_members << [struct.member_names[idx], t.width_ast] if t.runtime?
+          end
+        -%>
+      template <class HartType>
+      <%= name_of(:struct, cfg_arch, struct.name) %>(const HartType& hart)
+        : <%= runtime_members.map { |a| "#{a[0]}(#{a[1].nil? ? "__UDB_HART" : "WidthArg(#{a[1].gen_cpp(cfg_arch.symtab)}.get())" })" }.join(", ") %>
+      {
+
+      }
+
+      <%= name_of(:struct, cfg_arch, struct.name) %>() = delete;
+      <%- else -%>
       <%= name_of(:struct, cfg_arch, struct.name) %>() = default;
+      <%- end -%>
       ~<%= name_of(:struct, cfg_arch, struct.name) %>() = default;
 
       <%= name_of(:struct, cfg_arch, struct.name) %>& operator=(const <%= name_of(:struct, cfg_arch, struct.name) %>& other)
@@ -34,5 +57,8 @@ namespace udb {
   <%- end -%>
 
 #undef __UDB_STRUCT
+#undef __UDB_STATIC_PARAM
+#undef __UDB_RUNTIME_PARAM
+#undef __UDB_HART
 
 }

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-
 <%- raise("'hpm_num' must be defined") if hpm_num.nil? -%>
 
 $schema: csr_schema.json#
@@ -10,6 +9,7 @@ kind: csr
 name: <%= "mhpmcounter#{hpm_num}" %>
 long_name: Machine Hardware Performance Counter <%= hpm_num %>
 address: <%= "0x" + (0xB00 + hpm_num).to_s(16).upcase %>
+writable: true
 priv_mode: M
 length: 64
 description: Programmable hardware performance counter.

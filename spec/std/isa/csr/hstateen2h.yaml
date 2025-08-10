@@ -11,6 +11,7 @@ address: 0x61E
 priv_mode: S
 length: 32
 base: 32
+writable: true
 description:
   - id: csr-hstateen0h-purpose
     normative: true

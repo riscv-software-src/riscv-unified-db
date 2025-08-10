@@ -9,6 +9,7 @@ kind: csr
 name: mhpmcounter26
 long_name: Machine Hardware Performance Counter 26
 address: 0xB1A
+writable: true
 priv_mode: M
 length: 64
 description: Programmable hardware performance counter.

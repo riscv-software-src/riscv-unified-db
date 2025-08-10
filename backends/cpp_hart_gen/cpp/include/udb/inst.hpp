@@ -1,5 +1,6 @@
 #pragma once
 
+#include "udb/bits.hpp"
 #include "udb/bitfield.hpp"
 #include "udb/pool_alloc.hpp"
 
@@ -77,6 +78,10 @@ namespace udb {
 
     Reg(Enum r) : m_reg(r) {}
     Reg(uint64_t r, bool is_fp = false) : m_reg(Enum(is_fp ? r + 32 : r)) {}
+
+    template <typename BitsClass>
+      requires (BitsClass::IsABits)
+    Reg(const BitsClass& r, bool is_fp = false) : m_reg(Enum(is_fp ? r.get() + 32 : r.get())) {}
     operator Enum() const { return m_reg; }
     bool operator==(const Reg &other) const { return m_reg == other.m_reg; }
     bool operator==(Enum other) const { return m_reg == other; }
@@ -106,10 +111,12 @@ namespace udb {
 
   class InstBase {
    public:
-    InstBase(uint64_t pc, uint64_t encoding) : m_pc(pc), m_encoding(encoding) {}
+    InstBase() = default;
+    ~InstBase() = default;
 
-    uint64_t pc() { return m_pc; }
-    uint64_t encoding() { return m_encoding; }
+    virtual uint64_t pc() const = 0;
+    virtual uint64_t encoding() const = 0;
+
     // return encoding length, in bytes
     virtual size_t enc_len() const = 0;
 
@@ -129,9 +136,29 @@ namespace udb {
     virtual std::vector<Reg> srcRegs() const = 0;
     virtual std::vector<Reg> dstRegs() const = 0;
 
+  };
+
+  template <unsigned XLEN, unsigned EncodingLength>
+    requires (EncodingLength % 8 == 0)
+  class InstWithKnownLength : public InstBase {
+   public:
+    using EncodingType = Bits<EncodingLength>;
+
+    InstWithKnownLength(Bits<XLEN> pc, EncodingType encoding)
+      : m_pc(pc),
+        m_encoding(encoding)
+    {
+    }
+
+    uint64_t pc() const override { return m_pc.get(); }
+    const Bits<XLEN> _pc() const { return m_pc; }
+    uint64_t encoding() const override { return m_encoding.get(); }
+    const EncodingType& _encoding() const { return m_encoding; }
+    size_t enc_len() const override { return EncodingLength / 8; }
+
    protected:
-    uint64_t m_pc;
-    uint64_t m_encoding;
+    const Bits<XLEN> m_pc;
+    const EncodingType m_encoding;
   };
 
 }  // namespace udb

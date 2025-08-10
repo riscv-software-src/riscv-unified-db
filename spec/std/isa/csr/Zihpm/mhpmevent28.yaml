@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent28
 long_name: Machine Hardware Performance Counter 28 Control
 address: 0x33C
+writable: true
 priv_mode: M
 length: 64
 description: |

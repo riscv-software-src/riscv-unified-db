@@ -11,6 +11,7 @@ address: 0x31E
 priv_mode: M
 length: 32
 base: 32
+writable: true
 description:
   - id: csr-mstateen2h-purpose
     normative: true

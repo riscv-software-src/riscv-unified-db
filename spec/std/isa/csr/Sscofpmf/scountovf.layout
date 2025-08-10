@@ -8,6 +8,7 @@ kind: csr
 name: scountovf
 long_name: Supervisor Count Overflow
 address: 0xDA0
+writable: false
 priv_mode: S
 length: 32
 definedBy: Sscofpmf

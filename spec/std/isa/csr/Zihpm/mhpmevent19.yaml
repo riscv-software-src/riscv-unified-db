@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent19
 long_name: Machine Hardware Performance Counter 19 Control
 address: 0x333
+writable: true
 priv_mode: M
 length: 64
 description: |

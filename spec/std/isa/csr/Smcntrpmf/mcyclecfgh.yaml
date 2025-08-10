@@ -7,6 +7,7 @@ kind: csr
 name: mcyclecfgh
 long_name: Machine Cycle Counter Configuration High
 address: 0x721
+writable: true
 priv_mode: M
 length: 32
 definedBy: Smcntrpmf

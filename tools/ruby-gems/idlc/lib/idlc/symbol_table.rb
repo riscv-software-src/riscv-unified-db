@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -17,7 +17,7 @@ module Idl
 
     attr_reader :name, :type, :value
 
-    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false)
+    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false, for_loop_iter: false)
       @name = name
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
@@ -31,6 +31,7 @@ module Idl
       @template_index = template_index
       @function_name = function_name
       @param = param
+      @for_loop_iter = for_loop_iter
 
       @const_compatible = true # until otherwise known
     end
@@ -47,6 +48,11 @@ module Idl
       else
         @const_compatible
       end
+    end
+
+    sig { returns(T::Boolean) }
+    def for_loop_iter?
+      @for_loop_iter
     end
 
     def hash
@@ -322,7 +328,7 @@ module Idl
     end
 
     def keys_pretty
-      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k }}
+      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k } }
     end
 
     # searches the symbol table scope-by-scope to find 'name'

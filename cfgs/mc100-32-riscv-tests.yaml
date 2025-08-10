@@ -1,0 +1,127 @@
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
+$schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
+kind: architecture configuration
+type: fully configured
+name: MC100-32-riscv-tests
+description: An example MC100-32-compliant full config for riscv-tests
+implemented_extensions:
+  - [Sm, "1.11.0"]
+  - [I, "2.1"]
+  - [C, "2.0"]
+  - [M, "2.0"]
+  - [Zicsr, "2.0"]
+  - [Zicntr, "2.0"]
+  - [Smrnmi, "1.0"]
+  - [S, "1.11.0"]
+  - [Smpmp, "1.11.0"]
+  - [U, "1.0.0"]
+  - [Zifencei, "2.0.0"]
+
+params:
+  MXLEN: 32
+  ARCH_ID: 0
+  IMP_ID: 0
+  VENDOR_ID_BANK: 1
+  VENDOR_ID_OFFSET: 1
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4
+  MISALIGNED_SPLIT_STRATEGY: by_byte
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  M_MODE_ENDIANNESS: little
+  TRAP_ON_ILLEGAL_WLRL: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+  PMA_GRANULARITY: 12
+  PHYS_ADDR_WIDTH: 34
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_M: false
+  TIME_CSR_IMPLEMENTED: false
+  MUTABLE_MISA_S: false
+  ASID_WIDTH: 5
+  S_MODE_ENDIANNESS: little
+  SXLEN: 32
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 32
+  SCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  STVEC_MODE_DIRECT: false
+  STVEC_MODE_VECTORED: true
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: false
+  MSTATUS_FS_WRITABLE: false
+  MSTATUS_VS_WRITABLE: false
+  MSTATUS_VS_LEGAL_VALUES: [0]
+  MSTATUS_FS_LEGAL_VALUES: [0]
+  MSTATUS_TVM_IMPLEMENTED: false
+  NUM_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 12
+  MUTABLE_MISA_U: false
+  U_MODE_ENDIANNESS: little
+  UXLEN: 32
+  MSTATEEN_ENVCFG_TYPE: rw
+  HSTATEEN_ENVCFG_TYPE: rw

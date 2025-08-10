@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -84,7 +85,7 @@ module Idl
         return create_literal(symtab, v, type(symtab))
       end
       value_else(value_result) do
-        FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab)} )
+        FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab) })
       end
     end
   end
@@ -108,7 +109,8 @@ module Idl
         type_name.dup,
         lhs.dup,
         ary_size&.prune(symtab),
-        rhs.prune(symtab)
+        rhs.prune(symtab),
+        @for_iter_var
       )
     end
   end
@@ -286,7 +288,7 @@ module Idl
         elsif rhs_value == 0
           # anything & 0 == 0
           create_literal(symtab, 0, type(symtab))
-        elsif (lhs.type(symtab).width != :unknown) && rhs_value == (1 << lhs.type(symtab).width - 1)
+        elsif (lhs.type(symtab).width != :unknown) && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # lhs identity
           lhs.prune(symtab)
         else
@@ -306,7 +308,7 @@ module Idl
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
-        elsif lhs_type.width != :unknown && rhs_value == (1 << lhs.type(symtab).width - 1)
+        elsif lhs_type.width != :unknown && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # anything | ~0 == ~0
           create_literal(symtab, rhs_value, type(symtab))
         else

@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
 $schema: csr_schema.json#
 kind: csr
 name: qc.mstkbottomaddr
@@ -9,6 +11,7 @@ address: 0x7c5
 base: 32
 priv_mode: M
 length: MXLEN
+writable: true
 description: |
   Stack bottom limit register. If the stack pointer (sp == x2) lesser then its value - SpOutOfRange exception occurs
 definedBy:

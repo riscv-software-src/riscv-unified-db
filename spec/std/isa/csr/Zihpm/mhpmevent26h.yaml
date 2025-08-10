@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent26h
 long_name: Machine Hardware Performance Counter 26 Control, High half
 address: 0x73A
+writable: true
 priv_mode: M
 length: 32
 base: 32

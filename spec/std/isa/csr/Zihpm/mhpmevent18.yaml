@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent18
 long_name: Machine Hardware Performance Counter 18 Control
 address: 0x332
+writable: true
 priv_mode: M
 length: 64
 description: |

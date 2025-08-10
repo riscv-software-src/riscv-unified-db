@@ -10,12 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "udb/bits.hpp"
 #include "udb/csr.hpp"
 #include "udb/enum.hxx"
 #include "udb/soc_model.hpp"
 #include "udb/stop_reason.h"
 #include "udb/version.hpp"
-#include "udb/xregister.hpp"
 
 #if !defined(JSON_ASSERT)
 #define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");
@@ -127,20 +127,26 @@ namespace udb {
       throw AbortInstruction();
     }
 
-    void wfi() { throw WfiException(); }
+    void wfi() {
+      //Do nothing for now
+      //throw WfiException();
+    }
 
-    void pause() { throw PauseException(); }
+    void pause() {
+      //Do nothing for now
+      //throw PauseException();
+    }
 
     // SoC functions
-    uint64_t read_hpm_counter(uint64_t counternum) {
-      return m_soc.read_hpm_counter(counternum);
+    PossiblyUnknownBits<64> read_hpm_counter(const PossiblyUnknownBits<64>& counternum) {
+      return Bits<64>{m_soc.read_hpm_counter(counternum.get())};
     }
-    uint64_t read_mcycle() { return m_soc.read_mcycle(); }
-    uint64_t read_mtime() { return m_soc.read_mtime(); }
-    Bits<64> sw_write_mcycle(const Bits<64>& value) {
-      return m_soc.sw_write_mcycle(value);
+    PossiblyUnknownBits<64> read_mcycle() { return Bits<64>{m_soc.read_mcycle()}; }
+    PossiblyUnknownBits<64> read_mtime() { return Bits<64>{m_soc.read_mtime()}; }
+    PossiblyUnknownBits<64> sw_write_mcycle(const PossiblyUnknownBits<64>& value) {
+      return Bits<64>(m_soc.sw_write_mcycle(value.get()));
     }
-    void cache_block_zero(uint64_t paddr) { m_soc.cache_block_zero(paddr); }
+    void cache_block_zero(const PossiblyUnknownBits<64>& paddr) { m_soc.cache_block_zero(paddr.get()); }
     void eei_ecall_from_m() { m_soc.eei_ecall_from_m(); }
     void eei_ecall_from_s() { m_soc.eei_ecall_from_s(); }
     void eei_ecall_from_u() { m_soc.eei_ecall_from_u(); }
@@ -153,17 +159,18 @@ namespace udb {
       m_soc.notify_mode_change(from, to);
     }
     void ebreak() { m_soc.ebreak(); }
-    void prefetch_instruction(uint64_t paddr) {
-      m_soc.prefetch_instruction(paddr);
+    void prefetch_instruction(const PossiblyUnknownBits<64>& paddr) {
+      m_soc.prefetch_instruction(paddr.get());
     }
-    void prefetch_read(uint64_t paddr) { m_soc.prefetch_read(paddr); }
-    void prefetch_write(uint64_t paddr) { m_soc.prefetch_write(paddr); }
+    void prefetch_read(const PossiblyUnknownBits<64>& paddr) { m_soc.prefetch_read(paddr.get()); }
+    void prefetch_write(const PossiblyUnknownBits<64>& paddr) { m_soc.prefetch_write(paddr.get()); }
     void fence(bool pi, bool pr, bool po, bool pw, bool si, bool sr, bool so,
                bool sw) {
       m_soc.fence(pi, pr, po, pw, si, sr, so, sw);
     }
     void fence_tso() { m_soc.fence_tso(); }
-    void ifence() { m_soc.ifence(); }
+    virtual void ifence() { m_soc.ifence(); }
+
     template <typename... Args>
     void order_pgtbl_writes_before_vmafence(Args...) {
       // TODO: pass along order info (not easy now because VmaOrderType is
@@ -175,62 +182,62 @@ namespace udb {
       // TODO: pass along order info
       m_soc.order_pgtbl_reads_after_vmafence();
     }
-    Bits<8> read_physical_memory_8(const Bits<64>& paddr) {
-      return m_soc.read_physical_memory_8(paddr);
+    Bits<8> read_physical_memory_8(const PossiblyUnknownBits<64>& paddr) {
+      return Bits<8>{m_soc.read_physical_memory_8(paddr.get())};
     }
-    Bits<16> read_physical_memory_16(const Bits<64>& paddr) {
-      return m_soc.read_physical_memory_16(paddr);
+    Bits<16> read_physical_memory_16(const PossiblyUnknownBits<64>& paddr) {
+      return Bits<16>{m_soc.read_physical_memory_16(paddr.get())};
     }
-    Bits<32> read_physical_memory_32(const Bits<64>& paddr) {
-      return m_soc.read_physical_memory_32(paddr);
+    Bits<32> read_physical_memory_32(const PossiblyUnknownBits<64>& paddr) {
+      return Bits<32>{m_soc.read_physical_memory_32(paddr.get())};
     }
-    Bits<64> read_physical_memory_64(const Bits<64>& paddr) {
-      return m_soc.read_physical_memory_64(paddr);
+    Bits<64> read_physical_memory_64(const PossiblyUnknownBits<64>& paddr) {
+      return Bits<64>{m_soc.read_physical_memory_64(paddr.get())};
     }
-    void write_physical_memory_8(const Bits<64>& paddr, const Bits<8>& value) {
-      m_soc.write_physical_memory_8(paddr, value);
+    void write_physical_memory_8(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<8>& value) {
+      m_soc.write_physical_memory_8(paddr.get(), value.get());
     }
-    void write_physical_memory_16(const Bits<64>& paddr,
-                                  const Bits<16>& value) {
-      m_soc.write_physical_memory_16(paddr, value);
+    void write_physical_memory_16(const PossiblyUnknownBits<64>& paddr,
+                                  const PossiblyUnknownBits<16>& value) {
+      m_soc.write_physical_memory_16(paddr.get(), value.get());
     }
-    void write_physical_memory_32(const Bits<64>& paddr,
-                                  const Bits<32>& value) {
-      m_soc.write_physical_memory_32(paddr, value);
+    void write_physical_memory_32(const PossiblyUnknownBits<64>& paddr,
+                                  const PossiblyUnknownBits<32>& value) {
+      m_soc.write_physical_memory_32(paddr.get(), value.get());
     }
-    void write_physical_memory_64(const Bits<64>& paddr,
-                                  const Bits<64>& value) {
-      m_soc.write_physical_memory_64(paddr, value);
+    void write_physical_memory_64(const PossiblyUnknownBits<64>& paddr,
+                                  const PossiblyUnknownBits<64>& value) {
+      m_soc.write_physical_memory_64(paddr.get(), value.get());
     }
-    bool atomic_check_then_write_32(uint64_t paddr, uint32_t compare_value,
-                                    uint32_t write_value) {
-      return m_soc.atomic_check_then_write_32(paddr, compare_value,
-                                              write_value);
+    bool atomic_check_then_write_32(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<32>& compare_value,
+                                    const PossiblyUnknownBits<32>& write_value) {
+      return m_soc.atomic_check_then_write_32(paddr.get(), compare_value.get(),
+                                              write_value.get());
     }
-    bool atomic_check_then_write_64(uint64_t paddr, uint64_t compare_value,
-                                    uint64_t write_value) {
-      return m_soc.atomic_check_then_write_64(paddr, compare_value,
-                                              write_value);
+    bool atomic_check_then_write_64(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<64>& compare_value,
+                                    const PossiblyUnknownBits<64>& write_value) {
+      return m_soc.atomic_check_then_write_64(paddr.get(), compare_value.get(),
+                                              write_value.get());
     }
-    bool atomically_set_pte_a(uint64_t pte_paddr, uint64_t pte_value,
-                              uint32_t pte_len) {
-      return atomically_set_pte_a(pte_paddr, pte_value, pte_len);
+    bool atomically_set_pte_a(const PossiblyUnknownBits<64>& pte_paddr, const PossiblyUnknownBits<64>& pte_value,
+                              const PossiblyUnknownBits<32>& pte_len) {
+      return atomically_set_pte_a(pte_paddr.get(), pte_value.get(), pte_len.get());
     }
-    bool atomically_set_pte_a_d(uint64_t pte_paddr, uint64_t pte_value,
-                                uint32_t pte_len) {
-      return atomically_set_pte_a_d(pte_paddr, pte_value, pte_len);
+    bool atomically_set_pte_a_d(const PossiblyUnknownBits<64>& pte_paddr, const PossiblyUnknownBits<64>& pte_value,
+                                const PossiblyUnknownBits<32>& pte_len) {
+      return atomically_set_pte_a_d(pte_paddr.get(), pte_value.get(), pte_len.get());
     }
-    uint64_t atomic_read_modify_write_32(uint64_t paddr, uint32_t value,
+    Bits<32> atomic_read_modify_write_32(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<32>& value,
                                          AmoOperation op) {
-      return m_soc.atomic_read_modify_write_32(paddr, value, op);
+      return Bits<32>{m_soc.atomic_read_modify_write_32(paddr.get(), value.get(), op)};
     }
-    uint64_t atomic_read_modify_write_64(uint64_t paddr, uint64_t value,
+    Bits<64> atomic_read_modify_write_64(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<64>& value,
                                          AmoOperation op) {
-      return m_soc.atomic_read_modify_write_64(paddr, value, op);
+      return Bits<64>{m_soc.atomic_read_modify_write_64(paddr.get(), value.get(), op)};
     }
-    bool pma_applies_Q_(const PmaAttribute& attr, uint64_t start_paddr,
-                        uint32_t len) {
-      return m_soc.pma_applies_Q_(attr, start_paddr, len);
+    bool pma_applies_Q_(const PmaAttribute& attr, PossiblyUnknownBits<64> start_paddr,
+                        PossiblyUnknownBits<64> len) {
+      return m_soc.pma_applies_Q_(attr, start_paddr.get(), len.get());
     }
 
     // external interrupt interface
@@ -279,21 +286,21 @@ namespace udb {
     void invalidate_translations(const VmaOrderType&) {}
 
     void invalidate_all_translations() {}
-    void invalidate_asid_translations(Bits<16> asid) {}
+    void invalidate_asid_translations(const PossiblyUnknownBits<16>& asid) {}
     void invalidate_vaddr_translations(uint64_t vaddr) {}
-    void invalidate_asid_vaddr_translations(Bits<16> asid, uint64_t vaddr) {}
+    void invalidate_asid_vaddr_translations(const PossiblyUnknownBits<16>& asid, const PossiblyUnknownRuntimeBits<64>& vaddr) {}
 
     template <typename TranslationResult>
-    void maybe_cache_translation(Bits<64> vaddr, MemoryOperation op,
+    void maybe_cache_translation(const PossiblyUnknownBits<64>& vaddr, MemoryOperation op,
                                  TranslationResult result) {}
 
     void sfence_all() {}
-    void sfence_asid(Bits<16> asid) {}
-    void sfence_vaddr(uint64_t vaddr) {}
-    void sfence_asid_vaddr(Bits<16> asid, uint64_t vaddr) {}
+    void sfence_asid(const PossiblyUnknownBits<16>& asid) {}
+    void sfence_vaddr(const PossiblyUnknownBits<64>& vaddr) {}
+    void sfence_asid_vaddr(const PossiblyUnknownBits<16>& asid, const PossiblyUnknownBits<64>& vaddr) {}
 
     // Return true if the address at paddr has the PMA attribute 'attr'
-    bool check_pma(const uint64_t& paddr, const PmaAttribute& attr) const {
+    bool check_pma(const PossiblyUnknownBits<64>& paddr, const PmaAttribute& attr) const {
       return true;
     }
 
@@ -324,7 +331,7 @@ namespace udb {
       throw UnpredictableBehaviorException();
     }
 
-    unsigned hartid() const { return m_hart_id; }
+    Bits<64> hartid() const { return Bits<64>{m_hart_id}; }
 
     virtual int run_one() = 0;
     virtual int run_bb() = 0;

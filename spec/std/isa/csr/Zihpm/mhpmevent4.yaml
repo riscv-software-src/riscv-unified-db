@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent4
 long_name: Machine Hardware Performance Counter 4 Control
 address: 0x324
+writable: true
 priv_mode: M
 length: 64
 description: |

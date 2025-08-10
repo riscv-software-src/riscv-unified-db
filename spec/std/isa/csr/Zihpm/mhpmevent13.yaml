@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent13
 long_name: Machine Hardware Performance Counter 13 Control
 address: 0x32D
+writable: true
 priv_mode: M
 length: 64
 description: |

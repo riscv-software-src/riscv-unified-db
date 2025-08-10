@@ -9,6 +9,7 @@ kind: csr
 name: hpmcounter15h
 long_name: User-mode Hardware Performance Counter 12, high half
 address: 0xC8F
+writable: false
 base: 32
 description: |
   Alias for M-mode CSR `mhpmcounter15h`.
