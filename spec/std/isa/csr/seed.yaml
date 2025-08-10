@@ -30,3 +30,4 @@ fields:
     reset_value: UNDEFINED_LEGAL  
     sw_read: |
       return read_entropy();
+      
