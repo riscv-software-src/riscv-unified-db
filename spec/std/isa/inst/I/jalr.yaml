@@ -34,11 +34,12 @@ pseudoinstructions:
   - when: (rd == 0 && xs1 == x1 && imm == 0)
     to: ret
 operation(): |
+  XReg addr = (X[xs1] + $signed(imm)) & ~MXLEN'1;
   XReg returnaddr;
   returnaddr = $pc + 4;
 
-  jump((X[xs1] + $signed(imm)) & ~MXLEN'1);
   X[xd] = returnaddr;
+  jump(addr);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

@@ -34,8 +34,8 @@ pseudoinstructions:
 operation(): |
   XReg return_addr = $pc + 4;
 
-  jump_halfword($pc + $signed(imm));
   X[xd] = return_addr;
+  jump_halfword($pc + $signed(imm));
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
