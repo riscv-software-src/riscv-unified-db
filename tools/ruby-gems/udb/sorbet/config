@@ -12,3 +12,5 @@ doc
 ext
 --ignore
 python
+--ignore
+test
