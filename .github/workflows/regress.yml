@@ -44,6 +44,13 @@ jobs:
           disable_search: true
           files: tools/ruby-gems/idlc/coverage/coverage.xml
           flags: idlc
+      - name: Upload udb coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/udb/coverage/coverage.xml
+          flags: udb
   regress-gen-isa-manual:
     runs-on: ubuntu-latest
     env:
