@@ -184,6 +184,14 @@ class Tilt::FinalizedMapping < ::Tilt::BaseMapping
   def lookup(ext); end
 end
 
+# source://tilt//lib/tilt/kramdown.rb#0
+class Tilt::KramdownTemplate < ::Tilt::StaticTemplate
+  private
+
+  # source://tilt//lib/tilt/kramdown.rb#8
+  def _prepare_output; end
+end
+
 # source://tilt//lib/tilt/template.rb#11
 Tilt::LOCK = T.let(T.unsafe(nil), Thread::Mutex)
 

@@ -100,12 +100,13 @@ module Udb
       contributors = prompt.collect do
         loop do
           prompt.say "Who is the first contributor?"
-          key(:people).values do
-            key(:name).ask("Full name?", required: true, modify: [:trim])
+          me = T.cast(self, TTY::Prompt::AnswersCollector)
+          me.key(:people).values do
+            me.key(:name).ask("Full name?", required: true, modify: [:trim])
 
-            key(:email).ask("Email?", validate: :email, modify: [:trim])
+            me.key(:email).ask("Email?", validate: :email, modify: [:trim])
 
-            key(:company).ask("Company?", modify: [:trim])
+            me.key(:company).ask("Company?", modify: [:trim])
           end
           break unless prompt.yes?("Add another contributor?")
         end
@@ -117,7 +118,7 @@ module Udb
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
 
-      CreatedFile.new(path: dest_path, contents: erb.render(binding), next_steps: [])
+      CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
 
     sig { params(prompt: TTY::Prompt, copyright: String, outdir: Pathname, location: String).returns(CreatedFile) }
@@ -204,6 +205,7 @@ module Udb
           "What is the name of the #{(variables.size + 1).to_words(ordinal: true, remove_hyphen: true)} variable field (e.g., `rs1`)?",
           modify: [:trim]
 
+        variable_location = T.let(nil, T.nilable(String))
         loop do
           variable_location = prompt.ask \
             "What is the location of the '#{variable_name}' variable (e.g., '5', '14-12', '31|7|30-25|11-8'. Type 'help' for more)"
@@ -235,7 +237,7 @@ module Udb
           end
         end
 
-        variables << OpcodeOrVariable.new(name: variable_name, location: variable_location)
+        variables << OpcodeOrVariable.new(name: variable_name, location: T.must(variable_location))
       end
 
       template_path = Udb.gem_path / "lib" / "udb" / "templates" / "instruction_type.yaml.erb"
@@ -310,10 +312,9 @@ module Udb
         if type == "Create new"
           prompt.say "Ok. Let's get some information on the new instruction type"
           files << CreationActions.create_inst_type(prompt, copyright, outdir)
-          type = files.last.path.basename(".yaml")
+          type = T.must(files.last).path.basename(".yaml")
           prompt.say "That's all I need for the instruction type. Back to the subtype:\n\n"
-          puts files.last.contents
-          YAML.load(files.last.contents)
+          YAML.load(T.must(files.last).contents)
         else
           YAML.load_file(Udb.repo_root / "spec" / "std" / "isa" / "inst_type" / "#{type}.yaml")
         end
@@ -348,7 +349,7 @@ module Udb
         if var_type == "Create new"
           prompt.say "Ok. Let's get some information on the new instruction variable type"
           files << CreationActions.create_inst_var(prompt, copyright, outdir, type_data["name"])
-          var_type = files.last.path.basename(".yaml")
+          var_type = T.must(files.last).path.basename(".yaml")
           prompt.say "That's all I need for the instruction variable type. Back to the subtype variable.\n\n"
         end
 
@@ -414,6 +415,8 @@ module Udb
       sig { void }
       def instruction_type
         outdir = options[:dry_run].nil? ? Udb.repo_root / "spec" / "std" / "isa" : Pathname.new(options[:dry_run])
+        input = self.options.key?("input") ? self.options.fetch("input") : $stdin
+        output = self.options.key?("output") ? self.options.fetch("output") : $stdout
         prompt = TTY::Prompt.new(input:, output:, env: { "TTY_TEST" => true })
 
         intro_text = <<~INTRO
@@ -489,7 +492,7 @@ module Udb
         prompt.clear_lines 2
 
         extension_list = ["Create new"]
-        Dir.glob(Udb.repo_root / "spec" / "std" / "isa" / "ext" / "*.yaml") do |f|
+        Dir.glob((Udb.repo_root / "spec" / "std" / "isa" / "ext" / "*.yaml").to_s) do |f|
           extension_list << File.basename(f, ".yaml")
         end
 
@@ -500,7 +503,7 @@ module Udb
 
         if ext_name == "Create new"
           files.append CreationActions.create_extension(prompt, copyright, outdir)
-          ext_name = files.last.path.basename(".yaml")
+          ext_name = T.must(files.last).path.basename(".yaml")
         end
 
         long_name = prompt.ask \
@@ -516,7 +519,7 @@ module Udb
         data_independent_timing = prompt.yes?("Is this instruction required to have data-independent timing when extension Zkt and/or Zvkt is used?")
 
         subtypes = { "Create new" => "Create new" }
-        Dir.glob(Udb.repo_root / "spec" / "**" / "isa" / "inst_subtype" / "**" / "*.yaml") do |f|
+        Dir.glob((Udb.repo_root / "spec" / "**" / "isa" / "inst_subtype" / "**" / "*.yaml").to_s) do |f|
           subtype_contents = YAML.load_file(f)
           subtype_name = subtype_contents["name"]
           subtypes["#{subtype_name.ljust(10)} (#{subtype_contents["long_name"]})"] = subtype_name
@@ -549,27 +552,27 @@ module Udb
         subtype_contents = nil
         if subtype == "Create new"
           files.concat CreationActions.create_inst_subtype(prompt, copyright, outdir)
-          subtype_file = files.find { |f| f.path.to_s =~ /inst_subtype/ }
+          subtype_file = T.must(files.find { |f| f.path.to_s =~ /inst_subtype/ })
           subtype_contents = YAML.load(subtype_file.contents)
           type_ref = subtype_contents.fetch("data").fetch("type").fetch("$ref")
           $stderr.puts type_ref
           type_paths = Dir[Udb.repo_root / "spec" / "**" / type_ref.gsub("#", "")]
           if type_paths.empty?
-            type_file = files.find { |f| f.path.to_s =~ /inst_type/ }
+            type_file = T.must(files.find { |f| f.path.to_s =~ /inst_type/ })
             type_contents = YAML.load(type_file.contents)
           else
-            type_contents = YAML.load_file(type_paths[0])
+            type_contents = YAML.load_file(type_paths.fetch(0))
           end
         else
           subtype_paths = Dir[Udb.repo_root / "spec" / "std" / "isa" / "inst_subtype" / "*" / "#{subtype}.yaml"]
           raise "can't find subtype" unless subtype_paths.size == 1
-          subtype_contents = YAML.load_file(subtype_paths[0])
+          subtype_contents = YAML.load_file(subtype_paths.fetch(0))
           type_ref = subtype_contents.fetch("data").fetch("type").fetch("$ref")
           type_paths = Dir[Udb.repo_root / "spec" / "std" / "isa" / type_ref.gsub("#", "")]
           if type_paths.empty?
             raise "Can't find type path"
           else
-            type_contents = YAML.load_file(type_paths[0])
+            type_contents = YAML.load_file(type_paths.fetch(0))
           end
         end
         type_name = type_contents["name"]
@@ -605,7 +608,7 @@ module Udb
 
           if opcode_type == "common/shared"
             matching_opcodes = ["Create a new common opcode"]
-            Dir.glob(Udb.repo_root / "spec" / "std" / "isa" / "inst_opcode" / "*.yaml") do |opcode_file|
+            Dir.glob((Udb.repo_root / "spec" / "std" / "isa" / "inst_opcode" / "*.yaml").to_s) do |opcode_file|
               common_opcode_data = YAML.load_file(opcode_file)
 
               if opcode_data["location"] == common_opcode_data["data"]["location"]
@@ -618,7 +621,7 @@ module Udb
               filter: true
             if op == "Create a new common opcode"
               files.append CreationActions.create_inst_opcode(prompt, copyright, outdir, opcode_data["location"])
-              op = files.last.path.basename(".yaml")
+              op = T.must(files.last).path.basename(".yaml")
             end
             opcodes[opcode_name] = { ref: op }
           else
