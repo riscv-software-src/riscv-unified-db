@@ -5,8 +5,8 @@ ruby "~> 3.2"
 # local gems in UDB
 gem "idlc", path: "tools/ruby-gems/idlc"
 gem "idl_highlighter", path: "tools/ruby-gems/idl_highlighter"
-gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
 gem "udb", path: "tools/ruby-gems/udb"
+gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
 
 source "https://rubygems.org"
 
