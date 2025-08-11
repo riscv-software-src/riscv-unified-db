@@ -187,7 +187,22 @@ def load_instructions(
                     encoding_filtered += 1
                     continue
 
-                match_bits = ["-" for _ in range(32)]
+                bit_length = 32
+                if "length" in data:
+                    try:
+                        bit_length = int(data["length"])
+                    except ValueError:
+                        pass
+                elif "C" in enabled_extensions:
+                    if any(
+                        loc.get("location", "").startswith("0..15")
+                        if isinstance(loc, dict) else str(loc).startswith("0..15")
+                        for loc in opcodes.values()
+                    ):
+                        bit_length = 16
+
+                match_bits = ["-" for _ in range(bit_length)]
+
                 try:
                     for field, info in opcodes.items():
                         if not isinstance(info, dict):
@@ -211,7 +226,10 @@ def load_instructions(
                                 )
                                 val_bin = bin(val_int)[2:].zfill(width)
 
-                                match_bits[31 - hi : 32 - lo + 1] = list(val_bin)
+                                inst_width = 16 if encoding.get("compressed", False) else 32
+                                match_bits = ["-"] * inst_width
+                                match_bits[inst_width - 1 - hi : inst_width - lo] = list(val_bin)
+
                             except Exception as e:
                                 logging.error(
                                     f"Failed to parse location '{location}' for field '{field}' in instruction '{name}': {e}"
