@@ -43,7 +43,7 @@ description: |
     * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_
     * Add the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value
     * Write the result to the address in _xs1_
-definedBy: Zaamo
+definedBy: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
 <%- if size == "d" -%>
 base: 64
 <%- end -%>

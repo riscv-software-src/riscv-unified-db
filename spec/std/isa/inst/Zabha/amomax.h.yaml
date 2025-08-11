@@ -6,18 +6,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomax.h
-long_name: No synopsis available
+long_name: Atomic MAX halfword
 description: |
-  No description available.
+  Atomically:
+
+    * Load the halfword at address _xs1_
+    * Write the sign-extended value into _xd_
+    * Signed compare the least-significant halfword of register _xs2_ to the loaded value, and select the maximum value
+    * Write the maximum to the address in _xs1_
 definedBy: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 10100------------001-----0101111
+  match: 1010000----------001-----0101111
   variables:
-    - name: aq
-      location: 26-26
-    - name: rl
-      location: 25-25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -29,8 +30,13 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg virtual_address = X[xs1];
+  X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::Max, 1'b0, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

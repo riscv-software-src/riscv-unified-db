@@ -362,6 +362,9 @@ end
 # AMO instruction generation from layouts
 %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
   ["b", "h", "w", "d"].each do |size|
+    # Determine target extension directory based on size
+    extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+
     # Define all acquire/release combinations
     aq_rl_variants = [
       { suffix: "", aq: false, rl: false },           # base instruction
@@ -371,7 +374,7 @@ end
     ]
 
     aq_rl_variants.each do |variant|
-      file "#{$resolver.std_path}/inst/Zaamo/#{op}.#{size}#{variant[:suffix]}.yaml" => [
+      file "#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{variant[:suffix]}.yaml" => [
         "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
         __FILE__
       ] do |t|
@@ -381,6 +384,33 @@ end
         erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
         File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
       end
+    end
+  end
+end
+
+# AMOCAS (Atomic Compare-and-Swap) instruction generation from layouts
+["b", "h", "w", "d", "q"].each do |size|
+  # Determine target extension directory based on size
+  extension_dir = %w[b h].include?(size) ? "Zabha" : "Zacas"
+
+  # Define all acquire/release combinations
+  aq_rl_variants = [
+    { suffix: "", aq: false, rl: false },           # base instruction
+    { suffix: ".aq", aq: true, rl: false },         # acquire only
+    { suffix: ".rl", aq: false, rl: true },         # release only
+    { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+  ]
+
+  aq_rl_variants.each do |variant|
+    file "#{$resolver.std_path}/inst/#{extension_dir}/amocas.#{size}#{variant[:suffix]}.yaml" => [
+      "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout",
+      __FILE__
+    ] do |t|
+      aq = variant[:aq]
+      rl = variant[:rl]
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zacas/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
     end
   end
 end
