@@ -245,6 +245,40 @@ module Udb
           out.puts JSON.dump(yaml)
         end
       end
+
+
+      desc "csrs", "list all csrs for a config"
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_std_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_custom_isa_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+      method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+      def csrs
+        raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
+
+        cfg_file =
+          if File.file?(options[:config])
+            Pathname.new(options[:config])
+          elsif File.file?("#{options[:config_dir]}/#{options[:config]}.yaml")
+            Pathname.new("#{options[:config_dir]}/#{options[:config]}.yaml")
+          else
+            raise ArgumentError, "Cannot find config: #{options[:config]}"
+          end
+
+        resolver =
+          Udb::Resolver.new(
+            std_path_override: Pathname.new(options[:arch]),
+            custom_path_override: Pathname.new(options[:arch_overlay]),
+            gen_path_override: Pathname.new(options[:gen])
+          )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        count = 0
+        cfg_arch.csrs.each do |csr|
+          puts csr.name
+          count += 1
+        end
+        count
+      end
     end
   end
 
