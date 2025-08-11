@@ -11,7 +11,7 @@ For a new extension called `Znew`:
 
 . Create a new branch at https://github.com/riscv-software-src/riscv-unified-db.
 ** The branch should be called `spec/Znew`.
-** If you do not have write permission on riscv-unified-db, reach out to mailto:help@riscv.org[help@riscv.org, Please create a fork on riscv-unified-db for {EXTENSION_NAME}].
+** If you do not have write permission on riscv-unified-db, reach out to mailto:help@riscv.org[help@riscv.org, Please create a branch on riscv-unified-db for {EXTENSION_NAME}].
 . Check out the branch and set it up.
 ** UnifiedDB requires _either_ Docker or Signularity/Apptainer to be installed.
 ** Run `./bin/setup`. It will ask which container type you want to use.
@@ -28,6 +28,8 @@ See xref:creating-a-new-instruction.adoc[Creating New Instructions].
 Make sure you indicate that the new instruction is defined by Znew.
 
 == Adding CSRs / CSR fields
+
+TODO
 
 == Verifying the extension
 
