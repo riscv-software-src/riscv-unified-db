@@ -7,7 +7,21 @@
 source "https://rubygems.org"
 
 # explicit require the local gems so that bundler can find them
-gem "idlc", path: "../idlc"
-gem "udb_helpers", path: "../udb_helpers"
+gem "idlc", path: "../idlc", require: false
+gem "udb_helpers", path: "../udb_helpers", require: false
 
 gemspec
+
+group :development do
+  gem "bumbler", require: false
+  gem "rubocop-github", require: false
+  gem "rubocop-minitest", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-sorbet", require: false
+  gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
+  gem "sorbet", require: false
+  gem "tapioca", require: false
+  gem "yard", require: false
+  gem "yard-sorbet", require: false
+end

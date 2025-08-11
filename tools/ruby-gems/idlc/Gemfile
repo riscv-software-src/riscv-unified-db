@@ -7,3 +7,18 @@
 source "https://rubygems.org"
 
 gemspec
+
+group :development do
+  gem "minitest", require: false
+  gem "rouge", require: false
+  gem "rubocop-github", require: false
+  gem "rubocop-minitest", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-sorbet", require: false
+  gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
+  gem "sorbet", require: false
+  gem "tapioca", require: false
+  gem "yard", require: false
+  gem "yard-sorbet", require: false
+end

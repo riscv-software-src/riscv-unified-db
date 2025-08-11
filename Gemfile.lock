@@ -25,7 +25,6 @@ PATH
       activesupport
       asciidoctor
       awesome_print
-      concurrent-ruby
       idlc
       json_schemer
       numbers_and_words
@@ -85,11 +84,10 @@ GEM
     base64 (0.3.0)
     benchmark (0.4.1)
     bigdecimal (3.2.2)
+    bumbler (0.9.0)
     commander (5.0.0)
       highline (~> 3.0.0)
     concurrent-ruby (1.3.5)
-    concurrent-ruby-ext (1.3.5)
-      concurrent-ruby (= 1.3.5)
     connection_pool (2.5.3)
     css_parser (1.21.1)
       addressable
@@ -348,8 +346,7 @@ DEPENDENCIES
   awesome_print
   base64
   bigdecimal
-  concurrent-ruby
-  concurrent-ruby-ext
+  bumbler
   debug
   idl_highlighter!
   idlc!

@@ -35,7 +35,6 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport"
   s.add_dependency "asciidoctor"
   s.add_dependency "awesome_print"
-  s.add_dependency "concurrent-ruby"
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
   s.add_dependency "numbers_and_words"
@@ -48,6 +47,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-prompt"
   s.add_dependency "udb_helpers"
 
+  s.add_development_dependency "bumbler"
   s.add_development_dependency "rubocop-github"
   s.add_development_dependency "rubocop-minitest"
   s.add_development_dependency "rubocop-performance"

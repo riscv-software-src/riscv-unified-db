@@ -36,17 +36,4 @@ Gem::Specification.new do |s|
   s.add_dependency "commander", "~> 5"
   s.add_dependency "sorbet-runtime"
   s.add_dependency "treetop", "1.6.12"
-
-  s.add_development_dependency "minitest"
-  s.add_development_dependency "rouge"
-  s.add_development_dependency "rubocop-github"
-  s.add_development_dependency "rubocop-minitest"
-  s.add_development_dependency "rubocop-performance"
-  s.add_development_dependency "rubocop-sorbet"
-  s.add_development_dependency "simplecov"
-  s.add_development_dependency "simplecov-cobertura"
-  s.add_development_dependency "sorbet"
-  s.add_development_dependency "tapioca"
-  s.add_development_dependency "yard"
-  s.add_development_dependency "yard-sorbet"
 end

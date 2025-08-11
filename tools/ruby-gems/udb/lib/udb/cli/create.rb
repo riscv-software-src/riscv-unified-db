@@ -106,7 +106,7 @@ module Udb
 
             me.key(:email).ask("Email?", validate: :email, modify: [:trim])
 
-            me.key(:company).ask("Company?", modify: [:trim])
+            me.key(:company).ask("Organization?", modify: [:trim])
           end
           break unless prompt.yes?("Add another contributor?")
         end
@@ -366,6 +366,26 @@ module Udb
 
       files << CreatedFile.new(path: dest_path, contents: erb.result(binding), next_steps: [])
     end
+
+    sig { params(prompt: TTY::Prompt, files: T::Array[CreatedFile]).void }
+    def self.print_results(prompt, files)
+      prompt.ok "\nBased on your answers, I've created the following file(s):"
+      files.each do |f|
+        prompt.say "   - #{f.path}"
+      end
+
+      unless files.all? { |f| f.next_steps.empty? }
+        prompt.say "\n\n"
+        prompt.warn "NEXT STEPS"
+        files.each do |f|
+          next if f.next_steps.empty?
+          prompt.say "  In #{f.path}:"
+          f.next_steps.each do |step|
+            prompt.say "    - #{step}"
+          end
+        end
+      end
+    end
   end
 
   module TtyTools
@@ -393,7 +413,10 @@ module Udb
       method_option :dry_run, aliases: "-n", type: :string, lazy_default: "/dev/null", desc: "Write files to directory dry_run instead of the UDB databse"
       sig { void }
       def extension
-        prompt = TTY::Prompt.new
+        outdir = options[:dry_run].nil? ? Udb.repo_root / "spec" / "std" / "isa" : Pathname.new(options[:dry_run])
+        input = self.options.key?("input") ? self.options.fetch("input") : $stdin
+        output = self.options.key?("output") ? self.options.fetch("output") : $stdout
+        prompt = TTY::Prompt.new(input:, output:, env: { "TTY_TEST" => true })
 
         copyright = CreationActions.get_copyright(prompt)
 
@@ -401,10 +424,10 @@ module Udb
 
         file = CreationActions.create_extension(prompt, copyright, outdir)
 
+        FileUtils.mkdir_p file.path.dirname
         File.write file.path, file.contents
 
-        puts
-        puts "New file written to #{file.path}"
+        CreationActions.print_results(prompt, [file])
       end
 
       desc "instruction_type", "Create a new instruction type (e.g., R-type)"
@@ -656,22 +679,7 @@ module Udb
           File.write f.path, f.contents
         end
 
-        prompt.ok "\nBased on your answers, I've created the following file(s):"
-        files.each do |f|
-          prompt.say "   - #{f.path}"
-        end
-
-        unless files.all? { |f| f.next_steps.empty? }
-          prompt.say "\n\n"
-          prompt.warn "NEXT STEPS"
-          files.each do |f|
-            next if f.next_steps.empty?
-            prompt.say "  In #{f.path}:"
-            f.next_steps.each do |step|
-              prompt.say "    - #{step}"
-            end
-          end
-        end
+        CreationActions.print_results(prompt, files)
       end
     end
   end

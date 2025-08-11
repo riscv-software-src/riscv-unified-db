@@ -337,4 +337,66 @@ class TestCli < Minitest::Test
       input.puts "new"
     end
   end
+
+  def test_create_extension
+    input = TestInput.new
+    output = TestOutput.new
+    Dir.mktmpdir do |outdir|
+      ENV["NO_COLOR"] = "1"
+      ENV["SKIP_INFO"] = "1"
+      fiber = run_cmd_io("create extension -n #{outdir}", input, output)
+      input.cli_fiber = fiber
+
+      expect_line(output, %r{What copyright do you want to assign to newly created files?})
+      input.puts "COPYRIGHT TEXT\n"
+
+      expect_line(output, %r{Is this a RISC-V standard extension})
+      input.puts "standard"
+
+      expect_line(output, %r{What is the extension name})
+      input.puts "Zibi"
+
+      expect_line(output, %r{What is the state of the extension})
+      input.puts "development"
+
+      expect_line(output, %r{Is this an unprivileged})
+      input.puts "unprivileged"
+
+      expect_line(output, %r{What is a short description of the extension})
+      input.puts "A short description"
+
+      expect_line(output, %r{What is the initial version})
+      input.puts "Version1"
+
+      expect_line(output, %r{invalid})
+      input.puts "0.1"
+
+      expect_line(output, %r{Who is the first contributor})
+      expect_line(output, %r{Full name})
+      input.puts "Author One"
+      expect_line(output, %r{Email})
+      input.puts "author@riscv.org"
+      expect_line(output, %r{Organization})
+      input.puts "Org"
+
+      expect_line(output, %r{Add another contributor})
+      input.puts "y"
+      expect_line(output, %r{Full name})
+      input.puts "Author Two"
+      expect_line(output, %r{Email})
+      input.puts "author2@riscv.org"
+      expect_line(output, %r{Organization})
+      input.puts "Org"
+
+      expect_line(output, %r{Add another contributor})
+      input.puts "n"
+
+      expect_line(output, %r{Based on your answers, I've created the following file})
+      expect_line(output, %r{#{outdir}/ext/Zibi\.yaml})
+
+      result = YAML.load_file("#{outdir}/ext/Zibi\.yaml")
+      assert_equal "Zibi", result["name"]
+      assert_equal "A short description", result["long_name"]
+    end
+  end
 end

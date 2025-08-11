@@ -6,6 +6,9 @@
 
 UDB_ROOT = (Pathname.new(__dir__) / "..").realpath
 
+require "sorbet-runtime"
+T::Configuration.enable_checking_for_sigs_marked_checked_tests
+
 require "simplecov"
 require "simplecov-cobertura"
 
