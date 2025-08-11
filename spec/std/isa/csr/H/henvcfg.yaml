@@ -266,8 +266,11 @@ fields:
         - The senvcfg.SSE field will read as zero and is read-only.
 
         - When menvcfg.SSE is one, SSAMOSWAP.W/D raises a virtual-instruction exception.
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    definedBy: Zicfiss
+    type(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? UNDEFINED_LEGAL : 0;
   FIOM:
     location: 0
     description: |
@@ -310,5 +313,9 @@ sw_read(): |
   if (implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 0) {
     # henvcfg.ADUE must read-as-zero
     value = value & ~(1 `<< 61);
+  }
+  if (implemented?(ExtensionName::Zicfiss) && CSR[menvcfg].SSE == 0) {
+    # henvcfg.SSE must read-as-zero
+    value = value & ~(1 `<< 3);
   }
   return value;

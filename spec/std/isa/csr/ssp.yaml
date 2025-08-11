@@ -37,7 +37,7 @@ fields:
                  (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
         raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       } else {
-        return csr_value.VALUE
+        return csr_value.VALUE;
       }
 sw_read(): |
   if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
@@ -46,4 +46,12 @@ sw_read(): |
   } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
              (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  } else {
+      if (XLEN == 32) {
+      # [1:0] must read-as-zero for XLEN 32
+        return ($bits(CSR[ssp]) & ~3);
+      } else {
+      # [2:0] must read-as-zero for XLEN 64
+        return ($bits(CSR[ssp]) & ~7);
+      }
   }

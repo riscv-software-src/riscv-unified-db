@@ -278,8 +278,11 @@ fields:
         - SSAMOSWAP.W/D raises an illegal-instruction exception.
 
       When menvcfg.SSE is 0, the henvcfg.SSE and senvcfg.SSE fields are read-only zero.
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    definedBy: Zicfiss
+    type(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? UNDEFINED_LEGAL : 0;
   FIOM:
     location: 0
     description: |
