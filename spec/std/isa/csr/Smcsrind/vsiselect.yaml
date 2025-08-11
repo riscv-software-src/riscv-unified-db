@@ -8,6 +8,7 @@ name: vsiselect
 long_name: Virtual Supervisor Indirect Register Select
 address: 0x250
 virtual_address: 0x250
+writable: true
 priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
