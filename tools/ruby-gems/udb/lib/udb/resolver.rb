@@ -169,7 +169,7 @@ module Udb
     # run command in the shell. raise if exit is not zero
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
-      # puts cmd.join(" ")  # Uncomment for debugging
+      puts cmd.join(" ") 
       T.unsafe(self).send(:system, *cmd)
       raise unless $?.success?
     end
