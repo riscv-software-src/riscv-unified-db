@@ -27,13 +27,16 @@ namespace udb {
           return {
             <%= ext_ver.params.map { |param| "  \"#{param.name}\"" }.join(",\n") %>
           };
+        } else {
+          throw std::runtime_error("Bad extension version");
+          return {};
         }
         <%- end -%>
       }
       <%- i += 1 -%>
       <%- end -%>
       else {
-        throw std::runtime_error("Bad extension version");
+        throw std::runtime_error("Bad extension");
         return {};
       }
     }

@@ -8,6 +8,7 @@ kind: csr
 name: scounteren
 long_name: Supervisor Counter Enable
 address: 0x106
+writable: true
 priv_mode: S
 length: 32
 description: |
