@@ -372,6 +372,9 @@ class TestCli < Minitest::Test
       input.puts "funct3"
 
       expect_line(output, %r{What is the location of the 'funct3' field})
+      input.puts "help"
+
+      expect_line(output, %r{What is the location of the 'funct3' field})
       input.puts "12-14"
 
       expect_line(output, %r{invalid})
@@ -434,6 +437,29 @@ class TestCli < Minitest::Test
       expect_line(output, %r{What kind of variable is the 'rs1' slot})
       input.puts "xs1"
 
+    end
+  end
+
+  def test_create_inst_type
+    input = TestInput.new
+    output = TestOutput.new
+    Dir.mktmpdir do |outdir|
+      ENV["NO_COLOR"] = "1"
+      ENV["SKIP_INFO"] = "1"
+      fiber = run_cmd_io("create instruction_type -n #{outdir}", input, output)
+      input.cli_fiber = fiber
+
+      expect_line(output, %r{What copyright do you want to assign to newly created files?})
+      input.puts "COPYRIGHT TEXT\n"
+
+      expect_line(output, %r{What is the instruction type name})
+      input.puts "X"
+
+      expect_line(output, %r{What is a short description})
+      input.puts "short desc"
+
+      expect_line(output, %r{What is the instruction encoding length})
+      input.puts "32"
     end
   end
 
