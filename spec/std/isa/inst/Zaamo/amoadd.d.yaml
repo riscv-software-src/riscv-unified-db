@@ -1,5 +1,3 @@
-# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amoaddN.layout
-
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -17,9 +15,10 @@ description: |
     * Add the least-significant doubleword of register _xs2_ to the loaded value
     * Write the sum to the address in _xs1_
 definedBy: Zaamo
+base: 64
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 00000------------010-----0101111
+  match: 00000------------011-----0101111
   variables:
     - name: aq
       location: 26
@@ -45,7 +44,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
 
-  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Add, aq, rl, $encoding);
+  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Add, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

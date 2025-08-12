@@ -2,14 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomin.h
 long_name: Atomic MIN halfword
 description: |
   Atomically:
-
     * Load the halfword at address _xs1_
     * Write the sign-extended value into _xd_
     * Signed compare the least-significant halfword of register _xs2_ to the loaded value, and select the minimum value
@@ -17,8 +15,12 @@ description: |
 definedBy: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 1000000----------001-----0101111
+  match: 10000------------001-----0101111
   variables:
+    - name: aq
+      location: 26
+    - name: rl
+      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -34,10 +36,8 @@ operation(): |
   if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-
   XReg virtual_address = X[xs1];
-  X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::Min, 1'b0, 1'b0, $encoding);
-
+  X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::Min, aq, rl, $encoding);
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
@@ -64,13 +64,11 @@ sail(): |
                 AMOMINU => true,
                 AMOMAXU => true,
                 _       => false
-              };
               let rs2_val : xlenbits = match width {
                 BYTE   => if is_unsigned then zero_extend(X(rs2)[7..0])  else sign_extend(X(rs2)[7..0]),
                 HALF   => if is_unsigned then zero_extend(X(rs2)[15..0]) else sign_extend(X(rs2)[15..0]),
                 WORD   => if is_unsigned then zero_extend(X(rs2)[31..0]) else sign_extend(X(rs2)[31..0]),
                 DOUBLE => X(rs2)
-              };
               match (eares) {
                 MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
                 MemValue(_) => {
@@ -91,7 +89,6 @@ sail(): |
                           AMOXOR  => rs2_val ^ loaded,
                           AMOAND  => rs2_val & loaded,
                           AMOOR   => rs2_val | loaded,
-
                           /* These operations convert bitvectors to integer values using [un]signed,
                            * and back using to_bits().
                            */
@@ -112,7 +109,6 @@ sail(): |
                         (WORD, _)    => mem_write_value(addr, 4, result[31..0], aq & rl, rl, true),
                         (DOUBLE, 64) => mem_write_value(addr, 8, result,        aq & rl, rl, true),
                         _            => internal_error(__FILE__, __LINE__, "Unexpected AMO width")
-                      };
                       match (wval) {
                         MemValue(true)  => { X(rd) = rval; RETIRE_SUCCESS },
                         MemValue(false) => { internal_error(__FILE__, __LINE__, "AMO got false from mem_write_value") },
@@ -130,6 +126,5 @@ sail(): |
       handle_illegal();
       RETIRE_FAIL
     }
-  }
 
 # SPDX-SnippetEnd
