@@ -199,16 +199,19 @@ module Udb
       prompt.say "A variable field is a single _potentionally non-contiguous_ set of bits that change value from encoding to encoding (e.g., `rs1` in R-type)"
 
       loop do
-        break unless prompt.yes? (variables.empty?) ? "Do you want to add a variable?" : "Is there another variable to add?"
+        q = variables.empty? ? "Do you want to add a variable?" : "Is there another variable to add?"
+        break unless prompt.yes?(q)
 
         variable_name = prompt.ask \
           "What is the name of the #{(variables.size + 1).to_words(ordinal: true, remove_hyphen: true)} variable field (e.g., `rs1`)?",
-          modify: [:trim]
+          modify: [:trim],
+          required: true
 
         variable_location = T.let(nil, T.nilable(String))
         loop do
           variable_location = prompt.ask \
-            "What is the location of the '#{variable_name}' variable (e.g., '5', '14-12', '31|7|30-25|11-8'. Type 'help' for more)"
+            "What is the location of the '#{variable_name}' variable (e.g., '5', '14-12', '31|7|30-25|11-8'. Type 'help' for more)",
+            required: true
 
           if variable_location == "help"
             location_help = <<~HELP

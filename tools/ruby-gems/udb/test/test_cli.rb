@@ -119,7 +119,6 @@ class TestCli < Minitest::Test
       result = @io.gets
       @pos = @io.tell
       @io.seek(0, IO::SEEK_END)
-      puts "gets: #{result}"
       result
     end
 
@@ -128,6 +127,17 @@ class TestCli < Minitest::Test
       result = @io.getc
       @pos = @io.tell
       @io.seek(0, IO::SEEK_END)
+      result
+    end
+
+    def empty?
+      @pos == @io.size
+    end
+
+    def peeks
+      @io.seek @pos
+      result = @io.gets
+      @io.seek(@pos, IO::SEEK_SET)
       result
     end
 
@@ -334,6 +344,96 @@ class TestCli < Minitest::Test
 
       expect_line(output, %r{How should this variable type be displayed})
       input.puts "new"
+    end
+  end
+
+  def test_create_inst_with_new_subtype_and_type
+    input = TestInput.new
+    output = TestOutput.new
+    Dir.mktmpdir do |outdir|
+      do_inst_create_until_subtype(outdir, input, output)
+
+      expect_line(output, %r{What is the subtype of the instruction format?})
+      input.puts "Create"
+
+      expect_line(output, %r{What instruction type does the new instruction subtype inherit from})
+      input.puts "Create"
+
+      expect_line(output, %r{What is the instruction type name})
+      input.puts "X"
+
+      expect_line(output, %r{What is a short description})
+      input.puts "A short description"
+
+      expect_line(output, %r{What is the instruction encoding length})
+      input.puts "32"
+
+      expect_line(output, %r{What is the name of the first opcode field})
+      input.puts "funct3"
+
+      expect_line(output, %r{What is the location of the 'funct3' field})
+      input.puts "12-14"
+
+      expect_line(output, %r{invalid})
+      expect_line(output, %r{What is the location of the 'funct3' field})
+      input.puts "14-12"
+
+      expect_line(output, %r{Is there another opcode field})
+      input.puts "y"
+
+      expect_line(output, %r{What is the name of the second opcode field})
+      input.puts "funct7"
+
+      expect_line(output, %r{What is the location of the 'funct7' field})
+      assert_empty input
+      input.puts "31-25"
+
+      expect_line(output, %r{Is there another opcode field})
+      assert_empty input
+      input.puts "no"
+
+      expect_line(output, %r{A variable field is a })
+      assert_empty input
+      input.puts "y"
+      expect_line(output, %r{Do you want to add a variable})
+
+      expect_line(output, %r{What is the name of the first variable field})
+      assert_empty input
+      input.puts "rs2"
+
+      expect_line(output, %r{What is the location of the 'rs2' variable})
+      input.puts "24-20"
+
+      expect_line(output, %r{Is there another variable to add})
+      input.puts "y"
+
+      expect_line(output, %r{What is the name of the second variable field})
+      input.puts "rs1"
+
+      expect_line(output, %r{What is the location of the 'rs1' variable})
+      input.puts "19-15"
+
+      expect_line(output, %r{Is there another variable to add})
+      input.puts "y"
+
+      expect_line(output, %r{What is the name of the third variable field})
+      input.puts "rd"
+
+      expect_line(output, %r{What is the location of the 'rd' variable})
+      input.puts "11-7"
+
+      expect_line(output, %r{Is there another variable to add})
+      input.puts "n"
+
+      expect_line(output, %r{What is the subtype name})
+      input.puts "X-new"
+
+      expect_line(output, %r{What kind of variable is the 'rs2' slot})
+      input.puts "xs2"
+
+      expect_line(output, %r{What kind of variable is the 'rs1' slot})
+      input.puts "xs1"
+
     end
   end
 
