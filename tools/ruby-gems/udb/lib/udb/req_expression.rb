@@ -174,7 +174,7 @@ class ExtensionRequirementExpression
   def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
     # For simple single extension OR complex condition headers at root level (indent = 0), don't show bullets
     use_bullets = !(indent == 0 && (is_simple_single_extension?(cond) || is_complex_condition_header?(cond)))
-    bullet_prefix = use_bullets ? "#{'*' * indent}* " : ""
+    bullet_prefix = use_bullets ? "#{'*' * indent} " : ""
 
     case cond
     when String
@@ -187,7 +187,7 @@ class ExtensionRequirementExpression
           "#{bullet_prefix}#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
         end
       else
-        "#{bullet_prefix}#{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
+        "#{bullet_prefix}#{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 1)
       end
     when Array
       # Arrays represent multiple items, so they need bullets for clarity
