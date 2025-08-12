@@ -23,11 +23,11 @@ include "fp.idl"
 ############################################################
 
 # CSR field value is undefined, but whatever it is, it must be legal for the field
-Bits<65> UNDEFINED_LEGAL = 65'h10000000000000000;
+Bits<MXLEN> UNDEFINED_LEGAL;
 
 # CSR field value is undefined, but whateer it is, it must be legal for the field and it
 # must be the same value if the same sequence of instructions leading to the read is executed
-Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 66'h20000000000000000;
+Bits<MXLEN> UNDEFINED_LEGAL_DETERMINISTIC;
 
 # Signals an illegal write of a WLRL field
 Bits<67> ILLEGAL_WLRL = 67'h40000000000000000;
@@ -2420,16 +2420,16 @@ function canonical_vaddr? {
     # calculate the effective address after pointer masking
     XReg eaddr = mask_eaddr(vaddr);
 
-    if (satp_mode == SatpMode::Bare) {
+    if (SATP_MODE_BARE && (satp_mode == SatpMode::Bare)) {
       return true;
-    } else if (satp_mode == SatpMode::Sv32) {
+    } else if ((MXLEN == 32) && satp_mode == SatpMode::Sv32) {
       # Sv32 uses all 32 bits of the VA
       return true;
-    } else if (satp_mode == SatpMode::Sv39) {
+    } else if ((MXLEN == 64) && satp_mode == SatpMode::Sv39) {
       return eaddr[63:39] == {25{eaddr[38]}};
-    } else if (satp_mode == SatpMode::Sv48) {
+    } else if ((MXLEN == 64) && satp_mode == SatpMode::Sv48) {
       return eaddr[63:48] == {16{eaddr[47]}};
-    } else if (satp_mode == SatpMode::Sv57) {
+    } else if ((MXLEN == 64) && satp_mode == SatpMode::Sv57) {
       return eaddr[63:57] == {6{eaddr[56]}};
     }
   }
@@ -2573,8 +2573,8 @@ function read_memory {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
         Bits<LEN> result = 0;
-        for (U32 i = 0; i <= (LEN/8); i++) {
-          result = result | (read_memory_aligned<8>(virtual_address + i, encoding) << (8*i));
+        for (U32 I = 0; I < (LEN/8); I++) {
+          result = result | (read_memory_aligned<8>(virtual_address + I, encoding) `<< (8*I));
         }
         return result;
       } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {
@@ -2959,8 +2959,8 @@ function write_memory {
     } else {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
-        for (U32 i = 0; i <= (LEN/8); i++) {
-          write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0], encoding);
+        for (U32 I = 0; I < (LEN/8); I++) {
+          write_memory_aligned<8>(virtual_address + I, (value >> (8*I))[7:0], encoding);
         }
       } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {
         unpredictable("An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");

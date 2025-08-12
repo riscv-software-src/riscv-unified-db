@@ -175,6 +175,7 @@ def write_yaml(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         yaml.dump(data, file)
+        file.close()
 
 
 def write_json(file_path: str | Path, data):
@@ -189,6 +190,7 @@ def write_json(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         json.dump(data, file)
+        file.close()
 
 
 def dig(obj: dict, *keys):
@@ -512,6 +514,7 @@ def _get_schema(uri):
     with open(abs_path) as f:
         # Load the JSON data into a Python dictionary
         schema_obj = json.load(f)
+        f.close()
 
     schemas[rel_path] = DefaultValidatingValidator(schema_obj, registry=registry)
     return schemas[rel_path]

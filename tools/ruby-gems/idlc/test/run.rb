@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -21,3 +22,4 @@ require "minitest/autorun"
 
 require_relative "test_expressions"
 require_relative "test_cli"
+require_relative "test_loops"
