@@ -11,7 +11,7 @@
 #   (b) All jobs run, but output is not uploaded/GitHub pages is not updated
 #   (c) All jobs run, results are uploaded, and GitHub pages is updated
 
-name: Merge Queue Tests
+name: Deployment actions
 permissions:
   contents: read
   pull-requests: write
@@ -77,7 +77,7 @@ jobs:
       - name: Resolve unconfig
         run: ./do gen:resolved_arch
       - name: Tar unconfig
-        run: tar czf gen/resolved_spec/_/resolved_spec.tar.gz gen/resolved_spec/_
+        run: tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_ && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_/resolved_spec.tar.gz
       - name: Upload resolved spec
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
@@ -314,7 +314,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: ac100-crd-${{ github.run_id }}
+          name: ac200-crd-${{ github.run_id }}
           path: gen/proc_crd/pdf/AC200-CRD.pdf
   build-mc100-32-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -460,144 +460,3 @@ jobs:
         with:
           name: mc100-32-ctp-${{ github.run_id }}
           path: gen/proc_ctp/pdf/MC100-32-CTP.pdf
-  deploy_pages:
-    if: (github.event_name == 'push') && (github.ref_name == 'main')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Make _site
-        run: mkdir _site
-      - name: Download reuse BOM
-        uses: actions/download-artifact@v5
-        with:
-          name: reuse-manifest-${{ github.run_id }}
-          path: _site/reuse_bom.txt
-      - name: Download resolved spec
-        uses: actions/download-artifact@v5
-        with:
-          name: resolved-spec-${{ github.run_id }}
-          path: _site/resolved_spec
-      - name: Download UDB API Docs
-        uses: actions/download-artifact@v5
-        with:
-          name: udb-api-${{ github.run_id }}
-          path: _site/htmls/udb_api_doc
-      - name: Download ISA Explorer CSR
-        uses: actions/download-artifact@v5
-        with:
-          name: isa_explorer-csr-${{ github.run_id }}
-          path: _site/isa_explorer
-      - name: Download ISA Explorer Extension
-        uses: actions/download-artifact@v5
-        with:
-          name: isa_explorer-ext-${{ github.run_id }}
-          path: _site/isa_explorer
-      - name: Download ISA Explorer Inst
-        uses: actions/download-artifact@v5
-        with:
-          name: isa_explorer-inst-${{ github.run_id }}
-          path: _site/isa_explorer
-      - name: Download ISA Explorer Spreadsheet
-        uses: actions/download-artifact@v5
-        with:
-          name: isa_explorer-spreadsheet-${{ github.run_id }}
-          path: _site/isa_explorer
-      - name: Download HTML ISA Manual
-        uses: actions/download-artifact@v5
-        with:
-          name: isa-html-manual-${{ github.run_id }}
-          path: _site/manual
-      - name: Download HTML ISA Manual
-        uses: actions/download-artifact@v5
-        with:
-          name: cfg-html-manual-${{ github.run_id }}
-          path: _site/example_cfg
-      - name: Download Instruction Appendix
-        uses: actions/download-artifact@v5
-        with:
-          name: inst-appendix-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVI20
-        uses: actions/download-artifact@v5
-        with:
-          name: rvi20-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVA20
-        uses: actions/download-artifact@v5
-        with:
-          name: rva20-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVA22
-        uses: actions/download-artifact@v5
-        with:
-          name: rva22-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVA23
-        uses: actions/download-artifact@v5
-        with:
-          name: rva23-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVB23
-        uses: actions/download-artifact@v5
-        with:
-          name: rvb23-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download AC100
-        uses: actions/download-artifact@v5
-        with:
-          name: ac100-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download AC200
-        uses: actions/download-artifact@v5
-        with:
-          name: ac200-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC100-32
-        uses: actions/download-artifact@v5
-        with:
-          name: mc100-32-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC100-64
-        uses: actions/download-artifact@v5
-        with:
-          name: mc100-64-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC200-32
-        uses: actions/download-artifact@v5
-        with:
-          name: mc200-32-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC200-64
-        uses: actions/download-artifact@v5
-        with:
-          name: mc200-64-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC300-32
-        uses: actions/download-artifact@v5
-        with:
-          name: mc300-32-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC300-64
-        uses: actions/download-artifact@v5
-        with:
-          name: mc300-64-crd-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVI20-32 CTP
-        uses: actions/download-artifact@v5
-        with:
-          name: rvi20-32-ctp-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download RVI20-64 CTP
-        uses: actions/download-artifact@v5
-        with:
-          name: rvi20-64-ctp-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Download MC100-32 CTP
-        uses: actions/download-artifact@v5
-        with:
-          name: mc100-32-ctp-${{ github.run_id }}
-          path: _site/pdfs
-      - name: Create index
-        env:
-          PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
-        run: |
-          ruby -r erb -e "File.write('_site/index.html', ERB.new('tools/scripts/pages.html.erb', trim_mode: '-').result(binding))"
