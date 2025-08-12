@@ -40,6 +40,10 @@ needs_grammar_recompile = !rb_path.exist? || (rb_path.mtime < tt_path.mtime)
 if needs_grammar_recompile
   tt_compiler = Treetop::Compiler::GrammarCompiler.new
   tt_compiler.compile(tt_path, rb_path)
+
+  # make sure there is a single newline at the end
+  compiler_src = File.read rb_path
+  File.write rb_path, "#{compiler_src.strip}\n"
 end
 
 require_relative "idlc/ast"
