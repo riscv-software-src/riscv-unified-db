@@ -63,7 +63,7 @@ if [ ! -f ${ROOT}/.container-type ]; then
   echo ${CONTAINER_TYPE} > ${ROOT}/.container-type
 fi
 
-echo "Using ${CONTAINER_TYPE} environment" >&2
+echo "Using ${CONTAINER_TYPE} environment"
 
 if [ -v GITHUB_ACTIONS ]; then
     echo "Running in a GitHub Action"
