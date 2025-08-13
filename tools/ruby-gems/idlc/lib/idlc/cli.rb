@@ -1,17 +1,18 @@
-# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: false
 # frozen_string_literal: true
 
 require "idlc"
-# require "gli"
 require "commander"
 require "forwardable"
 require "optparse"
 require "yaml"
 
 module Idl
+  class CliError < StandardError; end
+
   class Cli
     extend Forwardable
     def_delegators :@runner,
@@ -44,7 +45,7 @@ module Idl
           warn "Unexpected arguments: #{args[1..]}"
         end
         @runner.commands["help"].run
-        exit 1
+        raise CliError
       end
 
       compiler = Compiler.new
@@ -160,7 +161,7 @@ module Idl
               warn "Unexpected arguments: #{args[1..]}"
             end
             @runner.commands["help"].run
-            exit 1
+            raise CliError
           end
 
           do_tc_inst(args, options, vars)

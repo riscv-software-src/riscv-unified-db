@@ -29,6 +29,56 @@ class TestCli < CliTest
     assert_equal 15, eval(result.out)
   end
 
+  def test_eval_missing
+    require "idlc/cli"
+    assert_raises(Idl::CliError) do
+      run_cmd("idlc eval -DA=5 -DB=10 --trace")
+    end
+    # assert_equal 0, result.status
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
+  def test_eval_multiple
+    require "idlc/cli"
+    assert_raises(Idl::CliError) do
+      run_cmd("idlc eval -DA=5 -DB=10 A+B A+C --trace")
+    end
+    # assert_equal 0, result.status
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
+  def test_eval_subtraction
+    require "idlc/cli"
+    result = run_cmd("idlc eval -DA=5 -DB=10 B-A --trace")
+    assert_empty result.err
+    assert_equal 5, eval(result.out)
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
+  def test_eval_multiplication
+    require "idlc/cli"
+    result = run_cmd("idlc eval -DA=5 -DB=10 (B*A) --trace")
+    assert_match(/A value was truncated/, result.err)
+    assert_equal 2, eval(result.out)
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
+  def test_eval_widening_multiplication
+    require "idlc/cli"
+    result = run_cmd("idlc eval -DA=5 -DB=10 (B`*A) --trace")
+    assert_empty result.err
+    assert_equal 50, eval(result.out)
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
+  def test_eval_cast
+    require "idlc/cli"
+    result = run_cmd("idlc eval -DA=5 -DB=10 $bits($signed(B)`*A) --trace")
+    assert_empty result.err
+    assert_equal(-30, eval(result.out))
+    # assert_match(/Missing expression to evaluate/, result.err)
+  end
+
   def test_operation_tc
     Tempfile.open("idl") do |f|
       f.write <<~YAML
