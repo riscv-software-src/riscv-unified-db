@@ -1,0 +1,30 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Creating a new instruction
+
+== Easy way
+
+`riscv-unified-db` ships with a command line tool to help add instructions to the database.
+
+[source,bash]
+----
+./bin/udb create instruction
+----
+
+Follow the prompts, and at the end, the tool will point you to newly created file(s) along with
+any next steps.
+
+== Expert way
+
+Instructions can also be added by manually adding files under `spec/**/inst`.
+This is not recommended for new UDB users, though experienced users may find this path faster.
+
+== Verifying the instruction
+
+To test that the new instruction files conform to the UnifiedDB schema and that the IDL code is valid, run:
+
+[source,bash]
+----
+./do test:smoke
+----

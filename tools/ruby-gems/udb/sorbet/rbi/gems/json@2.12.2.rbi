@@ -346,7 +346,6 @@ end
 
 class NilClass
   include ::JSON::Ext::Generator::GeneratorMethods::NilClass
-  include ::Treetop::Compiler::Metagrammar::LabeledExpressionSequenceBody0
 end
 
 class Object < ::BasicObject

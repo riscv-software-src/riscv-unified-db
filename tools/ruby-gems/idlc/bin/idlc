@@ -5,6 +5,10 @@
 
 # frozen_string_literals: true
 
-require 'idlc/cli'
+require "idlc/cli"
 
-Idl::Cli.new(ARGV).run
+begin
+  Idl::Cli.new(ARGV).run
+rescue Idl::CliError
+  exit 1
+end

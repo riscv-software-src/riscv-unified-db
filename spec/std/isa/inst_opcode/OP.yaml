@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/inst_opcode_schema.json#
+# yaml-language-server: $schema=../../../schemas/inst_opcode_schema.json#
 
 $schema: inst_opcode_schema.json#
 kind: instruction_opcode
@@ -10,3 +10,4 @@ name: OP
 data:
   display_name: OP
   value: 0b0110011
+  location: 6-0

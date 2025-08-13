@@ -4,7 +4,6 @@
 
 # frozen_string_literal: true
 
-require "idlc"
 require_relative "helpers"
 require "minitest/autorun"
 

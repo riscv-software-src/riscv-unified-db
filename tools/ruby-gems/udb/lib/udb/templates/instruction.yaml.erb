@@ -1,0 +1,38 @@
+# <%= copyright %>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: <%= mnemonic %>
+long_name: <%= long_name %>
+description: |
+  DESCRIPTION GOES HERE
+definedBy:
+    name: <%= ext_name %>
+assembly: # TODO: assembly format. e.g., 'xd, xs1, xs2'
+format:
+  $inherits:
+    - inst_subtype/${type_name}/${subtype_name}.yaml#/data
+  opcodes:
+    <%- opcodes.each do |opcode_name, opcode_data| %>
+    <%= opcode_name %>:
+      <%- if opcode_data[:ref].nil? -%>
+      display_name: <%= opcode_data[:display_name] %>
+      value: <%= opcode_data[:value].nil? ? "# TODO" : "0b#{opcode_data[:value]}" %>
+      <%- else -%>
+      { $inherits: inst_opcode/<%= opcode_data[:ref] %>.yaml#/data }
+      <%- end -%>
+    <%- end -%>
+access:
+  s: <%= s_access %>
+  u: <%= u_access %>
+  vs: <%= vs_access %>
+  vu: <%= vu_access %>
+data_independent_timing: <%= data_independent_timing %>
+operation(): |
+  # IDL execution function goes here
+
+sail(): |
+  // SAIL execute clause goes here

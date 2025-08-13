@@ -1,0 +1,5 @@
+version = 1
+
+[[annotations]]
+path = "*.erb"
+SPDX-FileCopyrightText = "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries."

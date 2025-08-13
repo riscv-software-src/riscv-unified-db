@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -8,7 +9,6 @@ require "minitest/autorun"
 require "yaml"
 
 require_relative "helpers"
-require "idlc"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
 
@@ -24,6 +24,7 @@ class ExpressionTestFactory
         make_my_diffs_pretty!
 
         def setup
+          require "idlc"
           @symtab = Idl::SymbolTable.new
           @compiler = Idl::Compiler.new
         end

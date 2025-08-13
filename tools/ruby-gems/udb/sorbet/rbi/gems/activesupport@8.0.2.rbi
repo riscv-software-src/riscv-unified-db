@@ -2347,7 +2347,7 @@ class IO::Buffer
   def get_string(*_arg0); end
   def get_value(_arg0, _arg1); end
   def get_values(_arg0, _arg1); end
-  def hexdump; end
+  def hexdump(*_arg0); end
   def inspect; end
   def internal?; end
   def locked; end
@@ -2357,6 +2357,7 @@ class IO::Buffer
   def null?; end
   def or!(_arg0); end
   def pread(*_arg0); end
+  def private?; end
   def pwrite(*_arg0); end
   def read(*_arg0); end
   def readonly?; end
@@ -2384,6 +2385,7 @@ class IO::Buffer
     def for(_arg0); end
     def map(*_arg0); end
     def size_of(_arg0); end
+    def string(_arg0); end
   end
 end
 
@@ -2447,10 +2449,6 @@ end
 
 class Integer < ::Numeric; end
 
-class LoadError < ::ScriptError
-  include ::DidYouMean::Correctable
-end
-
 # source://activesupport//lib/active_support/core_ext/module/delegation.rb#3
 class Module
   # source://activesupport//lib/active_support/core_ext/object/json.rb#53
@@ -2503,8 +2501,6 @@ end
 
 # source://activesupport//lib/active_support/core_ext/object/to_query.rb#18
 class NilClass
-  include ::Treetop::Compiler::Metagrammar::LabeledExpressionSequenceBody0
-
   # source://activesupport//lib/active_support/core_ext/object/json.rb#93
   def as_json(options = T.unsafe(nil)); end
 
@@ -2750,8 +2746,6 @@ end
 
 # source://activesupport//lib/active_support/core_ext/object/json.rb#230
 class URI::Generic
-  include ::URI
-
   # source://activesupport//lib/active_support/core_ext/object/json.rb#231
   def as_json(options = T.unsafe(nil)); end
 end

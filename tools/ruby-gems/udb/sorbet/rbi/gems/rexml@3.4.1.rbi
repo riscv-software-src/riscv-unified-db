@@ -1314,9 +1314,6 @@ class REXML::Parsers::StreamParser
   def parse; end
 end
 
-# source://rexml//lib/rexml/parsers/baseparser.rb#28
-module REXML::Parsers::StringScannerCaptures; end
-
 # source://rexml//lib/rexml/parsers/treeparser.rb#7
 class REXML::Parsers::TreeParser
   # source://rexml//lib/rexml/parsers/treeparser.rb#8

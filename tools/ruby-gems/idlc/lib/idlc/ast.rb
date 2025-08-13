@@ -3202,6 +3202,8 @@ module Idl
         end
       when :csr
         expr.value(symtab)
+      when :bits
+        expr.value(symtab)
       else
         type_error "TODO: Bits cast for #{etype.kind}"
       end

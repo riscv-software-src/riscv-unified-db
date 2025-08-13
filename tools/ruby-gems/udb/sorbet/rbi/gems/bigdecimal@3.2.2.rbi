@@ -24,8 +24,6 @@ end
 
 # source://bigdecimal//lib/bigdecimal/util.rb#171
 class NilClass
-  include ::Treetop::Compiler::Metagrammar::LabeledExpressionSequenceBody0
-
   # source://bigdecimal//lib/bigdecimal/util.rb#182
   def to_d; end
 end

@@ -4925,7 +4925,7 @@ end
 
 # source://yard//lib/yard/parser/ruby/ast_node.rb#479
 class YARD::Parser::Ruby::MethodDefinitionNode < ::YARD::Parser::Ruby::AstNode
-  def block(*_arg0); end
+  def block(n = T.unsafe(nil)); end
 
   # source://yard//lib/yard/parser/ruby/ast_node.rb#481
   def def?; end

@@ -1,0 +1,38 @@
+# <%= copyright %>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: <%= name %>
+type: <%= priv_type %>
+long_name: <%= long_name %>
+
+<%- if type == "standard"  -%>
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+<%- end -%>
+
+versions:
+  - version: "<%= version %>"
+    state: <%= state %>
+    # ratification_date: YYYY-MM    -- to be applied when the extension is ratified
+    contributors:
+      <%- contributors[:people].each do |person| %>
+      - name: <%= person[:name] %>
+        email: <%= person[:email] %>
+        company: <%= person[:company] %>
+      <%- end -%>
+
+  # as new versions are created, they can be documented by adding another entry in the versions array
+  # - version: "0.2"
+  #   state: STATE
+
+# put the spec introduction here
+description: |
+  TODO
