@@ -27,3 +27,6 @@ sorbet
 !tools/ruby-gems/idlc/sorbet
 !tools/ruby-gems/udb/sorbet
 coverage
+
+# emacs backup files
+*~

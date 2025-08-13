@@ -1,0 +1,462 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# This workflow runs when:
+#   (a) A PR changes (the regression tests)
+#   (b) A PR reaches the head of the merge queue, and
+#   (c) After a PR has been pushed to main
+#
+# However, it does something different in each case:
+#   (a) All jobs are no-ops
+#   (b) All jobs run, but output is not uploaded/GitHub pages is not updated
+#   (c) All jobs run, results are uploaded, and GitHub pages is updated
+
+name: Deployment actions
+permissions:
+  contents: read
+  pull-requests: write
+on:
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      dry-run:
+        required: true
+        type: boolean
+  push:
+    branches:
+      - main
+env:
+  SINGULARITY: 1
+  DEPLOY_DIR: _site
+jobs:
+  build-reuse-manifest:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: run reuse
+        run: ./bin/reuse spdx -o reuse_bom
+      - name: Upload Reuse Manifest
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: reuse-manifest-${{ github.run_id }}
+          path: reuse_bom
+          retention-days: 1
+  build-udb-api-doc:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate UDB API Docs
+        run: ./do gen:udb:api_doc
+      - name: Upload UDB API Docs
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: udb-api-${{ github.run_id }}
+          path: gen/udb_api_doc
+          include-hidden-files: true
+          retention-days: 1
+  resolve-unconfig:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Resolve unconfig
+        run: ./do gen:resolved_arch
+      - name: Tar unconfig
+        run: tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_ && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_/resolved_spec.tar.gz
+      - name: Upload resolved spec
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: resolved-spec-${{ github.run_id }}
+          path: gen/resolved_spec/_
+          include-hidden-files: true
+          retention-days: 1
+  build-isa-explorer-csr:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate ISA Explorer CSR
+        run: ./do gen:isa_explorer_browser_csr
+      - name: Upload ISA Explorer CSR
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: isa-explorer-csr-${{ github.run_id }}
+          path: gen/isa_explorer/browser
+          retention-days: 1
+  build-isa-explorer-ext:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate ISA Explorer Extension
+        run: ./do gen:isa_explorer_browser_ext
+      - name: Upload ISA Explorer Extension
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: isa-explorer-ext-${{ github.run_id }}
+          path: gen/isa_explorer/browser
+          retention-days: 1
+  build-isa-explorer-inst:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate ISA Explorer Instructions
+        run: ./do gen:isa_explorer_browser_inst
+      - name: Upload ISA Explorer Instructions
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: isa-explorer-inst-${{ github.run_id }}
+          path: gen/isa_explorer/browser
+          retention-days: 1
+  build-isa-explorer-spreadsheet:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate ISA Explorer Spreadsheet
+        run: ./do gen:isa_explorer_spreadsheet
+      - name: Upload ISA Explorer Spreadsheet
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: isa-explorer-spreadsheet-${{ github.run_id }}
+          path: gen/isa_explorer/browser
+  build-html-isa-manual:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    env:
+      MANUAL_NAME: isa
+      VERSIONS: all
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate HTML ISA manual
+        run: ./do gen:html_manual
+      - name: Upload HTML ISA manual
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: isa-html-manual-${{ github.run_id }}
+          path: gen/manual/isa/top/all/html
+  build-html-cfg-isa-manual:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate HTML ISA manual for a config
+        run: ./do gen:html[example_rv64_with_overlay]
+      - name: Upload HTML ISA manual for a config
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: cfg-html-manual-${{ github.run_id }}
+          path: gen/cfg_html_doc/example_rv64_with_overlay/html
+  build-instruction-appendix:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate instruction appendix
+        run: ./do gen:instruction_appendix
+      - name: Upload instruction appendix
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: inst-appendix-${{ github.run_id }}
+          path: gen/instructions_appendix/instructions_appendix.pdf
+  build-rvi20-profile:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVI20
+        run: ./do gen:profile_release_pdf[RVI20]
+      - name: Upload RVI20
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvi20-${{ github.run_id }}
+          path: gen/proc_crd/pdf/RVI20ProfileRelease.pdf
+  build-rva20-profile:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVA20
+        run: ./do gen:profile_release_pdf[RVA20]
+      - name: Upload RVA20
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rva20-${{ github.run_id }}
+          path: gen/proc_crd/pdf/RVA20ProfileRelease.pdf
+  build-rva22-profile:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVA22
+        run: ./do gen:profile_release_pdf[RVA22]
+      - name: Upload RVA22
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rva22-${{ github.run_id }}
+          path: gen/proc_crd/pdf/RVA22ProfileRelease.pdf
+  build-rva23-profile:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVA23
+        run: ./do gen:profile_release_pdf[RVA23]
+      - name: Upload RVA23
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rva23-${{ github.run_id }}
+          path: gen/proc_crd/pdf/RVA23ProfileRelease.pdf
+  build-rvb23-profile:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVB23
+        run: ./do gen:profile_release_pdf[RVB23]
+      - name: Upload RVB23
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvb23-${{ github.run_id }}
+          path: gen/proc_crd/pdf/RVB23ProfileRelease.pdf
+  build-ac100-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate AC100 CRD
+        run: ./do gen:proc_crd_pdf[AC100]
+      - name: Upload AC100 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: ac100-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/AC100-CRD.pdf
+  build-ac200-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate AC200 CRD
+        run: ./do gen:proc_crd_pdf[AC200]
+      - name: Upload AC200 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: ac200-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/AC200-CRD.pdf
+  build-mc100-32-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC100-32 CRD
+        run: ./do gen:proc_crd_pdf[MC100-32]
+      - name: Upload MC100-32 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc100-32-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC100-32-CRD.pdf
+  build-mc100-64-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC100-64 CRD
+        run: ./do gen:proc_crd_pdf[MC100-64]
+      - name: Upload MC100-64 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc100-64-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC100-64-CRD.pdf
+  build-mc200-32-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC200-32 CRD
+        run: ./do gen:proc_crd_pdf[MC200-32]
+      - name: Upload MC200-32 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc200-32-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC200-32-CRD.pdf
+  build-mc200-64-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC200-64 CRD
+        run: ./do gen:proc_crd_pdf[MC200-64]
+      - name: Upload MC200-64 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc200-64-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC200-64-CRD.pdf
+  build-mc300-32-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC300-32 CRD
+        run: ./do gen:proc_crd_pdf[MC300-32]
+      - name: Upload MC300-32 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc300-32-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC300-32-CRD.pdf
+  build-mc300-64-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC300-64 CRD
+        run: ./do gen:proc_crd_pdf[MC300-64]
+      - name: Upload MC300-64 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc300-64-crd-${{ github.run_id }}
+          path: gen/proc_crd/pdf/MC300-64-CRD.pdf
+  build-rvi20-32-ctp:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVI20-32 CTP
+        run: ./do gen:proc_ctp_pdf[RVI20-32]
+      - name: Upload RVI20-32 CTP
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvi20-32-ctp-${{ github.run_id }}
+          path: gen/proc_ctp/pdf/RVI20-32-CTP.pdf
+  build-rvi20-64-ctp:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVI20-64 CTP
+        run: ./do gen:proc_ctp_pdf[RVI20-64]
+      - name: Upload RVI20-64 CTP
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvi20-64-ctp-${{ github.run_id }}
+          path: gen/proc_ctp/pdf/RVI20-64-CTP.pdf
+  build-mc100-32-ctp:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate MC100-32 CTP
+        run: ./do gen:proc_ctp_pdf[MC100-32]
+      - name: Upload MC100-32 CTP
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: mc100-32-ctp-${{ github.run_id }}
+          path: gen/proc_ctp/pdf/MC100-32-CTP.pdf

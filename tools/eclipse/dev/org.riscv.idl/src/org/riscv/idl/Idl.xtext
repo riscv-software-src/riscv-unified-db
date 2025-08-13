@@ -1,0 +1,18 @@
+//grammar org.riscv.idl.Idl with org.eclipse.xtext.xbase.Xbase
+grammar org.riscv.idl.Idl with org.eclipse.xtext.common.Terminals
+//import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate idl "http://www.riscv.org/idl/Idl"
+
+Model:
+	csrs += Csr*;
+
+Csr:
+	'csr' name=ID
+		description=STRING
+		address=STRING
+		reset_value=STRING
+		';';
+
+//terminal IDLHEX returns ecore::EInt:
+//	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F'|'_')+;
