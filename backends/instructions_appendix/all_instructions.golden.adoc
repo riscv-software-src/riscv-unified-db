@@ -10531,13 +10531,11 @@ Decode Variables::
 |===
 
 Included in::
+allOf:
+* Zfa, version >= Zfa@1.0.0
 * anyOf:
-*** allOf:
-***** Zfa, version >= Zfa@1.0.0
-***** Zfh, version >= Zfh@1.0.0
-*** allOf:
-***** Zfa, version >= Zfa@1.0.0
-***** Zvfh, version >= Zvfh@1.0.0
+** Zfh, version >= Zfh@1.0.0
+** Zvfh, version >= Zvfh@1.0.0
 
 
 [#udb:doc:inst:fli_q]
