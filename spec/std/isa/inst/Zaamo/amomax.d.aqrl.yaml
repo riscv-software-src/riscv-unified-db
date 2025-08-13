@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomax.d.aqrl
-long_name: Atomic MAX doubleword (acquire) (release) (acquire-release)
+long_name: Atomic MAX doubleword (acquire-release)
 description: |
-  Atomically with acquire ordering with release ordering:
+  Atomically with acquire and release ordering:
 
     * Load the doubleword at address _xs1_
     * Write the loaded value into _xd_
@@ -32,7 +32,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0)) {
+  if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
@@ -40,7 +40,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
   X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Max, 1'b1, 1'b1, $encoding);
-        memory_model_release();
+  memory_model_release();
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

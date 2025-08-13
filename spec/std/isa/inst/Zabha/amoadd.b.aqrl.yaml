@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amoadd.b.aqrl
-long_name: Atomic fetch-and-add byte (acquire) (release) (acquire-release)
+long_name: Atomic fetch-and-add byte (acquire-release)
 description: |
-  Atomically with acquire ordering with release ordering:
+  Atomically with acquire and release ordering:
 
     * Load the byte at address _xs1_
     * Write the sign-extended value into _xd_
@@ -31,7 +31,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0)) {
+  if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 

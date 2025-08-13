@@ -40,7 +40,7 @@ description: |
   Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
 
     * Load the <%= current_size[:name] %> at address _xs1_
-    * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_
+    * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
     * XOR the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value
     * Write the result to the address in _xs1_
 definedBy: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
@@ -63,7 +63,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0)) {
+  if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
