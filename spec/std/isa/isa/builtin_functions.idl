@@ -639,7 +639,7 @@ builtin function atomic_read_modify_write_64 {
 }
 
 builtin function read_entropy {
-  returns Bits<64>
+  returns Bits<ZKR_SEED_WIDTH>
   description {
     Return entropy bits from the implementation’s physical entropy source.
     The value may be consumed or updated per read, depending on platform behavior.

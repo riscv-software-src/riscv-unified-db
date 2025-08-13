@@ -18,6 +18,9 @@ description: |
   The `seed` CSR exposes physical entropy directly to software. This register is useful for cryptographic
   applications and random number generation. Reads may have side effects depending on the implementation.
 
+sw_read: |
+  return read_entropy();
+
 fields:
   seed_value:
     location_rv32: 31-0
@@ -27,7 +30,4 @@ fields:
       Entropy bits returned from the physical entropy source.
       This field is WARL and read-only. On each read, the value may be consumed
       or updated depending on platform behavior (see `ZKR_READ_SIDE_EFFECTS`).
-    reset_value: UNDEFINED_LEGAL  
-    sw_read: |
-      return read_entropy();
-      
+    reset_value: UNDEFINED_LEGAL
