@@ -9,8 +9,12 @@
     "@cloudflare/doca-default-theme": "^0.1.1",
     "@commitlint/cli": "19.8.0",
     "@commitlint/config-conventional": "19.8.0",
+<<<<<<< HEAD
     "asciidoctor-kroki": "0.17.0",
     "corepack": "^0.34.0",
+=======
+    "asciidoctor-mathjax": "^0.0.5",
+>>>>>>> 345c07ec (Fix mathematical notation rendering (Issue #78) (#933))
     "prettier": "3.4.2",
     "wavedrom-cli": "^3.1.1"
   }
