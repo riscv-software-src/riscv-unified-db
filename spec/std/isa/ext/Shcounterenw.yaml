@@ -1,7 +1,10 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
+<<<<<<< HEAD
 # WARNING: This file is auto-generated from spec/std/isa/ext/Shcounterenw.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
+=======
+>>>>>>> fe86e703 (fix(csr): correct broken schema paths in YAML files (closes #875) (#923))
 # yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
