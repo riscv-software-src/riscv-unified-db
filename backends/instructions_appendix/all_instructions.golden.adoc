@@ -3812,11 +3812,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c-fldsp]
@@ -3850,11 +3850,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c-flw]
@@ -3889,11 +3889,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c-flwsp]
@@ -3927,11 +3927,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c-fsd]
@@ -3966,11 +3966,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c-fsdsp]
@@ -4004,11 +4004,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c-fsw]
@@ -4043,11 +4043,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c-fswsp]
@@ -4081,11 +4081,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c-j]
@@ -46326,10 +46326,10 @@ Decode Variables::
 |===
 
 Included in::
-* allOf:
-*** Zbb, version >= Zbb@1.0.0
-*** not:
-***** Zbkb, version >= Zbkb@1.0.0
+allOf:
+* Zbb, version >= Zbb@1.0.0
+* not:
+** Zbkb, version >= Zbkb@1.0.0
 
 
 [#udb:doc:inst:zip]
