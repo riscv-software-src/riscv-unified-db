@@ -13,6 +13,14 @@ require "idlc/passes/gen_adoc"
 
 require "udb/config"
 
+# Ensure npm dependencies are installed, particularly wavedrom-cli for diagram generation
+def ensure_npm_dependencies
+  unless File.exist?("#{$root}/node_modules/.bin/wavedrom-cli")
+    puts "Installing npm dependencies (wavedrom-cli not found)..."
+    system("cd #{$root} && npm install") || raise("Failed to install npm dependencies")
+  end
+end
+
 sig { returns(Udb::ConfiguredArchitecture) }
 def pf_create_arch
   $resolver.cfg_arch_for("_")
@@ -87,6 +95,7 @@ end
 # @param adoc_file [String] Full name of source adoc file
 # @param target_pname [String] Full name of PDF file being generated
 def pf_adoc2pdf(adoc_file, target_pname)
+  ensure_npm_dependencies
   FileUtils.mkdir_p File.dirname(target_pname)
 
   $logger.info "Generating PDF in #{target_pname}"
@@ -99,6 +108,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
     "-a pdf-theme=#{$root}/ext/docs-resources/themes/riscv-pdf.yml",
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{target_pname}",
@@ -125,6 +135,7 @@ end
 # @param adoc_file [String] Full name of source adoc file
 # @param target_pname [String] Full name of HTML file being generated
 def pf_adoc2html(adoc_file, target_pname)
+  ensure_npm_dependencies
   FileUtils.mkdir_p File.dirname(target_pname)
 
   $logger.info "Generating HTML in #{target_pname}"
@@ -134,6 +145,7 @@ def pf_adoc2html(adoc_file, target_pname)
     "-v",
     "-a toc",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{target_pname}",
