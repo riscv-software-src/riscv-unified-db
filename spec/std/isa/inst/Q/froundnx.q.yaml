@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: froundnx.q
-long_name: Floating-Point Round-to-Integral-Exact Quad-Precision
+long_name: Floating-Point Round-to-Integer Inexact Quad-Precision
 description:
   - id: inst-froundnx.q-behaviour
     normative: false

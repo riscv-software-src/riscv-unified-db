@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fltq.q
-long_name: Floating-Point Quiet Less Than Quad-Precision
+long_name: Floating-Point Less Than Quiet Quad-Precision
 description:
   - id: inst-fltq.q-behaviour
     normative: false

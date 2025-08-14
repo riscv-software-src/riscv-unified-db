@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmvp.q.x
-long_name: Floating-Point Move Integer Pair Quad-Precision
+long_name: Floating-Point Move to Quad-Precision from Integer Pair
 description:
   - id: inst-fmvp.q.x-behaviour
     normative: false

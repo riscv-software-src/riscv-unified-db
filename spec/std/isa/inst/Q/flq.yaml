@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: flq
-long_name: Floating-Point Quad-Precision Load
+long_name: Floating-Point Load Quad-Precision
 description:
   - id: inst-flq-behaviour
     normative: false
