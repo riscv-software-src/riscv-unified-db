@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /home/hbg/Projects/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -10670,7 +10670,7 @@ Included in::
 == flq
 
 Synopsis::
-Floating-Point Quad-Precision Load
+Floating-Point Load Quad-Precision
 
 Assembly::
 flq fd, xs1, imm
@@ -10953,7 +10953,7 @@ Included in::
 == fltq.q
 
 Synopsis::
-Floating-Point Quiet Less Than Quad-Precision
+Floating-Point Less Than Quiet Quad-Precision
 
 Assembly::
 fltq.q fd, fs1, fs2
@@ -11156,7 +11156,7 @@ Included in::
 == fmadd.q
 
 Synopsis::
-Floating-Point Fused Multiply-Add Quad-Precision
+Floating-Point Multiply-Add Quad-Precision
 
 Assembly::
 fmadd.q fd, fs1, fs2, fs3, rm
@@ -11476,7 +11476,7 @@ Included in::
 == fmaxm.q
 
 Synopsis::
-Floating-Point Maximum-Number with _NaN_ Handling Quad-Precision
+Floating-Point Maximum-Number NaN Quad-Precision
 
 Assembly::
 fmaxm.q fd, fs1, fs2
@@ -11795,7 +11795,7 @@ Included in::
 == fminm.q
 
 Synopsis::
-Floating-Point Minimum-Number with _NaN_ Handling Quad-Precision
+Floating-Point Minimum-Number NaN Quad-Precision
 
 Assembly::
 fminm.q fd, fs1, fs2
@@ -11958,7 +11958,7 @@ Included in::
 == fmsub.q
 
 Synopsis::
-Floating-Point Fused Multiply-Subtract Quad-Precision
+Floating-Point Multiply-Subtract Quad-Precision
 
 Assembly::
 fmsub.q fd, fs1, fs2, fs3, rm
@@ -12478,7 +12478,7 @@ Included in::
 == fmvh.x.q
 
 Synopsis::
-Floating-Point Move Upper 64 Bits of Quad-Precision to Integer Register
+Floating-Point Move High Half to Integer from Quad-Precision
 
 Assembly::
 fmvh.x.q xd, fs1
@@ -12561,7 +12561,7 @@ Included in::
 == fmvp.q.x
 
 Synopsis::
-Floating-Point Move Integer Pair Quad-Precision
+Floating-Point Move to Quad-Precision from Integer Pair
 
 Assembly::
 fmvp.q.x fd, xs1, xs2
@@ -12685,7 +12685,7 @@ Included in::
 == fnmadd.q
 
 Synopsis::
-Floating-Point Fused Negate-Multiply-Add Quad-Precision
+Floating-Point Negate-Multiply-Add Quad-Precision
 
 Assembly::
 fnmadd.q fd, fs1, fs2, fs3, rm
@@ -12847,7 +12847,7 @@ Included in::
 == fnmsub.q
 
 Synopsis::
-Floating-Point Fused Negate-Multiply-Subtract Quad-Precision
+Floating-Point Negate-Multiply-Subtract Quad-Precision
 
 Assembly::
 fnmsub.q fd, fs1, fs2, fs3, rm
@@ -13178,7 +13178,7 @@ Included in::
 == froundnx.q
 
 Synopsis::
-Floating-Point Round-to-Integral-Exact Quad-Precision
+Floating-Point Round-to-Integer Inexact Quad-Precision
 
 Assembly::
 froundnx.q fd, fs1, rm
@@ -13371,7 +13371,7 @@ Included in::
 == fsgnj.q
 
 Synopsis::
-Floating-point Sign-Injection Quad-Precision
+Floating-Point Sign-Inject Quad-Precision
 
 Assembly::
 fsgnj.q fd, fs1, fs2
@@ -13527,7 +13527,7 @@ Included in::
 == fsgnjn.q
 
 Synopsis::
-Floating-Point Sign Inject Negate Quad-Precision
+Floating-Point Sign-Inject Negate Quad-Precision
 
 Assembly::
 fsgnjn.q fd, fs1, fs2
@@ -13683,7 +13683,7 @@ Included in::
 == fsgnjx.q
 
 Synopsis::
-Floating-Point Sign Inject XOR Quad-Precision
+Floating-Point Sign-Inject XOR Quad-Precision
 
 Assembly::
 fsgnjx.q fd, fs1, fs2
@@ -13812,7 +13812,7 @@ Included in::
 == fsq
 
 Synopsis::
-Floating-point Store Quad-Precision
+Floating-Point Store Quad-Precision
 
 Assembly::
 fsq fs2, imm(xs1)
@@ -13931,7 +13931,7 @@ Included in::
 == fsqrt.q
 
 Synopsis::
-Floating-point Square Root Quad-Precision
+Floating-Point Square Root Quad-Precision
 
 Assembly::
 fsqrt.q fd, fs1, rm
@@ -14085,7 +14085,7 @@ Included in::
 == fsub.q
 
 Synopsis::
-Floating-point Subtract Quad-Precision
+Floating-Point Subtract Quad-Precision
 
 Assembly::
 fsub.q fd, fs1, fs2, rm
