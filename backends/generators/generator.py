@@ -177,12 +177,74 @@ def load_instructions(
 
             encoding = data.get("encoding", {})
             if not encoding:
-                logging.error(
-                    f"Missing 'encoding' field in instruction {name} in {path}"
-                )
-                encoding_filtered += 1
-                continue
+                format_data = data.get("format", {})
+                opcodes = format_data.get("opcodes", {})
 
+                if not opcodes:
+                    logging.error(
+                        f"Missing both 'encoding' and 'format.opcodes' for {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
+
+                bit_length = 32
+                if "length" in data:
+                    try:
+                        bit_length = int(data["length"])
+                    except ValueError:
+                        pass
+                elif "C" in enabled_extensions:
+                    if any(
+                        loc.get("location", "").startswith("0..15")
+                        if isinstance(loc, dict) else str(loc).startswith("0..15")
+                        for loc in opcodes.values()
+                    ):
+                        bit_length = 16
+
+                match_bits = ["-" for _ in range(bit_length)]
+
+                try:
+                    for field, info in opcodes.items():
+                        if not isinstance(info, dict):
+                            continue
+
+                        value = info.get("value")
+                        location = info.get("location")
+                        if value is None or location is None:
+                            continue
+
+                        if isinstance(location, str):
+                            try:
+                                if "-" in location:
+                                    hi, lo = map(int, location.split("-"))
+                                else:
+                                    hi = lo = int(location)
+
+                                width = hi - lo + 1
+                                val_int = (
+                                    int(value, 0) if isinstance(value, str) else value
+                                )
+                                val_bin = bin(val_int)[2:].zfill(width)
+
+                                inst_width = 16 if encoding.get("compressed", False) else 32
+                                match_bits = ["-"] * inst_width
+                                match_bits[inst_width - 1 - hi : inst_width - lo] = list(val_bin)
+
+                            except Exception as e:
+                                logging.error(
+                                    f"Failed to parse location '{location}' for field '{field}' in instruction '{name}': {e}"
+                                )
+                                continue
+
+                    match_str = "".join(match_bits)
+                    instr_dict[name] = {"match": match_str}
+                except Exception as e:
+                    logging.error(
+                        f"Critical error constructing match string for {name} in {path}: {e}"
+                    )
+                    raise
+
+                continue
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
             if base is not None:
@@ -255,14 +317,23 @@ def load_instructions(
                 encoding_filtered += 1
                 continue
 
-            match_str = encoding_to_use.get("match")
+            match_str = encoding_to_use.get("match") if encoding_to_use else None
+
+            if not match_str:
+                subtype = data.get("subtype", {})
+                if isinstance(subtype, dict):
+                    match_str = subtype.get("match")
+                    if match_str:
+                        logging.debug(f"Using subtype.match for instruction {name}")
+
             if not match_str:
                 msg = f"Skipping {name} because 'match' field is missing in {path}"
                 logging.warning(msg)
                 encoding_filtered += 1
                 continue
 
-            instr_dict[instr_key] = {"match": match_str}
+            entry = {"match": match_str}
+            instr_dict[instr_key] = entry
 
     if found_instructions > 0:
         logging.info(
