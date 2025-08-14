@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -419,7 +419,8 @@ fields:
       enter the privilege level stored in MPP before clearing the field.
       * When `mstatus.MPRV` is set, loads and stores behave as if the current privilege level were MPP.
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return 2'b11;
     sw_write(csr_value): |
       if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
