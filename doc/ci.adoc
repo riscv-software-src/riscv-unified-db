@@ -1,0 +1,52 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Continuous Integration
+
+The UnifiedDB project uses continuous integration (CI) to improve quality and automate artifact creation.
+
+We use two framworks for CI:
+
+- https://pre-commit.com[pre-commit]
+- https://docs.github.com/en/actions[GitHub Actions]
+
+== Frameworks
+
+=== pre-commit
+
+`pre-commit` checks are installed by the UnifiedDB setup and automatically run as a git hook on commit.
+Any errors from pre-commit will cause a `git commit` to fail.
+Most pre-commit checks (like linters) will automatically edit the offending files to fix them;
+just `git add` the changes and try again.
+
+`pre-commit` can also be run on demand with `./bin/pre-commit`.
+
+=== GitHub Actions
+
+The upstream UnifiedDB main branch is protected by a variety of checks.
+The checks are split into two different groups.
+
+==== PR Regression Tests
+
+The first group runs on any PR targeting the main branch.
+All of the tests must pass before the PR is allowed to move to the https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue[merge queue].
+The tests are specified in xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
+
+==== Deployment Tests / Actions
+
+The second group of tests run when a PR enters the merge queue.
+They generate artifacts that are deployed to https://riscv-software-src.github.io/riscv-unified-db/[GitHub pages].
+If any test in the second group fails, a PR is removed from the merge queue.
+While in the merge queue, the CI tests generate artifacts but do not upload/update pages yet.
+The upload occurs after the PR merges to main and the test runs again.
+The tests are specified in xref:.github/workflows/deploy.yml[`.github/workflows/deploy.yml`] and are uploaded via xref:.github/workflows/pages.yml[`.github/workflows/pages.yml`].
+
+== CI Policies
+
+=== Test Coverage
+
+Code coverage is tracked for the `idlc` and `udb` Ruby gems.
+New PRs must not drop line coverage of the gems by more than 1%.
+
+While coverage is not currently tracked for other collateral, any new features are expected to be
+tested and those tests are expected to be run during CI.
