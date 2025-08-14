@@ -6,9 +6,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fnmsub.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Negate-Multiply-Subtract Quad-Precision
+description:
+  - id: inst-fnmsub.q-behaviour
+    normative: true
+    text: |
+      The `fnmsub.q` instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the
+      value in `fs3`, and writes the final result to `fd`.
+      `fnmsub.q` computes `-(fs1 * fs2) - fs3`.
 definedBy: Q
 assembly: fd, fs1, fs2, fs3, rm
 encoding:

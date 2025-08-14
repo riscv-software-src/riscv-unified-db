@@ -6,9 +6,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsgnjn.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Sign-Inject Negate Quad-Precision
+description:
+  - id: inst-fsgnjn.q-behaviour
+    normative: false
+    text: |
+      The `fsgnjn.q` instruction produces a result that takes all bits except the sign bit from `fs1`.
+      The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination register `fd`.
+      `fsgnjn.q` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 definedBy: Q
 assembly: fd, fs1, fs2
 encoding:

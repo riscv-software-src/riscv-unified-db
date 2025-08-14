@@ -6,9 +6,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsqrt.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Square Root Quad-Precision
+description:
+  - id: inst-fsqrt.q-behaviour
+    normative: false
+    text: |
+      The `fsqrt.q` instruction computes the square root of the value in `fs1` and writes the result to `fd`.
 definedBy: Q
 assembly: fd, fs1, rm
 encoding:

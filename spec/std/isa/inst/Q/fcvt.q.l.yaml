@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.l
-long_name: Floating-point Convert Long to Quad-precision
+long_name: Floating-Point Convert Long to Quad-Precision
 description:
   - id: inst-fcvt.q.l-behaviour
     normative: false

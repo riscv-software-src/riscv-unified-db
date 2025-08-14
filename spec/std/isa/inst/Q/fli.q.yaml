@@ -6,9 +6,15 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fli.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Load Immediate Quad-Precision
+description:
+  - id: inst-fli.q-behaviour
+    normative: false
+    text: |
+      The
+      The `fli.q` instruction loads one of 32 quad-precision floating-point constants, encoded in the `rs1`
+      field, into floating-point register `rd`.
+      `fli.q` is encoded like `fmv.w.x`, but with _fmt_ = Q.
 definedBy:
   allOf: [Q, Zfa]
 assembly: fd, xs1
