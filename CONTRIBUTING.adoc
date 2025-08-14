@@ -36,10 +36,7 @@ All patches must meet the UnifiedDB code standards. This includes:
 === Regression tests
 
 All contributions must pass the full suite of regression tests.
-Regression tests are checked in GitHub for every PR, and they can also be run locally using `./do test:regress`.
-
-If a Pull Request adds a new feature that is not already covered by the regression test suite, it
-must add at least one new test.
+Tests are documented more in xref:doc/ci.adoc[Continuous Integration].
 
 === Commit messages
 
