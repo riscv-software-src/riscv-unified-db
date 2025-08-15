@@ -90,6 +90,17 @@
 #     - Can't use [#<anchor-name]#Here's some note text.# since it just shows up in HTML as normal text
 #     - Don't put [[<<anchor-name]] before the entire admonition (e.g., before [NOTE]) to apply to entire admonition
 #       (one or more paragraphs) since it will just create a hyperlink with no associated text.
+#
+#  4) Anchor inside table/figure name
+#     - You might be tempted to try to put an inline anchor in a table/figure name but they won't work
+#     - For example, say the adoc contains a normative statement like this:
+#          .Encoding of Extensions field in `misa`. [#<anchor-name>]#All bits that are reserved for future use must return zero when read.#
+#     - To work around this, move the normative statement in the table/figure name to outside the table/figure
+#       and create a regular inline anchor to the text.
+#     - For the example above, you'd change it to:
+#          [#<anchor-name>]#All bits that are reserved for future use must return zero when read.#
+#
+#          .Encoding of Extensions field in `misa`.
 
 module Udb
 class DocLink

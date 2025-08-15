@@ -88,7 +88,10 @@ normative_rules:
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
-    doc_links: ["norm:csr:misa:disabling-extension"]
+    doc_links:
+      - "norm:csrfld:misa:extensions:disabling"
+      - "norm:csrfld:misa:extensions:impl_def"
+      - "norm:csrfld:misa:extensions:disabling_def"
 
 cert_test_procedures:
   - name: inst.mul.encoding

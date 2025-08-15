@@ -24,3 +24,23 @@ fields:
     type: RO
     reset_value(): return VENDOR_ID_OFFSET;
 definedBy: Sm
+normative_rules:
+  - name: mvendorid_always_readable
+    type: CSR
+    description: Mandatory feature
+    doc_links: ["norm:csr:mvendorid:always_readable"]
+  - name: mvendorid_sz
+    type: CSR
+    description: Bit width
+    doc_links: ["norm:csr:mvendorid:sz_ro_meaning"]
+  - name: mvendorid_ro
+    type: CSR
+    description: Read-only
+    doc_links: ["norm:csr:mvendorid:sz_ro_meaning"]
+  - name: mvendorid_meaning
+    type: CSR
+    description: Meaning
+    doc_links:
+      - "norm:csr:mvendorid:sz_ro_meaning"
+      - "norm:csr:mvendorid:encoding"
+      - "norm:csr:mvendorid:bank_1_less_than_JEDEC"

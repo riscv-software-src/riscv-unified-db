@@ -13,6 +13,75 @@ priv_mode: M
 length: MXLEN
 description: Reports the XLEN and "major" extensions supported by the ISA.
 definedBy: Sm
+sw_read(): |
+  return (
+    (CSR[misa].MXL << (xlen() - 2)) |
+    (CSR[misa].V << 21) |
+    (CSR[misa].U << 20) |
+    (CSR[misa].S << 18) |
+    (CSR[misa].Q << 16) |
+    (CSR[misa].M << 12) |
+    (CSR[misa].I << 7) |
+    (CSR[misa].H << 6) |
+    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 5) | # 'G'
+    (CSR[misa].F << 4) |
+    (CSR[misa].D << 3) |
+    (CSR[misa].C << 2) |
+    (CSR[misa].B << 1) |
+    CSR[misa].A);
+normative_rules:
+  - name: misa_sw_rw
+    type: CSR
+    description: SW can read & write
+    doc_links: ["norm:csr:misa:sw_rw"]
+  - name: misa_always_readable
+    type: CSR
+    description: Mandatory feature
+    doc_links: ["norm:csr:misa:always_readable"]
+  - name: misa_sz
+    type: CSR
+    description: bit width
+    doc_links: ["norm:csr:misa:sz"]
+  - name: misa_inc_align
+    type: CSR
+    description: Increasing IALIGN
+    doc_links: ["norm:csr:misa:inc_ialign"]
+  - name: MISA_CSR_IMPLEMENTED
+    type: Parameter
+    description: misa CSR can be zero
+    doc_links: ["norm:param:MISA_CSR_IMPLEMENTED:can_be_zero"]
+  - name: misa_exts_rsv_ret_0
+    type: CSR field
+    description: Reserved bits in the misa.extensions field return 0 when read.
+    doc_links: ["norm:csrfld:misa:extensions:rsv_ret_0"]
+  - name: misa_exts_depends
+    type: CSR field
+    description: Dependencies between "extensions" bits
+    doc_links: ["norm:csrfld:misa:extensions:dependencies"]
+cert_test_procedures:
+  - name: csr.misa.off&on
+    description: Turn on/off each bit and see what happens
+    normative_rules:
+      - misa_a_disabling
+      - misa_b_disabling
+      - misa_c_disabling
+      - misa_d_disabling
+      - misa_f_disabling
+      - misa_g_disabling
+      - misa_h_disabling
+      - misa_i_disabling # Always present
+      - misa_m_disabling
+      - misa_q_disabling
+      - misa_s_disabling
+      - misa_u_disabling
+      - misa_v_disabling
+    steps: |
+      . Setup
+      .. Turn on all bits
+      . Loop
+      .. Turn off each present bit invidually and try affected behaviors
+      . Check
+      .. Fail unless turning off bit disables extension as expected
 fields:
   MXL:
     location_rv32: 31-30
@@ -21,6 +90,19 @@ fields:
     type: RO
     reset_value(): |
       return (MXLEN == 32) ? 2'b01 : 2'b10;
+    normative_rules:
+      - name: misa_mxl_effect
+        type: CSR field
+        description: Controls native base integer ISA width
+        doc_links: ["norm:csrfld:misa:mxl:base_int_width"]
+      - name: misa_mxl_ro
+        type: CSR field
+        description: Read-only
+        doc_links: ["norm:csrfld:misa:mxl:ro"]
+      - name: mxlen_if_misa_nz
+        type: CSR field
+        description: Contains MXLEN if
+        doc_links: ["norm:csrfld:misa:mxl:mxlen_if_misa_nz"]
   A:
     location: 0
     description: |
@@ -33,6 +115,22 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::A) ? 1 : 0;
     definedBy: A
+    normative_rules:
+      - name: MUTABLE_MISA_A
+        type: parameter
+        description: Is A-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_a_reset
+        type: parameter
+        description: Reset value of MISA.A field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_a_disabling
+        type: CSR field
+        description: What happens when you turn off the 'A' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   B:
     location: 1
     description: |
@@ -45,6 +143,26 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::B) ? 1 : 0;
     definedBy: B
+    normative_rules:
+      - name: MUTABLE_MISA_B
+        type: parameter
+        description: Is B-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_b_reset
+        type: parameter
+        description: Reset value of MISA.B field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_b_disabling
+        type: CSR field
+        description: What happens when you turn off the 'B' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
+      - name: misa_b_set
+        type: CSR field
+        description: When is the B-bit set?
+        doc_links: ["norm:csrfld:misa:b:set"]
   C:
     location: 2
     description: |
@@ -58,6 +176,22 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::C) ? 1 : 0;
     definedBy: C
+    normative_rules:
+      - name: MUTABLE_MISA_C
+        type: parameter
+        description: Is C-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_c_reset
+        type: parameter
+        description: Reset value of MISA.C field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_c_disabling
+        type: CSR field
+        description: What happens when you turn off the 'C' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   D:
     location: 3
     description: |
@@ -74,6 +208,49 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::D) ? 1 : 0;
     definedBy: D
+    normative_rules:
+      - name: MUTABLE_MISA_D
+        type: parameter
+        description: Is D-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_d_reset
+        type: parameter
+        description: Reset value of MISA.D field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_d_disabling
+        type: CSR field
+        description: What happens when you turn off the 'D' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
+  E:
+    location: 4
+    description: |
+      Indicates support for either the RV32E or RV64E base ISA (E = Embedded).
+    type(): |
+      return CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::I) ? 0 : 1;
+    definedBy: I
+    normative_rules:
+      - name: misa_e_reset
+        type: parameter
+        description: Reset value of MISA.E field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_e_set
+        type: CSR field
+        description: When is the E-bit set?
+        doc_links: ["norm:csrfld:misa:e:set"]
+      - name: misa_e_ro
+        type: CSR field
+        description: Read-only
+        doc_links: ["norm:csrfld:misa:e:ro"]
+      - name: misa_e_not_i
+        type: CSR field
+        description: '"E" is inverse of "I"'
+        doc_links: ["norm:csrfld:misa:e:not_i"]
+        # TODO: add "when" statement saying rule only applies if MISA_CSR_IMPLEMENTED == true
   F:
     location: 5
     description: |
@@ -99,6 +276,22 @@ fields:
       return csr_value.F;
     legal?(csr_value): |
       return !(csr_value.F == 0 && csr_value.D == 1);
+    normative_rules:
+      - name: MUTABLE_MISA_F
+        type: parameter
+        description: Is F-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_f_reset
+        type: parameter
+        description: Reset value of MISA.F field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_f_disabling
+        type: CSR field
+        description: What happens when you turn off the 'F' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   G:
     location: 6
     description: |
@@ -118,6 +311,22 @@ fields:
         implemented?(ExtensionName::M) &&
         implemented?(ExtensionName::F) &&
         implemented?(ExtensionName::D)) ? 1 : 0;
+    normative_rules:
+      - name: MUTABLE_MISA_G
+        type: parameter
+        description: Is G-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_g_reset
+        type: parameter
+        description: Reset value of MISA.G field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_g_disabling
+        type: CSR field
+        description: What happens when you turn off the 'G' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   H:
     location: 7
     description: |
@@ -130,13 +339,45 @@ fields:
     definedBy: H
     reset_value(): |
       return implemented?(ExtensionName::H) ? 1 : 0;
+    normative_rules:
+      - name: MUTABLE_MISA_H
+        type: parameter
+        description: Is H-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_h_reset
+        type: parameter
+        description: Reset value of MISA.H field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_h_disabling
+        type: CSR field
+        description: What happens when you turn off the 'H' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   I:
     location: 8
     description: |
       Indicates support for the `I` (base) extension.
     type: RO
     definedBy: I
-    reset_value: 1
+    reset_value: 1 # This is incorrect for a processor only supporting RV32E/RV64E
+    normative_rules:
+      - name: MUTABLE_MISA_I
+        type: parameter
+        description: Is I-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_i_reset
+        type: parameter
+        description: Reset value of MISA.I field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_i_disabling
+        type: CSR field
+        description: What happens when you turn off the 'I' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   M:
     location: 12
     description: |
@@ -150,14 +391,29 @@ fields:
       return implemented?(ExtensionName::M) ? 1 : 0;
     definedBy: M
     normative_rules:
-      - name: misa_M_disabled
+      - name: MUTABLE_MISA_M
+        type: parameter
+        description: Is M-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_m_reset
+        type: parameter
+        description: Reset value of MISA.M field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_m_disabling
         type: CSR field
-        description: What happens when you turn off `misa.M`
-        doc_links: ["norm:csr:misa:disabling-extension"]
+        description: What happens when you turn off the 'M' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
+      - name: misa_m_set
+        type: CSR field
+        description: When is the M-bit set?
+        doc_links: ["norm:csrfld:misa:m:set"]
     cert_test_procedures:
       - name: csr.misa.M.muldiv_with_M_on&off
         description: Execute with M on/off
-        normative_rules: [misa_M_disabled]
+        normative_rules: [misa_m_disabling]
         steps: |
           . on
           .. Turn on `misa.M`
@@ -193,6 +449,22 @@ fields:
       return csr_value.Q;
     legal?(csr_value): |
       return !(csr_value.Q == 1 && csr_value.D == 0);
+    normative_rules:
+      - name: MUTABLE_MISA_Q
+        type: parameter
+        description: Is Q-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_q_reset
+        type: parameter
+        description: Reset value of MISA.Q field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_q_disabling
+        type: CSR field
+        description: What happens when you turn off the 'Q' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
   S:
     location: 18
     description: |
@@ -205,6 +477,26 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::S) ? 1 : 0;
     definedBy: S
+    normative_rules:
+      - name: MUTABLE_MISA_S
+        type: parameter
+        description: Is S-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_s_reset
+        type: parameter
+        description: Reset value of MISA.S field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_s_disabling
+        type: CSR field
+        description: What happens when you turn off the 'S' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
+      - name: misa_s_set
+        type: CSR field
+        description: When is the S-bit set?
+        doc_links: ["norm:csrfld:misa:s:set"]
   U:
     location: 20
     description: |
@@ -217,6 +509,26 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::U) ? 1 : 0;
     definedBy: U
+    normative_rules:
+      - name: MUTABLE_MISA_U
+        type: parameter
+        description: Is U-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_u_reset
+        type: parameter
+        description: Reset value of MISA.U field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_u_disabling
+        type: CSR field
+        description: What happens when you turn off the 'U' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"
+      - name: misa_u_set
+        type: CSR field
+        description: When is the U-bit set?
+        doc_links: ["norm:csrfld:misa:u:set"]
   V:
     location: 21
     description: |
@@ -229,35 +541,19 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::V) ? 1 : 0;
     definedBy: V
-sw_read(): |
-  return (
-    (CSR[misa].MXL << (xlen() - 2)) |
-    (CSR[misa].V << 21) |
-    (CSR[misa].U << 20) |
-    (CSR[misa].S << 18) |
-    (CSR[misa].Q << 16) |
-    (CSR[misa].M << 12) |
-    (CSR[misa].I << 7) |
-    (CSR[misa].H << 6) |
-    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 5) | # 'G'
-    (CSR[misa].F << 4) |
-    (CSR[misa].D << 3) |
-    (CSR[misa].C << 2) |
-    (CSR[misa].B << 1) |
-    CSR[misa].A);
-normative_rules:
-  - name: misa_disabling_bits
-    type: CSR
-    description: What happens when you turn off bits
-    doc_links: ["norm:csr:misa:disabling-extension"]
-cert_test_procedures:
-  - name: csr.misa.off&on
-    description: Turn on/off each bit and see what happens
-    normative_rules: [misa_disabling_bits]
-    steps: |
-      . Setup
-      .. Turn on all bits
-      . Loop
-      .. Turn off each present bit invidually and try affected behaviors
-      . Check
-      .. Fail unless turning off bit disables extension as expected
+    normative_rules:
+      - name: MUTABLE_MISA_V
+        type: parameter
+        description: Is V-bit writeable?
+        doc_links: ["norm:csrfld:misa:extensions:can_be_writable"]
+      - name: misa_v_reset
+        type: parameter
+        description: Reset value of MISA.V field
+        doc_links: ["norm:csrfld:misa:extensions:reset"]
+      - name: misa_v_disabling
+        type: CSR field
+        description: What happens when you turn off the 'V' field
+        doc_links:
+          - "norm:csrfld:misa:extensions:disabling"
+          - "norm:csrfld:misa:extensions:impl_def"
+          - "norm:csrfld:misa:extensions:disabling_def"

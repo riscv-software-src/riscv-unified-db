@@ -20,6 +20,19 @@ description:
   The mstatus register tracks and controls the hart's current operating
   state.
 definedBy: Sm
+normative_rules:
+  - name: mstatus_mandatory
+    type: CSR
+    description: Present in every RISC-V implementation
+  - name: mstatus_sz
+    type: CSR
+    description: Bit width
+    doc_links: ["norm:csr:mstatus:sz_rw"]
+  - name: mstatus_rw
+    type: CSR
+    description: Read-write
+    doc_links: ["norm:csr:mstatus:sz_rw"]
+
 fields:
   SD:
     location_rv32: 31

@@ -19,7 +19,7 @@ description: |
 
 normative_rules:
   - name: R-type_ops
-    type: extension
+    type: instruction
     description: R-type instruction source and destination operands
     doc_links: ["norm:basegrp:all:R-type_operands"]
     coverage_points: [cp_rs1, cp_rs2, cp_rd, cp_rs1_edges]

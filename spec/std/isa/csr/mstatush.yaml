@@ -18,6 +18,23 @@ description:
 definedBy:
   name: Sm
   version: ">= 1.12"
+normative_rules:
+  - name: mstatush_rv32_mandatory
+    type: CSR
+    description: Present in every RV32 implementation
+    doc_links: ["norm:csr:mstatush:sz_rw_rv32"]
+  - name: mstatush_sz
+    type: CSR
+    description: Bit width
+    doc_links: ["norm:csr:mstatush:sz_rw_rv32"]
+  - name: mstatus_rw
+    type: CSR
+    description: Read-write
+    doc_links: ["norm:csr:mstatush:sz_rw_rv32"]
+  - name: mstatus_enc
+    type: CSR
+    description: Encoding
+    doc_links: ["norm:csr:mstatush:encoding"]
 fields:
   MDT:
     location: 10

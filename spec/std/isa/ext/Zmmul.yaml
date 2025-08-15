@@ -26,3 +26,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2022-06
+normative_rules:
+- name: ignore_misa_m_if_Zmmul
+  type: extension
+  description: Ignore misa.m value when Zmmul present
+  doc_links: ["norm:ext:Zmmul:misa_m"]

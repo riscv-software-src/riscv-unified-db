@@ -78,7 +78,9 @@ normative_rules:
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
     doc_links:
-      - norm:csr:misa:disabling-extension
+      - "norm:csrfld:misa:extensions:disabling"
+      - "norm:csrfld:misa:extensions:impl_def"
+      - "norm:csrfld:misa:extensions:disabling_def"
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
 cert_test_procedures:

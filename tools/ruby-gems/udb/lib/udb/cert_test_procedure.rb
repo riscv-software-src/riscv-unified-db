@@ -50,7 +50,7 @@ class CertTestProcedure
 
     @normative_rules = []
     @data["normative_rules"]&.each do |nr_name|
-      nr = @db_obj.normative_rule(nr_name)
+      nr = @db_obj.arch.normative_rule(nr_name)
       raise ArgumentError, "Can't find normative rule '#{nr_name}' for certification test procedure '#{@name}'" if nr.nil?
       @normative_rules << nr
     end

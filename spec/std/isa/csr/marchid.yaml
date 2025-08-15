@@ -54,3 +54,20 @@ fields:
     type: RO
     description: Vendor-specific microarchitecture ID.
     reset_value(): return ARCH_ID;
+normative_rules:
+  - name: marchid_always_readable
+    type: CSR
+    description: Mandatory feature
+    doc_links: ["norm:csr:marchid:always_readable"]
+  - name: marchid_sz
+    type: CSR
+    description: Bit width
+    doc_links: ["norm:csr:marchid:sz_ro_meaning"]
+  - name: marchid_ro
+    type: CSR
+    description: Read-only
+    doc_links: ["norm:csr:marchid:sz_ro_meaning"]
+  - name: marchid_meaning
+    type: CSR
+    description: Meaning
+    doc_links: ["norm:csr:marchid:sz_ro_meaning"]

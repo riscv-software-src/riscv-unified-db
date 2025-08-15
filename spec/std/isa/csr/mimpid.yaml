@@ -37,3 +37,18 @@ fields:
     type: RO
     description: Vendor-specific implementation ID.
     reset_value(): return IMP_ID;
+normative_rules:
+  - name: mimpid_always_readable
+    type: CSR
+    description: Mandatory feature
+    doc_links: ["norm:csr:mimpid:always_readable"]
+  - name: mimpid_sz
+    type: CSR
+    description: MXLEN-bits wide
+  - name: mimpid_ro
+    type: CSR
+    description: Read-only
+  - name: mimpid_meaning
+    type: CSR
+    description: Meaning
+    doc_links: ["norm:csr:mimpid:meaning"]

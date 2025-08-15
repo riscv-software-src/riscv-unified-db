@@ -491,3 +491,16 @@ params:
       extra_validation: |
         # must be a power of two
         assert MTVEC_BASE_ALIGNMENT_VECTORED.to_s(2).count('1') == 1
+
+normative_rules:
+  - name: m_highest_priv_mode
+    type: extension
+    description: M-mode is the highest priviledge mode
+    doc_links:
+      - "norm:ext:Sm:highest_priv_mode"
+      - "norm:ext:Sm:access_all_lower_priv_CSRs"
+
+  - name: m_reset_priv_mode
+    type: extension
+    description: Reset puts hart into M-mode
+    doc_links: ["norm:ext:Sm:mode_at_reset"]

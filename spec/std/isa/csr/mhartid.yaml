@@ -22,3 +22,20 @@ fields:
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
   return hartid();
+normative_rules:
+  - name: mhartid_always_readable
+    type: CSR
+    description: Mandatory feature
+    doc_links: ["norm:csr:mhartid:always_readable"]
+  - name: mhartid_sz
+    type: CSR
+    description: Bit width
+    doc_links: ["norm:csr:mhartid:sz_ro_meaning"]
+  - name: mhartid_ro
+    type: CSR
+    description: Read-only
+    doc_links: ["norm:csr:mhartid:sz_ro_meaning"]
+  - name: mhartid_meaning
+    type: CSR
+    description: Meaning
+    doc_links: ["norm:csr:mhartid:sz_ro_meaning"]
