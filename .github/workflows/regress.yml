@@ -270,6 +270,6 @@ jobs:
       - name: Run cpp unit tests
         run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest
   call-deploy:
-    uses: ./.github/workflows/merge.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       dry-run: true
