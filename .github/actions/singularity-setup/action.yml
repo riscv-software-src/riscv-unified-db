@@ -19,10 +19,46 @@ runs:
             .home/.gems
             node_modules
           key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: false
       - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
         run: ./bin/build_container
         shell: bash
+      - if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies when cache is missing
+        run: |
+          echo "Cache miss detected, ensuring dependencies are installed..."
+          # Create directories if they don't exist
+          mkdir -p .home/.gems
+          mkdir -p .home/.cache
+          echo "Dependencies will be installed by setup script"
+        shell: bash
       - name: Setup project
         run: ./bin/setup
+        shell: bash
+      - name: Ensure Ruby gems are installed
+        run: |
+          # Check if gems are properly installed, install if missing
+          if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
+            echo "Ruby gems directory missing or empty, installing gems..."
+            if [ -f Gemfile ]; then
+              # Configure bundler to use local path
+              ./do bundle config set --local path .home/.gems
+              ./do bundle config set --local cache_path .home/.cache
+              ./do bundle config set --local with development
+              # Install gems
+              ./do bundle install
+            else
+              echo "ERROR: Gemfile not found"
+              exit 1
+            fi
+          else
+            echo "Ruby gems directory exists and is not empty"
+          fi
+
+          # Verify gems are accessible
+          if ! ./do bundle check; then
+            echo "Bundle check failed, reinstalling gems..."
+            ./do bundle install
+          fi
         shell: bash
