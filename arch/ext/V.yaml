@@ -47,3 +47,9 @@ params:
 
       # if HW is writing VS, then Dirty (3) better be a supported value
       assert MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX:
+    description: |
+      The value assigned to VL when AVL < 2*VLMAX.
+    schema:
+      type: string
+      enum: ["ceil(AVL/2)", "VLMAX", "custom"]
