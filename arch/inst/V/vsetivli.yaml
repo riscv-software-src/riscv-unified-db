@@ -25,11 +25,19 @@ data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
   XReg VLMAX = (VLEN <<< state.log2_multiplier) >> (3 + state.vsew);
+  XReg AVL = uimm;
+  XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
 
-  if (uimm < VLMAX) {
-    CSR[vl].VALUE = uimm;
-  } else if (uimm < 2*VLMAX) {
-    CSR[vl].VALUE = uimm / 2;
+  if (AVL < VLMAX) {
+    CSR[vl].VALUE = AVL;
+  } else if (AVL < 2*VLMAX) {
+    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
+      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
+    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
+      CSR[vl].VALUE = VLMAX;
+    } else {
+      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+    }
   } else {
     CSR[vl].VALUE = VLMAX;
   }
