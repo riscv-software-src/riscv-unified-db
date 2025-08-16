@@ -1,8 +1,9 @@
 name: Deploy pages
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [Deployment actions]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,6 +15,7 @@ concurrency:
 jobs:
   pages:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       SINGULARITY: 1
     environment:
@@ -24,8 +26,146 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Create many artifacts in the _site directory
-        run: /bin/bash tools/scripts/deploy.sh
+
+      - name: Make _site
+        run: mkdir _site
+      - name: Download reuse BOM
+        uses: actions/download-artifact@v5
+        with:
+          name: reuse-manifest-${{ github.event.workflow_run.run_number }}
+          path: _site/reuse_bom.txt
+      - name: Download resolved spec
+        uses: actions/download-artifact@v5
+        with:
+          name: resolved-spec-${{ github.event.workflow_run.run_number }}
+          path: _site/resolved_spec
+      - name: Download UDB API Docs
+        uses: actions/download-artifact@v5
+        with:
+          name: udb-api-${{ github.event.workflow_run.run_number }}
+          path: _site/htmls/udb_api_doc
+      - name: Download ISA Explorer CSR
+        uses: actions/download-artifact@v5
+        with:
+          name: isa_explorer-csr-${{ github.event.workflow_run.run_number }}
+          path: _site/isa_explorer
+      - name: Download ISA Explorer Extension
+        uses: actions/download-artifact@v5
+        with:
+          name: isa_explorer-ext-${{ github.event.workflow_run.run_number }}
+          path: _site/isa_explorer
+      - name: Download ISA Explorer Inst
+        uses: actions/download-artifact@v5
+        with:
+          name: isa_explorer-inst-${{ github.event.workflow_run.run_number }}
+          path: _site/isa_explorer
+      - name: Download ISA Explorer Spreadsheet
+        uses: actions/download-artifact@v5
+        with:
+          name: isa_explorer-spreadsheet-${{ github.event.workflow_run.run_number }}
+          path: _site/isa_explorer
+      - name: Download HTML ISA Manual
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-html-manual-${{ github.event.workflow_run.run_number }}
+          path: _site/manual
+      - name: Download HTML ISA Manual
+        uses: actions/download-artifact@v5
+        with:
+          name: cfg-html-manual-${{ github.event.workflow_run.run_number }}
+          path: _site/example_cfg
+      - name: Download Instruction Appendix
+        uses: actions/download-artifact@v5
+        with:
+          name: inst-appendix-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVI20
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVA20
+        uses: actions/download-artifact@v5
+        with:
+          name: rva20-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVA22
+        uses: actions/download-artifact@v5
+        with:
+          name: rva22-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVA23
+        uses: actions/download-artifact@v5
+        with:
+          name: rva23-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVB23
+        uses: actions/download-artifact@v5
+        with:
+          name: rvb23-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download AC100
+        uses: actions/download-artifact@v5
+        with:
+          name: ac100-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download AC200
+        uses: actions/download-artifact@v5
+        with:
+          name: ac200-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC100-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-32-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC100-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-64-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC200-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc200-32-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC200-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc200-64-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC300-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc300-32-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC300-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc300-64-crd-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVI20-32 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-32-ctp-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download RVI20-64 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-64-ctp-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Download MC100-32 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-32-ctp-${{ github.event.workflow_run.run_number }}
+          path: _site/pdfs
+      - name: Create index
+        env:
+          PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
+        run: |
+          ruby -r erb -e "File.write('_site/index.html', ERB.new('tools/scripts/pages.html.erb', trim_mode: '-').result(binding))"
+
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

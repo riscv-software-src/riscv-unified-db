@@ -1,7 +1,7 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Qualcomm Technologies, Inc. and Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -95,6 +95,30 @@ versions:
       #   - [Zcmt, "1.0.0"]
 
 params:
+  JVT_BASE_TYPE:
+    schema:
+      type: string
+      enum: [mask, custom]
+    description: |
+      Type of the jvt.BASE CSR field. One of:
+
+        * mask: jvt.BASE contains one or more implemented bits, which are indicated by JVT_BASE_MASK.
+        * custom: Custom behavior. Will cause hart to enter 'unpredictable' state on a write to jvt.BASE.
+  JVT_BASE_MASK:
+    schema:
+      type: integer
+      minimum: 64
+      maximum: 0x7ffffffffffffff # 58 bits
+      required_if(): return JVT_BASE_TYPE == "mask";
+    description: |
+      Mask representing the implemented bits of jvt.BASE. Includes the implicitly-zero bits of jvt.BASE, so JVT_BASE_MASK[5:0] must always be 0.
+    extra_validation: |
+      assert JVT_BASE_MASK < 0xffffffc0 if MXLEN == 32
+  JVT_READ_ONLY:
+    schema:
+      type: boolean
+    description: |
+      If Zcmt is implemented, JVT is implemented, but can contain a read-only value
   MSTATEEN_JVT_TYPE:
     when:
       name: Smstateen
