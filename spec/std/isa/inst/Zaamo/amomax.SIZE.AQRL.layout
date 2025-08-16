@@ -1,6 +1,4 @@
-# Copyright (c) Qualcomm Technologieslong_name: Atomic fetch-and-max <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
-description: |
-  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:nc. and/or its subsidiaries.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json

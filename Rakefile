@@ -388,9 +388,59 @@ end
   end
 end
 
+# AMOCAS instruction generation from Zabha layout (supports both Zabha and Zacas)
+# Zabha variants (b, h) -> generated in Zabha directory
+["b", "h"].each do |size|
+  # Define all acquire/release combinations
+  aq_rl_variants = [
+    { suffix: "", aq: false, rl: false },           # base instruction
+    { suffix: ".aq", aq: true, rl: false },         # acquire only
+    { suffix: ".rl", aq: false, rl: true },         # release only
+    { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+  ]
+
+  aq_rl_variants.each do |variant|
+    file "#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{variant[:suffix]}.yaml" => [
+      "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout",
+      __FILE__
+    ] do |t|
+      aq = variant[:aq]
+      rl = variant[:rl]
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zabha/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+    end
+  end
+end
+
+# Zacas variants (w, d, q) -> generated in Zacas directory using the same Zabha layout
+["w", "d", "q"].each do |size|
+  # Define all acquire/release combinations
+  aq_rl_variants = [
+    { suffix: "", aq: false, rl: false },           # base instruction
+    { suffix: ".aq", aq: true, rl: false },         # acquire only
+    { suffix: ".rl", aq: false, rl: true },         # release only
+    { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+  ]
+
+  aq_rl_variants.each do |variant|
+    file "#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml" => [
+      "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout",
+      __FILE__
+    ] do |t|
+      aq = variant[:aq]
+      rl = variant[:rl]
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zabha/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+    end
+  end
+end
+
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
+    # Generate CSR files
     (3..31).each do |hpm_num|
       Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}.yaml"].invoke
       Rake::Task["#{$resolver.std_path}/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml"].invoke
@@ -413,6 +463,54 @@ namespace :gen do
 
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+    end
+
+    # Generate AMO instruction files from layouts
+    # Zaamo AMO variants (w, d sizes)
+    %w[w d].each do |size|
+      %w[add and max maxu min minu or swap xor].each do |op|
+        [
+          { suffix: ".aq", aq: true, rl: false },
+          { suffix: ".rl", aq: false, rl: true },
+          { suffix: ".aqrl", aq: true, rl: true }
+        ].each do |variant|
+          Rake::Task["#{$resolver.std_path}/inst/Zaamo/amo#{op}.#{size}#{variant[:suffix]}.yaml"].invoke
+        end
+      end
+    end
+
+    # Zabha AMO variants (b, h sizes)
+    %w[b h].each do |size|
+      %w[add and max maxu min minu or swap xor].each do |op|
+        [
+          { suffix: ".aq", aq: true, rl: false },
+          { suffix: ".rl", aq: false, rl: true },
+          { suffix: ".aqrl", aq: true, rl: true }
+        ].each do |variant|
+          Rake::Task["#{$resolver.std_path}/inst/Zabha/amo#{op}.#{size}#{variant[:suffix]}.yaml"].invoke
+        end
+      end
+    end
+
+    # AMOCAS variants from Zabha layout (Zabha: b,h and Zacas: w,d,q)
+    %w[b h].each do |size|
+      [
+        { suffix: ".aq", aq: true, rl: false },
+        { suffix: ".rl", aq: false, rl: true },
+        { suffix: ".aqrl", aq: true, rl: true }
+      ].each do |variant|
+        Rake::Task["#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
+      end
+    end
+
+    %w[w d q].each do |size|
+      [
+        { suffix: ".aq", aq: true, rl: false },
+        { suffix: ".rl", aq: false, rl: true },
+        { suffix: ".aqrl", aq: true, rl: true }
+      ].each do |variant|
+        Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
+      end
     end
   end
 end

@@ -15,12 +15,8 @@ description: |
 definedBy: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 01100------------001-----0101111
+  match: 0110000----------001-----0101111
   variables:
-    - name: aq
-      location: 26
-    - name: rl
-      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -37,7 +33,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   XReg virtual_address = X[xs1];
-  X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::And, aq, rl, $encoding);
+  X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::And, 1'b0, 1'b0, $encoding);
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause

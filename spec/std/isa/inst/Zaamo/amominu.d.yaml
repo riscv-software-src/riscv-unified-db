@@ -18,12 +18,8 @@ definedBy: Zaamo
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 11000------------011-----0101111
+  match: 1100000----------011-----0101111
   variables:
-    - name: aq
-      location: 26
-    - name: rl
-      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -44,7 +40,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
 
-  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Minu, aq, rl, $encoding);
+  X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Minu, 1'b0, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

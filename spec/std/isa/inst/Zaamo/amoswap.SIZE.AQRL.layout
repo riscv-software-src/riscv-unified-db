@@ -1,8 +1,4 @@
-# Copyright (c) Qualcomm Technologieslong_n    * Load the <%= current_size[:name] %> at address _xs1_
-    * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
-    * Write the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the address in _xs1_: Atomic swap <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
-description: |
-  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:nc. and/or its subsidiaries.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json

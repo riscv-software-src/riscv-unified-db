@@ -1,0 +1,176 @@
+# Layout file for generating AMOCAS instruction variants for both Zabha and Zacas extensions
+# Generates files in appropriate extension directories:
+# - Zabha (b,h) variants -> spec/std/isa/inst/Zabha/
+# - Zacas (w,d,q) variants -> spec/std/isa/inst/Zacas/
+
+<%-
+  # Validate size parameter - supports both Zabha (b,h) and Zacas (w,d,q) variants
+  raise "'size' must be defined as 'b', 'h', 'w', 'd', or 'q'" unless %w[b h w d q].include?(size)
+  raise "'aq' must be defined as true or false" unless [true, false].include?(aq)
+  raise "'rl' must be defined as true or false" unless [true, false].include?(rl)
+
+  # Size configuration for different widths and their target extensions
+  size_info = {
+    "b" => { name: "byte", bits: 8, funct3: "000", operation_bits: "8", extension: "Zabha" },
+    "h" => { name: "halfword", bits: 16, funct3: "001", operation_bits: "16", extension: "Zabha" },
+    "w" => { name: "word", bits: 32, funct3: "010", operation_bits: "32", extension: "Zacas" },
+    "d" => { name: "doubleword", bits: 64, funct3: "011", operation_bits: "64", extension: "Zacas" },
+    "q" => { name: "quadword", bits: 128, funct3: "100", operation_bits: "128", extension: "Zacas" }
+  }
+
+  current_size = size_info[size]
+
+  # Generate instruction name suffix based on aq/rl memory ordering
+  aq_rl_suffix = ""
+  if aq && rl
+    aq_rl_suffix = ".aqrl"
+  elsif aq
+    aq_rl_suffix = ".aq"
+  elsif rl
+    aq_rl_suffix = ".rl"
+  end
+
+  # Generate opcode match string with fixed aq/rl bits (no variable overlap)
+  aq_bit = aq ? "1" : "0"
+  rl_bit = rl ? "1" : "0"
+-%>
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: amocas.<%= size %><%= aq_rl_suffix %>
+long_name: Atomic compare-and-swap <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
+description: |
+  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
+
+    * Load the <%= current_size[:name] %> at address _xs1_
+    * Write the loaded value into _xd_
+    * Compare the loaded value with the value in register _xs2_
+    * If equal, write the value in register _xs2+1_ to the address in _xs1_
+definedBy: <%= current_size[:extension] %>
+<%- if %w[d q].include?(size) -%>
+base: 64
+<%- end -%>
+assembly: xd, xs2, (xs1)
+encoding:
+  match: 00101<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111
+  variables:
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |
+  if (!implemented?(ExtensionName::<%= current_size[:extension] %>)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+<% if aq -%>
+  memory_model_acquire();
+
+<% end -%>
+  XReg virtual_address = X[xs1];
+  X[xd] = amocas<<%= current_size[:operation_bits] %>>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, X[xd]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding);
+
+<% if rl -%>
+  memory_model_release();
+<% end -%>
+
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
+sail(): |
+  {
+    if extension("<%= current_size[:extension] %>") then {
+      /* Get the address, X(rs1) (no offset).
+       * Some extensions perform additional checks on address validity.
+       */
+      match ext_data_get_addr(rs1, zeros(), ReadWrite(Data, Data), <%= current_size[:name].upcase %>) {
+        Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
+        Ext_DataAddr_OK(vaddr) => {
+          match translateAddr(vaddr, ReadWrite(Data, Data)) {
+            TR_Failure(e, _) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+            TR_Address(addr, _) => {
+              let eares : MemoryOpResult(unit) = match (<%= current_size[:name].upcase %>, sizeof(xlen)) {
+<%- if %w[b h].include?(size) -%>
+                (<%= current_size[:name].upcase %>, _)    => mem_write_ea(addr, <%= current_size[:bits] / 8 %>, <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, <%= rl ? "true" : "false" %>, true),
+<%- else -%>
+                (<%= current_size[:name].upcase %>, <%= size == "w" ? "_" : "64" %>)    => mem_write_ea(addr, <%= current_size[:bits] / 8 %>, <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, <%= rl ? "true" : "false" %>, true),
+<%- end -%>
+                _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+              };
+              let rs2_val : xlenbits = match <%= current_size[:name].upcase %> {
+<%- if %w[b h w].include?(size) -%>
+                <%= current_size[:name].upcase %>   => sign_extend(X(rs2)[<%= current_size[:bits]-1 %>..0])
+<%- else -%>
+                <%= current_size[:name].upcase %> => X(rs2)
+<%- end -%>
+              };
+              let rd_val : xlenbits = match <%= current_size[:name].upcase %> {
+<%- if %w[b h w].include?(size) -%>
+                <%= current_size[:name].upcase %>   => sign_extend(X(rd)[<%= current_size[:bits]-1 %>..0])
+<%- else -%>
+                <%= current_size[:name].upcase %> => X(rd)
+<%- end -%>
+              };
+              match (eares) {
+                MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+                MemValue(_) => {
+                  let mval : MemoryOpResult(xlenbits) = match (<%= current_size[:name].upcase %>, sizeof(xlen)) {
+<%- if %w[b h].include?(size) -%>
+                    (<%= current_size[:name].upcase %>, _)    => extend_value(false, mem_read(ReadWrite(Data, Data), addr, <%= current_size[:bits] / 8 %>, <%= aq ? "true" : "false" %>, <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, true)),
+<%- else -%>
+                    (<%= current_size[:name].upcase %>, <%= size == "w" ? "_" : "64" %>)    => extend_value(false, mem_read(ReadWrite(Data, Data), addr, <%= current_size[:bits] / 8 %>, <%= aq ? "true" : "false" %>, <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, true)),
+<%- end -%>
+                    _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+                  };
+                  match (mval) {
+                    MemException(e)  => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+                    MemValue(loaded) => {
+                      let success : bool = (loaded == rs2_val);
+                      let result : xlenbits = if success then rd_val else loaded;
+                      let rval : xlenbits = match <%= current_size[:name].upcase %> {
+<%- if %w[b h w].include?(size) -%>
+                        <%= current_size[:name].upcase %>   => sign_extend(loaded[<%= current_size[:bits]-1 %>..0])
+<%- else -%>
+                        <%= current_size[:name].upcase %> => loaded
+<%- end -%>
+                      };
+                      let wval : MemoryOpResult(bool) = if success then {
+                        match (<%= current_size[:name].upcase %>, sizeof(xlen)) {
+<%- if %w[b h].include?(size) -%>
+                          (<%= current_size[:name].upcase %>, _)    => mem_write_value(addr, <%= current_size[:bits] / 8 %>, result[<%= current_size[:bits]-1 %>..0], <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, <%= rl ? "true" : "false" %>, true),
+<%- else -%>
+                          (<%= current_size[:name].upcase %>, <%= size == "w" ? "_" : "64" %>)    => mem_write_value(addr, <%= current_size[:bits] / 8 %>, result<%= size == "w" ? "[31..0]" : "" %>, <%= aq ? "true" : "false" %> & <%= rl ? "true" : "false" %>, <%= rl ? "true" : "false" %>, true),
+<%- end -%>
+                          _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+                        }
+                      } else {
+                        MemValue(true)  /* No write on compare failure */
+                      };
+                      match (wval) {
+                        MemValue(true)  => { X(rd) = rval; RETIRE_SUCCESS },
+                        MemValue(false) => { internal_error(__FILE__, __LINE__, "AMOCAS got false from mem_write_value") },
+                        MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      handle_illegal();
+      RETIRE_FAIL
+    }
+  }
+
+# SPDX-SnippetEnd
