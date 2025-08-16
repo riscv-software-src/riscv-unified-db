@@ -346,6 +346,12 @@ def gen_js_table(table, div_name, output_pname)
     fp.write "  ]\n"
     fp.write "});\n"
     fp.write "\n"
+
+    fp.write "// Load data in chunks after table is built\n"
+    fp.write "table.on(\"tableBuilt\", function() {\n"
+    fp.write "    loadDataInChunks(tabledata);\n"
+    fp.write "});\n"
+    fp.write "\n"
   end
 end
 
