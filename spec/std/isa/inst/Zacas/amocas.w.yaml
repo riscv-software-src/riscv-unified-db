@@ -70,4 +70,4 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amocas<32>(virtual_address, X[xs2][31:0], X[xd][31:0], aq_bit(), rl_bit(), $encoding);
+  X[xd] = amocas32(virtual_address, X[xs2][31:0], X[xd][31:0], aq, rl, $encoding);
