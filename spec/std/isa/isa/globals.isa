@@ -2878,6 +2878,231 @@ function amo {
   }
 }
 
+function amocas8 {
+  returns Bits<8>
+  arguments
+    XReg virtual_address,
+    Bits<8> compare_value,
+    Bits<8> new_value,
+    Bits<1> aq,
+    Bits<1> rl,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Perform an atomic compare-and-swap operation on an 8-bit value in memory.
+    If the value at virtual_address equals compare_value, store new_value.
+    Always return the original value from memory.
+  }
+  body {
+    XReg physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::AMONone, physical_address, 8)) {
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
+    }
+
+    access_check(physical_address, 8, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (!is_naturally_aligned<8>(virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
+    }
+
+    Bits<8> original_value = read_physical_memory<8>(physical_address);
+    if (original_value == compare_value) {
+      write_physical_memory<8>(physical_address, new_value);
+    }
+    return original_value;
+  }
+}
+
+function amocas16 {
+  returns Bits<16>
+  arguments
+    XReg virtual_address,
+    Bits<16> compare_value,
+    Bits<16> new_value,
+    Bits<1> aq,
+    Bits<1> rl,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Perform an atomic compare-and-swap operation on a 16-bit value in memory.
+    If the value at virtual_address equals compare_value, store new_value.
+    Always return the original value from memory.
+  }
+  body {
+    XReg physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::AMONone, physical_address, 16)) {
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
+    }
+
+    access_check(physical_address, 16, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (!is_naturally_aligned<16>(virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
+    }
+
+    Bits<16> original_value = read_physical_memory<16>(physical_address);
+    if (original_value == compare_value) {
+      write_physical_memory<16>(physical_address, new_value);
+    }
+    return original_value;
+  }
+}
+
+function amocas32 {
+  returns Bits<32>
+  arguments
+    XReg virtual_address,
+    Bits<32> compare_value,
+    Bits<32> new_value,
+    Bits<1> aq,
+    Bits<1> rl,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Perform an atomic compare-and-swap operation on a 32-bit value in memory.
+    If the value at virtual_address equals compare_value, store new_value.
+    Always return the original value from memory.
+  }
+  body {
+    XReg physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::AMONone, physical_address, 32)) {
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
+    }
+
+    access_check(physical_address, 32, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (!is_naturally_aligned<32>(virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
+    }
+
+    Bits<32> original_value = read_physical_memory<32>(physical_address);
+    if (original_value == compare_value) {
+      write_physical_memory<32>(physical_address, new_value);
+    }
+    return original_value;
+  }
+}
+
+function amocas64 {
+  returns Bits<64>
+  arguments
+    XReg virtual_address,
+    Bits<64> compare_value,
+    Bits<64> new_value,
+    Bits<1> aq,
+    Bits<1> rl,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Perform an atomic compare-and-swap operation on a 64-bit value in memory.
+    If the value at virtual_address equals compare_value, store new_value.
+    Always return the original value from memory.
+  }
+  body {
+    XReg physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::AMONone, physical_address, 64)) {
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
+    }
+
+    access_check(physical_address, 64, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (!is_naturally_aligned<64>(virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
+    }
+
+    Bits<64> original_value = read_physical_memory<64>(physical_address);
+    if (original_value == compare_value) {
+      write_physical_memory<64>(physical_address, new_value);
+    }
+    return original_value;
+  }
+}
+
+function amocas128 {
+  returns Bits<128>
+  arguments
+    XReg virtual_address,
+    Bits<128> compare_value,
+    Bits<128> new_value,
+    Bits<1> aq,
+    Bits<1> rl,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Perform an atomic compare-and-swap operation on a 128-bit value in memory.
+    If the value at virtual_address equals compare_value, store new_value.
+    Always return the original value from memory.
+  }
+  body {
+    XReg physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::AMONone, physical_address, 128)) {
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
+    }
+
+    access_check(physical_address, 128, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (!is_naturally_aligned<128>(virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
+    }
+
+    Bits<128> original_value = read_physical_memory<128>(physical_address);
+    if (original_value == compare_value) {
+      write_physical_memory<128>(physical_address, new_value);
+    }
+    return original_value;
+  }
+}
+
 
 
 function write_memory_aligned {
