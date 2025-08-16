@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
 $schema: "csr_schema.json#"
 kind: csr
 name: qc.mntvec
@@ -9,6 +11,7 @@ address: 0x7c3
 base: 32
 priv_mode: M
 length: MXLEN
+writable: true
 description: Controls where NMI jump.
 definedBy:
   anyOf:

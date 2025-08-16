@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /home/hbg/Projects/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -3812,11 +3812,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fldsp]
@@ -3850,11 +3850,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_flw]
@@ -3889,11 +3889,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_flwsp]
@@ -3927,11 +3927,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_fsd]
@@ -3966,11 +3966,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fsdsp]
@@ -4004,11 +4004,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fsw]
@@ -4043,11 +4043,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_fswsp]
@@ -4081,11 +4081,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_j]
@@ -9655,7 +9655,7 @@ Included in::
 == fence
 
 Synopsis::
-Memory oxdering fence
+Memory ordering fence
 
 Assembly::
 fence pred, succ
@@ -9667,12 +9667,12 @@ Encoding::
 ....
 
 Description::
-Oxders memory operations.
+Orders memory operations.
 
-The xref:insts:fence.adoc#udb:doc:inst:fence[fence] instruction is used to oxder device I/O and memory accesses as
+The xref:insts:fence.adoc#udb:doc:inst:fence[fence] instruction is used to order device I/O and memory accesses as
 viewed by other RISC-V harts and external devices or coprocessors. Any
 combination of device input (I), device output (O), memory reads \(R),
-and memory writes (W) may be oxdered with respect to any combination of
+and memory writes (W) may be ordered with respect to any combination of
 the same. Informally, no other RISC-V hart or external device can
 observe any operation in the _successor_ set following a xref:insts:fence.adoc#udb:doc:inst:fence[fence] before
 any operation in the _predecessor_ set preceding the xref:insts:fence.adoc#udb:doc:inst:fence[fence].
@@ -9692,15 +9692,15 @@ The predecessor and successor fields have the same format to specify operation t
 |===
 |_fm_ field |Mnemonic |Meaning
 |0000 |_none_ |Normal Fence
-|1000 |TSO |With `FENCE RW,RW`: exclude write-to-read oxdering; otherwise: _Reserved for future use._
+|1000 |TSO |With `FENCE RW,RW`: exclude write-to-read ordering; otherwise: _Reserved for future use._
 2+|_other_ |_Reserved for future use._
 |===
 
 When the mode field _fm_ is `0001` and both the predecessor and successor sets are 'RW',
-then the instruction acts as a special-case xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso]. xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] oxders all load operations
+then the instruction acts as a special-case xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso]. xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] orders all load operations
 in its predecessor set before all memory operations in its successor set, and all store operations
 in its predecessor set before all store operations in its successor set. This leaves non-AMO store
-operations in the 'fence.tso's predecessor set unoxdered with non-AMO loads in its successor set.
+operations in the 'fence.tso's predecessor set unordered with non-AMO loads in its successor set.
 
 When mode field _fm_ is not `0001`, or when mode field _fm_ is `0001` but the _pred_ and
 _succ_ fields are not both 'RW' (0x3), then the fence acts as a baseline fence (_e.g._, _fm_ is
@@ -37910,7 +37910,7 @@ vsetvli xd, xs1, vtypei
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "xs1","type":4},{"bits":1,"name": 0x0,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "zimm","type":4},{"bits":1,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -37921,7 +37921,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|xs1 |$encoding[30:20]
+|zimm |$encoding[30:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
@@ -46326,10 +46326,10 @@ Decode Variables::
 |===
 
 Included in::
-* allOf:
-*** Zbb, version >= Zbb@1.0.0
-*** not:
-***** Zbkb, version >= Zbkb@1.0.0
+allOf:
+* Zbb, version >= Zbb@1.0.0
+* not:
+** Zbkb, version >= Zbkb@1.0.0
 
 
 [#udb:doc:inst:zip]

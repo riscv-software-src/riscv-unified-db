@@ -7,7 +7,7 @@ image::https://api.reuse.software/badge/github.com/riscv-software-src/riscv-unif
 ----
 This project is under rapid development. Expect schemas and APIs to change.
 
-The data in the `arch` directory is also a work in progress and may be incorrect.
+The data in the `spec` directory is also a work in progress and may be incorrect.
 
 That said, the following data has been validated against third-party sources:
 
@@ -44,16 +44,16 @@ https://lf-riscv.atlassian.net/wiki/x/iwCsCw?atlOrigin=eyJpIjoiYzU3N2ZiNDViMGRkN
 
 The following directories contain information relevant to most users of UnifiedDB
 
-* `data`: Holds all data specification files, along with their schemas
-* `data/arch`: The RISC-V standard
-* `data/arch_overlay`: Non-standard RISC-V extensions
-* `data/schemas`: Data schemas for the specification content
+* `spec`: Holds all data specification files, along with their schemas
+* `spec/std`: The RISC-V standard
+* `spec/custom`: Non-standard RISC-V extensions
+* `spec/schemas`: Data schemas for the specification content
 * `cfgs`: Configurations used by backends to customize generated outputs
 
 Additionally, developers will be interested in the following:
 
 * `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
-* `tools/gems`: Ruby gem libraries for interacting with UDB / IDL
+* `tools/ruby-gems`: Ruby gem libraries for interacting with UDB / IDL
 * `bin`: Wrapper scripts to run commands within the container environment
 
 == Getting Started
