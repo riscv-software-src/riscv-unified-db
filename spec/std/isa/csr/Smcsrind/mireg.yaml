@@ -7,6 +7,7 @@ kind: csr
 name: mireg
 long_name: Machine Indirect Register Alias
 address: 0x351
+writable: true
 priv_mode: M
 length: MXLEN
 definedBy: Smcsrind

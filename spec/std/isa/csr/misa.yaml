@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -336,6 +336,7 @@ sw_read(): |
     (CSR[misa].V << 21) |
     (CSR[misa].U << 20) |
     (CSR[misa].S << 18) |
+    (CSR[misa].Q << 16) |
     (CSR[misa].M << 12) |
     (CSR[misa].I << 8) |
     (CSR[misa].H << 7) |
