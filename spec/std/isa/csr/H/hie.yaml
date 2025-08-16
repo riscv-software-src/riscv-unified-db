@@ -1,0 +1,69 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hie
+long_name: Hypervisor Interrupt Enable
+address: 0x604
+writable: true
+priv_mode: M
+length: 64
+definedBy: H
+description: |
+  The `hie` CSR provides hypervisor-level interrupt enable bits for virtual supervisor interrupts.
+  These bits control whether virtual supervisor interrupts can be taken by the virtual machine.
+
+  This register serves as the hypervisor's control over which virtual interrupts are enabled.
+
+fields:
+  VSSIE:
+    location: 2
+    alias: mie.VSSIE
+    description: |
+      *Virtual Supervisor Software Interrupt Enable*
+
+      Enables virtual supervisor software interrupts.
+
+      This field is an alias of `mie.VSSIE`.
+    type: RW
+    reset_value: 0
+    definedBy: H
+  VSTIE:
+    location: 6
+    alias: mie.VSTIE
+    description: |
+      *Virtual Supervisor Timer Interrupt Enable*
+
+      Enables virtual supervisor timer interrupts.
+
+      This field is an alias of `mie.VSTIE`.
+    type: RW
+    reset_value: 0
+    definedBy: H
+  VSEIE:
+    location: 10
+    alias: mie.VSEIE
+    description: |
+      *Virtual Supervisor External Interrupt Enable*
+
+      Enables virtual supervisor external interrupts.
+
+      This field is an alias of `mie.VSEIE`.
+    type: RW
+    reset_value: 0
+    definedBy: H
+  SGEIE:
+    location: 12
+    alias: mie.SGEIE
+    description: |
+      *Supervisor Guest External Interrupt Enable*
+
+      Enables supervisor guest external interrupts.
+
+      This field is an alias of `mie.SGEIE`.
+    type: RW
+    reset_value: 0
+    definedBy: H

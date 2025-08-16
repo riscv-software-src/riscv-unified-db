@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stimecmp
+long_name: Supervisor Timer Compare
+address: 0x14D
+writable: true
+priv_mode: S
+length: 64
+definedBy: Sstc
+description: |
+  The `stimecmp` CSR is a 64-bit register that holds the time value at which the next supervisor timer interrupt should be triggered.
+  When the `time` CSR reaches or exceeds the value in `stimecmp`, a supervisor timer interrupt is triggered by setting the STIP bit in the `mip` CSR.
+
+  The supervisor timer interrupt is enabled when the STIE bit in the `mie` CSR is set.
+
+  This CSR is available when the Sstc extension is implemented and `menvcfg.STCE` is set.
+  When `menvcfg.STCE` is clear, accessing this CSR will cause an `IllegalInstruction` exception.
+
+  In virtualized environments, when executing in VS-mode, accesses to `stimecmp` are redirected to `vstimecmp`.
+
+fields:
+  VALUE:
+    location: 63-0
+    description: |
+      *Timer Compare Value*
+
+      64-bit value representing the time at which the next supervisor timer interrupt should be triggered.
+      When `time` >= `stimecmp`, the supervisor timer interrupt pending bit (`mip.STIP`) is set.
+    type: RW
+    reset_value: 0
+    definedBy: Sstc

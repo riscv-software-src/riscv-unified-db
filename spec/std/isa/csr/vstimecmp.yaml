@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vstimecmp
+long_name: Virtual Supervisor Timer Compare
+address: 0x24D
+writable: true
+priv_mode: M
+length: 64
+definedBy: H
+description: |
+  The `vstimecmp` CSR is a 64-bit register that holds the time value at which the next virtual supervisor timer interrupt should be triggered.
+  When the `time` CSR reaches or exceeds the value in `vstimecmp`, a virtual supervisor timer interrupt is triggered by setting the VSTIP bit in the `mip` CSR.
+
+  The virtual supervisor timer interrupt is enabled when the VSTIE bit in the `mie` CSR is set.
+
+  This CSR is available when both the Sstc extension and H extension are implemented, and both `menvcfg.STCE` and `henvcfg.STCE` are set.
+  When either control bit is clear, accessing this CSR will cause an `IllegalInstruction` exception.
+
+  In VS-mode, accesses to `stimecmp` are redirected to this CSR.
+
+fields:
+  VALUE:
+    location: 63-0
+    description: |
+      *Virtual Timer Compare Value*
+
+      64-bit value representing the time at which the next virtual supervisor timer interrupt should be triggered.
+      When `time` >= `vstimecmp`, the virtual supervisor timer interrupt pending bit (`mip.VSTIP`) is set.
+    type: RW
+    reset_value: 0
+    definedBy: H
+    affectedBy: Sstc
