@@ -37,7 +37,7 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amocas<16>(virtual_address, X[xs2][15:0], X[xd][15:0], 1'b0, 1'b1, $encoding);
+  X[xd] = amocas16(virtual_address, X[xs2][15:0], X[xd][15:0], 1'b0, 1'b1, $encoding);
 
   memory_model_release();
 
