@@ -112,4 +112,4 @@ params:
       Indicates whether or not the `D` extension can be disabled with the `misa.D` bit.
     schema:
       type: boolean
-      extra_validation: assert MISA_CSR_IMPLEMENTED == true
+    extra_validation: assert MISA_CSR_IMPLEMENTED == true

@@ -50,7 +50,7 @@ params:
       Indicates whether or not the `S` extension can be disabled with the `misa.S` bit.
     schema:
       type: boolean
-      extra_validation: assert MISA_CSR_IMPLEMENTED == true
+    extra_validation: assert MISA_CSR_IMPLEMENTED == true
     extra_validation: |
       # If U mode can be disabled, then S mode must also be disabled since you can't
       # be in S mode without U mode

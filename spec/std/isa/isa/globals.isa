@@ -872,39 +872,34 @@ function xlen {
   body {
     if (MXLEN == 32) {
       return 32;
-    } else {
-      if (mode() == PrivilegeMode::M) {
-        if (MXLEN == 32) {
-          return 32;
-        } else if (MXLEN == 64) {
-          return 64;
-        }
-      } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
-        if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32)) {
-          return 32;
-        } else if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) {
-          return 64;
-        }
-      } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
-        if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN32)) {
-          return 32;
-        } else if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN64)) {
-          return 64;
-        }
-      } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
-        if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)) {
-          return 32;
-        } else if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)) {
-          return 64;
-        }
-      } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU) {
-        if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN32)) {
-          return 32;
-        } else if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN64)) {
-          return 64;
-        }
+    } else if (mode() == PrivilegeMode::M) {
+      return MXLEN;
+    } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
+      if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
+      if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
+      if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU) {
+      if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
       }
     }
+    
   }
 }
 
