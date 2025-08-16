@@ -68,3 +68,9 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (!implemented?(ExtensionName::Zacas)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg virtual_address = X[xs1];
+  X[xd] = amocas<128>(virtual_address, X[xs2], X[xd], aq_bit(), rl_bit(), $encoding);
