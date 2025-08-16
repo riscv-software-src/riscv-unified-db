@@ -41,7 +41,7 @@ fields:
 
       <%- if ext?(:Sstc) -%>
       When the Sstc extension is enabled (`menvcfg.STCE` and `henvcfg.STCE` are set), the actual interrupt pending state (`mip.VSTIP`) is the logical OR of this field and the timer-generated interrupt (controlled by `vstimecmp`).
-      
+
       When Sstc is disabled, `mip.VSTIP` reflects exactly the value of this field.
       <%- else -%>
       This bit directly controls the virtual supervisor timer interrupt pending state.
