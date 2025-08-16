@@ -21,6 +21,7 @@ params:
       Indicates whether or not the `U` extension can be disabled with the `misa.U` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true
   U_MODE_ENDIANNESS:
     description: |
       Endianness of data in U-mode. Can be one of:
