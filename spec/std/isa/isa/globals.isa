@@ -2902,7 +2902,7 @@ function amocas8 {
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
-    if (pma_applies?(PmaAttribute::AMONone, physical_address, 8)) {
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, 8)) {
       raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     }
 
@@ -2947,7 +2947,7 @@ function amocas16 {
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
-    if (pma_applies?(PmaAttribute::AMONone, physical_address, 16)) {
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, 16)) {
       raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     }
 
@@ -2992,7 +2992,7 @@ function amocas32 {
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
-    if (pma_applies?(PmaAttribute::AMONone, physical_address, 32)) {
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, 32)) {
       raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     }
 
@@ -3037,7 +3037,7 @@ function amocas64 {
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
-    if (pma_applies?(PmaAttribute::AMONone, physical_address, 64)) {
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, 64)) {
       raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     }
 
@@ -3082,7 +3082,7 @@ function amocas128 {
         ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
         : virtual_address;
 
-    if (pma_applies?(PmaAttribute::AMONone, physical_address, 128)) {
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, 128)) {
       raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     }
 
