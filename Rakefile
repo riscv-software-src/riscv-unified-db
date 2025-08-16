@@ -503,15 +503,16 @@ namespace :gen do
       end
     end
 
-    %w[w d q].each do |size|
-      [
-        { suffix: ".aq", aq: true, rl: false },
-        { suffix: ".rl", aq: false, rl: true },
-        { suffix: ".aqrl", aq: true, rl: true }
-      ].each do |variant|
-        Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
-      end
-    end
+    # TODO: Uncomment when Zacas amocas instruction files are added in future PR
+    # %w[w d q].each do |size|
+    #   [
+    #     { suffix: ".aq", aq: true, rl: false },
+    #     { suffix: ".rl", aq: false, rl: true },
+    #     { suffix: ".aqrl", aq: true, rl: true }
+    #   ].each do |variant|
+    #     Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
+    #   end
+    # end
   end
 end
 
