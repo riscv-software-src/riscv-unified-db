@@ -330,8 +330,19 @@
           "description": "Detailed description of the instruction"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that defines the instruction"
+          "description": "Extension(s) that define the instruction. Can be per-base (RV32/RV64) or a single set for both.",
+          "oneOf": [
+            { "$ref": "schema_defs.json#/$defs/requires_entry" },
+            {
+              "type": "object",
+              "properties": {
+                "RV32": { "$ref": "schema_defs.json#/$defs/requires_entry" },
+                "RV64": { "$ref": "schema_defs.json#/$defs/requires_entry" }
+              },
+              "required": ["RV32", "RV64"],
+              "additionalProperties": false
+            }
+          ]
         },
 
         "hints": {
