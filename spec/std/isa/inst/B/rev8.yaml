@@ -26,7 +26,7 @@ format:
       - inst_subtype/I/I-x-x.yaml#/data
     opcodes:
       funct12:
-        display_name: RV32
+        display_name: RV8
         value: 0b011010011000
       funct3:
         display_name: REV8
@@ -37,7 +37,7 @@ format:
       - inst_subtype/I/I-x-x.yaml#/data
     opcodes:
       funct12:
-        display_name: RV64
+        display_name: RV8
         value: 0b011010111000
       funct3:
         display_name: REV8
