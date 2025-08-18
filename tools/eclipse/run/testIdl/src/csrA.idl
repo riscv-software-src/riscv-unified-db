@@ -1,0 +1,3 @@
+csr A "Mock CSR A" "0x445" "0x12345678";
+csr misa "Machine ISA register" "0x301" "0xABCD4648" ;
+csr mstatus "Machine Status Register" "0x300" "0x0";
