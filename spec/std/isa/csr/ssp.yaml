@@ -8,6 +8,7 @@ kind: csr
 name: ssp
 long_name: Shadow Stack Pointer
 address: 0x011
+writable: true
 description:
   - id: csr-ssp-purpose
     normative: true
@@ -19,7 +20,8 @@ description:
       zero.
 priv_mode: U
 length: XLEN
-definedBy: Zicfiss
+definedBy:
+  name: Zicfiss
 fields:
   VALUE:
     location_rv64: 63-3

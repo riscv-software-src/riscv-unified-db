@@ -272,6 +272,11 @@ fields:
       return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Zicfiss)) ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].SSE == 0){
+        return 0;
+      }
+      return csr_value.SSE;
   FIOM:
     location: 0
     description: |
