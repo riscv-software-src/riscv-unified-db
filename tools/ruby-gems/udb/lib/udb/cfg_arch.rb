@@ -812,7 +812,7 @@ class ConfiguredArchitecture < Architecture
         extensions.each do |ext|
           ext.versions.each do |ext_ver|
             next if mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-            next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.include?(ext_ver) }
+            next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.eval.any? { |impl| impl.ext_ver == ext_ver } }
 
             @transitive_prohibited_extension_versions << ext_ver
           end
@@ -1043,11 +1043,12 @@ class ConfiguredArchitecture < Architecture
         instructions.map(&:max_encoding_width).max
       end
   end
-
+    
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
   sig { returns(T::Array[Idl::FunctionDefAst]) }
   def implemented_functions
-    return @implemented_functions unless @implemented_functions.nil?
+    return @implemented_functions if @implemented_functions
+    return [] unless fully_configured?
 
     @implemented_functions = []
 
@@ -1058,7 +1059,7 @@ class ConfiguredArchitecture < Architecture
         if inst.base.nil?
           if multi_xlen?
             (inst.reachable_functions(32) +
-             inst.reachable_functions(64))
+            inst.reachable_functions(64))
           else
             inst.reachable_functions(mxlen)
           end
