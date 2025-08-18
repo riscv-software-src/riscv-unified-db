@@ -266,7 +266,8 @@ fields:
         - The senvcfg.SSE field will read as zero and is read-only.
 
         - When menvcfg.SSE is one, SSAMOSWAP.W/D raises a virtual-instruction exception.
-    definedBy: Zicfiss
+    definedBy:
+      name: Zicfiss
     type(): |
       return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

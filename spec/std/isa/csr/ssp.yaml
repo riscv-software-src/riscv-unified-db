@@ -46,12 +46,7 @@ sw_read(): |
   } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
              (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-  } else {
-      if (XLEN == 32) {
-      # [1:0] must read-as-zero for XLEN 32
-        return ($bits(CSR[ssp]) & ~3);
-      } else {
-      # [2:0] must read-as-zero for XLEN 64
-        return ($bits(CSR[ssp]) & ~7);
-      }
+  } else if (XLEN == 32) {
+    return ($bits(CSR[ssp]) & ~3);
   }
+  return ($bits(CSR[ssp]) & ~7);
