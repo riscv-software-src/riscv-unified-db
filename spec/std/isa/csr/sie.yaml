@@ -93,4 +93,4 @@ fields:
       CSR[mie].LCOFIE = csr_value.LCOFIE;
       return csr_value.LCOFIE;
 sw_read(): |
-  return $bits(CSR[mie]);
+  return ($bits(CSR[mie]) & 64'h2222);
