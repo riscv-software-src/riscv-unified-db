@@ -48,7 +48,7 @@ module Rouge
         rule %r{\d+}, Num::Integer
         rule %r{(?:true|false|\$encoding|\$pc|\$signed|\$bits|\$width|\$enum_size|\$enum_element_size|\$enum_to_a|\$enum|\$array_size)}, Name::Builtin
         rule %r{[.,;:\[\]\(\)\}\{]}, Punctuation
-        rule %r([~!%^&*+=\|?:<>\/\-`]), Operator
+        rule %r([~!%^&*+=\|?:<>/`-]), Operator
         rule id do |m|
           name = m[0]
 
