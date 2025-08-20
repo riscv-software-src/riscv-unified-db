@@ -23,14 +23,25 @@ description: |
 
   In virtualized environments, when executing in VS-mode, accesses to `stimecmp` are redirected to `vstimecmp`.
 
+sw_read(): |
+  if (!CSR[menvcfg].STCE) {
+    raise(ExceptionCode::IllegalInstruction, mode());
+  }
+  return CSR[stimecmp].VALUE;
+
 fields:
   VALUE:
     location: 63-0
     description: |
-      *Timer Compare Value*
+      Timer Compare Value
 
       64-bit value representing the time at which the next supervisor timer interrupt should be triggered.
       When `time` >= `stimecmp`, the supervisor timer interrupt pending bit (`mip.STIP`) is set.
     type: RW
     reset_value: 0
     definedBy: Sstc
+    sw_write(csr_value): |
+      if (!CSR[menvcfg].STCE) {
+        raise(ExceptionCode::IllegalInstruction, mode());
+      }
+      return csr_value.VALUE;
