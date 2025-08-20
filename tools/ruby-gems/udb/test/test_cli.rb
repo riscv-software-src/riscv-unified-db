@@ -9,7 +9,10 @@ require "udb/cli"
 
 class TestCli < Minitest::Test
   def run_cmd(cmdline)
-    Udb::Cli.start(cmdline.split(" "))
+    out, _err = capture_io do
+      Udb::Cli.start(cmdline.split(" "))
+    end
+    out
   end
 
   def test_list_extensions
@@ -65,15 +68,18 @@ class TestCli < Minitest::Test
   end
 
   def test_list_csrs
-    # Use a valid configuration that includes AIA extensions to ensure all CSRs are counted
-    num_listed = run_cmd("list csrs --config rv64gc_zknd_zbkb_zvkg_aia")
-    
+    # Use a configuration that includes AIA extensions to ensure all CSRs are counted
+    out = run_cmd("list csrs --config example_rv64_with_overlay")
+
+    # Count the number of CSRs listed in the output
+    num_listed = out.lines.count { |line| line.match?(/^csr_/) }
+
     repo_top = Udb.repo_root
     num_csr_yaml_files = `find #{repo_top}/spec/std/isa/csr/ -name '*.yaml' | wc -l`.to_i
 
-    # With the addition of AIA CSRs, we need to account for potential discrepancies
-    # between the raw file count and what the CLI lists (which may filter by config)
-    assert num_csr_yaml_files <= num_listed + 10, "Expected close to #{num_csr_yaml_files} CSRs, but got #{num_listed}"
+    # Allow a small discrepancy due to configuration filtering
+    assert_in_delta num_csr_yaml_files, num_listed, 10,
+                    "Expected close to #{num_csr_yaml_files} CSRs, but got #{num_listed}"
   end
 
 end
