@@ -215,7 +215,7 @@ jobs:
         env:
           PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
         run: |
-          ruby -r erb -e "File.write('_site/index.html', ERB.new('tools/scripts/pages.html.erb', trim_mode: '-').result(binding))"
+          ruby -r erb -e "File.write('_site/index.html', ERB.new(File.read('tools/scripts/pages.html.erb'), trim_mode: '-').result(binding))"
 
 
       - name: Setup Pages
