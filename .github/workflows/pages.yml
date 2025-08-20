@@ -32,133 +32,159 @@ jobs:
       - name: Download reuse BOM
         uses: actions/download-artifact@v5
         with:
-          name: reuse-manifest-${{ github.event.workflow_run.id }}
+          name: reuse-manifest
           path: _site/reuse_bom.txt
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download resolved spec
         uses: actions/download-artifact@v5
         with:
-          name: resolved-spec-${{ github.event.workflow_run.id }}
+          name: resolved-spec
           path: _site/resolved_spec
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download UDB API Docs
         uses: actions/download-artifact@v5
         with:
-          name: udb-api-${{ github.event.workflow_run.id }}
+          name: udb-api
           path: _site/htmls/udb_api_doc
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer CSR
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-csr-${{ github.event.workflow_run.id }}
+          name: isa_explorer-csr
           path: _site/isa_explorer
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Extension
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-ext-${{ github.event.workflow_run.id }}
+          name: isa_explorer-ext
           path: _site/isa_explorer
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Inst
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-inst-${{ github.event.workflow_run.id }}
+          name: isa_explorer-inst
           path: _site/isa_explorer
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Spreadsheet
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-spreadsheet-${{ github.event.workflow_run.id }}
+          name: isa_explorer-spreadsheet
           path: _site/isa_explorer
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download HTML ISA Manual
         uses: actions/download-artifact@v5
         with:
-          name: isa-html-manual-${{ github.event.workflow_run.id }}
+          name: isa-html-manual
           path: _site/manual
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download HTML ISA Manual
         uses: actions/download-artifact@v5
         with:
-          name: cfg-html-manual-${{ github.event.workflow_run.id }}
+          name: cfg-html-manual
           path: _site/example_cfg
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download Instruction Appendix
         uses: actions/download-artifact@v5
         with:
-          name: inst-appendix-${{ github.event.workflow_run.id }}
+          name: inst-appendix
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVI20
         uses: actions/download-artifact@v5
         with:
-          name: rvi20-${{ github.event.workflow_run.id }}
+          name: rvi20
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVA20
         uses: actions/download-artifact@v5
         with:
-          name: rva20-${{ github.event.workflow_run.id }}
+          name: rva20
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVA22
         uses: actions/download-artifact@v5
         with:
-          name: rva22-${{ github.event.workflow_run.id }}
+          name: rva22
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVA23
         uses: actions/download-artifact@v5
         with:
-          name: rva23-${{ github.event.workflow_run.id }}
+          name: rva23
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVB23
         uses: actions/download-artifact@v5
         with:
-          name: rvb23-${{ github.event.workflow_run.id }}
+          name: rvb23
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download AC100
         uses: actions/download-artifact@v5
         with:
-          name: ac100-crd-${{ github.event.workflow_run.id }}
+          name: ac100-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download AC200
         uses: actions/download-artifact@v5
         with:
-          name: ac200-crd-${{ github.event.workflow_run.id }}
+          name: ac200-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC100-32
         uses: actions/download-artifact@v5
         with:
-          name: mc100-32-crd-${{ github.event.workflow_run.id }}
+          name: mc100-32-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC100-64
         uses: actions/download-artifact@v5
         with:
-          name: mc100-64-crd-${{ github.event.workflow_run.id }}
+          name: mc100-64-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC200-32
         uses: actions/download-artifact@v5
         with:
-          name: mc200-32-crd-${{ github.event.workflow_run.id }}
+          name: mc200-32-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC200-64
         uses: actions/download-artifact@v5
         with:
-          name: mc200-64-crd-${{ github.event.workflow_run.id }}
+          name: mc200-64-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC300-32
         uses: actions/download-artifact@v5
         with:
-          name: mc300-32-crd-${{ github.event.workflow_run.id }}
+          name: mc300-32-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC300-64
         uses: actions/download-artifact@v5
         with:
-          name: mc300-64-crd-${{ github.event.workflow_run.id }}
+          name: mc300-64-crd
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVI20-32 CTP
         uses: actions/download-artifact@v5
         with:
-          name: rvi20-32-ctp-${{ github.event.workflow_run.id }}
+          name: rvi20-32-ctp
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVI20-64 CTP
         uses: actions/download-artifact@v5
         with:
-          name: rvi20-64-ctp-${{ github.event.workflow_run.id }}
+          name: rvi20-64-ctp
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC100-32 CTP
         uses: actions/download-artifact@v5
         with:
-          name: mc100-32-ctp-${{ github.event.workflow_run.id }}
+          name: mc100-32-ctp
           path: _site/pdfs
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Create index
         env:
           PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
