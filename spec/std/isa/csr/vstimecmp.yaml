@@ -24,7 +24,7 @@ description: |
   In VS-mode, accesses to `stimecmp` are redirected to this CSR.
 
 sw_read(): |
-  if (!CSR[menvcfg].STCE || !CSR[henvcfg].STCE) {
+  if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
     raise(ExceptionCode::IllegalInstruction, mode());
   }
   return CSR[vstimecmp].VALUE;
@@ -42,7 +42,7 @@ fields:
     definedBy: H
     affectedBy: Sstc
     sw_write(csr_value): |
-      if (!CSR[menvcfg].STCE || !CSR[henvcfg].STCE) {
+      if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
         raise(ExceptionCode::IllegalInstruction, mode());
       }
       return csr_value.VALUE;
