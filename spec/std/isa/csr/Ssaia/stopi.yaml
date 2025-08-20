@@ -36,3 +36,8 @@ fields:
     type: RO-H
     reset_value: UNDEFINED_LEGAL
     definedBy: Ssaia
+sw_read(): |
+  # stopi includes both local and external interrupts
+  # For now, return the external interrupt info (same as stopei)
+  # A full implementation would prioritize between local and external
+  return current_s_topei;

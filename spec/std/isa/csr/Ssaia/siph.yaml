@@ -15,4 +15,17 @@ writable: true
 description: |
   Upper 32 bits of sip.
 definedBy: Ssaia
-fields: {}
+fields:
+  RESERVED_63_32:
+    location: 31-0
+    description: |
+      Reserved interrupt pending bits 63-32.
+
+      These bits are reserved for future interrupt sources or implementation-
+      specific interrupt pending states. The behavior of these bits is implementation-
+      defined and may be hardwired to zero.
+    type: RW
+    reset_value: 0
+    definedBy: Ssaia
+sw_read(): |
+  return $bits(CSR[sip])[63:32];
