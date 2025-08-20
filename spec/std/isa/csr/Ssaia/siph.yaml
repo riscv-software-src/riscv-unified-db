@@ -16,16 +16,17 @@ description: |
   Upper 32 bits of sip.
 definedBy: Ssaia
 fields:
-  RESERVED_63_32:
+  SIP_63_32:
     location: 31-0
     description: |
-      Reserved interrupt pending bits 63-32.
+      Supervisor interrupt pending bits 63-32.
 
-      These bits are reserved for future interrupt sources or implementation-
-      specific interrupt pending states. The behavior of these bits is implementation-
-      defined and may be hardwired to zero.
+      These bits indicate pending supervisor-level interrupts for the 63-32 range.
+      The behavior of these bits depends on the interrupt controller implementation.
     type: RW
     reset_value: 0
     definedBy: Ssaia
+    aliases:
+      - SIP_63_32
 sw_read(): |
   return $bits(CSR[sip])[63:32];
