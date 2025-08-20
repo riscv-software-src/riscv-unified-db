@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
-      - uses: sourcemeta/jsonschema@v9.1.1
+      - uses: sourcemeta/jsonschema@v11.1.1
       - run: jsonschema lint --ignore schemas/json-schema-draft-07.json --resolve schemas/*.json schemas/*.json
   regress-smoke:
     needs: build-llvm
