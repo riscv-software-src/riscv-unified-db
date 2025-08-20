@@ -53,28 +53,28 @@ jobs:
       - name: Download ISA Explorer CSR
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-csr
+          name: isa-explorer-csr
           path: _site/isa_explorer
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Extension
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-ext
+          name: isa-explorer-ext
           path: _site/isa_explorer
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Inst
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-inst
+          name: isa-explorer-inst
           path: _site/isa_explorer
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download ISA Explorer Spreadsheet
         uses: actions/download-artifact@v5
         with:
-          name: isa_explorer-spreadsheet
+          name: isa-explorer-spreadsheet
           path: _site/isa_explorer
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
