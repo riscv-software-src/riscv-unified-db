@@ -16,8 +16,8 @@ definedBy: Sstc
 description: |
   The `stimecmph` CSR is the upper 32 bits of the supervisor timer compare register for RV32.
   Together with `stimecmp`, this forms a 64-bit timer compare value.
-  
-  When the 64-bit `time` CSR reaches or exceeds the 64-bit value formed by concatenating 
+
+  When the 64-bit `time` CSR reaches or exceeds the 64-bit value formed by concatenating
   `stimecmph` and `stimecmp` (`{stimecmph, stimecmp}`), a supervisor timer interrupt is triggered.
 
   This CSR is available when the Sstc extension is implemented and `menvcfg.STCE` is set.

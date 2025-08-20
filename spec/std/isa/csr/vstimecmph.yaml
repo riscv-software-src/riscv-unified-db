@@ -16,11 +16,11 @@ definedBy: H
 description: |
   The `vstimecmph` CSR is the upper 32 bits of the virtual supervisor timer compare register for RV32.
   Together with `vstimecmp`, this forms a 64-bit timer compare value.
-  
-  When the 64-bit `time` CSR reaches or exceeds the 64-bit value formed by concatenating 
+
+  When the 64-bit `time` CSR reaches or exceeds the 64-bit value formed by concatenating
   `vstimecmph` and `vstimecmp` (`{vstimecmph, vstimecmp}`), a virtual supervisor timer interrupt is triggered.
 
-  This CSR is available when both the Sstc extension and H extension are implemented, 
+  This CSR is available when both the Sstc extension and H extension are implemented,
   and both `menvcfg.STCE` and `henvcfg.STCE` are set.
   When either control bit is clear, accessing this CSR will cause an `IllegalInstruction` exception.
 
