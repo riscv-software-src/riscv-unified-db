@@ -26,7 +26,7 @@ description: |
 
 sw_read(): |
   if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
-    raise(ExceptionCode::IllegalInstruction, mode());
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   return CSR[vstimecmph].VALUE;
 
@@ -44,6 +44,6 @@ fields:
     affectedBy: Sstc
     sw_write(csr_value): |
       if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
-        raise(ExceptionCode::IllegalInstruction, mode());
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
       return csr_value.VALUE;

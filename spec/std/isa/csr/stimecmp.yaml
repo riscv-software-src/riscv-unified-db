@@ -25,7 +25,7 @@ description: |
 
 sw_read(): |
   if (CSR[menvcfg].STCE == 0) {
-    raise(ExceptionCode::IllegalInstruction, mode());
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   return CSR[stimecmp].VALUE;
 
@@ -42,6 +42,6 @@ fields:
     definedBy: Sstc
     sw_write(csr_value): |
       if (CSR[menvcfg].STCE == 0) {
-        raise(ExceptionCode::IllegalInstruction, mode());
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
       return csr_value.VALUE;
