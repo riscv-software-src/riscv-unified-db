@@ -152,7 +152,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: isa-explorer-spreadsheet
-          path: gen/isa_explorer/browser
+          path: gen/isa_explorer/spreadsheet
   build-html-isa-manual:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -219,7 +219,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: rvi20
-          path: gen/proc_crd/pdf/RVI20ProfileRelease.pdf
+          path: gen/profile/pdf/RVI20ProfileRelease.pdf
   build-rva20-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -235,7 +235,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: rva20
-          path: gen/proc_crd/pdf/RVA20ProfileRelease.pdf
+          path: gen/profile/pdf/RVA20ProfileRelease.pdf
   build-rva22-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -251,7 +251,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: rva22
-          path: gen/proc_crd/pdf/RVA22ProfileRelease.pdf
+          path: gen/profile/pdf/RVA22ProfileRelease.pdf
   build-rva23-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -267,7 +267,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: rva23
-          path: gen/proc_crd/pdf/RVA23ProfileRelease.pdf
+          path: gen/profile/pdf/RVA23ProfileRelease.pdf
   build-rvb23-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -283,7 +283,7 @@ jobs:
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: rvb23
-          path: gen/proc_crd/pdf/RVB23ProfileRelease.pdf
+          path: gen/profile/pdf/RVB23ProfileRelease.pdf
   build-ac100-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
