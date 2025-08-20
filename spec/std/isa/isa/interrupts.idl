@@ -254,137 +254,6 @@ external function clear_timer_interrupt {
   }
 }
 
-# AIA-specific functions for IMSIC interrupt management
-external function set_imsic_interrupt {
-  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
-  description {
-    Set an IMSIC interrupt for the specified privilege mode and interrupt ID
-  }
-  body {
-    assert(interrupt_id < IMSIC_INTERRUPT_FILE_SIZE, "Invalid interrupt ID");
-
-    if (target_mode == PrivilegeMode::M) {
-      imsic_m_interrupt_file[interrupt_id] = 1;
-      update_topei_m();
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      imsic_s_interrupt_file[interrupt_id] = 1;
-      update_topei_s();
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
-      imsic_vs_interrupt_file[interrupt_id] = 1;
-      update_topei_vs();
-    } else {
-      assert(false, "Invalid target_mode");
-    }
-  }
-}
-
-external function clear_imsic_interrupt {
-  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
-  description {
-    Clear an IMSIC interrupt for the specified privilege mode and interrupt ID
-  }
-  body {
-    assert(interrupt_id < IMSIC_INTERRUPT_FILE_SIZE, "Invalid interrupt ID");
-
-    if (target_mode == PrivilegeMode::M) {
-      imsic_m_interrupt_file[interrupt_id] = 0;
-      update_topei_m();
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      imsic_s_interrupt_file[interrupt_id] = 0;
-      update_topei_s();
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
-      imsic_vs_interrupt_file[interrupt_id] = 0;
-      update_topei_vs();
-    } else {
-      assert(false, "Invalid target_mode");
-    }
-  }
-}
-
-# AIA TOPEI update functions
-function update_topei_m {
-  description {
-    Update machine-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_m_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    if (implemented?(ExtensionName::Smaia)) {
-      if (highest_id != 0) {
-        CSR[mtopei].IID = highest_id;
-        CSR[mtopei].IPRIO = highest_priority;
-      } else {
-        CSR[mtopei].IID = 0;
-        CSR[mtopei].IPRIO = 0;
-      }
-    }
-  }
-}
-
-function update_topei_s {
-  description {
-    Update supervisor-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_s_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    if (implemented?(ExtensionName::Ssaia)) {
-      if (highest_id != 0) {
-        CSR[stopei].IID = highest_id;
-        CSR[stopei].IPRIO = highest_priority;
-        CSR[stopi].IID = highest_id;
-        CSR[stopi].IPRIO = highest_priority;
-      } else {
-        CSR[stopei].IID = 0;
-        CSR[stopei].IPRIO = 0;
-        CSR[stopi].IID = 0;
-        CSR[stopi].IPRIO = 0;
-      }
-    }
-  }
-}
-
-function update_topei_vs {
-  description {
-    Update virtual supervisor-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_vs_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    # Virtual supervisor TOPEI would be implemented when H extension AIA support is added
-  }
-}
-
 function refresh_pending_interrupts {
   description {
     refreshes the calculation of a pending interrupt
@@ -446,7 +315,7 @@ function refresh_pending_interrupts {
     #   Bits<MXLEN> vsmode_enabled_ints =
     #     ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S) || (CSR[vsstatus].SIE == 1'b0)
     #       ? 0
-    #       : $bits(CSR[mie]) & ($bits[CSR[mideleg]] & $bits[CSR[hideleg]]));
+    #       : $bits(CSR[mie]) & ($bits[CSR[mideleg]] & $bits(CSR[hideleg]));
     #   Bits<MXLEN> vsmode_pending_and_enabled = pending_ints & vsmode_enabled_ints;
 
     #   if (vsmode_pending_and_enabled != 0) {
@@ -582,7 +451,11 @@ function take_interrupt {
       CSR[mepc].PC = $pc;
       CSR[mstatus].MPP = $bits(mode())[1:0];
       if (CSR[misa].H == 1'b1) {
-        CSR[mstatus].MPV = $bits(mode())[2];
+        if(MXLEN == 64) {
+          CSR[mstatus].MPV = $bits(mode())[2];
+        } else {
+          CSR[mstatush].MPV = $bits(mode())[2];
+        }
         CSR[mtval2].VALUE = 0;
         CSR[mtinst].VALUE = 0;
       }
