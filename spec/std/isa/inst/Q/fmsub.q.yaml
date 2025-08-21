@@ -6,9 +6,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmsub.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Multiply-Subtract Quad-Precision
+description:
+  - id: inst-fmsub.q-behaviour
+    normative: false
+    text: |
+      The `fmsub.q` instruction performs a floating-point multiply-subtract operation on the values in registers `fs1`, `fs2`, and `fs3`.
+      It computes the result as `(fs1 * fs2) - fs3` and writes the result to the destination register `fd`.
 definedBy: Q
 assembly: fd, fs1, fs2, fs3, rm
 encoding:

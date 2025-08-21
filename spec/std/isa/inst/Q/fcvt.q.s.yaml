@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.s
-long_name: Floating-point Convert Single-precision to Quad-precision
+long_name: Floating-Point Convert Single-Precision to Quad-Precision
 description:
   - id: inst-fcvt.q.s-behaviour
     normative: false

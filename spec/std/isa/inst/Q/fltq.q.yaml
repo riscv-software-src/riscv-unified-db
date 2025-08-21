@@ -6,9 +6,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fltq.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Less Than Quiet Quad-Precision
+description:
+  - id: inst-fltq.q-behaviour
+    normative: false
+    text: |
+      The `fltq.q` performs the specified comparison between floating-point registers `fs1` and `fs2`,
+      and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
+
+      `fltq.q` is defined like `flt.q`, except that quiet _NaN_ inputs do not cause the invalid
+      operation exception flag to be set.
+      This instruction is encoded like its `fle` counterpart, but with instruction bit 14 set to 1.
 definedBy:
   allOf: [Q, Zfa]
 assembly: fd, fs1, fs2

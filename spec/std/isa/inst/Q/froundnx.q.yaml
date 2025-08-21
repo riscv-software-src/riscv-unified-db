@@ -6,9 +6,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: froundnx.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Round-to-Integer Inexact Quad-Precision
+description:
+  - id: inst-froundnx.q-behaviour
+    normative: false
+    text: |
+      The `froundnx.q` instruction is encoded like `fround.q` but with `rs2`=5 and it also sets the
+      inexact exception flag if the input differs from the rounded result and is not _NaN_.
 definedBy:
   allOf: [Q, Zfa]
 assembly: fd, fs1, rm

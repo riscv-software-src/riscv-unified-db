@@ -6,9 +6,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: feq.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Equal Quad-Precision
+description:
+  - id: inst-feq.q-behaviour
+    normative: false
+    text: |
+      The `feq.q` performs the specified comparison between floating-point registers `fs1` and `fs2`,
+      and writes 1 to integer register `xd` if the conditon hold, and 0 otherwise.
+
+      `feq.q` performs a quiet comparison:
+      it only sets the invalid operation exception flag if either input is a signaling _NaN_.
+      The result is 0 if either operand is _NaN_.
 definedBy: Q
 assembly: xd, fs1, fs2
 encoding:

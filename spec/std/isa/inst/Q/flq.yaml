@@ -6,9 +6,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: flq
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Load Quad-Precision
+description:
+  - id: inst-flq-behaviour
+    normative: false
+    text: |
+      The `flq` is the new variant of LOAD-FP, encoded with a new value for the `funct3`.
+
+      `flq` is only guaranteed to execute atomically if the effective address is naturally aligned XLEN=128.
+
+      `flq` does not modify the bits being transferred; in particular, the payloads of non-canonical
+      _NaNs_ are preserved.
 definedBy: Q
 assembly: fd, xs1, imm
 encoding:
