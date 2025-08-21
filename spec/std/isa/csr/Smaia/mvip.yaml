@@ -33,9 +33,8 @@ fields:
       # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSSIE == 1'b1) {
         return csr_value.VSSIP;
-      } else {
-        return 0;  # Force to zero if mvien bit is disabled
       }
+      return 0;  # Force to zero if mvien bit is disabled
   VSTIP:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Pending
@@ -50,9 +49,8 @@ fields:
       # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSTIE == 1'b1) {
         return csr_value.VSTIP;
-      } else {
-        return 0;  # Force to zero if mvien bit is disabled
       }
+      return 0;  # Force to zero if mvien bit is disabled
   VSEIP:
     location: 9
     long_name: Virtual Supervisor External Interrupt Pending
@@ -67,9 +65,8 @@ fields:
       # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSEIE == 1'b1) {
         return csr_value.VSEIP;
-      } else {
-        return 0;  # Force to zero if mvien bit is disabled
       }
+      return 0;  # Force to zero if mvien bit is disabled
   VOTHERPIP:
     location_rv32: 31-13
     location_rv64: 63-13
