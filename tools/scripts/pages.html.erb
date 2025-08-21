@@ -11,14 +11,18 @@
     <p>Created on <%= Date.today %></p>
 
     <br/>
-    <h3>Resolved architecture</h3>
+    <h3>Resolved standard specification</h3>
+    <p>
+      The <em>resolved specification</em> is the database after applying the <code>$inherits</code> operator on data.
+      The resolved specification is what should be used by downstream tools.
+    </p>
     <ul>
       <li>
         <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/index.yaml">index.yaml</a>
         Database index, as array of relative paths from <%= ENV["PAGES_URL"] %>/resolved_spec
         <ul>
           <li>
-            For example, you can find <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml">Sm.yaml</a> at <%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml
+            For example, you can find Sm.yaml at <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml"><%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml</a>
           </li>
         </ul>
       </li>
@@ -98,7 +102,7 @@
     <br/>
     <h3>IDL Documentation</h3>
     <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/ruby/idl/index.html">IDL language documentation</a></li>
+      <li><a href="<%= ENV["PAGES_URL"] %>/idl.html">IDL language documentation</a></li>
     </ul>
 
     <br/>

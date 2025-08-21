@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 RUBY_UDB_ROOT = Kernel.__dir__
 
@@ -48,7 +48,7 @@ namespace :gen do
     task :api_doc do
       Dir.chdir(RUBY_UDB_ROOT) do
         FileUtils.rm_rf $root / "gen" / "udb_api_doc"
-        sh "bundle exec yard --plugin sorbet lib/**/*.rb --no-save --embed-mixins --hide-void-return -o #{$root}/gen/udb_api_doc"
+        sh "bundle exec yard --plugin sorbet lib --no-save --embed-mixins --hide-void-return -o #{$root}/gen/udb_api_doc"
       end
     end
   end
