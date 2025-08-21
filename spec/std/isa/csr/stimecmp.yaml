@@ -24,11 +24,13 @@ description: |
   In virtualized environments, when executing in VS-mode, accesses to `stimecmp` are redirected to `vstimecmp`.
 
 sw_read(): |
-  if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-  if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
-    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  if (implemented_version?(ExtensionName::S, "1.11")) {
+    if (CSR[menvcfg].STCE == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+    if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    }
   }
   if (virtual_mode?()) {
     return CSR[vstimecmp].VALUE;
@@ -48,11 +50,13 @@ fields:
     reset_value: 0
     definedBy: Sstc
     sw_write(csr_value): |
-      if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-      }
-      if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      if (implemented_version?(ExtensionName::S, "1.11")) {
+        if (CSR[menvcfg].STCE == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+        if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
       }
       if (virtual_mode?()) {
         CSR[vstimecmp].VALUE = csr_value.VALUE;

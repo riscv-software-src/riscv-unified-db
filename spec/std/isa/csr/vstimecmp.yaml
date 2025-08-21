@@ -24,8 +24,10 @@ description: |
   In VS-mode, accesses to `stimecmp` are redirected to this CSR.
 
 sw_read(): |
-  if ((implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) || (implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented_version?(ExtensionName::S, "1.11")) {
+    if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
   }
   return CSR[vstimecmp].VALUE;
 
@@ -42,7 +44,9 @@ fields:
     definedBy: H
     affectedBy: Sstc
     sw_write(csr_value): |
-      if ((implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) || (implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0)) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      if (implemented_version?(ExtensionName::S, "1.11")) {
+        if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
       }
       return csr_value.VALUE;
