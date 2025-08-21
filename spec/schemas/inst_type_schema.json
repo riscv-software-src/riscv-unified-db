@@ -25,7 +25,10 @@
           "required": ["location"],
           "additionalProperties": false,
           "properties": {
-            "location": { "$ref": "schema_defs.json#/$defs/field_location" }
+            "location": { "$ref": "schema_defs.json#/$defs/field_location" },
+            "$parent_of": {
+              "$ref": "schema_defs.json#/$defs/ref_url_list"
+            }
           }
         }
       }
@@ -34,6 +37,9 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
+        "^\\$parent_of$": {
+          "$ref": "schema_defs.json#/$defs/ref_url_list"
+        },
         "^[a-z][a-zA-Z0-9]*$": {
           "type": "object",
           "required": ["location"],
@@ -52,6 +58,10 @@
     "$source": {
       "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
       "type": "string"
+    },
+    "$parent_of": {
+      "description": "List of instruction subtypes that this type is the parent of",
+      "$ref": "schema_defs.json#/$defs/ref_url_list"
     }
   },
   "required": ["$schema", "kind", "name", "description", "length", "opcodes"],
