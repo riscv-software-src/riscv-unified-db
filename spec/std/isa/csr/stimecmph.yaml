@@ -24,13 +24,11 @@ description: |
   When `menvcfg.STCE` is clear, accessing this CSR will cause an `IllegalInstruction` exception.
 
 sw_read(): |
-  if (implemented_version?(ExtensionName::S, "1.11")) {
-    if (CSR[menvcfg].STCE == 0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-    }
-    if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
-      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-    }
+  if (implemented?(ExtensionName::S) && implemented?(ExtensionName::Sstc) && CSR[menvcfg].STCE == 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
   }
   if (virtual_mode?()) {
     return CSR[vstimecmph].VALUE;
@@ -51,13 +49,11 @@ fields:
     reset_value: 0
     definedBy: Sstc
     sw_write(csr_value): |
-      if (implemented_version?(ExtensionName::S, "1.11")) {
-        if (CSR[menvcfg].STCE == 0) {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-        }
-        if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
-          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-        }
+      if (implemented?(ExtensionName::S) && implemented?(ExtensionName::Sstc) && CSR[menvcfg].STCE == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?() && CSR[henvcfg].STCE == 0) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       }
       if (virtual_mode?()) {
         CSR[vstimecmph].VALUE = csr_value.VALUE;
