@@ -25,7 +25,7 @@ description: |
   When either control bit is clear, accessing this CSR will cause an `IllegalInstruction` exception.
 
 sw_read(): |
-  if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
+  if ((implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) || (implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   return CSR[vstimecmph].VALUE;
@@ -33,6 +33,7 @@ sw_read(): |
 fields:
   VALUE:
     location: 31-0
+    alias: vstimecmp.VALUE[63:32]
     description: |
       Virtual Timer Compare High Value
 
@@ -43,7 +44,7 @@ fields:
     definedBy: H
     affectedBy: Sstc
     sw_write(csr_value): |
-      if (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0) {
+      if ((implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) || (implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0)) {
         raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
       return csr_value.VALUE;

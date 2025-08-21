@@ -24,14 +24,22 @@ description: |
   When `menvcfg.STCE` is clear, accessing this CSR will cause an `IllegalInstruction` exception.
 
 sw_read(): |
-  if (CSR[menvcfg].STCE == 0) {
+  if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-  return CSR[stimecmph].VALUE;
+  if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  if (virtual_mode?()) {
+    return CSR[vstimecmph].VALUE;
+  } else {
+    return CSR[stimecmph].VALUE;
+  }
 
 fields:
   VALUE:
     location: 31-0
+    alias: stimecmp.VALUE[63:32]
     description: |
       Timer Compare High Value
 
@@ -41,7 +49,15 @@ fields:
     reset_value: 0
     definedBy: Sstc
     sw_write(csr_value): |
-      if (CSR[menvcfg].STCE == 0) {
+      if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
         raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
-      return csr_value.VALUE;
+      if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        CSR[vstimecmph].VALUE = csr_value.VALUE;
+        return CSR[stimecmph].VALUE;
+      } else {
+        return csr_value.VALUE;
+      }

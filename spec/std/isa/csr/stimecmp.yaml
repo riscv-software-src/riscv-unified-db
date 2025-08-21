@@ -24,10 +24,17 @@ description: |
   In virtualized environments, when executing in VS-mode, accesses to `stimecmp` are redirected to `vstimecmp`.
 
 sw_read(): |
-  if (CSR[menvcfg].STCE == 0) {
+  if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-  return CSR[stimecmp].VALUE;
+  if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  if (virtual_mode?()) {
+    return CSR[vstimecmp].VALUE;
+  } else {
+    return CSR[stimecmp].VALUE;
+  }
 
 fields:
   VALUE:
@@ -41,7 +48,15 @@ fields:
     reset_value: 0
     definedBy: Sstc
     sw_write(csr_value): |
-      if (CSR[menvcfg].STCE == 0) {
+      if (implemented_version?(ExtensionName::S, "1.11") && CSR[menvcfg].STCE == 0) {
         raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
-      return csr_value.VALUE;
+      if (virtual_mode?() && implemented_version?(ExtensionName::S, "1.11") && CSR[henvcfg].STCE == 0) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        CSR[vstimecmp].VALUE = csr_value.VALUE;
+        return CSR[stimecmp].VALUE;
+      } else {
+        return csr_value.VALUE;
+      }
