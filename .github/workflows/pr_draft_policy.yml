@@ -1,0 +1,27 @@
+name: Draft on Open
+on:
+  pull_request_target:
+    types: [ opened ]
+
+jobs:
+  mark-as-draft:
+    name: Mark as draft
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark as draft
+        uses: voiceflow/draft-pr@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+
+            All PRs are marked as *draft* when opened.
+
+            Once this PR has passed all CI checks, it may be marked *ready*.
+
+            See [https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request](Changing the stage of a pull request) for more information.
