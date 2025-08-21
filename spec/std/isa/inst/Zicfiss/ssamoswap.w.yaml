@@ -6,9 +6,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: ssamoswap.w
-long_name: No synopsis available
+long_name: Atomic Swap from a Shadow Stack Location
 description: |
-  No description available.
+  The `ssamoswap.w` atomically loads a 32-bit data value from address of a shadow
+  stack location in rs1, puts the loaded value into register rd, and stores the
+  32-bit value held in rs2 to the original address in rs1.
 definedBy: Zicfiss
 assembly: xd, xs2, xs1
 encoding:
@@ -31,3 +33,21 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  Csr csr_handle = direct_csr_lookup(12'h011);
+
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!implemented?(ExtensionName::S)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+
+  if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
+    X[xd] = $signed(read_memory<32>(X[xs1][31:0], $encoding));
+    write_memory<32>(X[xs1], X[xs2][31:0], $encoding);
+  }
