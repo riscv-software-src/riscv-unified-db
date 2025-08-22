@@ -1,4 +1,5 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) 2025 Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
@@ -186,6 +187,37 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].ADUE == 1'b0) {
+        return 0;
+      }
+      return csr_value.ADUE;
+  DTE:
+    location: 59
+    description: |
+      *Double Trap Enable*
+
+      The DTE bit controls whether the Ssdbltrp extension is available for VS-mode.
+
+      When DTE=1, the Ssdbltrp extension is enabled for VS-mode. The `vsstatus.SDT` field becomes functional.
+      When a trap is to be taken into VS-mode, if `vsstatus.SDT` is currently 0, it is set to 1 and
+      the trap is delivered as expected. However, if `vsstatus.SDT` is already set to 1, a double-trap
+      exception is delivered to HS-mode instead.
+
+      When DTE=0, the implementation behaves as though Ssdbltrp is not implemented for VS-mode.
+      The `vsstatus.SDT` field is read-only zero.
+
+      If Ssdbltrp is not implemented, DTE is read-only zero.
+
+      Furthermore, `henvcfg.DTE` is read-only zero if `menvcfg.DTE` is zero.
+    definedBy: Ssdbltrp
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[menvcfg].DTE == 1'b0) {
+        return 0;
+      }
+      return csr_value.DTE;
   CBZE:
     location: 7
     description: |
@@ -290,5 +322,9 @@ sw_read(): |
   if (implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 0) {
     # henvcfg.ADUE must read-as-zero
     value = value & ~(1 `<< 61);
+  }
+  if (implemented?(ExtensionName::Ssdbltrp) && CSR[menvcfg].DTE == 0) {
+    # henvcfg.DTE must read-as-zero
+    value = value & ~(1 `<< 59);
   }
   return value;

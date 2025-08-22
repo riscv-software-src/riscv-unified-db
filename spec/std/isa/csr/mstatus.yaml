@@ -1,4 +1,5 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) 2025 Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -65,6 +66,26 @@ fields:
     definedBy: Smdbltrp
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+  SDT:
+    location: 41
+    base: 64
+    description: |
+      *Supervisor Disable Trap*
+
+      Written to 1 when entering S-mode from an exception/interrupt.
+      When returning via an SRET instruction, the bit is written to 0.
+      On reset is set to 0.
+      When mstatus.SDT=1, direct write by CSR instruction cannot set mstatus.SIE to 1, if not written together.
+
+      This field is read-only zero if `menvcfg.DTE` is zero.
+    definedBy: Ssdbltrp
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[menvcfg].DTE == 1'b0) {
+        return 0;
+      }
+      return csr_value.SDT;
   MPV:
     location: 39
     base: 64
