@@ -10531,15 +10531,11 @@ Decode Variables::
 |===
 
 Included in::
-[options="autowrap,autowidth"]
-|===
-| Extension | Version
-
-| *Zfa* | ~> 1.0.0
-
-| *Zfh* | ~> 1.0.0
-
-|===
+allOf:
+* Zfa, version >= Zfa@1.0.0
+* anyOf:
+** Zfh, version >= Zfh@1.0.0
+** Zvfh, version >= Zvfh@1.0.0
 
 
 [#udb:doc:inst:fli_q]
