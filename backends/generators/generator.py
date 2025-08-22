@@ -3,12 +3,19 @@ import os
 import yaml
 import logging
 import pprint
+import logging
+from backends.generators.schema_validator import validate_entry
+from .generator import parse_extension_requirements
+
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
 
 def check_requirement(req, exts):
+    if isinstance(req, dict) and "name" in req:
+        validate_entry(req, ["name"], context="check_requirement")
+
     if isinstance(req, str):
         return req in exts
     elif isinstance(req, dict) and "name" in req:
@@ -25,8 +32,17 @@ def parse_extension_requirements(extensions_spec):
     """
     if extensions_spec is None:
         # If definedBy is None, we should never match
-        logging.error(f"Missing 'definedBy' field")
-        return lambda exts: False
+        raise AssertionError(
+            "Schema change detected: 'definedBy' field missing in extensions_spec"
+        )
+
+    if isinstance(extensions_spec, dict):
+        allowed_keys = {"name", "version", "allOf", "oneOf", "anyOf"}
+        for key in extensions_spec.keys():
+            if key not in allowed_keys:
+                raise AssertionError(
+                    f"Schema change detected: unexpected key '{key}' in extensions_spec"
+                )
 
     if isinstance(extensions_spec, str):
         # Simple case: a single extension
@@ -59,6 +75,11 @@ def parse_extension_requirements(extensions_spec):
 
         # Process each alternative, which could be a string or a dict with name/version
         def check_alternative_one_of(alt, exts):
+            if isinstance(alt, dict) and "name" in alt:
+                validate_entry(
+                    alt, ["name"], context="parse_extension_requirements:oneOf"
+                )
+
             if isinstance(alt, str):
                 return alt in exts
             elif isinstance(alt, dict) and "name" in alt:
@@ -77,6 +98,12 @@ def parse_extension_requirements(extensions_spec):
 
         # Process each alternative, which could be a string, dict with name/version, or nested allOf
         def check_alternative(alt, exts):
+            if isinstance(alt, dict):
+                if "name" in alt:
+                    validate_entry(
+                        alt, ["name"], context="parse_extension_requirements:anyOf"
+                    )
+
             if isinstance(alt, str):
                 return alt in exts
             elif isinstance(alt, dict):
@@ -93,6 +120,11 @@ def parse_extension_requirements(extensions_spec):
 
     # Handle direct name/version specification
     if "name" in extensions_spec and "version" in extensions_spec:
+        validate_entry(
+            extensions_spec,
+            ["name", "version"],
+            context="parse_extension_requirements:name_version",
+        )
         extension = extensions_spec["name"]
         # We don't actually check the version, just the extension name
         return lambda exts: extension in exts
@@ -141,6 +173,14 @@ def load_instructions(
                 continue
 
             found_instructions += 1
+
+            # Validate required top-level fields
+            validate_entry(
+                data,
+                ["name", "definedBy", "encoding"],
+                context=f"Instruction file: {path}",
+            )
+
             name = data.get("name")
             if not name:
                 logging.error(f"Missing 'name' field in {path}")
@@ -148,7 +188,6 @@ def load_instructions(
 
             # If include_all is True, skip extension filtering
             if not include_all:
-                # Check if this instruction is defined by an enabled extension
                 definedBy = data.get("definedBy")
                 if definedBy is None:
                     logging.error(
@@ -165,7 +204,6 @@ def load_instructions(
                     extension_filtered += 1
                     continue
 
-                # Check if this instruction is excluded by an enabled extension
                 excludedBy = data.get("excludedBy")
                 if excludedBy:
                     exclusion_check = parse_extension_requirements(excludedBy)
@@ -183,7 +221,17 @@ def load_instructions(
                 encoding_filtered += 1
                 continue
 
-            # Check if the instruction specifies a base architecture constraint
+            # Validate RV32/RV64 encodings
+            if isinstance(encoding, dict):
+                if "RV64" in encoding:
+                    validate_entry(
+                        encoding["RV64"], ["match"], context=f"{name} RV64 encoding"
+                    )
+                if "RV32" in encoding:
+                    validate_entry(
+                        encoding["RV32"], ["match"], context=f"{name} RV32 encoding"
+                    )
+
             base = data.get("base")
             if base is not None:
                 if (base == 32 and target_arch not in ["RV32", "BOTH"]) or (
@@ -194,34 +242,24 @@ def load_instructions(
                     encoding_filtered += 1
                     continue
 
-            # Determine which encoding to use based on target architecture
             if isinstance(encoding, dict):
                 if "RV64" in encoding and "RV32" in encoding:
-                    # Instruction has both RV32 and RV64 encodings
                     if target_arch == "RV64":
                         encoding_to_use = encoding["RV64"]
                         instr_key = name
                     elif target_arch == "RV32":
                         encoding_to_use = encoding["RV32"]
                         instr_key = name
-                    else:  # BOTH
-                        # For "BOTH", include both encodings with suitable naming
+                    else:
                         rv64_encoding = encoding["RV64"]
                         rv32_encoding = encoding["RV32"]
-
-                        # Process RV64 encoding
                         rv64_match = rv64_encoding.get("match")
                         if rv64_match:
-                            instr_dict[name] = {
-                                "match": rv64_match
-                            }  # RV64 gets the default name
-
-                        # Process RV32 encoding with a _rv32 suffix
+                            instr_dict[name] = {"match": rv64_match}
                         rv32_match = rv32_encoding.get("match")
                         if rv32_match:
                             instr_dict[f"{name}_rv32"] = {"match": rv32_match}
-
-                        continue  # Skip the rest of the loop as we've already added the encodings
+                        continue
                 elif "RV64" in encoding:
                     if target_arch in ["RV64", "BOTH"]:
                         encoding_to_use = encoding["RV64"]
@@ -241,7 +279,6 @@ def load_instructions(
                         encoding_filtered += 1
                         continue
                 elif "match" in encoding:
-                    # Generic encoding, no specific architecture
                     encoding_to_use = encoding
                     instr_key = name
                 else:
@@ -318,6 +355,14 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                 continue
 
             found_csrs += 1
+
+            # Validate required top-level fields
+            validate_entry(
+                data,
+                ["name", "address", "indirect_address", "definedBy"],
+                context=f"CSR file: {path}",
+            )
+
             name = data.get("name")
             if not name:
                 logging.error(f"Missing 'name' field in {path}")
@@ -333,7 +378,6 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                 address_errors += 1
                 continue
 
-            # Check if the CSR has a base constraint (32 or 64)
             base = data.get("base")
             if base:
                 if base == 32 and target_arch not in ["RV32", "BOTH"]:
@@ -345,13 +389,8 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                     arch_filtered += 1
                     continue
 
-            # If include_all is True, skip extension filtering
             if not include_all:
-                # Check if this CSR is defined by an enabled extension
                 definedBy = data.get("definedBy")
-
-                # If definedBy is missing, log a warning but don't skip
-                # This is different from instructions where we're more strict
                 if definedBy is None:
                     logging.warning(
                         f"Missing 'definedBy' field in CSR {name} in {path}, including anyway"
@@ -367,16 +406,13 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                         extension_filtered += 1
                         continue
 
-            # If we're here, we've passed all checks
             try:
-                # Use address if available, otherwise use indirect_address
                 addr_to_use = address if address is not None else indirect_address
                 if isinstance(addr_to_use, int):
                     addr_int = addr_to_use
                 else:
                     addr_int = int(addr_to_use, 0)
 
-                # For BOTH architecture, add suffix to RV32-specific CSRs
                 if target_arch == "BOTH" and base == 32:
                     csrs[addr_int] = f"{name.upper()}.RV32"
                 else:
