@@ -35,28 +35,6 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomaxu.<%= size %><%= aq_rl_suffix %>
-long_name: Atomic fetch-and-max unsigned <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
-description: |
-  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
-
-  # Generate instruction name suffix based on aq/rl
-  aq_rl_suffix = ""
-  if aq && rl
-    aq_rl_suffix = ".aqrl"
-  elsif aq
-    aq_rl_suffix = ".aq"
-  elsif rl
-    aq_rl_suffix = ".rl"
-  end
-
-  # Generate match string with fixed aq/rl bits
-  aq_bit = aq ? "1" : "0"
-  rl_bit = rl ? "1" : "0"
--%>
-
-$schema: "inst_schema.json#"
-kind: instruction
-name: amomaxu.<%= size %><%= aq_rl_suffix %>
 long_name: Atomic unsigned MAX <%= current_size[:name] %><%= aq ? " (acquire)" : "" %><%= rl ? " (release)" : "" %><%= aq && rl ? " (acquire-release)" : "" %>
 description: |
   Atomically<%= aq ? " with acquire ordering" : "" %><%= rl ? " with release ordering" : "" %>:

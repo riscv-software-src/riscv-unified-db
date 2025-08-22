@@ -73,7 +73,7 @@ operation(): |
 
 <% end -%>
   XReg virtual_address = X[xs1];
-  X[xd] = amocas<<%= current_size[:operation_bits] %>>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, X[xd]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding);
+  X[xd] = amocas<%= current_size[:operation_bits] %>(virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, X[xd]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding);
 
 <% if rl -%>
   memory_model_release();

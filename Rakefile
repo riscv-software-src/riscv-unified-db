@@ -158,8 +158,38 @@ end
 
 
 namespace :test do
+  # Build list of all AMO instruction files that need to be generated
+  amo_instruction_files = []
+
+  # Zaamo and Zabha AMO variants
+  %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+    ["b", "h", "w", "d"].each do |size|
+      extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+      [
+        { suffix: "", aq: false, rl: false },
+        { suffix: ".aq", aq: true, rl: false },
+        { suffix: ".rl", aq: false, rl: true },
+        { suffix: ".aqrl", aq: true, rl: true }
+      ].each do |variant|
+        amo_instruction_files << "#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{variant[:suffix]}.yaml"
+      end
+    end
+  end
+
+  # AMOCAS variants for Zabha (b, h sizes)
+  ["b", "h"].each do |size|
+    [
+      { suffix: "", aq: false, rl: false },
+      { suffix: ".aq", aq: true, rl: false },
+      { suffix: ".rl", aq: false, rl: true },
+      { suffix: ".aqrl", aq: true, rl: true }
+    ].each do |variant|
+      amo_instruction_files << "#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{variant[:suffix]}.yaml"
+    end
+  end
+
   desc "Check that instruction encodings in the DB are consistent and do not conflict"
-  task :inst_encodings do
+  task :inst_encodings => amo_instruction_files do
     print "Checking for conflicts in instruction encodings.."
 
     cfg_arch = $resolver.cfg_arch_for("_")
@@ -464,55 +494,6 @@ namespace :gen do
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
-
-    # Generate AMO instruction files from layouts
-    # Zaamo AMO variants (w, d sizes)
-    %w[w d].each do |size|
-      %w[add and max maxu min minu or swap xor].each do |op|
-        [
-          { suffix: ".aq", aq: true, rl: false },
-          { suffix: ".rl", aq: false, rl: true },
-          { suffix: ".aqrl", aq: true, rl: true }
-        ].each do |variant|
-          Rake::Task["#{$resolver.std_path}/inst/Zaamo/amo#{op}.#{size}#{variant[:suffix]}.yaml"].invoke
-        end
-      end
-    end
-
-    # Zabha AMO variants (b, h sizes)
-    %w[b h].each do |size|
-      %w[add and max maxu min minu or swap xor].each do |op|
-        [
-          { suffix: ".aq", aq: true, rl: false },
-          { suffix: ".rl", aq: false, rl: true },
-          { suffix: ".aqrl", aq: true, rl: true }
-        ].each do |variant|
-          Rake::Task["#{$resolver.std_path}/inst/Zabha/amo#{op}.#{size}#{variant[:suffix]}.yaml"].invoke
-        end
-      end
-    end
-
-    # AMOCAS variants from Zabha layout (Zabha: b,h and Zacas: w,d,q)
-    %w[b h].each do |size|
-      [
-        { suffix: ".aq", aq: true, rl: false },
-        { suffix: ".rl", aq: false, rl: true },
-        { suffix: ".aqrl", aq: true, rl: true }
-      ].each do |variant|
-        Rake::Task["#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
-      end
-    end
-
-    # TODO: Uncomment when Zacas amocas instruction files are added in future PR
-    # %w[w d q].each do |size|
-    #   [
-    #     { suffix: ".aq", aq: true, rl: false },
-    #     { suffix: ".rl", aq: false, rl: true },
-    #     { suffix: ".aqrl", aq: true, rl: true }
-    #   ].each do |variant|
-    #     Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml"].invoke
-    #   end
-    # end
   end
 end
 
