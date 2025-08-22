@@ -13,7 +13,7 @@ function fetch_memory_aligned_16 {
   body {
     TranslationResult result;
 
-    if (CSR[misa].S == 1) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1)) {
       result = translate(virtual_address, MemoryOperation::Fetch, mode(), virtual_address);
     } else {
       result.paddr = virtual_address;
@@ -36,7 +36,7 @@ function fetch_memory_aligned_32 {
   body {
     TranslationResult result;
 
-    if (CSR[misa].S == 1) {
+    if ((!MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S)) || (CSR[misa].S == 1)) {
       result = translate(virtual_address, MemoryOperation::Fetch, mode(), virtual_address);
     } else {
       result.paddr = virtual_address;
