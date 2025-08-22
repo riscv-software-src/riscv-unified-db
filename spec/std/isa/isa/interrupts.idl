@@ -315,7 +315,7 @@ function refresh_pending_interrupts {
     #   Bits<MXLEN> vsmode_enabled_ints =
     #     ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S) || (CSR[vsstatus].SIE == 1'b0)
     #       ? 0
-    #       : $bits(CSR[mie]) & ($bits[CSR[mideleg]] & $bits(CSR[hideleg]));
+    #       : $bits(CSR[mie]) & ($bits(CSR[mideleg]] & $bits(CSR[hideleg]));
     #   Bits<MXLEN> vsmode_pending_and_enabled = pending_ints & vsmode_enabled_ints;
 
     #   if (vsmode_pending_and_enabled != 0) {

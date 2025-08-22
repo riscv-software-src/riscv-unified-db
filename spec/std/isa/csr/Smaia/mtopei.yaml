@@ -6,38 +6,55 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: mtopei
-long_name: Machine Top External Interrupt
+long_name: Machine Top External Interrupt Pending
 address: 0x35C
 priv_mode: M
 length: MXLEN
-writable: true
+writable: false
 description: |
-  Provides information about the highest-priority pending-and-enabled external interrupt
-  for machine level, with claim-and-clear semantics on write.
+  Holds the interrupt ID of the highest-priority pending interrupt observed by the
+  IMSIC interrupt file that is not disabled by the corresponding bits in mie and mvien.
+
+  When no interrupt is pending, the register reads 0. When an interrupt is pending,
+  the register holds the interrupt ID in the Interrupt ID (IID) field.
+
+  This register is read-only and is automatically updated by the hardware.
 definedBy: Smaia
 fields:
   IID:
-    location: 26-16
-    long_name: Interrupt Identity
+    location_rv32: 31-16
+    location_rv64: 63-16
+    long_name: Interrupt ID
     description: |
-      Identity of the highest-priority pending-and-enabled external interrupt.
+      Interrupt ID of the highest-priority pending interrupt.
 
-      When written with a non-zero value, clears the corresponding IMSIC interrupt.
-    type: RW-R
-    reset_value: UNDEFINED_LEGAL
+      The IID field holds the interrupt ID of the highest-priority pending interrupt
+      observed by the IMSIC interrupt file that is not disabled by the corresponding
+      bits in mie and mvien.
+    type: RO
+    reset_value: 0
     definedBy: Smaia
-    sw_write(csr_value): |
-      if (csr_value.IID != 0 && implemented?(ExtensionName::Smaia)) {
-        clear_imsic_interrupt(PrivilegeMode::M, csr_value.IID);
-      }
-      return csr_value.IID;
-  IPRIO:
-    location: 7-0
+  IP:
+    location: 15-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending-and-enabled external interrupt.
+      Priority of the highest-priority pending interrupt.
 
-      Read-only field that reflects the priority of the interrupt in IID field.
+      The IP field holds the priority of the highest-priority pending interrupt
+      observed by the IMSIC interrupt file that is not disabled by the corresponding
+      bits in mie and mvien.
     type: RO
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
+sw_read(): |
+  // Return the top pending external interrupt
+  if (!implemented?(ExtensionName::Smaia)) {
+    return 0;
+  }
+  
+  // Get the highest priority pending interrupt from IMSIC
+  TopInterrupt top = get_top_imsic_interrupt(PrivilegeMode::M);
+  return (top.id << 16) | top.priority;
+sw_write(csr_value): |
+  // This register is read-only, writes are ignored
+  return csr_value;

@@ -66,13 +66,7 @@ class TestCli < Minitest::Test
 
   def test_list_csrs
     # Use a configuration that includes AIA extensions to ensure all CSRs are counted
-    out, err = capture_io do
-      run_cmd("list csrs --config example_rv64_with_overlay")
-    end
-    
-    # Count the actual CSRs listed in the output
-    csr_lines = out.lines.grep(/^csr\d+/)
-    num_listed = csr_lines.size
+    num_listed = run_cmd("list csrs --config rv64gc_zknh")
     
     repo_top = Udb.repo_root
     num_csr_yaml_files = `find #{repo_top}/spec/std/isa/csr/ -name '*.yaml' | wc -l`.to_i

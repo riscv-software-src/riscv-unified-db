@@ -15,18 +15,11 @@ writable: true
 description: |
   Upper 32 bits of sip.
 definedBy: Ssaia
-fields:
-  SIP_63_32:
-    location: 31-0
-    description: |
-      Supervisor interrupt pending bits 63-32.
-
-      These bits indicate pending supervisor-level interrupts for the 63-32 range.
-      The behavior of these bits depends on the interrupt controller implementation.
-    type: RW
-    reset_value: 0
-    definedBy: Ssaia
-    aliases:
-      - SIP_63_32
 sw_read(): |
   return $bits(CSR[sip])[63:32];
+sw_write(csr_value): |
+  // Write to the upper 32 bits of sip
+  Bits<64> new_sip = CSR[sip];
+  new_sip[63:32] = value;
+  CSR[sip] = new_sip;
+  return value;

@@ -6,38 +6,53 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: stopi
-long_name: Supervisor Top Interrupt
-address: 0xDB0
+long_name: Supervisor Top Interrupt Pending
+address: 0x15B
 priv_mode: S
-length: SXLEN
+length: MXLEN
 writable: false
 description: |
-  Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns
-  information about the highest-priority pending-and-enabled interrupt for supervisor level,
-  in this format:
-  bits 27:16 IID
-  bits 7:0 IPRIO
-  All other bits of stopi are reserved and read as zeros.
+  Holds the interrupt ID and priority of the highest-priority pending interrupt
+  that is not disabled by the corresponding bits in sie.
+
+  When no interrupt is pending, the register reads 0. When an interrupt is pending,
+  the register holds the interrupt ID in the Interrupt ID (IID) field.
+
+  This register is read-only and is automatically updated by the hardware.
 definedBy: Ssaia
 fields:
   IID:
-    location: 27-16
-    long_name: Interrupt Identity
+    location_rv32: 31-16
+    location_rv64: 63-16
+    long_name: Interrupt ID
     description: |
-      Identity of the highest-priority pending-and-enabled interrupt.
-    type: RO-H
-    reset_value: UNDEFINED_LEGAL
+      Interrupt ID of the highest-priority pending interrupt.
+
+      The IID field holds the interrupt ID of the highest-priority pending interrupt
+      that is not disabled by the corresponding bits in sie.
+    type: RO
+    reset_value: 0
     definedBy: Ssaia
-  IPRIO:
-    location: 7-0
+  IP:
+    location: 15-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending-and-enabled interrupt.
-    type: RO-H
-    reset_value: UNDEFINED_LEGAL
+      Priority of the highest-priority pending interrupt.
+
+      The IP field holds the priority of the highest-priority pending interrupt
+      that is not disabled by the corresponding bits in sie.
+    type: RO
+    reset_value: 0
     definedBy: Ssaia
 sw_read(): |
-  # stopi includes both local and external interrupts
-  # For now, return the external interrupt info (same as stopei)
-  # A full implementation would prioritize between local and external
-  return current_s_topei;
+  // Return the top pending interrupt
+  if (!implemented?(ExtensionName::Ssaia)) {
+    return 0;
+  }
+  
+  // Get the highest priority pending interrupt
+  TopInterrupt top = get_top_interrupt(PrivilegeMode::S);
+  return (top.id << 16) | top.priority;
+sw_write(csr_value): |
+  // This register is read-only, writes are ignored
+  return csr_value;
