@@ -8,7 +8,7 @@ kind: instruction
 name: ssrdp
 long_name: Read ssp into a Register
 description: |
-  The SSRDP instruction is provided to move the contents of ssp to a destination register.
+  Move the contents of ssp to a destination register.
 definedBy: Zicfiss
 assembly: xd
 encoding:
@@ -24,7 +24,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Csr csr_handle = direct_csr_lookup(12'h011);
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
 
   if (csr_handle.valid == false) {
     unimplemented_csr($encoding);

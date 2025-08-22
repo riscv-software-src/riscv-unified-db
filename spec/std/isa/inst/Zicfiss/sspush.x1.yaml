@@ -6,11 +6,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: sspush.x1
-long_name: Push to the Shadow Stack
+long_name: Push to the Shadow Stack from register x1
 description: |
   A shadow stack push operation is defined as decrement of the ssp by XLEN/8
-  followed by a store of the value in the link register to memory at the new
-  top of the shadow stack.
+  followed by a store of the value in the link register x1 to memory at the
+  new top of the shadow stack.
 definedBy: Zicfiss
 assembly: sspush_x1
 encoding:
@@ -23,7 +23,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Csr csr_handle = direct_csr_lookup(12'h011);
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
 
   if (csr_handle.valid == false) {
     unimplemented_csr($encoding);

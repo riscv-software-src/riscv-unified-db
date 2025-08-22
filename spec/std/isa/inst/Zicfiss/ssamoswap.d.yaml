@@ -6,11 +6,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: ssamoswap.d
-long_name: Atomic Swap from a Shadow Stack Location
+long_name: Atomic Swap Doubleword from a Shadow Stack Location
 description: |
   The `ssamoswap.w` atomically loads a 64-bit data value from address of a shadow
-  stack location in rs1, puts the loaded value into register rd, and stores the
-  64-bit value held in rs2 to the original address in rs1.
+  stack location in xs1, puts the loaded value into register xd, and stores the
+  64-bit value held in xs2 to the original address in xs1.
 definedBy: Zicfiss
 assembly: xd, xs2, xs1
 encoding:
@@ -33,7 +33,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Csr csr_handle = direct_csr_lookup(12'h011);
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
 
   if (csr_handle.valid == false) {
     unimplemented_csr($encoding);

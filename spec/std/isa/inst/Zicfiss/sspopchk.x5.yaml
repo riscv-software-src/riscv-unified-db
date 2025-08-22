@@ -22,7 +22,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Csr csr_handle = direct_csr_lookup(12'h011);
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
 
   if (csr_handle.valid == false) {
     unimplemented_csr($encoding);
