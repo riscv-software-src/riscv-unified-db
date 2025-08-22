@@ -1,0 +1,25 @@
+# Copyright (c) 2025 Abhijit Das(Sukuna0007Abhi)
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Ssdbltrp
+long_name: Double trap for supervisor mode
+description: |
+  The Ssdbltrp extension addresses a double trap in privilege modes lower than M.
+  It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.
+  It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.
+
+  The Ssdbltrp extension adds the `menvcfg.DTE` and the `sstatus.SDT` fields.
+  If the hypervisor extension is additionally implemented, then the extension adds the
+  `henvcfg.DTE` and the `vsstatus.SDT` fields.
+
+  When `menvcfg.DTE` is zero, the implementation behaves as though Ssdbltrp is not implemented.
+  When Ssdbltrp is not implemented, `sstatus.SDT`, `vsstatus.SDT`, and `henvcfg.DTE` bits are read-only zero.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-08
