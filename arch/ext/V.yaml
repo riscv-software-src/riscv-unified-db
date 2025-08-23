@@ -53,3 +53,11 @@ params:
     schema:
       type: string
       enum: ["ceil(AVL/2)", "VLMAX", "custom"]
+  UNSUPPORTED_VTYPES:
+    description: |
+      The set of values for vtype that are unsupported.
+    schema:
+      type: array
+      items:
+        type: integer
+      uniqueItems: true

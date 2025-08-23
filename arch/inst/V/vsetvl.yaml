@@ -24,7 +24,7 @@ access:
 data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
-  XReg VLMAX = (VLEN <<< state.log2_multiplier) >> (3 + state.vsew);
+  XReg VLMAX = (VLEN `<< state.log2_multiplier) >> (3 + state.vsew);
   XReg AVL = X[rs1];
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
 
@@ -42,11 +42,50 @@ operation(): |
     CSR[vl].VALUE = VLMAX;
   }
 
-  XReg input2 = X[rs2];
-  CSR[vtype].VMA = input2[7];
-  CSR[vtype].VTA = input2[6];
-  CSR[vtype].VSEW = input2[5:3];
-  CSR[vtype].VLMUL = input2[2:0];
+  XReg new_vtype = X[rs2];
+  if (new_vtype[xlen() - 1] == 1'b1) {
+    # software is setting the illegal bit
+    CSR[vtype].VILL = 1;
+    CSR[vtype].VMA = 0;
+    CSR[vtype].VTA = 0;
+    CSR[vtype].VSEW = 0;
+    CSR[vtype].VLMUL = 0;
+  } else if ((new_vtype & 8'd0) != 0) {
+    CSR[vtype].VILL = 1;
+    CSR[vtype].VMA = 0;
+    CSR[vtype].VTA = 0;
+    CSR[vtype].VSEW = 0;
+    CSR[vtype].VLMUL = 0;
+  } else if (new_vtype[5] == 1) {
+    # reserved vsew encoding
+    CSR[vtype].VILL = 1;
+    CSR[vtype].VMA = 0;
+    CSR[vtype].VTA = 0;
+    CSR[vtype].VSEW = 0;
+    CSR[vtype].VLMUL = 0;
+  } else if (new_type[2:0] == 3'b100) {
+    # reserved LMUL
+    CSR[vtype].VILL = 1;
+    CSR[vtype].VMA = 0;
+    CSR[vtype].VTA = 0;
+    CSR[vtype].VSEW = 0;
+    CSR[vtype].VLMUL = 0;
+  } else if (xlen() == 32 && new_type[2:0] == 3'b101) {
+    # reserved LMUL in RV32
+    CSR[vtype].VILL = 1;
+    CSR[vtype].VMA = 0;
+    CSR[vtype].VTA = 0;
+    CSR[vtype].VSEW = 0;
+    CSR[vtype].VLMUL = 0;
+  } else {
+    # valid, do the write
+    CSR[vtype].VILL = 0;
+    CSR[vtype].VMA = new_vtype[7];
+    CSR[vtype].VTA = new_vtype[6];
+    CSR[vtype].VSEW = new_vtype[5:3];
+    CSR[vtype].VLMUL = new_vtype[2:0];
+  }
+
   X[rd] = CSR[vl].VALUE;
   CSR[vstart].VALUE = 0;
 sail(): |
