@@ -1,15 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name", "description"],
   "properties": {
     "$schema": {
-      "type": "string",
       "const": "profile_release_schema.json#"
     },
     "kind": {
-      "type": "string",
       "const": "profile release"
     },
     "name": {
