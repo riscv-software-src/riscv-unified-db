@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vlenb
+long_name: Vector Byte Length
+address: 0xC22
+priv_mode: U
+length: MXLEN
+description: Holds the value VLEN/8, the vector register length in bytes.
+definedBy: V
+fields:
+  VALUE:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      The value in vlenb is a design-time constant in any implementation.
+      Without this CSR, several instructions are needed to calculate VLEN in bytes, and the code
+      has to disturb current vl and vtype settings which require them to be saved and restored.
+    type: RO
+    reset_value(): return VLEN / 8;

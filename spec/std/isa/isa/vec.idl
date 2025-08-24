@@ -1,0 +1,53 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+%version: 1.0
+
+# - test suite?
+# - Vector params (there will be many)
+# - Vector state
+# - Order (might be dictated somewhat by test suite)
+#   - vset*
+#   - integer arith (vadd/vsub/vrsub(.vv,.vx,.vi), compare, min, max)
+#   - integer widening arith ()
+
+# the vector register file
+Bits<VLEN> v[32] = [0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0];
+
+enum VectorLmulType {
+  Divide
+  Multiply
+}
+
+struct VectorState {
+  Bits<7> sew;
+  VectorMultiplierDirection lmul_type;
+  Bits<2> log2_multiplier;
+}
+
+function vector_state {
+  returns VectorState
+  description {
+    Get the current vector state from CSRs
+  }
+  body {
+    VectorState state;
+
+    state.sew = 7'b1 << (3 + CSR[vtype].VSEW);
+    Bits<3> vlmul = CSR[vtype].VLMUL;
+    state.lmul_type = CSR[vtype].VLMUL[2] == 1'b1 ? VectorLmulType::Divide : VectorLmulType::Multiply;
+    state.log2_multiplier = CSR[vtype].VLMUL[1:0];
+    if (vlmul == 3'b101) {
+      state.log2_multiplier = 8;
+    } else if (vlmul == 3'b110) {
+      state.log2_multiplier = 4;
+    } else if (vlmul == 3'b111) {
+      state.log2_multiplier = 2;
+    }
+
+    return state;
+  }
+}
