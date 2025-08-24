@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -40,6 +40,7 @@ params:
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
+      default: rw
     description: |
       Behavior of the mstateen0.CONTEXT bit:
 
@@ -56,6 +57,7 @@ params:
     schema:
       type: string
       enum: [rw, read-only-0, read-only-1]
+      default: rw
     description: |
       Behavior of the hstateen0.CONTEXT bit:
 

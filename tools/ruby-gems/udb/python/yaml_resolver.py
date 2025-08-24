@@ -175,6 +175,7 @@ def write_yaml(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         yaml.dump(data, file)
+        file.close()
 
 
 def write_json(file_path: str | Path, data):
@@ -189,6 +190,7 @@ def write_json(file_path: str | Path, data):
     """
     with open(file_path, "w") as file:
         json.dump(data, file)
+        file.close()
 
 
 def dig(obj: dict, *keys):
@@ -254,7 +256,7 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
         fn_name = Path(rel_path).stem
         if do_checks and (fn_name != unresolved_arch_data["name"]):
             print(
-                f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name} in {arch_root}/{rel_path}",
+                f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name}) in {arch_root}/{rel_path}",
                 file=sys.stderr,
             )
             exit(1)
@@ -512,6 +514,7 @@ def _get_schema(uri):
     with open(abs_path) as f:
         # Load the JSON data into a Python dictionary
         schema_obj = json.load(f)
+        f.close()
 
     schemas[rel_path] = DefaultValidatingValidator(schema_obj, registry=registry)
     return schemas[rel_path]
@@ -560,6 +563,7 @@ def write_resolved_file_and_validate(
 ):
     resolved_path = os.path.join(resolved_dir, rel_path)
     resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+    resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
     write_yaml(resolved_path, resolved_obj)
 
     if do_checks and ("$schema" in resolved_obj):
@@ -625,7 +629,12 @@ if __name__ == "__main__":
         arch_paths.extend(merged_paths)
         arch_paths = list(set(arch_paths))
 
-        for arch_path in tqdm(arch_paths, ascii=True, desc="Merging arch"):
+        for arch_path in tqdm(
+            arch_paths,
+            ascii=True,
+            desc="Merging arch",
+            file=sys.stderr,
+        ):
             merged_arch_path = (
                 os.path.join(args.merged_dir, arch_path)
                 if os.path.isabs(args.merged_dir)
@@ -634,7 +643,10 @@ if __name__ == "__main__":
             os.makedirs(os.path.dirname(merged_arch_path), exist_ok=True)
             merge_file(arch_path, args.arch_dir, args.overlay_dir, args.merged_dir)
 
-        print(f"[INFO] Merged architecture files written to {args.merged_dir}")
+        print(
+            f"[INFO] Merged architecture files written to {args.merged_dir}",
+            file=sys.stderr,
+        )
 
     elif args.command == "resolve":
         arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
@@ -647,7 +659,12 @@ if __name__ == "__main__":
         iter = (
             arch_paths
             if args.no_progress
-            else tqdm(arch_paths, ascii=True, desc="Resolving arch")
+            else tqdm(
+                arch_paths,
+                ascii=True,
+                desc="Resolving arch",
+                file=sys.stderr,
+            )
         )
         abs_resolved_dir = (
             f"{args.udb_root}/{args.resolved_dir}"
@@ -663,7 +680,12 @@ if __name__ == "__main__":
         iter = (
             arch_paths
             if args.no_progress
-            else tqdm(arch_paths, ascii=True, desc="Validating arch")
+            else tqdm(
+                arch_paths,
+                ascii=True,
+                desc="Validating arch",
+                file=sys.stderr,
+            )
         )
         for arch_path in iter:
             write_resolved_file_and_validate(
@@ -674,4 +696,7 @@ if __name__ == "__main__":
         write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
         write_json(f"{abs_resolved_dir}/index.json", arch_paths)
 
-        print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")
+        print(
+            f"[INFO] Resolved architecture files written to {args.resolved_dir}",
+            file=sys.stderr,
+        )

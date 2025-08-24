@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-
 <%- raise "'hpm_num' must be defined" if hpm_num.nil? -%>
 
 $schema: csr_schema.json#
@@ -10,6 +9,7 @@ kind: csr
 name: hpmcounter<%= hpm_num %>
 long_name: User-mode Hardware Performance Counter <%= hpm_num - 3 %>
 address: 0x<%= (0xC03 + (hpm_num - 3)).to_s(16).upcase %>
+writable: false
 description: |
   Alias for M-mode CSR `mhpmcounter<%= hpm_num %>`.
 
