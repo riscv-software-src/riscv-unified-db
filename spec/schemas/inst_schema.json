@@ -206,6 +206,10 @@
           "default": 0,
           "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
         },
+        "transform": {
+          "type": "string",
+          "description": "Expression to transform the field value. Supports IDL expressions like '(var << 1) | 1' for complex transformations"
+        },
         "alias": {
           "type": "string",
           "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
@@ -267,6 +271,10 @@
               "type": "integer",
               "default": 0,
               "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
+            },
+            "transform": {
+              "type": "string",
+              "description": "Expression to transform the field value. Supports IDL expressions like '(var << 1) | 1' for complex transformations"
             },
             "alias": {
               "type": "string",

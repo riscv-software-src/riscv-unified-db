@@ -23,6 +23,20 @@
             }
           }
         },
+        "sign_extend": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether or not the field should be sign extended when used"
+        },
+        "left_shift": {
+          "type": "integer",
+          "default": 0,
+          "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
+        },
+        "transform": {
+          "type": "string",
+          "description": "Expression to transform the field value. Supports IDL expressions like '(var << 1) | 1' for complex transformations"
+        },
         "$parent_of": {
           "$ref": "schema_defs.json#/$defs/ref_url_list"
         },
@@ -63,6 +77,20 @@
               "pattern": "^inst_var_type/[^/]*\\.yaml#$"
             }
           }
+        },
+        "sign_extend": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether or not the field should be sign extended when used"
+        },
+        "left_shift": {
+          "type": "integer",
+          "default": 0,
+          "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
+        },
+        "transform": {
+          "type": "string",
+          "description": "Expression to transform the field value. Supports IDL expressions like '(var << 1) | 1' for complex transformations"
         }
       }
     }
