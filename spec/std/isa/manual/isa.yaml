@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/manual_schema.json
+
+$schema: manual_schema.json#
+kind: manual
+name: isa
+long_name: Entire RISC-V ISA
+marketing_name: RISC-V ISA Manual
+url: https://github.com/riscv/riscv-isa-manual
+license:
+  id: CC-BY-4.0
+  name: Creative Commons Attribution 4.0 International Public License
+  url: https://creativecommons.org/licenses/by/4.0/legalcode
+# versions are found in by search all subdirectories for "contents.yaml"

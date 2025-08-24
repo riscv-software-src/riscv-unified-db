@@ -1,0 +1,171 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: satp
+address: 0x180
+writable: true
+long_name: Supervisor Address Translation and Protection
+description:
+  Controls the translation mode in (H)S-mode and U-mode, and holds the
+  current ASID and page table base pointer.
+priv_mode: S
+length: SXLEN
+definedBy: S
+fields:
+  MODE:
+    location_rv64: 63-60
+    location_rv32: 31
+    type: RW-R
+    description: |
+      *Translation Mode*
+
+      Controls the current translation mode according to the table below.
+
+      [separator="!",%autowidth]
+      !===
+      ! Value ! Name ! Description
+
+      ! 0 ! Bare a! No translation -> virtual address == physical address
+      <%- if ext?(:Sv39) -%>
+      ! 8 ! Sv39 ! 39-bit virtual address translation
+      <%- end -%>
+      <%- if ext?(:Sv48) -%>
+      ! 9 ! Sv48 ! 48-bit virtual address translation
+      <%- end -%>
+      <%- if ext?(:Sv57) -%>
+      ! 10 ! Sv57 ! 57-bit virtual address translation
+      <%- end -%>
+      !===
+
+      Any other value shall be ignored on a write.
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if (SATP_MODE_BARE) {
+        if (csr_value.MODE == 0) {
+          # In Bare, ASID and PPN must be zero, else the entire write is ignored
+          if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+            if (CSR[satp].MODE != 0) {
+              # changes *to* Bare mode take effect immediately without needing sfence.vma
+              # thus, an implicit sfence.vma occurs now
+              VmaOrderType order_type;
+              order_type.global = true;
+              order_pgtbl_writes_before_vmafence(order_type);
+
+              invalidate_translations(order_type);
+
+              order_pgtbl_reads_after_vmafence(order_type);
+            }
+            return csr_value.MODE;
+          } else {
+            return UNDEFINED_LEGAL_DETERMINISTIC;
+          }
+        }
+      }
+      else if (implemented?(ExtensionName::Sv39) && csr_value.MODE == 8) {
+        if (CSR[satp].MODE == 0) {
+          # changes *from* Bare mode take effect immediately without needing sfence.vma
+          # thus, an implicit sfence.vma occurs now
+          VmaOrderType order_type;
+          order_type.global = true;
+          order_pgtbl_writes_before_vmafence(order_type);
+
+          invalidate_translations(order_type);
+
+          order_pgtbl_reads_after_vmafence(order_type);
+        }
+        return csr_value.MODE;
+      }
+      else if (implemented?(ExtensionName::Sv48) && csr_value.MODE == 9) {
+        if (CSR[satp].MODE == 0) {
+          # changes *from* Bare mode take effect immediately without needing sfence.vma
+          # thus, an implicit sfence.vma occurs now
+          VmaOrderType order_type;
+          order_type.global = true;
+          order_pgtbl_writes_before_vmafence(order_type);
+
+          invalidate_translations(order_type);
+
+          order_pgtbl_reads_after_vmafence(order_type);
+        }
+
+        return csr_value.MODE;
+      }
+      else if (implemented?(ExtensionName::Sv57) && csr_value.MODE == 10) {
+        if (CSR[satp].MODE == 0) {
+          # changes *from* Bare mode take effect immediately without needing sfence.vma
+          # thus, an implicit sfence.vma occurs now
+          VmaOrderType order_type;
+          order_type.global = true;
+          order_pgtbl_writes_before_vmafence(order_type);
+
+          invalidate_translations(order_type);
+
+          order_pgtbl_reads_after_vmafence(order_type);
+        }
+
+        return csr_value.MODE;
+      }
+      else {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      }
+  ASID:
+    location_rv32: 30-22
+    location_rv64: 59-44
+    description: |
+      *Address Space ID*
+    type: RW-R
+    sw_write(csr_value): |
+      if (csr_value.MODE == 0) {
+        # when MODE == Bare, PPN and ASID must be zero
+        if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+          return csr_value.ASID;
+        } else {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        }
+      } else {
+        XReg shamt = (xlen() == 32 || (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32))) ? 9 : 16;
+        XReg all_ones = ((MXLEN'1 << shamt) - 1);
+        XReg largest_allowed_asid = (MXLEN'1 << shamt) - 1;
+
+        if (csr_value.ASID == all_ones) {
+          # the specification states that if all 1's are written to the ASID field, then
+          # you must return the largest asid
+          return largest_allowed_asid;
+        } else if (csr_value.ASID > largest_allowed_asid) {
+          # ... but is silent on what happens on any other illegal value
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else {
+          # unrestricted
+          return csr_value.ASID;
+        }
+      }
+    reset_value: UNDEFINED_LEGAL
+  PPN:
+    location_rv32: 21-0
+    location_rv64: 43-0
+    description: |
+      *Physical Page Number*
+
+      The physical address of the active root page table is PPN << 12.
+
+      Can only hold values that correspond to a valid page table base, which
+      will be implementation-dependent.
+    type: RW-R
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (csr_value.MODE == 0) {
+        # when MODE == Bare, PPN and ASID must be zero
+        if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+          return csr_value.PPN;
+        } else {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        }
+      } else {
+        # unrestricted
+        return csr_value.PPN;
+      }

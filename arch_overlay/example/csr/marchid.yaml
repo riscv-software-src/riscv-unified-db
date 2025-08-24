@@ -1,5 +1,0 @@
----
-# Overrides the value of marchid.Architecture to 0xcafebabe
-fields:
-  Architecture:
-    description: Custom overlay description

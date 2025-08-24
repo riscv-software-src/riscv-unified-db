@@ -1,0 +1,152 @@
+<<<
+[appendix]
+== Extension Details
+<% portfolio_design.in_scope_ext_reqs.each do |ext_req| -%>
+<% ext = arch.extension(ext_req.name) -%>
+<% min_ext_ver = ext_req.min_satisfying_ext_ver -%>
+
+<%= anchor_for_udb_doc_ext(ext_req.name) %>
+=== Extension <%= ext_req.name %> +
+*Long Name*: <%= ext.long_name %> +
+*Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
+<% if portfolios.size > 1 -%>
+<%= ext.name %> Extension Presence
+|===
+| <%= portfolio_kind %> | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
+
+<% portfolios.each do |portfolio| -%>
+| <%= portfolio.name %> | <%= portfolio.version_greatest_presence(ext.name, ext.versions).join(" | ") -%>
+<% end -%>
+
+|===
+<% end # portfolios.size > 1 -%>
+
+<% ext.versions.each do |v| -%>
+<%= v.canonical_version %>::
+  State:::
+    <%= v.state %>
+  <% if v.state == "ratified" && !v.ratification_date.nil? -%>
+  Ratification date:::
+    <%= v.ratification_date %>
+  <% end # if %>
+  <% unless v.changes.empty? -%>
+  Changes:::
+
+    <% v.changes.each do |c| -%>
+    * <%= c %>
+    <% end -%>
+
+  <% end -%>
+  <% unless v.url.nil? -%>
+  Ratification document:::
+    <%= v.url %>
+  <% end -%>
+  <% unless v.implications.empty? -%>
+  Implies:::
+    <%- v.implications.each do |i| -%>
+    <%-   next unless i.cond.satisfied_by? { |ext_req| portfolio_design.cfg_arch.possible_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver)}} -%>
+    * `<%= i.ext_ver.name %>` version <%= i.ext_ver.version_str %>
+    <%- end -%>
+  <% end -%>
+<% end -%>
+
+==== Synopsis
+
+:leveloffset: +3
+
+<%= ext.description %>
+
+:leveloffset: -3
+
+<% unless ext_req.note.nil? -%>
+[NOTE]
+--
+<%= ext_req.note %>
+--
+<% end -%>
+
+<% insts = min_ext_ver.in_scope_instructions(portfolio_design) -%>
+<% unless insts.empty? -%>
+==== Instructions
+
+The following <%= insts.size %> instructions are added by extension version <%= min_ext_ver.version_str %>
+(the minimum version of this extension that satifies the extension requirement).
+
+[cols="1,3"]
+|===
+<% insts.each do |inst| -%>
+| <%= link_to_udb_doc_inst(inst.name) %>
+| *<%= inst.long_name %>*
+<% end -%>
+|===
+<% end -%>
+
+<% csrs = min_ext_ver.in_scope_csrs(portfolio_design) -%>
+<% unless csrs.empty? -%>
+==== CSRs
+
+The following <%= csrs.size %> CSRs are added by extension version <%= min_ext_ver.version_str %>
+(the minimum version of this extension that satifies the extension requirement).
+
+[%autowidth]
+|===
+| Name | Long Name | Address | Mode
+
+<% csrs.sort_by(&:name).each do |csr| -%>
+| <%= link_to_udb_doc_csr(csr.name) %>
+| <%= csr.long_name %>
+| <%= "0x#{csr.address.to_s(16)}" %>
+| <%= csr.priv_mode %>
+<% end # do -%>
+|===
+<% end -%>
+
+<% unless ext.params.empty? -%>
+<% if portfolio_design.in_scope_params(ext_req).empty? && portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
+==== Parameters
+
+This extension has the following parameters (AKA implementation options):
+
+<% ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<% end # do param -%>
+
+<% end # if in_scope & out_of_scope empty -%>
+<% end # unless table -%>
+
+<% unless portfolio_design.in_scope_params(ext_req).empty? -%>
+==== IN-SCOPE Parameters
+
+<% portfolio_design.in_scope_params(ext_req).each do |param| -%>
+<%= anchor_for_udb_doc_ext_param(ext_req.name, param.name) %>
+<%= param.name %> &#8658; <%= param.param.schema_type %>::
++
+--
+<%= param.param.desc %>
+--
+<% end # do param -%>
+<% end # unless table -%>
+
+<% unless portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
+==== OUT-OF-SCOPE Parameters
+
+<% portfolio_design.out_of_scope_params(ext_req.name).each do |param| -%>
+<%= anchor_for_udb_doc_ext_param(ext_req.name, param.name) %>
+<%= param.name %> &#8658; <%= param.schema_type %>::
++
+--
+<%= param.desc %>
+--
+<% end # do param -%>
+<% end # unless table -%>
+
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => ext, "org" => "appendix", "use_description_list" => true}) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => ext, "org" => "appendix", "use_description_list" => true}) %>
+<% end # if gen_ctp_content -%>
+
+<% end # do ext_req -%>

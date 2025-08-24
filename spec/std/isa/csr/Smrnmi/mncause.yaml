@@ -1,0 +1,47 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mncause
+long_name: Resumable NMI cause
+address: 0x742
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy: Smrnmi
+description: |
+  The mncause CSR holds the reason for the NMI.
+  If the reason is an interrupt, bit MXLEN-1 is set to 1, and the NMI cause is encoded in
+  the least-significant bits.
+  If the reason is an interrupt and NMI causes are not supported,
+  bit MXLEN-1 is set to 1, and zero is written to the least-significant bits.
+  If the reason is an exception within M-mode that results in a double trap as
+  specified in the Smdbltrp extension, bit MXLEN-1 is set to 0 and the least-significant
+  bits are set to the cause code corresponding to the exception that precipitated the
+  double trap.
+fields:
+  INT:
+    location_rv32: 31
+    location_rv64: 63
+    description: |
+      Written by hardware when a resumable NMI is taken into M-mode.
+
+      When set, the last non-maskable exception was caused by an asynchronous Interrupt.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == true"]
+      If `mcause` is written with an undefined cause (combination of `mcause.INT` and `mcause.CODE`), an `Illegal Instruction` exception occurs.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == false"]
+      If `mcause` is written with an undefined cause (combination of `mcause.INT` and `mcause.CODE`), neither `mcause.INT` nor `mcause.CODE` are modified.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  CODE:
+    location_rv32: 30-0
+    location_rv64: 62-0
+    description: |
+      TODO
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL

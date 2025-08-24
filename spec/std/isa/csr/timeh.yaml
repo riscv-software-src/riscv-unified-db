@@ -1,0 +1,87 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: timeh
+long_name: High-half timer for RDTIME Instruction
+address: 0xC81
+writable: false
+base: 32
+description: |
+  [when,"TIME_CSR_IMPLEMENTED == false"]
+  This CSR does not exist, and access will cause an IllegalInstruction exception.
+
+  [when,"TIME_CSR_IMPLEMENTED == true"]
+  --
+  Shadow of the memory-mapped M-mode CSR `mtimeh`.
+
+  Privilege mode access is controlled with `mcounteren.TM`, `scounteren.TM`, and `hcounteren.TM` as follows:
+
+  [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
+  !===
+  .2+h![.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# .2+h! [.rotate]#`scounteren.TM`#
+  4+^.>h! `time` behavior
+  .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
+
+  ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction`
+  ! 1 ! 0 ! 0 ! read-only ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction`
+  ! 1 ! 1 ! 0 ! read-only ! read-only ! `Illegal Instruction` ! `Illegal Instruction`
+  ! 1 ! 0 ! 1 ! read-only ! `Illegal Instruction` ! read-only ! `Illegal Instruction`
+  ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
+  !===
+  --
+priv_mode: U
+length: 32
+definedBy: Zicntr
+fields:
+  COUNT:
+    location: 31-0
+    alias: time.COUNT[63:32]
+    description: |
+      Reports the most significant 32 bits of the current wall-clock time from the timer device.
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  if (!TIME_CSR_IMPLEMENTED) {
+    unimplemented_csr($encoding);
+  }
+
+  # access is determined by *counteren CSRs
+  if (mode() == PrivilegeMode::S) {
+    # S-mode is present ->
+    #   mcounteren determines access in S-mode
+    if (CSR[mcounteren].TM == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::U) {
+    if (CSR[misa].S == 1'b1) {
+      # S-mode is present ->
+      #   mcounteren and scounteren together determine access in U-mode
+      if ((CSR[mcounteren].TM & CSR[scounteren].TM) == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+    } else if (CSR[mcounteren].TM == 1'b0) {
+      # S-mode is not present ->
+      #   mcounteren determines access in U-mode
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::VS) {
+    # access in VS mode
+    if (CSR[hcounteren].TM == 1'b0 && CSR[mcounteren].TM == 1'b1) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else if (CSR[mcounteren].TM == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  } else if (mode() == PrivilegeMode::VU) {
+    # access in VU mode
+    if (((CSR[hcounteren].TM & CSR[scounteren].TM) == 1'b0) && (CSR[mcounteren].IR == 1'b1)) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else if (CSR[mcounteren].TM == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+
+  return read_mtime()[63:32];

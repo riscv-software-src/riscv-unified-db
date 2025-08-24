@@ -1,15 +1,25 @@
 
+# typed: true
+# frozen_string_literal: true
+
+require "sorbet-runtime"
+
+module Udb
 class CsrField
-  TYPE_VALUE_TO_CPP_NAME = {
-    0 => "RO",
-    1 => "ROH",
-    2 => "RW",
-    3 => "RWR",
-    4 => "RWH",
-    5 => "RWRH"
-  }.freeze
+  TYPE_VALUE_TO_CPP_NAME = T.let(
+    {
+      0 => "RO",
+      1 => "ROH",
+      2 => "RW",
+      3 => "RWR",
+      4 => "RWH",
+      5 => "RWRH"
+    }.freeze,
+    T::Hash[Integer, String]
+  )
 
   # @return [String] C++ implementation of type() body
+  sig { params(xlen: Integer).returns(String) }
   def type_to_cpp(xlen)
     raise "#{csr.name}.#{field.name} is not defined in RV#{xlen}" unless defined_in_base?(xlen)
 
@@ -33,4 +43,5 @@ class CsrField
 
     cpp
   end
+end
 end

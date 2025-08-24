@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zawrs
+long_name: Wait-on-Reservation-Set Instructions
+description: |
+  The `Zawrs` extension defines a pair of instructions to be used in polling loops that allows a
+  core to enter a low-power state and wait on a store to a memory location.
+  Waiting for a memory location to be updated is a common pattern in many use cases such as:
+
+  * Contenders for a lock waiting for the lock variable to be updated.
+  * Consumers waiting on the tail of an empty queue for the producer to queue work/data.
+    The producer may be code executing on a RISC-V hart, an accelerator device, an external I/O agent.
+  * Code waiting on a flag to be set in memory indicative of an event occurring.
+    For example, software on a RISC-V hart may wait on a "done" flag to be set in memory by an
+    accelerator device indicating completion of a job previously submitted to the device.
+type: unprivileged
+versions:
+  - version: "1.0.1"
+    state: ratified
+    ratification_date: 2022-11

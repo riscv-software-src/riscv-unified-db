@@ -1,0 +1,62 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: frm
+long_name: Floating-Point Dynamic Rounding Mode
+address: 0x002
+writable: true
+description:
+  - id: csr-frm-encodings
+    normative: false
+    text: |
+      Rounding modes are encoded as follows:
+
+      [[rm]]
+      .Rounding mode encoding.
+      [%autowidth,float="center",align="center",cols="^,^,<",options="header"]
+      !===
+      !Rounding Mode |Mnemonic |Meaning
+      !000 !RNE !Round to Nearest, ties to Even
+      !001 !RTZ !Round towards Zero
+      !010 !RDN !Round Down (towards latexmath:[$-\infty$])
+      !011 !RUP !Round Up (towards latexmath:[$+\infty$])
+      !100 !RMM !Round to Nearest, ties to Max Magnitude
+      !101 ! !_Reserved for future use._
+      !110 ! !_Reserved for future use._
+      !111 !DYN !In instruction's _rm_ field, selects dynamic rounding mode; In Rounding Mode register, _reserved_.
+      !===
+  - id: csr-frm-reserved
+    normative: false
+    text: |
+      The behavior of floating-point instructions that depend on rounding mode when
+      executed with a reserved rounding mode is _reserved_, including both static
+      reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).
+  - id: csr-frm-rmfield
+    normative: false
+    text: |
+      Some instructions, including widening conversions, have the _rm_ field but are
+      nevertheless mathematically unaffected by the rounding mode; software should set
+      their _rm_ field to RNE (000) but implementations must treat the _rm_ field as
+      usual (in particular, with regard to decoding legal vs. reserved encodings).
+
+priv_mode: U
+length: 32
+definedBy: F
+fields:
+  ROUNDINGMODE:
+    alias: fcsr.FRM
+    location: 2-0
+    description: |
+      Rounding mode data.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].FRM = csr_value.ROUNDINGMODE;
+      return csr_value.ROUNDINGMODE;
+sw_read(): |
+  return
+   CSR[fcsr].FRM;

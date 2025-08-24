@@ -1,0 +1,73 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# typed: true
+# frozen_string_literal: true
+
+RUBY_UDB_ROOT = Kernel.__dir__
+
+namespace :gen do
+  namespace :udb do
+    desc "Generate the UDB Ruby API documentation"
+    task "ruby-doc" do
+      sh "yard doc"
+    end
+  end
+end
+
+# initialize sorbet
+file "#{RUBY_UDB_ROOT}/Gemfile.lock" do
+  Dir.chdir(RUBY_UDB_ROOT) do
+    sh "bundle install --gemfile Gemfile"
+  end
+end
+
+# initialize sorbet
+namespace :chore do
+  namespace :udb do
+    task :update_deps do
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+      end
+    end
+
+    task :lsp do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle exec srb tc --lsp --disable-watchman"
+      end
+    end
+  end
+end
+
+namespace :gen do
+  namespace :udb do
+    task :api_doc do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        FileUtils.rm_rf $root / "gen" / "udb_api_doc"
+        sh "bundle exec yard --plugin sorbet lib --no-save --embed-mixins --hide-void-return -o #{$root}/gen/udb_api_doc"
+      end
+    end
+  end
+end
+
+namespace :test do
+  namespace :udb do
+    desc "Type check the Ruby UDB source code"
+    task sorbet: "#{RUBY_UDB_ROOT}/sorbet/config" do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle exec srb tc"
+      end
+    end
+
+    desc "Run unit tests for the udb gem"
+    task :unit do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "ruby -Ilib:test test/run.rb"
+      end
+    end
+  end
+end

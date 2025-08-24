@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smnpm
+long_name: Pointer masking for next privilege level less than M-mode
+description: |
+  A machine-level extension that provides pointer masking for the next lower privilege mode
+  (S/HS if S-mode is implemented, or U-mode otherwise).
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+params:
+  PMLEN:
+    description: |
+      The number of high-order bits of an address that are masked by the
+      pointer masking facility.
+    schema:
+      type: integer
+    also_defined_in: [Ssnpm, Smmpm]

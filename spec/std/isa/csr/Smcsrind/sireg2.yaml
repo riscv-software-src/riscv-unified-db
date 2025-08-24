@@ -1,0 +1,81 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: sireg2
+long_name: Supervisor Indirect Register Alias 2
+address: 0x152
+writable: true
+priv_mode: S
+length: SXLEN
+definedBy: Sscsrind
+description:
+  - id: csr-sireg2-behavior-implemented
+    normative: true
+    text: |
+      Access to `sireg2` from M-mode or S-mode while `siselect` holds a number in a
+      standard-defined and implemented range results in specific behavior that, for each combination of
+      `siselect` and `sireg2`, is defined by the extension to which the `siselect` value is allocated.
+
+  - id: csr-sireg2-typical-behavior-note
+    normative: false
+    text: |
+      Ordinarily, `sireg2` will access register state, access read-only 0 state, or, unless
+      executing in a virtual machine (covered in the next section), raise an illegal instruction
+      exception.
+
+  - id: csr-sireg2-xlens
+    normative: true
+    text: |
+      Note that the widths of `siselect` and `sireg2` are always the current XLEN rather than SXLEN. Hence,
+      for example, if MXLEN = 64 and SXLEN = 32, then this register is 64 bits when the current
+      privilege mode is M (running RV64 code) but 32 bits when the privilege mode is S (RV32 code).
+
+  - id: csr-sireg2-unimplemented
+    normative: true
+    text: |
+      The behavior upon accessing `sireg2` from M-mode or S-mode, while `siselect` holds a value that is
+      not implemented at supervisor level, is UNSPECIFIED.
+
+  - id: csr-sireg2-unimplemented-recommendation
+    normative: false
+    text: |
+      It is recommended that implementations raise an illegal instruction exception for such
+      accesses, to facilitate possible emulation (by M-mode) of these accesses.
+
+  - id: csr-sireg2-extension-disabled
+    normative: false
+    text: |
+      An extension is considered not to be implemented at supervisor level if machine level has
+      disabled the extension for S-mode, such as by the settings of certain fields in CSR
+      `menvcfg`, for example.
+
+fields:
+  VALUE:
+    long_name: Indirectly Selected Register Value
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description:
+      - id: csr-sireg2-value-desc
+        normative: true
+        text: The data read from or written to the register selected by the current `siselect` value.
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 2);
+      if (!handle.valid) {
+        unimplemented_csr($encoding);
+      }
+      if (!handle.writable) {
+        raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      csr_sw_write(handle, csr_value.VALUE);
+      return csr_hw_read(handle);
+sw_read(): |
+  Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 2);
+  if (!handle.valid) {
+    unimplemented_csr($encoding);
+  }
+  return csr_sw_read(handle);

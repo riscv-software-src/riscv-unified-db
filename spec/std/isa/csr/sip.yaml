@@ -1,0 +1,150 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sip
+long_name: Supervisor Interrupt Pending
+address: 0x144
+writable: true
+priv_mode: S
+description: |
+  A restricted view of the interrupt pending bits in `mip`.
+
+  Hypervisor-related interrupts (VS-mode interrupts and Supervisor Guest interrupts) are not reflected
+  in `sip` even though those interrupts can be taken in HS-mode. Instead, they are reported through `hip`.
+length: 64
+definedBy: S
+fields:
+  SSIP:
+    location: 1
+    alias:
+      - sip.SSIP
+      - mvip.SSIP
+    description: |
+      *Supervisor Software Interrupt Pending*
+
+      Reports the current pending state of an (H)S-mode software interrupt.
+
+      When Supervisor Software Interrupts are not delegated to (H)S-mode (`mideleg.SSI` is clear), `sip.SSIP` is read-only 0.
+
+      Otherwise, `sip.SSIP` is an alias of `mip.SSIP`.
+
+      <%- if ext?(:Smaia) -%>
+      When using AIA/IMSIC, IPIs are expected to be delivered as external interrupts
+      and SSIP is not backed by any hardware update (aside from any aliasing effects).
+
+      However, SSIP is still writable by S-mode software and, when written, can be used to
+      generate an S-mode Software Interrupt.
+      <%- end -%>
+
+      Since it is an alias, writes to `sip.SSIP` are also be reflected in `mip.SSIP`<% if ext?(:Smaia) %> and `mvip.SSIP`<% end %>.
+
+      <% if ext?(:Smaia) %>_Aliases_<% else %>_Alias_<% end %>:
+
+      * `mip.SSIP` when `mideleg.SSI` is set
+      <%- if ext?(:Smaia) -%>
+      * `mvip.SSIP` when `mideleg.SSI` is set
+      <%- end -%>
+
+      To summarize:
+      [separator="!",%autowidth]
+      !===
+      ! `mideleg.SSI` ! `sip.SSIP` behavior
+
+      ! 0 ! read-only 0
+      ! 1 ! writable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
+      !===
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: S
+    affectedBy: Smaia
+  STIP:
+    location: 5
+    alias:
+      - mip.STIP
+      - mvip.STIP
+    description: |
+      *Supervisor Timer Interrupt Pending*
+
+      Reports the current pending state of an (H)S-mode timer interrupt.
+
+      When Supervisor Timer Interrupts are not delegated to (H)S-mode (_i.e._, `mideleg.STI` is clear), `sip.STIP` is read-only 0.
+
+      Otherwise, `sip.STIP` is a read-only view of `mip.STIP`.
+
+      <% if ext?(:Smaia) %>_Aliases_<% else %>_Alias_<% end %>:
+
+      * `mip.STIP` when `mideleg.STI` is set
+      <%- if ext?(:Smaia) -%>
+      * `mvip.STIP` when `mideleg.SSI` is set and `menvcfg.STCE` is clear.
+      <%- end -%>
+
+      To summarize:
+      [separator="!",%autowidth]
+      !===
+      ! `mideleg.STI` ! `sip.STIP` behavior
+
+      ! 0 ! read-only 0
+      ! 1 ! read-only alias of `mip.STIP` <% if ext?(:Smaia) %>(and `mvip.STIP` when `menvcfg.STCE` is clear)<% end %>
+      !===
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: S
+    affectedBy: Sstc
+  SEIP:
+    location: 9
+    alias:
+      - mip.SEIP
+    description: |
+      *Supervisor External Interrupt Pending*
+
+      Reports the current pending state of an (H)S-mode external interrupt.
+
+      When Supervisor External Interrupts are not delegated to (H)S-mode (_i.e._, `mideleg.SEI` is clear), `sip.SEIP` is read-only 0.
+
+      Otherwise, `sip.SEIP` is a read-only view of `mip.SEIP`.
+
+      To summarize:
+      [separator="!",%autowidth]
+      !===
+      ! `mideleg.SEI` ! `sip.SEIP` behavior
+
+      ! 0 ! read-only 0
+      ! 1 ! read-only alias of `mip.SEIP`
+      !===
+
+    type: RO-H
+    definedBy: S
+    affectedBy: Smaia
+    reset_value: UNDEFINED_LEGAL
+  LCOFIP:
+    location: 13
+    alias:
+      - mip.LCOFIP
+      - vsip.LCOFIP
+    description: |
+      *Local Counter Overflow Interrupt pending*
+
+      Reports the current pending state of a Local Counter Overflow interrupt.
+
+      When Local Counter Overflow interrupts are not delegated to (H)S-mode (_i.e._, `mideleg.LCOFI` is clear), `sip.LCOFIP` is read-only 0.
+
+      Otherwise, `sip.LCOFIP` is an alias of `mip.LCOFIP`.
+
+      Software writes 0 to `sip.LCOFIP` to clear the pending interrupt.
+
+      To summarize:
+      [separator="!",%autowidth]
+      !===
+      ! `mideleg.LCOFI` ! `sip.LCOFIP` behavior
+
+      ! 0 ! read-only 0
+      ! 1
+      a! writable alias of `mip.LCOFIP` (and `vsip.LCOFIP` when `hideleg.LCOFI` is set)
+      !===
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Sscofpmf

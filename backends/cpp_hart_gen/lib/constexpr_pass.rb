@@ -10,7 +10,7 @@ module Idl
       end
     end
   end
-  class IdAst
+  class IdAst < AstNode
     def constexpr?(symtab)
       sym = symtab.get(name)
       return true if sym.nil?
@@ -18,7 +18,8 @@ module Idl
       return false if sym.value.nil? # assuming undefined syms are local (be sure to type check first!!)
 
       if sym.param?
-        symtab.cfg_arch.params_with_value.any? { |p| p.name == text_value }
+        p = symtab.param(text_value)
+        T.must(p).value_known?
       elsif sym.template_value?
         true
       else
@@ -26,28 +27,28 @@ module Idl
       end
     end
   end
-  class PcAssignmentAst
+  class PcAssignmentAst < AstNode
     def constexpr?(symtab) = false
   end
-  class FunctionCallExpressionAst
+  class FunctionCallExpressionAst < AstNode
     def constexpr?(symtab) = false # conservative, can do better...
   end
-  class CsrFieldReadExpressionAst
+  class CsrFieldReadExpressionAst < AstNode
     def constexpr?(symtab) = false
   end
-  class CsrReadExpressionAst
+  class CsrReadExpressionAst < AstNode
     def constexpr?(symtab) = false
   end
-  class CsrSoftwareWriteAst
+  class CsrSoftwareWriteAst < AstNode
     def constexpr?(symtab) = false
   end
-  class CsrFunctionCallAst
+  class CsrFunctionCallAst < AstNode
     def constexpr?(symtab) = function_name == "address"
   end
-  class CsrWriteAst
+  class CsrWriteAst < AstNode
     def constexpr?(symtab) = false
   end
-  class FunctionDefAst
+  class FunctionDefAst < AstNode
     # @return [Boolean] If the function is possibly C++ constexpr (does not access CSRs or registers)
     def constexpr?(symtab)
       return false if builtin?

@@ -1,0 +1,485 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/I/pmpcfgN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: pmpcfg4
+long_name: PMP Configuration Register 4
+address: 0x3A4
+writable: true
+priv_mode: M
+length: MXLEN
+description: PMP entry configuration
+definedBy: Smpmp
+fields:
+  pmp16cfg:
+    location: 7-0
+    description: |
+      *PMP configuration for entry 16*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 7   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 6:5 ! _Reserved_ Writes shall be ignored.
+      h! A ! 4:3
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 2 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 1 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 0 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 16) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((CSR[pmpcfg4].pmp16cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp16cfg & 0x1) == 0) && ((csr_value.pmp16cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp16cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp16cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp16cfg;
+  pmp17cfg:
+    location: 15-8
+    description: |
+      *PMP configuration for entry 17*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 15   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 14:13 ! _Reserved_ Writes shall be ignored.
+      h! A ! 12:11
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 10 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 9 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 8 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 17) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((CSR[pmpcfg4].pmp17cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp17cfg & 0x1) == 0) && ((csr_value.pmp17cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp17cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp17cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp17cfg;
+  pmp18cfg:
+    location: 23-16
+    description: |
+      *PMP configuration for entry 18*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 23   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 22:21 ! _Reserved_ Writes shall be ignored.
+      h! A ! 20:19
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 18 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 17 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 16 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 18) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((CSR[pmpcfg4].pmp18cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp18cfg & 0x1) == 0) && ((csr_value.pmp18cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp18cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp18cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp18cfg;
+  pmp19cfg:
+    location: 31-24
+    description: |
+      *PMP configuration for entry 19*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 31   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 30:29 ! _Reserved_ Writes shall be ignored.
+      h! A ! 28:27
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 26 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 25 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 24 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 19) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((CSR[pmpcfg4].pmp19cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp19cfg & 0x1) == 0) && ((csr_value.pmp19cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp19cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp19cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp19cfg;
+  pmp20cfg:
+    location: 39-32
+    base: 64 # upper half doesn't exist in RV32
+    description: |
+      *PMP configuration for entry 20*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 39   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 38:37 ! _Reserved_ Writes shall be ignored.
+      h! A ! 36:35
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 34 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 33 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 32 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 20) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((CSR[pmpcfg4].pmp20cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp20cfg & 0x1) == 0) && ((csr_value.pmp20cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp20cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp20cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp20cfg;
+  pmp21cfg:
+    location: 47-40
+    base: 64 # upper half doesn't exist in RV32
+    description: |
+      *PMP configuration for entry 21*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 47   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 46:45 ! _Reserved_ Writes shall be ignored.
+      h! A ! 44:43
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 42 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 41 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 40 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 21) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp21cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp21cfg & 0x1) == 0) && ((csr_value.pmp21cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp21cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp21cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp21cfg;
+  pmp22cfg:
+    location: 55-48
+    base: 64 # upper half doesn't exist in RV32
+    description: |
+      *PMP configuration for entry 22*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 55   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 54:53 ! _Reserved_ Writes shall be ignored.
+      h! A ! 52:51
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 50 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 49 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 48 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 22) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp22cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp22cfg & 0x1) == 0) && ((csr_value.pmp22cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp22cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp22cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp22cfg;
+  pmp23cfg:
+    location: 63-56
+    base: 64 # upper half doesn't exist in RV32
+    description: |
+      *PMP configuration for entry 23*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! 63   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! 62:61 ! _Reserved_ Writes shall be ignored.
+      h! A ! 60:59
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! 58 ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! 57 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! 56 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > 23) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp23cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp23cfg & 0x1) == 0) && ((csr_value.pmp23cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp23cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp23cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[pmpcfg4].pmp23cfg;

@@ -1,0 +1,95 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vscause
+long_name: Virtual Supervisor Cause
+address: 0x242
+writable: true
+virtual_address: 0x142
+priv_mode: VS
+length: VSXLEN
+description: Reports the cause of the latest exception taken in VS-mode.
+definedBy: H
+fields:
+  INT:
+    location_rv64: 63
+    location_rv32: 31
+    description: |
+      Written by hardware when a trap is taken into VS-mode.
+
+      When set, the last exception was caused by an asynchronous Interrupt.
+
+      `vscause.INT` is writable.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == true"]
+      If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == false"]
+      If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
+    type: RW-RH
+    sw_write(csr_value): |
+      # the write only holds if the INT/CODE combination is valid
+      # otherwise, the old value is retained
+      if (csr_value.INT == 1) {
+        if (valid_interrupt_code?(csr_value.CODE)) {
+          return 1;
+        }
+        return ILLEGAL_WLRL;
+      } else {
+        if (valid_exception_code?(csr_value.CODE)) {
+          return 1;
+        }
+        return ILLEGAL_WLRL;
+      }
+    reset_value: UNDEFINED_LEGAL
+  CODE:
+    location_rv32: 30-0
+    location_rv64: 62-0
+    description: |
+      Written by hardware when a trap is taken into VS-mode.
+
+      Holds the interrupt or exception code for the last taken trap.
+
+      `vscause.CODE` is writable.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == true"]
+      If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == false"]
+      If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
+
+      Valid interrupt codes are:
+      [separator="!"]
+      !===
+      <%- interrupt_codes.sort_by { |code| code.num }.each do |code| -%>
+      ! <%= code.num %> ! <%= code.name %>
+      <%- end -%>
+      !===
+
+      Valid exception codes are:
+      [separator="!"]
+      !===
+      <%- exception_codes.sort_by { |code| code.num }.each do |code| -%>
+      ! <%= code.num %> ! <%= code.name %>
+      <%- end -%>
+      !===
+    type: RW-RH
+    sw_write(csr_value): |
+      # the write only holds if the INT/CODE combination is valid
+      # otherwise, the old value is retained
+      if (csr_value.INT == 1) {
+        if (valid_interrupt_code?(csr_value.CODE)) {
+          return csr_value.CODE;
+        }
+        return ILLEGAL_WLRL;
+      } else {
+        if (valid_exception_code?(csr_value.CODE)) {
+          return csr_value.CODE;
+        }
+        return ILLEGAL_WLRL;
+      }
+    reset_value: UNDEFINED_LEGAL

@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfbfwma
+long_name: Vector BF16 widening mul-add
+description: |
+  This extension provides a vector widening BF16 mul-add instruction that accumulates into FP32.
+
+  This extension depends upon the `Zvfbfmin` extension and the `Zfbfmin` extension.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      allOf:
+        - Zvfbfmin
+        - Zfbfmin

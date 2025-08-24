@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.lrw
+long_name: Load indexed word
+description: |
+  Load 32 bits of data into register `rd` from an
+  address formed by adding `rs1` to `rs2`, shifted by `shamt`.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcisls
+assembly: xd, xs1, xs2, shamt
+base: 32
+encoding:
+  match: 1010-------------111-----0001011
+  variables:
+    - name: shamt
+      location: 27-25
+    - name: rs1
+      location: 19-15
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg virtual_address = X[rs1] + (X[rs2] << shamt);
+  X[rd] = read_memory<32>(virtual_address, $encoding);

@@ -1,6 +1,6 @@
 :tabs-sync-option:
 
-[[inst:<%=inst.name.gsub('.', '_')%>-def]]
+<%= anchor_for_udb_doc_inst(inst.name) %>
 = <%= inst.name %>
 
 *<%= inst.long_name %>*
@@ -15,7 +15,6 @@ This instruction is defined by:
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
-[tabs]
 ====
 RV32::
 +
@@ -34,7 +33,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["XLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? cfg_arch.param_values["MXLEN"] : inst.base) %>
 ....
 <%- end -%>
 
@@ -43,21 +42,55 @@ RV64::
 <%= inst.description %>
 
 == Access
-<%- if cfg_arch.ext?(:H) -%>
-[cols="^,^,^,^,^"]
-<%- else -%>
-[cols="^,^,^"]
-<%- end -%>
-|===
-| M | <%- if cfg_arch.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if cfg_arch.ext?(:H) -%> | VS | VU <%- end -%>
+<%-
+  # Determine which privilege modes to display based on implemented extensions
+  modes = ["M"]  # M-mode is always present
+  mode_headers = ["M"]
+  mode_values = ["[.access-always]#Always#"]
 
-| [.access-always]#Always#
-| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
-| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if cfg_arch.ext?(:H) %>
-| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
-| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
-<% end %>
+  # Add S-mode if S extension is implemented
+  if cfg_arch.ext?(:S)
+    if cfg_arch.ext?(:H)
+      modes << "HS"
+      mode_headers << "HS"
+    else
+      modes << "S"
+      mode_headers << "S"
+    end
+    mode_values << "[.access-#{inst.access['s']}]##{inst.access['s'].capitalize}#"
+  end
+
+  # Add U-mode if U extension is implemented
+  if cfg_arch.ext?(:U)
+    modes << "U"
+    mode_headers << "U"
+    mode_values << "[.access-#{inst.access['u']}]##{inst.access['u'].capitalize}#"
+  end
+
+  # Add virtual modes if H extension is implemented
+  if cfg_arch.ext?(:H)
+    # Always add VS mode when H extension is present
+    modes << "VS"
+    mode_headers << "VS"
+    mode_values << "[.access-#{inst.access['vs']}]##{inst.access['vs'].capitalize}#"
+
+    # Only add VU mode if both H and U extensions are present
+    if cfg_arch.ext?(:U)
+      modes << "VU"
+      mode_headers << "VU"
+      mode_values << "[.access-#{inst.access['vu']}]##{inst.access['vu'].capitalize}#"
+    end
+  end
+
+  # Generate column specification
+  col_spec = "^," * modes.size
+  col_spec = col_spec.chomp(",")
+-%>
+[cols="<%= col_spec %>"]
+|===
+| <%= mode_headers.join(" | ") %>
+
+| <%= mode_values.join("\n| ") %>
 |===
 
 <%- if inst.access_detail? -%>
@@ -90,7 +123,7 @@ RV64::
 <%- else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(cfg_arch.param_values["XLEN"]).each do |d| -%>
+<%- inst.decode_variables(inst.base.nil? ? cfg_arch.param_values["MXLEN"] : inst.base).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -121,7 +154,7 @@ Original::
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str() -%>
+<%- exception_list = inst.reachable_exceptions_str(inst.base.nil? ? cfg_arch.param_values["MXLEN"] : inst.base) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

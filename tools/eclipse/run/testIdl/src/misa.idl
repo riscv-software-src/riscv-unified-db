@@ -1,0 +1,1 @@
+csr misa "Machine ISA register" "0x301" "0xABCD4648" ;

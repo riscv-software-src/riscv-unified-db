@@ -1,6 +1,0 @@
-$schema: profile_schema.json#
-kind: profile
-name: RVI20U64
-$inherits: "profile/RVI20U32.yaml#"
-base: 64
-marketing_name: RVI20U64

@@ -1,0 +1,75 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/I/pmpaddrN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: pmpaddr28
+long_name: PMP Address 28
+address: 0x3CC
+writable: true
+priv_mode: M
+length: MXLEN
+description: PMP entry address
+definedBy: Smpmp
+fields:
+  ADDR:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      Bits PHYS_ADDR_WIDTH-1:2 of the address specifier for PMP entry 28
+      (or, if `pmp29cfg.A` == TOR, for PMP entry 29).
+    type(): |
+      if (NUM_PMP_ENTRIES > 28) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if (csr_value.ADDR >= ((1 `<< (PHYS_ADDR_WIDTH - 2)) - 1)) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else if (NUM_PMP_ENTRIES <= 28) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else {
+        return csr_value.ADDR;
+      }
+sw_read(): |
+  # when the mode is NAPOT and PMP_GRANULARITY >= 16,
+  # bits (PMP_GRANULARITY-4):0 must read as ones
+  if (MXLEN == 32) {
+    if ((PMP_GRANULARITY >= 16) &&
+        (CSR[pmpcfg7].pmp28cfg[4] == 1)) {
+      return CSR[pmpaddr28].ADDR | {PMP_GRANULARITY-3{1'b1}};
+
+    # when the mode is OFF or TOR and PMP_GRANULARITY >= 8,
+    # bits (PMP_GRANULARITY-3):0 must read as zeros
+    } else if ((PMP_GRANULARITY >= 8) &&
+                (CSR[pmpcfg7].pmp28cfg[4] == 0)) {
+      Bits<PHYS_ADDR_WIDTH-2> mask = {PMP_GRANULARITY-2{1'b1}};
+      return CSR[pmpaddr28].ADDR & ~mask;
+
+    # no modifications needed
+    } else {
+      return CSR[pmpaddr28].ADDR;
+    }
+  } else {
+    if ((PMP_GRANULARITY >= 16) &&
+        (CSR[pmpcfg6].pmp28cfg[4] == 1)) {
+      return CSR[pmpaddr28].ADDR | {PMP_GRANULARITY-3{1'b1}};
+
+    # when the mode is OFF or TOR and PMP_GRANULARITY >= 8,
+    # bits (PMP_GRANULARITY-3):0 must read as zeros
+    } else if ((PMP_GRANULARITY >= 8) &&
+                (CSR[pmpcfg6].pmp28cfg[4] == 0)) {
+      Bits<PHYS_ADDR_WIDTH-2> mask = {PMP_GRANULARITY-2{1'b1}};
+      return CSR[pmpaddr28].ADDR & ~mask;
+
+    # no modifications needed
+    } else {
+      return CSR[pmpaddr28].ADDR;
+    }
+  }

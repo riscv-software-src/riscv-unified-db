@@ -1,0 +1,193 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mideleg
+long_name: Machine Interrupt Delegation
+address: 0x303
+writable: true
+priv_mode: M
+length: MXLEN
+definedBy:
+  # "In harts without S-mode, the medeleg and mideleg registers should not exist." -- priv
+  # after 1.9.1, mideleg does not exist when S-mode is not implemented
+  # we can represent that by making mideleg an S extension CSR post 1.9.1
+  oneOf:
+    - name: Sm
+      version: "<= 1.9.1"
+    - allOf:
+        - name: S
+          version: "> 1.9.1"
+        - name: Sm
+          version: "> 1.9.1"
+description: |
+  Controls exception delegation from M-mode to HS/S-mode
+
+  By default, all traps at any privilege level are handled in machine
+  mode, though a machine-mode handler can redirect traps back to the
+  appropriate level with the `MRET` instruction. To increase performance,
+  implementations can provide individual read/write bits within `mideleg`
+  to indicate that certain exceptions and interrupts should
+  be processed directly by a lower privilege level.
+
+  In harts with S-mode, the `mideleg` register must
+  exist, and setting a bit `mideleg` will delegate the
+  corresponding trap, when occurring in S-mode or U-mode, to the S-mode
+  trap handler
+  <%- if ext?(:H) -%>
+  (which could further be delegated to VS-mode through hideleg)
+  <%- end -%>
+  .
+  <%- if ext?(:S, "> 1.9.1") -%>
+  In harts without S-mode, the `mideleg` register should not exist.
+
+  [NOTE]
+  ====
+  In versions 1.9.1 and earlier , this register existed but was
+  hardwired to zero in M-mode only, or M/U without N harts. There is no
+  reason to require they return zero in those cases, as the `misa`
+  register indicates whether they exist.
+  ====
+  <%- else -%>
+  In harts without S-mode, the `mideleg` register is read-only zero.
+  <%- end -%>
+
+  An implementation can choose to subset the delegatable traps, with the
+  supported delegatable bits found by writing one to every bit location,
+  then reading back the value in `mideleg` to see which bit
+  positions hold a one.
+
+  [NOTE]
+  ====
+  Version 1.11 and earlier prohibited having any bits of `mideleg` be
+  read-only one. Platform standards may always add such restrictions.
+  ====
+
+  Traps never transition from a more-privileged mode to a less-privileged
+  mode. For example, if M-mode has delegated illegal-instruction
+  exceptions to S-mode, and M-mode software later executes an illegal
+  instruction, the trap is taken in M-mode, rather than being delegated to
+  S-mode. By contrast, traps may be taken horizontally. Using the same
+  example, if M-mode has delegated illegal-instruction exceptions to
+  S-mode, and S-mode software later executes an illegal instruction, the
+  trap is taken in S-mode.
+
+  Delegated interrupts result in the interrupt being masked at the
+  delegator privilege level. For example, if the supervisor timer
+  interrupt (STI) is delegated to S-mode by setting `mideleg`[5], STIs
+  will not be taken when executing in M-mode. By contrast, if `mideleg`[5]
+  is clear, STIs can be taken in any mode and regardless of current mode
+  will transfer control to M-mode.
+
+  `mideleg` holds trap delegation bits for individual interrupts, with the
+  layout of bits matching those in the `mip` register (i.e., STIP
+  interrupt delegation control is located in bit 5).
+
+  For exceptions that cannot occur in less privileged modes, the
+  corresponding `medeleg` bits should be read-only zero. In particular,
+  `medeleg`[11] is read-only zero.
+
+  [when,"ext?(:Smdbltrp) || ext?(:Ssdbltrp)"]
+  The `medeleg`[16] is read-only zero as double trap is not delegatable.
+
+fields:
+  SSI:
+    location: 1
+    description: |
+      *Supervisor Software Interrupt delegation*
+
+      When 1, Supervisor Software interrupts are delegated to HS/S-mode.
+    type: RW
+    reset_value: 0
+  VSSI:
+    location: 2
+    description: |
+      *Virtual Supervisor Software Interrupt delegation*
+
+      When 1, Virtual Supervisor Software interrupts are delegated to HS-mode.
+
+      Virtual Supervisor Software Interrupts are always delegated to HS-mode, so this field is read-only one.
+    type: RO
+    reset_value: 1
+    definedBy: H
+  MSI:
+    location: 3
+    description: |
+      *Machine Software interrupt delegation*
+
+      Since M-mode interrupts cannot be delegated, this field is read-only zero.
+    type: RO
+    reset_value: 0
+  STI:
+    location: 5
+    description: |
+      *Supervisor Timer interrupt delegation*
+
+      When 1, Supervisor Timer interrupts are delegated to HS/S-mode.
+    type: RW
+    reset_value: 0
+  VSTI:
+    location: 6
+    description: |
+      *Virtual Supervisor Timer interrupt delegation*
+
+      When 1, Virtual Supervisor Timer interrupts are delegated to HS-mode.
+
+      Virtual Supervisor Time Interrupts are always delegated to HS-mode, so this field is read-only one.
+    type: RO
+    reset_value: 1
+    definedBy: H
+  MTI:
+    location: 7
+    description: |
+      *Machine Timer interrupt delegation*
+
+      Since M-mode interrupts cannot be delegated, this field is read-only zero.
+    type: RO
+    reset_value: 0
+  SEI:
+    location: 9
+    description: |
+      *Supervisor External interrupt delegation*
+
+      When 1, Supervisor External interrupts are delegated to HS/S-mode.
+    type: RW
+    reset_value: 0
+  VSEI:
+    location: 10
+    description: |
+      *Virtual Supervisor External interrupt delegation*
+
+      Virtual Supervisor External Interrupts are always delegated to HS-mode, so this field is read-only one.
+    type: RO
+    reset_value: 1
+    definedBy: H
+  MEI:
+    location: 11
+    description: |
+      *Machine External interrupt delegation*
+
+      Since M-mode interrupts cannot be delegated, this field is read-only zero.
+    type: RO
+    reset_value: 0
+  SGEI:
+    location: 12
+    description: |
+      *Supervisor Guest External Interrupt delegation*
+
+      Supervisor Guest External interrupts are always delegated to HS-mode, so this field is read-only one.
+    type: RO
+    reset_value: 1
+    definedBy: H
+  LCOFI:
+    location: 13
+    description: |
+      *Local Counter Overflow Interrupt delegation*
+
+      When 1, local counter overflow interrupts are delegated to (H)S-mode.
+    type: RW
+    reset_value: 0
+    definedBy: Sscofpmf

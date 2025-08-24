@@ -1,0 +1,55 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zfhmin
+long_name: Minimal half-precision Floating-point
+description: |
+  `Zfhmin` provides
+  minimal support for 16-bit half-precision binary floating-point
+  instructions. The Zfhmin extension is a subset of the `Zfh` extension,
+  consisting only of data transfer and conversion instructions. Like `Zfh`,
+  the `Zfhmin` extension depends on the single-precision floating-point
+  extension, `F`. The expectation is that `Zfhmin` software primarily uses the
+  half-precision format for storage, performing most computation in higher
+  precision.
+
+  The `Zfhmin` extension includes the following instructions from the `Zfh`
+  extension: `flh`, `fsh`, `fmv.x.h`, `fmv.h.x`, `fcvt.s.h`, and `fcvt.h.s`.
+  If the `D` extension is present, the `fcvt.d.h` and `fcvt.h.d` instructions are also
+  included. If the `Q` extension is present, the `fcvt.q.h` and `fcvt.h.q`
+  instructions are additionally included.
+
+  [NOTE]
+  ====
+  `Zfhmin` does not include the `fsgnj.h` instruction, because it suffices to
+  instead use the `fsgnj.s` instruction to move half-precision values
+  between floating-point registers.
+
+  Half-precision addition, subtraction, multiplication, division, and
+  square-root operations can be faithfully emulated by converting the
+  half-precision operands to single-precision, performing the operation
+  using single-precision arithmetic, then converting back to
+  half-precision. cite:[roux:hal-01091186] Performing half-precision fused multiply-addition using
+  this method incurs a 1-ulp error on some inputs for the RNE and RMM
+  rounding modes.
+
+  Conversion from 8- or 16-bit integers to half-precision can be emulated
+  by first converting to single-precision, then converting to
+  half-precision. Conversion from 32-bit integer can be emulated by first
+  converting to double-precision. If the `D` extension is not present and a
+  1-ulp error under RNE or RMM is tolerable, 32-bit integers can be first
+  converted to single-precision instead. The same remark applies to
+  conversions from 64-bit integers without the `Q` extension.
+  ====
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires:
+      name: F
+      version: ">= 2.2"

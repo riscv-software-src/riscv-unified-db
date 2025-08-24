@@ -1,0 +1,60 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mconfigptr
+long_name: Machine Configuration Pointer
+address: 0xF15
+writable: false
+description: |
+  Holds a physical address pointer to the unified discovery data structure in Memory.
+
+  The `mconfigptr` holds the physical
+  address of a configuration data structure. Software can traverse this
+  data structure to discover information about the harts, the platform,
+  and their configuration.
+
+  The pointer alignment in bits must be no smaller than MXLEN:
+  i.e., if MXLEN is
+  latexmath:[$8\times n$], then `mconfigptr`[latexmath:[$\log_2n$]-1:0]
+  must be zero.
+
+  The `mconfigptr` register must be implemented, but it may be zero to indicate the
+  configuration data structure does not exist or that an alternative
+  mechanism must be used to locate it.
+
+  [NOTE]
+  ====
+  The format and schema of the configuration data structure have yet to be
+  standardized.
+
+  ***
+
+  While the `mconfigptr` register will simply be hardwired in some implementations,
+  other implementations may provide a means to configure the value
+  returned on CSR reads. For example, `mconfigptr` might present the value
+  of a memory-mapped register that is programmed by the platform or by
+  M-mode software towards the beginning of the boot process.
+  ====
+
+priv_mode: M
+length: MXLEN
+definedBy:
+  name: Sm
+  version: ">=1.12"
+fields:
+  ADDRESS:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description:
+      Pointer to physical address of the Unified Discovery configuration
+      data structure.
+    type: RO
+    reset_value(): |
+      return CONFIG_PTR_ADDRESS;
+    legal?(csr_value): |
+      # pointer must be naturally aligned to MXLEN
+      return ((MXLEN-1) | csr_value.ADDRESS) == 0;

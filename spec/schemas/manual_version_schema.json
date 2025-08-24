@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "$defs": {
+    "volume": {
+      "type": "object",
+      "required": ["title", "description", "authors"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the volume"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the volume"
+        },
+        "chapters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/chapter"
+          },
+          "description": "Ordered (in display order) list of chapters"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/author"
+          }
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/extension_with_version"
+          },
+          "description": "List of extensions defined in this volume, with version numbers"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of changes made since the last version"
+        }
+      }
+    },
+    "chapter": {
+      "type": "string",
+      "description": "Relative (to the contents.yaml file) path to the chapter source"
+    }
+  },
+
+  "type": "object",
+  "required": [
+    "$schema",
+    "kind",
+    "manual",
+    "version",
+    "name",
+    "long_name",
+    "marketing_version",
+    "state",
+    "volumes"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "manual_version_schema.json#"
+    },
+    "kind": {
+      "const": "manual version"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name (database key) of this version"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "One line description of the instruction"
+    },
+    "manual": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^manual/.*\\.yaml#$",
+          "description": "Pointer to the manual"
+        }
+      }
+    },
+    "version": {
+      "$ref": "schema_defs.json#/$defs/semantic_version",
+      "description": "Semantic version number within the manual"
+    },
+    "marketing_version": {
+      "type": "string",
+      "description": "The publicly displayed version number"
+    },
+    "state": {
+      "$ref": "schema_defs.json#/$defs/spec_state",
+      "description": "State of this version"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the version, if stored external to the database"
+    },
+    "uses_isa_manual": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether or not this manual version is derived from riscv-isa-manual"
+    },
+    "isa_manual_tree": {
+      "type": "string",
+      "description": "The git tree-ish of the riscv-isa-manual repository used to generate this version"
+    },
+    "volumes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/volume"
+      },
+      "description": "List of volumes in this version"
+    },
+    "$source": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Relative (from arch/) path to the original source file"
+    }
+  },
+  "additionalProperties": false
+}

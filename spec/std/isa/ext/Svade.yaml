@@ -1,0 +1,43 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Svade
+long_name: Exception on PTE A/D Bits
+type: unprivileged
+description: |
+  The Svade extension indicates that hardware does *not* update the A/D bits of a page table
+  during a page walk. Rather, encountering a PTE with the A bit clear or the D bit clear when
+  an operation is a write will cause a Page Fault.
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-11
+    url: https://github.com/riscvarchive/riscv-svadu/releases/download/v1.0/riscv-svadu.pdf
+    repositories:
+      - url: https://github.com/riscvarchive/riscv-svadu
+        branch: main
+    contributors:
+      - name: Aaron Durbin
+        company: Rivos, Inc.
+      - name: Andrew Waterman
+        company: SiFive
+      - name: Earl Killian
+        company: Aril
+      - name: Greg Favor
+        company: Ventana
+      - name: John Ingalls
+        company: SiFive
+      - name: Ken Dockser
+        company: Tenstorrent
+      - name: Krste Asanovic
+        company: SiFive
+      - name: Paul Donahue
+      - name: Ved Shanbhogue
+        company: Rivos, Inc.
+doc_license:
+  name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
+  url: https://creativecommons.org/licenses/by/4.0/
