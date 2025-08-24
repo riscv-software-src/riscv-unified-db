@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/proc_cert_model_schema.json
+
+$schema: proc_cert_model_schema.json#
+kind: processor certificate model
+name: MC300-32
+long_name: Advanced 32-bit Microcontroller Certificate
+class:
+  $ref: proc_cert_class/MC.yaml#
+
+# Semantic versions within the model
+versions:
+  - version: "1.0.0"
+
+# MXLEN used by rakefile
+base: 32
+
+$inherits: "proc_cert_model/MC200-32.yaml#"
+
+revision_history:
+  - revision: "0.1.0"
+    date: "2024-11-27"
+    changes:
+      - First created
+
+introduction: |
+  The MC300 Processor Certificate targets advanced RISC-V microcontrollers.
+  It supports either a 32-bit (MC300-32) or 64-bit (MC300-64) base ISA.
+  The MC300 adds the following mandatory extensions to the MC200:
+
+  * S extension (Supervisor-mode privilege level)
+  * Sspmp extension (S-mode PMP, not ratified yet)
+
+# TODO: No ratified sPMP yet.
+
+extensions:
+  S:
+    presence: mandatory

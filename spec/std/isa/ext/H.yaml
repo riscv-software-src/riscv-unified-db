@@ -1,0 +1,665 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: H
+type: privileged
+long_name: Hypervisor
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    requires:
+      name: S
+      version: ">= 1.12.0"
+interrupt_codes:
+  - num: 2
+    name: Virtual supervisor software interrupt
+    var: VirtualSupervisorSoftware
+  - num: 6
+    name: Virtual supervisor timer interrupt
+    var: VirtualSupervisorTimer
+  - num: 10
+    name: Virtual supervisor external interrupt
+    var: VirtualSupervisorExternal
+  - num: 12
+    name: Supervisor guest external interrupt
+    var: SupervisorGuestExternal
+exception_codes:
+  - num: 10
+    name: Environment call from VS-mode
+    var: VScall
+  - num: 20
+    name: Instruction guest page fault
+    var: InstructionGuestPageFault
+  - num: 21
+    name: Load guest page fault
+    var: LoadGuestPageFault
+  - num: 22
+    name: Virtual instruction
+    var: VirtualInstruction
+  - num: 23
+    name: Store/AMO guest page fault
+    var: StoreAmoGuestPageFault
+description: |
+  This chapter describes the RISC-V hypervisor extension, which
+  virtualizes the supervisor-level architecture to support the efficient
+  hosting of guest operating systems atop a type-1 or type-2 hypervisor.
+  The hypervisor extension changes supervisor mode into
+  _hypervisor-extended supervisor mode_ (HS-mode, or _hypervisor mode_ for
+  short), where a hypervisor or a hosting-capable operating system runs.
+  The hypervisor extension also adds another stage of address translation,
+  from _guest physical addresses_ to supervisor physical addresses, to
+  virtualize the memory and memory-mapped I/O subsystems for a guest
+  operating system. HS-mode acts the same as S-mode, but with additional
+  instructions and CSRs that control the new stage of address translation
+  and support hosting a guest OS in virtual S-mode (VS-mode). Regular
+  S-mode operating systems can execute without modification either in
+  HS-mode or as VS-mode guests.
+
+  In HS-mode, an OS or hypervisor interacts with the machine through the
+  same SBI as an OS normally does from S-mode. An HS-mode hypervisor is
+  expected to implement the SBI for its VS-mode guest.
+
+  The hypervisor extension depends on an "I" base integer ISA with 32
+  `x` registers (RV32I or RV64I), not RV32E or RV64E, which have only 16 `x`
+  registers. CSR `mtval` must not be read-only zero, and standard
+  page-based address translation must be supported, either Sv32 for RV32,
+  or a minimum of Sv39 for RV64.
+
+  The hypervisor extension is enabled by setting bit 7 in the `misa` CSR,
+  which corresponds to the letter H. RISC-V harts that implement the
+  hypervisor extension are encouraged not to hardwire `misa`[7], so that
+  the extension may be disabled.
+
+  [NOTE]
+  ====
+  The baseline privileged architecture is designed to simplify the use of
+  classic virtualization techniques, where a guest OS is run at
+  user-level, as the few privileged instructions can be easily detected
+  and trapped. The hypervisor extension improves virtualization
+  performance by reducing the frequency of these traps.
+
+  The hypervisor extension has been designed to be efficiently emulable on
+  platforms that do not implement the extension, by running the hypervisor
+  in S-mode and trapping into M-mode for hypervisor CSR accesses and to
+  maintain shadow page tables. The majority of CSR accesses for type-2
+  hypervisors are valid S-mode accesses so need not be trapped.
+  Hypervisors can support nested virtualization analogously.
+  ====
+
+  = Privilege Modes
+
+  The current _virtualization mode_, denoted V, indicates whether the hart
+  is currently executing in a guest. When V=1, the hart is either in
+  virtual S-mode (VS-mode), or in virtual U-mode (VU-mode) atop a guest OS
+  running in VS-mode. When V=0, the hart is either in M-mode, in HS-mode,
+  or in U-mode atop an OS running in HS-mode. The virtualization mode also
+  indicates whether two-stage address translation is active (V=1) or
+  inactive (V=0). <<HPrivModes>> lists the
+  possible privilege modes of a RISC-V hart with the hypervisor extension.
+
+  <<<
+
+  [[HPrivModes]]
+  .Privilege modes with the hypervisor extension.
+  [float="center",align="center",cols="~,~,~,~,~"]
+  |===
+  ^|Virtualization +
+  Mode (V) ^|Nominal Privilege |Abbreviation |Name |Two-Stage Translation
+
+  ^|0 +
+  0 +
+  0
+  ^| U +
+  S +
+  M
+  |U-mode +
+  HS-mode +
+  M-mode
+  |User mode +
+  Hypervisor-extended supervisor mode +
+  Machine mode
+  |Off +
+  Off +
+  Off
+  ^|1 +
+  1
+  ^|U +
+  S
+  |VU-mode +
+  VS-mode
+  |Virtual user mode +
+  Virtual supervisor mode
+  |On +
+  On
+  |===
+
+  For privilege modes U and VU, the _nominal privilege mode_ is U, and for
+  privilege modes HS and VS, the nominal privilege mode is S.
+
+  HS-mode is more privileged than VS-mode, and VS-mode is more privileged
+  than VU-mode. VS-mode interrupts are globally disabled when executing in
+  U-mode.
+
+  [NOTE]
+  ====
+  This description does not consider the possibility of U-mode or VU-mode
+  interrupts and will be revised if an extension for user-level interrupts
+  is adopted.
+  ====
+params:
+  MUTABLE_MISA_H:
+    description: |
+      Indicates whether or not the `H` extension can be disabled with the `misa.H` bit.
+    schema:
+      type: boolean
+    extra_validation: |
+      # If S mode can be disabled, then H mode must also be disabled since you can't
+      # be in H mode without S mode
+      assert MUTABLE_MISA_H if MUTABLE_MISA_S
+  NUM_EXTERNAL_GUEST_INTERRUPTS:
+    description: |
+      Number of supported virtualized guest interrupts
+
+      Corresponds to the `GEILEN` parameter in the RVI specs
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 63
+    extra_validation: |
+      # GEILEN must be <= 31 for RV32
+      assert NUM_EXTERNAL_GUEST_INTERRUPTS <= 31 if SXLEN == 32
+  VS_MODE_ENDIANNESS:
+    description: |
+      Endianness of data in VS-mode. Can be one of:
+
+       * little:  VS-mode data is always little endian
+       * big:     VS-mode data is always big endian
+       * dynamic: VS-mode data can be either little or big endian,
+                  depending on the CSR field `hstatus.VSBE`
+    schema:
+      type: string
+      enum: [little, big, dynamic]
+  VU_MODE_ENDIANNESS:
+    description: |
+      Endianness of data in VU-mode. Can be one of:
+
+       * little:  VU-mode data is always little endian
+       * big:     VU-mode data is always big endian
+       * dynamic: VU-mode data can be either little or big endian,
+                  depending on the CSR field `vsstatus.UBE`
+    schema:
+      type: string
+      enum: [little, big, dynamic]
+  VUXLEN:
+    description: |
+      Set of XLENs supported in VU-mode. Can be one of:
+
+        * 32:   VUXLEN is always 32
+        * 64:   VUXLEN is always 64
+        * 3264: VUXLEN can be changed (via `vsstatus.UXL`) between 32 and 64
+    schema:
+      type: integer
+      enum: [32, 64, 3264]
+    extra_validation: |
+      assert VUXLEN == 32 if XLEN == 32
+      assert (SXLEN != 32) if VUXLEN != 32
+      assert (VSXLEN != 32) if VUXLEN != 32
+  VSXLEN:
+    description: |
+      Set of XLENs supported in VS-mode. Can be one of:
+
+        * 32:   VSXLEN is always 32
+        * 64:   VSXLEN is always 64
+        * 3264: VSXLEN can be changed (via `hstatus.VSXL`) between 32 and 64
+    schema:
+      type: integer
+      enum: [32, 64, 3264]
+    extra_validation: |
+      assert VSXLEN == 32 if XLEN == 32
+      assert (SXLEN != 32) if VSXLEN != 32
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT:
+    description: |
+      When true, `vstval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
+
+      When false, `vstval` is written with 0 on an EBREAK instruction.
+
+      Regardless, `vstval` is always written with a virtual PC when an external breakpoint is generated
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED:
+    description: |
+      When true, `vstval` is written with the virtual address of a load instruction when the
+      address is misaligned and MISALIGNED_LDST is false.
+
+      When false, `vstval` is written with 0 when a load address is misaligned and
+      MISALIGNED_LDST is false.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED:
+    description: |
+      When true, `vstval` is written with the virtual address of a store instruction when the
+      address is misaligned and MISALIGNED_LDST is false.
+
+      When false, `vstval` is written with 0 when a store address is misaligned and
+      MISALIGNED_LDST is false.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED:
+    description: |
+      When true, `vstval` is written with the virtual PC when an instruction fetch is misaligned.
+
+      When false, `vstval` is written with 0 when an instruction fetch is misaligned.
+
+      Note that when IALIGN=16 (i.e., when the `C` or one of the `Zc*` extensions are implemented),
+      it is impossible to generate a misaligned fetch, and so this parameter has no effect.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual address of a load when it causes a
+      `LoadAccessFault`.
+
+      WHen false, `vstval` is written with 0 when a load causes a `LoadAccessFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual address of a store when it causes a
+      `StoreAmoAccessFault`.
+
+      WHen false, `vstval` is written with 0 when a store causes a `StoreAmoAccessFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual PC of an instructino when fetch causes an
+      `InstructionAccessFault`.
+
+      WHen false, `vstval` is written with 0 when an instruction fetch causes an
+      `InstructionAccessFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual address of a load when it causes a
+      `LoadPageFault`.
+
+      WHen false, `vstval` is written with 0 when a load causes a `LoadPageFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual address of a store when it causes a
+      `StoreAmoPageFault`.
+
+      WHen false, `vstval` is written with 0 when a store causes a `StoreAmoPageFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT:
+    description: |
+      When true, `vstval` is written with the virtual PC of an instructino when fetch causes an
+      `InstructionPageFault`.
+
+      WHen false, `vstval` is written with 0 when an instruction fetch causes an
+      `InstructionPageFault`.
+    schema:
+      type: boolean
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION:
+    description: |
+      When true, `vstval` is written with the encoding of an instruction that causes an
+      `IllegalInstruction` exception.
+
+      When false `vstval` is written with 0 when an `IllegalInstruction` exception occurs.
+    schema:
+      type: boolean
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
+    description: |
+      When true, `htval` is written with the Guest Physical Address, shifted right by 2, that
+      caused a `GuestPageFault` exception.
+
+      When false, `htval` is written with0 when a `GuestPageFault` exception occurs.
+    schema:
+      type: boolean
+  HCOUNTENABLE_EN:
+    description: |
+      Indicates which counters can delegated via `hcounteren`
+
+      An unimplemented counter cannot be specified, i.e., if
+      HPM_COUNTER_EN[3] is false, it would be illegal to set
+      HCOUNTENABLE_EN[3] to true.
+
+      HCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+      HCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+    schema:
+      type: array
+      items:
+        type: boolean
+      maxItems: 32
+      minItems: 32
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO:
+    description: |
+      Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+      ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+      behavior.
+    schema:
+      type: boolean
+  GSTAGE_MODE_BARE:
+    description: |
+      Whether or not writing mode=Bare is supported in the `hgatp` register.
+    schema:
+      type: boolean
+  SV32_VSMODE_TRANSLATION:
+    description: |
+      Whether or not Sv32 translation is supported in first-stage (VS-stage)
+      translation.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv32 is only valid if VS-mode can get into XLEN=32 mode
+      assert (VSXLEN == 32 || VSXLEN == 3264) if SV32_VSMODE_TRANSLATION
+  SV39_VSMODE_TRANSLATION:
+    description: |
+      Whether or not Sv39 translation is supported in first-stage (VS-stage)
+      translation.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv39 is only valid if VS-mode can get into XLEN=64 mode
+      assert (VSXLEN == 64 || VSXLEN == 3264) if SV39_VSMODE_TRANSLATION
+  SV48_VSMODE_TRANSLATION:
+    description: |
+      Whether or not Sv48 translation is supported in first-stage (VS-stage)
+      translation.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv48 is only valid if VS-mode can get into XLEN=64 mode
+      assert (VSXLEN == 64 || VSXLEN == 3264) if SV48_VSMODE_TRANSLATION
+  SV57_VSMODE_TRANSLATION:
+    description: |
+      Whether or not Sv57 translation is supported in first-stage (VS-stage)
+      translation.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv57 is only valid if VS-mode can get into XLEN=64 mode
+      assert (VSXLEN == 64 || VSXLEN == 3264) if SV57_VSMODE_TRANSLATION
+  SV32X4_TRANSLATION:
+    description: |
+      Whether or not Sv32x4 translation mode is supported.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv32x4 is only valid if S-mode can get into XLEN=32 mode
+      assert SXLEN == 32 || SXLEN == 3264 if SV32X4_TRANSLATION
+  SV39X4_TRANSLATION:
+    description: |
+      Whether or not Sv39x4 translation mode is supported.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv39x4 is only valid if S-mode can get into XLEN=64 mode
+      assert SXLEN == 64 || SXLEN == 3264 if SV39X4_TRANSLATION
+  SV48X4_TRANSLATION:
+    description: |
+      Whether or not Sv48x4 translation mode is supported.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv48x4 is only valid if S-mode can get into XLEN=64 mode
+      assert SXLEN == 64 || SXLEN == 3264 if SV48X4_TRANSLATION
+  SV57X4_TRANSLATION:
+    description: |
+      Whether or not Sv57x4 translation mode is supported.
+    schema:
+      type: boolean
+    extra_validation: |
+      # Sv57x4 is only valid if S-mode can get into XLEN=64 mode
+      assert SXLEN == 64 || SXLEN == 3264 if SV57X4_TRANSLATION
+  VMID_WIDTH:
+    description: |
+      Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID).
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 14
+    extra_validation: |
+      # if XLEN = 32, then VMID MAX is actually 7
+      assert VMID_WIDTH <= 7 if SXLEN == 32
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT:
+    description: |
+      Whether or not GPA >> 2 is written into htval/mtval2 when a load guest page fault occurs.
+
+      If false, 0 will be written into htval/mtval2 on a load guest page fault.
+    schema:
+      type: boolean
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT:
+    description: |
+      Whether or not GPA >> 2 is written into htval/mtval2 when a store/amo guest page fault occurs.
+
+      If false, 0 will be written into htval/mtval2 on a store/amo guest page fault.
+    schema:
+      type: boolean
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT:
+    description: |
+      Whether or not GPA >> 2 is written into htval/mtval2 when an instruction guest page fault occurs.
+
+      If false, 0 will be written into htval/mtval2 on an instruction guest page fault.
+    schema:
+      type: boolean
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT:
+    description: |
+      Whether or not GPA >> 2 is written into htval/mtval2 when a guest page fault occurs while
+      walking a VS-mode page table.
+
+      If false, 0 will be written into htval/mtval2 on an intermediate guest page fault.
+    schema:
+      type: boolean
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT:
+    description: |
+      Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always pseudoinstruction": Always write the pseudoinstruction
+        * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
+        * "custom": A custom value, which will cause an UNPREDICTABLE event.
+    schema:
+      type: string
+      enum:
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT:
+    description: |
+      Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always pseudoinstruction": Always write the pseudoinstruction
+        * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
+        * "custom": A custom value, which will cause an UNPREDICTABLE event.
+    schema:
+      type: string
+      enum:
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT:
+    description: |
+      Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always pseudoinstruction": Always write the pseudoinstruction
+    schema:
+      type: string
+      enum:
+        - "always zero"
+        - "always pseudoinstruction"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED:
+    description: |
+      Value written into htinst/mtinst when there is an instruction address misaligned exception.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum:
+        - "always zero"
+        - "custom"
+  TINST_VALUE_ON_BREAKPOINT:
+    description: |
+      Value written into htinst/mtinst on a Breakpoint exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION:
+    description: |
+      Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED:
+    description: |
+      Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT:
+    description: |
+      Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED:
+    description: |
+      Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT:
+    description: |
+      Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TINST_VALUE_ON_UCALL:
+    description: |
+      Value written into htinst/mtinst on a UCall exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_SCALL:
+    description: |
+      Value written into htinst/mtinst on a SCall exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_MCALL:
+    description: |
+      Value written into htinst/mtinst on a MCall exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_VSCALL:
+    description: |
+      Value written into htinst/mtinst on a VSCall exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "custom"]
+  TINST_VALUE_ON_LOAD_PAGE_FAULT:
+    description: |
+      Value written into htinst/mtinst on a LoadPageFault exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT:
+    description: |
+      Value written into htinst/mtinst on a StoreAmoPageFault exception from VU/VS-mode.
+
+      Possible values:
+        * "always zero": Always write the value zero
+        * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+        * "custom": Write a custom value, which results in UNPREDICTABLE
+    schema:
+      type: string
+      enum: ["always zero", "always transformed standard instruction", "custom"]
+  TRAP_ON_ECALL_FROM_VS:
+    description: |
+      Whether or not an ECALL-from-VS-mode causes a synchronous exception.
+
+      The spec states that implementations may handle ECALLs transparently
+      without raising a trap, in which case the EEI must provide a builtin.
+    schema:
+      type: boolean
+      default: true
+  VSTVEC_MODE_DIRECT:
+    description: |
+      Whether or not `vstvec.MODE` supports Direct (0).
+    schema:
+      type: boolean
+    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+  VSTVEC_MODE_VECTORED:
+    description: |
+      Whether or not `stvec.MODE` supports Vectored (1).
+    schema:
+      type: boolean
+    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED

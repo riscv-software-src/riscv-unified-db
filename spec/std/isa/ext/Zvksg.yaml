@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvksg
+long_name: ShangMi Algorithm Suite with GCM
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zvks`
+  * `Zvkg`
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies:
+      - name: Zvks
+        version: "1.0.0"
+      - name: Zvkg
+        version: "1.0.0"

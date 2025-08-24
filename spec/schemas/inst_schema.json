@@ -1,0 +1,512 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "$defs": {
+    "fully_resolved_opcodes": {
+      "type": "object",
+      "required": ["location", "display_name", "value"],
+      "properties": {
+        "location": {
+          "type": "schema_defs.json#/$defs/field_location"
+        },
+        "display_name": {
+          "type": "string",
+          "description": "field name, displayed in encoding drawings"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/integer"
+            },
+            {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "^inst_opcode/.*\\.yaml#$"
+                }
+              }
+            }
+          ]
+        },
+        "$child_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^inst_.*/.*\\.yaml#.*$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^inst_.*/.*\\.yaml#.*$"
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "fully_resolved_variables": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location", "type"],
+          "properties": {
+            "location": {
+              "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+            },
+            "type": {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "inst_var_type/.+\\.yaml#"
+                }
+              }
+            },
+            "$child_of": {
+              "type": "string",
+              "pattern": "^inst_.*/.*\\.yaml#.*$"
+            }
+          }
+        }
+      }
+    },
+    "fully_resolved_format": {
+      "$comment": "Fully resolved format; $child_of must exist, and all properties must be present",
+      "required": ["$child_of", "type", "subtype", "opcodes"],
+      "properties": {
+        "$child_of": {
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/reference"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "schema_defs.json#/$defs/reference"
+              }
+            }
+          ]
+        },
+        "type": {
+          "type": "object",
+          "required": ["$ref"],
+          "additionalProperties": false,
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_type/[A-Z][A-Za-z0-9\\-]*.yaml#"
+            }
+          }
+        },
+        "subtype": {
+          "type": "object",
+          "required": ["$ref"],
+          "additionalProperties": false,
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_subtype/[A-Z][A-Za-z0-9\\-]*/[A-Z][A-Za-z0-9\\-]*-[A-Za-z0-9\\-]*.yaml#"
+            }
+          }
+        },
+        "opcodes": {
+          "type": "object",
+          "patternProperties": {
+            "$comment": "opcode names are lowercase with numbers",
+            "^[a-z][a-z0-9]*$": {
+              "$refs": "#/$defs/fully_resolved_opcodes"
+            }
+          }
+        },
+        "variables": {
+          "$ref": "#/$defs/fully_resolved_variables"
+        }
+      },
+      "additionalProperties": false
+    },
+    "old_encoding": {
+      "type": "object",
+      "properties": {
+        "match": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[01-]{43}11111$",
+              "description": "48-bit encoding"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01-]{30}11$",
+              "description": "32-bit encoding"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01-]{14}((00)|(01)|(10))$",
+              "description": "16-bit encoding"
+            }
+          ]
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "additionalProperties": false
+      },
+      "additionalProperties": false
+    },
+    "type": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^inst_type/[A-Z]+\\.yaml#.*$",
+          "description": "Reference to an instruction type definition"
+        }
+      },
+      "required": ["$ref"],
+      "additionalProperties": false
+    },
+    "subtype": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^inst_type/[A-Z]+/[a-zA-Z0-9_]+\\.yaml#.*$",
+          "description": "Reference to an instruction subtype definition"
+        }
+      },
+      "required": ["$ref"],
+      "additionalProperties": false
+    },
+    "variable_metadata": {
+      "properties": {
+        "location": {
+          "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+        },
+        "sign_extend": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether or not the field should be sign extended when used"
+        },
+        "left_shift": {
+          "type": "integer",
+          "default": 0,
+          "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
+        },
+        "not": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          ],
+          "description": "Specific value(s) that are not permitted for this field."
+        }
+      },
+      "required": ["location"],
+      "additionalProperties": false
+    },
+    "field": {
+      "description": "Decode field",
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "$inherits": {
+              "type": "string",
+              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
+              "description": "Reference to variable metadata"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "$child_of": {
+              "type": "string",
+              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
+              "description": "Cookie crumb of the reference to variable metadata"
+            },
+            "location": {
+              "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+            },
+            "sign_extend": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether or not the field should be sign extended when used"
+            },
+            "left_shift": {
+              "type": "integer",
+              "default": 0,
+              "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
+            },
+            "alias": {
+              "type": "string",
+              "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
+            },
+            "not": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              ],
+              "description": "Specific value(s) that are not permitted for this field."
+            }
+          },
+          "required": ["name", "location"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "inst_data": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "description",
+        "definedBy",
+        "access",
+        "assembly"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "inst_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "instruction"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9.]+$",
+          "description": "Instruction mnemonic (must be lowercase)"
+        },
+        "long_name": {
+          "type": "string",
+          "description": "One line description of the instruction"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text",
+          "description": "Detailed description of the instruction"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "description": "Extension(s) that defines the instruction"
+        },
+
+        "hints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "$ref": {
+                "type": "string",
+                "format": "uri-reference",
+                "pattern": "^inst/.+\\.yaml#.*$",
+                "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruction"
+              }
+            },
+            "required": ["$ref"],
+            "additionalProperties": false
+          },
+          "description": "List of HINTs that use this instruction's codepoints"
+        },
+        "base": {
+          "enum": [32, 64],
+          "description": "When present, instruction is only defined for RV32 or RV64 base"
+        },
+        "access": {
+          "type": "object",
+          "required": ["s", "u", "vs", "vu"],
+          "properties": {
+            "m": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "s": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "u": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "vs": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "vu": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            }
+          }
+        },
+        "access_detail": {
+          "type": "string",
+          "description": "Extra detail about access when at least one mode is 'sometimes'"
+        },
+        "operation()": {
+          "type": "string",
+          "description": "Functional description of the instruction using IDL language"
+        },
+        "sail()": {
+          "type": "string",
+          "description": "Functional description of the instruction using Sail"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
+        },
+        "assembly": {
+          "type": "string",
+          "description": "Assembly format of the instruction. Can use decode variables"
+        },
+        "data_independent_timing": {
+          "type": "boolean",
+          "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
+          "default": false
+        },
+        "pseudoinstructions": {
+          "description": "Variations of this instruction that form a pseudoinstruction",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "when": {
+                "type": "string",
+                "description": "Condition when the instruction has an alias"
+              },
+              "to": {
+                "type": "string",
+                "description": "pseudoinstruction format"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "$source": {
+          "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+          "type": "string"
+        },
+        "format": {
+          "type": "object",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/fully_resolved_format"
+            },
+            {
+              "$comment": "Unresolved version",
+              "required": ["$inherits", "opcodes"],
+              "properties": {
+                "$inherits": {
+                  "oneOf": [
+                    {
+                      "$ref": "schema_defs.json#/$defs/reference"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "schema_defs.json#/$defs/reference"
+                      }
+                    }
+                  ]
+                },
+                "opcodes": {
+                  "type": "object",
+                  "patternProperties": {
+                    "$comment": "opcode names are lowercase with numbers",
+                    "^[a-z][a-z0-9]*$": {
+                      "type": "object",
+                      "properties": {
+                        "$comment": "location must come from inheritance",
+                        "display_name": {
+                          "type": "string",
+                          "description": "field name, displayed in encoding drawings"
+                        },
+                        "value": {
+                          "$ref": "schema_defs.json#/$defs/integer"
+                        },
+                        "$inherits": {
+                          "type": "string",
+                          "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "encoding": {
+          "description": "Instruction encoding and decode variables",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/old_encoding"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "RV32": {
+                  "$ref": "#/$defs/old_encoding"
+                },
+                "RV64": {
+                  "$ref": "#/$defs/old_encoding"
+                }
+              },
+              "required": ["RV32", "RV64"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      }
+    }
+  },
+
+  "$ref": "#/$defs/inst_data"
+}

@@ -1,0 +1,8 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+hints:
+  - { $ref: inst/Xqci/qc.sync.yaml# }
+  - { $ref: inst/Xqci/qc.syncr.yaml# }
+  - { $ref: inst/Xqci/qc.syncwf.yaml# }
+  - { $ref: inst/Xqci/qc.syncwl.yaml# }

@@ -1,0 +1,101 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stval
+long_name: Supervisor Trap Value
+address: 0x143
+writable: true
+description: Holds trap-specific information
+priv_mode: S
+length: 64
+definedBy: S
+fields:
+  VALUE:
+    location: 63-0
+    description: |
+      Written with trap-specific information when a trap is taken into S-mode.
+
+      The values are:
+
+      [separator="!"]
+      !===
+      ! Exception type ! Value
+
+      ! [0] Instruction address misaligned ! The misaligned virtual PC (same as the value written to `mepc`).
+      ! [1] Instruction access fault ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the access fault <%- unless ext?(:C) -%>(same as the value written to `mepc`)<%- end -%>.
+      ! [2] Illegal Instruction ! The encoding of the illegal instruction.
+      ! [3] Breakpoint
+      ! [when,"REPORT_VA_IN_STVAL_ON_BREAKPOINT == true"]
+        When caused by an EBREAK instruction, the virtual PC of the breakpoint instruction.
+
+        [when,"REPORT_VA_IN_STVAL_ON_BREAKPOINT == false"]
+        When caused by an EBREAK instruction, zero.
+
+        When caused by a data address (_i.e._, watchpoint) breakpoint, the faulting virtual address.
+        When caused by an instruction address breakpoint, the faulting virtual PC.
+      ! [4] Load address misaligned ! The misaligned virtual load address.
+      ! [5] Load access fault
+      ! The part of virtual load address causing in the access fault.
+
+        When the load is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page,
+        address + 4 is reported).
+
+        (Even though the access fault arises on a physical address, the virtual address is reported)
+      ! [6] Store/AMO address misaligned ! The misaligned virtual store/AMO address.
+      ! [7] Store/AMO access fault
+      ! The virtual store/AMO address causing the access fault.
+
+        When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page,
+        address + 4 is reported).
+
+        (Even though the access fault arises on a physical address, the virtual address is reported)
+      ! [8] Environment call from U-mode <% if ext?(:H) %>or VU-mode<% end %> ! Zero
+      ! [9] Environment call from (H)S-mode ! Zero
+      <%- if ext?(:H) -%>
+      ! [10] Environment call from VS-mode ! Zero
+      <%- end -%>
+      ! [12] Instruction page fault
+      ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the page fault
+        <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
+      ! [13] Load page fault
+      ! The part of the virtual load address causing in the page fault.
+
+        When the load is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page, address + 4 is reported).
+      ! [15] Store/AMO page fault
+      ! The virtual store/AMO address causing in the page fault.
+
+        When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
+      <%- if ext?(:H) -%>
+      ! [20] Instruction guest-page fault
+      ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the fault <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
+
+        The guest physical address is reported in `mtval2`.
+      ! [21] Load guest-page fault
+      ! The part of the virtual address causing the fault.
+
+        When the load is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page, address + 4 is reported).
+
+        The guest physical address is reported in `mtval2`.
+      ! [22] Virtual instruction
+      ! The encoding of the faulting virtual instruction.
+      ! [23] Store/AMO guest-page fault
+      ! The part of the virtual address causing the fault.
+
+        When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
+        (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
+
+        The guest physical address is reported in `htval`.
+      <%- end -%>
+      !===
+
+    type: RW-H
+    reset_value: 0

@@ -47,7 +47,6 @@
 // Settings
 :experimental:
 :reproducible:
-:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
 // needs to be changed
 :imagesoutdir: images
 :icons: font
@@ -154,8 +153,9 @@ This specification documents version <%= max_version.version_spec %> of <%= ext.
 === Version History
 
 <%- ext.versions.each do |version| -%>
+==== <%= version.version_spec %>
+
 --
-Version:: <%= version.version_spec %>
 State:: <%= version.state %>
 <%- unless version.ratification_date.nil? -%>
 Ratification Date:: <%= version.ratification_date %>
@@ -173,7 +173,9 @@ Changes::
 <%- end -%>
 <%- unless version.implications.empty? -%>
 Implies::
-<%= version.implications.each { |i| "* #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n* ") %>
+
+<%= version.implications.map { |i| "    * #{i.ext_ver.name} (#{i.ext_ver.version_spec}) #{i.cond.empty? ? '' : i.cond.to_asciidoc(join: ', ')}" }.join("\n") %>
+
 <%- unless version.requirement_condition.empty? -%>
 Requires::
 <%= version.requirement_condition.to_asciidoc %>
@@ -218,8 +220,8 @@ Version requirements are specified as conditions using the following operators:
 <%-     end -%>
 
 <%-     version.implications.each do |implication_hsh| -%>
-<%-       sub_ext = implication_hsh[:ext_ver] -%>
-<%-       cond = implication_hsh[:cond] -%>
+<%-       sub_ext = implication_hsh.ext_ver -%>
+<%-       cond = implication_hsh.cond -%>
 ==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>) <%= "if #{cond.to_asciidoc(join: ', ')}" unless cond.empty? %>
 
 <%= cfg_arch.extension(sub_ext.name).description %>
@@ -263,11 +265,11 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 [%autowidth]
 |===
-| Mnemonic | <%= implications.map { |e| "`#{e[:ext_ver].name}`" }.join(" | ") %>
+| Mnemonic | <%= implications.map { |e| "`#{e.ext_ver.name}`" }.join(" | ") %>
 
 <%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e[:ext_ver]) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e.ext_ver) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 
@@ -281,7 +283,7 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 <%- csr_list = ext.csrs.select { |csr| versions.any? { |ext_ver| csr.affected_by?(ext_ver) } } -%>
 
-The following <%= csr_list.size %> are affected by this extension.
+The following <%= csr_list.size %> CSRs are affected by this extension.
 
 [%autowidth]
 |===
@@ -306,7 +308,7 @@ The following <%= csr_list.size %> are affected by this extension.
 <%- ext.csrs.each do |csr| -%>
 <<<
 :leveloffset: +2
-<%= partial "adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
+<%= partial "common_templates/adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 <%- end -%>
 
@@ -319,7 +321,7 @@ The following <%= csr_list.size %> are affected by this extension.
 
 <%- ext.instructions.each do |i| -%>
 :leveloffset: +2
-<%= partial "adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
+<%= partial "common_templates/adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 
 <<<

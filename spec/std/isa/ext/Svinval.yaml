@@ -1,0 +1,84 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Svinval
+type: privileged
+long_name: Fine-grained address-translation cache invalidation
+description: |
+  The `Svinval` extension splits `sfence.vma`, `hfence.vma`, and `hfence.gvma` instructions into
+  finer-grained invalidation and ordering operations that can be more efficiently batched or
+  pipelined on certain classes of high-performance implementation.
+
+  The `sinval.vma` instruction invalidates any address-translation cache entries that an
+  `sfence.vma` instruction with the same values of rs1 and rs2 would invalidate.
+  However, unlike `sfence.vma`, `sinval.vma` instructions are only ordered with respect to
+  `sfence.vma`, `sfence.w.inval`, and `sfence.inval.ir` instructions as defined below.
+
+  The `sfence.w.inval` instruction guarantees that any previous stores already visible to the
+  current RISC-V hart are ordered before subsequent `sinval.vma` instructions executed by the
+  same hart. The `sfence.inval.ir` instruction guarantees that any previous `sinval.vma`
+  instructions executed by the current hart are ordered before subsequent implicit references by
+  that hart to the memory-management data structures.
+
+  When executed in order (but not necessarily consecutively) by a single hart, the sequence
+  `sfence.w.inval`, `sinval.vma`, and `sfence.inval.ir` has the same effect as a hypothetical
+  `sfence.vma` instruction in which:
+
+  * the values of _rs1_ and _rs2_ for the `sfence.vma` are the same as those used in the `sinval.vma`,
+  * reads and writes prior to the `sfence.w.inval` are considered to be those prior to the `sfence.vma`, and
+  * reads and writes following the `sfence.inval.ir` are considered to be those subsequent to the `sfence.vma`.
+
+  If the hypervisor extension is implemented, the `Svinval` extension also provides two additional
+  instructions: `hinval.vvma` and `hinval.gvma`.
+  These have the same semantics as `sinval.vma`, except that they combine with `sfence.w.inval`
+  and `sfence.inval.ir` to replace `hfence.vvma` and `hfence.gvma`, respectively,
+  instead of `sfence.vma`.
+  In addition, `hinval.gvma` uses VMIDs instead of ASIDs.
+
+  `sinval.vma`, `hinval.vvma`, and `hinval.gvma` require the same permissions and raise the same
+  exceptions as `sfence.vma`, `hfence.vvma`, and `hfence.gvma`, respectively.
+  In particular, an attempt to execute any of these instructions in U-mode always raises an
+  IllegalInstruction exception, and an attempt to execute `sinval.vma` or `hinval.gvma` in S-mode
+  or HS-mode when `mstatus.TVM`=1 also raises an IllegalInstruction exception.
+  An attempt to execute `hinval.vvma` or `hinval.gvma` in VS-mode or VU-mode, or to execute
+  `sinval.vma` in VU-mode, raises a `VirtualInstruction` exception.
+  When `hstatus.VTVM`=1, an attempt to execute `sinval.vma` in VS-mode also raises a
+  `VirtualInstruction` exception.
+
+  Attempting to execute `sfence.w.inval` or `sfence.inval.ir` in U-mode raises an `IllegalInstruction`
+  exception.
+  Doing so in VU-mode raises a `VirtualInstruction` exception.
+  `sfence.w.inval` and `sfence.inval.ir` are unaffected by the `mstatus.TVM` and `hstatus.VTVM`
+  fields and hence are always permitted in S-mode and VS-mode.
+
+  [NOTE]
+  --
+  `sfence.w.inval` and `sfence.inval.ir` instructions do not need to be trapped when `mstatus.TVM`=1
+  or when `hstatus.VTVM`=1, as they only have ordering effects but no visible side effects.
+  Trapping of the `sinval.vma` instruction is sufficient to enable emulation of the intended
+  overall TLB maintenance functionality.
+
+  In typical usage, software will invalidate a range of virtual addresses in the address-translation
+  caches by executing an `sfence.w.inval` instruction, executing a series of `sinval.vma`,
+  `hinval.vvma`, or `hinval.gvma` instructions to the addresses (and optionally ASIDs or VMIDs)
+  in question, and then executing an `sfence.inval.ir` instruction.
+
+  High-performance implementations will be able to pipeline the address-translation cache
+  invalidation operations, and will defer any pipeline stalls or other memory ordering enforcement
+  until an `sfence.w.inval`, `sfence.inval.ir`, `sfence.vma`, `hfence.gvma`, or `hfence.vvma`
+  instruction is executed.
+
+  Simpler implementations may implement `sinval.vma`, `hinval.vvma`, and `hinval.gvma` identically
+  to `sfence.vma`, `hfence.vvma`, and `hfence.gvma`, respectively, while implementing
+  `sfence.w.inval` and `sfence.inval.ir` instructions as no-ops.
+  --
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires:
+      name: S

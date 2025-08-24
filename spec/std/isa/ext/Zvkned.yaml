@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvkned
+long_name: "NIST Suite: Vector AES Block Cipher"
+description: |
+  Instructions for accelerating encryption, decryption and key-schedule functions of the AES block
+  cipher as defined in Federal Information Processing Standards Publication 197.
+
+  All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
+
+  To help avoid side-channel timing attacks, these instructions shall be implemented with data-independent timing.
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

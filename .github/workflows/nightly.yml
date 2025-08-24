@@ -31,26 +31,7 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
-      - name: Setup project
-        run: ./bin/setup
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Run regression
         run: ./do test:nightly

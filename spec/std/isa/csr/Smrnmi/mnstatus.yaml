@@ -1,0 +1,93 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mnstatus
+long_name: Machine NMI Status
+address: 0x744
+writable: true
+priv_mode: M
+
+# length is MXLEN-bit
+length: MXLEN
+description:
+  The mnstatus register tracks and controls the hart's current NMI operating
+  state.
+definedBy: Smrnmi
+fields:
+  MNPP:
+    location: 12-11
+    description: |
+      M-mode NMI Previous Privilege.
+
+      Written by hardware in two cases:
+
+      * Written with the prior nominal privilege level when entering M-mode NMI from an exception/interrupt.
+      * Written with 0 when executing an `mnret` instruction to return from a double exception / NMI in M-mode.
+
+      Can also be written by software without immediate side-effect.
+
+      Affects execution in two cases:
+
+      * On a return from a double exception / NMI from M-mode, the machine will
+      enter the privilege level stored in MNPP before clearing the field.
+      * When `mnstatus.MNPRV` is set, loads and stores behave as if the current privilege level were MNPP.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (csr_value.MNPP == 2'b01 && !implemented?(ExtensionName::S)) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else if (csr_value.MNPP == 2'b00 && !implemented?(ExtensionName::U)) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else if (csr_value.MNPP == 2'b10) {
+        # never a valid value
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else {
+        return csr_value.MNPP;
+      }
+    legal?(csr_value): |
+      if (csr_value.MNPP == 2'b01 && !implemented?(ExtensionName::S)) {
+        return false;
+      } else if (csr_value.MNPP == 2'b00 && !implemented?(ExtensionName::U)) {
+        return false;
+      } else if (csr_value.MNPP == 2'b10) {
+        # never a valid value
+        return false;
+      } else {
+        return true;
+      }
+  MNPV:
+    location: 7
+    description: |
+      *Machine Previous NMI Virtualization mode*
+
+      Written with the prior virtualization mode when entering M-mode from an exception/interrupt.
+      When returning via an MRET instruction, the virtualization mode becomes the value of MPV unless MPP=3, in which case the virtualization mode is always 0.
+      Can also be written by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    definedBy: H
+  NMIE:
+    location: 3
+    description: |
+      *M-mode NMI Enable*
+
+      Written by hardware in two cases:
+
+      * Written with the value 0 when entering M-mode NMI.
+      * Written with the value 0 when entering M-mode double trap.
+
+      Written by software in one case only:
+
+      * The NMIE is 0 on reset for boot code to initialize system to service NMIs. Once SW writes NMIE to 1, it cannot be changed anymore by SW.
+
+      Affects execution by:
+
+      * When 0, all non-maskable interrupts and exceptions are disabled when the current privilege level is M.
+      * When 1, NMI or double trap is possible.
+
+    type: RW-H
+    reset_value: 0

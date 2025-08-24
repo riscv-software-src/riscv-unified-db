@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zmmul
+long_name: Integer multiplication instructions
+description: |
+  The `Zmmul` extension implements the multiplication subset of the `M` extension.
+  It adds `MUL`, `MULH`, `MULHU`, `MULHSU`, and (for RV64 only) `MULW`.
+  The encodings are identical to those of the corresponding M-extension instructions.
+  `M` implies `Zmmul`.
+
+  [NOTE]
+  The `Zmmul` extension enables low-cost implementations that require multiplication
+  operations but not division. For many microcontroller applications, division operations
+  are too infrequent to justify the cost of divider hardware. By contrast, multiplication
+  operations are more frequent, making the cost of multiplier hardware more justifiable.
+  Simple FPGA soft cores particularly benefit from eliminating division but retaining
+  multiplication, since many FPGAs provide hardwired multipliers but require dividers be
+  implemented in soft logic.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2022-06

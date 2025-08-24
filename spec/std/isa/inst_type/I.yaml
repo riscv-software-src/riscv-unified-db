@@ -1,0 +1,22 @@
+# Copyright (c) 2025 Usman Akinyemi
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_type_schema.json
+
+$schema: inst_type_schema.json#
+kind: instruction_type
+name: I
+description: I-type instructions usually have one source register, an immediate value, and one destination register
+length: 32
+opcodes:
+  funct3:
+    location: 14-12
+  opcode:
+    location: 6-0
+variables:
+  imm:
+    location: 31-20
+  rs1:
+    location: 19-15
+  rd:
+    location: 11-7

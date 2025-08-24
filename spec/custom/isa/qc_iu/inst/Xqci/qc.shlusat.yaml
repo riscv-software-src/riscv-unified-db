@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.shlusat
+long_name: Saturating unsigned left shift
+description: |
+  Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcia
+base: 32
+encoding:
+  match: 0001100----------011-----0001011
+  variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, xs2"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<MXLEN`*2> zext_double_width_rs1 = {{xlen(){1'b0}}, X[rs1]};
+  Bits<MXLEN`*2> shifted_value = zext_double_width_rs1 << X[rs2][4:0];
+  Bits<MXLEN`*2> largest_unsigned_value = {{xlen(){1'b0}}, {xlen(){1'b1}}};
+
+  if (shifted_value > largest_unsigned_value) {
+    X[rd] = largest_unsigned_value[(xlen() - 1):0];
+  } else {
+    X[rd] = shifted_value[(xlen() - 1):0];
+  }

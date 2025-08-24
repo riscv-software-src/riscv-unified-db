@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mhartid
+long_name: Machine Hart ID
+address: 0xf14
+writable: false
+priv_mode: M
+length: MXLEN
+description: Reports the unique hart-specific ID in the system.
+definedBy: Sm
+fields:
+  ID:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RO
+    description: hart-specific ID.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  return hartid();

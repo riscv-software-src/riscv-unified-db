@@ -1,0 +1,17 @@
+CSR field colors::
+
+* Grey fields are reserved (WPRI)
+* Green fields are present
+* Red fields are defined by the RISC-V ISA but not present
+
+CSR field types::
+
+[%autowidth]
+|===
+| Abbreviation | Description
+
+<% Udb::CsrField::TYPE_DESC_MAP.each do |abbreviation, description| -%>
+| <%= abbreviation %>
+| <%= description %>
+<% end -%>
+|===

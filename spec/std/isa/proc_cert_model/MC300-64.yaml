@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/proc_cert_model_schema.json
+
+$schema: proc_cert_model_schema.json#
+kind: processor certificate model
+name: MC300-64
+long_name: Advanced 64-bit Microcontroller Certificate
+class:
+  $ref: proc_cert_class/MC.yaml#
+
+$inherits: "proc_cert_model/MC300-32.yaml#"
+
+# MXLEN used by rakefile
+base: 64
+
+extensions:
+  Sm:
+    param_constraints:
+      MXLEN:
+        schema:
+          const: 64

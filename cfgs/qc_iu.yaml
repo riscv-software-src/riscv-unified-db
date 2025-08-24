@@ -21,125 +21,142 @@ implemented_extensions:
   - { name: Zihpm, version: "2.0" }
   - { name: Xqccmp, version: "0.3" }
   - { name: Xqci, version: "0.8" }
-exception_codes:
-  - num: 27
-    name: Illegal Stack Pointer
-    var: IllegalStackPointer
-  - num: 28
-    name: Stack Pointer Out-Of-Range
-    var: SpOutOfRange
-  - num: 29
-    name: Execution Watchpoint
-    var: ExecWatchpoint
-  - num: 30
-    name: Read Watchpoint
-    var: ReadWatchpoint
-  - num: 31
-    name: Write Watchpoint
-    var: WriteWatchpoint
 params:
-  XLEN: 32
+  MXLEN: 32
   PHYS_ADDR_WIDTH: 32
   ARCH_ID: 0
   CONFIG_PTR_ADDRESS: 0
   HPM_EVENTS: []
   MTVEC_MODES: [0, 1]
   HPM_COUNTER_EN:
-    - const: false
-    - const: false
-    - const: false
-    - const: true
-    - const: true
-    - const: true
-    - const: true
-    - const: true
-    - const: true
-    - const: true
-    - const: true
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-    - const: false
-COUNTINHIBIT_EN:
-  - const: true
-  - const: false
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-MCOUNTENABLE_EN:
-  - const: true
-  - const: false
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: true
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
-  - const: false
+    - false # CY
+    - false # empty
+    - false # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+  COUNTINHIBIT_EN:
+    - true # CY
+    - false # empty
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+  MCOUNTENABLE_EN:
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_M: false
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  IMP_ID: 0 # TODO
+  VENDOR_ID_BANK: 0 # TODO
+  VENDOR_ID_OFFSET: 0 # TODO
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_SPLIT_STRATEGY: by_byte
+  TRAP_ON_ILLEGAL_WLRL: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+  PMP_GRANULARITY: 12
+  PMP_NUM_ENTRIES: 16
+  PMA_GRANULARITY: 12
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  TIME_CSR_IMPLEMENTED: true

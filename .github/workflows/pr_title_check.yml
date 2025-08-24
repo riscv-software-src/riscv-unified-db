@@ -1,0 +1,46 @@
+name: 'Lint PR'
+
+on:
+  # This allows the action to be used in a fork-based workflow, where
+  # e.g. you want to accept pull requests in a public repository.
+  # In this case, the configuration from the main branch of your repository will be used for the
+  # check. This means that you need to have this configuration in the main branch for the action to
+  # run at all (e.g. it won't run within a PR that adds the action initially).
+  # Also if you change the configuration in a PR, the changes will not be reflected for the current
+  # PR – only subsequent ones after the changes are in the main branch.
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure that a scope is optional
+          requireScope: false
+          # Configure additional validation for the subject based on a regex.
+          # This ensures the subject doesn't start with an uppercase character.
+          subjectPattern: ^(?![A-Z]).+$
+          # If `subjectPattern` is configured, you can use this property to override
+          # the default error message that is shown when the pattern doesn't match.
+          # The variables `subject` and `title` can be used within the message.
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+          # If the PR contains one of these newline-delimited labels, the
+          # validation is skipped. If you want to rerun the validation when
+          # labels change, you might want to use the `labeled` and `unlabeled`
+          # event triggers in your workflow.
+          ignoreLabels: |
+            bot
+            ignore-semantic-pull-request

@@ -1,0 +1,765 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+
+$schema: ext_schema.json#
+kind: extension
+name: Xqci
+type: unprivileged
+long_name: Qualcomm uC extensions
+versions:
+- version: "0.1.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+- version: "0.2.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Splits Xqci into sub-extensions based on instruction type
+    - Removed shXadd instructions in favor of generic shladd
+- version: "0.3.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Rename extension and sub extensions to match toolchain guidelines
+    - Rename mnemonics to match toolchain guidelines
+    - Ensure every instruction belongs to at least one sub extension
+  implies:
+  - { name: Xqcia, version: "0.1.0" }
+  - { name: Xqciac, version: "0.1.0" }
+  - { name: Xqcibi, version: "0.1.0" }
+  - { name: Xqcibm, version: "0.1.0" }
+  - { name: Xqcicli, version: "0.1.0" }
+  - { name: Xqcicm, version: "0.1.0" }
+  - { name: Xqcics, version: "0.1.0" }
+  - { name: Xqcicsr, version: "0.1.0" }
+  - { name: Xqciint, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.1.0" }
+  - { name: Xqcili, version: "0.1.0" }
+  - { name: Xqcilia, version: "0.1.0" }
+  - { name: Xqcilo, version: "0.1.0" }
+  - { name: Xqcilsm, version: "0.1.0" }
+  - { name: Xqcisls, version: "0.1.0" }
+- version: "0.4.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Add information about instruction formats of each instruction
+    - Fix description and functionality of qc.c.extu instruction
+    - Fix description and functionality of qc.shladd instruction
+  implies:
+  - { name: Xqcia, version: "0.2.0" }
+  - { name: Xqciac, version: "0.2.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.2.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.2.0" }
+  - { name: Xqciint, version: "0.2.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Added Xqciio sub-extension
+    - Added Xqcisim sub-extension
+    - Added Xqcisync sub-extension
+    - Rename instruction of qc.muladdi to qc.muliadd
+    - Rename instruction of qc.c.muladdi to qc.c.muliadd
+    - Fix description of qc.shladd instruction
+    - Fix description and functionality of qc.c.extu instruction
+    - Fix description and functionality of qc.wrapi instruction
+    - Fix description of qc.swmi, qc.lwmi and qc.setwmi instructions
+    - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
+    - Fix description of qc.setinti and qc.clrinti instructions
+    - Fix to make qc.c.mret and qc.c.mnret visible
+  implies:
+  - { name: Xqcia, version: "0.3.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.3.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.2.0" }
+  - { name: Xqciint, version: "0.3.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.3.0" }
+  - { name: Xqcisim, version: "0.1.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.1.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix encoding of qc.c.extu instruction
+    - Fix encoding of qc.swmi instruction
+    - Fix decoding of qc.pputci instruction
+    - Fix decoding of qc.c.delay instruction (state that immediate cannot be 0)
+    - Rename qc.slasat -> qc.shlsat
+    - Rename qc.sllsat -> qc.shlusat
+    - Add requirement to include Zca extension for Xqcisim since it has 16-bit instructions
+    - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
+    - Remove qc.flags CSR
+  implies:
+  - { name: Xqcia, version: "0.4.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.4.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.3.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.7.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix typos in description of qc.shlsat and qc.shlusat instructions
+    - Fix bug in qc.shlsat that caused wrong IDL code result
+    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
+    - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
+    - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
+    - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
+    - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
+    - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
+    - Remove CSR registers qc.mncause, qc.mnepc
+    - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
+    - Fix IDL code for qc.c.ei, qc.c.eir, qc.c.di, qc.c.dir
+    - Add list of supported custom exceptions
+    - Fix qc.cto instruction IDL code
+    - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
+    - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
+  implies:
+  - { name: Xqcia, version: "0.5.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.5.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.4.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.8.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix rs1 cannot be 31 for qc.extdu, qc.extd, qc.extdur, instructions
+    - Fix rs1 cannot be 31 for qc.extduprh, qc.extdprh, qc.extdupr, qc.extdr qc.extdpr instructions
+    - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
+    - Fix IDL code and description to look correct in PDF for qc.insbhr and qc.insbh instructions
+    - Fix Xqci extension description to reflect correct 48-bit format field names
+    - Fix IDL code to to match description for qc.insbr instruction
+    - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
+  implies:
+  - { name: Xqcia, version: "0.5.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.6.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.5.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.9.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code sign extension logic for qc.e.lb and qc.e.lh instructions
+    - Fix IDL code sign extension logic for qc.ext and qc.extd instructions
+    - Fix IDL code sign extension logic for qc.extdpr, qc.extdprh and qc.extdr instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdr and qc.extdur instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
+    - Fix IDL code sign extension logic for qc.lieq instruction
+    - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
+    - Fix wrong exponent calculation in qc.normeu instruction
+    - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
+  implies:
+  - { name: Xqcia, version: "0.6.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.7.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.6.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.10.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mileaveret instruction
+  implies:
+  - { name: Xqcia, version: "0.6.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.7.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.7.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.11.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code of qc.shlusat instruction (should use zero-extension and not sign-extension)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions (should compare values of xlen()*2 bits)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions because change in IDL operators (width adjustment)
+    - Fix IDL code of qc.subsat, qc.addusat and qc.addsat instructions because change in IDL operators (width adjustment)
+    - Fix IDL code for qc.c.mileaveret, qc.c.mnret and qc.c.mret instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.clrint, qc.c.setint, qc.clrinti and qc.setinti instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.di, qc.c.dir, qc.c.ei, qc.c.eir and qc.c.mienter.nest instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.sync, qc.c.syncr, qc.c.syncwf and qc.c.syncwl instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.bseti, qc.c.extu, qc.ext and qc.extu instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extd, qc.extdu, qc.extdr and qc.extdur instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extdpr, qc.extdprh, qc.extdupr and qc.extduprh instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insb, qc.insbi, qc.insbr and qc.insbri instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insbh, qc.insbhr, qc.insbpr and qc.insbprh instructions because change in IDL '<<' operator
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.8.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.12.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix desciption of qc.c.eir instruction to match IDL code and functionality
+    - Fix encoding of qc.swm and qc.swmi instructions to state that rs3 cannot be x0
+    - Fix description and IDL code of qc.swm and qc.lwm instructions to state that length is in rs2[4:0]
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.9.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.6.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.13.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix version history of releases v0.11.0 and v0.12.0
+    - Fix description and IDL code of qc.csrrwr instruction to allow just read CSR
+    - Fix IDL code of qc.c.mileaveret instruction to avoid restoring from stack NMIP and EXCP bits
+  implies:
+  - { name: Xqcia, version: "0.7.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.8.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.4.0" }
+  - { name: Xqciint, version: "0.10.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.6.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.3.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+description: |
+  The Xqci extension includes a set of instructions that improve RISC-V code density and
+  performance in microontrollers. It fills several gaps:
+
+  Long immediates::
+  --
+  This extension provides wide-immediate versions of
+  loads, stores, branches, jumps, and several arithmetic operations.
+  --
+
+  Addressing modes::
+  --
+  New indexed addressing modes are added for load and store instructions.
+  --
+
+  Load/store multiple::
+  --
+  Xqci adds instructions that load multiple sequential values from memory into multiple registers.
+  Analogous instructions for stores are also included.
+  --
+
+  Branch immediate instructions::
+  --
+  The base RISC-V ISA provides conditional branches that compare two register values.
+  Xqci adds conditional branch instructions that compare an immediate value to a register value,
+  reducing a common code sequence into a single instruction.
+  --
+
+  Conditional instructions::
+  --
+  Xqci includes a variety of conditional select instructions that pick one of two operand values based on the result of a condition
+  and conditional move instructions that either move a value or retain a value in a destination register based on the result of a condition.
+  Conditional select and conditional move instructions help reduce code size and avoid branches in common code sequences.
+  --
+
+  Extra bit manipulation instructions::
+  --
+  Xqci expands upon the standard `B` extension by adding instructions for
+  bit insertion/extraction, bit set/clear, sign and zero extension, and bit counting instructions.
+  --
+
+  Fast interrupt instructions::
+  --
+  Xqci adds instructions to accelerate interrupt handling, including instructions to quickly
+  enable/disable interrupts and instructions to automatically save an interrupt frame.
+  --
+
+  Saturating arithmetic::
+  --
+  Xqci adds saturating arithmetic instructions to improve performance of fixed-point calculations.
+  --
+
+  Xqci adds 16, 32, and 48-bit instruction encodings. The 16 and 32-bit encodings are allocated
+  in the custom opcode space so as not to conflict with standard RISC-V instructions. The 48-bit instructions
+  follow the guidance for 48-bit instructions in the RISC-V standard, but are not allocated in reserved custom
+  space since no such space has been defined by RISC-V International.
+
+  Extension-specific instruction formats ::
+  --
+  QC.EAI format used for 48-bit instructions that operate on 32-bit immediate argument.
+  --
+
+  [%autowidth, cols="4*", options="header" ]
+  |===
+  ^|Field
+  ^|Start bit
+  ^|Width
+  ^|Description
+
+  |opcode
+  ^|0
+  ^|7
+  |Opcode field of 48-bit instructions is 0x1F
+
+  |rd
+  ^|7
+  ^|5
+  |Destination register
+
+  |funct3
+  ^|12
+  ^|3
+  |Function field identifying instruction group
+
+  |f1
+  ^|15
+  ^|1
+  |Secondary function field
+
+  |imm[31:0]
+  ^|16
+  ^|32
+  |Immediate operand of 32 bits
+  |===
+
+  --
+  QC.EI format used for 48-bit instructions that operate on 26-bit immediate argument, including loads.
+  --
+
+  [%autowidth, cols="4*", options="header" ]
+  |===
+  ^|Field
+  ^|Start bit
+  ^|Width
+  ^|Description
+
+  |opcode
+  ^|0
+  ^|7
+  |Opcode field of 48-bit instructions is 0x1F
+
+  |rd
+  ^|7
+  ^|5
+  |Destination register
+
+  |funct3
+  ^|12
+  ^|3
+  |Function field identifying instruction group
+
+  |rs1
+  ^|15
+  ^|5
+  |Register argument
+
+  |imm[9:0]
+  ^|20
+  ^|10
+  |Immediate operand of 26 bits, the 10 LSBs
+
+  |funct2
+  ^|30
+  ^|2
+  |Secondary function field
+
+  |imm[25:10]
+  ^|32
+  ^|16
+  |Immediate operand of 26 bits, the 16 MSBs
+  |===
+
+  --
+  QC.EB format used for 48-bit branch instructions that compare register with 16-bit immediate.
+  --
+
+  [%autowidth, cols="4*", options="header" ]
+  |===
+  ^|Field
+  ^|Start bit
+  ^|Width
+  ^|Description
+
+  |opcode
+  ^|0
+  ^|7
+  |Opcode field of 48-bit instructions is 0x1F
+
+  |imm[4:1,11]
+  ^|7
+  ^|5
+  |Bits of immediate value of branch target
+
+  |funct3
+  ^|12
+  ^|3
+  |Function field identifying instruction group
+
+  |rs1
+  ^|15
+  ^|5
+  |Register argument
+
+  |funct5
+  ^|20
+  ^|5
+  |Secondary function field
+
+  |imm[12,10:5]
+  ^|25
+  ^|7
+  |Bits of immediate value of branch target
+
+  |simm[15:0]
+  ^|32
+  ^|16
+  |Immediate operand of 16 bits to compare with register
+  |===
+
+  --
+  QC.EJ format used for 48-bit jump/call instructions with 32-bit immediate target address.
+  --
+
+  [%autowidth, cols="4*", options="header" ]
+  |===
+  ^|Field
+  ^|Start bit
+  ^|Width
+  ^|Description
+
+  |opcode
+  ^|0
+  ^|7
+  |Opcode field of 48-bit instructions is 0x1F
+
+  |imm[4:1,11]
+  ^|7
+  ^|5
+  |Bits of immediate value of branch target
+
+  |funct3
+  ^|12
+  ^|3
+  |Function field identifying instruction group
+
+  |funct2
+  ^|15
+  ^|2
+  |Secondary function field
+
+  |imm[15:13]
+  ^|17
+  ^|3
+  |Bits of immediate value of branch target
+
+  |funct5
+  ^|20
+  ^|5
+  |Secondary function field
+
+  |imm[12,10:5]
+  ^|25
+  ^|7
+  |Bits of immediate value of branch target
+
+  |imm[31:16]
+  ^|32
+  ^|16
+  |The 16 MSBs of immediate value of branch target
+  |===
+
+  --
+  QC.ES format used for 48-bit store instructions with 26-bit immediate offset.
+  --
+
+  [%autowidth.stretch]
+  |===
+  |Field|Start bit|Width|Description
+
+  |opcode
+  ^|0
+  ^|7
+  |Opcode field of 48-bit instructions is 0x1F
+
+  |imm[4:0]
+  ^|7
+  ^|5
+  |Immediate operand of 26 bits offset, the 5 LSBs
+
+  |funct3
+  ^|12
+  ^|3
+  |Function field identifying instruction group
+
+  |rs1
+  ^|15
+  ^|5
+  |Register argument used as base address
+
+  |rs2
+  ^|20
+  ^|5
+  |Register argument to be saved
+
+  |imm[9:5]
+  ^|25
+  ^|5
+  |Immediate operand of 26 bits offset, the 5 bits
+
+  |funct2
+  ^|30
+  ^|2
+  |Secondary function field
+
+  |imm[25:10]
+  ^|32
+  ^|16
+  |Immediate operand of 26 bits offset, the 16 MSBs
+  |===
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+company:
+  name: Qualcomm Technologies, Inc.
+  url: https://qualcomm.com
+conflicts: D

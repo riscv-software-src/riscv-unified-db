@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: B
+type: unprivileged
+long_name: Bitmanipulation instructions
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-04
+    contributors:
+      - name: Ved Shanbhogue
+        email: ved@rivosinc.com
+        company: Rivos, Inc.
+    url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
+    implies:
+      - name: Zba
+        version: "1.0.0"
+      - name: Zbb
+        version: "1.0.0"
+      - name: Zbs
+        version: "1.0.0"
+description: |
+  The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
+
+  Bit 1 of the `misa` register encodes the presence of the B standard extension. When `misa.B` is 1,
+  the implementation supports the instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
+  When `misa.B` is 0, it indicates that the implementation may not support one or more of the
+  `Zba`, `Zbb`, or `Zbs` extensions.
+params:
+  MUTABLE_MISA_B:
+    description: |
+      Indicates whether or not the `B` extension can be disabled with the `misa.B` bit.
+    schema:
+      type: boolean

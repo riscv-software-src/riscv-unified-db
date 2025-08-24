@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smcdeleg
+long_name: Performance counter delegation
+description: Performance counter delegation
+type: privileged
+rvi_jira_issue: RVS-1005
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
+  url: https://creativecommons.org/licenses/by/4.0/
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    repositories:
+      - url: https://github.com/riscvarchive/riscv-smcdeleg-ssccfg
+    url: https://github.com/riscvarchive/riscv-smcdeleg-ssccfg/releases/download/v1.0.0/riscv-smcdeleg-ssccfg-v1.0.0.pdf
+    contributors:
+      - name: Beeman Strong
+        email: beeman@rivosinc.com
+        company: Rivos, Inc.
+      - name: Atish Patra
+        email: atishp@rivosinc.com
+        company: Rivos, Inc.
+      - name: Allen Baum
+        email: allen.baum@esperantotech.com
+        company: Rivos, Inc.
+      - name: Greg Favor
+        email: gfavor@ventanamicro.com
+        company: Ventana Microsystems
+      - name: John Hauser
+        email: jh.riscv@jhauser.us
