@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "title": "CSR description",
+  "description": "A CSR register specification",
+
+  "$defs": {
+    "csr_field": {
+      "type": "object",
+      "description": "Field in a CSR register",
+      "required": ["description"],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the field. Optional because it is implied by the object key of the CSR object holding the field"
+        },
+        "long_name": {
+          "type": "string",
+          "description": "One line description of the CSR field"
+        },
+        "location": {
+          "$ref": "schema_defs.json#/$defs/field_location",
+          "description": "Location of the field within the CSR register"
+        },
+        "location_rv32": {
+          "$ref": "schema_defs.json#/$defs/field_location",
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 32"
+        },
+        "location_rv64": {
+          "$ref": "schema_defs.json#/$defs/field_location",
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 64"
+        },
+        "reset_value": {
+          "description": "Value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec",
+          "oneOf": [
+            {
+              "type": "integer",
+              "description": "A precise reset value"
+            },
+            {
+              "type": "string",
+              "const": "UNDEFINED_LEGAL",
+              "description": "State is undefined, though it must be a legal value for the state."
+            }
+          ]
+        },
+        "reset_value()": {
+          "description": "Configuration-dependent value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec.",
+          "type": "string"
+        },
+        "sw_write(csr_value)": {
+          "type": "string",
+          "description": "Function implementing custom write behavior for the CSR. Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
+        },
+        "legal?(csr_value)": {
+          "type": "string",
+          "description": "Function that returns whether or not an attempted value for the field is legal. The csr_value parameter is the *entire* attempted CSR write value. Fields within the attempted write value can be accessed with a dot operator (e.g., csr_value.SXL, csr_value.VGEIN, ...)"
+        },
+        "base": {
+          "type": "integer",
+          "enum": [32, 64],
+          "description": "When a CSR field is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text",
+          "description": "Function of the field"
+        },
+        "type": {
+          "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"],
+          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. sw_write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. sw_write(value) must be provided"
+        },
+        "type()": {
+          "type": "string",
+          "description": "Function that returns a configuration-dependent type. The return value should be a CsrFieldType enum, and must be compile-time-known."
+        },
+        "alias": {
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/csr_field"
+            },
+            {
+              "$ref": "schema_defs.json#/$defs/csr_field_bits"
+            },
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field"
+                  },
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field_bits"
+                  }
+                ]
+              }
+            }
+          ],
+          "description": "When specified, indicates that this field aliases (a portion of) another CSR field"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "description": "Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR"
+        },
+        "affectedBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+              }
+            }
+          ],
+          "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
+        }
+      },
+
+      "allOf": [
+        {
+          "$comment": "Location is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["location"]
+            },
+            {
+              "required": ["location_rv32", "location_rv64"]
+            }
+          ]
+        },
+        {
+          "$comment": "type is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["type"]
+            },
+            {
+              "required": ["type()"]
+            }
+          ]
+        },
+        {
+          "$comment": "reset_value is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["reset_value"]
+            },
+            {
+              "required": ["reset_value()"]
+            }
+          ]
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": { "type": { "const": "RW-R" } },
+                "required": ["type"]
+              },
+              {
+                "properties": { "type": { "const": "RW-RH" } },
+                "required": ["type"]
+              }
+            ]
+          },
+          "then": {
+            "required": ["sw_write(csr_value)"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "csr_register": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "length",
+        "description",
+        "writable",
+        "priv_mode",
+        "definedBy"
+      ],
+
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "csr_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "csr",
+          "description": "Object type"
+        },
+        "name": {
+          "$ref": "schema_defs.json#/$defs/csr_name"
+        },
+        "base": {
+          "type": "integer",
+          "enum": [32, 64],
+          "description": "When a CSR is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
+        },
+        "long_name": {
+          "type": "string",
+          "description": "One line description for the CSR"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text",
+          "description": "Function of the field"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "description": "Extension(s) that define the CSR"
+        },
+        "address": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4095,
+          "description": "Address of the CSR, as given to the CSR access instructions of the `Zicsr` extension"
+        },
+        "indirect_address": {
+          "type": "integer",
+          "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
+        },
+        "indirect_slot": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Indirect window slot of the CSR, corresponding to its appearance in *ireg<slot>"
+        },
+        "writable": {
+          "type": "boolean",
+          "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
+        },
+        "virtual_address": true,
+        "$comment": "Conditionally required; see below",
+        "priv_mode": {
+          "enum": ["M", "S", "U", "VS", "D"]
+        },
+        "length": {
+          "description": "Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN to indicate that it is dependent on the effective XLEN for a given mode. XLEN here refers to the effective XLEN in the current execution mode.",
+          "enum": [32, 64, "MXLEN", "SXLEN", "VSXLEN", "XLEN"]
+        },
+        "requires": {
+          "type": "string",
+          "description": "Extension that must be implemented for this CSR to exist"
+        },
+        "fields": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z].*$": {
+              "$ref": "#/$defs/csr_field"
+            }
+          },
+          "description": "fields of this CSR",
+          "additionalProperties": false
+        },
+        "sw_read()": {
+          "type": "string",
+          "description": "Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned."
+        },
+        "$source": {
+          "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
+          "type": "string"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
+        }
+      },
+      "additionalProperties": false,
+
+      "$comment": "If mode is VS, then there must be a virtual_address field",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "priv_mode": { "const": "VS" }
+            }
+          },
+          "then": {
+            "properties": {
+              "virtual_address": {
+                "type": "number",
+                "description": "Address of the CSR viewed from VS-mode"
+              }
+            },
+            "required": ["virtual_address"]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "indirect_address": { "const": null }
+              }
+            }
+          },
+          "then": {
+            "required": ["indirect_slot"]
+          }
+        }
+      ]
+    }
+  },
+
+  "$ref": "#/$defs/csr_register"
+}

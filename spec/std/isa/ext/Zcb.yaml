@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zcb
+long_name: Simple code-size saving instructions
+description: |
+  Zcb has simple code-size saving instructions which are easy to implement on all CPUs.
+  All proposed encodings are currently reserved for all architectures, and have no conflicts with any existing extensions.
+
+  The Zcb extension depends on the Zca extension.
+
+  As shown on the individual instruction pages, many of the instructions in Zcb depend upon another extension being implemented.
+  For example, c.mul is only implemented if M or Zmmul is implemented, and c.sext.b is only implemented if Zbb is implemented.
+
+type: unprivileged
+company:
+  name: RISC-V International
+  url: https://riscv.org
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-04
+    repositories:
+      - url: https://github.com/riscv/riscv-code-size-reduction
+        branch: main
+    contributors:
+      - name: Tariq Kurd
+      - name: Ibrahim Abu Kharmeh
+      - name: Torbjørn Viem Ness
+      - name: Matteo Perotti
+      - name: Nidal Faour
+      - name: Bill Traynor
+      - name: Rafael Sene
+      - name: Xinlong Wu
+      - name: sinan
+      - name: Jeremy Bennett
+      - name: Heda Chen
+      - name: Alasdair Armstrong
+      - name: Graeme Smecher
+      - name: Nicolas Brunie
+      - name: Jiawei

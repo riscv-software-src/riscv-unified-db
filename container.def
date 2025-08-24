@@ -11,31 +11,37 @@ From: ubuntu:24.04
 
   apt-get update
 
-  apt-get install -y --no-install-recommends  git \
-                                              gh \
-                                              less \
-                                              python3 \
-                                              python3.12-venv \
-                                              python3-pip \
-                                              build-essential \
-                                              ruby \
-                                              ruby-dev \
-                                              libyaml-dev \
-                                              bundler \
-                                              nodejs \
-                                              npm \
-                                              ditaa \
-                                              cmake \
-                                              g++ \
-                                              gdb \
-                                              libgmp-dev \
-                                              clang-format \
-                                              clang-tidy \
-                                              libelf-dev \
-                                              gcc-riscv64-linux-gnu \
-                                              gcc-riscv64-unknown-elf \
-                                              libc6-dev-riscv64-cross
-  # cleanup
+  # please keep pkgs sorted
+  apt-get install -y --no-install-recommends \
+    build-essential \
+    bundler \
+    clang-format \
+    clang-tidy \
+    cmake \
+    ditaa \
+    g++ \
+    gcc-riscv64-linux-gnu \
+    gcc-riscv64-unknown-elf \
+    gdb \
+    gh \
+    git \
+    less \
+    libc6-dev-riscv64-cross \
+    libelf-dev \
+    libgmp-dev \
+    libnewlib-dev \
+    libyaml-dev \
+    nodejs \
+    npm \
+    parallel \
+    python3 \
+    python3-pip \
+    python3.12-venv \
+    ruby \
+    ruby-dev \
+    shellcheck
+
+# cleanup
   apt-get clean autoclean
   apt-get autoremove -y
   rm -rf /var/lib/{apt, dpkg, cache, log}

@@ -1,0 +1,79 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+<%-
+  raise "'pmpaddr_num' must be defined" if pmpaddr_num.nil?
+  pmpcfg_num_32 = (pmpaddr_num / 4)
+  pmpcfg_num_64 = (pmpaddr_num / 8)*2
+-%>
+
+$schema: csr_schema.json#
+kind: csr
+name: pmpaddr<%= pmpaddr_num %>
+long_name: PMP Address <%= pmpaddr_num %>
+address: 0x<%= (0x3B0 + pmpaddr_num).to_s(16).upcase %>
+writable: true
+priv_mode: M
+length: MXLEN
+description: PMP entry address
+definedBy: Smpmp
+fields:
+  ADDR:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      Bits PHYS_ADDR_WIDTH-1:2 of the address specifier for PMP entry <%= pmpaddr_num %>
+      (or, if `pmp<%= pmpaddr_num+1 %>cfg.A` == TOR, for PMP entry <%= pmpaddr_num + 1 %>).
+    type(): |
+      if (NUM_PMP_ENTRIES > <%= pmpaddr_num %>) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if (csr_value.ADDR >= ((1 `<< (PHYS_ADDR_WIDTH - 2)) - 1)) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else if (NUM_PMP_ENTRIES <= <%= pmpaddr_num %>) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      } else {
+        return csr_value.ADDR;
+      }
+sw_read(): |
+  # when the mode is NAPOT and PMP_GRANULARITY >= 16,
+  # bits (PMP_GRANULARITY-4):0 must read as ones
+  if (MXLEN == 32) {
+    if ((PMP_GRANULARITY >= 16) &&
+        (CSR[pmpcfg<%= pmpcfg_num_32 %>].pmp<%= pmpaddr_num %>cfg[4] == 1)) {
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR | {PMP_GRANULARITY-3{1'b1}};
+
+    # when the mode is OFF or TOR and PMP_GRANULARITY >= 8,
+    # bits (PMP_GRANULARITY-3):0 must read as zeros
+    } else if ((PMP_GRANULARITY >= 8) &&
+                (CSR[pmpcfg<%= pmpcfg_num_32 %>].pmp<%= pmpaddr_num %>cfg[4] == 0)) {
+      Bits<PHYS_ADDR_WIDTH-2> mask = {PMP_GRANULARITY-2{1'b1}};
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR & ~mask;
+
+    # no modifications needed
+    } else {
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR;
+    }
+  } else {
+    if ((PMP_GRANULARITY >= 16) &&
+        (CSR[pmpcfg<%= pmpcfg_num_64 %>].pmp<%= pmpaddr_num %>cfg[4] == 1)) {
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR | {PMP_GRANULARITY-3{1'b1}};
+
+    # when the mode is OFF or TOR and PMP_GRANULARITY >= 8,
+    # bits (PMP_GRANULARITY-3):0 must read as zeros
+    } else if ((PMP_GRANULARITY >= 8) &&
+                (CSR[pmpcfg<%= pmpcfg_num_64 %>].pmp<%= pmpaddr_num %>cfg[4] == 0)) {
+      Bits<PHYS_ADDR_WIDTH-2> mask = {PMP_GRANULARITY-2{1'b1}};
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR & ~mask;
+
+    # no modifications needed
+    } else {
+      return CSR[pmpaddr<%= pmpaddr_num %>].ADDR;
+    }
+  }

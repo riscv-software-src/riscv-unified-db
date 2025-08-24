@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zbkc
+long_name: Carry-less multiplication for Cryptography
+description: |
+  Carry-less multiplication is the multiplication in the polynomial ring over GF(2).
+  This is a critical operation in some cryptographic workloads, particularly the AES-GCM
+  authenticated encryption scheme.
+  This extension provides only the instructions needed to efficiently implement the GHASH operation,
+  which is part of this workload.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

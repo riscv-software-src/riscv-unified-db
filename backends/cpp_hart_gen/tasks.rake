@@ -6,10 +6,38 @@ require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
 require_relative "lib/gen_cpp"
 require_relative "lib/decode_tree"
-require_relative "../../lib/idl/passes/find_src_registers"
+require "idlc/passes/find_src_registers"
 
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
-CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
+CPP_HART_GEN_DST = $resolver.gen_path / "cpp_hart_gen"
+
+OPTION_STR = <<~DESC_OPTIONS.freeze
+  Options:
+
+    * CONFIG: Comma-separated list of configurations to generate.
+              "rv32" is the generic RV32 architecture (i.e., no config).
+              "rv64" is the generic RV64 architecture (i.e., no config).
+              "all" will generate all configurations and the generic architecture.
+
+              CONFIG can either be the name, excluding extension '.yaml', of a file under cfgs/
+              or the (absolute or relative) path to a config file.
+    * BUILD_NAME: Name of the build. Required if CONFIG is a list. Otherwise, BUILD_NAME will equal CONFIG.
+DESC_OPTIONS
+
+HELP = <<~DESC.freeze
+  Generate a C++ model of a hart(s) for configurations (./do --desc for more options)
+
+  #{OPTION_STR}
+
+  Examples:
+
+    ./do gen:cpp_hart CONFIG=rv64                       # generate generic hart model
+    ./do gen:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
+
+    # generate hart model for example_rv64_with_overlay and custom_cfg
+    ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
+
+DESC
 
 # copy the includes to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} => proc { |tname|
@@ -61,7 +89,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -85,7 +113,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -100,10 +128,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
   [
-    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
-    "#{$root}/lib/idl/passes/prune.rb",
+    "#{$root}/tools/ruby-gems/idlc/lib/idlc/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -113,7 +140,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -134,10 +161,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
   [
-    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
-    "#{$root}/lib/idl/passes/prune.rb",
+    "#{$root}/tools/ruby-gems/idlc/lib/idlc/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -147,7 +173,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -187,8 +213,15 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hpp} do |t|
   FileUtils.ln_s "#{CPP_HART_GEN_SRC}/cpp/include/udb/#{fname}", t.name
 end
 
+# the gen script creates all tests, so we just need a task for one
+file (CPP_HART_GEN_SRC / "cpp" / "test" / "test_bits_random_0.cpp").to_s => [
+  CPP_HART_GEN_SRC / "cpp" / "test" / "gen_test_bits.rb"
+] do
+  sh "ruby #{CPP_HART_GEN_SRC}/cpp/test/gen_test_bits.rb -o #{CPP_HART_GEN_SRC}/cpp/test"
+end
+
 def configs_build_name
-  raise ArgumentError, "Missing required option CONFIG:\n#{help}" if ENV["CONFIG"].nil?
+  raise ArgumentError, "Missing required option CONFIG:\n#{HELP}" if ENV["CONFIG"].nil?
 
   configs = ENV["CONFIG"].split(",")
   build_type = cmake_build_type
@@ -206,7 +239,7 @@ def configs_build_name
   end
 
   config_names = configs.map do |config|
-    cfg_arch_for(config).name
+    $resolver.cfg_arch_for(config).name
   end
 
   build_name =
@@ -224,35 +257,10 @@ def configs_build_name
   [config_names, build_name]
 end
 
-OPTION_STR = <<~DESC_OPTIONS
-Options:
 
-  * CONFIG: Comma-separated list of configurations to generate.
-            "rv32" is the generic RV32 architecture (i.e., no config).
-            "rv64" is the generic RV64 architecture (i.e., no config).
-            "all" will generate all configurations and the generic architecture.
-
-            CONFIG can either be the name, excluding extension '.yaml', of a file under cfgs/
-            or the (absolute or relative) path to a config file.
-  * BUILD_NAME: Name of the build. Required if CONFIG is a list. Otherwise, BUILD_NAME will equal CONFIG.
-DESC_OPTIONS
 
 namespace :gen do
-  help = <<~DESC
-    Generate a C++ model of a hart(s) for configurations (./do --desc for more options)
-
-    #{OPTION_STR}
-
-    Examples:
-
-      ./do gen:cpp_hart CONFIG=rv64                       # generate generic hart model
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
-
-      # generate hart model for example_rv64_with_overlay and custom_cfg
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
-
-  DESC
-  desc help
+  desc HELP
   task :cpp_hart do
     configs, build_name = configs_build_name
 
@@ -328,21 +336,7 @@ def cmake_build_type
 end
 
 namespace :build do
-  help = <<~DESC
-    Build a C++ model of a hart(s) for configurations (./do --desc for more options)
-
-    #{OPTION_STR}
-
-    Examples:
-
-      ./do build:cpp_hart CONFIG=rv64                       # generate generic hart model
-      ./do build:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
-
-      # generate hart model for example_rv64_with_overlay and custom_cfg
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
-
-  DESC
-  desc help
+  desc HELP
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 
@@ -372,7 +366,13 @@ file "#{$root}/ext/riscv-tests/env/LICENSE" => ["#{$root}/ext/riscv-tests/LICENS
   end
 end
 
-task "checkout-riscv-tests" => "#{$root}/ext/riscv-tests/env/LICENSE"
+task checkout_riscv_tests: "#{$root}/ext/riscv-tests/env/LICENSE"
+
+task build_riscv_tests: "checkout_riscv_tests" do
+  Dir.chdir "#{$root}/ext/riscv-tests/isa" do
+    sh "make RISCV_GCC_OPTS='-static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -I/usr/include/newlib'"
+  end
+end
 
 file "#{CPP_HART_GEN_DST}/riscv-tests-build-64/Makefile" => "#{$root}/ext/riscv-tests/env/LICENSE" do |t|
   FileUtils.mkdir_p File.dirname(t.name)
@@ -382,11 +382,32 @@ file "#{CPP_HART_GEN_DST}/riscv-tests-build-64/Makefile" => "#{$root}/ext/riscv-
 end
 
 namespace :test do
-  task cpp_hart: ["build:cpp_hart"] do
+  task cpp_hart: "gen:cpp_hart" do
     _, build_name = configs_build_name
 
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+    Rake::Task[(CPP_HART_GEN_SRC / "cpp" / "test" / "test_bits_random_0.cpp").to_s].invoke
+
     Dir.chdir "#{CPP_HART_GEN_DST}/#{build_name}/build" do
-      sh "ctest"
+      sh "make -j #{$jobs} test_bits_directed"
+      sh "make -j #{$jobs} test_bits_random"
+      sh "ctest -T coverage -T test"
+    end
+  end
+
+  task riscv_tests: ["build_riscv_tests", "build:cpp_hart"] do
+    configs_name, build_name = configs_build_name
+    tests = ["simple", "add", "addi", "and",
+    "andi", "auipc", "beq", "bge", "bgeu", "blt",
+    "bltu", "bne", "fence_i", "jal", "jalr",
+     "lb", "lbu", "lh", "lhu", "lw", "ld_st",
+     "lui", "ma_data", "or", "ori", "sb", "sh",
+     "sw", "st_ld", "sll", "slli", "slt", "slti",
+     "sltiu", "sltu", "sra", "srai", "srl",
+     "srli", "sub", "xor", "xori"]
+
+     tests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
     end
   end
 end

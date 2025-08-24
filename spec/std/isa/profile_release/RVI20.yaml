@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/profile_release_schema.json
+
+$schema: profile_release_schema.json#
+kind: profile release
+name: RVI20
+long_name: RVI20
+marketing_name: RVI20
+family:
+  $ref: profile_family/RVI.yaml#
+base: null
+state: ratified # current status ["ratified", "development"]
+ratification_date: "2023-04-03"
+
+# Semantic versions within the release
+versions:
+  - version: "1.0.0"
+
+introduction: |
+  The two profiles RVI20U32 and RVI20U64 correspond to the RV32I and RV64I base ISAs respectively.
+contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+profiles:
+  - { $ref: profile/RVI20U32.yaml# }
+  - { $ref: profile/RVI20U64.yaml# }
+description: |
+  This profile release defines the RISC-V base ISA unprivileged instructions.

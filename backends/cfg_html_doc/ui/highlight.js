@@ -3530,7 +3530,7 @@
           name: "IDL",
           case_insensitive: !1,
           keywords:
-            "if else for return returns arguments builtin function enum bitfield",
+            "if else for return returns arguments builtin function enum bitfield generated struct",
           literal: "true false $pc $encoding",
           contains: [
             e.HASH_COMMENT_MODE,
@@ -3555,6 +3555,7 @@
             {
               className: "number",
               variants: [
+                { begin: /((MXLEN'(s?([bhodBHOD])?))[0-9xzXZa-fA-F_]+)/ },
                 { begin: /((\d+'(s?([bhodBHOD])?))[0-9xzXZa-fA-F_]+)/ },
                 { begin: /(('(s?([bhodBHOD])?))[0-9xzXZa-fA-F_]+)/ },
                 {

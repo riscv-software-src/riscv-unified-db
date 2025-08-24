@@ -1,0 +1,12 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/profile_schema.json
+
+$schema: profile_schema.json#
+kind: profile
+name: RVI20U64
+long_name: U-mode extensions for version 20 of a 64-bit processor
+$inherits: "profile/RVI20U32.yaml#"
+base: 64
+marketing_name: RVI20U64

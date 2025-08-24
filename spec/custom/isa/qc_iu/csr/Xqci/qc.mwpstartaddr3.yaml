@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: qc.mwpstartaddr3
+long_name: Watchpoint start address for region 3
+address: 0x7d3
+length: 32
+priv_mode: M
+base: 32
+definedBy:
+  anyOf:
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
+writable: true
+description: |
+  Watchpoint start address for region 3
+fields:
+  ADDR:
+    type: RW
+    reset_value: 0
+    location: 31-0
+    description: Watchpoint start address

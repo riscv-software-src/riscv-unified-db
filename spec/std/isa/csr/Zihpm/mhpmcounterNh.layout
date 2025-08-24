@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+<%- raise "'hpm_num' must be defined" if hpm_num.nil? -%>
+
+$schema: csr_schema.json#
+kind: csr
+name: <%= "mhpmcounter#{hpm_num}h" %>
+long_name: Machine Hardware Performance Counter <%= hpm_num %>, Upper half
+address: <%= "0x" + (0xB80 + hpm_num).to_s(16).upcase %>
+writable: true
+priv_mode: M
+length: 32
+base: 32
+description: |
+  Upper half of mhpmcounter<%= hpm_num %>.
+definedBy: Smhpm
+fields:
+  COUNT:
+    location: 31-0
+    alias: mhpmcounter.COUNT<%= hpm_num %>[63:32]
+    description: |
+      Upper bits of counter.
+    type(): "return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;"
+sw_read(): |
+  if (HPM_COUNTER_EN[<%= hpm_num %>]) {
+    return read_hpm_counter(<%= hpm_num %>)[63:32];
+  } else {
+    return 0;
+  }

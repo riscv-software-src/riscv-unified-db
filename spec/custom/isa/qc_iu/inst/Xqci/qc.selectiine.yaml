@@ -1,0 +1,43 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.selectiine
+long_name: Select load immediate if not equal (Register)
+description: |
+  Move `simm1` to `rd` if the value in `rd` is not equal to value `rs1`,
+  move `simm2` to `rd` otherwise.
+  Instruction encoded in R4 instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcics
+base: 32
+encoding:
+  match: -----00----------011-----1011011
+  variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: simm1
+      location: 24-20
+    - name: simm2
+      location: 31-27
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, simm1, simm2"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  if ($signed(X[rd]) != $signed(X[rs1])) {
+    X[rd] = sext(simm1, 5);
+  } else {
+    X[rd] = sext(simm2, 5);
+  }

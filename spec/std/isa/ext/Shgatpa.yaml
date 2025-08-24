@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Shgatpa
+long_name: hgtap profile requirements
+description: |
+  For each supported virtual memory scheme SvNN supported in
+  `satp`, the corresponding hgatp SvNNx4 mode must be supported.  The
+  `hgatp` mode Bare must also be supported.
+
+  [NOTE]
+  This extension was ratified with the RVA22 profiles.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      SV32X4_TRANSLATION:
+        extra_validation: |
+          (SV32X4_TRANSLATION && ext?(:Sv32)) || (!SV32X4_TRANSLATION && !ext?(:Sv32))
+      SV39X4_TRANSLATION:
+        extra_validation: |
+          (SV39X4_TRANSLATION && ext?(:Sv39)) || (!SV39X4_TRANSLATION && !ext?(:Sv39))
+      SV48X4_TRANSLATION:
+        extra_validation: |
+          (SV48X4_TRANSLATION && ext?(:Sv48)) || (!SV48X4_TRANSLATION && !ext?(:Sv48))
+      SV57X4_TRANSLATION:
+        extra_validation: |
+          (SV57X4_TRANSLATION && ext?(:Sv57)) || (!SV57X4_TRANSLATION && !ext?(:Sv57))
+      GSTAGE_MODE_BARE:
+        schema:
+          const: true

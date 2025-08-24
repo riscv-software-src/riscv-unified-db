@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Shtvala
+long_name: htval profile requirements
+description: |
+  htval must be written with the faulting virtual address
+  for load, store, and instruction page-fault, access-fault, and
+  misaligned exceptions, and for breakpoint exceptions other than
+  those caused by execution of the `ebreak` or `c.ebreak` instructions.
+  For virtual-instruction and illegal-instruction exceptions, htval must be written with the
+  faulting instruction.
+
+  [NOTE]
+  This extension was ratified with the RVA22 profiles.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
+        schema:
+          const: true

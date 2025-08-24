@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.swmi
+long_name: Store word multiple (immediate)
+description: |
+  Stores multiple words from the registers starting at `rs3` to the address starting at (`rs1` + `imm`).
+  The number of words is in `length` immediate.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcilsm
+base: 32
+encoding:
+  match: 01---------------111-----0101011
+  variables:
+    - name: imm
+      location: 29-25
+      left_shift: 2
+    - name: rs1
+      location: 19-15
+    - name: length
+      location: 24-20
+      not: 0
+    - name: rs3
+      location: 11-7
+      not: 0
+assembly: " xs3, length, imm(xs1)"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg vaddr = X[rs1] + imm;
+  raise (ExceptionCode::IllegalInstruction, effective_ldst_mode(), $encoding) if ((rs3 + length) > 32);
+  for (U32 i = 0; i < length; i++) {
+    write_memory<32>(vaddr, X[rs3 + i], $encoding);
+    vaddr = vaddr + 4;
+  }

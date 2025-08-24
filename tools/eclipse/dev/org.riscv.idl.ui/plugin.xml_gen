@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension
+		point="org.eclipse.ui.editors">
+		<editor
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+			default="true"
+			extensions="idl"
+			id="org.riscv.idl.Idl"
+			matchingStrategy="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.editor.JavaEditorInputMatcher"
+			name="Idl Editor">
+		</editor>
+	</extension>
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+			commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+			commandId="org.riscv.idl.Idl.validate">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+		<!-- copy qualified name -->
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
+			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName">
+			<activeWhen>
+				<reference definitionId="org.riscv.idl.Idl.Editor.opened" />
+			</activeWhen>
+		</handler>
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
+			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName">
+			<activeWhen>
+				<and>
+					<reference definitionId="org.riscv.idl.Idl.XtextEditor.opened" />
+					<iterate>
+						<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
+					</iterate>
+				</and>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.core.expressions.definitions">
+		<definition id="org.riscv.idl.Idl.Editor.opened">
+			<and>
+				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
+				<with variable="activeEditor">
+					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
+						value="org.riscv.idl.Idl"
+						forcePluginActivation="true"/>
+				</with>
+			</and>
+		</definition>
+		<definition id="org.riscv.idl.Idl.XtextEditor.opened">
+			<and>
+				<reference definitionId="isXtextEditorActive"/>
+				<with variable="activeEditor">
+					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
+						value="org.riscv.idl.Idl"
+						forcePluginActivation="true"/>
+				</with>
+			</and>
+		</definition>
+	</extension>
+	<extension
+			point="org.eclipse.ui.preferencePages">
+		<page
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.riscv.idl.Idl"
+			name="Idl">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+			id="org.riscv.idl.Idl.coloring"
+			name="Syntax Coloring">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+			id="org.riscv.idl.Idl.templates"
+			name="Templates">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+	</extension>
+	<extension
+			point="org.eclipse.ui.propertyPages">
+		<page
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.riscv.idl.Idl"
+			name="Idl">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+			<filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
+		</page>
+	</extension>
+	<extension
+		point="org.eclipse.ui.keywords">
+		<keyword
+			id="org.riscv.idl.ui.keyword_Idl"
+			label="Idl"/>
+	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			description="Trigger expensive validation"
+			id="org.riscv.idl.Idl.validate"
+			name="Validate">
+		</command>
+		<!-- copy qualified name -->
+		<command
+			id="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
+			categoryId="org.eclipse.ui.category.edit"
+			description="Copy the qualified name for the selected element"
+			name="Copy Qualified Name">
+		</command>
+		<command
+			id="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName"
+			categoryId="org.eclipse.ui.category.edit"
+			description="Copy the qualified name for the selected element"
+			name="Copy Qualified Name">
+		</command>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.edit">
+			<command
+				commandId="org.riscv.idl.Idl.validate"
+				style="push"
+				tooltip="Trigger expensive validation">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="org.riscv.idl.Idl.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		<!-- copy qualified name -->
+		<menuContribution locationURI="popup:#TextEditorContext?after=copy">
+			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
+				style="push" tooltip="Copy Qualified Name">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		<menuContribution locationURI="menu:edit?after=copy">
+			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
+				style="push" tooltip="Copy Qualified Name">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		<menuContribution locationURI="popup:org.eclipse.xtext.ui.outline?after=additions">
+			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName"
+				style="push" tooltip="Copy Qualified Name">
+				<visibleWhen checkEnabled="false">
+					<and>
+						<reference definitionId="org.riscv.idl.Idl.XtextEditor.opened" />
+						<iterate>
+							<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
+						</iterate>
+					</and>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
+			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+			commandId="org.eclipse.xtext.ui.editor.FindReferences">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+		<content-type
+			base-type="org.eclipse.core.runtime.text"
+			file-extensions="idl"
+			id="org.riscv.idl.Idl.contenttype"
+			name="Idl File"
+			priority="normal">
+		</content-type>
+	</extension>
+	<!-- adding resource factories -->
+	<extension
+		point="org.eclipse.emf.ecore.extension_parser">
+		<parser
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			type="idl">
+		</parser>
+	</extension>
+	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
+		<resourceServiceProvider
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+			uriExtension="idl">
+		</resourceServiceProvider>
+	</extension>
+	<!-- marker definitions for org.riscv.idl.Idl -->
+	<extension
+			id="idl.check.fast"
+			name="Idl Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.fast"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="idl.check.normal"
+			name="Idl Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.normal"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="idl.check.expensive"
+			name="Idl Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.expensive"/>
+		<persistent value="true"/>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
+			id="org.riscv.idl.Idl.validator.preferencePage"
+			name="Errors/Warnings">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.xtext.builder.participant">
+		<participant
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="idl"/>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.riscv.idl.Idl.compiler.preferencePage"
+			name="Compiler">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.propertyPages">
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.riscv.idl.Idl.compiler.propertyPage"
+			name="Compiler">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+			<filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
+			<command
+				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
+				id="org.riscv.idl.Idl.OpenGeneratedCode"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
+			<activeWhen>
+				<reference definitionId="org.riscv.idl.Idl.Editor.opened" />
+			</activeWhen>
+		</handler>
+	</extension>
+	<!-- Quick Outline -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			description="Open the quick outline."
+			id="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+			name="Quick Outline">
+		</command>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+				style="push"
+				tooltip="Open Quick Outline">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<!-- quickfix marker resolution generator for org.riscv.idl.Idl -->
+	<extension
+			point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.riscv.idl.ui.idl.check.fast">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.riscv.idl.ui.idl.check.normal">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.riscv.idl.ui.idl.check.expensive">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+	</extension>
+	<!-- Rename Refactoring -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.edit">
+			<command commandId="org.eclipse.xtext.ui.refactoring.RenameElement"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="org.riscv.idl.Idl.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="org.riscv.idl.Idl"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="org.riscv.idl.Idl.refactoring"
+			name="Refactoring">
+			<keywordReference id="org.riscv.idl.ui.keyword_Idl"/>
+		</page>
+	</extension>
+	<!-- Type Hierarchy  -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.hierarchy.OpenTypeHierarchyHandler"
+			commandId="org.eclipse.xtext.xbase.ui.hierarchy.OpenTypeHierarchy">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.hierarchy.QuickTypeHierarchyHandler"
+			commandId="org.eclipse.jdt.ui.edit.text.java.open.hierarchy">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.xbase.ui.hierarchy.OpenTypeHierarchy"
+				style="push"
+				tooltip="Open Type Hierarchy">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.jdt.ui.edit.text.java.open.hierarchy"
+				style="push"
+				tooltip="Quick Type Hierarchy">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<!-- Call Hierachy -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.hierarchy.OpenCallHierachyHandler"
+			commandId="org.eclipse.xtext.xbase.ui.hierarchy.OpenCallHierarchy">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.xbase.ui.hierarchy.OpenCallHierarchy"
+				style="push"
+				tooltip="Open Call Hierarchy">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.riscv.idl.Idl.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.core.runtime.adapters">
+		<factory class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.builder.smap.StratumBreakpointAdapterFactory"
+			adaptableType="org.riscv.idl.ui.editor.IdlEditor">
+			<adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+		</factory>
+	</extension>
+	<extension point="org.eclipse.ui.editorActions">
+		<editorContribution targetID="org.riscv.idl.Idl"
+			id="org.riscv.idl.Idl.rulerActions">
+			<action
+				label="Not Used"
+				class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+				style="push"
+				actionID="RulerDoubleClick"
+				id="org.riscv.idl.Idl.doubleClickBreakpointAction"/>
+		</editorContribution>
+	</extension>
+	<extension point="org.eclipse.ui.popupMenus">
+		<viewerContribution
+			targetID="org.riscv.idl.Idl.RulerContext"
+			id="org.riscv.idl.Idl.RulerPopupActions">
+			<action
+				label="Toggle Breakpoint"
+				class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+				menubarPath="debug"
+				id="org.riscv.idl.Idl.rulerContextMenu.toggleBreakpointAction">
+			</action>
+			<action
+				label="Not used"
+				class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+				menubarPath="debug"
+				id="org.riscv.idl.Idl.rulerContextMenu.enableDisableBreakpointAction">
+			</action>
+			<action
+				label="Breakpoint Properties"
+				helpContextId="breakpoint_properties_action_context"
+				class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.jdt.debug.ui.actions.JavaBreakpointPropertiesRulerActionDelegate"
+				menubarPath="group.properties"
+				id="org.riscv.idl.Idl.rulerContextMenu.openBreapointPropertiesAction">
+			</action>
+		</viewerContribution>
+	</extension>
+	<!-- Introduce Local Variable Refactoring -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.refactoring.ExtractVariableHandler"
+			commandId="org.eclipse.xtext.xbase.ui.refactoring.ExtractLocalVariable">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.edit">
+			<command commandId="org.eclipse.xtext.xbase.ui.refactoring.ExtractLocalVariable"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="org.riscv.idl.Idl.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<!-- Open implementation -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.navigation.OpenImplementationHandler"
+			commandId="org.eclipse.xtext.xbase.ui.OpenImplementationCommand">
+			<activeWhen>
+				<reference
+					definitionId="org.riscv.idl.Idl.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="menu:navigate?after=open.ext4">
+			<command commandId="org.eclipse.xtext.xbase.ui.OpenImplementationCommand">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="org.riscv.idl.Idl.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.compare.contentViewers">
+		<viewer id="org.riscv.idl.Idl.compare.contentViewers"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="idl">
+		</viewer>
+		<contentTypeBinding
+			contentTypeId="org.riscv.idl.Idl.contenttype"
+			contentViewerId="org.riscv.idl.Idl.compare.contentViewers" />
+	</extension>
+	<extension point="org.eclipse.compare.contentMergeViewers">
+		<viewer id="org.riscv.idl.Idl.compare.contentMergeViewers"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="idl" label="Idl Compare">
+		</viewer>
+		<contentTypeBinding
+			contentTypeId="org.riscv.idl.Idl.contenttype"
+			contentMergeViewerId="org.riscv.idl.Idl.compare.contentMergeViewers" />
+	</extension>
+	<extension point="org.eclipse.ui.editors.documentProviders">
+		<provider id="org.riscv.idl.Idl.editors.documentProviders"
+			class="org.riscv.idl.ui.IdlExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+			extensions="idl">
+		</provider>
+	</extension>
+	<extension point="org.eclipse.team.core.fileTypes">
+		<fileTypes
+			extension="idl"
+			type="text">
+		</fileTypes>
+	</extension>
+</plugin>

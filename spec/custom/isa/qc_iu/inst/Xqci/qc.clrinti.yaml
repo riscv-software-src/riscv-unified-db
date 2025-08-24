@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.clrinti
+long_name: Clear interrupt (Immediate)
+description: |
+  Clear interrupt, interrupt number is in `imm` (0 - 1023).
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+assembly: " imm"
+base: 32
+encoding:
+  match: 1100111----------000000001110011
+  variables:
+    - name: imm
+      location: 24-15
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<12> MCLICIP0_ADDR = CSR[qc.mclicip0].address();
+
+  XReg idx = imm / 32;
+  XReg bit = imm % 32;
+  Csr pre_csr = direct_csr_lookup(MCLICIP0_ADDR + idx);
+  csr_sw_write(pre_csr, csr_sw_read(pre_csr) & ~(32'b1 << bit));

@@ -1,0 +1,83 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+<%- raise "'pmpcfg_num' must be defined" if pmpcfg_num.nil? -%>
+
+$schema: csr_schema.json#
+kind: csr
+name: pmpcfg<%= pmpcfg_num %>
+<%- if pmpcfg_num.odd? -%>
+base: 32 # odd numbered pmpcfg registers do not exist in RV64
+<%- end -%>
+long_name: PMP Configuration Register <%= pmpcfg_num %>
+address: 0x<%= (0x3A0 + pmpcfg_num).to_s(16).upcase %>
+writable: true
+priv_mode: M
+length: MXLEN
+description: PMP entry configuration
+definedBy: Smpmp
+fields:
+  <%- (pmpcfg_num.odd? ? 4 : 8).times do |i| -%>
+  pmp<%= pmpcfg_num*4 + i %>cfg:
+    location: <%= ((i+1)*8)-1 %>-<%= i*8 %>
+    <%- if i >= 4 -%>
+    base: 64 # upper half doesn't exist in RV32
+    <%- end -%>
+    description: |
+      *PMP configuration for entry <%= pmpcfg_num*4 + i %>*
+
+      The bits are as follows:
+
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
+
+      h! L ! <%= ((i+1)*8)-1 %>   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! <%= ((i+1)*8)-2 %>:<%= ((i+1)*8)-3 %> ! _Reserved_ Writes shall be ignored.
+      h! A ! <%= ((i+1)*8)-4 %>:<%= ((i+1)*8)-5 %>
+      a! Address matching mode. One of:
+
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Naturally aligned power of two
+
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Naturally aligned power of two
+
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+
+      h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! <%= ((i)*8)+1 %> ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! <%= ((i)*8)+0 %> ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
+
+      The combination of R = 0, W = 1 is reserved.
+    type(): |
+      if (NUM_PMP_ENTRIES > <%= pmpcfg_num*4 + i %>) {
+        return CsrFieldType::RWR;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return 0;
+    sw_write(csr_value): |
+      if (<%- if i > 4 -%>(xlen() == 64) && <%- end -%>(CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg & 0x80) == 0) {
+        # entry is not locked
+        if (!(((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x1) == 0) && ((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x2) == 0x2))) {
+          # not R = 0, W =1, which is reserved
+          if ((PMP_GRANULARITY < 2) ||
+              ((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x18) != 0x10)) {
+            # NA4 is not allowed when PMP granularity is larger than 4 bytes
+            return csr_value.pmp<%= pmpcfg_num*4 + i %>cfg;
+          }
+        }
+      }
+      # fall through: keep old value
+      return CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg;
+  <%- end -%>

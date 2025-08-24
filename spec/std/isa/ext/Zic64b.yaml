@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zic64b
+long_name: 64-byte cache blocks
+description: |
+  Cache blocks must be 64 bytes in size, naturally aligned in the address space.
+
+  [NOTE]
+  This extension was ratified with the RVA20 profiles.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    url: https://github.com/riscv/riscv-profiles/releases/tag/v1.0
+    repositories:
+      - url: https://github.com/riscv/riscv-profiles
+        branch: main
+    contributors:
+      - name: Krste Asanovic
+        company: SiFive, Inc.
+    requires:
+      anyOf:
+        - name: Zicbom
+        - name: Zicboz
+        - name: Zicbop
+    param_constraints:
+      CACHE_BLOCK_SIZE:
+        schema:
+          const: 64

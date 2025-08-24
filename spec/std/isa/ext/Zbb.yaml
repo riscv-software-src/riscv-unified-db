@@ -1,0 +1,54 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zbb
+long_name: Basic bit manipulation
+description: |
+  Basic bit manipulation
+type: unprivileged
+company:
+  name: RISC-V International
+  url: https://riscv.org
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-06
+    repositories:
+      - url: https://github.com/riscv/riscv-bitmanip
+        branch: main
+    contributors:
+      - name: Jacob Bachmeyer
+      - name: Allen Baum
+      - name: Ari Ben
+      - name: Alex Bradbury
+      - name: Steven Brager
+      - name: Rogier Brussee
+      - name: Michael Clark
+      - name: Ken Dockser
+      - name: Paul Donahue
+      - name: Dennis Ferguson
+      - name: Fabian Giesen
+      - name: John Hauser
+      - name: Robert Henry
+      - name: Bruce Holt
+      - name: Po-wei Huang
+      - name: Ben Marshall
+      - name: Rex McCrary
+      - name: Lee Moore
+      - name: Jiri Moravec
+      - name: Samuel Neves
+      - name: Markus Oberhumer
+      - name: Christopher Olson
+      - name: Nils Pipenbrinck
+      - name: Joseph Rahmeh
+      - name: Xue Saw
+      - name: Tommy Thorn
+      - name: Philipp Tomsich
+      - name: Avishai Tvila
+      - name: Andrew Waterman
+      - name: Thomas Wicki
+      - name: Claire Wolf

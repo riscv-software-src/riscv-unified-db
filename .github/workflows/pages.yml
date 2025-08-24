@@ -1,8 +1,9 @@
 name: Deploy pages
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [Deployment actions]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,6 +15,7 @@ concurrency:
 jobs:
   pages:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       SINGULARITY: 1
     environment:
@@ -22,29 +24,211 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+
+      - name: Make _site
+        run: mkdir _site
+      - name: Download reuse BOM
+        uses: actions/download-artifact@v5
         with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
+          name: reuse-manifest
+          path: _site/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download resolved spec
+        uses: actions/download-artifact@v5
         with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
-      - name: Setup project
-        run: ./bin/setup
-      - name: Create deploy dir
-        run: /bin/bash lib/deploy.sh
+          name: resolved-spec
+          path: _site/resolved_spec
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download UDB API Docs
+        uses: actions/download-artifact@v5
+        with:
+          name: udb-api
+          path: _site/htmls/udb_api_doc
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download ISA Explorer CSR
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-explorer-csr
+          path: _site/isa_explorer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download ISA Explorer Extension
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-explorer-ext
+          path: _site/isa_explorer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download ISA Explorer Inst
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-explorer-inst
+          path: _site/isa_explorer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download ISA Explorer Spreadsheet
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-explorer-spreadsheet
+          path: _site/isa_explorer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download HTML ISA Manual
+        uses: actions/download-artifact@v5
+        with:
+          name: isa-html-manual
+          path: _site/manual/html
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download HTML ISA Manual
+        uses: actions/download-artifact@v5
+        with:
+          name: cfg-html-manual
+          path: _site/example_cfg/html
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download Instruction Appendix
+        uses: actions/download-artifact@v5
+        with:
+          name: inst-appendix
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVI20
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVA20
+        uses: actions/download-artifact@v5
+        with:
+          name: rva20
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVA22
+        uses: actions/download-artifact@v5
+        with:
+          name: rva22
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVA23
+        uses: actions/download-artifact@v5
+        with:
+          name: rva23
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVB23
+        uses: actions/download-artifact@v5
+        with:
+          name: rvb23
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download AC100
+        uses: actions/download-artifact@v5
+        with:
+          name: ac100-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download AC200
+        uses: actions/download-artifact@v5
+        with:
+          name: ac200-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC100-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-32-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC100-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-64-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC200-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc200-32-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC200-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc200-64-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC300-32
+        uses: actions/download-artifact@v5
+        with:
+          name: mc300-32-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC300-64
+        uses: actions/download-artifact@v5
+        with:
+          name: mc300-64-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVI20-32 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-32-ctp
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVI20-64 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-64-ctp
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download MC100-32 CTP
+        uses: actions/download-artifact@v5
+        with:
+          name: mc100-32-ctp
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download IDL Doc
+        uses: actions/download-artifact@v5
+        with:
+          name: idl-doc
+          path: idl.html
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Create index
+        env:
+          PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
+        run: >
+          cp doc/udb-block.svg _site/ &&
+          ruby -r erb -r date
+            -e "File.write('_site/index.html',
+                           ERB.new(File.read('tools/scripts/pages.html.erb'),
+                                   trim_mode: '-').result(binding))"
+
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

@@ -1,0 +1,57 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: minstretcfgh
+long_name: Machine Instructions-Retired Counter Configuration High
+address: 0x722
+writable: true
+priv_mode: M
+length: 32
+definedBy: Smcntrpmf
+description: |
+  Upper 32 bits of the 64-bit `minstretcfg` CSR, used on RV32 systems to access
+  privilege mode filtering inhibit bits for instruction retirement.
+
+fields:
+  MINH:
+    alias: minstretcfg.MINH
+    location: 30
+    type: RW
+    definedBy: M
+    description: If set, then counting of events in M-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  SINH:
+    alias: minstretcfg.SINH
+    location: 29
+    type: RW
+    definedBy: S
+    description: If set, then counting of events in S/HS-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  UINH:
+    alias: minstretcfg.UINH
+    location: 28
+    type: RW
+    definedBy: U
+    description: If set, then counting of events in U-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  VSINH:
+    alias: minstretcfg.VSINH
+    location: 27
+    type: RW
+    definedBy: H
+    description: If set, then counting of events in VS-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  VUINH:
+    alias: minstretcfg.VUINH
+    location: 26
+    type: RW
+    definedBy: H
+    description: If set, then counting of events in VU-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL

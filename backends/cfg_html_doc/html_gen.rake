@@ -1,40 +1,7 @@
+# typed: false
 # frozen_string_literal: true
 
-# Utilities for generating an Antora site out of an architecture def
-module AntoraUtils
-  class << self
-    def resolve_links(path_or_str)
-      str =
-        if path_or_str.is_a?(Pathname)
-          path_or_str.read
-        else
-          path_or_str
-        end
-      str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
-        type = Regexp.last_match[1]
-        name = Regexp.last_match[2]
-        link_text = Regexp.last_match[3]
-
-        case type
-        when "inst"
-          "xref:insts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
-        when "csr"
-          "xref:csrs:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
-        when "csr_field"
-          csr_name, field_name = name.split('.')
-          "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
-        when "ext"
-          "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
-        when "func"
-          "xref:funcs:funcs.adoc##{name}-func-def[#{link_text.gsub(']', '\]')}]"
-        else
-          raise "Unhandled link type '#{type}' for '#{name}' #{match.captures}"
-        end
-      end
-    end
-  end
-end
-
+# fill out templates for every csr, inst, ext, and func
 ["csr", "inst", "ext", "func"].each do |type|
   rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/#{type}s/pages/.*\.adoc} => proc { |tname|
     config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
@@ -47,7 +14,7 @@ end
     rest = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc/#{config_name}/antora/modules/#{type}s/pages")
     FileUtils.mkdir_p File.dirname(t.name)
     src = $root / "gen" / "cfg_html_doc" / config_name / "adoc" / "#{type}s" / rest
-    File.write t.name, AntoraUtils.resolve_links(src)
+    File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(src)
   end
 end
 
@@ -67,8 +34,8 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
   erb = ERB.new(toc_path.read, trim_mode: "-")
   erb.filename = toc_path.to_s
 
-  cfg_arch = cfg_arch_for(config_name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  cfg_arch = $resolver.cfg_arch_for(config_name)
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(erb.result(binding))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => proc { |tname|
@@ -84,9 +51,9 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
   erb = ERB.new(config_path.read, trim_mode: "-")
   erb.filename = config_path.to_s
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => proc { |tname|
@@ -97,10 +64,10 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => 
   ]
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(File.read(t.prerequisites[0])))
+  File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(File.read(t.prerequisites[0])))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/antora.yml} => proc { |tname|
@@ -143,6 +110,9 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
       extensions:
       - 'asciidoctor-kroki'
       - '@asciidoctor/tabs'
+      - 'asciidoctor-mathjax'   # auto-handles raw TeX delimiters
+      attributes:
+        stem: latexmath
     ui:
       bundle:
         url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
@@ -222,11 +192,11 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
   PLAYBOOK
 end
 
-rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "arch" / "prose" / "**" / "*"] do |t|
+rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "spec" / "std" / "isa" / "prose" / "**" / "*"] do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("html-gen-prose-", "")
   FileUtils.rm_rf $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
   FileUtils.mkdir_p $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
-  FileUtils.cp_r $root / "arch" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
+  FileUtils.cp_r $root / "spec" / "std" / "isa" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
 
   Rake::Task["#{$root}/.stamps"].invoke
 
@@ -264,6 +234,8 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
   playbook_path = $root / "gen" / "cfg_html_doc" / config_name / "antora" / "playbook.yaml"
   Rake::Task[playbook_path].invoke
 
+  $logger.info "Running Antora under npm to create #{config_name}"
+
   sh [
     "npm exec -- antora",
     "--stacktrace",
@@ -274,6 +246,9 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
     "--fetch",
     playbook_path
   ].join(" ")
+
+  $logger.info "Done running Antora under npm to create #{config_name}"
+
   FileUtils.touch t.name
 end
 

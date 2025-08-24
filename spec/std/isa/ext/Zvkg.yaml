@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvkg
+long_name: Vector GCM/GMAC
+description: |
+  Instructions to enable the efficient implementation of GHASHH which is used in Galois/Counter Mode
+  (GCM) and Galois Message Authentication Code (GMAC).
+
+  All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
+
+  To help avoid side-channel timing attacks, these instructions shall be implemented with data-independent timing.
+
+  The number of element groups to be processed is vl/EGS.
+  vl must be set to the number of SEW=32 elements to be processed and therefore must be a multiple of EGS=4.
+
+  Likewise, vstart must be a multiple of EGS=4.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

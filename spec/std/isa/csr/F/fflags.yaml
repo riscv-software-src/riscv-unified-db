@@ -1,0 +1,99 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: fflags
+long_name: Floating-Point Accrued Exceptions
+address: 0x001
+writable: true
+description:
+  - id: csr-fflags-purpose
+    normative: true
+    text: |
+      The accrued exception flags indicate the exception conditions that have arisen on any floating-point arithmetic
+      instruction since the field was last reset by software.
+  - id: csr-fflags-fptrap
+    normative: false
+    text: The base RISC-V ISA does not support generating a trap on the setting of a floating-point exception flag.
+  - id: csr-fflags-reasoning
+    normative: false
+    text: |
+      As allowed by the standard, we do not support traps on floating-point exceptions in the F
+      extension, but instead require explicit checks of the flags in software. We considered
+      adding branches controlled directly by the contents of the floating-point accrued
+      exception flags, but ultimately chose to omit these instructions to keep the ISA simple.
+
+priv_mode: U
+length: 32
+definedBy: F
+fields:
+  NV:
+    alias: fcsr.NV
+    long_name: Invalid Operation
+    location: 4
+    description: |
+      Set by hardware when a floating point operation is invalid and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].NV = csr_value.NV;
+      return csr_value.NV;
+  DZ:
+    alias: fcsr.DZ
+    long_name: Divide by Zero
+    location: 3
+    description: |
+      Set by hardware when a floating point divide attempts to divide by zero and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].DZ = csr_value.DZ;
+      return csr_value.DZ;
+  OF:
+    alias: fcsr.OF
+    long_name: Overflow
+    location: 2
+    description: |
+      Set by hardware when a floating point operation overflows and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].OF = csr_value.OF;
+      return csr_value.OF;
+  UF:
+    alias: fcsr.UF
+    long_name: Underflow
+    location: 1
+    description: |
+      Set by hardware when a floating point operation underflows and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].UF = csr_value.UF;
+      return csr_value.UF;
+  NX:
+    alias: fcsr.NX
+    long_name: Inexact
+    location: 0
+    description: |
+      Set by hardware when a floating point operation is inexact and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].NX = csr_value.NX;
+      return csr_value.NX;
+sw_read(): |
+  return
+   (CSR[fcsr].NV `<< 4) |
+   (CSR[fcsr].DZ `<< 3) |
+   (CSR[fcsr].OF `<< 2) |
+   (CSR[fcsr].UF `<< 1) |
+   CSR[fcsr].NX;

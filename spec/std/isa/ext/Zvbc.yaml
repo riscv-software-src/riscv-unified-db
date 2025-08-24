@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvbc
+long_name: Vector Carryless Multiplication
+description: |
+  General purpose carryless multiplication instructions which are commonly used in cryptography and
+  hashing (e.g., Elliptic curve cryptography, GHASH, CRC).
+
+  These instructions are only defined for SEW=64.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

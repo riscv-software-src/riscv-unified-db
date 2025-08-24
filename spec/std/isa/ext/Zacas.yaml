@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zacas
+long_name: Atomic Compare-and-Swap (CAS) Instructions
+description: |
+  Adds Word/Doubleword/Quadword compare-and-swap instructions.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires: Zaamo

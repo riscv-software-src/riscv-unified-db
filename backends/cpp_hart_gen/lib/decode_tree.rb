@@ -212,12 +212,12 @@ class DecodeGen
     idx = 0
     efs = []
     dv.encoding_fields.reverse.each do |ef|
-      bits = "extract<#{ef.range.first}, #{ef.range.size}>(#{encoding_var_name}.get())"
+      bits = "#{encoding_var_name}.extract<#{ef.range.last}, #{ef.range.first}>()"
       efs <<
         if idx.zero?
           bits
         else
-          "(#{bits}.template sll<#{idx}>())"
+          "(#{bits}.template widening_sll<#{idx}>())"
         end
       idx += ef.size
     end
@@ -238,7 +238,12 @@ class DecodeGen
     if @cfg_arch.unconfigured?
       !inst.defined_by_condition.satisfied_by? { |ext_req| @cfg_arch.extension("I").versions.all? { |i_ver| ext_req.satisfied_by?(i_ver) } }
     elsif @cfg_arch.partially_configured?
-      !inst.defined_by_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(@cfg_arch.mandatory_extension_reqs) }
+      !inst.defined_by_condition.satisfied_by? do |ext_req|
+        # this is conservative
+        @cfg_arch.mandatory_extension_reqs.any? do |ext_req2|
+          ext_req.satisfied_by?(ext_req2)
+        end
+      end
     else
       false # fully configured, inst_list is already prunned for the config
     end
@@ -282,7 +287,7 @@ class DecodeGen
               next if dv.excludes.empty?
 
               dv_val = extract_dv(dv, encoding_var_name)
-              conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val})" })
+              conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val}_b)" })
             end
           end
           if has_hints
@@ -290,7 +295,7 @@ class DecodeGen
             impl_hints.each do |hint_inst|
               mask = hint_inst.encoding(xlen).format.gsub("0", "1").gsub("-", "0")
               value = hint_inst.encoding(xlen).format.gsub("-", "0")
-              conds << ("((#{encoding_var_name} & 0b#{mask}ull) != 0b#{value}ull)")
+              conds << ("((#{encoding_var_name} & 0b#{mask}_b) != 0b#{value}_b)")
             end
           end
 
@@ -304,16 +309,16 @@ class DecodeGen
             end
           end
           if !conds.empty?
-            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) && #{conds.join(' && ')}) {\n"
+            code += "#{' '*indent}#{els}if ((#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
           else
-            code += "#{' '*indent}#{els}if (extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) {\n"
+            code += "#{' '*indent}#{els}if (#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) {\n"
           end
           code += decode_c(encoding_var_name, xlen, inst_list, child, indent + 2)
           code += "#{' '*indent}}\n"
           els = "else "
         end
       else
-        code += "#{' ' * indent}switch(extract<#{node.children.first.range.first}, #{node.children.first.range.size}>(#{encoding_var_name}).get()) {\n"
+        code += "#{' ' * indent}switch(#{encoding_var_name}.extract<#{node.children.first.range.last}, #{node.children.first.range.first}>().get()) {\n"
         node.children.each do |child|
           code += comment_tree(child, indent + 2)
           code += "#{' ' * (indent + 2)}case 0b#{child.value.reverse}:\n"

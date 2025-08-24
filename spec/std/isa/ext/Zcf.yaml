@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zcf
+long_name: Compressed instructions for single precision floating point
+description: |
+  Zcf is the existing set of compressed single precision floating point loads and stores (RV32 only):
+  `c.flw`, `c.flwsp`, `c.fsw`, `c.fswsp`.
+
+type: unprivileged
+company:
+  name: RISC-V International
+  url: https://riscv.org
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-04
+    repositories:
+      - url: https://github.com/riscv/riscv-code-size-reduction
+        branch: main
+    contributors:
+      - name: Tariq Kurd
+      - name: Ibrahim Abu Kharmeh
+      - name: Torbjørn Viem Ness
+      - name: Matteo Perotti
+      - name: Nidal Faour
+      - name: Bill Traynor
+      - name: Rafael Sene
+      - name: Xinlong Wu
+      - name: sinan
+      - name: Jeremy Bennett
+      - name: Heda Chen
+      - name: Alasdair Armstrong
+      - name: Graeme Smecher
+      - name: Nicolas Brunie
+      - name: Jiawei
+    requires:
+      allOf:
+        - anyOf:
+          - { name: Zca, version: "= 1.0.0" }
+          - { name: C, version: "~> 2.0.0" }
+        - { name: F, version: "~> 2.2.0" }

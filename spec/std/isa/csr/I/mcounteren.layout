@@ -1,0 +1,190 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mcounteren
+long_name: Machine Counter Enable
+address: 0x306
+writable: true
+priv_mode: M
+length: 32
+description: |
+  The counter-enable `mcounteren` register is a 32-bit register that controls the availability
+  of the hardware performance-monitoring counters to
+  <%%- if ext?(:S) -%>
+  S-mode
+  <%%- elsif ext?(:U) -%>
+  U-mode
+  <%%- else -%>
+  the next-lower privileged mode
+  <%%- end -%>
+  .
+
+  The settings in this register only control accessibility. The act of reading or writing this
+  register does not affect the underlying counters, which continue to increment even when not
+  accessible.
+
+  When the CY, TM, IR, or HPMn bit in the mcounteren register is clear, attempts to read the
+  `cycle`, `time`, `instret`, or `hpmcountern` register while executing in
+  <%%- if ext?(:S) -%>
+  S-mode
+  <%%- elsif ext?(:U) -%>
+  U-mode
+  <%%- else -%>
+  S-mode or U-mode
+  <%%- end -%>
+  will cause an `IllegalInstruction` exception. When one of these bits is set, access to the
+  corresponding register is permitted in
+  <%%- if ext?(:S) -%>
+  S-mode
+  <%%- elsif ext?(:U) -%>
+  U-mode
+  <%%- else -%>
+  the next implemented privilege mode (S-mode if implemented, otherwise U-mode).
+  <%%- end -%>
+
+  [NOTE]
+  The counter-enable bits support two common use cases with minimal hardware.
+  For harts that do not need high-performance timers and counters, machine-mode software can
+  trap accesses and implement all features in software. For harts that need high-performance
+  timers and counters but are not concerned with obfuscating the underlying hardware counters,
+  the counters can be directly exposed to lower privilege modes.
+
+  The `cycle`, `instret`, and `hpmcountern` CSRs are read-only shadows of `mcycle`, `minstret`,
+  and `mhpmcounter n`, respectively. The `time` CSR is a read-only shadow of the memory-mapped
+  `mtime` register.
+  <%%- if possible_xlens.include?(32) -%>
+  Analogously, on RV32I the `cycleh`, `instreth` and `hpmcounternh` CSRs are
+  read-only shadows of `mcycleh`, `minstreth` and `mhpmcounternh`, respectively.
+  On RV32I the `timeh` CSR is a read-only shadow of the upper 32 bits of the memory-mapped `mtime`
+  register, while time shadows only the lower 32 bits of `mtime`.
+  <%%- end -%>
+
+  [NOTE]
+  Implementations can convert reads of the `time` and `timeh` CSRs into loads to the
+  memory-mapped `mtime` register, or emulate this functionality on behalf of less-privileged
+  modes in M-mode software.
+
+  <%%- if !ext?(:U) -%>
+  In harts with U-mode, the `mcounteren` CSR must be implemented, but all fields are WARL and may
+  be read-only zero, indicating reads to the corresponding counter will cause an
+  `IllegalInstruction` exception when executing in a less-privileged mode.
+  In harts without U-mode, the `mcounteren` register should not exist.
+  <%%- end -%>
+
+  <%%- if ext?(:S) -%>
+  [INFO]
+  The `cycle`, `instret`, and `hpmcountern` CSRs can also be made available to U-mode
+  through the `scounteren` CSR
+  <%%- if ext?(:H) -%>
+  and to VS-mode and/or VU-mode through `hcounteren`
+  <%%- end -%>
+  .
+  <%%- end -%>
+definedBy: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
+fields:
+  CY:
+    location: 0
+    description: |
+      When set, the `cycle` CSR (an alias of `mcycle`) is accessible to
+      <%%- if ext?(:S) -%>
+      S-mode.
+      <%%- else -%>
+      U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:S) -%>
+      When `scounteren.CY` is also set, `cycle` is further accessible to U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:H) -%>
+      When `hcounteren.CY` is also set, `cycle` is further accessible to VS-mode.
+
+      When `hcounteren.CY` && `scounteren.CY` are both set, `cycle` is further accessible to VU-mode.
+      <%%- end -%>
+    type(): |
+      if (MCOUNTENABLE_EN[0]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (MCOUNTENABLE_EN[0]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  TM:
+    location: 1
+    description: |
+      Placeholder for delegating `time` to less-privileged modes; however, since `time`
+      is memory-mapped rather than a CSR, this field is always read-only zero.
+    type: RO
+    reset_value: 0
+  IR:
+    location: 2
+    description: |
+      When set, the `instret` CSR (an alias of `minstret`) is accessible to
+      <%%- if ext?(:S) -%>
+      S-mode.
+      <%%- else -%>
+      U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:S) -%>
+      When `scounteren.IR` is also set, `instret` is further accessible to U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:H) -%>
+      When `hcounteren.IR` is also set, `instret` is further accessible to VS-mode.
+
+      When `hcounteren.IR` && `scounteren.IR` are both set, `instret` is further accessible to VU-mode.
+      <%%- end -%>
+    type(): |
+      if (MCOUNTENABLE_EN[2]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (MCOUNTENABLE_EN[2]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  <%- (3..31).each do |hpm_num| -%>
+  HPM<%= hpm_num %>:
+    location: <%= hpm_num %>
+    description: |
+      When set, the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmcounter<%= hpm_num %>`) is accessible to
+      <%%- if ext?(:S) -%>
+      S-mode.
+      <%%- else -%>
+      U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:S) -%>
+      When `scounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is further accessible to U-mode.
+      <%%- end -%>
+
+      <%%- if ext?(:H) -%>
+      When `hcounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is further accessible to VS-mode.
+
+      When `hcounteren.HPM<%= hpm_num %>` && `scounteren.HPM<%= hpm_num %>` are both set, `hpmcounter<%= hpm_num %>` is further accessible to VU-mode.
+      <%%- end -%>
+    type(): |
+      if (MCOUNTENABLE_EN[<%= hpm_num %>]) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      if (MCOUNTENABLE_EN[<%= hpm_num %>]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
+  <%- end -%>

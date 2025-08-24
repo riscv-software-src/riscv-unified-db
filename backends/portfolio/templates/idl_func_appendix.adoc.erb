@@ -1,0 +1,40 @@
+<<<
+[appendix]
+== IDL Function Details
+
+<% portfolio_design.functions.each do |f| -%>
+<%= anchor_for_udb_doc_idl_func(f.name) %>
+=== <%= f.name %><% if f.builtin? -%> (builtin)<% end -%><% if f.generated? -%> (generated)<% end -%>
+
+<%= f.description %>
+
+[cols="1,2"]
+|===
+h| Return Type
+a|
+[source,idl]
+----
+<%= f.return_type_list_str.join(', ') %>
+----
+
+h| Arguments
+a|
+<%- if f.arguments_list_str.empty? -%>
+None
+<%- else -%>
+[source,idl]
+----
+<%= f.arguments_list_str.join (', ') %>
+----
+<%- end -%>
+|===
+
+<%- unless f.builtin? || f.generated? -%>
+<%- body_ast = f.body -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= body_ast.gen_adoc %>
+----
+<%- end -%>
+
+<%- end -%>

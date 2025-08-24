@@ -1,0 +1,321 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: C
+type: unprivileged
+long_name: Compressed instructions
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    implies:
+      - name: Zca
+        version: "1.0.0"
+      - if:
+          name: F
+          version: ~> 2.2
+        then:
+          name: Zcf
+          version: "1.0.0"
+      - if:
+          name: D
+          version: ~> 2.2
+        then:
+          name: Zcd
+          version: "1.0.0"
+description: |
+  The `C` extension reduces static and dynamic code size by
+  adding short 16-bit instruction encodings for common operations. The C
+  extension can be added to any of the base ISAs (RV32, RV64, RV128), and
+  we use the generic term "RVC" to cover any of these. Typically,
+  50%-60% of the RISC-V instructions in a program can be replaced with RVC
+  instructions, resulting in a 25%-30% code-size reduction.
+
+  = Overview
+
+  RVC uses a simple compression scheme that offers shorter 16-bit versions
+  of common 32-bit RISC-V instructions when:
+
+  * the immediate or address offset is small, or
+  * one of the registers is the zero register (`x0`), the ABI link register
+  (`x1`), or the ABI stack pointer (`x2`), or
+  * the destination register and the first source register are identical, or
+  * the registers used are the 8 most popular ones.
+
+  The C extension is compatible with all other standard instruction
+  extensions. The C extension allows 16-bit instructions to be freely
+  intermixed with 32-bit instructions, with the latter now able to start
+  on any 16-bit boundary, i.e., IALIGN=16. With the addition of the C
+  extension, no instructions can raise instruction-address-misaligned
+  exceptions.
+
+  [NOTE]
+  ====
+  Removing the 32-bit alignment constraint on the original 32-bit
+  instructions allows significantly greater code density.
+  ====
+
+  The compressed instruction encodings are mostly common across RV32C,
+  RV64C, and RV128C, but as shown in <<rvc-instr-table0, Table 34>>, a few opcodes are used for
+  different purposes depending on base ISA. For example, the wider
+  address-space RV64C and RV128C variants require additional opcodes to
+  compress loads and stores of 64-bit integer values, while RV32C uses the
+  same opcodes to compress loads and stores of single-precision
+  floating-point values. Similarly, RV128C requires additional opcodes to
+  capture loads and stores of 128-bit integer values, while these same
+  opcodes are used for loads and stores of double-precision floating-point
+  values in RV32C and RV64C. If the C extension is implemented, the
+  appropriate compressed floating-point load and store instructions must
+  be provided whenever the relevant standard floating-point extension (F
+  and/or D) is also implemented. In addition, RV32C includes a compressed
+  jump and link instruction to compress short-range subroutine calls,
+  where the same opcode is used to compress ADDIW for RV64C and RV128C.
+
+  [TIP]
+  ====
+  Double-precision loads and stores are a significant fraction of static
+  and dynamic instructions, hence the motivation to include them in the
+  RV32C and RV64C encoding.
+
+  Although single-precision loads and stores are not a significant source
+  of static or dynamic compression for benchmarks compiled for the
+  currently supported ABIs, for microcontrollers that only provide
+  hardware single-precision floating-point units and have an ABI that only
+  supports single-precision floating-point numbers, the single-precision
+  loads and stores will be used at least as frequently as double-precision
+  loads and stores in the measured benchmarks. Hence, the motivation to
+  provide compressed support for these in RV32C.
+
+  Short-range subroutine calls are more likely in small binaries for
+  microcontrollers, hence the motivation to include these in RV32C.
+
+  Although reusing opcodes for different purposes for different base ISAs
+  adds some complexity to documentation, the impact on implementation
+  complexity is small even for designs that support multiple base ISAs.
+  The compressed floating-point load and store variants use the same
+  instruction format with the same register specifiers as the wider
+  integer loads and stores.
+  ====
+
+  RVC was designed under the constraint that each RVC instruction expands
+  into a single 32-bit instruction in either the base ISA (RV32I/E, RV64I/E,
+  or RV128I) or the F and D standard extensions where present. Adopting
+  this constraint has two main benefits:
+
+  * Hardware designs can simply expand RVC instructions during decode,
+  simplifying verification and minimizing modifications to existing
+  microarchitectures.
+
+  * Compilers can be unaware of the RVC extension and leave code compression
+  to the assembler and linker, although a compression-aware compiler will
+  generally be able to produce better results.
+
+  [NOTE]
+  ====
+  We felt the multiple complexity reductions of a simple one-one mapping
+  between C and base IFD instructions far outweighed the potential gains
+  of a slightly denser encoding that added additional instructions only
+  supported in the C extension, or that allowed encoding of multiple IFD
+  instructions in one C instruction.
+  ====
+
+  It is important to note that the C extension is not designed to be a
+  stand-alone ISA, and is meant to be used alongside a base ISA.
+
+  [TIP]
+  ====
+  Variable-length instruction sets have long been used to improve code
+  density. For example, the IBM Stretch cite:[stretch], developed in the late 1950s, had
+  an ISA with 32-bit and 64-bit instructions, where some of the 32-bit
+  instructions were compressed versions of the full 64-bit instructions.
+  Stretch also employed the concept of limiting the set of registers that
+  were addressable in some of the shorter instruction formats, with short
+  branch instructions that could only refer to one of the index registers.
+  The later IBM 360 architecture cite:[ibm360] supported a simple variable-length
+  instruction encoding with 16-bit, 32-bit, or 48-bit instruction formats.
+
+  In 1963, CDC introduced the Cray-designed CDC 6600 cite:[cdc6600], a precursor to RISC
+  architectures, that introduced a register-rich load-store architecture
+  with instructions of two lengths, 15-bits and 30-bits. The later Cray-1
+  design used a very similar instruction format, with 16-bit and 32-bit
+  instruction lengths.
+
+  The initial RISC ISAs from the 1980s all picked performance over code
+  size, which was reasonable for a workstation environment, but not for
+  embedded systems. Hence, both ARM and MIPS subsequently made versions of
+  the ISAs that offered smaller code size by offering an alternative
+  16-bit wide instruction set instead of the standard 32-bit wide
+  instructions. The compressed RISC ISAs reduced code size relative to
+  their starting points by about 25-30%, yielding code that was
+  significantly smaller than 80x86. This result surprised some, as their
+  intuition was that the variable-length CISC ISA should be smaller than
+  RISC ISAs that offered only 16-bit and 32-bit formats.
+
+  Since the original RISC ISAs did not leave sufficient opcode space free
+  to include these unplanned compressed instructions, they were instead
+  developed as complete new ISAs. This meant compilers needed different
+  code generators for the separate compressed ISAs. The first compressed
+  RISC ISA extensions (e.g., ARM Thumb and MIPS16) used only a fixed
+  16-bit instruction size, which gave good reductions in static code size
+  but caused an increase in dynamic instruction count, which led to lower
+  performance compared to the original fixed-width 32-bit instruction
+  size. This led to the development of a second generation of compressed
+  RISC ISA designs with mixed 16-bit and 32-bit instruction lengths (e.g.,
+  ARM Thumb2, microMIPS, PowerPC VLE), so that performance was similar to
+  pure 32-bit instructions but with significant code size savings.
+  Unfortunately, these different generations of compressed ISAs are
+  incompatible with each other and with the original uncompressed ISA,
+  leading to significant complexity in documentation, implementations, and
+  software tools support.
+
+  Of the commonly used 64-bit ISAs, only PowerPC and microMIPS currently
+  supports a compressed instruction format. It is surprising that the most
+  popular 64-bit ISA for mobile platforms (ARM v8) does not include a
+  compressed instruction format given that static code size and dynamic
+  instruction fetch bandwidth are important metrics. Although static code
+  size is not a major concern in larger systems, instruction fetch
+  bandwidth can be a major bottleneck in servers running commercial
+  workloads, which often have a large instruction working set.
+
+  Benefiting from 25 years of hindsight, RISC-V was designed to support
+  compressed instructions from the outset, leaving enough opcode space for
+  RVC to be added as a simple extension on top of the base ISA (along with
+  many other extensions). The philosophy of RVC is to reduce code size for
+  embedded applications _and_ to improve performance and energy-efficiency
+  for all applications due to fewer misses in the instruction cache.
+  Waterman shows that RVC fetches 25%-30% fewer instruction bits, which
+  reduces instruction cache misses by 20%-25%, or roughly the same
+  performance impact as doubling the instruction cache size. cite:[waterman-ms]
+  ====
+
+  = Compressed Instruction Formats
+  ((((compressed, formats))))
+
+  <<rvc-form>> shows the nine compressed instruction
+  formats. CR, CI, and CSS can use any of the 32 RVI registers, but CIW,
+  CL, CS, CA, and CB are limited to just 8 of them.
+  <<registers>> lists these popular registers, which
+  correspond to registers `x8` to `x15`. Note that there is a separate
+  version of load and store instructions that use the stack pointer as the
+  base address register, since saving to and restoring from the stack are
+  so prevalent, and that they use the CI and CSS formats to allow access
+  to all 32 data registers. CIW supplies an 8-bit immediate for the
+  ADDI4SPN instruction.
+
+  [NOTE]
+  ====
+  The RISC-V ABI was changed to make the frequently used registers map to
+  registers 'x8-x15'. This simplifies the decompression decoder by
+  having a contiguous naturally aligned set of register numbers, and is
+  also compatible with the RV32E and RV64E base ISAs, which only have 16 integer
+  registers.
+  ====
+  Compressed register-based floating-point loads and stores also use the
+  CL and CS formats respectively, with the eight registers mapping to `f8` to `f15`.
+  ((((calling convention, standard))))
+  [NOTE]
+  ====
+  _The standard RISC-V calling convention maps the most frequently used
+  floating-point registers to registers `f8` to `f15`, which allows the
+  same register decompression decoding as for integer register numbers._
+  ====
+  ((((register source specifiers, c-ext))))
+  The formats were designed to keep bits for the two register source
+  specifiers in the same place in all instructions, while the destination
+  register field can move. When the full 5-bit destination register
+  specifier is present, it is in the same place as in the 32-bit RISC-V
+  encoding. Where immediates are sign-extended, the sign extension is
+  always from bit 12. Immediate fields have been scrambled, as in the base
+  specification, to reduce the number of immediate muxes required.
+  [NOTE]
+  ====
+  The immediate fields are scrambled in the instruction formats instead of
+  in sequential order so that as many bits as possible are in the same
+  position in every instruction, thereby simplifying implementations.
+  ====
+
+  For many RVC instructions, zero-valued immediates are disallowed and
+  `x0` is not a valid 5-bit register specifier. These restrictions free up
+  encoding space for other instructions requiring fewer operand bits.
+
+  //[[cr-register]]
+  //include::images/wavedrom/cr-register.adoc[]
+  //.Compressed 16-bit RVC instructions
+  //(((compressed, 16-bit)))
+
+  [[rvc-form]]
+  .Compressed 16-bit RVC instruction formats
+  //[%header]
+  [float="center",align="center",cols="1a, 2a",frame="none",grid="none"]
+  |===
+  |
+  [%autowidth,float="right",align="right",cols="^,^",frame="none",grid="none",options="noheader"]
+  !===
+  !Format ! Meaning
+  !CR ! Register
+  !CI ! Immediate
+  !CSS ! Stack-relative Store
+  !CIW ! Wide Immediate
+  !CL ! Load
+  !CS ! Store
+  !CA ! Arithmetic
+  !CB ! Branch/Arithmetic
+  !CJ ! Jump
+  !===
+  |
+  [float="left",align="left",cols="1,1,1,1,1,1,1",options="noheader"]
+  !===
+  2+^!15 14 13 12 2+^!11 10 9 8 7 2+^!6 5 4 3 2 ^!1 0
+  2+^!funct4 2+^!rd/rs1 2+^!rs2 ^!  op
+  ^!funct3 ^!imm 2+^!rd/rs1  2+^!imm ^!  op
+  ^!funct3 3+^!imm  2+^!rs2 ^!  op
+  ^!funct3 4+^!imm ^!rd&#x2032; ^! op
+  ^!funct3 2+^!imm ^!rs1&#x2032; ^!imm ^!rd&#x2032; ^! op
+  ^!funct3 2+^!imm ^!rs1&#x2032; ^! imm ^!rs2&#x2032; ^! op
+  3+^!funct6 ^!rd&#x2032;/rs1&#x2032; ^!funct2 ^!rs2&#x2032; ^! op
+  ^!funct3 2+^!offset ^!rd&#x2032;/rs1&#x2032; 2+^!offset ^! op
+  ^!funct3 5+^!jump target ^! op
+  !===
+  |===
+
+  [[registers]]
+  .Registers specified by the three-bit _rs1_&#x2032;, _rs2_&#x2032;, and _rd_&#x2032; fields of the CIW, CL, CS, CA, and CB formats.
+  //[cols="20%,10%,10%,10%,10%,10%,10%,10%,10%"]
+  [float="center",align="center",cols="1a, 1a",frame="none",grid="none"]
+  |===
+  |
+  [%autowidth,cols="<",frame="none",grid="none",options="noheader"]
+  !===
+  !RVC Register Number
+  !Integer Register Number
+  !Integer Register ABI Name
+  !Floating-Point Register Number
+  !Floating-Point Register ABI Name
+  !===
+  |
+
+  [%autowidth,cols="^,^,^,^,^,^,^,^",options="noheader"]
+  !===
+  !`000` !`001` !`010` !`011` !`100` !`101` !`110` !`111`
+  !`x8` !`x9` !`x10` !`x11` !`x12` !`x13` !`x14`!`x15`
+  !`s0` !`s1` !`a0` !`a1` !`a2` !`a3` !`a4`!`a5`
+  !`f8` !`f9` !`f10` !`f11` !`f12` !`f13`!`f14` !`f15`
+  !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5`
+  !===
+  |===
+params:
+  MUTABLE_MISA_C:
+    description: |
+      Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.
+    schema:
+      type: boolean

@@ -1,0 +1,69 @@
+version = 1
+
+# For original UDB code
+[[annotations]]
+path = [
+    ".**",
+    "arch_def.yardopts",
+    "backends/**",
+    "bin/**",
+    "cert_flow.txt",
+    "cfgs/**",
+    "container.def",
+    "do",
+    "doc/data-templates.adoc",
+    "doc/riscv-opcodes-migration.adoc",
+    "docs/**",
+    "Gemfile.lock",
+    "Gemfile",
+    "idl.yardopts",
+    "lib/**",
+    "package-lock.json",
+    "package.json",
+    "Rakefile",
+    "README.adoc",
+    "requirements.txt",
+    "spec/schemas/**",
+]
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+    "2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>",
+]
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+# readme files
+[[annotations]]
+path = [
+    "CODE_OF_CONDUCT.adoc",
+    "CONTRIBUTING.adoc",
+    "doc/idl.adoc",
+    "doc/ruby.adoc",
+    "doc/schemas.adoc",
+    "doc/prose-schema.adoc"
+]
+SPDX-FileCopyrightText = "2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+[[annotations]]
+path = [
+    "data/arch_overlay/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.  ",
+    "2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>",
+    # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
+    "2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>",
+]
+SPDX-License-Identifier = [
+    "BSD-3-Clause-Clear",
+    # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
+    "CC-BY-4.0",
+]
+
+[[annotations]]
+path = [
+  "doc/udb*.svg"
+]
+SPDX-FileCopyrightText = "Copyright (c) Derek Hower, Paul Clarke"
+SPDX-License-Identifier = "CC0-1.0"

@@ -1,0 +1,30 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Za128rs
+long_name: Reservation set requirement for RVA profiles
+type: unprivileged
+description: |
+  Reservation sets must be contiguous, naturally aligned, and at most 128 bytes in size.
+
+  [NOTE]
+  This extension was ratified as part of the RVA20 profile.
+
+  [NOTE]
+  The minimum reservation set size is effectively determined by the size of atomic accesses in
+  the A extension.
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      LRSC_RESERVATION_STRATEGY:
+        schema:
+          oneOf:
+            - const: reserve exactly enough to cover the access
+            - const: reserve naturally-aligned 64-byte region
+            - const: reserve naturally-aligned 128-byte region
