@@ -1,10 +1,22 @@
 {
   "name": "RISC-V UnifiedDB Dev",
-  "build": { "dockerfile": "Dockerfile" },
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "HTTP_PROXY": "${localEnv:http_proxy}",
+      "HTTPS_PROXY": "${localEnv:https_proxy}",
+      "NO_PROXY": "${localEnv:no_proxy}"
+    },
+    "context": ".."
+  },
   "updateContentCommand": "${containerWorkspaceFolder}/.devcontainer/updateContentCommand.sh",
   "onCreateCommand": "${containerWorkspaceFolder}/.devcontainer/onCreateCommand.sh",
   "remoteEnv": {
-    "DISPLAY": ":0"
+    "DISPLAY": ":0",
+    "http_proxy": "${localEnv:http_proxy}",
+    "https_proxy": "${localEnv:https_proxy}",
+    "HTTP_PROXY": "${localEnv:http_proxy}",
+    "HTTPS_PROXY": "${localEnv:https_proxy}"
   },
   "containerEnv": {
     "DEVCONTAINER_ENV": "true"
