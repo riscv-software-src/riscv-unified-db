@@ -11,10 +11,11 @@ From: ubuntu:24.04
 
   apt-get update
 
-  # Create a Python virtual environment
+  # Set up Python environment
   python3 -m venv /opt/venv
   . /opt/venv/bin/activate
   pip install --upgrade pip
+  pip install --break-system-packages -r requirements.txt
 
   # please keep pkgs sorted
   apt-get install -y --no-install-recommends \
@@ -48,20 +49,23 @@ From: ubuntu:24.04
     # Set up Ruby environment for non-root user
   su - vscode -c "gem install bundler"
 
-  # Set proper permissions
+    # Set proper permissions
   chown -R vscode:vscode /opt/venv
+
+  # Install remaining packages
+  apt-get install -y --no-install-recommends \
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
-    nodejs \
-    npm \
     parallel \
     python3 \
     python3-pip \
     python3.12-venv \
-    ruby \
-    ruby-dev \
     shellcheck
+
+  # Install project dependencies as non-root user
+  su - vscode -c "cd /workspaces/riscv-unified-db && npm install"
+  su - vscode -c "cd /workspaces/riscv-unified-db && bundle install"
 
 # cleanup
   apt-get clean autoclean
