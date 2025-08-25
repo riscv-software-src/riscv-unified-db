@@ -1,5 +1,4 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# Copyright (c) 2025 Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -61,9 +60,8 @@ fields:
   SDT:
     location: 41
     base: 64
+    long_name: Supervisor Disable Trap
     description: |
-      *Supervisor Disable Trap*
-
       Written to 1 when entering VS-mode from an exception/interrupt.
       When returning via an SRET instruction, the bit is written to 0.
       On reset is set to 0.
@@ -72,7 +70,7 @@ fields:
       This field is read-only zero if `henvcfg.DTE` is zero.
     definedBy: Ssdbltrp
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     sw_write(csr_value): |
       if (CSR[henvcfg].DTE == 1'b0) {
         return 0;

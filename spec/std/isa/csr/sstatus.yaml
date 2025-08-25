@@ -1,5 +1,4 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# Copyright (c) 2025 Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -98,14 +97,12 @@ fields:
     alias: mstatus.SDT
     location: 41
     base: 64
+    long_name: Supervisor Disable Trap
     description: |
-      *Supervisor Disable Trap*
-
       Alias of `mstatus.SDT`.
-
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
     definedBy: Ssdbltrp
+    reset_value: 0
   SPP:
     alias: mstatus.SPP
     location: 8
