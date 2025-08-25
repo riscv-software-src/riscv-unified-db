@@ -827,9 +827,9 @@ Description::
 Atomically:
 
   * Load the doubleword at address _xs1_
-  * Write the sign-extended value into _xd_
-  * Add the least-significant doubleword of register _xs2_ to the loaded value
-  * Write the sum to the address in _xs1_
+  * Write the loaded value into _xd_
+  * Add the value of register _xs2_ to the loaded value
+  * Write the result to the address in _xs1_
 
 
 Decode Variables::
@@ -1173,7 +1173,7 @@ Atomically:
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
   * Add the least-significant word of register _xs2_ to the loaded value
-  * Write the sum to the address in _xs1_
+  * Write the result to the address in _xs1_
 
 
 Decode Variables::
@@ -1341,6 +1341,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * AND the least-significant byte of register _xs2_ to the loaded value
@@ -1684,6 +1685,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * AND the least-significant halfword of register _xs2_ to the loaded value
@@ -2014,7 +2016,7 @@ Included in::
 == amocas.b
 
 Synopsis::
-Atomic Compare-and-Swap byte
+Atomic compare-and-swap byte
 
 Assembly::
 amocas.b xd, xs2, (xs1)
@@ -2029,9 +2031,9 @@ Description::
 Atomically:
 
   * Load the byte at address _xs1_
-  * Compare the loaded value with the value in register _xs2_
-  * If equal, write the value in register _xd_ to the address in _xs1_
-  * Write the loaded value into _xd_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant byte of register _xs2_
+  * If equal, write the least-significant byte of register _xs2+1_ to the address in _xs1_
 
 
 Decode Variables::
@@ -2186,89 +2188,159 @@ Included in::
 == amocas.d
 
 Synopsis::
-Atomic Compare-and-Swap Doubleword
+Atomic compare-and-swap doubleword
 
 Assembly::
 amocas.d xd, xs2, (xs1)
 
 Encoding::
-[NOTE]
-This instruction has different encodings in RV32 and RV64
-
-RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2 != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":1,"name": "rl","type":4},{"bits":1,"name": "aq","type":4},{"bits":5,"name": 0x5,"type":2}]}
-....
-
-RV64::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":1,"name": "rl","type":4},{"bits":1,"name": "aq","type":4},{"bits":5,"name": 0x5,"type":2}]}
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x14,"type":2}]}
 ....
 
 Description::
-For RV32, AMOCAS.D atomically loads 64-bits of a data value from address in
-xs1, compares the loaded value to a 64-bit value held in a register pair
-consisting of xd and xd+1, and if the comparison is bitwise equal, then
-stores the 64-bit value held in the register pair xs2 and xs2+1 to the
-original address in xs1. The value loaded from memory is placed into the
-register pair xd and xd+1. The instruction requires the first register in
-the pair to be even numbered; encodings with odd-numbered registers
-specified in xs2 and xd are reserved. When the first register of a source
-register pair is x0, then both halves of the pair read as zero. When the
-first register of a destination register pair is x0, then the entire
-register result is discarded and neither destination register is written.
+Atomically:
 
-For RV64, AMOCAS.D atomically loads 64-bits of a data value from address in
-xs1, compares the loaded value to a 64-bit value held in xd, and if the
-comparison is bitwise equal, then stores the 64-bit value held in xs2 to the
-original address in xs1. The value loaded from memory is placed into
-register xd.
-
-Just as for AMOs in the A extension, AMOCAS.D requires that the address held
-in xs1 be naturally aligned to the size of the operand (i.e., eight-byte
-aligned for doublewords). And the same exception options apply if the
-address is not naturally aligned.
-
-Just as for AMOs in the A extension, the AMOCAS.D optionally provides release
-consistency semantics, using the aq and rl bits, to help implement
-multiprocessor synchronization. The memory operation performed by an
-AMOCAS.D, when successful, has acquire semantics if aq bit is 1 and has
-release semantics if rl bit is 1. The memory operation performed by an
-AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
-does not have release semantics, regardless of rl.
-
-A FENCE instruction may be used to order the memory read access and, if
-produced, the memory write access by an AMOCAS.D instruction.
-
-[Note] An unsuccessful AMOCAS.D may either not perform a memory write or may
-write back the old value loaded from memory. The memory write, if produced,
-does not have release semantics, regardless of rl.
-
-An AMOCAS.D instruction always requires write permissions.
+  * Load the doubleword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
 
 
 Decode Variables::
-*RV32:*
-
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|aq |$encoding[26]
-|rl |$encoding[25]
 |xs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
-*RV64:*
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
 
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_d_aq]
+== amocas.d.aq
+
+Synopsis::
+Atomic compare-and-swap doubleword (acquire)
+
+Assembly::
+amocas.d.aq xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x16,"type":2}]}
+....
+
+Description::
+Atomically with acquire ordering:
+
+  * Load the doubleword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|aq |$encoding[26]
-|rl |$encoding[25]
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_d_aqrl]
+== amocas.d.aqrl
+
+Synopsis::
+Atomic compare-and-swap doubleword (acquire-release)
+
+Assembly::
+amocas.d.aqrl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+....
+
+Description::
+Atomically with acquire and release ordering:
+
+  * Load the doubleword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_d_rl]
+== amocas.d.rl
+
+Synopsis::
+Atomic compare-and-swap doubleword (release)
+
+Assembly::
+amocas.d.rl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x15,"type":2}]}
+....
+
+Description::
+Atomically with release ordering:
+
+  * Load the doubleword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
 |xs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
@@ -2288,7 +2360,7 @@ Included in::
 == amocas.h
 
 Synopsis::
-Atomic Compare-and-Swap halfword
+Atomic compare-and-swap halfword
 
 Assembly::
 amocas.h xd, xs2, (xs1)
@@ -2303,9 +2375,9 @@ Description::
 Atomically:
 
   * Load the halfword at address _xs1_
-  * Compare the loaded value with the value in register _xs2_
-  * If equal, write the value in register _xd_ to the address in _xs1_
-  * Write the loaded value into _xd_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant halfword of register _xs2_
+  * If equal, write the least-significant halfword of register _xs2+1_ to the address in _xs1_
 
 
 Decode Variables::
@@ -2460,7 +2532,7 @@ Included in::
 == amocas.q
 
 Synopsis::
-Atomic Compare-and-Swap Quadword
+Atomic compare-and-swap quadword
 
 Assembly::
 amocas.q xd, xs2, (xs1)
@@ -2468,51 +2540,151 @@ amocas.q xd, xs2, (xs1)
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2 != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":1,"name": "rl","type":4},{"bits":1,"name": "aq","type":4},{"bits":5,"name": 0x5,"type":2}]}
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x14,"type":2}]}
 ....
 
 Description::
-For RV64, AMOCAS.Q atomically loads 128-bits of a data value from address
-in xs1, compares the loaded value to a 128-bit value held in a register
-pair consisting of xd and xd+1, and if the comparison is bitwise equal,
-then stores the 128-bit value held in the register pair xs2 and xs2+1 to
-the original address in xs1. The value loaded from memory is placed into
-the register pair xd and xd+1. The instruction requires the first register
-in the pair to be even numbered; encodings with odd-numbered registers
-specified in xs2 and xd are reserved. When the first register of a source
-register pair is x0, then both halves of the pair read as zero. When the
-first register of a destination register pair is x0, then the entire
-register result is discarded and neither destination register is written.
+Atomically:
 
-Just as for AMOs in the A extension, AMOCAS.Q requires that the address held
-in xs1 be naturally aligned to the size of the operand (i.e., sixteen-byte
-aligned for quadwords). And the same exception options apply if the
-address is not naturally aligned.
-
-Just as for AMOs in the A extension, the AMOCAS.Q optionally provides release
-consistency semantics, using the aq and rl bits, to help implement
-multiprocessor synchronization. The memory operation performed by an
-AMOCAS.Q, when successful, has acquire semantics if aq bit is 1 and has
-release semantics if rl bit is 1. The memory operation performed by an
-AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
-does not have release semantics, regardless of rl.
-
-A FENCE instruction may be used to order the memory read access and, if
-produced, the memory write access by an AMOCAS.Q instruction.
-
-[Note] An unsuccessful AMOCAS.Q may either not perform a memory write or
-may write back the old value loaded from memory. The memory write, if
-produced, does not have release semantics, regardless of rl.
-
-An AMOCAS.Q instruction always requires write permissions.
+  * Load the quadword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|aq |$encoding[26]
-|rl |$encoding[25]
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_q_aq]
+== amocas.q.aq
+
+Synopsis::
+Atomic compare-and-swap quadword (acquire)
+
+Assembly::
+amocas.q.aq xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x16,"type":2}]}
+....
+
+Description::
+Atomically with acquire ordering:
+
+  * Load the quadword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_q_aqrl]
+== amocas.q.aqrl
+
+Synopsis::
+Atomic compare-and-swap quadword (acquire-release)
+
+Assembly::
+amocas.q.aqrl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+....
+
+Description::
+Atomically with acquire and release ordering:
+
+  * Load the quadword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_q_rl]
+== amocas.q.rl
+
+Synopsis::
+Atomic compare-and-swap quadword (release)
+
+Assembly::
+amocas.q.rl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x15,"type":2}]}
+....
+
+Description::
+Atomically with release ordering:
+
+  * Load the quadword at address _xs1_
+  * Write the loaded value into _xd_
+  * Compare the loaded value with the value of register _xs2_
+  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
 |xs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
@@ -2532,7 +2704,7 @@ Included in::
 == amocas.w
 
 Synopsis::
-Atomic Compare-and-Swap Word
+Atomic compare-and-swap word
 
 Assembly::
 amocas.w xd, xs2, (xs1)
@@ -2540,51 +2712,151 @@ amocas.w xd, xs2, (xs1)
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":1,"name": "rl","type":4},{"bits":1,"name": "aq","type":4},{"bits":5,"name": 0x5,"type":2}]}
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x14,"type":2}]}
 ....
 
 Description::
-For RV32, AMOCAS.W atomically loads a 32-bit data value from address in xs1,
-compares the loaded value to the 32-bit value held in xd, and if the
-comparison is bitwise equal, then stores the 32-bit value held in xs2 to the
-original address in xs1. The value loaded from memory is placed into
-register xd.
+Atomically:
 
-For RV64, AMOCAS.W atomically loads a 32-bit data value from address in xs1,
-compares the loaded value to the lower 32 bits of the value held in xd, and
-if the comparison is bitwise equal, then stores the lower 32 bits of the
-value held in xs2 to the original address in xs1. The 32-bit value loaded
-from memory is sign-extended and is placed into register xd.
-
-Just as for AMOs in the A extension, AMOCAS.W requires that the address held
-in xs1 be naturally aligned to the size of the operand (i.e., four-byte
-aligned for words). And the same exception options apply if the address is
-not naturally aligned.
-
-Just as for AMOs in the A extension, the AMOCAS.W optionally provides release
-consistency semantics, using the aq and rl bits, to help implement
-multiprocessor synchronization. The memory operation performed by an
-AMOCAS.W, when successful, has acquire semantics if aq bit is 1 and has
-release semantics if rl bit is 1. The memory operation performed by an
-AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
-does not have release semantics, regardless of rl.
-
-A FENCE instruction may be used to order the memory read access and, if
-produced, the memory write access by an AMOCAS.W instruction.
-
-[Note] An unsuccessful AMOCAS.W may either not perform a memory write or may
-write back the old value loaded from memory. The memory write, if produced,
-does not have release semantics, regardless of rl.
-
-An AMOCAS.W instruction always requires write permissions.
+  * Load the word at address _xs1_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant word of register _xs2_
+  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|aq |$encoding[26]
-|rl |$encoding[25]
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_w_aq]
+== amocas.w.aq
+
+Synopsis::
+Atomic compare-and-swap word (acquire)
+
+Assembly::
+amocas.w.aq xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x16,"type":2}]}
+....
+
+Description::
+Atomically with acquire ordering:
+
+  * Load the word at address _xs1_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant word of register _xs2_
+  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_w_aqrl]
+== amocas.w.aqrl
+
+Synopsis::
+Atomic compare-and-swap word (acquire-release)
+
+Assembly::
+amocas.w.aqrl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+....
+
+Description::
+Atomically with acquire and release ordering:
+
+  * Load the word at address _xs1_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant word of register _xs2_
+  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zacas* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:amocas_w_rl]
+== amocas.w.rl
+
+Synopsis::
+Atomic compare-and-swap word (release)
+
+Assembly::
+amocas.w.rl xd, xs2, (xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x15,"type":2}]}
+....
+
+Description::
+Atomically with release ordering:
+
+  * Load the word at address _xs1_
+  * Write the sign-extended value into _xd_
+  * Compare the loaded value with the least-significant word of register _xs2_
+  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
 |xs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
@@ -2617,6 +2889,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * Signed compare the least-significant byte of register _xs2_ to the loaded value, and select the maximum value
@@ -2689,7 +2962,7 @@ Included in::
 == amomax.b.aqrl
 
 Synopsis::
-Atomic MAX byte (acquire-release)
+Atomic MAX byte (acquire) (release) (acquire-release)
 
 Assembly::
 amomax.b.aqrl xd, xs2, (xs1)
@@ -2701,7 +2974,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
@@ -2861,7 +3134,7 @@ Included in::
 == amomax.d.aqrl
 
 Synopsis::
-Atomic MAX doubleword (acquire-release)
+Atomic MAX doubleword (acquire) (release) (acquire-release)
 
 Assembly::
 amomax.d.aqrl xd, xs2, (xs1)
@@ -2873,7 +3146,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the doubleword at address _xs1_
   * Write the loaded value into _xd_
@@ -2960,6 +3233,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * Signed compare the least-significant halfword of register _xs2_ to the loaded value, and select the maximum value
@@ -3032,7 +3306,7 @@ Included in::
 == amomax.h.aqrl
 
 Synopsis::
-Atomic MAX halfword (acquire-release)
+Atomic MAX halfword (acquire) (release) (acquire-release)
 
 Assembly::
 amomax.h.aqrl xd, xs2, (xs1)
@@ -3044,7 +3318,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
@@ -3204,7 +3478,7 @@ Included in::
 == amomax.w.aqrl
 
 Synopsis::
-Atomic MAX word (acquire-release)
+Atomic MAX word (acquire) (release) (acquire-release)
 
 Assembly::
 amomax.w.aqrl xd, xs2, (xs1)
@@ -3216,7 +3490,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
@@ -3303,6 +3577,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * Unsigned compare the least-significant byte of register _xs2_ to the loaded value, and select the maximum value
@@ -3375,7 +3650,7 @@ Included in::
 == amomaxu.b.aqrl
 
 Synopsis::
-Atomic unsigned MAX byte (acquire-release)
+Atomic unsigned MAX byte (acquire) (release) (acquire-release)
 
 Assembly::
 amomaxu.b.aqrl xd, xs2, (xs1)
@@ -3387,7 +3662,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
@@ -3461,7 +3736,7 @@ Included in::
 == amomaxu.d
 
 Synopsis::
-Atomic MAX unsigned doubleword
+Atomic unsigned MAX doubleword
 
 Assembly::
 amomaxu.d xd, xs2, (xs1)
@@ -3547,7 +3822,7 @@ Included in::
 == amomaxu.d.aqrl
 
 Synopsis::
-Atomic unsigned MAX doubleword (acquire-release)
+Atomic unsigned MAX doubleword (acquire) (release) (acquire-release)
 
 Assembly::
 amomaxu.d.aqrl xd, xs2, (xs1)
@@ -3559,7 +3834,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the doubleword at address _xs1_
   * Write the loaded value into _xd_
@@ -3646,6 +3921,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * Unsigned compare the least-significant halfword of register _xs2_ to the loaded value, and select the maximum value
@@ -3718,7 +3994,7 @@ Included in::
 == amomaxu.h.aqrl
 
 Synopsis::
-Atomic unsigned MAX halfword (acquire-release)
+Atomic unsigned MAX halfword (acquire) (release) (acquire-release)
 
 Assembly::
 amomaxu.h.aqrl xd, xs2, (xs1)
@@ -3730,7 +4006,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
@@ -3804,7 +4080,7 @@ Included in::
 == amomaxu.w
 
 Synopsis::
-Atomic MAX unsigned word
+Atomic unsigned MAX word
 
 Assembly::
 amomaxu.w xd, xs2, (xs1)
@@ -3890,7 +4166,7 @@ Included in::
 == amomaxu.w.aqrl
 
 Synopsis::
-Atomic unsigned MAX word (acquire-release)
+Atomic unsigned MAX word (acquire) (release) (acquire-release)
 
 Assembly::
 amomaxu.w.aqrl xd, xs2, (xs1)
@@ -3902,7 +4178,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
@@ -3989,6 +4265,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * Signed compare the least-significant byte of register _xs2_ to the loaded value, and select the minimum value
@@ -4061,7 +4338,7 @@ Included in::
 == amomin.b.aqrl
 
 Synopsis::
-Atomic MIN byte (acquire-release)
+Atomic MIN byte (acquire) (release) (acquire-release)
 
 Assembly::
 amomin.b.aqrl xd, xs2, (xs1)
@@ -4073,7 +4350,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
@@ -4233,7 +4510,7 @@ Included in::
 == amomin.d.aqrl
 
 Synopsis::
-Atomic MIN doubleword (acquire-release)
+Atomic MIN doubleword (acquire) (release) (acquire-release)
 
 Assembly::
 amomin.d.aqrl xd, xs2, (xs1)
@@ -4245,7 +4522,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the doubleword at address _xs1_
   * Write the loaded value into _xd_
@@ -4332,6 +4609,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * Signed compare the least-significant halfword of register _xs2_ to the loaded value, and select the minimum value
@@ -4404,7 +4682,7 @@ Included in::
 == amomin.h.aqrl
 
 Synopsis::
-Atomic MIN halfword (acquire-release)
+Atomic MIN halfword (acquire) (release) (acquire-release)
 
 Assembly::
 amomin.h.aqrl xd, xs2, (xs1)
@@ -4416,7 +4694,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
@@ -4507,7 +4785,7 @@ Atomically:
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
   * Signed compare the least-significant word of register _xs2_ to the loaded value, and select the minimum value
-  * Write the result to the address in _xs1_
+  * Write the minimum to the address in _xs1_
 
 
 Decode Variables::
@@ -4576,7 +4854,7 @@ Included in::
 == amomin.w.aqrl
 
 Synopsis::
-Atomic MIN word (acquire-release)
+Atomic MIN word (acquire) (release) (acquire-release)
 
 Assembly::
 amomin.w.aqrl xd, xs2, (xs1)
@@ -4588,7 +4866,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
@@ -4675,6 +4953,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * Unsigned compare the least-significant byte of register _xs2_ to the loaded value, and select the minimum value
@@ -4747,7 +5026,7 @@ Included in::
 == amominu.b.aqrl
 
 Synopsis::
-Atomic MIN unsigned byte (acquire-release)
+Atomic MIN unsigned byte (acquire) (release) (acquire-release)
 
 Assembly::
 amominu.b.aqrl xd, xs2, (xs1)
@@ -4759,7 +5038,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
@@ -4919,7 +5198,7 @@ Included in::
 == amominu.d.aqrl
 
 Synopsis::
-Atomic MIN unsigned doubleword (acquire-release)
+Atomic MIN unsigned doubleword (acquire) (release) (acquire-release)
 
 Assembly::
 amominu.d.aqrl xd, xs2, (xs1)
@@ -4931,7 +5210,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the doubleword at address _xs1_
   * Write the loaded value into _xd_
@@ -5018,6 +5297,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * Unsigned compare the least-significant halfword of register _xs2_ to the loaded value, and select the minimum value
@@ -5090,7 +5370,7 @@ Included in::
 == amominu.h.aqrl
 
 Synopsis::
-Atomic MIN unsigned halfword (acquire-release)
+Atomic MIN unsigned halfword (acquire) (release) (acquire-release)
 
 Assembly::
 amominu.h.aqrl xd, xs2, (xs1)
@@ -5102,7 +5382,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
@@ -5192,8 +5472,8 @@ Atomically:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
-  * Unsigned compare the least-significant word of register _xs2_ to the loaded word, and select the minimum value
-  * Write the result to the address in _xs1_
+  * Unsigned compare the least-significant word of register _xs2_ to the loaded value, and select the minimum value
+  * Write the minimum to the address in _xs1_
 
 
 Decode Variables::
@@ -5262,7 +5542,7 @@ Included in::
 == amominu.w.aqrl
 
 Synopsis::
-Atomic MIN unsigned word (acquire-release)
+Atomic MIN unsigned word (acquire) (release) (acquire-release)
 
 Assembly::
 amominu.w.aqrl xd, xs2, (xs1)
@@ -5274,7 +5554,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
@@ -5361,6 +5641,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * OR the least-significant byte of register _xs2_ to the loaded value
@@ -5704,6 +5985,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * OR the least-significant halfword of register _xs2_ to the loaded value
@@ -6047,6 +6329,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * Store the least-significant byte of register _xs2_ to the address in _xs1_
@@ -6117,7 +6400,7 @@ Included in::
 == amoswap.b.aqrl
 
 Synopsis::
-Atomic SWAP byte (acquire-release)
+Atomic SWAP byte (acquire) (release) (acquire-release)
 
 Assembly::
 amoswap.b.aqrl xd, xs2, (xs1)
@@ -6129,7 +6412,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
@@ -6216,7 +6499,7 @@ Description::
 Atomically:
 
   * Load the doubleword at address _xs1_
-  * Write the value into _xd_
+  * Write the loaded value into _xd_
   * Store the value of register _xs2_ to the address in _xs1_
 
 
@@ -6285,7 +6568,7 @@ Included in::
 == amoswap.d.aqrl
 
 Synopsis::
-Atomic SWAP doubleword (acquire-release)
+Atomic SWAP doubleword (acquire) (release) (acquire-release)
 
 Assembly::
 amoswap.d.aqrl xd, xs2, (xs1)
@@ -6297,7 +6580,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the doubleword at address _xs1_
   * Write the loaded value into _xd_
@@ -6382,6 +6665,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * Store the least-significant halfword of register _xs2_ to the address in _xs1_
@@ -6452,7 +6736,7 @@ Included in::
 == amoswap.h.aqrl
 
 Synopsis::
-Atomic SWAP halfword (acquire-release)
+Atomic SWAP halfword (acquire) (release) (acquire-release)
 
 Assembly::
 amoswap.h.aqrl xd, xs2, (xs1)
@@ -6464,7 +6748,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
@@ -6620,7 +6904,7 @@ Included in::
 == amoswap.w.aqrl
 
 Synopsis::
-Atomic SWAP word (acquire-release)
+Atomic SWAP word (acquire) (release) (acquire-release)
 
 Assembly::
 amoswap.w.aqrl xd, xs2, (xs1)
@@ -6632,7 +6916,7 @@ Encoding::
 ....
 
 Description::
-Atomically with acquire and release ordering:
+Atomically with acquire ordering with release ordering:
 
   * Load the word at address _xs1_
   * Write the sign-extended value into _xd_
@@ -6717,6 +7001,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the byte at address _xs1_
   * Write the sign-extended value into _xd_
   * XOR the least-significant byte of register _xs2_ to the loaded value
@@ -7060,6 +7345,7 @@ Encoding::
 
 Description::
 Atomically:
+
   * Load the halfword at address _xs1_
   * Write the sign-extended value into _xd_
   * XOR the least-significant halfword of register _xs2_ to the loaded value
