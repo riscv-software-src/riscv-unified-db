@@ -11,9 +11,15 @@ From: ubuntu:24.04
 
   apt-get update
 
+  # Create a Python virtual environment
+  python3 -m venv /opt/venv
+  . /opt/venv/bin/activate
+  pip install --upgrade pip
+
   # please keep pkgs sorted
   apt-get install -y --no-install-recommends \
     build-essential \
+    ruby-full \
     bundler \
     clang-format \
     clang-tidy \
@@ -28,6 +34,22 @@ From: ubuntu:24.04
     less \
     libc6-dev-riscv64-cross \
     libelf-dev \
+    sudo \
+
+  # Install Node.js
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  apt-get install -y nodejs
+  npm install -g npm@latest
+
+  # Create non-root user
+  useradd -m -s /bin/bash vscode
+  echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/vscode
+
+    # Set up Ruby environment for non-root user
+  su - vscode -c "gem install bundler"
+
+  # Set proper permissions
+  chown -R vscode:vscode /opt/venv
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
