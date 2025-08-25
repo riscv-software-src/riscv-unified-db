@@ -4,108 +4,161 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Release artifacts for <%= ENV["GITHUB_REF_NAME"] %></title>
-  </head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UnifiedDB continuous deployment artifacts for <%= ENV["GITHUB_REF_NAME"] %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <body>
-    <h1>Release artifacts for <code>riscv-unified-db</code>, ref <%= ENV["GITHUB_REF_NAME"] %></h1>
-    <h2>Commit <%= ENV["GITHUB_SHA"] %></h2>
-    <p>Created on <%= Date.today %></p>
+    <div class="container my-5">
+      <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <img src="../../doc/udb-block.svg" width="100" height="100"/>
 
-    <br/>
-    <h3>Resolved architecture</h3>
-    <ul>
-      <li>
-        <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/index.yaml">index.yaml</a>
-        Database index, as array of relative paths from <%= ENV["PAGES_URL"] %>/resolved_spec
-        <ul>
-          <li>
-            For example, you can find <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml">Sm.yaml</a> at <%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/resolved_spec.tar.gz">resolved_spec.tar.gz</a>
-        The contents of the resolved specification as a tarball
-      </li>
-    </ul>
+        <h1 class="text-body-emphasis">UnifiedDB Deployment Artifacts</h1>
+        <p class="lead">
+          Produced from branch <strong><%= ENV["GITHUB_REF_NAME"] %></strong>, commit <code><%= ENV["GITHUB_SHA"] %></code>.
+          <br/>
+          Created on <%= Date.today %>
+        </p>
+        <p>
+      </div>
+    </div>
 
-    <br/>
-    <h3>ISA Manual</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/manual/html/index.html">Generated HTML ISA manuals, all versions</a></li>
-    </ul>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h3>Resolved standard specification</h3>
+          <p>
+            The <em>resolved specification</em> is the database after applying the <code>$inherits</code> operator on data.
+            The resolved specification is what should be used by downstream tools.
+          </p>
+          <ul>
+            <li>
+              <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/index.yaml">index.yaml</a>
+              Database index, as array of relative paths from <%= ENV["PAGES_URL"] %>/resolved_spec
+              <ul>
+                <li>
+                  For example, you can find Sm.yaml at <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml"><%= ENV["PAGES_URL"] %>/resolved_spec/ext/Sm.yaml</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="<%= ENV["PAGES_URL"] %>/resolved_spec/resolved_spec.tar.gz">resolved_spec.tar.gz</a>
+              The contents of the resolved specification as a tarball
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>Instruction Appendix</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/instructions_appendix.pdf">Generated PDF appendix of all instructions</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>ISA Manual</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/manual/html/index.html">Generated HTML ISA manuals, all versions</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>RISC-V ISA Explorer</h3>
-    Candidate replacement for <a href="https://docs.google.com/spreadsheets/d/1A40dfm0nnn2-tgKIhdi3UYQ1GBr8iRiV2edFowvgp7E/edit?gid=1157775000">Profiles & Bases & Extensions Google Sheet</a>
-    using data in riscv-unified-db.
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/browser/ext_table.html">Extensions</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/browser/inst_table.html">Instructions</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/browser/csr_table.html">CSRs</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/spreadsheet/isa_explorer.xlsx">Excel version (includes Extensions, Instructions, CSRs)</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>Instruction Appendix</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/instructions_appendix.pdf">Generated PDF appendix of all instructions</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>Profile Releases</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20ProfileRelease.pdf">RVI20 Profile Release</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA20ProfileRelease.pdf">RVA20 Profile Release</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA22ProfileRelease.pdf">RVA22 Profile Release</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA23ProfileRelease.pdf">RVA23 Profile Release</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVB23ProfileRelease.pdf">RVB23 Profile Release</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>RISC-V ISA Explorer</h3>
+          Candidate replacement for <a href="https://docs.google.com/spreadsheets/d/1A40dfm0nnn2-tgKIhdi3UYQ1GBr8iRiV2edFowvgp7E/edit?gid=1157775000">Profiles & Bases & Extensions Google Sheet</a>
+          using data in riscv-unified-db.
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/ext_table.html">Extensions</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/inst_table.html">Instructions</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/csr_table.html">CSRs</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/isa_explorer/spreadsheet/isa_explorer.xlsx">Excel version (includes Extensions, Instructions, CSRs)</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>CSC CRDs (Certification Requirements Documents)</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/AC100-CRD.pdf">AC100 CRD (based on RVB23)</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/AC200-CRD.pdf">AC200 CRD (based on RVA23)</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-32-CRD.pdf">MC100-32 CRD</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-64-CRD.pdf">MC100-64 CRD</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC200-32-CRD.pdf">MC200-32 CRD</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC200-64-CRD.pdf">MC200-64 CRD</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC300-32-CRD.pdf">MC300-32 CRD</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC300-64-CRD.pdf">MC300-64 CRD</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>Profile Releases</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20ProfileRelease.pdf">RVI20 Profile Release</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA20ProfileRelease.pdf">RVA20 Profile Release</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA22ProfileRelease.pdf">RVA22 Profile Release</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVA23ProfileRelease.pdf">RVA23 Profile Release</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVB23ProfileRelease.pdf">RVB23 Profile Release</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>CSC CTPs (Certification Test Plans)</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20-32-CTP.pdf">RVI20-32 CTP</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20-64-CTP.pdf">RVI20-64 CTP</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-32-CTP.pdf">MC100-32 CTP</a></li>
-      <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MockProcessor-CTP.pdf">MockProcessor CTP (for UDB testing)</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>CSC CRDs (Certification Requirements Documents)</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/AC100-CRD.pdf">AC100 CRD (based on RVB23)</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/AC200-CRD.pdf">AC200 CRD (based on RVA23)</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-32-CRD.pdf">MC100-32 CRD</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-64-CRD.pdf">MC100-64 CRD</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC200-32-CRD.pdf">MC200-32 CRD</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC200-64-CRD.pdf">MC200-64 CRD</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC300-32-CRD.pdf">MC300-32 CRD</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC300-64-CRD.pdf">MC300-64 CRD</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>Configuration-specific documentation</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/example_cfg/html/index.html">Architecture documentation for example RV64 config</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>CSC CTPs (Certification Test Plans)</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20-32-CTP.pdf">RVI20-32 CTP</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/RVI20-64-CTP.pdf">RVI20-64 CTP</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MC100-32-CTP.pdf">MC100-32 CTP</a></li>
+            <li><a href="<%= ENV["PAGES_URL"] %>/pdfs/MockProcessor-CTP.pdf">MockProcessor CTP (for UDB testing)</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>UDB Gem Documentation</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/htmls/udb_api_doc/index.html"><code>udb</code> Ruby API</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>Configuration-specific documentation</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/example_cfg/html/index.html">Architecture documentation for example RV64 config</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>IDL Documentation</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/ruby/idl/index.html">IDL language documentation</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>UDB Gem Documentation</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/htmls/udb_api_doc/index.html"><code>udb</code> Ruby API</a></li>
+          </ul>
+        </div>
+      </div>
 
-    <br/>
-    <h3>Repository development</h3>
-    <ul>
-      <li><a href="<%= ENV["PAGES_URL"] %>/reuse_bom.txt">Reuse Bill of Materials (LICENSE information)</a></li>
-    </ul>
+      <div class="row">
+        <div class="col">
+          <h3>IDL Documentation</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/idl.html">IDL language documentation</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <h3>Repository development</h3>
+          <ul>
+            <li><a href="<%= ENV["PAGES_URL"] %>/reuse_bom.txt">Reuse Bill of Materials (LICENSE information)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
   </body>
 </html>

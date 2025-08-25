@@ -10,7 +10,9 @@ long_name: Floating-point Load Immediate Half-precision
 description: |
   No description available.
 definedBy:
-  allOf: [Zfa, Zfh]
+  allOf:
+    - Zfa
+    - anyOf: [Zfh, Zvfh]
 assembly: fd, xs1
 encoding:
   match: 111101000001-----000-----1010011

@@ -33,7 +33,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: reuse-manifest
-          path: _site/reuse_bom.txt
+          path: _site/
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download resolved spec
@@ -82,14 +82,14 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: isa-html-manual
-          path: _site/manual
+          path: _site/manual/html
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download HTML ISA Manual
         uses: actions/download-artifact@v5
         with:
           name: cfg-html-manual
-          path: _site/example_cfg
+          path: _site/example_cfg/html
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download Instruction Appendix
@@ -211,11 +211,22 @@ jobs:
           path: _site/pdfs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+      - name: Download IDL Doc
+        uses: actions/download-artifact@v5
+        with:
+          name: idl-doc
+          path: idl.html
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Create index
         env:
           PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
-        run: |
-          ruby -r erb -e "File.write('_site/index.html', ERB.new(File.read('tools/scripts/pages.html.erb'), trim_mode: '-').result(binding))"
+        run: >
+          cp doc/udb-block.svg _site/ &&
+          ruby -r erb -r date
+            -e "File.write('_site/index.html',
+                           ERB.new(File.read('tools/scripts/pages.html.erb'),
+                                   trim_mode: '-').result(binding))"
 
 
       - name: Setup Pages
