@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amomaxu.SIZE.AQRL.layout
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -38,6 +40,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
   X[xd] = amo<64>(virtual_address, X[xs2], AmoOperation::Maxu, 1'b0, 1'b1, $encoding);
+
   memory_model_release();
 
 # SPDX-SnippetBegin

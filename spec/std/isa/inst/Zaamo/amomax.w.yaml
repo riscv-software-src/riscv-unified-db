@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amomax.SIZE.AQRL.layout
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -32,13 +34,10 @@ access:
   vu: always
 operation(): |
   if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
-    # even though this is a memory operation, the exception occurs before that would be known,
-    # so mode() is the correct reporting mode rathat than effective_ldst_mode()
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   XReg virtual_address = X[xs1];
-
   X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Max, 1'b0, 1'b0, $encoding);
 
 # SPDX-SnippetBegin

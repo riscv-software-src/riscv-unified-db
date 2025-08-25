@@ -1,13 +1,17 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amomin.SIZE.AQRL.layout
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomin.b
 long_name: Atomic MIN byte
 description: |
   Atomically:
+
     * Load the byte at address _xs1_
     * Write the sign-extended value into _xd_
     * Signed compare the least-significant byte of register _xs2_ to the loaded value, and select the minimum value
@@ -32,8 +36,10 @@ operation(): |
   if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
+
   XReg virtual_address = X[xs1];
   X[xd] = amo<8>(virtual_address, X[xs2][7:0], AmoOperation::Min, 1'b0, 1'b0, $encoding);
+
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
@@ -87,6 +93,7 @@ sail(): |
                           AMOXOR  => rs2_val ^ loaded,
                           AMOAND  => rs2_val & loaded,
                           AMOOR   => rs2_val | loaded,
+
                           /* These operations convert bitvectors to integer values using [un]signed,
                            * and back using to_bits().
                            */

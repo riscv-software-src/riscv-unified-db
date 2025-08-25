@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amomin.SIZE.AQRL.layout
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -6,9 +8,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomin.b.aqrl
-long_name: Atomic MIN byte (acquire-release)
+long_name: Atomic MIN byte (acquire) (release) (acquire-release)
 description: |
-  Atomically with acquire and release ordering:
+  Atomically with acquire ordering with release ordering:
 
     * Load the byte at address _xs1_
     * Write the sign-extended value into _xd_
@@ -39,6 +41,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
   X[xd] = amo<8>(virtual_address, X[xs2][7:0], AmoOperation::Min, 1'b1, 1'b1, $encoding);
+
   memory_model_release();
 
 # SPDX-SnippetBegin

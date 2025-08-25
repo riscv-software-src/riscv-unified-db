@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amominu.SIZE.AQRL.layout
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -6,9 +8,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amominu.h.aqrl
-long_name: Atomic MIN unsigned halfword (acquire-release)
+long_name: Atomic MIN unsigned halfword (acquire) (release) (acquire-release)
 description: |
-  Atomically with acquire and release ordering:
+  Atomically with acquire ordering with release ordering:
 
     * Load the halfword at address _xs1_
     * Write the sign-extended value into _xd_
@@ -39,6 +41,7 @@ operation(): |
 
   XReg virtual_address = X[xs1];
   X[xd] = amo<16>(virtual_address, X[xs2][15:0], AmoOperation::Minu, 1'b1, 1'b1, $encoding);
+
   memory_model_release();
 
 # SPDX-SnippetBegin

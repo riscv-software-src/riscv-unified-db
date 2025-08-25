@@ -158,38 +158,8 @@ end
 
 
 namespace :test do
-  # Build list of all AMO instruction files that need to be generated
-  amo_instruction_files = []
-
-  # Zaamo and Zabha AMO variants
-  %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
-    ["b", "h", "w", "d"].each do |size|
-      extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
-      [
-        { suffix: "", aq: false, rl: false },
-        { suffix: ".aq", aq: true, rl: false },
-        { suffix: ".rl", aq: false, rl: true },
-        { suffix: ".aqrl", aq: true, rl: true }
-      ].each do |variant|
-        amo_instruction_files << "#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{variant[:suffix]}.yaml"
-      end
-    end
-  end
-
-  # AMOCAS variants for Zabha (b, h sizes)
-  ["b", "h"].each do |size|
-    [
-      { suffix: "", aq: false, rl: false },
-      { suffix: ".aq", aq: true, rl: false },
-      { suffix: ".rl", aq: false, rl: true },
-      { suffix: ".aqrl", aq: true, rl: true }
-    ].each do |variant|
-      amo_instruction_files << "#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{variant[:suffix]}.yaml"
-    end
-  end
-
   desc "Check that instruction encodings in the DB are consistent and do not conflict"
-  task :inst_encodings => amo_instruction_files do
+  task :inst_encodings => ["gen:arch"] do
     print "Checking for conflicts in instruction encodings.."
 
     cfg_arch = $resolver.cfg_arch_for("_")
@@ -268,7 +238,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n").join("")
 end
 
 (3..31).each do |hpm_num|
@@ -444,28 +414,28 @@ end
 end
 
 # Zacas variants (w, d, q) -> generated in Zacas directory using the same Zabha layout
-["w", "d", "q"].each do |size|
-  # Define all acquire/release combinations
-  aq_rl_variants = [
-    { suffix: "", aq: false, rl: false },           # base instruction
-    { suffix: ".aq", aq: true, rl: false },         # acquire only
-    { suffix: ".rl", aq: false, rl: true },         # release only
-    { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
-  ]
-
-  aq_rl_variants.each do |variant|
-    file "#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml" => [
-      "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout",
-      __FILE__
-    ] do |t|
-      aq = variant[:aq]
-      rl = variant[:rl]
-      erb = ERB.new(File.read($resolver.std_path / "inst/Zabha/amocas.SIZE.AQRL.layout"), trim_mode: "-")
-      erb.filename = "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout"
-      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
-    end
-  end
-end
+# ["w", "d", "q"].each do |size|
+#   # Define all acquire/release combinations
+#   aq_rl_variants = [
+#     { suffix: "", aq: false, rl: false },           # base instruction
+#     { suffix: ".aq", aq: true, rl: false },         # acquire only
+#     { suffix: ".rl", aq: false, rl: true },         # release only
+#     { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+#   ]
+#
+#   aq_rl_variants.each do |variant|
+#     file "#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml" => [
+#       "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout",
+#       __FILE__
+#     ] do |t|
+#       aq = variant[:aq]
+#       rl = variant[:rl]
+#       erb = ERB.new(File.read($resolver.std_path / "inst/Zabha/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+#       erb.filename = "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout"
+#       File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+#     end
+#   end
+# end
 
 namespace :gen do
   desc "Generate architecture files from layouts"
@@ -494,6 +464,29 @@ namespace :gen do
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
+
+    # Generate AMO instruction files
+    %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+      ["b", "h", "w", "d"].each do |size|
+        extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+        ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+          Rake::Task["#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{suffix}.yaml"].invoke
+        end
+      end
+    end
+
+    # Generate AMOCAS instruction files
+    ["b", "h"].each do |size|
+      ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+        Rake::Task["#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{suffix}.yaml"].invoke
+      end
+    end
+
+    # ["w", "d", "q"].each do |size|
+    #   ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+    #     Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{suffix}.yaml"].invoke
+    #   end
+    # end
   end
 end
 
