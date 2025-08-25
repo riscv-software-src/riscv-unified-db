@@ -186,11 +186,6 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
-    sw_write(csr_value): |
-      if (CSR[menvcfg].ADUE == 1'b0) {
-        return 0;
-      }
-      return csr_value.ADUE;
   DTE:
     location: 59
     long_name: Double Trap Enable
