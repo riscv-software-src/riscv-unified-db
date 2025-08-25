@@ -7,7 +7,9 @@
 # require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
-require_relative "certifiable_obj"
+require_relative "can_define_normative_rules"
+require_relative "can_define_coverage_points"
+require_relative "can_define_cert_test_procedures"
 require_relative "../presence"
 require "udb_helpers/backend_helpers"
 require "awesome_print"
@@ -112,8 +114,11 @@ end
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < TopLevelDatabaseObject
-  # Add all methods in this module to this type of database object.
-  include CertifiableObject
+  # Add all methods in these modules to this type of database object.
+  include CanDefineNormativeRules
+  include CanDefineCoveragePoints
+  include CanDefineCertTestProcedures
+
   include Helpers::WavedromUtil
 
   sig { returns(T::Boolean) }
@@ -505,7 +510,7 @@ class Instruction < TopLevelDatabaseObject
         else
           effective_xlen = cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(effective_xlen)
-          puts " #{name}..."
+          # puts " #{name}..."
           symtab = fill_symtab(effective_xlen, pruned_ast)
           e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)

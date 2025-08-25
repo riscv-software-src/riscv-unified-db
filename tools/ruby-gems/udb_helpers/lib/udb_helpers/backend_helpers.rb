@@ -14,9 +14,10 @@ class String
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   #
-  # @param name [String] Some RISC-V name which might have periods in it or ampersand
-  # @return [String] New String with periods replaced with underscores and ampersands replaced with "_and_"
-  def sanitize = String.new(self).gsub(".", "_").gsub("&", "_and_")
+  # @param name [String] Some RISC-V name which might have periods in it (e.g., fence.tso) or ampersand
+  # @return [String] New String with periods replaced with hyphens and ampersands replaced with "-and-"
+  #                  Don't use underscore as a replacement character since it is used by doc_links to separate list items.
+  def sanitize = String.new(self).gsub(".", "-").gsub("&", "-and-")
 end
 
 module Udb::Helpers::WavedromUtil
@@ -117,8 +118,6 @@ module Udb::Helpers::TemplateHelpers
   # Documentation:
   #   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
   #   - How to create anchors: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/
-  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397#issuecomment-2515109936 for
-  #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
 
   # @return [String] A hyperlink to UDB extension documentation
   # @param ext_name [String] Name of the extension
@@ -160,19 +159,29 @@ module Udb::Helpers::TemplateHelpers
     "%%UDB_DOC_LINK%func;#{func_name.sanitize};#{func_name}%%"
   end
 
-  # @return [String] A hyperlink to a UDB certification normative rule (separate chapters for cov pts and test procs)
-  # @param org [String] Organization of normative rules and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
-  # @param id [String] ID of the normative rule
-  def link_to_udb_doc_cov_pt(org, id)
-    raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"
-    "%%UDB_DOC_COV_PT_LINK%#{org};#{id.sanitize};#{id}%%"
+  # @return [String] A hyperlink to a UDB normative rule
+  # @param fmt [String] Is link to normative rule defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] Unique name of the normative rule
+  def link_to_udb_doc_norm_rule(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "%%UDB_DOC_NORM_RULE_LINK%#{fmt};#{name.sanitize};#{name}%%"
+  end
+
+  # @return [String] A hyperlink to a UDB coverage point
+  # @param fmt [String] Is link to coverage point defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] Unique name of the coverage point
+  def link_to_udb_doc_cover_pt(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "%%UDB_DOC_COVER_PT_LINK%#{fmt};#{name.sanitize};#{name}%%"
   end
 
   # @return [String] A hyperlink into IDL instruction code
   # @param func_name [String] Name of the instruction
-  # @param id [String] ID within the instruction code
-  def link_into_idl_inst_code(inst_name, id)
-    "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{id.sanitize};#{inst_name}.#{id}%%"
+  # @param name [String] name within the instruction code
+  def link_into_idl_inst_code(inst_name, name)
+    "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{name.sanitize};#{inst_name}.#{name}%%"
   end
   # TODO: Add csr and csr_field support
 
@@ -191,7 +200,7 @@ module Udb::Helpers::TemplateHelpers
   # @param param_name [String] Name of the parameter
   def anchor_for_udb_doc_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "[#udb:doc:ext_param:#{ext_name.sanitize}:#{param_name}]"
+    "[#udb:doc:param:#{ext_name.sanitize}:#{param_name}]"
   end
 
   # @return [String] An anchor for UDB instruction documentation
@@ -220,19 +229,30 @@ module Udb::Helpers::TemplateHelpers
   end
 
   # @return [String] An anchor for a UDB normative rule documentation
-  # @param org [String] Document organization of normative rules and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
-  # @param id [String] ID of the normative rule
+  # @param fmt [String] Is anchor in normative rule defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] name of the normative rule
   # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
-  def anchor_for_udb_doc_cov_pt(org, id)
-    raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"
-    "[[udb:doc:cov_pt:#{org}:#{id.sanitize}]]"
+  def anchor_for_udb_doc_norm_rule(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for name '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "[[udb:doc:norm_rule:#{fmt}:#{name.sanitize}]]"
+  end
+
+  # @return [String] An anchor for a UDB coverage point documentation
+  # @param fmt [String] Is anchor in coverage point defined in its own separate chapter (fmt = "sep")
+  #                     or in a chapter that combines (fmt = "combo") normative rules, coverage points, and test procedures
+  # @param name [String] name of the coverage point
+  # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
+  def anchor_for_udb_doc_cover_pt(fmt, name)
+    raise ArgumentError, "Unknown fmt value of '#{fmt}' for name '#{name}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+    "[[udb:doc:cover_pt:#{fmt}:#{name.sanitize}]]"
   end
 
   # @return [String] An anchor inside IDL instruction code
   # @param func_name [String] Name of the instruction
-  # @param id [String] ID within the instruction code
-  def anchor_inside_idl_inst_code(inst_name, id)
-    "[#idl:code:inst:#{inst_name.sanitize}:#{id.sanitize}]"
+  # @param name [String] name within the instruction code
+  def anchor_inside_idl_inst_code(inst_name, name)
+    "[#idl:code:inst:#{inst_name.sanitize}:#{name.sanitize}]"
   end
   # TODO: Add csr and csr_field support
 
@@ -275,7 +295,7 @@ module Udb::Helpers::AsciidocUtils
           "<<udb:doc:ext:#{name},#{link_text}>>"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "<<udb:doc:ext_param:#{ext_name}:#{param_name},#{link_text}>>"
+          "<<udb:doc:param:#{ext_name}:#{param_name},#{link_text}>>"
         when "inst"
           "<<udb:doc:inst:#{name},#{link_text}>>"
         when "csr"
@@ -288,14 +308,22 @@ module Udb::Helpers::AsciidocUtils
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
-      end.gsub(/%%UDB_DOC_COV_PT_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
-        org = Regexp.last_match[1] # "sep", "combo", or "appendix"
-        id = Regexp.last_match[2]
+      end.gsub(/%%UDB_DOC_NORM_RULE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        fmt = Regexp.last_match[1] # "sep", "combo", or "appendix"
+        name = Regexp.last_match[2]
         link_text = Regexp.last_match[3]
 
-        raise "Unhandled link org of '#{org}' for ID '#{id}' with link_text '#{link_text}'" unless org == "sep" || org == "combo" || org == "appendix"
+        raise "Unhandled link fmt of '#{fmt}' for name '#{name}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
 
-        "<<udb:doc:cov_pt:#{org}:#{id},#{link_text}>>"
+        "<<udb:doc:norm_rule:#{fmt}:#{name},#{link_text}>>"
+      end.gsub(/%%UDB_DOC_COVER_PT_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        fmt = Regexp.last_match[1] # "sep", "combo", or "appendix"
+        name = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
+
+        raise "Unhandled link fmt of '#{fmt}' for name '#{name}' with link_text '#{link_text}'" unless fmt == "sep" || fmt == "combo" || fmt == "appendix"
+
+        "<<udb:doc:cover_pt:#{fmt}:#{name},#{link_text}>>"
       end.gsub(/%%IDL_CODE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
@@ -303,8 +331,8 @@ module Udb::Helpers::AsciidocUtils
 
         case type
         when "inst"
-          inst_name, id = name.split('.')
-          "<<idl:code:inst:#{inst_name}:#{id},#{link_text}>>"
+          inst_name, name = name.split('.')
+          "<<idl:code:inst:#{inst_name}:#{name},#{link_text}>>"
         # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
@@ -354,7 +382,7 @@ module Udb::Helpers::AntoraUtils
           "xref:exts:#{name}.adoc#udb:doc:ext:#{name}[#{link_text}]"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "xref:exts:#{ext_name}.adoc#udb:doc:ext_param:#{ext_name}:#{param_name}[#{link_text}]"
+          "xref:exts:#{ext_name}.adoc#udb:doc:param:#{ext_name}:#{param_name}[#{link_text}]"
         when "inst"
           "xref:insts:#{name}.adoc#udb:doc:inst:#{name}[#{link_text}]"
         when "csr"
@@ -375,8 +403,8 @@ module Udb::Helpers::AntoraUtils
 
         case type
         when "inst"
-          inst_name, id = name.split('.')
-          "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{id}[#{link_text}]"
+          inst_name, name = name.split('.')
+          "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{name}[#{link_text}]"
         # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"

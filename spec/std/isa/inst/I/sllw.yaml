@@ -48,3 +48,14 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sllw_enc
+    type: instruction
+    description: Encoding
+    doc_links: ["norm:enc:insttable:sllw"]
+
+  - name: sllw_op
+    type: instruction
+    description: Basic operation
+    doc_links: ["norm:insts:sllw_srlw_sraw:operation"]
