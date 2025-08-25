@@ -1,0 +1,119 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: scountinhibit
+long_name: Supervisor Counter-Inhibit Register
+address: 0x120
+writable: true
+priv_mode: S
+length: SXLEN
+description: |
+  For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed
+  via `scountinhibit`. For counters not delegated to S-mode, the associated bits in
+  `scountinhibit` are read-only zero.
+definedBy:
+  anyOf:
+    - Smcdeleg
+    - Ssccfg
+fields:
+  CY:
+    location: 0
+    description: |
+      Cycle inhibit. When 1, the cycle counter does not increment. Only meaningful if
+      mcycle is delegated to S-mode; otherwise reads as 0.
+    type(): |
+      return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
+        if (mode() == PrivilegeMode::M) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        CSR[mcountinhibit].CY = csr_value.CY;
+        return csr_value.CY;
+      }
+  IR:
+    location: 2
+    description: |
+      Instructions-retired inhibit. When 1, the instret counter does not increment. Only
+      meaningful if minstret is delegated to S-mode; else reads 0.
+    type(): |
+      return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
+        if (mode() == PrivilegeMode::M) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        CSR[mcountinhibit].IR = csr_value.IR;
+        return csr_value.IR;
+      }
+  <%- (3..31).each do |hpm_num| -%>
+  HPM<%= hpm_num %>:
+    location: <%= hpm_num %>
+    description:
+      - id: csr-field-hpmcounter<%= hpm_num %>.COUNT-effect
+        normative: true
+        when:
+          param:
+            name: COUNTINHIBIT_EN
+            index: <%= hpm_num %>
+            value: true
+        text: |
+          When bit is set `hpmcounter<%= hpm_num %>.COUNT` does not increment; when 0, `hpmcounter<%= hpm_num %>.COUNT` increments normally.
+      - id: unimplemented-hpmcounter<%= hpm_num %>
+        normative: false
+        when:
+          param:
+            name: COUNTINHIBIT_EN
+            index: <%= hpm_num %>
+            value: flase
+        text: |
+          Since hpmcounter<%= hpm_num %> is not implemented, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[<%= hpm_num %>] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[<%= hpm_num %>] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
+        if (mode() == PrivilegeMode::M) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        CSR[mcountinhibit].HPM<%= hpm_num %> = csr_value.HPM<%= hpm_num %>;
+        return csr_value.HPM<%= hpm_num %>;
+      }
+  <%- end -%>
+
+sw_read(): |
+    if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
+      if (mode() == PrivilegeMode::M) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+    } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
+      if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+    } else {
+    return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
+    }
