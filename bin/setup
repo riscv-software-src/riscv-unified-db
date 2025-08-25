@@ -9,27 +9,30 @@ CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 # Parse command line arguments
 PRESERVE_CONFIG=0
 
-for arg in "$@"; do
-  case $arg in
-    --preserve-config)
-      PRESERVE_CONFIG=1
-      shift
-      ;;
-    --help|-h)
-      echo "Usage: $0 [OPTIONS]"
-      echo ""
-      echo "Options:"
-      echo "  --preserve-config    Only create .bundle/config if missing (default: always recreate)"
-      echo "  --help, -h           Show this help message"
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $arg"
-      echo "Use --help for usage information"
-      exit 1
-      ;;
-  esac
-done
+# Only parse arguments if this script is being run directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  for arg in "$@"; do
+    case $arg in
+      --preserve-config)
+        PRESERVE_CONFIG=1
+        shift
+        ;;
+      --help|-h)
+        echo "Usage: $0 [OPTIONS]"
+        echo ""
+        echo "Options:"
+        echo "  --preserve-config    Only create .bundle/config if missing (default: always recreate)"
+        echo "  --help, -h           Show this help message"
+        exit 0
+        ;;
+      *)
+        echo "Unknown option: $arg"
+        echo "Use --help for usage information"
+        exit 1
+        ;;
+    esac
+  done
+fi
 
 # Supported container types:
 #
