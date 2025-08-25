@@ -1,0 +1,66 @@
+// Copyright (c) RISC-V International
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+
+// IDL definitions for the Smclic extension
+
+// CLIC interrupt control and status registers
+csr mtvec {
+  mode: bits(2);     // Trap mode: Direct(0), Vectored(1)
+  base: bits(30);    // Trap vector base address
+}
+
+csr mip {
+  // Machine-level interrupt pending bits
+  meip: bit;         // Machine external interrupt pending
+  mtip: bit;         // Machine timer interrupt pending
+  msip: bit;         // Machine software interrupt pending
+  // Additional CLIC-specific interrupt pending bits would be defined here
+}
+
+csr mie {
+  // Machine-level interrupt enable bits
+  meie: bit;         // Machine external interrupt enable
+  mtie: bit;         // Machine timer interrupt enable
+  msie: bit;         // Machine software interrupt enable
+  // Additional CLIC-specific interrupt enable bits would be defined here
+}
+
+// CLIC-specific CSRs
+csr mtvt {
+  base: bits(30);    // Machine trap vector table base address
+}
+
+csr mcause {
+  INT: bit;          // Interrupt bit (1 if interrupt, 0 if exception)
+  MINHV: bit;        // M-mode interrupt handler vector mode
+  MPP: bits(2);      // Previous privilege mode
+  MPIL: bits(8);     // Previous interrupt level
+  CODE: bits(20);    // Exception or interrupt code
+}
+
+csr mintstatus {
+  mil: bits(8);      // Current interrupt level
+  sil: bits(8);      // Supervisor interrupt level
+  uil: bits(8);      // User interrupt level
+}
+
+csr mintthresh {
+  th: bits(8);       // Interrupt threshold
+}
+
+csr mscratchcsw {
+  mscratch: bits(32); // Machine scratch register (context switch)
+}
+
+csr mscratchcswl {
+  mscratch: bits(32); // Machine scratch register (context switch lite)
+}
+
+csr mclicbase {
+  base: bits(22);    // CLIC memory-mapped base address
+}
+
+// Functions to handle CLIC operations
+function handle_clic_interrupt() {
+  // Implementation would handle CLIC interrupt processing
+}

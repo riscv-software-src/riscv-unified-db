@@ -1,0 +1,38 @@
+# Copyright (c) RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smclic
+type: privileged
+long_name: Machine-level Core-Local Interrupt Controller
+description: |
+  The Smclic extension provides support for the Core-Local Interrupt Controller (CLIC) 
+  at the machine level. CLIC is an advanced interrupt controller architecture that 
+  provides low-latency, vectored, and preemptive interrupts for RISC-V systems.
+  
+  CLIC enhances interrupt handling capabilities by:
+  
+  * Supporting a larger number of interrupt sources with individual configuration
+  * Providing hardware-assisted interrupt nesting and preemption
+  * Enabling vectored interrupt handling with direct vector table addressing
+  * Supporting selective hardware vectoring for reduced interrupt latency
+  * Allowing fine-grained control of interrupt attributes (level vs edge-triggered, etc.)
+  
+  This extension adds the following CSRs:
+  
+  * mtvt - Machine Trap Vector Table register
+  * mcause - Extended Machine Cause register with interrupt level information
+  * mintstatus - Machine Interrupt Status register
+  * mintthresh - Machine Interrupt Threshold register
+  * mscratchcsw - Machine Scratch register for Context Switching
+  * mscratchcswl - Machine Scratch register for Context Switching Lite
+  * mclicbase - CLIC memory-mapped base address register
+  
+  This extension is currently in development state and not yet ratified.
+versions:
+  - version: "0.1.0"
+    state: development
+    ratification_date: null
