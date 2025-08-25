@@ -133,7 +133,8 @@ fields:
         - When menvcfg.SSE is one, SSAMOSWAP.W/D raises an illegal-instruction exception in U-mode
           and a virtual-instruction exception in VU-mode.
     definedBy:
-      name: Zicfiss
+      extension:
+        name: Zicfiss
     type(): |
       return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

@@ -21,7 +21,8 @@ description:
 priv_mode: U
 length: XLEN
 definedBy:
-  name: Zicfiss
+  extension:
+    name: Zicfiss
 fields:
   VALUE:
     location_rv64: 63-3

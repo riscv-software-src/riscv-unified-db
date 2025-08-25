@@ -279,7 +279,8 @@ fields:
 
       When menvcfg.SSE is 0, the henvcfg.SSE and senvcfg.SSE fields are read-only zero.
     definedBy:
-      name: Zicfiss
+      extension:
+        name: Zicfiss
     type(): |
       return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

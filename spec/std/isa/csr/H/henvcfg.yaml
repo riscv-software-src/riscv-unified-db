@@ -267,7 +267,8 @@ fields:
 
         - When menvcfg.SSE is one, SSAMOSWAP.W/D raises a virtual-instruction exception.
     definedBy:
-      name: Zicfiss
+      extension:
+        name: Zicfiss
     type(): |
       return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
