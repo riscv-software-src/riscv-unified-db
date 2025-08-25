@@ -97,12 +97,17 @@ fields:
     alias: mstatus.SDT
     location: 41
     base: 64
-    long_name: Supervisor Disable Trap
+    long_name: Supervisor Double Trap
     description: |
       Alias of `mstatus.SDT`.
     type: RW-H
     definedBy: Ssdbltrp
     reset_value: 0
+    sw_write(csr_value): |
+      if (CSR[menvcfg].DTE == 1'b0) {
+        return 0;
+      }
+      return csr_value.SDT;
   SPP:
     alias: mstatus.SPP
     location: 8

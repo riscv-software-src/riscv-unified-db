@@ -68,8 +68,9 @@ fields:
   SDT:
     location: 41
     base: 64
+    long_name: Supervisor Double Trap
     description: |
-      *Supervisor Disable Trap*
+      *Supervisor Double Trap*
 
       Written to 1 when entering S-mode from an exception/interrupt.
       When returning via an SRET instruction, the bit is written to 0.
