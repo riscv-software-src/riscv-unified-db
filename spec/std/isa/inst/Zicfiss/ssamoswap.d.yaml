@@ -33,12 +33,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Bits<12> ssp_addr = 0x011;
-  Csr csr_handle = direct_csr_lookup(ssp_addr);
-
-  if (csr_handle.valid == false) {
-    unimplemented_csr($encoding);
-  } else if (!implemented?(ExtensionName::S)) {
+  if (!implemented?(ExtensionName::S)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   } else if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
              (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
@@ -49,6 +44,6 @@ operation(): |
   }
 
   if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
-    X[xd] = read_memory<64>(X[xs1], $encoding);
-    write_memory<64>(X[xs1], X[xs2], $encoding);
+    XReg addr_in_ssp = X[xs1];
+    X[xd] = amo<64>(addr_in_ssp, X[xs2], AmoOperation::Swap, aq, rl, $encoding);
   }
