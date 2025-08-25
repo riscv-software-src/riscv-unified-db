@@ -104,55 +104,69 @@ debug_manual_revision: "0.13.2"
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
 extensions:
-  I:
+  - name: "I"
     version: "~> 2.1"
     presence: mandatory
-  C:
+  - name: "C"
     version: "~> 2.2"
     presence: mandatory
-  M:
+  - name: "M"
     version: "~> 2.0"
     presence: optional
-  Zicsr:
+  - name: "Zicsr"
     version: "~> 2.0"
     presence: mandatory
-  Zicntr:
+  - name: "Zicntr"
     version: "~> 2.0"
     presence: mandatory
     param_constraints:
-      TIME_CSR_IMPLEMENTED: {} # Unconstrained
-  Sm:
+      - name: "TIME_CSR_IMPLEMENTED"
+      # Unconstrained
+  - name: "Sm"
     version: "~> 1.11.0"
     presence: mandatory
     param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID: {} # Unconstrained
-      IMP_ID: {} # Unconstrained
-      VENDOR_ID_BANK: {} # Unconstrained
-      VENDOR_ID_OFFSET: {} # Unconstrained
-      MISA_CSR_IMPLEMENTED: {} # Unconstrained
-      MTVAL_WIDTH: {} # Unconstrained
-      MTVEC_MODES: {} # Unconstrained
-      PHYS_ADDR_WIDTH: {} # Unconstrained
-      MISALIGNED_LDST: {} # Unconstrained
-      MISALIGNED_LDST_EXCEPTION_PRIORITY: {} # Unconstrained
-      MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
-      MISALIGNED_SPLIT_STRATEGY:
+      - name: "MTVEC_BASE_ALIGNMENT_DIRECT"
+        # Unconstrained
+      - name: "MTVEC_BASE_ALIGNMENT_VECTORED"
+        # Unconstrained
+      - name: "ARCH_ID"
+        # Unconstrained
+      - name: "IMP_ID"
+        # Unconstrained
+      - name: "VENDOR_ID_BANK"
+        # Unconstrained
+      - name: "VENDOR_ID_OFFSET"
+        # Unconstrained
+      - name: "MISA_CSR_IMPLEMENTED"
+        # Unconstrained
+      - name: "MTVAL_WIDTH"
+        # Unconstrained
+      - name: "MTVEC_MODES"
+        # Unconstrained
+      - name: "PHYS_ADDR_WIDTH"
+        # Unconstrained
+      - name: "MISALIGNED_LDST"
+        # Unconstrained
+      - name: "MISALIGNED_LDST_EXCEPTION_PRIORITY"
+        # Unconstrained
+      - name: "MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE"
+        # Unconstrained
+      - name: "MISALIGNED_SPLIT_STRATEGY"
         schema:
           const: by_byte
-      PRECISE_SYNCHRONOUS_EXCEPTIONS:
+      - name: "PRECISE_SYNCHRONOUS_EXCEPTIONS"
         schema:
           const: true
-      TRAP_ON_ECALL_FROM_M:
+      - name: "TRAP_ON_ECALL_FROM_M"
         schema:
           const: true
-      TRAP_ON_EBREAK:
+      - name: "TRAP_ON_EBREAK"
         schema:
           const: true
-      M_MODE_ENDIANNESS:
+      - name: "M_MODE_ENDIANNESS"
         schema:
           const: little
-      MXLEN:
+      - name: "MXLEN"
         schema:
           const: 32

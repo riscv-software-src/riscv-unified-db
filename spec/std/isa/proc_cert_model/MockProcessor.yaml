@@ -46,102 +46,75 @@ debug_manual_revision: "0.13.2"
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
 extensions:
-  $inherits:
-    - "profile/MP-S-64.yaml#/extensions"
-  I:
-    note: Just added this note to I extension
-  Xmock:
+  - name: "I"
+    version: "~> 2.1"
     presence: mandatory
-    param_constraints:
-      MOCK_ENUM_2_INTS: {}
-      MOCK_ENUM_2_STRINGS: {}
-      MOCK_BOOL_1: {}
-      MOCK_BOOL_2:
-        schema:
-          const: true
-      MOCK_1_BIT_INT: {}
-      MOCK_2_BIT_INT: {}
-      MOCK_25_BIT_INT: {}
-      MOCK_32_BIT_INT:
-        schema:
-          const: 0xdeadbeef
-      MOCK_64_BIT_INT: {}
-      MOCK_INT_RANGE_0_TO_127: {}
-      MOCK_INT_RANGE_0_TO_128: {}
-      MOCK_INT_RANGE_1_TO_128: {}
-      MOCK_INT_RANGE_0_TO_999: {}
-      MOCK_INT_RANGE_0_TO_1023: {}
-      MOCK_INT_RANGE_1000_TO_2048: {}
-      MOCK_ARRAY_INT_ENUM: {}
-      MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
-      MOCK_ARRAY_STRING_ENUM1:
-        schema:
-          const: DEF
-      MOCK_ARRAY_STRING_ENUM2:
-        schema:
-          contains: { const: DEF }
-  C:
-    version: "~> 2.2"
-    presence: mandatory
-    param_constraints:
-      MUTABLE_MISA_C:
-        schema:
-          const: false
-    note: |
-      Here's a multi-line note +
-      for the C extension.
-  M:
-    presence: mandatory
-  Zicsr:
+  - name: "C"
     version: "~> 2.0"
     presence: mandatory
-  Zicntr:
+  - name: "M"
+    version: "~> 2.0"
+    presence: mandatory
+  - name: "Zicsr"
+    version: "~> 2.0"
+    presence: mandatory
+  - name: "Zicntr"
     version: "~> 2.0"
     presence: mandatory
     param_constraints:
-      TIME_CSR_IMPLEMENTED: {} # Unconstrained
-  Sm:
+      - name: "TIME_CSR_IMPLEMENTED"
+        # Unconstrained
+  - name: "Sm"
     version: "~> 1.11"
     presence: mandatory
     param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID: {} # Unconstrained
-      IMP_ID: {} # Unconstrained
-      VENDOR_ID_BANK: {} # Unconstrained
-      VENDOR_ID_OFFSET: {} # Unconstrained
-      MISA_CSR_IMPLEMENTED: {} # Unconstrained
-      MTVAL_WIDTH: {} # Unconstrained
-      MTVEC_MODES:
+      - name: "MTVEC_BASE_ALIGNMENT_DIRECT"
+        # Unconstrained
+      - name: "MTVEC_BASE_ALIGNMENT_VECTORED"
+        # Unconstrained
+      - name: "ARCH_ID"
+        # Unconstrained
+      - name: "IMP_ID"
+        # Unconstrained
+      - name: "VENDOR_ID_BANK"
+        # Unconstrained
+      - name: "VENDOR_ID_OFFSET"
+        # Unconstrained
+      - name: "MISA_CSR_IMPLEMENTED"
+        # Unconstrained
+      - name: "MTVAL_WIDTH"
+        # Unconstrained
+      - name: "MTVEC_MODES"
         note: Here's a note for MTVEC_MODES parameter.
         schema:
           contains: { const: 0 }
-      PHYS_ADDR_WIDTH: {} # Unconstrained
-      PRECISE_SYNCHRONOUS_EXCEPTIONS:
+      - name: "PHYS_ADDR_WIDTH"
+        # Unconstrained
+      - name: "PRECISE_SYNCHRONOUS_EXCEPTIONS"
         schema:
           const: true
-      TRAP_ON_ECALL_FROM_M:
+      - name: "TRAP_ON_ECALL_FROM_M"
         schema:
           const: true
-      TRAP_ON_EBREAK:
+      - name: "TRAP_ON_EBREAK"
         schema:
           const: true
-      REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+      - name: "REPORT_VA_IN_MTVAL_ON_BREAKPOINT"
         schema:
           const: true
-      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+      - name: "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT"
         schema:
           const: true
-      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+      - name: "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT"
         schema:
           const: true
-      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+      - name: "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT"
         schema:
           const: true
-      REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+      - name: "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION"
         schema:
           const: true
-      M_MODE_ENDIANNESS:
+      - name: "M_MODE_ENDIANNESS"
         schema:
           const: little
         # TODO: Uncomment when GitHub issue # is fixed.
@@ -154,31 +127,31 @@ extensions:
         #    version: "=1.1.0"
         #    then:
         #      enum: [little, big]
-      MXLEN:
+      - name: "MXLEN"
         schema:
           const: 64
-      CONFIG_PTR_ADDRESS:
+      - name: "CONFIG_PTR_ADDRESS"
         schema:
           const: 0xdeadbeef
         note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
-  Zifencei:
+  - name: "Zifencei"
     presence: optional
     note: "Here's a note for Zifencei"
-  Zicbop:
+  - name: "Zicbop"
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
     param_constraints:
-      CACHE_BLOCK_SIZE:
+      - name: "CACHE_BLOCK_SIZE"
         schema:
           const: 64
-  Zicbom:
+  - name: "Zicbom"
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
     param_constraints:
-      CACHE_BLOCK_SIZE:
+      - name: "CACHE_BLOCK_SIZE"
         schema:
           const: 64
-  B:
+  - name: "B"
     presence: mandatory
     version: "~> 1.0"
     note: "Added this as mandatory to see if Zba, Zbb, and Zbs are included."

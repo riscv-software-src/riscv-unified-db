@@ -151,80 +151,46 @@
       "description": "List of in-scope privilege modes for the certificate"
     },
     "extensions": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "\\$inherits": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
-              },
-              "uniqueItems": true
-            }
-          ]
-        },
-        "\\$child_of": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
-              },
-              "uniqueItems": true
-            }
-          ]
-        },
-        "\\$parent_of": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^proc_cert_model/.*\\.yaml#.*"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^proc_cert_model/.*\\.yaml#.*"
-              },
-              "uniqueItems": true
-            }
-          ]
-        },
-        "^([A-WY])|([SXZ][a-z0-9]+)$": {
-          "type": "object",
-          "properties": {
-            "version": {
-              "$ref": "schema_defs.json#/$defs/requirement_string"
-            },
-            "presence": {
-              "$ref": "schema_defs.json#/$defs/extension_presence"
-            },
-            "param_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
+          },
+          "version": {
+            "$ref": "schema_defs.json#/$defs/requirement_string"
+          },
+          "presence": {
+            "$ref": "schema_defs.json#/$defs/extension_presence"
+          },
+          "param_constraints": {
+            "type": "array",
+            "items": {
               "type": "object",
-              "patternProperties": {
-                "^[A-Z][A-Z0-9_]+$": {
-                  "$ref": "schema_defs.json#/$defs/parameter_constraint"
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_]+$"
+                },
+                "schema": {
+                  "$ref": "json-schema-draft-07.json#"
+                },
+                "when": {
+                  "$ref": "schema_defs.json#/$defs/when_condition"
                 }
-              }
-            },
-            "note": {
-              "type": "string"
+              },
+              "additionalProperties": false
             }
           },
-          "additionalProperties": false
-        }
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       }
     },
     "requirement_groups": {
