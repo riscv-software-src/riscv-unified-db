@@ -183,7 +183,7 @@ fields:
       zero if menvcfg.ADUE is zero.
     definedBy: Svadu
     type(): |
-      return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
+      return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
   CBZE:
