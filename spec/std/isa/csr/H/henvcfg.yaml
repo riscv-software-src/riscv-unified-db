@@ -205,7 +205,8 @@ fields:
       Furthermore, `henvcfg.DTE` is read-only zero if `menvcfg.DTE` is zero.
     definedBy: Ssdbltrp
     type: RW
-    reset_value: 0
+    reset_value(): |
+      return (implemented?(ExtensionName::Ssdbltrp)) ? UNDEFINED_LEGAL : 0;
     sw_write(csr_value): |
       if (CSR[menvcfg].DTE == 1'b0) {
         return 0;
