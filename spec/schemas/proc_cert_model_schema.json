@@ -93,7 +93,6 @@
       "description": "List of semantic versions within the model"
     },
     "base": {
-      "type": "integer",
       "enum": [32, 64],
       "description": "Base of the model"
     },
@@ -140,7 +139,6 @@
     "in_scope_priv_modes": {
       "type": "array",
       "items": {
-        "type": "string",
         "enum": ["M", "S", "U", "HS", "VS", "VU"]
       },
       "uniqueItems": true,

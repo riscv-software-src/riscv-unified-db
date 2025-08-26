@@ -20,7 +20,6 @@
       "description": "Descriptive name of the class"
     },
     "processor_kind": {
-      "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
       "description": "What kind of class is this?"
     },
