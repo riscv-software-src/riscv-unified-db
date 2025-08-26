@@ -1175,6 +1175,4 @@ sw_read(): |
     if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
-  } else {
-  return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
-  }
+  } return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;

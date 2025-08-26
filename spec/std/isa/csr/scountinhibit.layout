@@ -83,7 +83,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: <%= hpm_num %>
-            value: flase
+            value: false
         text: |
           Since hpmcounter<%= hpm_num %> is not implemented, this field is read-only zero.
     type(): |
@@ -114,6 +114,4 @@ sw_read(): |
       if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       }
-    } else {
-    return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
-    }
+    } return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;

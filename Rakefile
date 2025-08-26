@@ -356,6 +356,15 @@ file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+file "#{$resolver.std_path}/csr/scountinhibit.yaml" => [
+  "#{$resolver.std_path}/csr/scountinhibit.layout",
+  __FILE__
+] do |t|
+  erb = ERB.new(File.read($resolver.std_path / "csr/scountinhibit.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/scountinhibit.layout"
+  File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+end
+
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
@@ -374,6 +383,7 @@ namespace :gen do
     Rake::Task["#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml"].invoke
     Rake::Task["#{$resolver.std_path}/csr/H/hcounteren.yaml"].invoke
     Rake::Task["#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml"].invoke
+    Rake::Task["#{$resolver.std_path}/csr/scountinhibit.yaml"].invoke
 
     (0..63).each do |pmpaddr_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml"].invoke
