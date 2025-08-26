@@ -214,7 +214,8 @@ fields:
       If Ssdbltrp is not implemented, DTE is read-only zero.
     definedBy: Ssdbltrp
     type: RW
-    reset_value: 0
+    reset_value(): |
+      return (implemented?(ExtensionName::Ssdbltrp)) ? UNDEFINED_LEGAL : 0;
   CBZE:
     location: 7
     description: |

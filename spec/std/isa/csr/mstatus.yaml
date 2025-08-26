@@ -78,7 +78,7 @@ fields:
       This field is read-only zero if `menvcfg.DTE` is zero.
     definedBy: Ssdbltrp
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     sw_write(csr_value): |
       if (CSR[menvcfg].DTE == 1'b0) {
         return 0;
