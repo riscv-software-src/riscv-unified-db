@@ -95,8 +95,7 @@ fields:
     definedBy: V
   SDT:
     alias: mstatus.SDT
-    location: 41
-    base: 64
+    location: 24
     long_name: Supervisor Double Trap
     description: |
       Alias of `mstatus.SDT`.

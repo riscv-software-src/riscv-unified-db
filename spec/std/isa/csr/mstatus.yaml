@@ -66,8 +66,7 @@ fields:
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   SDT:
-    location: 41
-    base: 64
+    location: 24
     long_name: Supervisor Double Trap
     description: |
       Written to 1 when entering S-mode from an exception/interrupt.

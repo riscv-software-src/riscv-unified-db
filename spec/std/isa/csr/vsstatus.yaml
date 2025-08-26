@@ -58,8 +58,7 @@ fields:
     reset_value(): |
       return (VUXLEN == 3264) ? UNDEFINED_LEGAL : VUXLEN;
   SDT:
-    location: 41
-    base: 64
+    location: 24
     long_name: Supervisor Double Trap
     description: |
       Written to 1 when entering VS-mode from an exception/interrupt.
