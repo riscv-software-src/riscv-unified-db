@@ -82,7 +82,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 3
-            value: flase
+            value: false
         text: |
           Since hpmcounter3 is not implemented, this field is read-only zero.
     type(): |
@@ -120,7 +120,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 4
-            value: flase
+            value: false
         text: |
           Since hpmcounter4 is not implemented, this field is read-only zero.
     type(): |
@@ -158,7 +158,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 5
-            value: flase
+            value: false
         text: |
           Since hpmcounter5 is not implemented, this field is read-only zero.
     type(): |
@@ -196,7 +196,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 6
-            value: flase
+            value: false
         text: |
           Since hpmcounter6 is not implemented, this field is read-only zero.
     type(): |
@@ -234,7 +234,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 7
-            value: flase
+            value: false
         text: |
           Since hpmcounter7 is not implemented, this field is read-only zero.
     type(): |
@@ -272,7 +272,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 8
-            value: flase
+            value: false
         text: |
           Since hpmcounter8 is not implemented, this field is read-only zero.
     type(): |
@@ -310,7 +310,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 9
-            value: flase
+            value: false
         text: |
           Since hpmcounter9 is not implemented, this field is read-only zero.
     type(): |
@@ -348,7 +348,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 10
-            value: flase
+            value: false
         text: |
           Since hpmcounter10 is not implemented, this field is read-only zero.
     type(): |
@@ -386,7 +386,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 11
-            value: flase
+            value: false
         text: |
           Since hpmcounter11 is not implemented, this field is read-only zero.
     type(): |
@@ -424,7 +424,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 12
-            value: flase
+            value: false
         text: |
           Since hpmcounter12 is not implemented, this field is read-only zero.
     type(): |
@@ -462,7 +462,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 13
-            value: flase
+            value: false
         text: |
           Since hpmcounter13 is not implemented, this field is read-only zero.
     type(): |
@@ -500,7 +500,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 14
-            value: flase
+            value: false
         text: |
           Since hpmcounter14 is not implemented, this field is read-only zero.
     type(): |
@@ -538,7 +538,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 15
-            value: flase
+            value: false
         text: |
           Since hpmcounter15 is not implemented, this field is read-only zero.
     type(): |
@@ -576,7 +576,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 16
-            value: flase
+            value: false
         text: |
           Since hpmcounter16 is not implemented, this field is read-only zero.
     type(): |
@@ -614,7 +614,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 17
-            value: flase
+            value: false
         text: |
           Since hpmcounter17 is not implemented, this field is read-only zero.
     type(): |
@@ -652,7 +652,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 18
-            value: flase
+            value: false
         text: |
           Since hpmcounter18 is not implemented, this field is read-only zero.
     type(): |
@@ -690,7 +690,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 19
-            value: flase
+            value: false
         text: |
           Since hpmcounter19 is not implemented, this field is read-only zero.
     type(): |
@@ -728,7 +728,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 20
-            value: flase
+            value: false
         text: |
           Since hpmcounter20 is not implemented, this field is read-only zero.
     type(): |
@@ -766,7 +766,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 21
-            value: flase
+            value: false
         text: |
           Since hpmcounter21 is not implemented, this field is read-only zero.
     type(): |
@@ -804,7 +804,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 22
-            value: flase
+            value: false
         text: |
           Since hpmcounter22 is not implemented, this field is read-only zero.
     type(): |
@@ -842,7 +842,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 23
-            value: flase
+            value: false
         text: |
           Since hpmcounter23 is not implemented, this field is read-only zero.
     type(): |
@@ -880,7 +880,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 24
-            value: flase
+            value: false
         text: |
           Since hpmcounter24 is not implemented, this field is read-only zero.
     type(): |
@@ -918,7 +918,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 25
-            value: flase
+            value: false
         text: |
           Since hpmcounter25 is not implemented, this field is read-only zero.
     type(): |
@@ -956,7 +956,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 26
-            value: flase
+            value: false
         text: |
           Since hpmcounter26 is not implemented, this field is read-only zero.
     type(): |
@@ -994,7 +994,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 27
-            value: flase
+            value: false
         text: |
           Since hpmcounter27 is not implemented, this field is read-only zero.
     type(): |
@@ -1032,7 +1032,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 28
-            value: flase
+            value: false
         text: |
           Since hpmcounter28 is not implemented, this field is read-only zero.
     type(): |
@@ -1070,7 +1070,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 29
-            value: flase
+            value: false
         text: |
           Since hpmcounter29 is not implemented, this field is read-only zero.
     type(): |
@@ -1108,7 +1108,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 30
-            value: flase
+            value: false
         text: |
           Since hpmcounter30 is not implemented, this field is read-only zero.
     type(): |
@@ -1146,7 +1146,7 @@ fields:
           param:
             name: COUNTINHIBIT_EN
             index: 31
-            value: flase
+            value: false
         text: |
           Since hpmcounter31 is not implemented, this field is read-only zero.
     type(): |
