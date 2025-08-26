@@ -67,12 +67,12 @@ fields:
       On reset is set to 0.
       When vsstatus.SDT=1, direct write by CSR instruction cannot set vsstatus.SIE to 1, if not written together.
 
-      This field is read-only zero if `henvcfg.DTE` is zero.
+      This field is read-only zero if `menvcfg.DTE` is zero.
     definedBy: Ssdbltrp
     type: RW-H
     reset_value: 0
     sw_write(csr_value): |
-      if (CSR[henvcfg].DTE == 0) {
+      if (CSR[menvcfg].DTE == 0) {
         return 0;
       }
       return csr_value.SDT;
