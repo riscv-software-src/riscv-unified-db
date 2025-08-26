@@ -13,6 +13,7 @@ description: |
   64-bit value held in xs2 to the original address in xs1.
 definedBy: Zicfiss
 assembly: xd, xs2, xs1
+base: 64
 encoding:
   match: 01001------------011-----0101111
   variables:
