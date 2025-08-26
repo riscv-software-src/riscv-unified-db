@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
-if [ ! -v NO_SOURCE ]; then
-  source $ROOT/setup
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+REPO_ROOT="$(cd -- "$ROOT/.." && pwd -P)"
+
+# Source setup unless NO_SOURCE is set
+if [ -z "${NO_SOURCE+x}" ]; then
+  # shellcheck disable=SC1091
+  source "$REPO_ROOT/bin/setup"
 fi
 
-$PYTHON "$@"
+if [ -n "${PYTHON+x}" ] && [ -n "$PYTHON" ]; then
+  # $PYTHON is a *command string* (e.g., `docker run ... python3`).
+  # Append our args safely and exec it.
+  printf -v _args ' %q' "$@"
+  eval "exec ${PYTHON}${_args}"
+else
+  # Fallback to local venv interpreter
+  exec "$REPO_ROOT/.home/.venv/bin/python3" "$@"
+fi
