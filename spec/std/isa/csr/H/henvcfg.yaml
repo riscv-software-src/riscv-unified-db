@@ -188,6 +188,7 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
   DTE:
     location: 59
+    base: 64
     long_name: Double Trap Enable
     description: |
       The DTE bit controls whether the Ssdbltrp extension is available for VS-mode.
