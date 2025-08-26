@@ -103,6 +103,7 @@ definedBy:
 fields:
   STCE:
     location: 63
+    base: 64
     description: |
       *STimecmp Enable*
 
@@ -126,6 +127,7 @@ fields:
       return (implemented?(ExtensionName::Sstc)) ? UNDEFINED_LEGAL : 0;
   PBMTE:
     location: 62
+    base: 64
     description: |
       *Page Based Memory Type Enable*
 
@@ -166,6 +168,7 @@ fields:
       return (implemented?(ExtensionName::Svpbmt)) ? UNDEFINED_LEGAL : 0;
   ADUE:
     location: 61
+    base: 64
     description: |
       If the `Svadu` extension is implemented, the ADUE bit controls whether hardware updating of
       PTE A/D bits is enabled for VS-stage address translation.
