@@ -72,7 +72,7 @@ fields:
     type: RW-H
     reset_value: 0
     sw_write(csr_value): |
-      if (CSR[henvcfg].DTE == 1'b0) {
+      if (CSR[henvcfg].DTE == 0) {
         return 0;
       }
       return csr_value.SDT;

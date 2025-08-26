@@ -104,7 +104,7 @@ fields:
     definedBy: Ssdbltrp
     reset_value: 0
     sw_write(csr_value): |
-      if (CSR[menvcfg].DTE == 1'b0) {
+      if (CSR[menvcfg].DTE == 0) {
         return 0;
       }
       return csr_value.SDT;
