@@ -10,7 +10,6 @@
       "const": "profile family"
     },
     "processor_kind": {
-      "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
       "description": "What kind of processor is this?"
     },
