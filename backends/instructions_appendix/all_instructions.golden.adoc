@@ -5206,18 +5206,18 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":5,"name": "rd","type":4},{"bits":4,"name": 0x0,"type":2}]}
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":5,"name": "xd","type":4},{"bits":4,"name": 0x0,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":5,"name": "rd","type":4},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x0,"type":2}]}
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":5,"name": "xd","type":4},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x0,"type":2}]}
 ....
 
 Description::
-Shift the value in rd left by shamt, and store the result back in rd.
-C.SLLI expands into `slli rd, rd, shamt`.
+Shift the value in xd left by shamt, and store the result back in xd.
+C.SLLI expands into `slli xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5227,7 +5227,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 *RV64:*
@@ -5236,7 +5236,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -5267,19 +5267,19 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x21,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x21,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "rd","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "xd","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
 ....
 
 Description::
-Arithmetic shift (the original sign bit is copied into the vacated upper bits) the value in rd right by shamt, and store the result in rd.
-The rd register index should be used as rd+8 (registers x8-x15).
-C.SRAI expands into `srai rd, rd, shamt`.
+Arithmetic shift (the original sign bit is copied into the vacated upper bits) the value in xd right by shamt, and store the result in xd.
+The xd register index should be used as xd+8 (registers x8-x15).
+C.SRAI expands into `srai xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5289,7 +5289,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 *RV64:*
@@ -5298,7 +5298,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -5329,19 +5329,19 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x20,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x20,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "rd","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "xd","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
 ....
 
 Description::
-Shift the value in rd right by shamt, and store the result back in rd.
-The rd register index should be used as rd+8 (registers x8-x15).
-C.SRLI expands into `srli rd, rd, shamt`.
+Shift the value in xd right by shamt, and store the result back in xd.
+The xd register index should be used as xd+8 (registers x8-x15).
+C.SRLI expands into `srli xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5351,7 +5351,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 *RV64:*
@@ -5360,7 +5360,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 Included in::
