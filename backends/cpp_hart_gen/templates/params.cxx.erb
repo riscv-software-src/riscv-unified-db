@@ -12,8 +12,18 @@ namespace udb {
   }
 
   template <unsigned N, bool Signed>
+  void to_json(const nlohmann::json& j, _PossiblyUnknownBits<N, Signed>& b) {
+    j = nlohmann::json { b.get() };
+  }
+
+  template <unsigned N, bool Signed>
   void from_json(const nlohmann::json& j, _Bits<N, Signed>& b) {
     b = _Bits<N, Signed>{j.get<typename _Bits<N, Signed>::StorageType>()};
+  }
+
+  template <unsigned N, bool Signed>
+  void from_json(const nlohmann::json& j, _PossiblyUnknownBits<N, Signed>& b) {
+    b = _PossiblyUnknownBits<N, Signed>{_Bits<N, Signed>{j.get<typename _Bits<N, Signed>::StorageType>()}, 0_b};
   }
 }
 
@@ -40,7 +50,7 @@ void udb::<%= name_of(:params, cfg_arch) %>::set_param_default(const std::string
     <%- if param.default.is_a?(Integer) -%>
     <%= param.name %> = <%= param.default %>_b;
     <%- else -%>
-    <%= param.name %> = <%= param.default %>;
+    <%= param.name %> = <%= param.default.to_cxx %>;
     <%- end -%>
   }
   <%- i += 1 -%>

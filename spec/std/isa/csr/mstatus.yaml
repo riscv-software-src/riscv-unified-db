@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -419,7 +419,8 @@ fields:
       enter the privilege level stored in MPP before clearing the field.
       * When `mstatus.MPRV` is set, loads and stores behave as if the current privilege level were MPP.
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return 2'b11;
     sw_write(csr_value): |
       if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
@@ -475,13 +476,13 @@ fields:
       }
     sw_write(csr_value): |
       if (CSR[misa].V == 1'b1){
-        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.VS) ? csr_value.VS : UNDEFINED_LEGAL_DETERMINISTIC;
       } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
         # must be read-only-0
         return 0;
       } else {
         # there will be no hardware update in this case because we know the V extension isn't implemented
-        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.VS) ? csr_value.VS : UNDEFINED_LEGAL_DETERMINISTIC;
       }
   SPP:
     location: 8

@@ -8,6 +8,7 @@ name: vsireg
 long_name: Virtual Supervisor Indirect Register Alias
 address: 0x251
 virtual_address: 0x251
+writable: true
 priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind

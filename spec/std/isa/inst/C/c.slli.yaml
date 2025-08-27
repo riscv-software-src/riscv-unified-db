@@ -8,8 +8,8 @@ kind: instruction
 name: c.slli
 long_name: Shift left logical immediate
 description: |
-  Shift the value in rd left by shamt, and store the result back in rd.
-  C.SLLI expands into `slli rd, rd, shamt`.
+  Shift the value in xd left by shamt, and store the result back in xd.
+  C.SLLI expands into `slli xd, xd, shamt`.
 definedBy:
   anyOf:
     - C
@@ -22,7 +22,7 @@ encoding:
       - name: shamt
         location: 6-2
         not: 0
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 000-----------10
@@ -30,7 +30,7 @@ encoding:
       - name: shamt
         location: 12|6-2
         not: 0
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -39,7 +39,7 @@ access:
   vu: always
 operation(): |
   # shamt is between 0-63
-  X[rd] = X[rd] << shamt;
+  X[xd] = X[xd] << shamt;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
