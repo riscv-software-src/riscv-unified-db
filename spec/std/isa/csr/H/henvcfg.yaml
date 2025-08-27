@@ -188,9 +188,8 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
   DTE:
     location: 59
+    long_name: Double Trap Enable
     description: |
-      *Double Trap Enable*
-
       The DTE bit controls whether the Ssdbltrp extension is available for VS-mode.
 
       When DTE=1, the Ssdbltrp extension is enabled for VS-mode. The `vsstatus.SDT` field becomes functional.
