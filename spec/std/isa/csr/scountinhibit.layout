@@ -10,7 +10,7 @@ long_name: Supervisor Counter-Inhibit Register
 address: 0x120
 writable: true
 priv_mode: S
-length: SXLEN
+length: 32
 description: |
   For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed
   via `scountinhibit`. For counters not delegated to S-mode, the associated bits in
@@ -32,16 +32,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].CY = csr_value.CY;
-        return csr_value.CY;
       }
+      CSR[mcountinhibit].CY = csr_value.CY;
+      return csr_value.CY;
   IR:
     location: 2
     description: |
@@ -54,16 +53,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].IR = csr_value.IR;
-        return csr_value.IR;
       }
+      CSR[mcountinhibit].IR = csr_value.IR;
+      return csr_value.IR;
   <%- (3..31).each do |hpm_num| -%>
   HPM<%= hpm_num %>:
     location: <%= hpm_num %>
@@ -93,25 +91,25 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM<%= hpm_num %> = csr_value.HPM<%= hpm_num %>;
-        return csr_value.HPM<%= hpm_num %>;
       }
+      CSR[mcountinhibit].HPM<%= hpm_num %> = csr_value.HPM<%= hpm_num %>;
+      return csr_value.HPM<%= hpm_num %>;
   <%- end -%>
 
 sw_read(): |
     if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
       if (mode() == PrivilegeMode::M) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
       if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       }
-    } return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
+    }
+    return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;

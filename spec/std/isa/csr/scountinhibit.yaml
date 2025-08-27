@@ -1,20 +1,21 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/scountinhibit.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 
-$schema: "csr_schema.json#"
+$schema: csr_schema.json#
 kind: csr
 name: scountinhibit
 long_name: Supervisor Counter-Inhibit Register
 address: 0x120
 writable: true
 priv_mode: S
+length: 32
 description: |
   For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed
   via `scountinhibit`. For counters not delegated to S-mode, the associated bits in
   `scountinhibit` are read-only zero.
-length: SXLEN
 definedBy:
   anyOf:
     - Smcdeleg
@@ -32,16 +33,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].CY = csr_value.CY;
-        return csr_value.CY;
       }
+      CSR[mcountinhibit].CY = csr_value.CY;
+      return csr_value.CY;
   IR:
     location: 2
     description: |
@@ -54,16 +54,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].IR = csr_value.IR;
-        return csr_value.IR;
       }
+      CSR[mcountinhibit].IR = csr_value.IR;
+      return csr_value.IR;
   HPM3:
     location: 3
     description:
@@ -76,7 +75,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter3.COUNT` does not increment; when 0, `hpmcounter3.COUNT` increments normally.
-      - id: hpmcounter3-not-implemented
+      - id: unimplemented-hpmcounter3
         normative: false
         when:
           param:
@@ -92,16 +91,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM3 = csr_value.HPM3;
-        return csr_value.HPM3;
       }
+      CSR[mcountinhibit].HPM3 = csr_value.HPM3;
+      return csr_value.HPM3;
   HPM4:
     location: 4
     description:
@@ -114,7 +112,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter4.COUNT` does not increment; when 0, `hpmcounter4.COUNT` increments normally.
-      - id: hpmcounter4-not-implemented
+      - id: unimplemented-hpmcounter4
         normative: false
         when:
           param:
@@ -130,16 +128,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM4 = csr_value.HPM4;
-        return csr_value.HPM4;
       }
+      CSR[mcountinhibit].HPM4 = csr_value.HPM4;
+      return csr_value.HPM4;
   HPM5:
     location: 5
     description:
@@ -152,7 +149,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter5.COUNT` does not increment; when 0, `hpmcounter5.COUNT` increments normally.
-      - id: hpmcounter5-not-implemented
+      - id: unimplemented-hpmcounter5
         normative: false
         when:
           param:
@@ -168,16 +165,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM5 = csr_value.HPM5;
-        return csr_value.HPM5;
       }
+      CSR[mcountinhibit].HPM5 = csr_value.HPM5;
+      return csr_value.HPM5;
   HPM6:
     location: 6
     description:
@@ -190,7 +186,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter6.COUNT` does not increment; when 0, `hpmcounter6.COUNT` increments normally.
-      - id: hpmcounter6-not-implemented
+      - id: unimplemented-hpmcounter6
         normative: false
         when:
           param:
@@ -206,16 +202,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM6 = csr_value.HPM6;
-        return csr_value.HPM6;
       }
+      CSR[mcountinhibit].HPM6 = csr_value.HPM6;
+      return csr_value.HPM6;
   HPM7:
     location: 7
     description:
@@ -228,7 +223,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter7.COUNT` does not increment; when 0, `hpmcounter7.COUNT` increments normally.
-      - id: hpmcounter7-not-implemented
+      - id: unimplemented-hpmcounter7
         normative: false
         when:
           param:
@@ -244,16 +239,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM7 = csr_value.HPM7;
-        return csr_value.HPM7;
       }
+      CSR[mcountinhibit].HPM7 = csr_value.HPM7;
+      return csr_value.HPM7;
   HPM8:
     location: 8
     description:
@@ -266,7 +260,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter8.COUNT` does not increment; when 0, `hpmcounter8.COUNT` increments normally.
-      - id: hpmcounter8-not-implemented
+      - id: unimplemented-hpmcounter8
         normative: false
         when:
           param:
@@ -282,16 +276,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM8 = csr_value.HPM8;
-        return csr_value.HPM8;
       }
+      CSR[mcountinhibit].HPM8 = csr_value.HPM8;
+      return csr_value.HPM8;
   HPM9:
     location: 9
     description:
@@ -304,7 +297,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter9.COUNT` does not increment; when 0, `hpmcounter9.COUNT` increments normally.
-      - id: hpmcounter9-not-implemented
+      - id: unimplemented-hpmcounter9
         normative: false
         when:
           param:
@@ -320,16 +313,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM9 = csr_value.HPM9;
-        return csr_value.HPM9;
       }
+      CSR[mcountinhibit].HPM9 = csr_value.HPM9;
+      return csr_value.HPM9;
   HPM10:
     location: 10
     description:
@@ -342,7 +334,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter10.COUNT` does not increment; when 0, `hpmcounter10.COUNT` increments normally.
-      - id: hpmcounter10-not-implemented
+      - id: unimplemented-hpmcounter10
         normative: false
         when:
           param:
@@ -358,16 +350,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM10 = csr_value.HPM10;
-        return csr_value.HPM10;
       }
+      CSR[mcountinhibit].HPM10 = csr_value.HPM10;
+      return csr_value.HPM10;
   HPM11:
     location: 11
     description:
@@ -380,7 +371,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter11.COUNT` does not increment; when 0, `hpmcounter11.COUNT` increments normally.
-      - id: hpmcounter11-not-implemented
+      - id: unimplemented-hpmcounter11
         normative: false
         when:
           param:
@@ -396,16 +387,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM11 = csr_value.HPM11;
-        return csr_value.HPM11;
       }
+      CSR[mcountinhibit].HPM11 = csr_value.HPM11;
+      return csr_value.HPM11;
   HPM12:
     location: 12
     description:
@@ -418,7 +408,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter12.COUNT` does not increment; when 0, `hpmcounter12.COUNT` increments normally.
-      - id: hpmcounter12-not-implemented
+      - id: unimplemented-hpmcounter12
         normative: false
         when:
           param:
@@ -434,16 +424,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM12 = csr_value.HPM12;
-        return csr_value.HPM12;
       }
+      CSR[mcountinhibit].HPM12 = csr_value.HPM12;
+      return csr_value.HPM12;
   HPM13:
     location: 13
     description:
@@ -456,7 +445,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter13.COUNT` does not increment; when 0, `hpmcounter13.COUNT` increments normally.
-      - id: hpmcounter13-not-implemented
+      - id: unimplemented-hpmcounter13
         normative: false
         when:
           param:
@@ -472,16 +461,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM13 = csr_value.HPM13;
-        return csr_value.HPM13;
       }
+      CSR[mcountinhibit].HPM13 = csr_value.HPM13;
+      return csr_value.HPM13;
   HPM14:
     location: 14
     description:
@@ -494,7 +482,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter14.COUNT` does not increment; when 0, `hpmcounter14.COUNT` increments normally.
-      - id: hpmcounter14-not-implemented
+      - id: unimplemented-hpmcounter14
         normative: false
         when:
           param:
@@ -510,16 +498,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM14 = csr_value.HPM14;
-        return csr_value.HPM14;
       }
+      CSR[mcountinhibit].HPM14 = csr_value.HPM14;
+      return csr_value.HPM14;
   HPM15:
     location: 15
     description:
@@ -532,7 +519,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter15.COUNT` does not increment; when 0, `hpmcounter15.COUNT` increments normally.
-      - id: hpmcounter15-not-implemented
+      - id: unimplemented-hpmcounter15
         normative: false
         when:
           param:
@@ -548,16 +535,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM15 = csr_value.HPM15;
-        return csr_value.HPM15;
       }
+      CSR[mcountinhibit].HPM15 = csr_value.HPM15;
+      return csr_value.HPM15;
   HPM16:
     location: 16
     description:
@@ -570,7 +556,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter16.COUNT` does not increment; when 0, `hpmcounter16.COUNT` increments normally.
-      - id: hpmcounter16-not-implemented
+      - id: unimplemented-hpmcounter16
         normative: false
         when:
           param:
@@ -586,16 +572,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM16 = csr_value.HPM16;
-        return csr_value.HPM16;
       }
+      CSR[mcountinhibit].HPM16 = csr_value.HPM16;
+      return csr_value.HPM16;
   HPM17:
     location: 17
     description:
@@ -608,7 +593,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter17.COUNT` does not increment; when 0, `hpmcounter17.COUNT` increments normally.
-      - id: hpmcounter17-not-implemented
+      - id: unimplemented-hpmcounter17
         normative: false
         when:
           param:
@@ -624,16 +609,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM17 = csr_value.HPM17;
-        return csr_value.HPM17;
       }
+      CSR[mcountinhibit].HPM17 = csr_value.HPM17;
+      return csr_value.HPM17;
   HPM18:
     location: 18
     description:
@@ -646,7 +630,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter18.COUNT` does not increment; when 0, `hpmcounter18.COUNT` increments normally.
-      - id: hpmcounter18-not-implemented
+      - id: unimplemented-hpmcounter18
         normative: false
         when:
           param:
@@ -662,16 +646,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM18 = csr_value.HPM18;
-        return csr_value.HPM18;
       }
+      CSR[mcountinhibit].HPM18 = csr_value.HPM18;
+      return csr_value.HPM18;
   HPM19:
     location: 19
     description:
@@ -684,7 +667,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter19.COUNT` does not increment; when 0, `hpmcounter19.COUNT` increments normally.
-      - id: hpmcounter19-not-implemented
+      - id: unimplemented-hpmcounter19
         normative: false
         when:
           param:
@@ -700,16 +683,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM19 = csr_value.HPM19;
-        return csr_value.HPM19;
       }
+      CSR[mcountinhibit].HPM19 = csr_value.HPM19;
+      return csr_value.HPM19;
   HPM20:
     location: 20
     description:
@@ -722,7 +704,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter20.COUNT` does not increment; when 0, `hpmcounter20.COUNT` increments normally.
-      - id: hpmcounter20-not-implemented
+      - id: unimplemented-hpmcounter20
         normative: false
         when:
           param:
@@ -738,16 +720,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM20 = csr_value.HPM20;
-        return csr_value.HPM20;
       }
+      CSR[mcountinhibit].HPM20 = csr_value.HPM20;
+      return csr_value.HPM20;
   HPM21:
     location: 21
     description:
@@ -760,7 +741,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter21.COUNT` does not increment; when 0, `hpmcounter21.COUNT` increments normally.
-      - id: hpmcounter21-not-implemented
+      - id: unimplemented-hpmcounter21
         normative: false
         when:
           param:
@@ -776,16 +757,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM21 = csr_value.HPM21;
-        return csr_value.HPM21;
       }
+      CSR[mcountinhibit].HPM21 = csr_value.HPM21;
+      return csr_value.HPM21;
   HPM22:
     location: 22
     description:
@@ -798,7 +778,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter22.COUNT` does not increment; when 0, `hpmcounter22.COUNT` increments normally.
-      - id: hpmcounter22-not-implemented
+      - id: unimplemented-hpmcounter22
         normative: false
         when:
           param:
@@ -814,16 +794,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM22 = csr_value.HPM22;
-        return csr_value.HPM22;
       }
+      CSR[mcountinhibit].HPM22 = csr_value.HPM22;
+      return csr_value.HPM22;
   HPM23:
     location: 23
     description:
@@ -836,7 +815,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter23.COUNT` does not increment; when 0, `hpmcounter23.COUNT` increments normally.
-      - id: hpmcounter23-not-implemented
+      - id: unimplemented-hpmcounter23
         normative: false
         when:
           param:
@@ -852,16 +831,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM23 = csr_value.HPM23;
-        return csr_value.HPM23;
       }
+      CSR[mcountinhibit].HPM23 = csr_value.HPM23;
+      return csr_value.HPM23;
   HPM24:
     location: 24
     description:
@@ -874,7 +852,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter24.COUNT` does not increment; when 0, `hpmcounter24.COUNT` increments normally.
-      - id: hpmcounter24-not-implemented
+      - id: unimplemented-hpmcounter24
         normative: false
         when:
           param:
@@ -890,16 +868,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM24 = csr_value.HPM24;
-        return csr_value.HPM24;
       }
+      CSR[mcountinhibit].HPM24 = csr_value.HPM24;
+      return csr_value.HPM24;
   HPM25:
     location: 25
     description:
@@ -912,7 +889,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter25.COUNT` does not increment; when 0, `hpmcounter25.COUNT` increments normally.
-      - id: hpmcounter25-not-implemented
+      - id: unimplemented-hpmcounter25
         normative: false
         when:
           param:
@@ -928,16 +905,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM25 = csr_value.HPM25;
-        return csr_value.HPM25;
       }
+      CSR[mcountinhibit].HPM25 = csr_value.HPM25;
+      return csr_value.HPM25;
   HPM26:
     location: 26
     description:
@@ -950,7 +926,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter26.COUNT` does not increment; when 0, `hpmcounter26.COUNT` increments normally.
-      - id: hpmcounter26-not-implemented
+      - id: unimplemented-hpmcounter26
         normative: false
         when:
           param:
@@ -966,16 +942,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM26 = csr_value.HPM26;
-        return csr_value.HPM26;
       }
+      CSR[mcountinhibit].HPM26 = csr_value.HPM26;
+      return csr_value.HPM26;
   HPM27:
     location: 27
     description:
@@ -988,7 +963,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter27.COUNT` does not increment; when 0, `hpmcounter27.COUNT` increments normally.
-      - id: hpmcounter27-not-implemented
+      - id: unimplemented-hpmcounter27
         normative: false
         when:
           param:
@@ -1004,16 +979,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM27 = csr_value.HPM27;
-        return csr_value.HPM27;
       }
+      CSR[mcountinhibit].HPM27 = csr_value.HPM27;
+      return csr_value.HPM27;
   HPM28:
     location: 28
     description:
@@ -1026,7 +1000,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter28.COUNT` does not increment; when 0, `hpmcounter28.COUNT` increments normally.
-      - id: hpmcounter28-not-implemented
+      - id: unimplemented-hpmcounter28
         normative: false
         when:
           param:
@@ -1042,16 +1016,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM28 = csr_value.HPM28;
-        return csr_value.HPM28;
       }
+      CSR[mcountinhibit].HPM28 = csr_value.HPM28;
+      return csr_value.HPM28;
   HPM29:
     location: 29
     description:
@@ -1064,7 +1037,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter29.COUNT` does not increment; when 0, `hpmcounter29.COUNT` increments normally.
-      - id: hpmcounter29-not-implemented
+      - id: unimplemented-hpmcounter29
         normative: false
         when:
           param:
@@ -1080,16 +1053,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM29 = csr_value.HPM29;
-        return csr_value.HPM29;
       }
+      CSR[mcountinhibit].HPM29 = csr_value.HPM29;
+      return csr_value.HPM29;
   HPM30:
     location: 30
     description:
@@ -1102,7 +1074,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter30.COUNT` does not increment; when 0, `hpmcounter30.COUNT` increments normally.
-      - id: hpmcounter30-not-implemented
+      - id: unimplemented-hpmcounter30
         normative: false
         when:
           param:
@@ -1118,16 +1090,15 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM30 = csr_value.HPM30;
-        return csr_value.30;
       }
+      CSR[mcountinhibit].HPM30 = csr_value.HPM30;
+      return csr_value.HPM30;
   HPM31:
     location: 31
     description:
@@ -1140,7 +1111,7 @@ fields:
             value: true
         text: |
           When bit is set `hpmcounter31.COUNT` does not increment; when 0, `hpmcounter31.COUNT` increments normally.
-      - id: hpmcounter31-not-implemented
+      - id: unimplemented-hpmcounter31
         normative: false
         when:
           param:
@@ -1156,23 +1127,24 @@ fields:
     sw_write(csr_value): |
       if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
         if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
-      } else {
-        CSR[mcountinhibit].HPM31 = csr_value.HPM31;
-        return csr_value.HPM31;
       }
+      CSR[mcountinhibit].HPM31 = csr_value.HPM31;
+      return csr_value.HPM31;
+
 sw_read(): |
   if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
     if (mode() == PrivilegeMode::M) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
     if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
-  } return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
+  }
+  return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
