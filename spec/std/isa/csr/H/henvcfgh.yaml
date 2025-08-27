@@ -116,10 +116,9 @@ fields:
       Alias of `henvcfg.DTE`.
     definedBy: Ssdbltrp
     type: RW
-    reset_value(): |
-      return (implemented?(ExtensionName::Ssdbltrp)) ? UNDEFINED_LEGAL : 0;
+    reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (!implemented?(ExtensionName::Ssdbltrp) || CSR[menvcfg].DTE == 0) {
+      if (CSR[menvcfg].DTE == 0) {
         return 0;
       }
       return csr_value.DTE;

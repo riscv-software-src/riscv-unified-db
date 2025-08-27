@@ -58,5 +58,4 @@ fields:
       Alias of `menvcfg.DTE`
     definedBy: Ssdbltrp
     type: RW
-    reset_value(): |
-      return (implemented?(ExtensionName::Ssdbltrp)) ? UNDEFINED_LEGAL : 0;
+    reset_value: UNDEFINED_LEGAL
