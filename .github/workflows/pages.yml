@@ -223,11 +223,7 @@ jobs:
           PAGES_URL: https://riscv-software-src.github.io/riscv-unified-db
         run: >
           cp doc/udb-block.svg _site/ &&
-          ruby -r erb -r date
-            -e "File.write('_site/index.html',
-                           ERB.new(File.read('tools/scripts/pages.html.erb'),
-                                   trim_mode: '-').result(binding))"
-
+          ruby -r erb -r date -e "File.write('_site/index.html', ERB.new(File.read('tools/scripts/pages.html.erb'), trim_mode: '-').result(binding))"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
