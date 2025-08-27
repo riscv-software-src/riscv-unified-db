@@ -616,7 +616,7 @@ module Udb
             - Those that are shared by multiple instructions (e.g., OP, OP-32 in encoding[6:0])
             - Those that are specific to an instruction (e.g., ADDI in encoding[14:12])
 
-          Common opcodes become their own object in the database and referenced by instructions.
+          Shared opcodes become their own object in the database and referenced by instructions.
           The specific opcodes are defined directly in the instruction, and do not elevate to a
           top-level database object.
 
