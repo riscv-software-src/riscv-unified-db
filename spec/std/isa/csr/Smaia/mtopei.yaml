@@ -12,37 +12,29 @@ priv_mode: M
 length: MXLEN
 writable: false
 description: |
-  Holds the interrupt ID of the highest-priority pending interrupt observed by the
-  IMSIC interrupt file that is not disabled by the corresponding bits in mie and mvien.
+  A read of mtopei returns zero either if no interrupt is both pending in the
+  interrupt file's eiparray and enabled in its eie array, or if eithreshold is
+  not zero and no pending-and-enabled interrupt has an identity number less than
+  the value of eithreshold. Otherwise, the value returned has this format:
 
-  When no interrupt is pending, the register reads 0. When an interrupt is pending,
-  the register holds the interrupt ID in the Interrupt ID (IID) field.
-
-  This register is read-only and is automatically updated by the hardware.
+  bits 26:16 Interrupt identity
+  bits 10:0 Interrupt priority (same as identity)
+  All other bit positions are zeros.
 definedBy: Smaia
 fields:
   IID:
-    location_rv32: 31-16
-    location_rv64: 63-16
+    location: 26-16
     long_name: Interrupt ID
     description: |
-      Interrupt ID of the highest-priority pending interrupt.
-
-      The IID field holds the interrupt ID of the highest-priority pending interrupt
-      observed by the IMSIC interrupt file that is not disabled by the corresponding
-      bits in mie and mvien.
+      Interrupt identity.
     type: RO
     reset_value: 0
     definedBy: Smaia
   IP:
-    location: 15-0
+    location: 10-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending interrupt.
-
-      The IP field holds the priority of the highest-priority pending interrupt
-      observed by the IMSIC interrupt file that is not disabled by the corresponding
-      bits in mie and mvien.
+      Interrupt priority (same as identity).
     type: RO
     reset_value: 0
     definedBy: Smaia
@@ -51,10 +43,10 @@ sw_read(): |
   if (!implemented?(ExtensionName::Smaia)) {
     return 0;
   }
-  
-  // Get the highest priority pending interrupt from IMSIC
-  TopInterrupt top = get_top_imsic_interrupt(PrivilegeMode::M);
-  return (top.id << 16) | top.priority;
+  return current_m_topei;
 sw_write(csr_value): |
-  // This register is read-only, writes are ignored
+  // Claim-and-clear semantics
+  if (csr_value.IID != 0 && implemented?(ExtensionName::Smaia)) {
+    clear_imsic_interrupt(PrivilegeMode::M, csr_value.IID);
+  }
   return csr_value;

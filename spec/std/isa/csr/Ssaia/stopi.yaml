@@ -12,35 +12,28 @@ priv_mode: S
 length: MXLEN
 writable: false
 description: |
-  Holds the interrupt ID and priority of the highest-priority pending interrupt
-  that is not disabled by the corresponding bits in sie.
+  A read of stopi returns zero either if no interrupt is both pending and
+  enabled, or if no pending-and-enabled interrupt has an identity number less
+  than the value of stimecmp. Otherwise, the value returned has this format:
 
-  When no interrupt is pending, the register reads 0. When an interrupt is pending,
-  the register holds the interrupt ID in the Interrupt ID (IID) field.
-
-  This register is read-only and is automatically updated by the hardware.
+  bits 26:16 Interrupt identity
+  bits 10:0 Interrupt priority (same as identity)
+  All other bit positions are zeros.
 definedBy: Ssaia
 fields:
   IID:
-    location_rv32: 31-16
-    location_rv64: 63-16
+    location: 26-16
     long_name: Interrupt ID
     description: |
-      Interrupt ID of the highest-priority pending interrupt.
-
-      The IID field holds the interrupt ID of the highest-priority pending interrupt
-      that is not disabled by the corresponding bits in sie.
+      Interrupt identity.
     type: RO
     reset_value: 0
     definedBy: Ssaia
   IP:
-    location: 15-0
+    location: 10-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending interrupt.
-
-      The IP field holds the priority of the highest-priority pending interrupt
-      that is not disabled by the corresponding bits in sie.
+      Interrupt priority (same as identity).
     type: RO
     reset_value: 0
     definedBy: Ssaia
@@ -49,10 +42,6 @@ sw_read(): |
   if (!implemented?(ExtensionName::Ssaia)) {
     return 0;
   }
-  
-  // Get the highest priority pending interrupt
-  TopInterrupt top = get_top_interrupt(PrivilegeMode::S);
-  return (top.id << 16) | top.priority;
-sw_write(csr_value): |
-  // This register is read-only, writes are ignored
-  return csr_value;
+  // Implementation would return the top pending interrupt
+  // This is a placeholder - actual implementation would depend on interrupt tracking
+  return 0;

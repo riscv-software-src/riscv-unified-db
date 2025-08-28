@@ -12,61 +12,51 @@ priv_mode: M
 length: MXLEN
 writable: true
 description: |
-  For interrupt numbers 13-63, implementations may freely choose which bits are writable.
-  Bits corresponding to unimplemented interrupt sources should be read-only zero.
+  The `mvien` register enables virtual interrupts in M-mode. This register
+  controls which virtual interrupts can be taken when the hart is in M-mode.
+  
+  The `mvien` register is a WARL register that must be able to hold the value zero.
+  
+  For interrupt numbers 13-63, implementations may freely choose which bits of mvien are writable and which bits are read-only zero or one. If such a bit in mvien is read-only zero (preventing the virtual interrupt from being enabled), the same bit should be read-only zero in mvip. All other bits for interrupts 13-63 must be writable in mvip.
 definedBy: Smaia
 fields:
-  # Fields VSSIE, VSTIE, VSEIE are defined in the RISC-V AIA specification
-  # Section 3.2.1 "Machine Virtual Interrupt Enable Register (mvien)"
-  # These correspond to virtual supervisor software, timer, and external interrupts
   VSSIE:
     location: 1
     long_name: Virtual Supervisor Software Interrupt Enable
     description: |
-      Virtual supervisor software enable.
+      Virtual supervisor software interrupt enable.
     type: RW
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
   VSTIE:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Enable
     description: |
-      Virtual supervisor timer enable.
+      Virtual supervisor timer interrupt enable.
     type: RW
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
   VSEIE:
     location: 9
     long_name: Virtual Supervisor External Interrupt Enable
     description: |
-      Virtual supervisor external enable.
+      Virtual supervisor external interrupt enable.
     type: RW
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
-  VOTHERIE:
-    location_rv32: 31-13
-    location_rv64: 63-13
-    long_name: Machine Other Virtual Interrupts
-    description: |
-      Configurable virtual interrupt enable bits for interrupt numbers 13-63.
-
-      Implementations may freely choose which bits are writable based on the
-      MACHINE_VIRTUAL_INTERRUPTS parameter. Bits corresponding to unimplemented
-      interrupt sources should be read-only zero.
-
-      This is a WARL register where the writable bits are determined by the
-      MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
-    type: RW-R
-    reset_value: UNDEFINED_LEGAL
-    definedBy: Smaia
-    sw_write(csr_value): |
-      # Only allow writes to bits that are configured as writable
-      # Bits not in MACHINE_VIRTUAL_INTERRUPTS are read-only zero
-      # This is a full write, so mask out non-writable bits
-      Bits<51> writable_mask = 0;
-      for (int i = 13; i <= 63; i++) {
-        if (MACHINE_VIRTUAL_INTERRUPTS.include?(i)) {
-          writable_mask[i-13] = 1;
-        }
-      }
-      return (csr_value & ~writable_mask) | (value & writable_mask);
+sw_read(): |
+  return value;
+sw_write(csr_value): |
+  Bits<MXLEN> writable_mask = 0;
+  
+  // Bits 0-12 are always writable
+  writable_mask[12:0] = {13{1'b1}};
+  
+  // For bits 13-63, check configuration
+  for (int i = 13; i <= 63; i++) {
+    if (MACHINE_VIRTUAL_INTERRUPTS.include?(i)) {
+      writable_mask[i] = 1;
+    }
+  }
+  
+  return (value & writable_mask) | (csr_value & ~writable_mask);

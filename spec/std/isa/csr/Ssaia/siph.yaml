@@ -15,6 +15,7 @@ writable: true
 description: |
   Upper 32 bits of sip.
 definedBy: Ssaia
+fields: {}
 sw_read(): |
   return $bits(CSR[sip])[63:32];
 sw_write(csr_value): |
