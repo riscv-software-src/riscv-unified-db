@@ -1,7 +1,7 @@
 # Copyright (c) Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -10,6 +10,7 @@ long_name: Trigger Data 1
 address: 0x7A1
 priv_mode: M
 length: XLEN
+writable: true
 description: |
   This register provides access to the trigger selected by `tselect`.
   The reset values listed here apply to every underlying trigger.
