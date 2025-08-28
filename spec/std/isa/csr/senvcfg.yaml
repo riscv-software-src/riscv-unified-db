@@ -117,6 +117,33 @@ fields:
         return UNDEFINED_LEGAL_DETERMINISTIC;
       }
     reset_value: UNDEFINED_LEGAL
+  SSE:
+    location: 3
+    description: |
+      *Shadow Stack Enable*
+
+      When the SSE field is set to 1, the Zicfiss extension is
+      activated in VU/U-mode. When the SSE field is 0, the Zicfiss extension remains inactive
+      in VU/U-mode, and the following rules apply:
+
+        - 32-bit Zicfiss instructions will revert to their behavior as defined by Zimop.
+
+        - 16-bit Zicfiss instructions will revert to their behavior as defined by Zcmop.
+
+        - When menvcfg.SSE is one, SSAMOSWAP.W/D raises an illegal-instruction exception in U-mode
+          and a virtual-instruction exception in VU-mode.
+    definedBy:
+      extension:
+        name: Zicfiss
+    type(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return (implemented?(ExtensionName::Zicfiss)) ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].SSE == 0 || CSR[henvcfg].SSE == 0){
+        return 0;
+      }
+      return csr_value.SSE;
   FIOM:
     location: 0
     description: |
@@ -148,3 +175,10 @@ fields:
 
     type: RW
     reset_value: 0
+sw_read(): |
+  Bits<64> value = $bits(CSR[senvcfg]);
+  if (implemented?(ExtensionName::Zicfiss) && (CSR[menvcfg].SSE == 0 || CSR[henvcfg].SSE == 0)) {
+    # senvcfg.SSE must read-as-zero
+    value = value & ~(1 `<< 3);
+  }
+  return value;
