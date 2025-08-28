@@ -394,7 +394,14 @@ class Instruction < TopLevelDatabaseObject
       qualifiers << :signed if d.sext?
       width = d.size
 
-      var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
+      # If the variable has a transform expression, we need to handle it specially
+      if d.transform.nil?
+        var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
+      else
+        # For variables with transform expressions, create a special variable type
+        # The actual transformation will be handled in the IDL compiler
+        var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true, transform: d.transform)
+      end
       symtab.add(d.name, var)
     end
 
@@ -585,6 +592,11 @@ class Instruction < TopLevelDatabaseObject
     # For example, if the field is offset[5:3], left_shift is 3
     attr_reader :left_shift
 
+    # expression to transform the field value
+    #
+    # For example, "(var << 1) | 1" to ensure the resulting value is always odd
+    attr_reader :transform
+
     # @return [Array<Integer>] Specific values that are prohibited for this variable
     attr_reader :excludes
 
@@ -611,6 +623,30 @@ class Instruction < TopLevelDatabaseObject
       else
         "#{name} != {#{excludes.join(',')}}"
       end
+    end
+
+    def initialize(name, field_data)
+      @name = name
+
+      @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
+      @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
+      @alias = field_data["alias"].nil? ? nil : field_data["alias"]
+      @transform = field_data["transform"].nil? ? nil : field_data["transform"]
+      
+      if field_data.key?("not")
+        @excludes = field_data["not"].is_a?(Array) ? field_data["not"] : [field_data["not"]]
+      else
+        @excludes = []
+      end
+
+      extract_location(field_data["location"])
+
+      @decode_variable =
+        if @alias.nil?
+          name
+        else
+          @decode_variable = [name, @alias]
+        end
     end
 
     def extract_location(location)
@@ -670,6 +706,17 @@ class Instruction < TopLevelDatabaseObject
       new_encoding
     end
 
+    # Check if this variable has a transformation expression
+    def has_transform?
+      !@transform.nil?
+    end
+
+    # Get the transformation expression with 'var' replaced by the variable name
+    def transform_expression
+      return nil if @transform.nil?
+      @transform.gsub('var', @name)
+    end
+
     # given a range of the instruction, return a string representing the bits of the field the range
     # represents
     def inst_range_to_var_range(r)
@@ -713,31 +760,6 @@ class Instruction < TopLevelDatabaseObject
           EncodingField.new("#{pretty_name}[#{inst_range_to_var_range(f)}]", f)
         end
       end
-    end
-
-    def initialize(name, field_data)
-      @name = name
-      @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
-      @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
-      @alias = field_data["alias"].nil? ? nil : field_data["alias"]
-      @location = field_data["location"]
-      extract_location(field_data["location"])
-      @excludes =
-        if field_data.key?("not")
-          if field_data["not"].is_a?(Array)
-            field_data["not"]
-          else
-            [field_data["not"]]
-          end
-        else
-          []
-        end
-      @decode_variable =
-        if @alias.nil?
-          name
-        else
-          @decode_variable = [name, @alias]
-        end
     end
 
     def eql?(other)
@@ -812,6 +834,14 @@ class Instruction < TopLevelDatabaseObject
           ops[0]
         end
       ops = "sext(#{ops})" if sext?
+      
+      # Apply transformation if specified
+      if @transform
+        # Replace 'var' in the transform expression with the extracted field
+        transformed_ops = @transform.gsub('var', ops)
+        ops = transformed_ops
+      end
+      
       ops
     end
   end

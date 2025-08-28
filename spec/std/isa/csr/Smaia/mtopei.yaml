@@ -6,38 +6,47 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: mtopei
-long_name: Machine Top External Interrupt
+long_name: Machine Top External Interrupt Pending
 address: 0x35C
 priv_mode: M
 length: MXLEN
-writable: true
+writable: false
 description: |
-  Provides information about the highest-priority pending-and-enabled external interrupt
-  for machine level, with claim-and-clear semantics on write.
+  A read of mtopei returns zero either if no interrupt is both pending in the
+  interrupt file's eiparray and enabled in its eie array, or if eithreshold is
+  not zero and no pending-and-enabled interrupt has an identity number less than
+  the value of eithreshold. Otherwise, the value returned has this format:
+
+  bits 26:16 Interrupt identity
+  bits 10:0 Interrupt priority (same as identity)
+  All other bit positions are zeros.
 definedBy: Smaia
 fields:
   IID:
     location: 26-16
-    long_name: Interrupt Identity
+    long_name: Interrupt ID
     description: |
-      Identity of the highest-priority pending-and-enabled external interrupt.
-
-      When written with a non-zero value, clears the corresponding IMSIC interrupt.
-    type: RW-R
-    reset_value: UNDEFINED_LEGAL
+      Interrupt identity.
+    type: RO
+    reset_value: 0
     definedBy: Smaia
-    sw_write(csr_value): |
-      if (csr_value.IID != 0 && implemented?(ExtensionName::Smaia)) {
-        clear_imsic_interrupt(PrivilegeMode::M, csr_value.IID);
-      }
-      return csr_value.IID;
-  IPRIO:
-    location: 7-0
+  IP:
+    location: 10-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending-and-enabled external interrupt.
-
-      Read-only field that reflects the priority of the interrupt in IID field.
+      Interrupt priority (same as identity).
     type: RO
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
+sw_read(): |
+  // Return the top pending external interrupt
+  if (!implemented?(ExtensionName::Smaia)) {
+    return 0;
+  }
+  return current_m_topei;
+sw_write(csr_value): |
+  // Claim-and-clear semantics
+  if (csr_value.IID != 0 && implemented?(ExtensionName::Smaia)) {
+    clear_imsic_interrupt(PrivilegeMode::M, csr_value.IID);
+  }
+  return csr_value;

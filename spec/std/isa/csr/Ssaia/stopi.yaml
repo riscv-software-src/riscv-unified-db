@@ -6,33 +6,42 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: stopi
-long_name: Supervisor Top Interrupt
-address: 0xDB0
+long_name: Supervisor Top Interrupt Pending
+address: 0x15B
 priv_mode: S
-length: SXLEN
+length: MXLEN
 writable: false
 description: |
-  Supervisor-level CSR stopi is read-only with width SXLEN. A read of stopi returns
-  information about the highest-priority pending-and-enabled interrupt for supervisor level,
-  in this format:
-  bits 27:16 IID
-  bits 7:0 IPRIO
-  All other bits of stopi are reserved and read as zeros.
+  A read of stopi returns zero either if no interrupt is both pending and
+  enabled, or if no pending-and-enabled interrupt has an identity number less
+  than the value of stimecmp. Otherwise, the value returned has this format:
+
+  bits 26:16 Interrupt identity
+  bits 10:0 Interrupt priority (same as identity)
+  All other bit positions are zeros.
 definedBy: Ssaia
 fields:
   IID:
-    location: 27-16
-    long_name: Interrupt Identity
+    location: 26-16
+    long_name: Interrupt ID
     description: |
-      Identity of the highest-priority pending-and-enabled interrupt.
-    type: RO-H
-    reset_value: UNDEFINED_LEGAL
+      Interrupt identity.
+    type: RO
+    reset_value: 0
     definedBy: Ssaia
-  IPRIO:
-    location: 7-0
+  IP:
+    location: 10-0
     long_name: Interrupt Priority
     description: |
-      Priority of the highest-priority pending-and-enabled interrupt.
-    type: RO-H
-    reset_value: UNDEFINED_LEGAL
+      Interrupt priority (same as identity).
+    type: RO
+    reset_value: 0
     definedBy: Ssaia
+sw_read(): |
+  // Return the top pending interrupt
+  if (!implemented?(ExtensionName::Ssaia)) {
+    return 0;
+  }
+  // Implementation would return the top pending interrupt
+  // This is a placeholder - actual implementation would depend on interrupt tracking
+  return 0;

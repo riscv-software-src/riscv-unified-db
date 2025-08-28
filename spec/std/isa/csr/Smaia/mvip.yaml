@@ -12,78 +12,65 @@ priv_mode: M
 length: MXLEN
 writable: true
 description: |
+  The `mvip` register contains the pending state of virtual interrupts. When the
+  hart is executing in M-mode, these bits can be written by both software and
+  external sources to set or clear the corresponding interrupt pending bits.
+  
   If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero.
-  Bits corresponding to unimplemented interrupt sources should be read-only zero.
 definedBy: Smaia
 fields:
-  # Fields VSSIP, VSTIP, VSEIP are defined in the RISC-V AIA specification
-  # Section 3.2.2 "Machine Virtual Interrupt Pending Register (mvip)"
-  # These correspond to virtual supervisor software, timer, and external interrupts
   VSSIP:
     location: 1
     long_name: Virtual Supervisor Software Interrupt Pending
     description: |
-      Virtual supervisor software pending.
-
-      This bit can only be written if the corresponding VSSIE bit in mvien is writable and enabled.
+      Virtual supervisor software interrupt pending.
     type: RW-R
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
     sw_write(csr_value): |
-      # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSSIE == 1'b1) {
-        return csr_value.VSSIP;
+        return csr_value;
       }
       return 0;  # Force to zero if mvien bit is disabled
   VSTIP:
     location: 5
     long_name: Virtual Supervisor Timer Interrupt Pending
     description: |
-      Virtual supervisor timer pending.
-
-      This bit can only be written if the corresponding VSTIE bit in mvien is writable and enabled.
+      Virtual supervisor timer interrupt pending.
     type: RW-R
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
     sw_write(csr_value): |
-      # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSTIE == 1'b1) {
-        return csr_value.VSTIP;
+        return csr_value;
       }
       return 0;  # Force to zero if mvien bit is disabled
   VSEIP:
     location: 9
     long_name: Virtual Supervisor External Interrupt Pending
     description: |
-      Virtual supervisor external pending.
-
-      This bit can only be written if the corresponding VSEIE bit in mvien is writable and enabled.
+      Virtual supervisor external interrupt pending.
     type: RW-R
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
     definedBy: Smaia
     sw_write(csr_value): |
-      # Check if corresponding mvien bit is enabled
       if (CSR[mvien].VSEIE == 1'b1) {
-        return csr_value.VSEIP;
+        return csr_value;
       }
       return 0;  # Force to zero if mvien bit is disabled
-  VOTHERPIP:
-    location_rv32: 31-13
-    location_rv64: 63-13
-    long_name: Machine Other Virtual Interrupts Pending
-    description: |
-      Configurable virtual interrupt pending bits for interrupt numbers 13-63.
-
-      The behavior of these bits follows the corresponding mvien bits. If a bit
-      in mvien is read-only zero, the corresponding bit in mvip should also be
-      read-only zero.
-
-      This is a WARL register where the writable bits are determined by the
-      MACHINE_VIRTUAL_INTERRUPTS configuration parameter.
-    type: RW-R
-    reset_value: UNDEFINED_LEGAL
-    definedBy: Smaia
-    sw_write(csr_value): |
-      # Only allow writes to bits that are also writable in mvien
-      # If a bit in mvien is read-only zero, the corresponding bit in mvip should also be read-only zero
-      return csr_value.VOTHERPIP;
+sw_read(): |
+  return value;
+sw_write(csr_value): |
+  Bits<MXLEN> writable_mask = 0;
+  
+  // Bits 0-12 are always writable
+  writable_mask[12:0] = {13{1'b1}};
+  
+  // For bits 13-63, check configuration
+  for (int i = 13; i <= 63; i++) {
+    if (MACHINE_VIRTUAL_INTERRUPTS.include?(i)) {
+      writable_mask[i] = 1;
+    }
+  }
+  
+  return (value & writable_mask) | (csr_value & ~writable_mask);

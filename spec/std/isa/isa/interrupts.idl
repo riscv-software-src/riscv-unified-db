@@ -3,6 +3,9 @@
 
 %version: 1.0
 
+# Constants
+const Bits<32> IMSIC_INTERRUPT_FILE_SIZE = 2048;  # Supports up to 65536 interrupt identities
+
 # generated from extension information in arch definition
 generated enum InterruptCode;
 
@@ -18,10 +21,256 @@ Bits<MXLEN> pending_and_enabled_interrupts = 0;
 
 # AIA-specific state for IMSIC (Incoming Message-Signaled Interrupt Controller)
 # These variables track the state of external interrupts managed by the IMSIC
-const Bits<32> IMSIC_INTERRUPT_FILE_SIZE = 2048; # Supports up to 65536 interrupt identities
-Bits<32> imsic_m_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Machine-level interrupt file
-Bits<32> imsic_s_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Supervisor-level interrupt file
-Bits<32> imsic_vs_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE]; # Virtual supervisor-level interrupt file
+Bits<32> imsic_m_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...};  # Machine-level interrupt file
+Bits<32> imsic_s_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...};  # Supervisor-level interrupt file
+Bits<32> imsic_vs_interrupt_file[IMSIC_INTERRUPT_FILE_SIZE] = {0, ...}; # Virtual supervisor-level interrupt file
+
+# Current top external interrupt information for machine and supervisor levels
+Bits<32> current_m_topei = 0;  # IID and IPRIO for machine level
+Bits<32> current_s_topei = 0;  # IID and IPRIO for supervisor level
+
+# Function to set an IMSIC interrupt
+external function set_imsic_interrupt {
+  arguments PrivilegeMode target_mode, Bits<12> iid, Bits<8> priority
+  description {
+    Set an IMSIC interrupt targeting target_mode with interrupt ID and priority
+  }
+  body {
+    if (target_mode == PrivilegeMode::M) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Set the interrupt in the machine-level IMSIC interrupt file
+      imsic_m_interrupt_file[iid] = priority;
+      # Update the current top external interrupt
+      update_m_topei();
+    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Set the interrupt in the supervisor-level IMSIC interrupt file
+      imsic_s_interrupt_file[iid] = priority;
+      # Update the current top external interrupt
+      update_s_topei();
+    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Set the interrupt in the virtual supervisor-level IMSIC interrupt file
+      imsic_vs_interrupt_file[iid] = priority;
+    } else {
+      assert(false, "Invalid target_mode");
+    }
+  }
+}
+
+# Function to clear an IMSIC interrupt
+external function clear_imsic_interrupt {
+  arguments PrivilegeMode target_mode, Bits<12> iid
+  description {
+    Clear an IMSIC interrupt targeting target_mode with interrupt ID
+  }
+  body {
+    if (target_mode == PrivilegeMode::M) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Clear the interrupt in the machine-level IMSIC interrupt file
+      imsic_m_interrupt_file[iid] = 0;
+      # Update the current top external interrupt
+      update_m_topei();
+    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Clear the interrupt in the supervisor-level IMSIC interrupt file
+      imsic_s_interrupt_file[iid] = 0;
+      # Update the current top external interrupt
+      update_s_topei();
+    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
+      # Check bounds
+      if (iid >= IMSIC_INTERRUPT_FILE_SIZE) {
+        assert(false, "IID out of bounds");
+      }
+      
+      # Clear the interrupt in the virtual supervisor-level IMSIC interrupt file
+      imsic_vs_interrupt_file[iid] = 0;
+    } else {
+      assert(false, "Invalid target_mode");
+    }
+  }
+}
+
+# Function to update the machine-level top external interrupt
+external function update_m_topei {
+  description {
+    Update the current_m_topei register with the highest priority pending interrupt
+  }
+  body {
+    Bits<12> highest_iid = 0;
+    Bits<8> highest_priority = 0;
+    
+    # Find the highest priority pending interrupt
+    for (int i = 0; i < IMSIC_INTERRUPT_FILE_SIZE; i++) {
+      if (imsic_m_interrupt_file[i] != 0) {
+        # Check if this interrupt is enabled
+        if ((i <= 12 && CSR[mie][i] == 1'b1) || 
+            (i >= 13 && i <= 63 && CSR[mie][i] == 1'b1 && CSR[mvien][i-13] == 1'b1) ||
+            (i >= 64 && CSR[mie][i] == 1'b1)) {
+          
+          # Check if this is higher priority than current highest
+          if (highest_iid == 0 || i < highest_iid) {
+            highest_iid = i;
+            highest_priority = imsic_m_interrupt_file[i];
+          }
+        }
+      }
+    }
+    
+    # Update current_m_topei
+    current_m_topei = (highest_iid << 16) | highest_priority;
+  }
+}
+
+# Function to update the supervisor-level top external interrupt
+external function update_s_topei {
+  description {
+    Update the current_s_topei register with the highest priority pending interrupt
+  }
+  body {
+    Bits<12> highest_iid = 0;
+    Bits<8> highest_priority = 0;
+    
+    # Find the highest priority pending interrupt
+    for (int i = 0; i < IMSIC_INTERRUPT_FILE_SIZE; i++) {
+      if (imsic_s_interrupt_file[i] != 0) {
+        # Check if this interrupt is enabled
+        if (CSR[sie][i] == 1'b1) {
+          # Check if this is higher priority than current highest
+          if (highest_iid == 0 || i < highest_iid) {
+            highest_iid = i;
+            highest_priority = imsic_s_interrupt_file[i];
+          }
+        }
+      }
+    }
+    
+    # Update current_s_topei
+    current_s_topei = (highest_iid << 16) | highest_priority;
+  }
+}
+
+# Function to refresh pending interrupts
+function refresh_pending_interrupts {
+  description {
+    Refresh the pending_and_enabled_interrupts bitmask
+  }
+  body {
+    Bits<MXLEN> result = 0;
+    
+    # Standard interrupts
+    result[11:3] = (CSR[mip] & CSR[mie])[11:3];
+    
+    # External interrupt
+    if ((CSR[mip].MEIP == 1'b1) && (CSR[mie].MEIE == 1'b1)) {
+      result[11] = 1'b1;
+    }
+    
+    # Timer interrupt
+    if ((CSR[mip].MTIP == 1'b1) && (CSR[mie].MTIE == 1'b1)) {
+      result[7] = 1'b1;
+    }
+    
+    # Software interrupt
+    if ((CSR[mip].MSIP == 1'b1) && (CSR[mie].MSIE == 1'b1)) {
+      result[3] = 1'b1;
+    }
+    
+    # Supervisor-level interrupts (if S-mode is implemented)
+    if (CSR[misa].S == 1'b1) {
+      # SEIP
+      Boolean seip = (CSR[mip].SEIP == 1'b1) || pending_smode_external_interrupt;
+      if (seip && (CSR[mie].SEIE == 1'b1)) {
+        result[9] = 1'b1;
+      }
+      
+      # STIP
+      if ((CSR[mip].STIP == 1'b1) && (CSR[mie].STIE == 1'b1)) {
+        result[5] = 1'b1;
+      }
+      
+      # SSIP
+      if ((CSR[mip].SSIP == 1'b1) && (CSR[mie].SSIE == 1'b1)) {
+        result[1] = 1'b1;
+      }
+    }
+    
+    # Virtual supervisor-level interrupts (if hypervisor extension is implemented)
+    if (CSR[misa].H == 1'b1) {
+      # VSEIP
+      if ((CSR[hip].VSEIP == 1'b1) && (CSR[mie].VSEIE == 1'b1)) {
+        result[10] = 1'b1;
+      }
+      
+      # VSTIP
+      Boolean vstip = (CSR[hip].VSTIP == 1'b1) || pending_vsmode_timer_interrupt;
+      if (vstip && (CSR[mie].VSTIE == 1'b1)) {
+        result[6] = 1'b1;
+      }
+      
+      # VSSIP
+      if ((CSR[hip].VSSIP == 1'b1) && (CSR[mie].VSSIE == 1'b1)) {
+        result[2] = 1'b1;
+      }
+    }
+    
+    # Update the global variable
+    pending_and_enabled_interrupts = result;
+  }
+}
+
+# Function to check for pending interrupts
+function pending_interrupt {
+  returns Boolean
+  description {
+    Check if any interrupts are pending and enabled
+  }
+  body {
+    refresh_pending_interrupts();
+    return |pending_and_enabled_interrupts;
+  }
+}
+
+# Function to get the highest priority pending interrupt
+function highest_priority_pending_interrupt {
+  returns Bits<MXLEN>
+  description {
+    Get the highest priority pending and enabled interrupt
+  }
+  body {
+    refresh_pending_interrupts();
+    
+    # Standard RISC-V interrupt priority (lower bit number = higher priority)
+    for (int i = 0; i < MXLEN; i++) {
+      if (pending_and_enabled_interrupts[i] == 1'b1) {
+        return 1 << i;
+      }
+    }
+    
+    # No pending interrupts
+    return 0;
+  }
+}
 
 external function set_external_interrupt {
   arguments PrivilegeMode target_mode
@@ -149,137 +398,6 @@ external function clear_timer_interrupt {
   }
 }
 
-# AIA-specific functions for IMSIC interrupt management
-external function set_imsic_interrupt {
-  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
-  description {
-    Set an IMSIC interrupt for the specified privilege mode and interrupt ID
-  }
-  body {
-    assert(interrupt_id < IMSIC_INTERRUPT_FILE_SIZE, "Invalid interrupt ID");
-
-    if (target_mode == PrivilegeMode::M) {
-      imsic_m_interrupt_file[interrupt_id] = 1;
-      update_topei_m();
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      imsic_s_interrupt_file[interrupt_id] = 1;
-      update_topei_s();
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
-      imsic_vs_interrupt_file[interrupt_id] = 1;
-      update_topei_vs();
-    } else {
-      assert(false, "Invalid target_mode");
-    }
-  }
-}
-
-external function clear_imsic_interrupt {
-  arguments PrivilegeMode target_mode, Bits<32> interrupt_id
-  description {
-    Clear an IMSIC interrupt for the specified privilege mode and interrupt ID
-  }
-  body {
-    assert(interrupt_id < IMSIC_INTERRUPT_FILE_SIZE, "Invalid interrupt ID");
-
-    if (target_mode == PrivilegeMode::M) {
-      imsic_m_interrupt_file[interrupt_id] = 0;
-      update_topei_m();
-    } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      imsic_s_interrupt_file[interrupt_id] = 0;
-      update_topei_s();
-    } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
-      imsic_vs_interrupt_file[interrupt_id] = 0;
-      update_topei_vs();
-    } else {
-      assert(false, "Invalid target_mode");
-    }
-  }
-}
-
-# AIA TOPEI update functions
-function update_topei_m {
-  description {
-    Update machine-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_m_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    if (implemented?(ExtensionName::Smaia)) {
-      if (highest_id != 0) {
-        CSR[mtopei].IID = highest_id;
-        CSR[mtopei].IPRIO = highest_priority;
-      } else {
-        CSR[mtopei].IID = 0;
-        CSR[mtopei].IPRIO = 0;
-      }
-    }
-  }
-}
-
-function update_topei_s {
-  description {
-    Update supervisor-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_s_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    if (implemented?(ExtensionName::Ssaia)) {
-      if (highest_id != 0) {
-        CSR[stopei].IID = highest_id;
-        CSR[stopei].IPRIO = highest_priority;
-        CSR[stopi].IID = highest_id;
-        CSR[stopi].IPRIO = highest_priority;
-      } else {
-        CSR[stopei].IID = 0;
-        CSR[stopei].IPRIO = 0;
-        CSR[stopi].IID = 0;
-        CSR[stopi].IPRIO = 0;
-      }
-    }
-  }
-}
-
-function update_topei_vs {
-  description {
-    Update virtual supervisor-level TOPEI register with highest priority pending interrupt
-  }
-  body {
-    Bits<32> highest_priority = 0;
-    Bits<32> highest_id = 0;
-
-    for (Bits<32> i = 1; i < IMSIC_INTERRUPT_FILE_SIZE; i = i + 1) {
-      if (imsic_vs_interrupt_file[i] == 1) {
-        if (i > highest_priority) {
-          highest_priority = i;
-          highest_id = i;
-        }
-      }
-    }
-
-    # Virtual supervisor TOPEI would be implemented when H extension AIA support is added
-  }
-}
-
 function refresh_pending_interrupts {
   description {
     refreshes the calculation of a pending interrupt
@@ -341,7 +459,7 @@ function refresh_pending_interrupts {
     #   Bits<MXLEN> vsmode_enabled_ints =
     #     ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S) || (CSR[vsstatus].SIE == 1'b0)
     #       ? 0
-    #       : $bits(CSR[mie]) & ($bits[CSR[mideleg]] & $bits[CSR[hideleg]]));
+    #       : $bits(CSR[mie]) & ($bits(CSR[mideleg]] & $bits(CSR[hideleg]));
     #   Bits<MXLEN> vsmode_pending_and_enabled = pending_ints & vsmode_enabled_ints;
 
     #   if (vsmode_pending_and_enabled != 0) {
@@ -477,7 +595,11 @@ function take_interrupt {
       CSR[mepc].PC = $pc;
       CSR[mstatus].MPP = $bits(mode())[1:0];
       if (CSR[misa].H == 1'b1) {
-        CSR[mstatus].MPV = $bits(mode())[2];
+        if(MXLEN == 64) {
+          CSR[mstatus].MPV = $bits(mode())[2];
+        } else {
+          CSR[mstatush].MPV = $bits(mode())[2];
+        }
         CSR[mtval2].VALUE = 0;
         CSR[mtinst].VALUE = 0;
       }

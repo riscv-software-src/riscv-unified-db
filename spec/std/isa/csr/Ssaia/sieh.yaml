@@ -16,3 +16,11 @@ description: |
   Upper 32 bits of sie.
 definedBy: Ssaia
 fields: {}
+sw_read(): |
+  return $bits(CSR[sie])[63:32];
+sw_write(csr_value): |
+  // Write to the upper 32 bits of sie
+  Bits<64> new_sie = CSR[sie];
+  new_sie[63:32] = value;
+  CSR[sie] = new_sie;
+  return value;
