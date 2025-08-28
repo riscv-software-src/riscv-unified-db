@@ -15,9 +15,9 @@ module Idl
   class Var
     extend T::Sig
 
-    attr_reader :name, :type, :value
+    attr_reader :name, :type, :value, :transform
 
-    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false)
+    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false, transform: nil)
       @name = name
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
@@ -31,6 +31,7 @@ module Idl
       @template_index = template_index
       @function_name = function_name
       @param = param
+      @transform = transform
 
       @const_compatible = true # until otherwise known
     end
@@ -50,22 +51,23 @@ module Idl
     end
 
     def hash
-      [@name, @type, @value, @decode_var, @template_index, @function_name, @param].hash
+      [@name, @type, @value, @decode_var, @template_index, @function_name, @param, @transform].hash
     end
 
     def to_s
-      "VAR: #{type} #{name} #{value.nil? ? 'NO VALUE' : value}"
+      "VAR: #{type} #{name} #{value.nil? ? 'NO VALUE' : value}#{transform.nil? ? '' : " TRANSFORM: #{transform}"}"
     end
 
     def clone
       Var.new(
         name,
         type.clone,
-        value&.clone,
+        value,
         decode_var: @decode_var,
         template_index: @template_index,
         function_name: @function_name,
-        param: @param
+        param: @param,
+        transform: @transform
       )
     end
 

@@ -394,7 +394,14 @@ class Instruction < TopLevelDatabaseObject
       qualifiers << :signed if d.sext?
       width = d.size
 
-      var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
+      # If the variable has a transform expression, we need to handle it specially
+      if d.transform.nil?
+        var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
+      else
+        # For variables with transform expressions, create a special variable type
+        # The actual transformation will be handled in the IDL compiler
+        var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true, transform: d.transform)
+      end
       symtab.add(d.name, var)
     end
 
@@ -697,6 +704,17 @@ class Instruction < TopLevelDatabaseObject
         new_encoding[encoding.size - idx - 1] = ((value >> pos) & 1).to_s
       end
       new_encoding
+    end
+
+    # Check if this variable has a transformation expression
+    def has_transform?
+      !@transform.nil?
+    end
+
+    # Get the transformation expression with 'var' replaced by the variable name
+    def transform_expression
+      return nil if @transform.nil?
+      @transform.gsub('var', @name)
     end
 
     # given a range of the instruction, return a string representing the bits of the field the range

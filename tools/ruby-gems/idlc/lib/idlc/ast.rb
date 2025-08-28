@@ -7444,4 +7444,53 @@ module Idl
     sig { override.returns(String) }
     def to_idl = "CSR[#{idx.text_value}]"
   end
+
+  # AST node for handling transformed instruction variables
+  class TransformedVariableAst < AstNode
+    include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      # Transformed variables are const eval if the underlying variable is const eval
+      symtab.get(name)&.const_eval?
+    end
+
+    attr_reader :name, :transform_expr
+
+    def initialize(input, interval, name, transform_expr)
+      super(input, interval, [])
+      @name = name
+      @transform_expr = transform_expr
+    end
+
+    # @!macro type_check
+    def type_check(symtab)
+      # Check that the variable exists in the symbol table
+      var = symtab.get(@name)
+      type_error "Variable '#{@name}' is not defined" if var.nil?
+      
+      # Check that it's a decode variable with a transform
+      type_error "Variable '#{@name}' is not a decode variable with transform" unless var.decode_var && !var.transform.nil?
+    end
+
+    # @!macro type
+    def type(symtab)
+      # The type is the same as the underlying variable
+      var = symtab.get(@name)
+      var&.type || Type.new(:bits, width: :unknown)
+    end
+
+    # @!macro value
+    def value(symtab)
+      # For transformed variables, we can't compute the value at compile time
+      # since it depends on the runtime instruction encoding
+      value_error "Transformed variable '#{@name}' value not available at compile time"
+    end
+
+    # @!macro to_idl
+    sig { override.returns(String) }
+    def to_idl
+      @name
+    end
+  end
 end
