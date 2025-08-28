@@ -1,0 +1,16 @@
+$schema: inst_schema.json#
+kind: instruction
+name: fmul.h
+long_name: Floating-point Multiply Half-Precision
+isa: zhinx
+encoding:
+  match: 0x10000053
+  mask: 0xfe00007f
+  funct7: 0x10
+  funct3: 0x0
+  rs1: x
+  rs2: x
+  rd: x
+  fmt: H
+description: |
+  Performs half-precision floating-point multiplication using integer x registers.
