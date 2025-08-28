@@ -35,6 +35,7 @@ module Idl
       :const,
       :signed,
       :global,
+      :known,
       :template_var
     ].freeze
 
@@ -42,6 +43,14 @@ module Idl
     sig { returns(T::Boolean) }
     def integral?
       @kind == :bits
+    end
+
+    def runtime?
+      if @kind == :array
+        @sub_type.runtime?
+      else
+        @kind == :bits && @width == :unknown
+      end
     end
 
     def default
@@ -76,6 +85,9 @@ module Idl
     sig { returns(T.any(Integer, Symbol)) }
     attr_reader :width
 
+    sig { returns(T.nilable(AstNode)) }
+    attr_reader :width_ast
+
     sig { returns(Type) }
     attr_reader :sub_type
 
@@ -104,7 +116,7 @@ module Idl
       end
     end
 
-    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, enum_class: nil, csr: nil)
+    def initialize(kind, qualifiers: [], width: nil, width_ast: nil, max_width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
@@ -117,6 +129,8 @@ module Idl
 
       raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer) || width == :unknown
       @width = width
+      @width_ast = width_ast
+      @max_width = max_width
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
       @tuple_types = tuple_types
@@ -389,6 +403,10 @@ module Idl
       @qualifiers.include?(:template_var)
     end
 
+    def known?
+      @qualifiers.include?(:known)
+    end
+
     def make_signed
       @qualifiers.append(:signed).uniq!
       self
@@ -410,6 +428,11 @@ module Idl
 
     def make_global
       @qualifiers.append(:global).uniq!
+      self
+    end
+
+    def make_known
+      @qualifiers.append(:known).uniq!
       self
     end
 
@@ -541,6 +564,11 @@ module Idl
       raise "No member named '#{member_name}'" if idx.nil?
 
       @member_types[idx]
+    end
+
+    # does this struct have any members whose type depends on a runtime parameter?
+    def runtime?
+      @member_types.any?(&:runtime?)
     end
   end
 
@@ -886,7 +914,7 @@ module Idl
   # prettier prints
   class XregType < Type
     def initialize(xlen)
-      super(:bits, width: xlen)
+      super(:bits, width: xlen, max_width: 64)
     end
 
     def to_s

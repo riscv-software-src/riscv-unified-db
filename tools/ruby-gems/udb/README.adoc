@@ -12,7 +12,7 @@ under the `cfgs` directory.
 
 == Library interface
 
-The main entry point to the udb database is through the `ConfiguredArchitecture` object.
+The main entry point to the udb database is through the {Udb::ConfiguredArchitecture} object.
 You can construct one with:
 
 [source,ruby]
@@ -52,7 +52,7 @@ Examples:
 [source,bash]
 --
 udb list extensions                             # list all extensions in RISC-V
-udb list extensions --config qc_iu              # list all extensions in the $UDB_ROOT/qc_iu.yaml config
+udb list extensions --config qc_iu              # list all extensions in the $UDB_ROOT/cfgs/qc_iu.yaml config
 udb list extensions --config /path/to/cfg.yaml  # list all extensions from config /path/to/cfg.yaml
 UDB_ROOT=/path/to/root udb list extensions      # list all extensions in RISC-V, using UDB repo at /path/to/root
 

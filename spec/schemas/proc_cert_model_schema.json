@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name", "base"],
   "additionalProperties": false,
@@ -54,11 +53,9 @@
       ]
     },
     "$schema": {
-      "type": "string",
       "const": "proc_cert_model_schema.json#"
     },
     "kind": {
-      "type": "string",
       "const": "processor certificate model"
     },
     "name": {
@@ -96,7 +93,6 @@
       "description": "List of semantic versions within the model"
     },
     "base": {
-      "type": "integer",
       "enum": [32, 64],
       "description": "Base of the model"
     },
@@ -143,7 +139,6 @@
     "in_scope_priv_modes": {
       "type": "array",
       "items": {
-        "type": "string",
         "enum": ["M", "S", "U", "HS", "VS", "VU"]
       },
       "uniqueItems": true,

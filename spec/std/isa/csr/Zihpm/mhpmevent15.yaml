@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent15
 long_name: Machine Hardware Performance Counter 15 Control
 address: 0x32F
+writable: true
 priv_mode: M
 length: 64
 description: |
