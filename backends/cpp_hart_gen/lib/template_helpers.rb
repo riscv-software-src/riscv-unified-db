@@ -118,9 +118,10 @@ module CppHartGen
   end
 
   class TemplateEnv
-    attr_reader :cfg_arch
-    def initialize(cfg_arch)
+    attr_reader :cfg_arch, :config_name
+    def initialize(cfg_arch, config_name = nil)
       @cfg_arch = cfg_arch
+      @config_name = config_name || cfg_arch.name
     end
 
     include TemplateHelpers
