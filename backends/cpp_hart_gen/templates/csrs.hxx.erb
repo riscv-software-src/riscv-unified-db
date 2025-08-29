@@ -19,7 +19,7 @@ namespace udb {
 
   <%- csrs.each do |csr| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| csr.defined_in_base?(xlen) } -%>
-  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
 
   // Field classes for <%= csr.name %>
 

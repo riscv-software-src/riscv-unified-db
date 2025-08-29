@@ -10,7 +10,7 @@ namespace udb {
 <%- csrs = cfg_arch.possible_csrs -%>
 
 <%- csrs.each do |csr| -%>
-<%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+<%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
 
 #define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
@@ -187,7 +187,7 @@ void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Possibly
 <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
 template <SocModel SocType>
 bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value, const Bits<8>& xlen) {
-  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- cfg_arch.possible_xlens.each do |xlen| -%>
@@ -229,7 +229,7 @@ template <SocModel SocType>
 bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const PossiblyUnknownBits<<%= csr.max_length %>>& value) {
   View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
 
-  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- if field.has_custom_sw_write? -%>

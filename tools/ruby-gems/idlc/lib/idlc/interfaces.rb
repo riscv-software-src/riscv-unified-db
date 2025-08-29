@@ -74,6 +74,10 @@ module Idl
     sig { abstract.returns(T::Boolean) }
     def defined_in_base64?; end
 
+    # whether or not this field is defined in the given base
+    sig { abstract.params(xlen: Integer).returns(T::Boolean) }
+    def defined_in_base?(xlen); end
+
     # whether or not this field is defined only in RV64
     sig { abstract.returns(T::Boolean) }
     def base64_only?; end
@@ -85,7 +89,7 @@ module Idl
     # returns the location of the field in the CSR.
     # base is required when the field moves locations between RV32 and RV64
     sig { abstract.params(base: T.nilable(Integer)).returns(T::Range[Integer]) }
-    def location(base); end
+    def location(base = nil); end
 
     # whether or not the field is supposed to exist/be implemented in the
     # execution context
