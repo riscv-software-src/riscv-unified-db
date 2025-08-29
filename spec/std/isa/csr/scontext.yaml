@@ -1,0 +1,50 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: scontext
+long_name: Supervisor Context
+address: 0x5A8
+priv_mode: S
+length: XLEN
+writable: true
+description: |
+  This optional register is only accessible in S/HS-mode, VS-mode, M-mode and Debug Mode.
+  Accessibility of this CSR is controlled by `mstateen0[57]` and `hstateen0[57]` in the
+  Smstateen extension. Enabling `scontext` can be a security risk in a virtualized system
+  with a hypervisor that does not swap `scontext`.
+
+definedBy:
+  allOf:
+    - Sdtrig
+    - S
+fields:
+  DATA:
+    location: 31-0
+    type: RW
+    description: |
+      Supervisor mode software can write a context number to
+      this register, which can be used to set triggers that only fire
+      in that specific context.
+
+      An implementation may tie any number of high bits in
+      this field to 0. It’s recommended to implement 16 bits on
+      RV32 and 32 bits on RV64.
+    reset_value: 0
+    sw_write(csr_value): |
+      # check if mstateen0 or hstateen0 is clear
+      if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
+        unimplemented_csr($encoding);
+      }
+
+      # enforce width of SCONTEXT
+      Bits<32> scontext_value = csr_value.DATA & ((32'1 << DBG_SCONTEXT_WIDTH) - 1);
+      return scontext_value;
+sw_read(): |
+  # check if mstateen0 or hstateen0 is clear
+  if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
+    unimplemented_csr($encoding);
+  }
