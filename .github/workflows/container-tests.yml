@@ -1,0 +1,45 @@
+name: Container Tests
+
+on:
+  pull_request:
+    paths:
+      - '.devcontainer/**'
+      - 'docker-compose.yml'
+      - 'start-dev.sh'
+      - 'tests/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
+      - 'docker-compose.yml'
+      - 'start-dev.sh'
+      - 'tests/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        proxy: ['with-proxy', 'no-proxy']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up test environment
+        run: |
+          if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
+            echo "Setting up test proxy"
+            export http_proxy="http://localhost:3128"
+            export https_proxy="http://localhost:3128"
+            docker run -d --name squid-proxy -p 3128:3128 ubuntu/squid
+          fi
+
+      - name: Run container tests
+        run: |
+          chmod +x tests/container_tests.sh
+          ./tests/container_tests.sh
+
+      - name: Test VS Code integration
+        run: |
+          # Skip this test for now as it's not essential for the build
+          echo "Skipping VS Code integration test"

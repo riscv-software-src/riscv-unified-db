@@ -2,6 +2,9 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Create a non-root user
+RUN useradd -m -s /bin/bash vscode
+
 WORKDIR /workspace
 
 RUN export DEBIAN_FRONTEND=noninteractive
@@ -15,6 +18,7 @@ RUN \
     clang-format \
     clang-tidy \
     cmake \
+    curl \
     ditaa \
     g++ \
     gcc-riscv64-linux-gnu \
@@ -38,8 +42,13 @@ RUN \
     ruby-dev \
     shellcheck
 
+# Fix PEP 668 issue by using --break-system-packages flag
+RUN pip3 install --break-system-packages -r /workspace/requirements.txt
+
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-WORKDIR /workspace
+# Change to non-root user
+USER vscode
+WORKDIR /home/vscode
