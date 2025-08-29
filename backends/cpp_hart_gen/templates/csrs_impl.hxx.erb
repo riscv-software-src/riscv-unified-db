@@ -31,9 +31,17 @@ template <SocModel SocType>
 CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::type(const Bits<8>& xlen) const {
   <%- if field.defined_in_all_bases? && cfg_arch.multi_xlen? -%>
   if (xlen == 32_b) {
+    <%- if field.defined_in_base?(32) -%>
     <%= field.type_to_cpp(32) %>
+    <%- else -%>
+    return CsrFieldType::RO;
+    <%- end -%>
   } else { // if (xlen == 64)
+    <%- if field.defined_in_base?(64) -%>
     <%= field.type_to_cpp(64) %>
+    <%- else -%>
+    return CsrFieldType::RO;
+    <%- end -%>
   }
   <%- else -%>
   <%= field.type_to_cpp(field_base) %>
