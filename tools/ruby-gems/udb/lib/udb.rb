@@ -6,15 +6,18 @@
 
 module Udb; end
 
-require_relative "udb/cert_normative_rule"
+require_relative "udb/normative_rule"
 require_relative "udb/cert_test_procedure"
+require_relative "udb/normative_rule_tags"
 require_relative "udb/doc_link"
 require_relative "udb/exception_code"
 require_relative "udb/req_expression"
 require_relative "udb/schema"
 require_relative "udb/version"
 
-require_relative "udb/obj/certifiable_obj"
+require_relative "udb/obj/can_define_normative_rules"
+require_relative "udb/obj/can_define_coverage_points"
+require_relative "udb/obj/can_define_cert_test_procedures"
 require_relative "udb/obj/certificate"
 require_relative "udb/obj/csr_field"
 require_relative "udb/obj/csr"

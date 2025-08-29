@@ -275,3 +275,68 @@ params:
 
       # if HW is writing FS, then Dirty (3) better be a supported value
       assert MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F) && (HW_MSTATUS_FS_DIRTY_UPDATE != "never")
+
+coverage_points:
+  - name: cp_fs1
+    bins: 32
+    description: The fs1 register number used in the instruction.
+  - name: cp_fs2
+    bins: 32
+    description: The fs2 register number used in the instruction.
+  - name: cp_fs3
+    bins: 32
+    description: The fs3 register number used in the instruction.
+  - name: cp_fd
+    bins: 32
+    description: The fd register number used in the instruction.
+  - name: cp_fs1_edges
+    bins: 26
+    description: Edge values for fs1 (see <<t-fp-edge-definitions>>)
+  - name: cp_fs2_edges
+    bins: 26
+    description: Edge values for fs2 (see <<t-fp-edge-definitions>>)
+  - name: cp_fs3_edges
+    bins: 26
+    description: Edge values for fs3 (see <<t-fp-edge-definitions>>)
+  - name: cmp_fd_fs1
+    bins: 32
+    description: The fd register has the same register number as the fs1 register.
+  - name: cmp_fd_fs2
+    bins: 32
+    description: The fd register has the same register number as the fs2 register.
+  - name: cmp_fd_fs3
+    bins: 32
+    description: The fd register has the same register number as the fs3 register.
+  - name: cp_frm
+    bins: 5
+    description: "The floating-point rounding mode used in the instruction: rne, rdn, rup, rtz, rmm, dyn."
+  - name: cp_csr_fflags
+    bins: 10
+    description: The instruction sets the {NV, DZ, OF, UF, NX} flags in the fflags CSR.
+  - name: cp_csr_frm
+    bins: 6
+    description: "Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm, illegal."
+  - name: cr_fs1_fs2_edges
+    bins: 26*26
+    description: Cross product of edges of fs1 and fs2 registers.
+  - name: cr_fs1_fs3_edges
+    bins: 26*26
+    description: Cross product of edges of fs1 and fs3 registers.
+  - name: cp_fclass
+    bins: 10
+    description: All 10 fclass classes.
+  - name: cp_NaNBox
+    bins: 1
+    description: Upper bits of NaN-boxed value are all 1s
+  - name: cp_fs1_badNB
+    bins: 12
+    description: The fs1 register contains an incorrectly-NaN-boxed lower-precision value.
+  - name: cp_fs2_badNB
+    bins: 12
+    description: The fs2 register contains an incorrectly-NaN-boxed lower-precision value.
+  - name: cp_fs3_badNB
+    bins: 12
+    description: The fs3 register contains an incorrectly-NaN-boxed lower-precision value.
+  - name: cp_fpr_hazard
+    bins: 4
+    description: "Floating-point register hazard detection: RAW, WAR, WAW, and no hazard."

@@ -11,9 +11,9 @@ module Udb
 class CertTestProcedure
   extend T::Sig
 
-  # @return [String] Unique ID of the test procedure
+  # @return [String] Unique name of the test procedure
   sig { returns(String) }
-  attr_reader :id
+  attr_reader :name
 
   # Description of test procedure (could be multiple lines).
   sig { returns(String) }
@@ -34,30 +34,30 @@ class CertTestProcedure
     @data = data
     @db_obj = db_obj
 
-    @id = T.must_because(data["id"]) { pp data }
+    @name = T.must_because(data["name"]) { pp data }
     @description = T.must_because(data["description"]) { pp data }
     @kind = T.must_because(db_obj.kind) { pp db_obj }
     @test_file_name = data["test_file_name"]
 
     if test_file_name.nil?
-      warn "Warning: Missing test_file_name for certification test procedure description for ID #{id} of kind #{kind}"
+      warn "Warning: Missing test_file_name for certification test procedure description #{name} of kind #{kind}"
     end
   end
 
-  # @return [Array<CertNormativeRule>]
-  def cert_normative_rules
-    return @cert_normative_rules unless @cert_normative_rules.nil?
+  # @return [Array<NormativeRule>] List of normative rules referenced by this test procedure
+  def normative_rules
+    return @normative_rules unless @normative_rules.nil?
 
-    @cert_normative_rules = []
-    @data["normative_rules"]&.each do |id|
-      cp = @db_obj.cert_coverage_point(id)
-      raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
-      @cert_normative_rules << cp
+    @normative_rules = []
+    @data["normative_rules"]&.each do |nr_name|
+      nr = @db_obj.normative_rule(nr_name)
+      raise ArgumentError, "Can't find normative rule '#{nr_name}' for certification test procedure '#{@name}'" if nr.nil?
+      @normative_rules << nr
     end
-    @cert_normative_rules
+    @normative_rules
   end
 
-  # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
+  # @return [String] String (likely multi-line) of certification test procedure steps using Asciidoc lists
   def cert_steps = @data["steps"]
 end
 end

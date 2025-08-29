@@ -49,3 +49,19 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sraiw_enc
+    type: instruction
+    description: Encoding
+    doc_links: ["norm:enc:insttable:sraiw"]
+
+  - name: sraiw_op
+    type: instruction
+    description: Basic operation
+    doc_links: ["norm:insts:slliw_srliw_sraiw:operation"]
+
+  - name: sraiw_imm5_rsv
+    type: instruction
+    description: Bit 5 of imm reserved
+    doc_links: ["norm:insts:slliw_srliw_sraiw:imm5_rsv"]
