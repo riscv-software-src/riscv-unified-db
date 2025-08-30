@@ -1,0 +1,27 @@
+# Copyright (c) 2025 RISC-V International. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfofp8min
+long_name: Vector OFP8 Converts
+description: |
+  This extension provides the minimal set of instructions needed to enable vector support of the
+  OFP8 format.
+  It enables OFP8 as an interchange format as it provides conversion between OFP8 values and FP32 values.
+  The extension offers conversion between OFP8 and BF16 (both directions), and from FP32 to OFP8
+  (only quad narrowing conversion). The narrowing conversions support both saturate and non-saturate
+  modes. Both OFP8 formats, E4M3 and E5M2, are supported.
+
+  This extension depends upon either the V extension or the Zve32f embedded vector extension.
+type: unprivileged
+versions:
+  - version: "0.2.1"
+    state: ratified
+    ratification_date: null
+    requires:
+      anyOf:
+        - V
+        - Zve32f
