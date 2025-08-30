@@ -6,6 +6,7 @@ require 'tempfile'
 
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
+directory "#{$root}/gen/sverilog"
 
 namespace :gen do
   desc <<~DESC
@@ -86,5 +87,29 @@ namespace :gen do
       resolved_codes_file.close
       resolved_codes_file.unlink
     end
+  end
+
+  desc <<~DESC
+    Generate SystemVerilog package from RISC-V instruction and CSR definitions
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated SystemVerilog code (defaults to "#{$root}/gen/sverilog")
+  DESC
+  task sverilog: "#{$root}/gen/sverilog" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/sverilog/"
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
+
+    # Run the SystemVerilog generator script using the same Python environment
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/sverilog/sverilog_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.sverilog"
   end
 end
