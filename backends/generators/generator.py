@@ -17,6 +17,74 @@ def check_requirement(req, exts):
     return False
 
 
+def build_match_from_format(format_field):
+    """
+    Build a match string from the format field in the new schema.
+    Supports 16-bit, 32-bit, and 48-bit instructions.
+    """
+    if not format_field or "opcodes" not in format_field:
+        return None
+
+    opcodes = format_field["opcodes"]
+
+    # Determine instruction width by finding maximum bit position
+    valid_locations = []
+    for field_data in opcodes.values():
+        if (
+            isinstance(field_data, dict)
+            and "location" in field_data
+            and isinstance(field_data["location"], str)
+        ):
+            try:
+                location = field_data["location"]
+                if "-" in location:
+                    high = int(location.split("-")[0])
+                else:
+                    high = int(location)
+                valid_locations.append(high)
+            except (ValueError, IndexError):
+                continue  # Skip invalid location formats
+
+    if not valid_locations:
+        return None
+
+    max_bit = max(valid_locations)
+
+    # Set instruction width based on maximum bit position
+    width = 48 if max_bit >= 32 else 32 if max_bit >= 16 else 16
+    match_bits = ["-"] * width
+
+    # Populate match string with opcode bits
+    for field_data in opcodes.values():
+        if (
+            isinstance(field_data, dict)
+            and "location" in field_data
+            and "value" in field_data
+            and isinstance(field_data["location"], str)
+            and isinstance(field_data["value"], int)
+        ):
+
+            try:
+                location = field_data["location"]
+                if "-" in location:
+                    high, low = map(int, location.split("-"))
+                else:
+                    high = low = int(location)
+
+                if high < low or high >= width:
+                    continue  # Skip invalid bit ranges
+
+                binary_value = format(field_data["value"], f"0{high - low + 1}b")
+                for i, bit in enumerate(binary_value):
+                    pos = high - i
+                    if 0 <= pos < width:
+                        match_bits[width - 1 - pos] = bit
+            except (ValueError, IndexError):
+                continue  # Skip invalid field data
+
+    return "".join(match_bits)
+
+
 def parse_extension_requirements(extensions_spec):
     """
     Parse the extension requirements from the definedBy field.
@@ -177,11 +245,27 @@ def load_instructions(
 
             encoding = data.get("encoding", {})
             if not encoding:
-                logging.error(
-                    f"Missing 'encoding' field in instruction {name} in {path}"
-                )
-                encoding_filtered += 1
-                continue
+                # Check if this instruction uses the new schema with a 'format' field
+                format_field = data.get("format")
+                if format_field:
+                    # Try to build a match string from the format field
+                    match_string = build_match_from_format(format_field)
+                    if match_string:
+                        # Create a synthetic encoding compatible with existing logic
+                        encoding = {"match": match_string, "variables": []}
+                        logging.debug(f"Built encoding from format field for {name}")
+                    else:
+                        logging.error(
+                            f"Could not build encoding from format field in instruction {name} in {path}"
+                        )
+                        encoding_filtered += 1
+                        continue
+                else:
+                    logging.error(
+                        f"Missing 'encoding' field in instruction {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
 
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
