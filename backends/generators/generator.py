@@ -17,6 +17,55 @@ def check_requirement(req, exts):
     return False
 
 
+def build_match_from_format(format_field):
+    """
+    Build a match string from the format field in the new schema.
+    The format field contains opcodes with specific bit fields.
+    """
+    if not format_field or "opcodes" not in format_field:
+        return None
+
+    opcodes = format_field["opcodes"]
+
+    # Initialize a 32-bit match string with all variable bits
+    match_bits = ["-"] * 32
+
+    # Process each opcode field
+    for field_name, field_data in opcodes.items():
+        if field_name == "$child_of":
+            continue
+
+        if (
+            isinstance(field_data, dict)
+            and "location" in field_data
+            and "value" in field_data
+        ):
+            location = field_data["location"]
+            value = field_data["value"]
+
+            # Parse the location string (e.g., "31-25" or "7")
+            if "-" in location:
+                # Range format like "31-25"
+                high, low = map(int, location.split("-"))
+            else:
+                # Single bit format like "7"
+                high = low = int(location)
+
+            # Convert value to binary and place in the match string
+            if isinstance(value, int):
+                # Calculate the number of bits needed
+                num_bits = high - low + 1
+                binary_value = format(value, f"0{num_bits}b")
+
+                # Place bits in the match string (MSB first)
+                for i, bit in enumerate(binary_value):
+                    bit_position = high - i
+                    if 0 <= bit_position < 32:
+                        match_bits[31 - bit_position] = bit
+
+    return "".join(match_bits)
+
+
 def parse_extension_requirements(extensions_spec):
     """
     Parse the extension requirements from the definedBy field.
@@ -177,11 +226,27 @@ def load_instructions(
 
             encoding = data.get("encoding", {})
             if not encoding:
-                logging.error(
-                    f"Missing 'encoding' field in instruction {name} in {path}"
-                )
-                encoding_filtered += 1
-                continue
+                # Check if this instruction uses the new schema with a 'format' field
+                format_field = data.get("format")
+                if format_field:
+                    # Try to build a match string from the format field
+                    match_string = build_match_from_format(format_field)
+                    if match_string:
+                        # Create a synthetic encoding compatible with existing logic
+                        encoding = {"match": match_string, "variables": []}
+                        logging.debug(f"Built encoding from format field for {name}")
+                    else:
+                        logging.error(
+                            f"Could not build encoding from format field in instruction {name} in {path}"
+                        )
+                        encoding_filtered += 1
+                        continue
+                else:
+                    logging.error(
+                        f"Missing 'encoding' field in instruction {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
 
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
