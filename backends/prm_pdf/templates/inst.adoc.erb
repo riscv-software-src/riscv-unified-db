@@ -1,0 +1,121 @@
+<%= anchor_for_udb_doc_inst(inst.name) %>
+= <%= inst.name %>
+
+*<%= inst.long_name %>*
+
+This instruction is defined by:
+
+<%= inst.defined_by_condition.to_asciidoc %>
+
+**Encoding**
+
+<%- if cfg_arch.multi_xlen? && inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+====
+RV32::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(32) %>
+....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+====
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
+....
+<%- end -%>
+
+**Synopsis**
+
+<%= inst.description %>
+
+**Access**
+<%- if cfg_arch.ext?(:H) -%>
+[cols="^,^,^,^,^"]
+<%- else -%>
+[cols="^,^,^"]
+<%- end -%>
+|===
+| M | <%- if cfg_arch.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if cfg_arch.ext?(:H) -%> | VS | VU <%- end -%>
+
+| [.access-always]#Always#
+| [.access-<%= inst.access['s'] %>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%= inst.access['u'] %>]#<%= inst.access['u'].capitalize %>#
+<% if cfg_arch.ext?(:H) %>
+| [.access-<%= inst.access['vs'] %>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%= inst.access['vu'] %>]#<%= inst.access['vu'].capitalize %>#
+<% end %>
+|===
+
+<%- if inst.access_detail? -%>
+<%= inst.access_detail %>
+<%- end -%>
+
+**Decode Variables**
+
+<%- if cfg_arch.multi_xlen? && inst.multi_encoding? -%>
+.RV32
+[source,idl]
+----
+<%- inst.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+
+.RV64
+[source,idl]
+----
+<%- inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- else -%>
+[source,idl]
+----
+<%- inst.decode_variables(cfg_arch.param_values["MXLEN"]).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- end -%>
+
+**Execution**
+
+<%- xlens = inst.base.nil? ? (cfg_arch.multi_xlen? ? [32, 64] : [cfg_arch.mxlen]) : [inst.base] -%>
+
+<%- if inst.key?("operation()") -%>
+<%- xlens.each do |effective_xlen| -%>
+.Pruned, XLEN == <%= effective_xlen %>
+[source,idl,subs="specialchars,macros"]
+----
+<%- begin %>
+<%= Udb::Helpers::AsciidocUtils.resolve_links(inst.pruned_operation_ast(effective_xlen).gen_adoc) %>
+<%- rescue %>
+_operation undefined for this configuration_
+<%- end %>
+----
+<%- end -%>
+<%- end -%>
+
+<%- exception_list = begin; inst.reachable_exceptions_str(); rescue; []; end -%>
+<%- unless exception_list.empty? -%>
+**Exceptions**
+
+This instruction may result in the following synchronous exceptions:
+
+<%- exception_list.sort.each do |etype| -%>
+* <%= etype %>
+<%- end -%>
+
+<%- end -%>
+
+<<<

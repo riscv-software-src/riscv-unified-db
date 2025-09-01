@@ -1,0 +1,33 @@
+= IDL Functions
+
+<%-
+functions_to_show = if cfg_arch.fully_configured?
+  cfg_arch.implemented_functions
+else
+  cfg_arch.reachable_functions
+end
+-%>
+
+<%- functions_to_show.sort_by(&:name).each do |f| -%>
+[[<%= f.name %>-func-def]]
+== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%><%- if f.generated? -%> (generated)<%- end -%>
+
+<%= f.description %>
+
+=== Signature
+[%autowidth]
+|===
+h| Return Type | <%= f.return_type_list_str.join(', ') %>
+h| Arguments   | <%= f.arguments_list_str.join(', ') %>
+|===
+
+<%- unless f.builtin? || f.generated? -%>
+=== Implementation
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= f.body.gen_adoc %>
+----
+<%- end -%>
+
+<%- end -%>

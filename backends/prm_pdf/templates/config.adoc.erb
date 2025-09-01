@@ -1,0 +1,73 @@
+<%-
+  is_fully_configured = cfg_arch.fully_configured?
+  is_partially_configured = cfg_arch.partially_configured?
+
+  extensions_to_list = []
+  extensions_section_title = "Extensions"
+
+  if is_fully_configured
+    extensions_to_list = cfg_arch.transitive_implemented_extension_versions
+    extensions_section_title = "Implemented Extensions"
+  elsif is_partially_configured
+    extensions_to_list = cfg_arch.possible_extension_versions
+    extensions_section_title = "Mandatory Extensions"
+  else
+    extensions_to_list = cfg_arch.possible_extension_versions
+    extensions_section_title = "Possible Extensions"
+  end
+-%>
+= Configuration of <%= cfg_arch.name %>
+
+== <%= extensions_section_title %>
+
+<% if extensions_to_list.empty? %>
+No extensions to list for this configuration state.
+<% else %>
+[cols="2,1,5", options="header"]
+|===
+| Extension | Version | Description
+
+<%- extensions_to_list.sort{ |a,b| a.name <=> b.name }.each do |e|
+    ext_name = e.respond_to?(:name) ? e.name : e.ext.name
+    ext_obj = e.respond_to?(:ext) ? e.ext : cfg_arch.extension(ext_name)
+    
+    version_display_text = if e.is_a?(Udb::ExtensionVersion)
+      if e.version_str.is_a?(String)
+        "`#{e.version_str.gsub('@', '{@}')}`"
+      else
+        "`#{e.version_str}`"
+      end
+    elsif e.is_a?(Udb::Extension) && is_partially_configured
+      # For partially configured, show any available version
+      "`(any version)`"
+    else
+      "(Not specified)"
+    end
+-%>
+| `<%= ext_name %>`
+| <%= version_display_text %>
+| <%= ext_obj.long_name if ext_obj %>
+<%- end -%>
+|===
+<% end %>
+
+== Parameters
+
+<%- params_to_display = cfg_arch.params_with_value.sort_by { |param| param.name } -%>
+<% if params_to_display.empty? && !cfg_arch.unconfigured? %>
+No parameters with defined values to list for this configuration.
+<% elsif cfg_arch.unconfigured? %>
+Parameters are not applicable for an unconfigured architecture definition.
+<% else %>
+[cols="2,1,4,2", options="header"]
+|===
+| Parameter | Value | Description | From Extension(s)
+
+<%- params_to_display.each do |param| -%>
+| *<%= param.name %>*
+| <%= param.value %>
+| <%= param.desc %>
+| <%= param.exts.map { |ext_obj| "`#{ext_obj.name}`" }.join(", ") %>
+<%- end -%>
+|===
+<% end %>
