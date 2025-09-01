@@ -33,6 +33,7 @@ class DatabaseObject
       Profile = new("profile")
       ProfileFamily = new("profile family")
       ProfileRelease = new("profile release")
+      NonIsaSpec = new("non-isa specification")
     end
   end
 
