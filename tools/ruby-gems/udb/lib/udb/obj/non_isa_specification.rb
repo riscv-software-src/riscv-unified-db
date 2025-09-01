@@ -20,8 +20,15 @@ module Udb
 
 ##
 # Clean non-ISA specification object that handles YAML-based specifications
-class NonIsaSpecification < TopLevelDatabaseObject
+class NonIsaSpecification
+  include Kernel
   extend T::Sig
+
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  attr_reader :data
 
   sig { returns(T.nilable(Pathname)) }
   attr_reader :spec_path
@@ -351,12 +358,18 @@ class NonIsaSpecification < TopLevelDatabaseObject
 
   sig { params(cfg_arch: T.untyped).returns(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean)) }
   def create_when_callback(cfg_arch)
-    lambda do |condition, _statement|
-      # Simple implementation - could be enhanced with proper IDL evaluation
-      return true if condition.nil?
-      # For now, always include
-      true
-    end
+    T.let(
+      lambda do |condition, _statement|
+        # Simple implementation - could be enhanced with proper IDL evaluation
+        if condition.nil?
+          T.let(true, T::Boolean)
+        else
+          # For now, always include
+          T.let(true, T::Boolean)
+        end
+      end,
+      T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean)
+    )
   end
 
   sig { params(base_level: Integer).returns(String) }
