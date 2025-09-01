@@ -1,0 +1,52 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mcontext
+long_name: Machine Context
+address: 0x7A8
+priv_mode: M
+length: MXLEN
+writable: true
+description: |
+  This register must be implemented if `hcontext` is implemented, and is optional otherwise.
+  It is only accessible in M-mode and Debug mode.
+
+  `hcontext` is primarily useful to set triggers on hypervisor systems that only fire when a
+  given VM is executing. It is also useful in systems where M-Mode implements something like
+  a hypervisor directly.
+
+definedBy: Sdtrig
+fields:
+  HCONTEXT:
+    location: 13-0
+    type: RW
+    description: |
+      M-Mode or HS-Mode (using `hcontext`) software can write a
+      context number to this register, which can be used to set
+      triggers that only fire in that specific context.
+
+      An implementation may tie any number of upper bits in
+      this field to 0. If the H extension is not implemented, it’s
+      recommended to implement 6 bits on RV32 and 13 bits on
+      RV64 (as visible through the `mcontext` register). If the H
+      extension is implemented, it’s recommended to
+      implement 7 bits on RV32 and 14 bits on RV64.
+    reset_value: 0
+    sw_write(csr_value): |
+      # check if MCONTEXT is available
+      if (!MCONTEXT_AVAILABLE) {
+        unimplemented_csr($encoding);
+      }
+
+      # enforce width of HCONTEXT
+      Bits<14> hcontext_value = csr_value.HCONTEXT & ((14'1 << DBG_HCONTEXT_WIDTH) - 1);
+      return hcontext_value;
+sw_read(): |
+  # check if MCONTEXT is available
+  if (!MCONTEXT_AVAILABLE) {
+    unimplemented_csr($encoding);
+  }

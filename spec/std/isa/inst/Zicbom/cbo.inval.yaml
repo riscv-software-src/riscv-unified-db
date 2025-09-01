@@ -28,7 +28,7 @@ description: |
   5+^.>h! `cbe.inval` Operation
   .^h! M-mode .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-  ! 00 ! - ! - ! Invalidate ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 00 ! - ! - ! Invalidate ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction`
   ! 01 ! 00 ! 00 ! Invalidate ! Flush  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
   ! 01 ! 00 ! 01 ! Invalidate ! Flush  ! `Illegal Instruction` ! Flush ! `Virtual Instruction`
   ! 01 ! 00 ! 11 ! Invalidate ! Flush  ! `Illegal Instruction` ! Flush ! `Virtual Instruction`
@@ -98,7 +98,7 @@ access_detail: |
   4+^.>h! `cbo.inval` Instruction Behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-  ! 00 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 00 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction`
   ! 01/11 ! 00 ! 00 ! executes  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
   ! 01/11 ! 01/11 ! 00 ! executes ! executes ! `Virtual Instruction` ! `Virtual Instruction`
   ! 01/11 ! 00 ! 01/11 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction`
