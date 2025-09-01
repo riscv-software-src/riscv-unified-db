@@ -77,7 +77,7 @@ fields:
             index: 3
             value: true
         text: |
-          When bit is set `hpmcounter3.COUNT` does not increment; when 0, `hpmcounter3.COUNT` increments normally.
+          When set, `hpmcounter3.COUNT` does not increment; when 0, `hpmcounter3.COUNT` increments normally.
       - id: unimplemented-hpmcounter3
         normative: false
         when:
@@ -115,7 +115,7 @@ fields:
             index: 4
             value: true
         text: |
-          When bit is set `hpmcounter4.COUNT` does not increment; when 0, `hpmcounter4.COUNT` increments normally.
+          When set, `hpmcounter4.COUNT` does not increment; when 0, `hpmcounter4.COUNT` increments normally.
       - id: unimplemented-hpmcounter4
         normative: false
         when:
@@ -153,7 +153,7 @@ fields:
             index: 5
             value: true
         text: |
-          When bit is set `hpmcounter5.COUNT` does not increment; when 0, `hpmcounter5.COUNT` increments normally.
+          When set, `hpmcounter5.COUNT` does not increment; when 0, `hpmcounter5.COUNT` increments normally.
       - id: unimplemented-hpmcounter5
         normative: false
         when:
@@ -191,7 +191,7 @@ fields:
             index: 6
             value: true
         text: |
-          When bit is set `hpmcounter6.COUNT` does not increment; when 0, `hpmcounter6.COUNT` increments normally.
+          When set, `hpmcounter6.COUNT` does not increment; when 0, `hpmcounter6.COUNT` increments normally.
       - id: unimplemented-hpmcounter6
         normative: false
         when:
@@ -229,7 +229,7 @@ fields:
             index: 7
             value: true
         text: |
-          When bit is set `hpmcounter7.COUNT` does not increment; when 0, `hpmcounter7.COUNT` increments normally.
+          When set, `hpmcounter7.COUNT` does not increment; when 0, `hpmcounter7.COUNT` increments normally.
       - id: unimplemented-hpmcounter7
         normative: false
         when:
@@ -267,7 +267,7 @@ fields:
             index: 8
             value: true
         text: |
-          When bit is set `hpmcounter8.COUNT` does not increment; when 0, `hpmcounter8.COUNT` increments normally.
+          When set, `hpmcounter8.COUNT` does not increment; when 0, `hpmcounter8.COUNT` increments normally.
       - id: unimplemented-hpmcounter8
         normative: false
         when:
@@ -305,7 +305,7 @@ fields:
             index: 9
             value: true
         text: |
-          When bit is set `hpmcounter9.COUNT` does not increment; when 0, `hpmcounter9.COUNT` increments normally.
+          When set, `hpmcounter9.COUNT` does not increment; when 0, `hpmcounter9.COUNT` increments normally.
       - id: unimplemented-hpmcounter9
         normative: false
         when:
@@ -343,7 +343,7 @@ fields:
             index: 10
             value: true
         text: |
-          When bit is set `hpmcounter10.COUNT` does not increment; when 0, `hpmcounter10.COUNT` increments normally.
+          When set, `hpmcounter10.COUNT` does not increment; when 0, `hpmcounter10.COUNT` increments normally.
       - id: unimplemented-hpmcounter10
         normative: false
         when:
@@ -381,7 +381,7 @@ fields:
             index: 11
             value: true
         text: |
-          When bit is set `hpmcounter11.COUNT` does not increment; when 0, `hpmcounter11.COUNT` increments normally.
+          When set, `hpmcounter11.COUNT` does not increment; when 0, `hpmcounter11.COUNT` increments normally.
       - id: unimplemented-hpmcounter11
         normative: false
         when:
@@ -419,7 +419,7 @@ fields:
             index: 12
             value: true
         text: |
-          When bit is set `hpmcounter12.COUNT` does not increment; when 0, `hpmcounter12.COUNT` increments normally.
+          When set, `hpmcounter12.COUNT` does not increment; when 0, `hpmcounter12.COUNT` increments normally.
       - id: unimplemented-hpmcounter12
         normative: false
         when:
@@ -457,7 +457,7 @@ fields:
             index: 13
             value: true
         text: |
-          When bit is set `hpmcounter13.COUNT` does not increment; when 0, `hpmcounter13.COUNT` increments normally.
+          When set, `hpmcounter13.COUNT` does not increment; when 0, `hpmcounter13.COUNT` increments normally.
       - id: unimplemented-hpmcounter13
         normative: false
         when:
@@ -495,7 +495,7 @@ fields:
             index: 14
             value: true
         text: |
-          When bit is set `hpmcounter14.COUNT` does not increment; when 0, `hpmcounter14.COUNT` increments normally.
+          When set, `hpmcounter14.COUNT` does not increment; when 0, `hpmcounter14.COUNT` increments normally.
       - id: unimplemented-hpmcounter14
         normative: false
         when:
@@ -533,7 +533,7 @@ fields:
             index: 15
             value: true
         text: |
-          When bit is set `hpmcounter15.COUNT` does not increment; when 0, `hpmcounter15.COUNT` increments normally.
+          When set, `hpmcounter15.COUNT` does not increment; when 0, `hpmcounter15.COUNT` increments normally.
       - id: unimplemented-hpmcounter15
         normative: false
         when:
@@ -571,7 +571,7 @@ fields:
             index: 16
             value: true
         text: |
-          When bit is set `hpmcounter16.COUNT` does not increment; when 0, `hpmcounter16.COUNT` increments normally.
+          When set, `hpmcounter16.COUNT` does not increment; when 0, `hpmcounter16.COUNT` increments normally.
       - id: unimplemented-hpmcounter16
         normative: false
         when:
@@ -609,7 +609,7 @@ fields:
             index: 17
             value: true
         text: |
-          When bit is set `hpmcounter17.COUNT` does not increment; when 0, `hpmcounter17.COUNT` increments normally.
+          When set, `hpmcounter17.COUNT` does not increment; when 0, `hpmcounter17.COUNT` increments normally.
       - id: unimplemented-hpmcounter17
         normative: false
         when:
@@ -647,7 +647,7 @@ fields:
             index: 18
             value: true
         text: |
-          When bit is set `hpmcounter18.COUNT` does not increment; when 0, `hpmcounter18.COUNT` increments normally.
+          When set, `hpmcounter18.COUNT` does not increment; when 0, `hpmcounter18.COUNT` increments normally.
       - id: unimplemented-hpmcounter18
         normative: false
         when:
@@ -685,7 +685,7 @@ fields:
             index: 19
             value: true
         text: |
-          When bit is set `hpmcounter19.COUNT` does not increment; when 0, `hpmcounter19.COUNT` increments normally.
+          When set, `hpmcounter19.COUNT` does not increment; when 0, `hpmcounter19.COUNT` increments normally.
       - id: unimplemented-hpmcounter19
         normative: false
         when:
@@ -723,7 +723,7 @@ fields:
             index: 20
             value: true
         text: |
-          When bit is set `hpmcounter20.COUNT` does not increment; when 0, `hpmcounter20.COUNT` increments normally.
+          When set, `hpmcounter20.COUNT` does not increment; when 0, `hpmcounter20.COUNT` increments normally.
       - id: unimplemented-hpmcounter20
         normative: false
         when:
@@ -761,7 +761,7 @@ fields:
             index: 21
             value: true
         text: |
-          When bit is set `hpmcounter21.COUNT` does not increment; when 0, `hpmcounter21.COUNT` increments normally.
+          When set, `hpmcounter21.COUNT` does not increment; when 0, `hpmcounter21.COUNT` increments normally.
       - id: unimplemented-hpmcounter21
         normative: false
         when:
@@ -799,7 +799,7 @@ fields:
             index: 22
             value: true
         text: |
-          When bit is set `hpmcounter22.COUNT` does not increment; when 0, `hpmcounter22.COUNT` increments normally.
+          When set, `hpmcounter22.COUNT` does not increment; when 0, `hpmcounter22.COUNT` increments normally.
       - id: unimplemented-hpmcounter22
         normative: false
         when:
@@ -837,7 +837,7 @@ fields:
             index: 23
             value: true
         text: |
-          When bit is set `hpmcounter23.COUNT` does not increment; when 0, `hpmcounter23.COUNT` increments normally.
+          When set, `hpmcounter23.COUNT` does not increment; when 0, `hpmcounter23.COUNT` increments normally.
       - id: unimplemented-hpmcounter23
         normative: false
         when:
@@ -875,7 +875,7 @@ fields:
             index: 24
             value: true
         text: |
-          When bit is set `hpmcounter24.COUNT` does not increment; when 0, `hpmcounter24.COUNT` increments normally.
+          When set, `hpmcounter24.COUNT` does not increment; when 0, `hpmcounter24.COUNT` increments normally.
       - id: unimplemented-hpmcounter24
         normative: false
         when:
@@ -913,7 +913,7 @@ fields:
             index: 25
             value: true
         text: |
-          When bit is set `hpmcounter25.COUNT` does not increment; when 0, `hpmcounter25.COUNT` increments normally.
+          When set, `hpmcounter25.COUNT` does not increment; when 0, `hpmcounter25.COUNT` increments normally.
       - id: unimplemented-hpmcounter25
         normative: false
         when:
@@ -951,7 +951,7 @@ fields:
             index: 26
             value: true
         text: |
-          When bit is set `hpmcounter26.COUNT` does not increment; when 0, `hpmcounter26.COUNT` increments normally.
+          When set, `hpmcounter26.COUNT` does not increment; when 0, `hpmcounter26.COUNT` increments normally.
       - id: unimplemented-hpmcounter26
         normative: false
         when:
@@ -989,7 +989,7 @@ fields:
             index: 27
             value: true
         text: |
-          When bit is set `hpmcounter27.COUNT` does not increment; when 0, `hpmcounter27.COUNT` increments normally.
+          When set, `hpmcounter27.COUNT` does not increment; when 0, `hpmcounter27.COUNT` increments normally.
       - id: unimplemented-hpmcounter27
         normative: false
         when:
@@ -1027,7 +1027,7 @@ fields:
             index: 28
             value: true
         text: |
-          When bit is set `hpmcounter28.COUNT` does not increment; when 0, `hpmcounter28.COUNT` increments normally.
+          When set, `hpmcounter28.COUNT` does not increment; when 0, `hpmcounter28.COUNT` increments normally.
       - id: unimplemented-hpmcounter28
         normative: false
         when:
@@ -1065,7 +1065,7 @@ fields:
             index: 29
             value: true
         text: |
-          When bit is set `hpmcounter29.COUNT` does not increment; when 0, `hpmcounter29.COUNT` increments normally.
+          When set, `hpmcounter29.COUNT` does not increment; when 0, `hpmcounter29.COUNT` increments normally.
       - id: unimplemented-hpmcounter29
         normative: false
         when:
@@ -1103,7 +1103,7 @@ fields:
             index: 30
             value: true
         text: |
-          When bit is set `hpmcounter30.COUNT` does not increment; when 0, `hpmcounter30.COUNT` increments normally.
+          When set, `hpmcounter30.COUNT` does not increment; when 0, `hpmcounter30.COUNT` increments normally.
       - id: unimplemented-hpmcounter30
         normative: false
         when:
@@ -1141,7 +1141,7 @@ fields:
             index: 31
             value: true
         text: |
-          When bit is set `hpmcounter31.COUNT` does not increment; when 0, `hpmcounter31.COUNT` increments normally.
+          When set, `hpmcounter31.COUNT` does not increment; when 0, `hpmcounter31.COUNT` increments normally.
       - id: unimplemented-hpmcounter31
         normative: false
         when:

@@ -77,7 +77,7 @@ fields:
             index: <%= hpm_num %>
             value: true
         text: |
-          When bit is set `hpmcounter<%= hpm_num %>.COUNT` does not increment; when 0, `hpmcounter<%= hpm_num %>.COUNT` increments normally.
+          When set, `hpmcounter<%= hpm_num %>.COUNT` does not increment; when 0, `hpmcounter<%= hpm_num %>.COUNT` increments normally.
       - id: unimplemented-hpmcounter<%= hpm_num %>
         normative: false
         when:
