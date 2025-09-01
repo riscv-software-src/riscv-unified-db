@@ -4,9 +4,7 @@ import yaml
 import logging
 import pprint
 import logging
-from backends.generators.schema_validator import validate_entry
-from .generator import parse_extension_requirements
-
+from .schema_validator import validate_entry
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")

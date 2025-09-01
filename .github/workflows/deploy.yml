@@ -40,13 +40,13 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: run reuse
-        run: ./bin/reuse spdx -o reuse_bom
+        run: ./bin/reuse spdx -o reuse_bom.txt
       - name: Upload Reuse Manifest
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: reuse-manifest-${{ github.run_id }}
-          path: reuse_bom
+          name: reuse-manifest
+          path: reuse_bom.txt
           retention-days: 1
   build-udb-api-doc:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -62,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: udb-api-${{ github.run_id }}
+          name: udb-api
           path: gen/udb_api_doc
           include-hidden-files: true
           retention-days: 1
@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: resolved-spec-${{ github.run_id }}
+          name: resolved-spec
           path: gen/resolved_spec/_
           include-hidden-files: true
           retention-days: 1
@@ -100,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: isa-explorer-csr-${{ github.run_id }}
+          name: isa-explorer-csr
           path: gen/isa_explorer/browser
           retention-days: 1
   build-isa-explorer-ext:
@@ -117,7 +117,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: isa-explorer-ext-${{ github.run_id }}
+          name: isa-explorer-ext
           path: gen/isa_explorer/browser
           retention-days: 1
   build-isa-explorer-inst:
@@ -134,7 +134,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: isa-explorer-inst-${{ github.run_id }}
+          name: isa-explorer-inst
           path: gen/isa_explorer/browser
           retention-days: 1
   build-isa-explorer-spreadsheet:
@@ -151,8 +151,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: isa-explorer-spreadsheet-${{ github.run_id }}
-          path: gen/isa_explorer/browser
+          name: isa-explorer-spreadsheet
+          path: gen/isa_explorer/spreadsheet
   build-html-isa-manual:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -170,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: isa-html-manual-${{ github.run_id }}
+          name: isa-html-manual
           path: gen/manual/isa/top/all/html
   build-html-cfg-isa-manual:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -186,7 +186,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: cfg-html-manual-${{ github.run_id }}
+          name: cfg-html-manual
           path: gen/cfg_html_doc/example_rv64_with_overlay/html
   build-instruction-appendix:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -202,7 +202,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: inst-appendix-${{ github.run_id }}
+          name: inst-appendix
           path: gen/instructions_appendix/instructions_appendix.pdf
   build-rvi20-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -218,8 +218,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rvi20-${{ github.run_id }}
-          path: gen/proc_crd/pdf/RVI20ProfileRelease.pdf
+          name: rvi20
+          path: gen/profile/pdf/RVI20ProfileRelease.pdf
   build-rva20-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -234,8 +234,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rva20-${{ github.run_id }}
-          path: gen/proc_crd/pdf/RVA20ProfileRelease.pdf
+          name: rva20
+          path: gen/profile/pdf/RVA20ProfileRelease.pdf
   build-rva22-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -250,8 +250,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rva22-${{ github.run_id }}
-          path: gen/proc_crd/pdf/RVA22ProfileRelease.pdf
+          name: rva22
+          path: gen/profile/pdf/RVA22ProfileRelease.pdf
   build-rva23-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -266,8 +266,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rva23-${{ github.run_id }}
-          path: gen/proc_crd/pdf/RVA23ProfileRelease.pdf
+          name: rva23
+          path: gen/profile/pdf/RVA23ProfileRelease.pdf
   build-rvb23-profile:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -282,8 +282,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rvb23-${{ github.run_id }}
-          path: gen/proc_crd/pdf/RVB23ProfileRelease.pdf
+          name: rvb23
+          path: gen/profile/pdf/RVB23ProfileRelease.pdf
   build-ac100-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
@@ -298,7 +298,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: ac100-crd-${{ github.run_id }}
+          name: ac100-crd
           path: gen/proc_crd/pdf/AC100-CRD.pdf
   build-ac200-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -314,7 +314,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: ac200-crd-${{ github.run_id }}
+          name: ac200-crd
           path: gen/proc_crd/pdf/AC200-CRD.pdf
   build-mc100-32-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -330,7 +330,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc100-32-crd-${{ github.run_id }}
+          name: mc100-32-crd
           path: gen/proc_crd/pdf/MC100-32-CRD.pdf
   build-mc100-64-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -346,7 +346,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc100-64-crd-${{ github.run_id }}
+          name: mc100-64-crd
           path: gen/proc_crd/pdf/MC100-64-CRD.pdf
   build-mc200-32-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -362,7 +362,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc200-32-crd-${{ github.run_id }}
+          name: mc200-32-crd
           path: gen/proc_crd/pdf/MC200-32-CRD.pdf
   build-mc200-64-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -378,7 +378,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc200-64-crd-${{ github.run_id }}
+          name: mc200-64-crd
           path: gen/proc_crd/pdf/MC200-64-CRD.pdf
   build-mc300-32-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -394,7 +394,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc300-32-crd-${{ github.run_id }}
+          name: mc300-32-crd
           path: gen/proc_crd/pdf/MC300-32-CRD.pdf
   build-mc300-64-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -410,7 +410,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc300-64-crd-${{ github.run_id }}
+          name: mc300-64-crd
           path: gen/proc_crd/pdf/MC300-64-CRD.pdf
   build-rvi20-32-ctp:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -426,7 +426,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rvi20-32-ctp-${{ github.run_id }}
+          name: rvi20-32-ctp
           path: gen/proc_ctp/pdf/RVI20-32-CTP.pdf
   build-rvi20-64-ctp:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -442,7 +442,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: rvi20-64-ctp-${{ github.run_id }}
+          name: rvi20-64-ctp
           path: gen/proc_ctp/pdf/RVI20-64-CTP.pdf
   build-mc100-32-ctp:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
@@ -458,5 +458,21 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
-          name: mc100-32-ctp-${{ github.run_id }}
+          name: mc100-32-ctp
           path: gen/proc_ctp/pdf/MC100-32-CTP.pdf
+  build-idl-doc:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Build IDL doc
+        run: ./bin/bundle exec asciidoctor -r idl_highlighter -a toc=left -a source-highlighter=rouge -o idl.html doc/idl.adoc
+      - name: Upload IDL Doc
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: idl-doc
+          path: idl.html

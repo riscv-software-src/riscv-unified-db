@@ -8,7 +8,7 @@ import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from generator import load_instructions, load_csrs, parse_match, signed
-from backends.generators.schema_validator import validate_entry
+from ...generators.schema_validator import validate_entry
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 

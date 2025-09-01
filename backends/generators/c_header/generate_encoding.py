@@ -9,7 +9,7 @@ import logging
 import argparse
 import yaml
 import json
-from backends.generators.schema_validator import validate_entry
+from ..schema_validator import validate_entry
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
