@@ -21,6 +21,13 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+hints:
+  - when: (n == 0)
+    refs:
+      - { $ref: inst/Zicfiss/c.sspush.yaml# }
+  - when: (n == 2)
+    refs:
+      - { $ref: inst/Zicfiss/c.sspopchk.yaml# }
 pseudoinstructions:
   - when: (n == 0)
     to: c.mop.1

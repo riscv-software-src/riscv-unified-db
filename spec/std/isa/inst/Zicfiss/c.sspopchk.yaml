@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: c.sspopchk.x5
+long_name: Pop from the Shadow Stack, 16 bit version of sspopchk
+description: |
+  The c.sspopchk x5 expands to sspopchk x5, which is defined for an XLEN wide read from
+  the current top of the shadow stack followed by an increment of the ssp by XLEN/8.
+definedBy: Zicfiss
+assembly: c.sspopchk_x5
+encoding:
+  match: "0110001010000001"
+  variables: []
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
+
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+
+  if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
+    Bits<XLEN> ssp = csr_sw_read(csr_handle);
+    XReg temp = read_memory<XLEN>(ssp, $encoding);
+    if (temp != X[1]) {
+      raise(ExceptionCode::SoftwareCheck, mode(), $encoding);
+    } else {
+    csr_sw_write(csr_handle, (ssp + (XLEN/8)));
+  }

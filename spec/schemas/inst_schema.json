@@ -337,19 +337,48 @@
         "hints": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "$ref": {
-                "type": "string",
-                "format": "uri-reference",
-                "pattern": "^inst/.+\\.yaml#.*$",
-                "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruction"
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "$ref": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "pattern": "^inst/.+\\.yaml#.*$",
+                    "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruction"
+                  }
+                },
+                "required": ["$ref"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "when": {
+                    "type": "string",
+                    "description": "Condition under which the following refs apply"
+                  },
+                  "refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "$ref": {
+                          "type": "string",
+                          "format": "uri-reference",
+                          "pattern": "^inst/.+\\.yaml#.*$"
+                        }
+                      },
+                      "required": ["$ref"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["when", "refs"],
+                "additionalProperties": false
               }
-            },
-            "required": ["$ref"],
-            "additionalProperties": false
-          },
-          "description": "List of HINTs that use this instruction's codepoints"
+            ]
+          }
         },
         "base": {
           "enum": [32, 64],
