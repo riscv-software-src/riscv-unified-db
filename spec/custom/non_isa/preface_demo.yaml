@@ -1,10 +1,13 @@
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 ---
 $schema: non_isa_schema.json#
 kind: non-isa specification
 name: preface
 long_name: Preface (Demo)
 version: 1.0.0
-ratification_date: '2025-08-08'
+ratification_date: "2025-08-08"
 description:
   - id: spec-preface-overview
     normative: false
@@ -15,10 +18,10 @@ description:
 
       This document is suitable for public distribution and does not contain proprietary or vendor-specific content. All examples and descriptions are generic and based on open RISC-V standards.
 authors:
-- name: RISC-V Community
-  organization:
-    name: RISC-V International
-    url: https://riscv.org
+  - name: RISC-V Community
+    organization:
+      name: RISC-V International
+      url: https://riscv.org
 license:
   name: CC0 1.0 Universal
   id: CC0-1.0

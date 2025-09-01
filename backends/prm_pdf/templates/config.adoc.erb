@@ -30,7 +30,7 @@ No extensions to list for this configuration state.
 <%- extensions_to_list.sort{ |a,b| a.name <=> b.name }.each do |e|
     ext_name = e.respond_to?(:name) ? e.name : e.ext.name
     ext_obj = e.respond_to?(:ext) ? e.ext : cfg_arch.extension(ext_name)
-    
+
     version_display_text = if e.is_a?(Udb::ExtensionVersion)
       if e.version_str.is_a?(String)
         "`#{e.version_str.gsub('@', '{@}')}`"

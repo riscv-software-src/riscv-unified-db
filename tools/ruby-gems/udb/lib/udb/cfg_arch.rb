@@ -1045,7 +1045,7 @@ class ConfiguredArchitecture < Architecture
         instructions.map(&:max_encoding_width).max
       end
   end
-    
+
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
   sig { returns(T::Array[Idl::FunctionDefAst]) }
   def implemented_functions
@@ -1145,22 +1145,22 @@ class ConfiguredArchitecture < Architecture
   sig { returns(T::Array[T.untyped]) }
   def possible_non_isa_specs
     return @possible_non_isa_specs if defined?(@possible_non_isa_specs)
-    
-  
-    
+
+
+
     @possible_non_isa_specs = []
-    
+
     # Discover local non-ISA specifications
     non_isa_path = Pathname.new(__dir__).parent.parent.parent.parent.parent / "spec/custom/non_isa"
     if non_isa_path.exist?
       non_isa_path.glob("*.yaml").each do |spec_file|
         next if spec_file.basename.to_s.start_with?('prm') # Skip PRM files
-        
+
         begin
           spec_name = spec_file.basename('.yaml').to_s
           spec_data = YAML.load_file(spec_file)
           next unless spec_data['kind'] == 'non-isa specification'
-          
+
           spec_obj = Udb::NonIsaSpecification.new(spec_name, spec_data)
           @possible_non_isa_specs << spec_obj
         rescue => e
@@ -1168,7 +1168,7 @@ class ConfiguredArchitecture < Architecture
         end
       end
     end
-    
+
     @possible_non_isa_specs.sort_by(&:name)
   end
 
@@ -1176,11 +1176,11 @@ class ConfiguredArchitecture < Architecture
   sig { returns(T::Array[T.untyped]) }
   def implemented_non_isa_specs
     return @implemented_non_isa_specs if defined?(@implemented_non_isa_specs)
-    
+
     @implemented_non_isa_specs = possible_non_isa_specs.select do |spec|
       spec.exists_in_cfg?(self)
     end
-    
+
     @implemented_non_isa_specs
   end
   alias transitive_implemented_non_isa_specs implemented_non_isa_specs

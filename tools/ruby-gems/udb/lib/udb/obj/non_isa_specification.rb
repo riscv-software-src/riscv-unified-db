@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # typed: true
 # frozen_string_literal: true
 
@@ -54,7 +57,7 @@ class NonIsaSpecification < TopLevelDatabaseObject
   sig { returns(T::Boolean) }
   # Returns true if the spec is valid and has required fields.
   def valid?
-    !@spec_data.nil? && 
+    !@spec_data.nil? &&
       @spec_data['kind'] == 'non-isa specification' &&
       !@spec_data['name'].nil? &&
       !@spec_data['description'].nil?
@@ -126,7 +129,7 @@ class NonIsaSpecification < TopLevelDatabaseObject
   def defined_by_condition
     when_condition = @data['when()'] || @spec_data&.dig('when()')
     return OpenStruct.new(to_asciidoc: "Always included") if when_condition.nil?
-    
+
     # Convert condition to human-readable description
     OpenStruct.new(
       to_asciidoc: "When #{when_condition}"
@@ -138,25 +141,25 @@ class NonIsaSpecification < TopLevelDatabaseObject
   # Validate all prose statement IDs and conventions for this spec.
   def validate_prose_ids
     return [] unless valid?
-    
+
     issues = []
     statements = extract_prose_statements
     statements.each do |stmt|
       next unless stmt['id']
       id = stmt['id']
       source = stmt[:source] || 'unknown'
-      
+
       # Check ID format according to prose-schema conventions
       unless valid_id_format?(id)
         issues << "Invalid ID format '#{id}' in #{source}: must be lowercase with underscores/hyphens only"
       end
-      
+
       # Check for non-ISA specification naming convention
       unless valid_id_naming?(id)
         issues << "ID '#{id}' in #{source} should start with '#{name.downcase}-' for non-ISA specifications"
       end
     end
-    
+
     # Check for duplicate IDs
     issues.concat(find_duplicate_ids(statements))
     issues
@@ -194,7 +197,7 @@ class NonIsaSpecification < TopLevelDatabaseObject
   # Configuration-aware rendering
   def render_for_cfg(cfg_arch, base_level: 3, normative: true, non_normative: true)
     return "" unless exists_in_cfg?(cfg_arch)
-    
+
     to_asciidoc(
       base_level: base_level,
       normative: normative,
@@ -214,20 +217,20 @@ class NonIsaSpecification < TopLevelDatabaseObject
   # Render the full specification as AsciiDoc, including description, sections, and references.
   def to_asciidoc(base_level: 3, normative: true, non_normative: true, when_callback: nil)
     return create_fallback_content(base_level) unless valid?
-    
+
     content = []
-    
+
     # Add main description prose
     desc_content = render_structured_prose(spec_description, normative: normative, non_normative: non_normative, when_callback: when_callback)
     content << desc_content if desc_content && !desc_content.empty?
     content << ""
-    
+
     # Process all sections
     content.concat(render_sections(base_level, normative, non_normative, when_callback))
-    
+
     # Add references section if present
     content.concat(render_references(base_level)) unless references.empty?
-    
+
     content.join("\n")
   end
 
@@ -310,19 +313,19 @@ class NonIsaSpecification < TopLevelDatabaseObject
   def render_structured_prose(prose_content, normative: true, non_normative: true, when_callback: nil)
     return nil if prose_content.nil?
     return "" unless prose_content.is_a?(Array)
-    
+
     rendered_statements = []
     prose_content.each do |statement|
       next unless statement.is_a?(Hash) && statement['id'] && statement['text']
-      
+
       # Filter by normative status
       stmt_normative = statement['normative']
       next if stmt_normative == true && !normative
       next if stmt_normative == false && !non_normative
-      
+
       # Filter by when condition
       next if when_callback && !when_callback.call(statement['when()'], statement)
-      
+
       rendered_statements << statement['text']
     end
     rendered_statements.join("\n\n")
@@ -338,7 +341,7 @@ class NonIsaSpecification < TopLevelDatabaseObject
   def should_include_section?(section, when_callback = nil)
     when_condition = section['when()']
     return true if when_condition.nil?
-    
+
     if when_callback
       when_callback.call(when_condition, section)
     else

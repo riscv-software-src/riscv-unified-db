@@ -32,7 +32,7 @@ package "PRM Generation System" {
   [UDB Resolver] --> [PrmGenerator::Generator]
   [External Docs] --> [ExternalDocumentationRenderer]
   [Templates] --> [ComponentGenerator]
-  
+
   [PrmGenerator::Generator] --> [ComponentGenerator]
   [PrmGenerator::Generator] --> [MainDocumentGenerator]
   [ComponentGenerator] --> [AsciiDoc Files]
@@ -128,10 +128,10 @@ chapters:
     level: 2                    # AsciiDoc heading level (1-6)
     type: standard              # "standard" or "appendix"
     description: "Chapter description"
-    
+
     # Auto-generate content from UDB
     auto_generate: ["instructions", "csrs"]
-    
+
     # Include external documentation
     external_documentation:
       - source: "riscv-isa-manual"
@@ -142,8 +142,8 @@ chapters:
           - file: "rv32.adoc"
             level_offset: 1
             title: "Optional custom title"
-    
-    # Include custom non-ISA specifications  
+
+    # Include custom non-ISA specifications
     non_isa_specifications:
       - name: "memory_management_demo"
         version: ">= 0"

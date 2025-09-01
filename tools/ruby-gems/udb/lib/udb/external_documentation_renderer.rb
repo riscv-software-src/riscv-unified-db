@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # typed: true
 # frozen_string_literal: true
 
@@ -33,16 +36,16 @@ class ExternalDocumentationRenderer
     return "" if external_docs.nil? || external_docs.empty?
 
     puts "    [INFO] Rendering #{external_docs.length} external documentation source(s)"
-    
+
     content = []
     external_docs.each_with_index do |external_config, index|
       source = external_config['source'] || "unknown_#{index}"
       puts "      - Processing source: #{source}"
-      
+
       doc_content = render_external_source(external_config, base_level)
       content << doc_content unless doc_content.empty?
     end
-    
+
     result = content.join("\n\n")
     puts "    [INFO] External documentation rendering complete (#{result.lines.count} lines generated)"
     result
@@ -54,7 +57,7 @@ class ExternalDocumentationRenderer
     source = external_config['source'] || 'unknown'
     doc_type = external_config['type'] || 'external_spec'
     path = external_config['path']
-    
+
     unless path
       return generate_missing_config_notice(source)
     end
@@ -68,7 +71,7 @@ class ExternalDocumentationRenderer
       chapter_content = render_external_chapter(external_config, chapter_config, base_level)
       content << chapter_content unless chapter_content.empty?
     end
-    
+
     content.join("\n\n")
   end
 
@@ -83,9 +86,9 @@ class ExternalDocumentationRenderer
     doc_type = external_config['type'] || 'external_spec'
 
     file_path = @root_dir / path / file
-    
+
     content = []
-    
+
     # Add custom title if specified
     if chapter_config['title']
       content << "#{'=' * chapter_level} #{chapter_config['title']}"
@@ -111,7 +114,7 @@ class ExternalDocumentationRenderer
     # Read and process the file
     file_content = read_and_process_file(file_path, external_config, chapter_config, level_offset, doc_type)
     content << file_content
-    
+
     content.join("\n")
   end
 
@@ -124,7 +127,7 @@ class ExternalDocumentationRenderer
     else
       "This external documentation has already been included elsewhere in the document: `#{file_path}`"
     end
-    
+
     "[NOTE]\n" +
     "====\n" +
     note_text + "\n" +
@@ -179,7 +182,7 @@ class ExternalDocumentationRenderer
   def read_and_process_file(file_path, external_config, chapter_config, level_offset, doc_type)
     begin
       content = File.read(file_path, encoding: 'UTF-8')
-      
+
       # Process based on document type
       case doc_type
       when 'isa_manual'
@@ -187,7 +190,7 @@ class ExternalDocumentationRenderer
       when 'external_spec'
         content = process_external_spec_content(content, file_path, level_offset, external_config, chapter_config)
       end
-      
+
       content + "\n"
     rescue StandardError => e
       "// Error reading external file: #{e.message}\n" +
@@ -201,20 +204,20 @@ class ExternalDocumentationRenderer
     content = strip_document_attributes(content)
     content = strip_conditional_blocks(content)
     content = strip_document_header(content)
-    
+
     # Resolve includes first (this may include content with images)
     base_dir = file_path.parent
     content = resolve_includes(content, base_dir)
-    
+
     # Fix image paths for ISA manual (after includes are resolved)
     content = fix_image_paths(content, base_dir)
-    
+
     # Adjust heading levels
     content = adjust_heading_levels(content, level_offset) if level_offset != 0
-    
+
     # Make IDs unique to avoid conflicts
     content = make_ids_unique(content, file_path.basename('.adoc').to_s)
-    
+
     content
   end
 
@@ -223,28 +226,28 @@ class ExternalDocumentationRenderer
     # For external specs, handle includes and section filtering
     content = strip_document_attributes(content)
     content = strip_document_header(content)
-    
+
     # Resolve includes if requested
     if external_config['resolve_includes']
       base_dir = file_path.parent
       content = resolve_includes(content, base_dir)
     end
-    
+
     # Filter sections if requested
     if chapter_config['exclude_sections']
       content = filter_sections(content, chapter_config['exclude_sections'])
     end
-    
+
     # Fix image paths
     base_dir = file_path.parent
     content = fix_image_paths(content, base_dir)
-    
+
     # Adjust heading levels
     content = adjust_heading_levels(content, level_offset) if level_offset != 0
-    
+
     # Make IDs unique to avoid conflicts
     content = make_ids_unique(content, file_path.basename('.adoc').to_s)
-    
+
     content
   end
 
@@ -254,7 +257,7 @@ class ExternalDocumentationRenderer
     content = content.gsub(/^image::([^:\[]+)(\[[^\]]*\])$/) do |match|
       image_path = $1
       attributes = $2
-      
+
       # Skip if already absolute or a URL
       if image_path.start_with?('/') || image_path.match?(/^https?:\/\//)
         match
@@ -265,12 +268,12 @@ class ExternalDocumentationRenderer
         "image::#{relative_to_root}#{attributes}"
       end
     end
-    
+
     # Also fix include directives that reference image files (wavedrom, bytefield, etc.)
     content = content.gsub(/^include::([^:\[]+)(\[[^\]]*\])$/) do |match|
       include_path = $1
       attributes = $2
-      
+
       # Only process paths that look like image includes (contain 'images/' or end with image-like extensions)
       if include_path.include?('images/') || include_path.match?(/\.(edn|svg|png|jpg|jpeg)$/)
         # Skip if already absolute or a URL
@@ -286,7 +289,7 @@ class ExternalDocumentationRenderer
         match
       end
     end
-    
+
     content
   end
 
@@ -296,7 +299,7 @@ class ExternalDocumentationRenderer
     content.gsub(/^include::([^\[]+)\[([^\]]*)\]$/) do |match|
       include_path = $1
       attributes = $2
-      
+
       # Skip if absolute path or URL
       if include_path.start_with?('/') || include_path.match?(/^https?:\/\//)
         match
@@ -310,18 +313,18 @@ class ExternalDocumentationRenderer
           else
             # Mark as processing before reading to prevent infinite recursion
             @@processing_stack.add(file_key)
-            
+
             begin
               included_content = File.read(included_file, encoding: 'UTF-8')
-              
+
               # Process the included content (strip headers, fix paths, etc.)
               included_content = strip_document_attributes(included_content)
               included_content = strip_document_header(included_content)
               included_content = fix_image_paths(included_content, included_file.parent)
-              
+
               # Recursively resolve includes in the included file
               resolved_content = resolve_includes(included_content, included_file.parent)
-              
+
               resolved_content
             ensure
               # Always remove from processing stack when done
@@ -338,7 +341,7 @@ class ExternalDocumentationRenderer
   sig { params(content: String, exclude_sections: T::Array[String]).returns(String) }
   def filter_sections(content, exclude_sections)
     return content if exclude_sections.empty?
-    
+
     # Simple implementation - could be enhanced to properly parse AsciiDoc structure
     exclude_sections.each do |section|
       content = content.gsub(/^=+ #{Regexp.escape(section)}.*?(?=^=+|\\z)/m, '')
@@ -350,14 +353,14 @@ class ExternalDocumentationRenderer
   def make_ids_unique(content, filename)
     # Prefix all IDs with the filename to avoid conflicts
     file_prefix = filename.gsub(/[^a-zA-Z0-9]/, '_').downcase
-    
+
     # Replace explicit ID attributes
     content = content.gsub(/^\[\[([^\]]+)\]\]$/, "[[#{file_prefix}_\\1]]")
     content = content.gsub(/^(\[#)([^\]]+)(\])$/, "\\1#{file_prefix}_\\2\\3")
-    
+
     # Replace cross-references to maintain links
     content = content.gsub(/<<([^,>]+)(,[^>]*)?>>/m, "<<#{file_prefix}_\\1\\2>>")
-    
+
     content
   end
 
@@ -386,7 +389,7 @@ class ExternalDocumentationRenderer
   sig { params(content: String, level_offset: Integer).returns(String) }
   def adjust_heading_levels(content, level_offset)
     return content if level_offset == 0
-    
+
     content.gsub(/^(=+)(\s+)/) do
       equals = $1
       spaces = $2

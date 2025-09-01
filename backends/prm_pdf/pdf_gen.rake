@@ -17,7 +17,7 @@ end
 task :generate_prm_pdf, [:prm_name] do |t, args|
   prm_name = args[:prm_name]
   raise ArgumentError, "PRM name is required" unless prm_name
-  
+
   generator = PrmGenerator::Generator.new(
     prm_name,
     resolver: $resolver,
@@ -25,6 +25,6 @@ task :generate_prm_pdf, [:prm_name] do |t, args|
     template_dir: PRM_PDF_DIR.to_s,
     root_dir: $root.to_s
   )
-  
+
   generator.generate_pdf
 end

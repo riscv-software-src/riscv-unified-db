@@ -132,7 +132,7 @@
         },
         "exclude_sections": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": { "type": "string" },
           "description": "Section IDs to exclude"
         },
         "level_offset": {
@@ -149,7 +149,14 @@
   },
 
   "type": "object",
-  "required": ["$schema", "kind", "name", "description", "processor_config", "chapters"],
+  "required": [
+    "$schema",
+    "kind",
+    "name",
+    "description",
+    "processor_config",
+    "chapters"
+  ],
   "properties": {
     "$schema": {
       "const": "prm_schema.json#"

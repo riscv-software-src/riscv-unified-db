@@ -2,7 +2,7 @@ extends: default-with-fallback-font
 font:
   catalog:
     merge: true
-#        sans-serif: GEM_FONTS_DIR/mplus1p-regular-fallback.ttf
+    #        sans-serif: GEM_FONTS_DIR/mplus1p-regular-fallback.ttf
     #Petrona
     body:
       normal: Petrona-Light.ttf
@@ -63,14 +63,16 @@ base:
   border_radius: 3
   border_width: 0.25
 vertical_rhythm: $base_line_height_length
-horizontal_rhythm: $base_line_height_length
+horizontal_rhythm:
+  $base_line_height_length
   # QUESTION should vertical_spacing be block_spacing instead?
 vertical_spacing: $vertical_rhythm
 link:
   font_color: 428bca
- # codespan is currently used for inline monospaced in prose and table cells
+  # codespan is currently used for inline monospaced in prose and table cells
 codespan:
-  font-color: 000000
+  font-color:
+    000000
     #font_family: code
     #font_family: Droid Fallback
   font_family: M+ 1mn
@@ -182,7 +184,7 @@ admonition:
 #  cite_font_color: 51278d
 # code is used for source blocks (perhaps change to source or listing?)
 code:
-#  font_color: $base_font_color
+  #  font_color: $base_font_color
   font_family: $codespan_font_family
   #font_size: ceil($base_font_size)
   font-size: 9
@@ -200,7 +202,7 @@ conum:
   font_size: $base_font_size
   line_height: 4 / 3
 example:
-#  border_color: $base_border_color
+  #  border_color: $base_border_color
   border_radius: $base_border_radius
   border_width: 0.2
   background_color: ffffff
@@ -212,7 +214,7 @@ prose:
   margin_top: $block_margin_top
   margin_bottom: $block_margin_bottom
 thematic_break:
-#  border_color: $base_border_color
+  #  border_color: $base_border_color
   border_style: solid
   border_width: $base_border_width
   margin_top: $vertical_rhythm * 0.5
@@ -271,10 +273,10 @@ header:
   # * {section-or-chapter-title}
   recto:
     right:
-      content: '{section-or-chapter-title} | Page {page-number}'
+      content: "{section-or-chapter-title} | Page {page-number}"
   verso:
     left:
-      content: '{section-or-chapter-title} | Page {page-number}'
+      content: "{section-or-chapter-title} | Page {page-number}"
   # left: 'Page {page-number} | {section-or-chapter-title}'
 footer:
   font_size: $base_font_size_small
@@ -300,7 +302,7 @@ footer:
     #columns: "<50% =0% >50%"
     right:
       #content: '{page-number}'
-      content: '{document-title} | © RISC-V International'
+      content: "{document-title} | © RISC-V International"
       #content: '{document-title} | © RISC-V'
       #center: '{page-number}'
       #content: '{revdate}'
