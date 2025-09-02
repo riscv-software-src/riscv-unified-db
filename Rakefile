@@ -413,30 +413,6 @@ end
   end
 end
 
-# Zacas variants (w, d, q) -> generated in Zacas directory using the same Zabha layout
-# ["w", "d", "q"].each do |size|
-#   # Define all acquire/release combinations
-#   aq_rl_variants = [
-#     { suffix: "", aq: false, rl: false },           # base instruction
-#     { suffix: ".aq", aq: true, rl: false },         # acquire only
-#     { suffix: ".rl", aq: false, rl: true },         # release only
-#     { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
-#   ]
-#
-#   aq_rl_variants.each do |variant|
-#     file "#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{variant[:suffix]}.yaml" => [
-#       "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout",
-#       __FILE__
-#     ] do |t|
-#       aq = variant[:aq]
-#       rl = variant[:rl]
-#       erb = ERB.new(File.read($resolver.std_path / "inst/Zabha/amocas.SIZE.AQRL.layout"), trim_mode: "-")
-#       erb.filename = "#{$resolver.std_path}/inst/Zabha/amocas.SIZE.AQRL.layout"
-#       File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
-#     end
-#   end
-# end
-
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
@@ -481,12 +457,6 @@ namespace :gen do
         Rake::Task["#{$resolver.std_path}/inst/Zabha/amocas.#{size}#{suffix}.yaml"].invoke
       end
     end
-
-    # ["w", "d", "q"].each do |size|
-    #   ["", ".aq", ".rl", ".aqrl"].each do |suffix|
-    #     Rake::Task["#{$resolver.std_path}/inst/Zacas/amocas.#{size}#{suffix}.yaml"].invoke
-    #   end
-    # end
   end
 end
 

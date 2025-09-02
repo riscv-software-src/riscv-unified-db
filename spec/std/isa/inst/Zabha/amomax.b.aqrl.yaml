@@ -8,9 +8,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomax.b.aqrl
-long_name: Atomic MAX byte (acquire) (release) (acquire-release)
+long_name: Atomic MAX byte (acquire-release)
 description: |
-  Atomically with acquire ordering with release ordering:
+  Atomically with acquire and release ordering:
 
     * Load the byte at address _xs1_
     * Write the sign-extended value into _xd_

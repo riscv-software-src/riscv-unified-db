@@ -8,7 +8,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomaxu.w
-long_name: Atomic unsigned MAX word
+long_name: Atomic MAX unsigned word
 description: |
   Atomically:
 
@@ -46,10 +46,10 @@ operation(): |
 sail(): |
   {
     if extension("A") then {
-      /* Get the address, X(xs1) (no offset).
+      /* Get the address, X(rs1) (no offset).
        * Some extensions perform additional checks on address validity.
        */
-      match ext_data_get_addr(xs1, zeros(), ReadWrite(Data, Data), width) {
+      match ext_data_get_addr(rs1, zeros(), ReadWrite(Data, Data), width) {
         Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
         Ext_DataAddr_OK(vaddr) => {
           match translateAddr(vaddr, ReadWrite(Data, Data)) {
@@ -68,10 +68,10 @@ sail(): |
                 _       => false
               };
               let xs2_val : xlenbits = match width {
-                BYTE   => if is_unsigned then zero_extend(X(xs2)[7..0])  else sign_extend(X(xs2)[7..0]),
-                HALF   => if is_unsigned then zero_extend(X(xs2)[15..0]) else sign_extend(X(xs2)[15..0]),
-                WORD   => if is_unsigned then zero_extend(X(xs2)[31..0]) else sign_extend(X(xs2)[31..0]),
-                DOUBLE => X(xs2)
+                BYTE   => if is_unsigned then zero_extend(X(rs2)[7..0])  else sign_extend(X(rs2)[7..0]),
+                HALF   => if is_unsigned then zero_extend(X(rs2)[15..0]) else sign_extend(X(rs2)[15..0]),
+                WORD   => if is_unsigned then zero_extend(X(rs2)[31..0]) else sign_extend(X(rs2)[31..0]),
+                DOUBLE => X(rs2)
               };
               match (eares) {
                 MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
@@ -116,7 +116,7 @@ sail(): |
                         _            => internal_error(__FILE__, __LINE__, "Unexpected AMO width")
                       };
                       match (wval) {
-                        MemValue(true)  => { X(xd) = rval; RETIRE_SUCCESS },
+                        MemValue(true)  => { X(rd) = rval; RETIRE_SUCCESS },
                         MemValue(false) => { internal_error(__FILE__, __LINE__, "AMO got false from mem_write_value") },
                         MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL }
                       }

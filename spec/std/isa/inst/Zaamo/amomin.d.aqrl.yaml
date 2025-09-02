@@ -8,9 +8,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomin.d.aqrl
-long_name: Atomic MIN doubleword (acquire) (release) (acquire-release)
+long_name: Atomic MIN doubleword (acquire-release)
 description: |
-  Atomically with acquire ordering with release ordering:
+  Atomically with acquire and release ordering:
 
     * Load the doubleword at address _xs1_
     * Write the loaded value into _xd_

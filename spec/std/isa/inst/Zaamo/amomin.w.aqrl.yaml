@@ -8,9 +8,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amomin.w.aqrl
-long_name: Atomic MIN word (acquire) (release) (acquire-release)
+long_name: Atomic MIN word (acquire-release)
 description: |
-  Atomically with acquire ordering with release ordering:
+  Atomically with acquire and release ordering:
 
     * Load the word at address _xs1_
     * Write the sign-extended value into _xd_
