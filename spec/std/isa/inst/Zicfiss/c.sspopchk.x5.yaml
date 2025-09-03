@@ -38,8 +38,8 @@ operation(): |
   if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
     Bits<XLEN> ssp = csr_sw_read(csr_handle);
     XReg temp = read_memory<XLEN>(ssp, $encoding);
-    if (temp != X[1]) {
+    if (temp != X[5]) {
       raise(ExceptionCode::SoftwareCheck, mode(), $encoding);
-    } else {
+    }
     csr_sw_write(csr_handle, (ssp + (XLEN/8)));
   }
