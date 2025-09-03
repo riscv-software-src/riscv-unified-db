@@ -12173,8 +12173,6 @@ Included in::
 |===
 | Extension | Version
 
-| *Zfh* | ~> 1.0.0
-
 | *Zfhmin* | ~> 1.0.0
 
 | *Zhinx* | ~> 1.0.0
