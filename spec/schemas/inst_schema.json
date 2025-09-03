@@ -378,7 +378,8 @@
                 "additionalProperties": false
               }
             ]
-          }
+          },
+          "description": "List of HINTs that use this instruction's codepoints"
         },
         "base": {
           "enum": [32, 64],
