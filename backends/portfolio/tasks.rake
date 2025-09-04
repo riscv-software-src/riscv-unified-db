@@ -41,21 +41,23 @@ def pf_get_latest_csc_isa_manual(target_pname)
   target_dir = File.dirname(target_pname)
 
   pf_ensure_repository("https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual",
-    target_dir + "/ext/riscv-isa-manual")
+    target_dir + "/ext/riscv-isa-manual", "21-create-yaml-files-for-norm-rules")
 
-  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources")
+  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources", nil)
 end
 
 # @param url [String] Where to clone repository from
 # @param workspace_dir [String] Path to desired workspace directory
-def pf_ensure_repository(url, workspace_dir)
+# @param branch [String] Optional branch to checkout after clone (can be nil)
+def pf_ensure_repository(url, workspace_dir, branch)
   if Dir.exist?(workspace_dir) && !Dir.empty?(workspace_dir)
     # Workspace already exists so just make sure it is up-to-date.
     sh "git -C #{workspace_dir} fetch"
     sh "git -C #{workspace_dir} pull origin main"
   else
     # Need to clone repository.
-    sh "git clone #{url} #{workspace_dir}"
+    branch_opt = branch.nil? ? "" : "-b #{branch} "
+    sh "git clone #{branch_opt}#{url} #{workspace_dir}"
   end
 end
 
@@ -204,4 +206,40 @@ def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
   FileUtils.mv(backend_tags_pname, target_pname)
 
   $logger.info "Moved normative rule tags to #{target_pname}"
+end
+
+# @param isa_manual_dirname [String] Full pathname of ISA manual root directory
+# @param unpriv_tags_json [String] Full pathname of unpriv ISA manual JSON tags file
+# @param priv_tags_json [String] Full pathname of priv ISA manual JSON tags file
+# @param target_pname [String] Full pathname where normative rules should end up
+def pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, target_pname)
+  target_dirname = File.dirname(target_pname)
+
+  # Ensure target directory is present.
+  FileUtils.mkdir_p(target_dirname)
+
+  $logger.info "Building normative rules JSON tag files"
+
+  cmdArray = [
+    "ruby",
+    "#{isa_manual_dir}/docs-resources/tools/create_normative_rules.rb",
+    "-t #{unpriv_tags_json}",
+    "-t #{priv_tags_json}"
+  ]
+
+  # Add -c option for each normative rule curation YAML file
+  Dir.glob("#{isa_manual_dir}/src/normative_rule_curation/*.yaml").each do |curation|
+    cmdArray.append("-c #{curation}")
+  end
+
+  # Add output filename as last command line option
+  cmdArray.append(target_pname)
+
+  cmd = cmdArray.join(" ")
+
+  $logger.info "bundle exec #{cmd}"
+
+  sh(cmd)
+
+  $logger.info "Done building normative rules into #{target_pname}"
 end

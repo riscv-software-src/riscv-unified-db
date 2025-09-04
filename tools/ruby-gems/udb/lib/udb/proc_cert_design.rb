@@ -22,19 +22,21 @@ class ProcCertDesign < PortfolioDesign
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
-  # @param normative_rule_tags [NormativeRuleTags] Some proc_cert_design objects have access to anchor text in stds docs
-  def initialize(name, cfg_arch, portfolio_design_type, proc_cert_model, proc_cert_class, normative_rule_tags)
+  # @param normative_rules [NormativeRules] Optional, can be nil
+  def initialize(name, cfg_arch, portfolio_design_type, proc_cert_model, proc_cert_class, normative_rules)
     raise ArgumentError, "name must be a String" unless name.is_a?(String)
     raise ArgumentError, "cfg_arch must be a ConfiguredArchitecture" unless cfg_arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type must be a String" unless portfolio_design_type.is_a?(String)
     raise ArgumentError, "proc_cert_model must be a ProcCertModel" unless proc_cert_model.is_a?(ProcCertModel)
     raise ArgumentError, "proc_cert_class must be a ProcCertClass" unless proc_cert_class.is_a?(ProcCertClass)
-    raise ArgumentError, "normative_rule_tags must be a NormativeRuleTags but is a #{normative_rule_tags.class}" unless normative_rule_tags.is_a?(NormativeRuleTags)
+    unless normative_rules.nil?
+      raise ArgumentError, "normative_rules must be a NormativeRules but is a #{normative_rules.class}" unless normative_rules.is_a?(NormativeRules)
+    end
 
     @proc_cert_model = proc_cert_model
     @proc_cert_class = proc_cert_class
 
-    super(name, cfg_arch, portfolio_design_type, [proc_cert_model], proc_cert_class, normative_rule_tags)
+    super(name, cfg_arch, portfolio_design_type, [proc_cert_model], proc_cert_class, normative_rules)
   end
 
   # Returns a string representation of the object, suitable for debugging.

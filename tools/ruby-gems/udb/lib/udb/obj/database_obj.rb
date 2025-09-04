@@ -8,8 +8,6 @@ require "sorbet-runtime"
 
 require "forwardable"
 
-require_relative "../doc_link"
-
 module Udb
 
 # a bunch of useful methods for both proper top-level DatabaseObject and sub-objects like CsrField

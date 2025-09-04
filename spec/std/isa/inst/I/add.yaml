@@ -62,13 +62,4 @@ sail(): |
 
 normative_rules:
   - name: add_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:add"]
-    coverage_points: [cr_rs1_rs2_edges]
-
   - name: add_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:add:operation"]
-    coverage_points: [cr_rs1_rs2_edges]

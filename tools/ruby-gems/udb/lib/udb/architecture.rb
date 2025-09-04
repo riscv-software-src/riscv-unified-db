@@ -55,7 +55,6 @@ require_relative "obj/manual"
 require_relative "obj/portfolio"
 require_relative "obj/profile"
 require_relative "exception_code"
-require_relative "normative_rule"
 require_relative "coverage_point"
 require_relative "cert_test_procedure"
 
@@ -76,7 +75,6 @@ class Architecture
     @path = @arch_dir # alias
     @objects = Concurrent::Hash.new
     @object_hashes = Concurrent::Hash.new
-    @normative_rule_hash = {}
     @coverage_point_hash = {}
     @cert_test_procedure_hash = {}
   end
@@ -262,26 +260,6 @@ class Architecture
   sig { params(name: String).returns(T.nilable(Parameter)) }
   def param(name)
     param_hash[name]
-  end
-
-  # @return [Hash<String, NormativeRule>] Hash of all normative rules defined in the architecture
-  attr_reader :normative_rule_hash
-
-  # @return [Array<NormativeRule>] List of all normative rules defined in the architecture
-  def normative_rules = @normative_rule_hash.values
-
-  # @return [NormativeRule] Normative rule named +name+
-  # @return [nil] if there is no normative rule named +name+
-  sig { params(name: String).returns(T.nilable(NormativeRule)) }
-  def normative_rule(name) = @normative_rule_hash[name]
-
-  # @param NormativeRule nr The normative rule defined in some database object.
-  #                         These are kept in an architecture-wide hash since the names are global.
-  def add_normative_rule(nr)
-      raise "Require a NormativeRule class but got a #{nr.class}" unless nr.is_a?(NormativeRule)
-      raise "Normative rule #{nr.name} defined multiple times" unless normative_rule(nr.name).nil?
-
-      @normative_rule_hash[nr.name] = nr
   end
 
   # @return [Hash<String, CoveragePoint>] Hash of all coverage points defined in the architecture

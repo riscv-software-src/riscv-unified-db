@@ -5,7 +5,7 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
-require_relative "can_define_normative_rules"
+require_relative "can_have_normative_rule_reqs"
 require_relative "can_define_coverage_points"
 require_relative "can_define_cert_test_procedures"
 require_relative "parameter"
@@ -19,7 +19,7 @@ module Udb
 # Extension definition
 class Extension < TopLevelDatabaseObject
   # Add all methods in these modules to this type of database object.
-  include CanDefineNormativeRules
+  include CanHaveNormativeRuleReqs
   include CanDefineCoveragePoints
   include CanDefineCertTestProcedures
 

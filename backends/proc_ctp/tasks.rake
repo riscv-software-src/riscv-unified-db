@@ -42,22 +42,22 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
       priv_adoc = "#{isa_manual_dir}/src/riscv-privileged.adoc"
       unpriv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-unprivileged-norm-tags.json"
       priv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged-norm-tags.json"
+      norm_rules_json = "#{PROC_CTP_GEN_DIR}/adoc/norm-rules.json"
 
       # Extract normative rule tags (AKA anchors) from ISA manuals into JSON files.
       pf_adoc2norm_tags(unpriv_adoc, unpriv_tags_json, isa_manual_dir)
       pf_adoc2norm_tags(priv_adoc, priv_tags_json, isa_manual_dir)
 
-      # Read in tag JSON files to Ruby hashes.
-      unpriv_tags = JSON.parse(File.read(unpriv_tags_json))
-      priv_tags = JSON.parse(File.read(priv_tags_json))
+      # Build normative rules using ISA manual repository.
+      pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, norm_rules_json)
 
-      # Load tags into a class to provide access to backend while generating CTP adoc.
-      normative_rule_tags = Udb::NormativeRuleTags.new()
-      normative_rule_tags.add_doc_tags("Unpriv", unpriv_tags['tags'])
-      normative_rule_tags.add_doc_tags("Priv", priv_tags['tags'])
+      # Read in normative rule JSON file to Ruby object.
+      data = JSON.parse(File.read(norm_rules_json))
 
-      proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name,
-        normative_rule_tags)
+      # Load normative rules into a Ruby class to provide access to rules when generating CTP.
+      normative_rules = Udb::NormativeRules.new(data)
+
+      proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name, normative_rules)
     rescue => e
       # Send to stdout since UDB sends tons of cr*p to stderr that floods one with useless information.
       # Note that the $logger sends to stdout so anything send to $logger actually gets displayed as useful

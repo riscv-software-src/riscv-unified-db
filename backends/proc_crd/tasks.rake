@@ -32,11 +32,7 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb"
   ] do |t|
     begin
-      # No normative rule tags from stds docs available in a CRD (at the moment) so just create empty object.
-      normative_rule_tags = Udb::NormativeRuleTags.new()
-
-      proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name,
-        normative_rule_tags)
+      proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name, nil)
     rescue => e
       # Send to stdout since UDB sends tons of cr*p to stderr that floods one with useless information.
       # Note that the $logger sends to stdout so anything send to $logger actually gets displayed as useful
