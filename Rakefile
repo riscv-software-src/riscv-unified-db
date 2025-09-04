@@ -12,6 +12,7 @@ Rake.application.options.thread_pool_size = $jobs
 puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
 
 require "etc"
+require "pathname"
 
 $root = Pathname.new(__dir__).realpath
 $lib = $root / "lib"
