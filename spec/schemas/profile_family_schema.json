@@ -1,19 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name"],
   "properties": {
     "$schema": {
-      "type": "string",
       "const": "profile_family_schema.json#"
     },
     "kind": {
-      "type": "string",
       "const": "profile family"
     },
     "processor_kind": {
-      "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
       "description": "What kind of processor is this?"
     },
