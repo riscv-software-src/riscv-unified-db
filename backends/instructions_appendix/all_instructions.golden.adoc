@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -7145,9 +7145,6 @@ Included in::
 
 Synopsis::
 No synopsis available
-
-Assembly::
-dret dret
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -15646,9 +15643,6 @@ Included in::
 Synopsis::
 Machine mode resume from the RNMI or Double Trap handler
 
-Assembly::
-mnret mnret
-
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -17194,9 +17188,6 @@ Included in::
 
 Synopsis::
 No synopsis available
-
-Assembly::
-sctrclr sctrclr
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -20645,7 +20636,7 @@ vaeskf1.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
 ....
 
 Description::
@@ -20657,7 +20648,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -20683,7 +20674,7 @@ vaeskf2.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
 ....
 
 Description::
@@ -20695,7 +20686,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -38562,7 +38553,7 @@ vsm3c.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
 ....
 
 Description::
@@ -38574,7 +38565,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -38642,7 +38633,7 @@ vsm4k.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
 ....
 
 Description::
@@ -38654,7 +38645,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -45245,7 +45236,7 @@ vwsll.vi vd, vs2, imm, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
 ....
 
 Description::
@@ -45258,7 +45249,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
