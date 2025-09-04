@@ -26,7 +26,6 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{$root}/backends/portfolio/templates/normative_rules.adoc.erb",
-    "#{$root}/backends/portfolio/templates/test_procedures.adoc.erb",
     "#{$root}/backends/proc_cert/templates/typographic.adoc.erb",
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
     "#{$root}/backends/proc_cert/templates/related_specs.adoc.erb",

@@ -8,8 +8,6 @@ require "idlc/interfaces"
 
 require_relative "database_obj"
 require_relative "can_have_normative_rule_reqs"
-require_relative "can_define_coverage_points"
-require_relative "can_define_cert_test_procedures"
 
 module Udb
 
@@ -17,8 +15,6 @@ module Udb
 class Csr < TopLevelDatabaseObject
   # Add all methods in these modules to this type of database object.
   include CanHaveNormativeRuleReqs
-  include CanDefineCoveragePoints
-  include CanDefineCertTestProcedures
 
   include Idl::Csr
 

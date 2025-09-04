@@ -8,8 +8,6 @@
 
 require_relative "database_obj"
 require_relative "can_have_normative_rule_reqs"
-require_relative "can_define_coverage_points"
-require_relative "can_define_cert_test_procedures"
 require_relative "../presence"
 require "udb_helpers/backend_helpers"
 require "awesome_print"
@@ -116,8 +114,6 @@ end
 class Instruction < TopLevelDatabaseObject
   # Add all methods in these modules to this type of database object.
   include CanHaveNormativeRuleReqs
-  include CanDefineCoveragePoints
-  include CanDefineCertTestProcedures
 
   include Helpers::WavedromUtil
 

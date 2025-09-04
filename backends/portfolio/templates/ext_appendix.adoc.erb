@@ -146,8 +146,4 @@ This extension has the following parameters (AKA implementation options):
 
 <%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => ext, "fmt" => "appendix", "use_description_list" => false}) %>
 
-<% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => ext, "fmt" => "appendix", "use_description_list" => false}) %>
-<% end # if gen_ctp_content -%>
-
 <% end # do ext_req -%>

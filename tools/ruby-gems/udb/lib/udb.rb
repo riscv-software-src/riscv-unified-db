@@ -15,8 +15,6 @@ require_relative "udb/schema"
 require_relative "udb/version"
 
 require_relative "udb/obj/can_have_normative_rule_reqs"
-require_relative "udb/obj/can_define_coverage_points"
-require_relative "udb/obj/can_define_cert_test_procedures"
 require_relative "udb/obj/certificate"
 require_relative "udb/obj/csr_field"
 require_relative "udb/obj/csr"
