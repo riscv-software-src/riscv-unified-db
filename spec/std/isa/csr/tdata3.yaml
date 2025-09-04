@@ -1,0 +1,30 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: tdata3
+long_name: Trigger Data 3
+address: 0x7A3
+priv_mode: M
+length: XLEN
+writable: true
+description: |
+  This register provides access to the trigger selected by `tselect`.
+  The reset values listed here apply to every underlying trigger.
+
+  Trigger-specific data. It is optional if no implemented triggers use it.
+  If the trigger is disabled, then this register can be written with any value
+  supported by any of the trigger types supported by this trigger.
+  If XLEN is less than DXLEN, writes to this register are sign-extended.
+
+definedBy: Sdtrig
+fields:
+  DATA:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Data value
+    reset_value: UNDEFINED_LEGAL

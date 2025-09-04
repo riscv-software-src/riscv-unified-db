@@ -1,0 +1,63 @@
+# Copyright (c) Katherine Hsu
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hcontext
+long_name: Hypervisor Context
+address: 0x6A8
+priv_mode: S
+length: XLEN
+writable: true
+description: |
+  This optional register may be implemented only if the H extension is implemented.
+  If it is implemented, `mcontext` must also be implemented.
+
+  This register is only accessible in HS-Mode, M-mode and Debug Mode. If Smstateen is implemented,
+  then accessibility of in HS-Mode is controlled by `mstateen0[57]`.
+
+  This register is an alias of the `mcontext` register, providing access to the HCONTEXT field from HS-Mode.
+
+definedBy:
+  allOf:
+    - Sdtrig
+    - H
+fields:
+  HCONTEXT:
+    alias: mcontext.HCONTEXT
+    location: 13-0
+    type: RW
+    description: |
+      Alias of `mcontext.HCONTEXT`.
+    reset_value: 0
+    sw_write(csr_value): |
+      # check if mstateen0 is implemented
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CONTEXT != 0) {
+        unimplemented_csr($encoding);
+      }
+
+      # check if HCONTEXT is available
+      if (!HCONTEXT_AVAILABLE) {
+        unimplemented_csr($encoding);
+      }
+
+      # enforce width of HCONTEXT
+      Bits<14> hcontext_value = csr_value.HCONTEXT & ((14'1 << DBG_HCONTEXT_WIDTH) - 1);
+      # forward the write to mcontext.HCONTEXT
+      CSR[mcontext].HCONTEXT = hcontext_value;
+      return CSR[mcontext].HCONTEXT;
+sw_read(): |
+  # check if mstateen0 is implemented
+  if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CONTEXT != 0) {
+    unimplemented_csr($encoding);
+  }
+
+  # check if HCONTEXT is available
+  if (!HCONTEXT_AVAILABLE) {
+    unimplemented_csr($encoding);
+  }
+
+  # return the value of mcontext
+  return $bits(CSR[mcontext]); # might truncate if xlen() < MXLEN, but that's the expected behavior

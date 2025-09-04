@@ -151,23 +151,49 @@ class ExtensionRequirementExpression
     end
   end
 
-  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
-  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(T::Boolean) }
+  def is_simple_single_extension?(cond)
     case cond
     when String
-      "#{'*' * indent}* #{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
+      true
+    when Hash
+      # Single extension with name and optional version
+      cond.key?("name") && cond.size <= 2 && (cond.size == 1 || cond.key?("version"))
+    else
+      false
+    end
+  end
+
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped])).returns(T::Boolean) }
+  def is_complex_condition_header?(cond)
+    # Check if this is a complex condition header (allOf, anyOf, oneOf, etc.)
+    cond.is_a?(Hash) && !cond.key?("name")
+  end
+
+  sig { params(cond: T.any(String, T::Hash[String, T.untyped], T::Array[T.untyped]), indent: Integer, join: String).returns(String) }
+  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
+    # For simple single extension OR complex condition headers at root level (indent = 0), don't show bullets
+    use_bullets = !(indent == 0 && (is_simple_single_extension?(cond) || is_complex_condition_header?(cond)))
+    bullet_prefix = use_bullets ? "#{'*' * indent} " : ""
+
+    case cond
+    when String
+      "#{bullet_prefix}#{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
+          "#{bullet_prefix}#{cond['name']}, version #{cond['version']}#{join}"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
+          "#{bullet_prefix}#{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
         end
       else
-        "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
+        "#{bullet_prefix}#{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 1)
       end
     when Array
-      cond.map { |e| to_asciidoc(e, indent) }.join(join)
+      # Arrays represent multiple items, so they need bullets for clarity
+      # Use indent=1 at root level to ensure bullets are shown
+      array_indent = indent == 0 ? 1 : indent
+      cond.map { |e| to_asciidoc(e, array_indent) }.join(join)
     else
       T.absurd(cond)
     end

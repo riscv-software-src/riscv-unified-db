@@ -15,6 +15,7 @@ BACKEND_DIR = "#{$root}/backends/#{BACKEND_NAME}"
 SRC_EXT_HTML_PNAME = "#{BACKEND_DIR}/ext_table.html"
 SRC_INST_HTML_PNAME = "#{BACKEND_DIR}/inst_table.html"
 SRC_CSR_HTML_PNAME = "#{BACKEND_DIR}/csr_table.html"
+SRC_LOAD_TABLE_JS_PNAME = "#{BACKEND_DIR}/load_table.js"
 
 # Generated directories/files
 GEN_ROOT = $root / "gen" / BACKEND_NAME
@@ -93,7 +94,8 @@ end
 
 file "#{GEN_HTML_EXT_TABLE}" => [
     __FILE__,
-  SRC_EXT_HTML_PNAME
+  SRC_EXT_HTML_PNAME,
+  SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -109,11 +111,16 @@ file "#{GEN_HTML_EXT_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_EXT_HTML_PNAME, t.name)
+
+    # Copy static JS file for table loading
+    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
+    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
 end
 
 file "#{GEN_HTML_INST_TABLE}" => [
     __FILE__,
-  SRC_INST_HTML_PNAME
+  SRC_INST_HTML_PNAME,
+  SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -129,11 +136,16 @@ file "#{GEN_HTML_INST_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_INST_HTML_PNAME, t.name)
+
+    # Copy static JS file for table loading
+    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
+    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
 end
 
 file "#{GEN_HTML_CSR_TABLE}" => [
     __FILE__,
-  SRC_CSR_HTML_PNAME
+  SRC_CSR_HTML_PNAME,
+  SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -149,6 +161,10 @@ file "#{GEN_HTML_CSR_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_CSR_HTML_PNAME, t.name)
+
+    # Copy static JS file for table loading
+    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
+    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
 end
 
 file "#{GEN_JS_EXT_TABLE}" => [
