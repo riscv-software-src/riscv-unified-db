@@ -22,7 +22,7 @@ services:
       - proxy
 
   proxy:
-    image: ubuntu/squid:latest
+    image: squid:latest
     ports:
       - "3128:3128"
     # Using default bridge network
