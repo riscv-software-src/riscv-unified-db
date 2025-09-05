@@ -46,20 +46,20 @@ jobs:
         run: |
           # Check Docker availability
           docker info || echo "Docker might not be properly set up"
-         
+
           if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
             echo "Setting up test proxy"
             # Pull the image first to isolate any pull errors
             echo "Pulling squid image..."
             docker pull sameersbn/squid:latest || { echo "Failed to pull squid image"; exit 1; }
-           
+
             echo "Starting squid container..."
             docker run -d --name squid-proxy -p 3128:3128 sameersbn/squid:latest
-           
+
             # Wait for proxy to start
             echo "Waiting for proxy to initialize..."
             sleep 15
-           
+
             # Verify proxy is running with more detailed output
             echo "Checking proxy status:"
             docker ps -a | grep squid
