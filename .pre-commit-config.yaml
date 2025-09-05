@@ -36,24 +36,13 @@ repos:
 
   - repo: local
     hooks:
-      - id: jsonschema-lint-fix
-        name: Auto-fix JSON Schema linting issues
+      - id: jsonschema-fix
+        name: jsonschema fix
         stages: [pre-commit]
         language: system
-        entry: bash -c 'for file in "$@"; do npx jsonschema lint --fix "$file" || npx jsonschema lint "$file"; done' --
+        entry: bash -c 'npx jsonschema lint --fix --ignore spec/schemas/json-schema-draft-07.json spec/schemas/*.json || true'
         files: ^spec/schemas/.*\.json$
         exclude: spec/schemas/json-schema-draft-07\.json
-        pass_filenames: true
-        require_serial: true
-      - id: jsonschema-lint-check
-        name: Lint JSON Schemas
-        stages: [pre-commit]
-        language: system
-        entry: npx jsonschema lint
-        files: ^spec/schemas/.*\.json$
-        exclude: spec/schemas/json-schema-draft-07\.json
-        pass_filenames: true
-        require_serial: false
 
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.5.3
@@ -62,6 +51,15 @@ repos:
         stages: [pre-commit]
         files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
+
+  - repo: local
+    hooks:
+      - id: jsonschema-lint
+        name: jsonschema lint
+        stages: [pre-commit]
+        language: system
+        entry: npx jsonschema lint
+        args: ["--ignore", "spec/schemas/json-schema-draft-07.json", "spec/schemas/*.json"]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0
