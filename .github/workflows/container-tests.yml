@@ -49,7 +49,7 @@ jobs:
 
           if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
             echo "Setting up test proxy"
-            docker run -d --name squid-proxy -p 3128:3128 squid
+            docker run -d --name squid-proxy -p 3128:3128 datadog/squid:latest
             # Wait for proxy to start
             sleep 10
             # Verify proxy is running
