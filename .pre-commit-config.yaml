@@ -36,11 +36,20 @@ repos:
 
   - repo: local
     hooks:
-      - id: jsonschema-lint
-        name: Lint and auto-fix JSON Schemas
+      - id: jsonschema-lint-fix
+        name: Auto-fix JSON Schema linting issues
         stages: [pre-commit]
         language: system
-        entry: npx jsonschema lint --fix
+        entry: bash -c 'for file in "$@"; do npx jsonschema lint --fix "$file" || npx jsonschema lint "$file"; done' --
+        files: ^spec/schemas/.*\.json$
+        exclude: spec/schemas/json-schema-draft-07\.json
+        pass_filenames: true
+        require_serial: true
+      - id: jsonschema-lint-check
+        name: Lint JSON Schemas
+        stages: [pre-commit]
+        language: system
+        entry: npx jsonschema lint
         files: ^spec/schemas/.*\.json$
         exclude: spec/schemas/json-schema-draft-07\.json
         pass_filenames: true
