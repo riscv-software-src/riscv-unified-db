@@ -18,20 +18,20 @@ RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(32) %>
+<%= inst.processed_wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(64) %>
+<%= inst.processed_wavedrom_desc(64) %>
 ....
 ====
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
+<%= inst.processed_wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
 ....
 <%- end -%>
 
