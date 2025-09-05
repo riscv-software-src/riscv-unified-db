@@ -10,6 +10,8 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
+    # Using conditional network configuration based on environment variable
+    # If PROXY_ENABLED is 'none', use 'host' network mode, otherwise connect to proxy
     network_mode: ${PROXY_ENABLED:-service:proxy}
     environment:
       - http_proxy=${HTTP_PROXY:-http://proxy:3128}
@@ -18,9 +20,6 @@ services:
       - HTTPS_PROXY=${HTTPS_PROXY:-http://proxy:3128}
     depends_on:
       - proxy
-    # Only use proxy network when proxy service exists
-    networks:
-      - proxy-net
 
   proxy:
     image: ubuntu/squid:latest

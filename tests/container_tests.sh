@@ -34,16 +34,17 @@ docker run --rm -v "$(pwd)":/workspace riscv-unified-db-test bash -c \
 python3 -m venv .venv && \
 source .venv/bin/activate && \
 python -m ensurepip --upgrade && \
-pip install --quiet -r requirements.txt && \
-pip list && \
+python -m pip install --upgrade pip && \
+python -m pip install --quiet -r requirements.txt && \
+python -m pip list && \
 deactivate"
 
 # Test 4: Check if we can install Python packages with --break-system-packages flag
 echo "Test 4: Installing Python packages with --break-system-packages flag..."
 docker run --rm -v "$(pwd)":/workspace riscv-unified-db-test bash -c \
 "cd /workspace && \
-pip3 install --break-system-packages --quiet -r requirements.txt && \
-pip3 list"
+python3 -m pip install --break-system-packages --quiet -r requirements.txt && \
+python3 -m pip list"
 
 # Test 5: Check if we can install gems
 echo "Test 5: Installing gems..."
