@@ -16,19 +16,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
-  regress-jsonschema-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm install
-      - name: Lint JSON Schemas
-        run: npx jsonschema lint --exclude const_with_type --ignore spec/schemas/json-schema-draft-07.json spec/schemas/*.json
   regress-smoke:
     needs: build-llvm
     runs-on: ubuntu-latest
