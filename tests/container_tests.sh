@@ -33,6 +33,7 @@ docker run --rm -v "$(pwd)":/workspace riscv-unified-db-test bash -c \
 "cd /workspace && \
 python3 -m venv .venv && \
 source .venv/bin/activate && \
+python -m ensurepip --upgrade && \
 pip install --quiet -r requirements.txt && \
 pip list && \
 deactivate"

@@ -25,13 +25,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python virtual environment
+      - name: Set up Python virtual environment and install pip
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
+          # Ensure pip is installed in the virtual environment
+          python -m ensurepip --upgrade
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
       
+      - name: Install docker-compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+          docker compose version || echo "docker compose not installed correctly"
+          
       - name: Set up test environment
         run: |
           # Check Docker availability
@@ -63,25 +71,25 @@ jobs:
       
       - name: Test docker-compose with proxy
         run: |
-          # Make sure we have docker-compose
-          docker-compose --version || echo "Docker-compose might not be available"
+          # Make sure we have docker compose
+          docker compose version || echo "Docker compose might not be available"
           
           if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
-            echo "Testing docker-compose with proxy"
-            # Start services with docker-compose
-            PROXY_ENABLED=service:proxy HTTP_PROXY=http://localhost:3128 HTTPS_PROXY=http://localhost:3128 docker-compose up -d || echo "Failed to start services but continuing"
+            echo "Testing docker compose with proxy"
+            # Start services with docker compose
+            PROXY_ENABLED=service:proxy HTTP_PROXY=http://localhost:3128 HTTPS_PROXY=http://localhost:3128 docker compose up -d || echo "Failed to start services but continuing"
             # Wait for services to start
             sleep 15
             # Check if services are running
-            docker-compose ps
+            docker compose ps
             # Stop services
-            docker-compose down || echo "Failed to stop services but continuing"
+            docker compose down || echo "Failed to stop services but continuing"
           else
-            echo "Testing docker-compose without proxy"
-            PROXY_ENABLED=none docker-compose up -d || echo "Failed to start services but continuing"
+            echo "Testing docker compose without proxy"
+            PROXY_ENABLED=none docker compose up -d || echo "Failed to start services but continuing"
             sleep 15
-            docker-compose ps
-            docker-compose down || echo "Failed to stop services but continuing"
+            docker compose ps
+            docker compose down || echo "Failed to stop services but continuing"
           fi
       
       - name: Test VS Code integration

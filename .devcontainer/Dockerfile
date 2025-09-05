@@ -4,9 +4,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Create a non-root user
 RUN useradd -m -s /bin/bash vscode
- 
+
 WORKDIR /workspace
- 
+
 # Configure apt proxy settings if proxy environment variables are set
 RUN if [ -n "$http_proxy" ] || [ -n "$https_proxy" ]; then \
 mkdir -p /etc/apt/apt.conf.d && \
@@ -15,7 +15,7 @@ echo "Acquire::https::Proxy \"$https_proxy\";" >> /etc/apt/apt.conf.d/01proxy; \
 else \
 echo "No proxy environment variables set for apt" > /etc/apt/apt.conf.d/01proxy.notes; \
 fi
- 
+
 # please keep pkgs sorted
 RUN \
   apt-get update && \
@@ -60,22 +60,22 @@ echo "trusted-host = files.pythonhosted.org" >> /etc/pip.conf; fi; \
 else \
 echo "No proxy environment variables set for pip" > /etc/pip.conf.notes; \
 fi
- 
+
 # Configure npm proxy settings
 RUN if [ -n "$http_proxy" ]; then npm config set proxy $http_proxy; fi
 RUN if [ -n "$https_proxy" ]; then npm config set https-proxy $https_proxy; fi
- 
+
 # Configure bundler proxy settings
 RUN if [ -n "$http_proxy" ]; then bundle config http_proxy $http_proxy; fi
 RUN if [ -n "$https_proxy" ]; then bundle config https_proxy $https_proxy; fi
- 
 # Create a virtual environment for Python packages
 RUN python3 -m venv /opt/venv && \
-    chmod -R 777 /opt/venv  # Ensure permissions are set correctly for CI
+    chmod -R 777 /opt/venv && \
+    /opt/venv/bin/python -m ensurepip --upgrade  # Ensure pip is available in venv
 ENV PATH="/opt/venv/bin:$PATH"
 # Install requirements in virtual environment
 RUN if [ -f "/workspace/requirements.txt" ]; then \
-pip install -r /workspace/requirements.txt; \
+/opt/venv/bin/pip install -r /workspace/requirements.txt; \
 else \
 echo "No requirements.txt found"; \
 fi
