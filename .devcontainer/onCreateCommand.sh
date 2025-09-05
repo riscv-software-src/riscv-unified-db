@@ -1,22 +1,18 @@
-sudo apt-get update
-sudo apt-get run `docker-compose`, but it is not installed. Fix install -y docker-compose-plugin
-Then use  this by adding the following installation step beforedocker compose instead of docker-compose in your using docker-compose:
+#!/bin/bash
 
-bash
-sudo apt-get scripts.
+# Install npm packages with proper error handling
+npm i || echo "Warning: npm install failed"
 
----
+# Install Ruby gems with proper error handling
+bundle install --verbose || echo "Warning: bundle install failed"
 
-## Where to Update
-
-Make these changes in your workflow or the referenced test script ([. update
-sudo apt-get install -y docker-compose
-github/workflows/container-tests.yml](https://github.com ```
-**Code suggestions for workflow fixes:**
-
-Add these steps before your test commands in `.github/riscv-software-src/riscv-unified-db/blob/1/workflows/container-tests.yml`:
-```yaml
-- name: Ensure Pythonc4426e0935cac0cb6cd07480cac05bd995d36b4/.github/workflows/container-tests.yml)), or in [`tests/container_tests.sh`](https://github.com/riscv-software-src/riscv-unified-db/blob/1c4426e0935cac0cb6cd07480cac05bd995d36b4/tests/container_tests.sh) if these commands are run there.
+# Activate virtual environment and install Python packages
+if [ -f "requirements.txt" ]; then
+  # Ensure pip is installed in the virtual environment
+  source /opt/venv/bin/activate
+  /opt/venv/bin/python -m ensurepip --upgrade
+  pip install -r requirements.txt || echo "Warning: pip install failed"
+fi
 
 ---
 
