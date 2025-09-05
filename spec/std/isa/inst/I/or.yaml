@@ -60,13 +60,4 @@ sail(): |
 
 normative_rules:
   - name: or_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:or"]
-    coverage_points: [cr_rs1_rs2_edges]
-
   - name: or_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:and_or_xor:operation"]
-    coverage_points: [cr_rs1_rs2_edges]

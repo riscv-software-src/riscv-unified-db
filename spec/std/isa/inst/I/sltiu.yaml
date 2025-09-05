@@ -61,13 +61,4 @@ sail(): |
 
 normative_rules:
   - name: sltiu_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:sltiu"]
-    coverage_points: [cr_rs1_imm_edges]
-
   - name: sltiu_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:slti_sltiu:operation"]
-    coverage_points: [cr_rs1_imm_edges]

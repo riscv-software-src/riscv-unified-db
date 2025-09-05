@@ -82,13 +82,4 @@ sail(): |
 
 normative_rules:
   - name: bge_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:bge"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]
-
   - name: bge_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:bge_bgeu:operation"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]

@@ -238,27 +238,7 @@ sail(): |
 
 normative_rules:
   - name: fence_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:fence"]
-
   - name: fence_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:fence:operation"]
-    coverage_points: [cp_asm_count]
-
-  - name: fence_cons_okay
-    type: instruction
-    description: Conservative Allowed
-    doc_links: ["norm:inst:fence:conservative_allowed"]
-
+  - name: fence_cons_ok
   - name: fence_null_pred_succ_inter
-    type: instruction
-    description: Successful Intersection
-    doc_links: ["norm:inst:fence:null_pred_succ_intersection"]
-
   - name: fence_unused_flds_rsv
-    type: instruction
-    description: Unused Fields are Reserved
-    doc_links: ["norm:inst:fence:unused_fields_reserved"]

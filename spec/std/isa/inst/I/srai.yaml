@@ -67,11 +67,4 @@ sail(): |
 
 normative_rules:
   - name: srai_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:srai"]
-
   - name: srai_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:srai:operation"]

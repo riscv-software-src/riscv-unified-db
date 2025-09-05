@@ -49,16 +49,5 @@ sail(): |
 
 normative_rules:
   - name: slliw_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:slliw"]
-
   - name: slliw_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:slliw_srliw_sraiw:operation"]
-
   - name: slliw_imm5_rsv
-    type: instruction
-    description: Bit 5 of imm reserved
-    doc_links: ["norm:insts:slliw_srliw_sraiw:imm5_rsv"]

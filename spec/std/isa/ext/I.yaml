@@ -22,25 +22,30 @@ normative_rules:
   - name: x0eq0
   - name: imm_always_sex
   - name: pcreg
-  - name: rv32i_rv64i_other_xregs
+  - name: rv32i_other_xregs
+
   # RV32I (XLEN == 32)
-  - name: rv32_xregwidth
+  - name: rv32_xreg_sz
     # TODO: add "when" statement saying MXLEN == 32
+
   # RV64I (XLEN == 64)
-  - name: rv64_xregwidth
+  - name: rv64i_other_xregs
     # TODO: add "when" statement saying MXLEN == 64
-  - name: w_sex_to_64
+  - name: rv64_xreg_sz
     # TODO: add "when" statement saying MXLEN == 64
-  #cti and LS
+  - name: rv64_w_sex
+    # TODO: add "when" statement saying MXLEN == 64
+
+  #CTI and LS
   - name: taken_cti_misaligned_exc
     # TODO: add "when" statement referencing the taken CTI instruction group
-  - name: addr_misaligned_or_access_fault_exc
+  - name: ldst_addr_misaligned_or_access_fault_exc
     # TODO: add "when" statement referencing the load/store instruction group
-  - name: atomicity_for_aligned
+  - name: ldst_atomicity_for_aligned
     # TODO: add "when" statement referencing the load/store instruction group
   - name: big_endian_op
     # TODO: add "when" statement referencing the load/store instruction group
-  - name: ls_effective_addr
+  - name: ldst_effective_addr
     # TODO: add "when" statement referencing the load/store instruction group
   - name: endian_byte_invariant
     # TODO: add "when" statement referencing the load/store instruction group
@@ -48,7 +53,7 @@ normative_rules:
     # TODO: add "when" statement referencing the load/store instruction group
   - name: little_endian_op
     # TODO: add "when" statement referencing the load/store instruction group
-  - name: ls_no_exc_aligned
+  - name: ldst_no_exc_aligned
     # TODO: add "when" statement referencing the load/store instruction group
   - name: load_exc_x0
     # TODO: add "when" statement referencing the load instruction group
@@ -56,12 +61,8 @@ normative_rules:
     # TODO: add "when" statement referencing the load instruction group
   - name: store_op
     # TODO: add "when" statement referencing the store instruction group
-  - name: add_sub_overflow
-    # TODO: add "when" statement listing the add/sub instructions (what about 16-bit compressed inst and RV64I add/sub?)
   - name: br_target
     # TODO: add "when" statement listing the branch instruction group
-  - name: bge_bgeu_op
-    # TODO: add "when" statement listing the bge and bgeu instructions
   - name: cond_br_no_ia_misaligned_exc_not_taken
   - name: cti_ia_fault_exc_on_target
   - name: no_cti_delay_slots

@@ -180,8 +180,4 @@ This CSR may return a value that is different from what is stored in hardware.
 
 <%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => csr, "fmt" => "appendix" }) %>
 
-<% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("", { "db_obj" => csr, "fmt" => "appendix" }) %>
-<% end # if gen_ctp_content -%>
-
 <% end # do in_scope_csrs -%>

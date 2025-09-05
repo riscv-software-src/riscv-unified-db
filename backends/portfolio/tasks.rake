@@ -40,10 +40,13 @@ def pf_get_latest_csc_isa_manual(target_pname)
   # Directory path for target file.
   target_dir = File.dirname(target_pname)
 
+  # TODO: Remove this branch name and use "main" when dependent PRs are checked into upstream.
   pf_ensure_repository("https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual",
     target_dir + "/ext/riscv-isa-manual", "21-create-yaml-files-for-norm-rules")
 
-  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources", nil)
+  # TODO: Remove this branch name and use "main" when dependent PRs are merged.
+  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources",
+    "63-tags-without-text")
 end
 
 # @param url [String] Where to clone repository from
@@ -171,7 +174,7 @@ def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
   # The tags backend will put the tags file in the same directory as the input adoc file.
   backend_tags_pname = adoc_file.sub(/\.adoc$/, "-norm-tags.json")
 
-  $logger.info "Extracting normative rule tags (AKA anchors) from #{adoc_file} into #{backend_tags_pname}"
+  $logger.info "Extracting normative rule tags from #{adoc_file} into #{backend_tags_pname}"
   cmd = [
     "asciidoctor",
     "-w",
@@ -227,8 +230,29 @@ def pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, target
     "-t #{priv_tags_json}"
   ]
 
+  curation_dir = "#{isa_manual_dir}/src/normative_rule_curation"
+
+  # Add in mock curation YAML file. Used for test coverage.
+  # TBD - Find a better way to do this.
+  mock_curation_yaml = <<~TEXT
+normative_curations:
+  - name: Xmock_nr1
+    summary: Here's a summary
+    description: Normative rule with multiple tags (one with and without text), description, and summary
+    tags_without_text:
+      - norm:enc:insttable:add
+    tags:
+      - norm:inst:add:operation
+  - name: Xmock_nr2
+    description: |
+      Normative rule without any tags.
+      Should have lots of room to display this description in the CTP tables.
+TEXT
+
+  File.write("#{curation_dir}/mock.yaml", mock_curation_yaml)
+
   # Add -c option for each normative rule curation YAML file
-  Dir.glob("#{isa_manual_dir}/src/normative_rule_curation/*.yaml").each do |curation|
+  Dir.glob("#{curation_dir}/*.yaml").each do |curation|
     cmdArray.append("-c #{curation}")
   end
 

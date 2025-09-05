@@ -43,11 +43,11 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
       priv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged-norm-tags.json"
       norm_rules_json = "#{PROC_CTP_GEN_DIR}/adoc/norm-rules.json"
 
-      # Extract normative rule tags (AKA anchors) from ISA manuals into JSON files.
+      # Extract normative rule tags from ISA manuals into JSON files.
       pf_adoc2norm_tags(unpriv_adoc, unpriv_tags_json, isa_manual_dir)
       pf_adoc2norm_tags(priv_adoc, priv_tags_json, isa_manual_dir)
 
-      # Build normative rules using ISA manual repository.
+      # Create normative rules using ISA manual repository.
       pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, norm_rules_json)
 
       # Read in normative rule JSON file to Ruby object.

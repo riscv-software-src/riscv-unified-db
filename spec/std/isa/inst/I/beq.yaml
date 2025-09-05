@@ -80,13 +80,4 @@ sail(): |
 
 normative_rules:
   - name: beq_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:beq"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]
-
   - name: beq_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:beq_bne:operation"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]

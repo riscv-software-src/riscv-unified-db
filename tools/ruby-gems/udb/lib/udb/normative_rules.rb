@@ -15,7 +15,7 @@ class NormativeRules
     data.each do |nr_data|
       nr = NormativeRule.new(nr_data)
       unless @normative_rule_hash[nr.name].nil?
-        raise "Duplicate normative rule #{nr.name} defined in #{nr.source} (already defined in #{@normative_rule_hash[nr.name].source})"
+        raise "Duplicate normative rule #{nr.name} defined in #{nr.filename} (already defined in #{@normative_rule_hash[nr.name].filename})"
       end
       @normative_rule_hash[nr.name] = nr
     end
@@ -31,7 +31,7 @@ end
 # Contains one Normative Rule
 class NormativeRule
   attr_reader :name         # String (mandatory)
-  attr_reader :source       # String (mandatory - Filename in ISA manual repo that defines normative rule)
+  attr_reader :filename     # String (mandatory - Filename in ISA manual repo that defines normative rule)
   attr_reader :summary      # String (optional - a few words)
   attr_reader :description  # String (optional - sentence, paragraph, or more)
   attr_reader :tags         # Array<NormativeRuleTag> (optional - can be empty array, never nil)
@@ -43,8 +43,8 @@ class NormativeRule
     @name = data["name"]
     raise ArgumentError, "Missing name in normative rule entry" if @name.nil?
 
-    @source = data["source"]
-    raise ArgumentError, "Missing source in normative rule entry #{name}" if @source.nil?
+    @filename = data["filename"]
+    raise ArgumentError, "Missing filename in normative rule entry #{name}" if @filename.nil?
 
     @summary = data["summary"]
     @description = data["description"]
@@ -61,10 +61,10 @@ class NormativeRuleTag
   # @return [String] Name of normative rule tag into standards document
   attr_reader :tag_name
 
-  # @return [String] Filename of ISA manual (priv or unpriv) with the tag
-  attr_reader :source
+  # @return [String] Filename of ISA manual (priv or unpriv) with the tag (optional, can be nil)
+  attr_reader :filename
 
-  # @return [String] Text associated with normative rule tag from standards document. Can have newlines.
+  # @return [String] Text associated with normative rule tag from standards doc. Can have newlines. (optional, can be nil)
   attr_reader :tag_text
 
   # @param data [Hash<String, Object>]
@@ -75,11 +75,8 @@ class NormativeRuleTag
     @tag_name = data["tag_name"]
     raise ArgumentError, "Missing tag_name in normative rule tag entry in normative rule #{nr_name}" if @tag_name.nil?
 
-    @source = data["source"]
-    raise ArgumentError, "Missing source in normative rule tag entry named #{tag_name} in normative rule #{nr_name}" if @source.nil?
-
+    @filename = data["filename"]
     @tag_text = data["tag_text"]
-    raise ArgumentError, "Missing tag_text in normative rule tag entry named #{tag_name} in normative rule #{nr_name}" if @tag_text.nil?
   end
 end
 

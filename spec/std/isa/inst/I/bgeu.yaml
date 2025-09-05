@@ -77,13 +77,4 @@ sail(): |
 
 normative_rules:
   - name: bgeu_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:bgeu"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]
-
   - name: bgeu_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:bge_bgeu:operation"]
-    coverage_points: [cp_offset, cr_rs1_rs2_edges]

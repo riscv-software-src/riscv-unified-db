@@ -66,6 +66,10 @@ class ProcCertDesign < PortfolioDesign
   # @param extra_inputs [Hash<String, Object>] Any extra inputs to be passed to ERB template.
   # @return [String] Result of ERB evaluation of the template file
   def include_erb(template_name, extra_inputs = {})
+    raise ArgumentError, "Passed #{template_name}.class for template_name but need a String" unless template_name.is_a?(String)
+    raise ArgumentError, "Passed empty String for template_name" if template_name.empty?
+    raise ArgumentError, "Passed #{extra_inputs}.class for extra_inputs but need a Hash" unless extra_inputs.is_a?(Hash)
+
     proc_cert_template_pname = "proc_cert/templates/#{template_name}"
     proc_cert_template_path = Pathname.new($root / "backends" / proc_cert_template_pname)
 

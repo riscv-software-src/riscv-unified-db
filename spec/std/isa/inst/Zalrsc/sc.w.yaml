@@ -241,8 +241,3 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
-
-coverage_points:
-  - name: cp_sc
-    bins: 2
-    description: Store conditional instruction has a success and failure case.

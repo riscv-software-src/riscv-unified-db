@@ -77,19 +77,5 @@ sail(): |
 
 normative_rules:
   - name: jalr_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:jalr"]
-    coverage_points: [cp_offset_jalr, cp_rd, cp_imm_edges]
-
   - name: jalr_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:jalr:operation"]
-    coverage_points: [cp_offset_jalr, cp_rd, cp_imm_edges]
-
   - name: jalr_target
-    type: instruction
-    description: Target
-    doc_links: ["norm:inst:jalr:target"]
-    coverage_points: [cp_offset_jalr, cp_rd, cp_imm_edges]

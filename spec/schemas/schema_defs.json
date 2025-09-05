@@ -342,79 +342,13 @@
     "normative_rules": {
       "description": "Architecturally visible behaviors defined by the RISC-V standards",
       "type": "array",
-      "required": ["name", "type", "description"],
+      "required": ["name"],
       "properties": {
         "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enum": ["extension", "instruction", "CSR", "CSR field", "parameter"]
-        },
-        "description": {
-          "type": "string"
-        },
-        "doc_links": {
-          "description": "Link to UDB documentation, ISA manual, Sail code, or IDL code",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "coverage_points": {
-          "type": "array",
-          "description": "List of cover points that must be met to test this normative rule",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "additionalProperties": false
-    },
-    "coverage_points": {
-      "description": "Coverage points used to measure coverage",
-      "type": "array",
-      "required": ["name", "description", "bins"],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "bins": {
           "type": "string"
         }
       },
       "additionalProperties": false
-    },
-    "cert_test_procedures": {
-      "description": "Procedure test must follow to test normative rules",
-      "type": "array",
-      "required": ["name", "description", "test_file_name", "normative_rules"],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "test_file_name": {
-          "type": "string"
-        },
-        "normative_rules": {
-          "type": "array",
-          "description": "List of normative rule IDs to be validated",
-          "items": {
-            "type": "string"
-          }
-        },
-        "steps": {
-          "description": "List of steps typically using Asciidoc unordered lists",
-          "type": "string"
-        },
-        "additionalProperties": false
-      }
     },
     "encoding_match": {
       "oneOf": [

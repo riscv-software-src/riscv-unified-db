@@ -68,11 +68,4 @@ sail(): |
 
 normative_rules:
   - name: lwu_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:lwu"]
-
   - name: lwu_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:lwu:operation"]

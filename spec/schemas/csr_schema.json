@@ -120,12 +120,6 @@
         },
         "normative_rules": {
           "$ref": "schema_defs.json#/$defs/normative_rules"
-        },
-        "coverage_points": {
-          "$ref": "schema_defs.json#/$defs/coverage_points"
-        },
-        "cert_test_procedures": {
-          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
 
@@ -282,12 +276,6 @@
         },
         "normative_rules": {
           "$ref": "schema_defs.json#/$defs/normative_rules"
-        },
-        "coverage_points": {
-          "$ref": "schema_defs.json#/$defs/coverage_points"
-        },
-        "cert_test_procedures": {
-          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false,

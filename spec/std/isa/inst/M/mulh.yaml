@@ -78,6 +78,3 @@ sail(): |
 
 normative_rules:
   - name: mulh_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:mulh"]

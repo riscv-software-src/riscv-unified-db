@@ -80,11 +80,4 @@ sail(): |
 
 normative_rules:
   - name: ecall_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:ecall"]
-
   - name: ecall_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:inst:ecall:operation"]

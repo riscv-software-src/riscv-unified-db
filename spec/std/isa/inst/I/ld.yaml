@@ -95,17 +95,7 @@ sail(): |
 
 normative_rules:
   - name: ld_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:ld"]
-
   # TODO: add "when" statement including this when Zilsd extension is present
   #- name: ld_op
-  #  type: instruction
-  #  description: Basic operation
-  #  doc_links: ["norm:inst:ld:operation"]
   - name: ld_rv64i_op
-    type: instruction
-    description: RV64I operation
-    doc_links: ["norm:inst:ld:rv64i_operation"]
     # TODO: add "when" statement saying MXLEN == 64

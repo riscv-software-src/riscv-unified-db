@@ -13,6 +13,8 @@ priv_mode: M
 length: MXLEN
 description: Reports the XLEN and "major" extensions supported by the ISA.
 definedBy: Sm
+normative_rules:
+  - name: misa_extensions_disabling
 fields:
   MXL:
     location_rv32: 31-30
@@ -149,28 +151,6 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::M) ? 1 : 0;
     definedBy: M
-    normative_rules:
-      - name: misa_M_disabled
-        type: CSR field
-        description: What happens when you turn off `misa.M`
-        doc_links: ["norm:csr:misa:disabling-extension"]
-    cert_test_procedures:
-      - name: csr.misa.M.muldiv_with_M_on&off
-        description: Execute with M on/off
-        normative_rules: [misa_M_disabled]
-        steps: |
-          . on
-          .. Turn on `misa.M`
-          . execute
-          .. Execute every in-scope multiply extension instruction
-          . check
-          .. Check that every multiply extension instruction works as normal
-          . off
-          .. Turn off `misa.M`
-          . execute
-          .. Execute every in-scope multiply extension instruction
-          . check
-          .. Check that every multiply extension instruction throws illegal instruction exception
   Q:
     location: 16
     description: |
@@ -245,19 +225,3 @@ sw_read(): |
     (CSR[misa].C << 2) |
     (CSR[misa].B << 1) |
     CSR[misa].A);
-normative_rules:
-  - name: misa_disabling_bits
-    type: CSR
-    description: What happens when you turn off bits
-    doc_links: ["norm:csr:misa:disabling-extension"]
-cert_test_procedures:
-  - name: csr.misa.off&on
-    description: Turn on/off each bit and see what happens
-    normative_rules: [misa_disabling_bits]
-    steps: |
-      . Setup
-      .. Turn on all bits
-      . Loop
-      .. Turn off each present bit invidually and try affected behaviors
-      . Check
-      .. Fail unless turning off bit disables extension as expected

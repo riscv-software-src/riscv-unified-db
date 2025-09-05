@@ -81,18 +81,6 @@ sail(): |
 
 normative_rules:
   - name: sh_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:sh"]
-
   - name: sh_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:sw_sh_sb:operation"]
-    coverage_points: [cp_rs2_edges]
-
   - name: sh_rv64i_op
-    type: instruction
-    description: RV64I operation
-    doc_links: ["norm:insts:sd_sw_sh_sb:rv64i_operation"]
     # TODO: add "when" statement saying MXLEN == 64

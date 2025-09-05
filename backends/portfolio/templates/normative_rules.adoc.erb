@@ -45,9 +45,10 @@ a| Summary: <%= nr.summary %>
 a| Description: <%= nr.description %>
 <%         end # description present -%>
 <%         nr.tags.each do |tag| -%>
-| <%= tag.source %>
+<%           optional_tag_text = tag.tag_text.nil? ? "" : ": #{tag.tag_text}" -%>
+| <%= tag.filename %>
 |
-a| <%= "#{tag.tag_name}: #{tag.tag_text}" %>
+a| <%= "#{tag.tag_name}:#{optional_tag_text}" %>
 <%         end # each tag -%>
 <%       end # if nr nil -%>
 <%     end # each normative rule requirement -%>

@@ -53,13 +53,4 @@ sail(): |
 
 normative_rules:
   - name: xori_enc
-    type: instruction
-    description: Encoding
-    doc_links: ["norm:enc:insttable:xori"]
-    coverage_points: [cr_rs1_imm_edges]
-
   - name: xori_op
-    type: instruction
-    description: Basic operation
-    doc_links: ["norm:insts:andi_ori_xori:operation"]
-    coverage_points: [cr_rs1_imm_edges]
