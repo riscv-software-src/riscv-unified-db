@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+    network_mode: service:proxy
+    environment:
+      - http_proxy=http://proxy:3128
+      - https_proxy=http://proxy:3128
+      - HTTP_PROXY=http://proxy:3128
+      - HTTPS_PROXY=http://proxy:3128
+    depends_on:
+      - proxy
+    # Only use proxy network when proxy service exists
+    networks:
+      - proxy-net
+
+  proxy:
+    image: ubuntu/squid:latest
+    ports:
+      - "3128:3128"
+    networks:
+      - proxy-net
+
+# Define the network for proxy communication
+networks:
+  proxy-net:
+    driver: bridge

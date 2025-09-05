@@ -1,0 +1,76 @@
+name: Container Tests
+
+on:
+  pull_request:
+    paths:
+      - '.devcontainer/**'
+      - 'docker-compose.yml'
+      - 'start-dev.sh'
+      - 'tests/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
+      - 'docker-compose.yml'
+      - 'start-dev.sh'
+      - 'tests/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        proxy: ['with-proxy', 'no-proxy']
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python virtual environment
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+      
+      - name: Set up test environment
+        run: |
+          if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
+            echo "Setting up test proxy"
+            docker run -d --name squid-proxy -p 3128:3128 ubuntu/squid
+            # Wait for proxy to start
+            sleep 5
+          fi
+      
+      - name: Run container tests
+        run: |
+          chmod +x tests/container_tests.sh
+          if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
+            HTTP_PROXY=http://localhost:3128 HTTPS_PROXY=http://localhost:3128 ./tests/container_tests.sh
+          else
+            ./tests/container_tests.sh
+          fi
+      
+      - name: Test docker-compose with proxy
+        run: |
+          if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
+            echo "Testing docker-compose with proxy"
+            # Start services with docker-compose
+            HTTP_PROXY=http://localhost:3128 HTTPS_PROXY=http://localhost:3128 docker-compose up -d
+            # Wait for services to start
+            sleep 10
+            # Check if services are running
+            docker-compose ps
+            # Stop services
+            docker-compose down
+          else
+            echo "Testing docker-compose without proxy"
+            docker-compose up -d
+            sleep 10
+            docker-compose ps
+            docker-compose down
+          fi
+      
+      - name: Test VS Code integration
+        run: |
+          # Skip this test for now as it's not essential for the build
+          echo "Skipping VS Code integration test"

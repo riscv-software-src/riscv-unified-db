@@ -8,7 +8,10 @@ gem "idl_highlighter", path: "tools/ruby-gems/idl_highlighter"
 gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
 gem "udb", path: "tools/ruby-gems/udb"
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
+
+gem 'bundler'
+gem 'rake'
 
 # gem "activesupport"
 gem "asciidoctor-diagram", "~> 2.2"
