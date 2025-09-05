@@ -25,5 +25,4 @@ services:
     image: ubuntu/squid:latest
     ports:
       - "3128:3128"
-    # Proxy service uses the default bridge network
-    # No explicit network needed when using network_mode in other services
+    # Using default bridge network
