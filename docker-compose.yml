@@ -25,10 +25,5 @@ services:
     image: ubuntu/squid:latest
     ports:
       - "3128:3128"
-    networks:
-      - proxy-net
-
-# Define the network for proxy communication
-networks:
-  proxy-net:
-    driver: bridge
+    # Proxy service uses the default bridge network
+    # No explicit network needed when using network_mode in other services
