@@ -24,7 +24,7 @@ jobs:
         proxy: ['with-proxy', 'no-proxy']
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python virtual environment and install pip
         run: |
           python3 -m venv .venv
@@ -33,7 +33,7 @@ jobs:
           python -m ensurepip --upgrade
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
-      
+
       - name: Install Docker Compose
         run: |
           DOCKER_COMPOSE_VERSION=2.27.0
@@ -41,12 +41,12 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
           docker-compose version || echo "docker-compose not installed correctly"
-          
+
       - name: Set up test environment
         run: |
           # Check Docker availability
           docker info || echo "Docker might not be properly set up"
-          
+
           if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
             echo "Setting up test proxy"
             docker run -d --name squid-proxy -p 3128:3128 ubuntu/squid
@@ -55,7 +55,7 @@ jobs:
             # Verify proxy is running
             docker ps | grep squid-proxy || echo "WARNING: Proxy container might not be running"
           fi
-      
+
       - name: Run container tests
         run: |
           # Make sure script is executable
@@ -67,15 +67,15 @@ jobs:
             echo "Running tests with proxy configuration"
             HTTP_PROXY=http://localhost:3128 HTTPS_PROXY=http://localhost:3128 ./tests/container_tests.sh || echo "Tests failed but continuing to collect information"
           else
-            echo "Running tests without proxy configuration" 
+            echo "Running tests without proxy configuration"
             ./tests/container_tests.sh || echo "Tests failed but continuing to collect information"
           fi
-      
+
       - name: Test docker-compose with proxy
         run: |
           # Make sure we have docker-compose
           docker-compose --version || echo "docker-compose might not be available"
-          
+
           if [ "${{ matrix.proxy }}" = "with-proxy" ]; then
             echo "Testing docker-compose with proxy"
             # Start services with docker-compose
@@ -93,7 +93,7 @@ jobs:
             docker-compose ps
             docker-compose down || echo "Failed to stop services but continuing"
           fi
-      
+
       - name: Test VS Code integration
         run: |
           # Skip this test for now as it's not essential for the build
