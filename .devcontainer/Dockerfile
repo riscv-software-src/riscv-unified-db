@@ -79,11 +79,10 @@ RUN if [ -f "/workspace/requirements.txt" ]; then \
 else \
 echo "No requirements.txt found"; \
 fi
- 
+
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
- 
 # Switch to non-root user
 USER vscode
 WORKDIR /home/vscode
