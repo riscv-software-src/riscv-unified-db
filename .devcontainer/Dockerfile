@@ -70,7 +70,8 @@ RUN if [ -n "$http_proxy" ]; then bundle config http_proxy $http_proxy; fi
 RUN if [ -n "$https_proxy" ]; then bundle config https_proxy $https_proxy; fi
  
 # Create a virtual environment for Python packages
-RUN python3 -m venv /opt/venv
+RUN python3 -m venv /opt/venv && \
+    chmod -R 777 /opt/venv  # Ensure permissions are set correctly for CI
 ENV PATH="/opt/venv/bin:$PATH"
 # Install requirements in virtual environment
 RUN if [ -f "/workspace/requirements.txt" ]; then \

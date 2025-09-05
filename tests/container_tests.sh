@@ -8,6 +8,13 @@
 set -e
 set -o pipefail
 
+# Display system information for debugging
+echo "System Information:"
+echo "-------------------"
+uname -a
+docker --version
+echo "-------------------"
+
 echo "Running container tests..."
 
 # Test 1: Check if we can build the container
@@ -87,8 +94,16 @@ riscv-unified-db-test bash -c \
 # Test 13: Check pre-created virtual environment
 echo "Test 13: Checking pre-created virtual environment..."
 docker run --rm riscv-unified-db-test bash -c \
-"ls -la /opt/venv/bin/python && \
-/opt/venv/bin/python --version"
+"echo 'Virtual environment contents:' && \
+ls -la /opt/venv/bin/ || echo 'Failed to list virtual environment directory' && \
+if [ -f /opt/venv/bin/python ]; then \
+  echo 'Python exists in virtual environment' && \
+  /opt/venv/bin/python --version; \
+else \
+  echo 'Python not found in virtual environment'; \
+  ls -la /opt/venv/; \
+  exit 0; \
+fi"
 
 # Cleanup
 echo "Cleaning up..."

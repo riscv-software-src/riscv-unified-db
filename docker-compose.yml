@@ -7,12 +7,12 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    network_mode: service:proxy
+    network_mode: ${PROXY_ENABLED:-service:proxy}
     environment:
-      - http_proxy=http://proxy:3128
-      - https_proxy=http://proxy:3128
-      - HTTP_PROXY=http://proxy:3128
-      - HTTPS_PROXY=http://proxy:3128
+      - http_proxy=${HTTP_PROXY:-http://proxy:3128}
+      - https_proxy=${HTTPS_PROXY:-http://proxy:3128}
+      - HTTP_PROXY=${HTTP_PROXY:-http://proxy:3128}
+      - HTTPS_PROXY=${HTTPS_PROXY:-http://proxy:3128}
     depends_on:
       - proxy
     # Only use proxy network when proxy service exists
