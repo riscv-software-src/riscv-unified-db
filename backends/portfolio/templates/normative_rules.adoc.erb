@@ -24,7 +24,7 @@ Normative Rules for `<%= nice_name %>`: ::
 <%   else # normative rule info available -%>
 [cols="20%,10%,10%,60%"]
 |===
-| Name | Doc | Chap | Information
+| Name | Manual | Section | Information
 
 <%     db_obj.normative_rule_reqs.sort_by(&:name).each do |nrr| -%>
 <%       nr = normative_rules.normative_rule(nrr.name) -%>
@@ -46,8 +46,8 @@ a| Description: <%= nr.description %>
 <%         end # description present -%>
 <%         nr.tags.each do |tag| -%>
 <%           optional_tag_text = tag.tag_text.nil? ? "" : ": #{tag.tag_text}" -%>
-| <%= tag.filename %>
-|
+| <%= tag.manual_name %>
+| TBD
 a| <%= "#{tag.tag_name}:#{optional_tag_text}" %>
 <%         end # each tag -%>
 <%       end # if nr nil -%>

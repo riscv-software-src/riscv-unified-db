@@ -46,7 +46,7 @@ def pf_get_latest_csc_isa_manual(target_pname)
 
   # TODO: Remove this branch name and use "main" when dependent PRs are merged.
   pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources",
-    "63-tags-without-text")
+    "65-rename-normative-rule-curation-to-normative-rule-creation-easier-to-explain")
 end
 
 # @param url [String] Where to clone repository from
@@ -230,12 +230,12 @@ def pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, target
     "-t #{priv_tags_json}"
   ]
 
-  curation_dir = "#{isa_manual_dir}/src/normative_rule_curation"
+  creation_dir = "#{isa_manual_dir}/src/normative_rule_creation"
 
-  # Add in mock curation YAML file. Used for test coverage.
+  # Add in mock creation YAML file. Used for test coverage.
   # TBD - Find a better way to do this.
-  mock_curation_yaml = <<~TEXT
-normative_curations:
+  mock_creation_yaml = <<~TEXT
+normative_rule_creations:
   - name: Xmock_nr1
     summary: Here's a summary
     description: Normative rule with multiple tags (one with and without text), description, and summary
@@ -249,11 +249,11 @@ normative_curations:
       Should have lots of room to display this description in the CTP tables.
 TEXT
 
-  File.write("#{curation_dir}/mock.yaml", mock_curation_yaml)
+  File.write("#{creation_dir}/mock.yaml", mock_creation_yaml)
 
-  # Add -c option for each normative rule curation YAML file
-  Dir.glob("#{curation_dir}/*.yaml").each do |curation|
-    cmdArray.append("-c #{curation}")
+  # Add -c option for each normative rule creation YAML file
+  Dir.glob("#{creation_dir}/*.yaml").each do |creation|
+    cmdArray.append("-c #{creation}")
   end
 
   # Add output filename as last command line option
