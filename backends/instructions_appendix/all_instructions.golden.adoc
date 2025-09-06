@@ -12173,7 +12173,9 @@ Included in::
 |===
 | Extension | Version
 
-| *F* | ~> 2.2.0
+| *Zfhmin* | ~> 1.0.0
+
+| *Zhinx* | ~> 1.0.0
 
 |===
 
