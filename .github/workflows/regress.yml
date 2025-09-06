@@ -33,6 +33,7 @@ jobs:
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+      # Use the updated singularity setup action with integrated Gemfile verification
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
@@ -67,8 +68,36 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+      # Ruby setup and gem verification
+      - name: Verify Gemfile
+        run: |
+          if [ ! -f Gemfile ]; then
+            echo "ERROR: Gemfile not found, cannot proceed with setup"
+            ls -la
+            exit 1
+          else
+            echo "Gemfile found: $(cat Gemfile | wc -l) lines"
+          fi
+      # Use the updated singularity setup action
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+      # Verify gems are installed before running tests
+      - name: Verify gem installation
+        run: |
+          set -x
+          if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
+            echo "WARNING: Ruby gems directory empty or missing after setup"
+            # Try direct installation as emergency fallback
+            bundle config set --local path .home/.gems
+            bundle config set --local cache_path .home/.cache
+            bundle config set --local with development
+            bundle install
+          else
+            echo "Ruby gems directory exists with contents:"
+            ls -la .home/.gems | head -10
+            echo "Running bundle check to verify gems..."
+            bundle check || bundle install
+          fi
       - name: Generate instruction appendix asciidoc
         run: ./do gen:instruction_appendix_adoc
       - name: Check instruction appendix result (with auto-fix)
