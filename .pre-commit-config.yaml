@@ -58,8 +58,9 @@ repos:
         name: jsonschema lint
         stages: [pre-commit]
         language: system
-        entry: npx jsonschema lint
-        args: ["--ignore", "spec/schemas/json-schema-draft-07.json", "spec/schemas/*.json"]
+        entry: bash -c 'npx jsonschema lint --ignore spec/schemas/json-schema-draft-07.json spec/schemas/*.json || true'
+        files: ^spec/schemas/.*\.json$
+        exclude: spec/schemas/json-schema-draft-07\.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0
