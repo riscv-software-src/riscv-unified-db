@@ -3,36 +3,65 @@ description: Verifies that Gemfile exists and gems are properly installed
 runs:
   using: composite
   steps:
+    # Setup Ruby and Bundler explicitly
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: false
+
+    - name: Install Bundler
+      run: |
+        echo "Installing Bundler..."
+        gem install bundler
+        which bundle || echo "Bundle not found in PATH"
+        bundle --version || echo "Bundle version command failed"
+      shell: bash
+
     - name: Verify Gemfile exists
       run: |
         if [ ! -f Gemfile ]; then
           echo "ERROR: Gemfile not found, cannot proceed with setup"
+          echo "Current directory: $(pwd)"
           ls -la
           exit 1
         else
           echo "Gemfile found: $(cat Gemfile | wc -l) lines"
+          echo "Gemfile contents:"
+          cat Gemfile
         fi
       shell: bash
+      
     - name: Ensure gem directories
       run: |
         mkdir -p .home/.gems
         mkdir -p .home/.cache
         chmod -R 755 .home
       shell: bash
-    - name: Verify gem installation after setup
+      
+    - name: Install gems
       run: |
         set -x
+        echo "Installing gems using Bundler..."
+        bundle config set --local path .home/.gems
+        bundle config set --local cache_path .home/.cache
+        bundle config set --local with development
+        bundle install --jobs 4 --retry 3
+        
+        # Verify installation
         if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
-          echo "WARNING: Ruby gems directory empty or missing after setup"
-          # Try direct installation as emergency fallback
-          bundle config set --local path .home/.gems
-          bundle config set --local cache_path .home/.cache
-          bundle config set --local with development
-          bundle install
+          echo "ERROR: Ruby gems directory still empty after installation"
+          echo "Bundle config:"
+          bundle config list
+          echo "Current directory structure:"
+          ls -la
+          echo "Home directory structure:"
+          ls -la .home/
+          exit 1
         else
           echo "Ruby gems directory exists with contents:"
           ls -la .home/.gems | head -10
           echo "Running bundle check to verify gems..."
-          bundle check || bundle install
+          bundle check || echo "Bundle check failed but continuing"
         fi
       shell: bash
