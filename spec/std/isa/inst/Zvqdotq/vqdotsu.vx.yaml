@@ -23,7 +23,7 @@ description: |
 definedBy: Zvqdotq
 assembly: vd, vs2, xs1, vm
 encoding:
-  match: 101010-----------110-----1010111
+  match: 101110-----------110-----1010111
   variables:
     - name: vm
       location: 25-25
