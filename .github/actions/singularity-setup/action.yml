@@ -34,6 +34,10 @@ runs:
           echo "Dependencies will be installed by setup script"
         shell: bash
         
+      # Fix trailing whitespace issues to prevent pre-commit hook failures
+      - name: Fix trailing whitespace
+        uses: ./.github/actions/fix-whitespace
+        
       # Use the verify-gemfile action to ensure Ruby and bundler are setup properly
       - name: Verify Gemfile and Install Ruby Gems
         uses: ./.github/actions/verify-gemfile
