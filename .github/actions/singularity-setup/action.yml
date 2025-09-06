@@ -36,29 +36,5 @@ runs:
       - name: Setup project
         run: ./bin/setup
         shell: bash
-      - name: Ensure Ruby gems are installed
-        run: |
-          # Check if gems are properly installed, install if missing
-          if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
-            echo "Ruby gems directory missing or empty, installing gems..."
-            if [ -f Gemfile ]; then
-              # Configure bundler to use local path
-              ./do bundle config set --local path .home/.gems
-              ./do bundle config set --local cache_path .home/.cache
-              ./do bundle config set --local with development
-              # Install gems
-              ./do bundle install
-            else
-              echo "ERROR: Gemfile not found"
-              exit 1
-            fi
-          else
-            echo "Ruby gems directory exists and is not empty"
-          fi
-
-          # Verify gems are accessible
-          if ! ./do bundle check; then
-            echo "Bundle check failed, reinstalling gems..."
-            ./do bundle install
-          fi
-        shell: bash
+      # Note: Ruby gems installation is already handled by bin/setup
+      # No need for additional gem installation steps here
