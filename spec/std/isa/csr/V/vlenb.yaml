@@ -8,6 +8,7 @@ kind: csr
 name: vlenb
 long_name: Vector Byte Length
 address: 0xC22
+writable: false
 priv_mode: U
 length: MXLEN
 description: Holds the value VLEN/8, the vector register length in bytes.

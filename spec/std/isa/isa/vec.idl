@@ -23,8 +23,8 @@ enum VectorLmulType {
 }
 
 struct VectorState {
-  Bits<7> sew;
-  VectorMultiplierDirection lmul_type;
+  Bits<7> vsew;
+  VectorLmulType lmul_type;
   Bits<2> log2_multiplier;
 }
 
@@ -36,7 +36,7 @@ function vector_state {
   body {
     VectorState state;
 
-    state.sew = 7'b1 << (3 + CSR[vtype].VSEW);
+    state.vsew = 7'b1 << (3 + CSR[vtype].VSEW);
     Bits<3> vlmul = CSR[vtype].VLMUL;
     state.lmul_type = CSR[vtype].VLMUL[2] == 1'b1 ? VectorLmulType::Divide : VectorLmulType::Multiply;
     state.log2_multiplier = CSR[vtype].VLMUL[1:0];

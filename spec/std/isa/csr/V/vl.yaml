@@ -8,6 +8,7 @@ kind: csr
 name: vl
 long_name: Vector Length
 address: 0xC20
+writable: false
 priv_mode: U
 length: MXLEN
 description: Holds an unsigned integer specifying number of elements to be updated with results from a vector instruction.

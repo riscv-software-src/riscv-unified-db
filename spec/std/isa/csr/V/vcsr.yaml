@@ -8,6 +8,7 @@ kind: csr
 name: vcsr
 long_name: Vector Control and Status Register
 address: 0x00F
+writable: true
 priv_mode: U
 length: MXLEN
 description: Allows access to vxrm and vxsat CSRs
@@ -18,12 +19,12 @@ fields:
     description: See vxrm.
     type: RW-RH
     sw_write(csr_value): |
-      return csr_value.VALUE;
+      return csr_value.VXRM;
     reset_value: UNDEFINED_LEGAL
   VXSAT:
     location: 0
     description: See vxsat.
     type: RW-RH
     sw_write(csr_value): |
-      return csr_value.VALUE;
+      return csr_value.VXSAT;
     reset_value: UNDEFINED_LEGAL

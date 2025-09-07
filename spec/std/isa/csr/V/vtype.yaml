@@ -8,6 +8,7 @@ kind: csr
 name: vtype
 long_name: Vector Type
 address: 0xC21
+writable: false
 priv_mode: U
 length: MXLEN
 description: Provides the default type used to interpret the contents of the vector register file.

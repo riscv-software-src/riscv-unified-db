@@ -56,11 +56,13 @@ params:
     schema:
       type: string
       enum: ["ceil(AVL/2)", "VLMAX", "custom"]
-  UNSUPPORTED_VTYPES:
+  VLEN:
     description: |
-      The set of values for vtype that are unsupported.
+      The number of bits in a single vector register. VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
     schema:
-      type: array
-      items:
-        type: integer
-      uniqueItems: true
+      type: integer
+  ELEN:
+    description: |
+      The maximum size in bits of a vector element that any operation can produce or consume, ELEN >= 8, which must be a power of 2.
+    schema:
+      type: integer
