@@ -1,80 +1,15 @@
-name: Verify Gemfile and Install Ruby Gems
-description: Verifies that Gemfile exists and gems are properly installed, creating a minimal Gemfile if needed
+name: Verify Gemfile Exists
+
+description: Verify that the workspace has a valid Gemfile for Ruby dependencies
+
 runs:
-  using: composite
+  using: "composite"
   steps:
-    - name: Verify Ruby and Bundler
-      run: |
-        echo "Verifying Ruby installation..."
-        ruby --version
-        
-        echo "Installing/Upgrading Bundler..."
-        gem install bundler
-        
-        echo "Verifying Bundler installation..."
-        which bundle || { echo "ERROR: Bundle not found in PATH"; exit 1; }
-        bundle --version || { echo "ERROR: Bundle version command failed"; exit 1; }
+    - name: Check for Gemfile
       shell: bash
-
-    - name: Verify Gemfile exists or create minimal one
       run: |
-        if [ ! -f Gemfile ]; then
-          echo "WARNING: Gemfile not found, creating minimal one to prevent CI failures"
-          echo "Current directory: $(pwd)"
-          
-          # Create a minimal Gemfile that will satisfy the workflow
-          cat > Gemfile << 'EOF'
-# Auto-generated minimal Gemfile for CI
-source 'https://rubygems.org'
-
-# Local gems as needed by the project
-Dir["tools/ruby-gems/*"].each do |gem_path|
-  if File.directory?(gem_path) && File.exist?(File.join(gem_path, "*.gemspec"))
-    gem File.basename(gem_path), path: gem_path
-  end
-end
-
-# External dependencies
-gem "rake"
-gem "json"
-EOF
-          echo "Created minimal Gemfile:"
-          cat Gemfile
-        else
-          echo "Gemfile found: $(cat Gemfile | wc -l) lines"
-        fi
-      shell: bash
-      
-    - name: Ensure gem directories
-      run: |
-        mkdir -p .home/.gems
-        mkdir -p .home/.cache
-        chmod -R 755 .home
-      shell: bash
-      
-    - name: Install gems
-      run: |
-        set -x
-        echo "Installing gems using Bundler..."
-        bundle config set --local path .home/.gems
-        bundle config set --local cache_path .home/.cache
-        bundle config set --local with development
-        bundle install --jobs 4 --retry 3
-        
-        # Verify installation
-        if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
-          echo "ERROR: Ruby gems directory still empty after installation"
-          echo "Bundle config:"
-          bundle config list
-          echo "Current directory structure:"
-          ls -la
-          echo "Home directory structure:"
-          ls -la .home/
+        if [ ! -f "Gemfile" ]; then
+          echo "Error: Gemfile not found in workspace root"
           exit 1
-        else
-          echo "Ruby gems directory exists with contents:"
-          ls -la .home/.gems | head -10
-          echo "Running bundle check to verify gems..."
-          bundle check || echo "Bundle check failed but continuing"
         fi
-      shell: bash
+        echo "Gemfile found, continuing with workflow"
