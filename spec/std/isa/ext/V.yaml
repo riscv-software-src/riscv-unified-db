@@ -50,3 +50,19 @@ params:
 
       # if HW is writing VS, then Dirty (3) better be a supported value
       assert MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX:
+    description: |
+      The value assigned to VL when AVL < 2*VLMAX.
+    schema:
+      type: string
+      enum: ["ceil(AVL/2)", "VLMAX", "custom"]
+  VLEN:
+    description: |
+      The number of bits in a single vector register. VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
+    schema:
+      type: integer
+  ELEN:
+    description: |
+      The maximum size in bits of a vector element that any operation can produce or consume, ELEN >= 8, which must be a power of 2.
+    schema:
+      type: integer
