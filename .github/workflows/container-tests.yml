@@ -24,6 +24,14 @@ jobs:
         proxy: ['with-proxy', 'no-proxy']
     steps:
       - uses: actions/checkout@v4
+      
+      # Fix whitespace issues before running tests
+      - name: Fix trailing whitespace
+        uses: ./.github/actions/fix-whitespace
+        
+      # Ensure Ruby environment is properly set up
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
 
       - name: Set up Python virtual environment and install pip
         run: |
