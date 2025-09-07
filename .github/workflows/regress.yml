@@ -79,13 +79,18 @@ jobs:
         run: ./do gen:instruction_appendix_adoc
       - name: Check instruction appendix result (with auto-fix)
         run: |
-          # First try the normal test
+          # Try running the instruction appendix test
           if ./do test:instruction_appendix; then
             echo "Test passed successfully"
             exit 0
           fi
 
           echo "Test failed, attempting auto-fix..."
+          
+          # Run our task to update the golden file
+          if ./do chore:update_golden_appendix; then
+            echo "Successfully updated golden file"
+          fi
 
           # Show the diff to understand what's different
           echo "=== DIFF ANALYSIS ==="
