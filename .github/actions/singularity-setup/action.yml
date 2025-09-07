@@ -64,12 +64,6 @@ runs:
             fi
           fi
         shell: bash
-
-      # Fix trailing whitespace issues before verification
-      - uses: ./.github/actions/fix-whitespace
-      
-      # Include the Gemfile verification action with Ruby setup
-      - uses: ./.github/actions/verify-gemfile
       
       # Run setup script with robust error handling
       - name: Setup project
