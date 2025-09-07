@@ -1,21 +1,19 @@
-name: Verify Gemfile
-description: Verifies that Gemfile exists and gems are properly installed
+name: Verify Gemfile and Install Ruby Gems
+description: Verifies that Gemfile exists and gems are properly installed, creating a minimal Gemfile if needed
 runs:
   using: composite
   steps:
-    # Setup Ruby and Bundler explicitly
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.2'
-        bundler-cache: false
-
-    - name: Install Bundler
+    - name: Verify Ruby and Bundler
       run: |
-        echo "Installing Bundler..."
+        echo "Verifying Ruby installation..."
+        ruby --version
+        
+        echo "Installing/Upgrading Bundler..."
         gem install bundler
-        which bundle || echo "Bundle not found in PATH"
-        bundle --version || echo "Bundle version command failed"
+        
+        echo "Verifying Bundler installation..."
+        which bundle || { echo "ERROR: Bundle not found in PATH"; exit 1; }
+        bundle --version || { echo "ERROR: Bundle version command failed"; exit 1; }
       shell: bash
 
     - name: Verify Gemfile exists or create minimal one
@@ -30,25 +28,20 @@ runs:
 source 'https://rubygems.org'
 
 # Local gems as needed by the project
-if File.exist?('tools/ruby-gems/idlc')
-  gem "idlc", path: "tools/ruby-gems/idlc"
+Dir["tools/ruby-gems/*"].each do |gem_path|
+  if File.directory?(gem_path) && File.exist?(File.join(gem_path, "*.gemspec"))
+    gem File.basename(gem_path), path: gem_path
+  end
 end
-if File.exist?('tools/ruby-gems/idl_highlighter')
-  gem "idl_highlighter", path: "tools/ruby-gems/idl_highlighter"
-end
-if File.exist?('tools/ruby-gems/udb_helpers')
-  gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
-end
-if File.exist?('tools/ruby-gems/udb')
-  gem "udb", path: "tools/ruby-gems/udb"
-end
+
+# External dependencies
+gem "rake"
+gem "json"
 EOF
           echo "Created minimal Gemfile:"
           cat Gemfile
         else
           echo "Gemfile found: $(cat Gemfile | wc -l) lines"
-          echo "Gemfile contents:"
-          cat Gemfile
         fi
       shell: bash
       

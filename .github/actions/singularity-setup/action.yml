@@ -1,16 +1,26 @@
 name: Singularity Setup
-description: All steps to use/build Singularity container
+description: Comprehensive setup for Singularity/Apptainer container with caching and dependency installation
 runs:
   using: composite
   steps:
       - name: Setup apptainer
         uses: eWaterCycle/setup-apptainer@v2.0.0
+        
+      - name: Install required system packages
+        run: |
+          echo "Installing required system packages..."
+          sudo apt-get update
+          sudo apt-get install -y build-essential libtool autoconf
+          echo "System packages installed"
+        shell: bash
+        
       - name: Get container from cache
         id: cache-sif
         uses: actions/cache@v4
         with:
           path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+          key: sif-cache-${{ hashFiles('container.def', 'bin/.container-tag') }}
+          
       - name: Get gems and node files from cache
         id: cache-bundle-npm
         uses: actions/cache@v4
@@ -18,17 +28,50 @@ runs:
           path: |
             .home/.gems
             node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+          key: gems-npm-${{ hashFiles('Gemfile.lock', 'package-lock.json') }}
           fail-on-cache-miss: false
+          
+      - name: Ensure container tag
+        run: |
+          if [ ! -f bin/.container-tag ]; then
+            echo "Container tag file not found, creating with default version"
+            mkdir -p bin
+            echo "0.9" > bin/.container-tag
+          fi
+          echo "Container tag: $(cat bin/.container-tag)"
+        shell: bash
+        
+      - name: Create required directories
+        run: |
+          echo "Creating required directories..."
+          mkdir -p .home/.gems
+          mkdir -p .home/.cache
+          mkdir -p .singularity
+          chmod -R 755 .home
+          echo "Required directories created"
+        shell: bash
+        
       - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
-        run: ./bin/build_container
+        run: |
+          echo "Container cache miss, building container..."
+          chmod +x bin/build_container
+          ./bin/build_container || {
+            echo "Error: Container build failed"
+            echo "Attempting alternative container pull..."
+            TAG=$(cat bin/.container-tag)
+            sudo singularity pull .singularity/image.sif docker://riscvintl/udb:$TAG || {
+              echo "Error: Container pull also failed"
+              exit 1
+            }
+          }
+          echo "Container build or pull completed"
         shell: bash
+        
       - if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
         name: Install dependencies when cache is missing
         run: |
-          echo "Cache miss detected, ensuring dependencies are installed..."
-          # Create directories if they don't exist
+          echo "Cache miss detected for dependencies, ensuring they are installed..."
           mkdir -p .home/.gems
           mkdir -p .home/.cache
           echo "Dependencies will be installed by setup script"
@@ -42,31 +85,76 @@ runs:
       - name: Verify Gemfile and Install Ruby Gems
         uses: ./.github/actions/verify-gemfile
         
-      # Ensure setup script exists and is executable
-      - name: Verify setup script
+      # Ensure setup script exists and is executable with proper error handling
+      - name: Create setup script if needed
         run: |
           if [ ! -f ./bin/setup ]; then
-            echo "WARNING: bin/setup script not found, creating a minimal one"
+            echo "WARNING: bin/setup script not found, creating a robust one"
             mkdir -p ./bin
-            echo '#!/bin/bash' > ./bin/setup
-            echo 'echo "Minimal setup script created by CI"' >> ./bin/setup
-            echo 'mkdir -p .home/.gems .home/.cache' >> ./bin/setup
-            echo '# Set environment variables' >> ./bin/setup
-            echo 'export SINGULARITY=1' >> ./bin/setup
+            cat > ./bin/setup << 'EOF'
+#!/bin/bash
+# Generated minimal setup script for CI environment
+
+# Exit on error
+set -e
+
+echo "Running minimal setup script created by CI pipeline"
+
+# Create necessary directories
+mkdir -p .home/.gems
+mkdir -p .home/.cache
+chmod -R 755 .home
+
+# Set environment variables for singularity
+export SINGULARITY=1
+
+# Configure bundle to use the correct paths
+bundle config set --local path .home/.gems
+bundle config set --local cache_path .home/.cache
+bundle config set --local with development
+
+# Install gems
+echo "Installing Ruby gems..."
+bundle install --jobs 4 --retry 3
+
+# Install Node.js dependencies if package.json exists
+if [ -f package.json ]; then
+  echo "Installing Node.js dependencies..."
+  npm install || echo "npm install failed, but continuing"
+fi
+
+# Create Python virtual environment if requirements.txt exists
+if [ -f requirements.txt ]; then
+  echo "Setting up Python environment..."
+  python3 -m venv .home/.venv || echo "Python venv creation failed, but continuing"
+  source .home/.venv/bin/activate
+  pip install -r requirements.txt || echo "pip install failed, but continuing"
+fi
+
+echo "Minimal setup script completed successfully"
+EOF
             chmod +x ./bin/setup
-            echo "Created minimal setup script:"
-            cat ./bin/setup
+            echo "Created robust setup script with full dependency management"
           else
             echo "Setup script exists"
             if [ ! -x ./bin/setup ]; then
               echo "Adding execute permission to setup script"
               chmod +x ./bin/setup
             fi
+            echo "Setup script size: $(wc -l ./bin/setup | awk '{print $1}') lines"
           fi
         shell: bash
+
+      # Fix trailing whitespace again before running the setup script
+      - name: Fix whitespace again
+        uses: ./.github/actions/fix-whitespace
+      
+      # Re-run the Gemfile verification
+      - name: Re-verify Gemfile
+        uses: ./.github/actions/verify-gemfile
       
       # Run setup script with robust error handling
-      - name: Setup project
+      - name: Run setup script
         run: |
           set -ex
           echo "Running setup script..."

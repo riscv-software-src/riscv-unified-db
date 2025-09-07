@@ -24,17 +24,34 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          
       - name: Get current LLVM submodule commit SHA
         id: get-llvm-sha
-        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+        run: |
+          if [ -d ext/llvm-project ]; then
+            echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+          else
+            echo "LLVM_SHA=default" >> $GITHUB_ENV
+            echo "LLVM submodule not found, using default SHA"
+          fi
+          
       - name: Restore cache RISC-V JSON
         id: cache-riscv
         uses: actions/cache@v4
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
-      # Use the updated singularity setup action with integrated Gemfile verification
-      - name: singularity setup
+          
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: false
+          
+      # Use the updated singularity setup action with integrated Gemfile verification  
+      - name: Singularity Setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
         run: ./do test:smoke
