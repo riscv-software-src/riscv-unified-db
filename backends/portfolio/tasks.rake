@@ -46,7 +46,7 @@ def pf_get_latest_csc_isa_manual(target_pname)
 
   # TODO: Remove this branch name and use "main" when dependent PRs are merged.
   pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources",
-    "65-rename-normative-rule-curation-to-normative-rule-creation-easier-to-explain")
+    "67-rename-creation-to-definition-and-add-isa-object-names")
 end
 
 # @param url [String] Where to clone repository from
@@ -230,30 +230,34 @@ def pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, target
     "-t #{priv_tags_json}"
   ]
 
-  creation_dir = "#{isa_manual_dir}/src/normative_rule_creation"
+  defs_dir = "#{isa_manual_dir}/normative_rule_defs"
 
-  # Add in mock creation YAML file. Used for test coverage.
+  # Add in mock normative rule definition YAML file. Used for test coverage.
   # TBD - Find a better way to do this.
-  mock_creation_yaml = <<~TEXT
-normative_rule_creations:
+  mock_nr_def_yaml = <<~TEXT
+normative_rule_definitions:
   - name: Xmock_nr1
     summary: Here's a summary
     description: Normative rule with multiple tags (one with and without text), description, and summary
+    kind: instruction
+    intances: [add]
     tags_without_text:
-      - norm:enc:insttable:add
+      - name: "norm:inst:add:enc"
+        kind: instruction
+        instances: [add]
     tags:
-      - norm:inst:add:operation
+      - "norm:inst:add:operation"
   - name: Xmock_nr2
     description: |
       Normative rule without any tags.
       Should have lots of room to display this description in the CTP tables.
 TEXT
 
-  File.write("#{creation_dir}/mock.yaml", mock_creation_yaml)
+  File.write("#{defs_dir}/mock.yaml", mock_nr_def_yaml)
 
-  # Add -c option for each normative rule creation YAML file
-  Dir.glob("#{creation_dir}/*.yaml").each do |creation|
-    cmdArray.append("-c #{creation}")
+  # Add -d option for each normative rule definition YAML file
+  Dir.glob("#{defs_dir}/*.yaml").each do |def_fname|
+    cmdArray.append("-d #{def_fname}")
   end
 
   # Add output filename as last command line option
