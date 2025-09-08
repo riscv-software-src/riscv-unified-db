@@ -242,11 +242,11 @@ normative_rule_definitions:
     kind: instruction
     intances: [add]
     tags_without_text:
-      - name: "norm:inst:add:enc"
+      - name: "norm:add_enc"
         kind: instruction
         instances: [add]
     tags:
-      - "norm:inst:add:operation"
+      - "norm:add_op"
   - name: Xmock_nr2
     description: |
       Normative rule without any tags.
