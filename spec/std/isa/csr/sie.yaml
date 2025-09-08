@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Muhammad Abdullah — 10xEngineers
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -52,7 +52,9 @@ fields:
     description: |
       sie.SSIE is the interrupt-enable bit for supervisor-level software interrupts.
     sw_write(csr_value): |
-      CSR[mie].SSIE = csr_value.SSIE;
+      if (CSR[mideleg].SSI == 1'b1) {
+        CSR[mie].SSIE = csr_value.SSIE;
+      }
       return csr_value.SSIE;
   STIE:
     location: 5
@@ -64,7 +66,9 @@ fields:
     description: |
       sie.STIE is the interrupt-enable bit for supervisor-level timer interrupts.
     sw_write(csr_value): |
-      CSR[mie].STIE = csr_value.STIE;
+      if (CSR[mideleg].STI == 1'b1) {
+        CSR[mie].STIE = csr_value.STIE;
+      }
       return csr_value.STIE;
   SEIE:
     location: 9
@@ -76,7 +80,9 @@ fields:
     description: |
       sie.SEIE is the interrupt-enable bit for supervisor-level external interrupts.
     sw_write(csr_value): |
-      CSR[mie].SEIE = csr_value.SEIE;
+      if (CSR[mideleg].SEI == 1'b1) {
+        CSR[mie].SEIE = csr_value.SEIE;
+      }
       return csr_value.SEIE;
   LCOFIE:
     location: 13
@@ -90,7 +96,9 @@ fields:
       bit for local-counter-overflow interrupts. If the Sscofpmf extension is not
       implemented, sie.LCOFIE is read-only zeros.
     sw_write(csr_value): |
-      CSR[mie].LCOFIE = csr_value.LCOFIE;
+      if (CSR[mideleg].LCOFI == 1'b1) {
+        CSR[mie].LCOFIE = csr_value.LCOFIE;
+      }
       return csr_value.LCOFIE;
 sw_read(): |
-  return $bits(CSR[mie]) & 0x2222;
+  return $bits(CSR[mie]) & $bits(CSR[mideleg]);

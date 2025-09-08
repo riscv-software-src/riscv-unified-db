@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Muhammad Abdullah — 10xEngineers
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
@@ -31,14 +31,20 @@ fields:
     reset_value(): |
       return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
     sw_write(csr_value): |
-      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
-        if (mode() == PrivilegeMode::M) {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      if (implemented_version?(ExtensionName::Sm, ">=1.12")) {
+        if (CSR[menvcfg].CDE == 1'b0) {
+          if ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S)) {
+            raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          }
+        } else if (CSR[menvcfg].CDE == 1'b1) {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
         }
-      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
-        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-        }
+      } else {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
       }
       CSR[mcountinhibit].CY = csr_value.CY;
       return csr_value.CY;
@@ -53,14 +59,20 @@ fields:
     reset_value(): |
       return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
     sw_write(csr_value): |
-      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
-        if (mode() == PrivilegeMode::M) {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      if (implemented_version?(ExtensionName::Sm, ">=1.12")) {
+        if (CSR[menvcfg].CDE == 1'b0) {
+          if ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S)) {
+            raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          }
+        } else if (CSR[menvcfg].CDE == 1'b1) {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
         }
-      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
-        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-        }
+      } else {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
       }
       CSR[mcountinhibit].IR = csr_value.IR;
       return csr_value.IR;
@@ -92,27 +104,39 @@ fields:
     reset_value(): |
       return COUNTINHIBIT_EN[<%= hpm_num %>] ? UNDEFINED_LEGAL : 0;
     sw_write(csr_value): |
-      if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
-        if (mode() == PrivilegeMode::M) {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      if (implemented_version?(ExtensionName::Sm, ">=1.12")) {
+        if (CSR[menvcfg].CDE == 1'b0) {
+          if ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S)) {
+            raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          }
+        } else if (CSR[menvcfg].CDE == 1'b1) {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
         }
-      } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
-        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-        }
+      } else {
+          if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+            raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+          }
       }
       CSR[mcountinhibit].HPM<%= hpm_num %> = csr_value.HPM<%= hpm_num %>;
       return csr_value.HPM<%= hpm_num %>;
   <%- end -%>
 
 sw_read(): |
-    if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b0) {
-      if (mode() == PrivilegeMode::M) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    if (implemented_version?(ExtensionName::Sm, ">=1.12")) {
+      if (CSR[menvcfg].CDE == 1'b0) {
+        if ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S)) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      } else if (CSR[menvcfg].CDE == 1'b1) {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
       }
-    } else if (implemented_csr?(CsrName::menvcfg) && CSR[menvcfg].CDE == 1'b1) {
-      if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-      }
+    } else {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
     }
-    return ($bits(CSR[mcountinhibit]) & ($bits(CSR[scounteren]) & ~32'd2)) ;
+    return $bits(CSR[mcountinhibit]) & $bits(CSR[mcounteren]);
