@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: Copyright (c) 2025 RISC-V International
+
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+    # Using conditional network configuration based on environment variable
+    # If PROXY_ENABLED is 'none', use 'host' network mode, otherwise connect to proxy
+    network_mode: ${PROXY_ENABLED:-service:proxy}
+    environment:
+      - http_proxy=${HTTP_PROXY:-http://proxy:3128}
+      - https_proxy=${HTTPS_PROXY:-http://proxy:3128}
+      - HTTP_PROXY=${HTTP_PROXY:-http://proxy:3128}
+      - HTTPS_PROXY=${HTTPS_PROXY:-http://proxy:3128}
+    depends_on:
+      - proxy
+
+  proxy:
+    image: sameersbn/squid:latest
+    ports:
+      - "3128:3128"
+    # Using default bridge network
