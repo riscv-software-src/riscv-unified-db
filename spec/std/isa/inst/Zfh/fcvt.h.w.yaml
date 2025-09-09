@@ -12,7 +12,7 @@ description:
     normative: false
     text: |
       `fcvt.h.w` converts a 32-bit signed integer to a half-precision floating-point number.
-definedBy: Zfh
+definedBy: [Zfh, Zhinx]
 assembly: fd, xs1, rm
 encoding:
   match: 110101000000-------------1010011
@@ -30,3 +30,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::Zhinx)) {
+    # Zhinx: use integer registers
+    X[rd] = fcvt_h_w(X[rs1], rm);
+  } else {
+    # Zfh: use floating-point registers
+    F[rd] = fcvt_h_w(X[rs1], rm);
+  }

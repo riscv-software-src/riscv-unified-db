@@ -12,7 +12,7 @@ description: |
 definedBy: H
 assembly: xd, xs1
 encoding:
-  match: 011001000011-----100-----1110011
+  match: 011000000011-----110-----1110011
   variables:
     - name: xs1
       location: 19-15
@@ -25,3 +25,4 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  hlvx_hu(xs1, xd);
