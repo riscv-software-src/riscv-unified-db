@@ -9,6 +9,7 @@ import logging
 import argparse
 import yaml
 import json
+from ..schema_validator import validate_entry
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,6 +22,7 @@ from generator import (
     parse_match,
     parse_extension_requirements,
 )
+
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
@@ -125,6 +127,11 @@ def load_exception_codes(
                             .replace("/", "_")
                             .replace("-", "_")
                         )
+                        # Validate the cause entry
+                        validate_entry(
+                            {"num": num, "name": sanitized_name},
+                            required_fields=["num", "name"],
+                        )
                         exception_codes.append((num, sanitized_name))
 
             except Exception as e:
@@ -214,6 +221,9 @@ def extract_instruction_fields(instructions):
 
     # Then process fields from actual instructions
     for name, instr_data in instructions.items():
+        # Validate instruction entry
+        validate_entry(instr_data, required_fields=["match"])
+
         # Get variables from the instruction structure
         variables = []
         if "encoding" in instr_data:
@@ -357,11 +367,15 @@ def main():
     instructions = load_instructions(
         args.inst_dir, args.extensions, include_all=args.include_all, target_arch="BOTH"
     )
+    for name, entry in instructions.items():
+        validate_entry(entry, required_fields=["match"])
 
     logging.info(f"Loading CSRs from {args.csr_dir}")
     csrs = load_csrs(
         args.csr_dir, args.extensions, include_all=args.include_all, target_arch="BOTH"
     )
+    for addr, name in csrs.items():
+        validate_entry({"addr": addr, "name": name}, required_fields=["addr", "name"])
 
     # Load exception codes
     logging.info(f"Loading exception codes from {args.ext_dir}")
@@ -371,6 +385,8 @@ def main():
         include_all=args.include_all,
         resolved_codes_file=args.resolved_codes,
     )
+    for num, name in causes:
+        validate_entry({"num": num, "name": name}, required_fields=["num", "name"])
 
     # Process instructions and calculate masks
     instr_dict = {}
@@ -412,8 +428,8 @@ def main():
     csr_names_str = ""
     declare_csr_str = ""
     for addr, name in sorted(csrs.items()):
-        csr_names_str += f"#define CSR_{name.upper().replace(".","_")} 0x{addr:x}\n"
-        declare_csr_str += f"DECLARE_CSR({name.lower().replace(".","_")}, CSR_{name.upper().replace(".","_")})\n"
+        csr_names_str += f"#define CSR_{name.upper().replace('.','_')} 0x{addr:x}\n"
+        declare_csr_str += f"DECLARE_CSR({name.lower().replace('.','_')}, CSR_{name.upper().replace('.','_')})\n"
 
     causes_str = ""
     declare_cause_str = ""
