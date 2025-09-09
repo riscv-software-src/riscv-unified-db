@@ -8,7 +8,7 @@ kind: instruction
 name: ssrdp
 long_name: Read ssp into a Register
 description: |
-  No description available.
+  Move the contents of ssp to a destination register.
 definedBy: Zicfiss
 assembly: xd
 encoding:
@@ -24,3 +24,21 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  Bits<12> ssp_addr = 0x011;
+  Csr csr_handle = direct_csr_lookup(ssp_addr);
+
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+
+  if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
+    X[xd] = csr_sw_read(csr_handle);
+  } else {
+    X[xd] = 0;
+  }
