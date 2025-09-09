@@ -48,14 +48,14 @@ function has_virt_mem? {
 }
 
 function highest_set_bit {
-  returns XReg
+  returns Bits<8>
   arguments XReg value
   description {
     Returns the position of the highest (nearest MSB) bit that is '1',
     or -1 if value is zero.
   }
   body {
-    for (U32 i=xlen()-1; i >= 0; i--) {
+    for (Bits<8> i=xlen()-1; i >= 0; i--) {
       if (value[i] == 1) {
         return i;
       }
@@ -67,14 +67,14 @@ function highest_set_bit {
 }
 
 function lowest_set_bit {
-  returns XReg
+  returns Bits<8>
   arguments XReg value
   description {
     Returns the position of the lowest (nearest LSB) bit that is '1',
     or XLEN if value is zero.
   }
   body {
-    for (U32 i=0; i < xlen(); i++) {
+    for (Bits<8> i=0; i < xlen(); i++) {
       if (value[i] == 1) {
         return i;
       }
