@@ -754,21 +754,25 @@ class CsrField < DatabaseObject
 
     if dynamic_location?
       condition =
-        case csr.priv_mode
-        when "M"
-          "CSR[misa].MXL == %%"
-        when "S"
-          "CSR[mstatus].SXL == %%"
-        when "VS"
-          "CSR[hstatus].VSXL == %%"
+        if csr.data["length"] == "XLEN"
+          "the current XLEN is $$"
         else
-          raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
+          case csr.priv_mode
+          when "M"
+            "CSR[misa].MXL == %%"
+          when "S"
+            "CSR[mstatus].SXL == %%"
+          when "VS"
+            "CSR[hstatus].VSXL == %%"
+          else
+            raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
+          end
         end
 
       if effective_xlen.nil?
         <<~LOC
-          * #{derangeify.call(location(32))} when #{condition.sub('%%', '0')}
-          * #{derangeify.call(location(64))} when #{condition.sub('%%', '1')}
+          * #{derangeify.call(location(32))} when #{condition.sub('%%', '0').sub('$$', '32')}
+          * #{derangeify.call(location(64))} when #{condition.sub('%%', '1').sub('$$', '64')}
         LOC
       else
         derangeify.call(location(effective_xlen))
