@@ -40,19 +40,16 @@ def pf_get_latest_csc_isa_manual(target_pname)
   # Directory path for target file.
   target_dir = File.dirname(target_pname)
 
-  # TODO: Remove this branch name and use "main" when dependent PRs are checked into upstream.
   pf_ensure_repository("https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual",
-    target_dir + "/ext/riscv-isa-manual", "21-create-yaml-files-for-norm-rules")
+    target_dir + "/ext/riscv-isa-manual")
 
-  # TODO: Remove this branch name and use "main" when dependent PRs are merged.
-  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources",
-    "67-rename-creation-to-definition-and-add-isa-object-names")
+  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources")
 end
 
 # @param url [String] Where to clone repository from
 # @param workspace_dir [String] Path to desired workspace directory
 # @param branch [String] Optional branch to checkout after clone (can be nil)
-def pf_ensure_repository(url, workspace_dir, branch)
+def pf_ensure_repository(url, workspace_dir, branch = nil)
   if Dir.exist?(workspace_dir) && !Dir.empty?(workspace_dir)
     # Workspace already exists so just make sure it is up-to-date.
     sh "git -C #{workspace_dir} fetch"
