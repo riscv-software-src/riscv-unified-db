@@ -10,19 +10,19 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: H
-assembly: xs1, xs2
+assembly: xs2, xs1
 encoding:
-  match: 0110111----------100000001110011
+  match: 011000000110-----101-----1110011
   variables:
-    - name: xs2
-      location: 24-20
     - name: xs1
       location: 19-15
+    - name: xs2
+      location: 24-20
 access:
   s: always
   u: always
   vs: always
   vu: always
 data_independent_timing: false
-base: 64
 operation(): |
+  hsv_d(xs1, xs2);
