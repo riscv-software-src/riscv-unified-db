@@ -130,10 +130,10 @@
           "type": "string",
           "description": "Custom title for this chapter"
         },
-        "exclude_sections": {
+        "exclude_content": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Section IDs to exclude"
+          "description": "Content IDs to exclude (excludes entire sections/chapters and their subsections by AsciiDoc ID)"
         },
         "level_offset": {
           "type": "integer",

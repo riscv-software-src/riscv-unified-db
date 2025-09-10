@@ -186,7 +186,7 @@ class ExternalDocumentationRenderer
       # Process based on document type
       case doc_type
       when 'isa_manual'
-        content = process_isa_manual_content(content, file_path, level_offset)
+        content = process_isa_manual_content(content, file_path, level_offset, chapter_config)
       when 'external_spec'
         content = process_external_spec_content(content, file_path, level_offset, external_config, chapter_config)
       end
@@ -198,8 +198,8 @@ class ExternalDocumentationRenderer
     end
   end
 
-  sig { params(content: String, file_path: Pathname, level_offset: Integer).returns(String) }
-  def process_isa_manual_content(content, file_path, level_offset)
+  sig { params(content: String, file_path: Pathname, level_offset: Integer, chapter_config: T.nilable(T::Hash[String, T.untyped])).returns(String) }
+  def process_isa_manual_content(content, file_path, level_offset, chapter_config = nil)
     # For ISA manual files, preserve image paths and ensure proper formatting
     content = strip_document_attributes(content)
     content = strip_conditional_blocks(content)
@@ -208,6 +208,11 @@ class ExternalDocumentationRenderer
     # Resolve includes first (this may include content with images)
     base_dir = file_path.parent
     content = resolve_includes(content, base_dir)
+
+    # Apply content filtering if specified
+    if chapter_config && chapter_config['exclude_content']
+      content = filter_content(content, chapter_config['exclude_content'])
+    end
 
     # Fix image paths for ISA manual (after includes are resolved)
     content = fix_image_paths(content, base_dir)
@@ -233,9 +238,9 @@ class ExternalDocumentationRenderer
       content = resolve_includes(content, base_dir)
     end
 
-    # Filter sections if requested
-    if chapter_config['exclude_sections']
-      content = filter_sections(content, chapter_config['exclude_sections'])
+    # Filter content if requested
+    if chapter_config['exclude_content']
+      content = filter_content(content, chapter_config['exclude_content'])
     end
 
     # Fix image paths
@@ -338,16 +343,72 @@ class ExternalDocumentationRenderer
     end
   end
 
-  sig { params(content: String, exclude_sections: T::Array[String]).returns(String) }
-  def filter_sections(content, exclude_sections)
-    return content if exclude_sections.empty?
 
-    # Simple implementation - could be enhanced to properly parse AsciiDoc structure
-    exclude_sections.each do |section|
-      content = content.gsub(/^=+ #{Regexp.escape(section)}.*?(?=^=+|\\z)/m, '')
+
+  sig { params(content: String, excludes: T::Array[String]).returns(String) }
+  def filter_content(content, excludes)
+    return content if excludes.empty?
+
+    excludes.each do |exclude_item|
+      lines = content.lines
+      start_index = T.let(nil, T.nilable(Integer))
+      heading_level = T.let(nil, T.nilable(Integer))
+
+      # Find the content to exclude by AsciiDoc patterns
+      lines.each_with_index do |line, index|
+        match_found = T.let(false, T::Boolean)
+
+        # Check for various AsciiDoc patterns:
+        # 1. ID anchors: [[id]] or [[id,ref...]]
+        # 2. ID references: [#id] or [#id,ref...]
+        # 3. Section attributes: [attribute] (like [bibliography], [appendix], etc.)
+        patterns = [
+          /^([[#{Regexp.escape(exclude_item)}(?:,.*?)?]])\s*$/,           # [[id]] or [[id,ref...]]
+          /^([##{Regexp.escape(exclude_item)}[^\]]*])\s*$/,                # [#id] or [#id,ref...]
+          /^([#{Regexp.escape(exclude_item)}])\s*$/                        # [attribute]
+        ]
+
+        patterns.each do |pattern|
+          if line.match(pattern)
+            start_index = index
+            # The next line should be the heading, get its level
+            if index + 1 < lines.length
+              heading_line = lines[index + 1]
+              if T.must(heading_line).match(/^(=+)\s/)
+                heading_level = $1.length
+              end
+            end
+            match_found = true
+            break
+          end
+        end
+
+        break if match_found
+      end
+
+      if start_index && heading_level
+        # Find the end (next heading of same or higher level)
+        end_index = T.let(lines.length - 1, T.untyped)  # Default to end of document
+
+        ((start_index + 2)...lines.length).each do |index|
+          line = lines[index]
+          if T.must(line).match(/^(=+)\s/) && $1.length <= heading_level
+            end_index = index - 1
+            break
+          end
+        end
+
+        # Remove the content
+        lines.slice!(start_index..end_index)
+        content = lines.join
+      end
     end
-    content
+
+    # Clean up any extra blank lines left behind
+    content.gsub(/\n\n\n+/, "\n\n")
   end
+
+
 
   sig { params(content: String, filename: String).returns(String) }
   def make_ids_unique(content, filename)
