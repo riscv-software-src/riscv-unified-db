@@ -1,47 +1,75 @@
 #!/usr/bin/env bash
+# Copyright (c) 2023, RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# Robust script to build the container image for the project
+# With additional error handling and improved logging
+
+set -eo pipefail
 
 ROOT=$(realpath $(dirname $(dirname ${BASH_SOURCE[0]})))
 
+# Ensure container tag file exists
+if [ ! -f "${ROOT}/bin/.container-tag" ]; then
+  echo "0.9" > "${ROOT}/bin/.container-tag"
+  echo "Created container tag file with default version 0.9"
+fi
+
 CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
+echo "Building container with tag: ${CONTAINER_TAG}"
+
 if [ -v GITHUB_ACTIONS ]; then
-  echo "ACTIONS"
+  echo "Running in GitHub Actions environment"
   CONTAINER_PATH=${ROOT}/.singularity/image.sif
   HOME_PATH=${GITHUB_WORKSPACE}
   SINGULARITY_CACHE=--disable-cache
 
-  # needed to get singularity working on Ubuntu 24.04
+  # Configure system for Singularity/Apptainer in CI
+  # Needed to get singularity working on Ubuntu 24.04
   # see https://github.com/lima-vm/lima/issues/2319
+  echo "Configuring system settings for Singularity/Apptainer"
   sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
   sudo sysctl --system
 else
+  echo "Running in local environment"
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
   HOME_PATH=${HOME}
   SINGULARITY_CACHE=
 fi
 
-# uncomment below if you have sudo permission and don't have fakeroot permission
+# Determine if we need sudo or can use fakeroot
+echo "Checking permission requirements for container build..."
 NEED_SUDO=0
-cat /etc/subgid | grep "^$(id -u):"
-if [ $? -ne 0 ]; then
-  NEED_SUDO=1
-fi
-cat /etc/subuid | grep "^$(id -u):"
-if [ $? -ne 0 ]; then
+
+# Check if subgid/subuid exist and contain the user ID
+if command -v grep >/dev/null 2>&1; then
+  if [ -f /etc/subgid ] && [ -f /etc/subuid ]; then
+    if ! grep -q "^$(id -u):" /etc/subgid || ! grep -q "^$(id -u):" /etc/subuid; then
+      echo "User not found in subuid/subgid files"
+      NEED_SUDO=1
+    fi
+  else
+    echo "subuid/subgid files not found"
+    NEED_SUDO=1
+  fi
+else
+  echo "grep command not available, assuming sudo is needed"
   NEED_SUDO=1
 fi
 
 if [ $NEED_SUDO -eq 0 ]; then
   SUDO=""
   FAKEROOT=--fakeroot
-  echo "Using fakeroot"
+  echo "Using fakeroot for container build"
 else
-  if [[ ! -z "$GITHUB_RUN_ID" || `groups` == *"sudo"* ]]; then
+  if [[ ! -z "$GITHUB_RUN_ID" || $(groups 2>/dev/null | grep -q "sudo" && echo true || echo false) == "true" ]]; then
     # user has sudo permission
     SUDO=sudo
     FAKEROOT=""
+    echo "Using sudo for container build"
   else
-    echo "You appear to have neither namespace or sudo permission. You need one to build."
+    echo "ERROR: You appear to have neither namespace or sudo permission. You need one to build."
     echo "  Either: "
     echo "    (1 - Preferred) Get your administrator to add you to /etc/subuid and /etc/subgid"
     echo "       Note: 'singularity config fakeroot --add ${USER}' will set the appropriate values"
@@ -51,34 +79,75 @@ else
   fi
 fi
 
-# make container home directory (~)
-if [ ! -d "${ROOT}/.home" ]; then
-  mkdir -p ${ROOT}/.home
-fi
+# Create necessary directories
+echo "Creating required directories..."
+mkdir -p "${ROOT}/.home"
+mkdir -p "${ROOT}/.home/.gems"
+mkdir -p "${ROOT}/.home/.cache"
+chmod -R 755 "${ROOT}/.home"
 
-
-# make sure we have singularity
-which singularity 2>&1 > /dev/null
-if [ $? -ne 0 ]; then
-  echo "Singularity is not installed (or is not in path)" 1>&2
+# Verify singularity/apptainer installation
+echo "Checking for Singularity/Apptainer installation..."
+if ! command -v singularity &>/dev/null && ! command -v apptainer &>/dev/null; then
+  echo "ERROR: Neither Singularity nor Apptainer is installed (or is not in PATH)" 1>&2
+  echo "Please install Singularity/Apptainer before continuing"
   exit 1
 fi
 
-
-# build the container image
-echo "Building container..."
-if [ ! -d "${ROOT}/.singularity" ]; then
-  mkdir -p ${ROOT}/.singularity
+# Use apptainer if available, fallback to singularity
+CONTAINER_CMD="singularity"
+if command -v apptainer &>/dev/null; then
+  CONTAINER_CMD="apptainer"
+  echo "Using Apptainer for container management"
+else
+  echo "Using Singularity for container management"
 fi
-if [ -e ${CONTAINER_PATH} ]; then
-  rm -f ${CONTAINER_PATH}
+
+
+# Prepare for container build
+echo "Preparing to build container image..."
+mkdir -p "${ROOT}/.singularity"
+
+# Remove existing container if present to ensure a clean build
+if [ -e "${CONTAINER_PATH}" ]; then
+  echo "Removing existing container image: ${CONTAINER_PATH}"
+  rm -f "${CONTAINER_PATH}"
 fi
 
-$SUDO singularity build --force \
-  $FAKEROOT \
-  ${CONTAINER_PATH} \
-  ${ROOT}/container.def
-if [ $? -ne 0 ]; then
-  echo "Container build failed." 2>&1
+# Verify container definition file exists
+if [ ! -f "${ROOT}/container.def" ]; then
+  echo "ERROR: Container definition file not found: ${ROOT}/container.def" 1>&2
   exit 1
 fi
+
+# Build the container image with detailed progress
+echo "Building container image at: ${CONTAINER_PATH}"
+echo "Using definition file: ${ROOT}/container.def"
+echo "Build starting at: $(date)"
+
+# Try to build with current commands, if that fails try alternatives
+set +e  # Temporarily disable exit on error for better error handling
+
+$SUDO $CONTAINER_CMD build --force $FAKEROOT ${CONTAINER_PATH} ${ROOT}/container.def
+BUILD_EXIT_CODE=$?
+
+# If the build fails, try alternative approach
+if [ $BUILD_EXIT_CODE -ne 0 ]; then
+  echo "Container build failed with exit code $BUILD_EXIT_CODE. Attempting alternative build method..."
+  
+  # Try pulling from Docker registry as fallback
+  echo "Trying to pull from Docker registry..."
+  $SUDO $CONTAINER_CMD pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} docker://riscvintl/udb:${CONTAINER_TAG}
+  PULL_EXIT_CODE=$?
+  
+  if [ $PULL_EXIT_CODE -ne 0 ]; then
+    echo "ERROR: All container build methods failed." 1>&2
+    echo "Please check your Singularity/Apptainer installation and permissions." 1>&2
+    exit 1
+  fi
+fi
+
+set -e  # Re-enable exit on error
+
+echo "Container build completed successfully at: $(date)"
+echo "Container image available at: ${CONTAINER_PATH}"

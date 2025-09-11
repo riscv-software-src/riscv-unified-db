@@ -24,6 +24,12 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        
+      # Use verify-gemfile to ensure a valid Gemfile exists
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
+        
+      # Use updated singularity setup with integrated fix-whitespace
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
 

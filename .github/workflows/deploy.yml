@@ -37,8 +37,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        
+      # Use verify-gemfile to ensure a valid Gemfile exists
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
+        
+      # Use updated singularity setup with integrated fix-whitespace
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+        
       - name: run reuse
         run: ./bin/reuse spdx -o reuse_bom.txt
       - name: Upload Reuse Manifest
@@ -54,8 +61,15 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        
+      # Use verify-gemfile to ensure a valid Gemfile exists
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
+        
+      # Use updated singularity setup with integrated fix-whitespace
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+        
       - name: Generate UDB API Docs
         run: ./do gen:udb:api_doc
       - name: Upload UDB API Docs
@@ -72,8 +86,15 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        
+      # Use verify-gemfile to ensure a valid Gemfile exists
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
+        
+      # Use updated singularity setup with integrated fix-whitespace
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+        
       - name: Resolve unconfig
         run: ./do gen:resolved_arch
       - name: Tar unconfig
@@ -92,8 +113,15 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        
+      # Use verify-gemfile to ensure a valid Gemfile exists
+      - name: Verify Gemfile
+        uses: ./.github/actions/verify-gemfile
+        
+      # Use updated singularity setup with integrated fix-whitespace
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
+        
       - name: Generate ISA Explorer CSR
         run: ./do gen:isa_explorer_browser_csr
       - name: Upload ISA Explorer CSR

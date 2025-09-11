@@ -1,0 +1,15 @@
+name: Verify Gemfile Exists
+
+description: Verify that the workspace has a valid Gemfile for Ruby dependencies
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check for Gemfile
+      shell: bash
+      run: |
+        if [ ! -f "Gemfile" ]; then
+          echo "Error: Gemfile not found in workspace root"
+          exit 1
+        fi
+        echo "Gemfile found, continuing with workflow"
