@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vsscratch
+address: 0x240
+virtual_address: 0x140
+long_name: Virtual Supervisor Scratch Register
+description:
+  - id: csr-vsscratch-purpose
+    normative: true
+    text: |
+      The vsscratch register is a VSXLEN-bit read/write register that is VS-mode’s version of
+      supervisor register sscratch. When V=1, vsscratch substitutes for the usual sscratch,
+      so instructions that normally read or modify sscratch actually access vsscratch instead.
+
+  - id: csr-vsscratch-effect
+    normative: true
+    text: |
+      The contents of vsscratch never directly affect the behavior of the machine.
+priv_mode: VS
+length: VSXLEN
+definedBy: H
+fields:
+  SCRATCH:
+    type: RW
+    reset_value: 0
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      Virtual supervisor scratch register.
+
