@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fli.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Double-Precision Floating-Point Load-Immediate
+description:
+  - id: inst-fli.d-behaviour
+    normative: false
+    text: |
+      `FLI.D` instruction loads one of 32 double-precision floating-point constants, encoded in the `xs1`
+      field, into floating-point register _fd_. `FLI.D` is encoded like `FLI.S`, but with fmt=D.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, xs1

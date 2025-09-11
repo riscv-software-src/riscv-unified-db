@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fltq.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Double-Precision Floating-Point Less Than
+description:
+  - id: inst-fltq.d-behaviour
+    normative: false
+    text: |
+      `FLTQ.D` is defined like the `FLT.D` instruction, except that quiet NaN inputs do not cause
+      the invalid operation exception flag to be set.
 definedBy:
   allOf: [D, Zfa]
 assembly: xd, fs1, fs2
