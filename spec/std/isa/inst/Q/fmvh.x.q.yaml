@@ -6,9 +6,16 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmvh.x.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Move High Half to Integer from Quad-Precision
+description:
+  - id: inst-fmvh.x.q-behaviour
+    normative: false
+    text: |
+      The `fmvh.x.q` instruction moves bits `127:64` of floating-point register `fs1` into integer register `xd`.
+      It is encoded in the OP-FP major opcode with _funct3_=0, _rs2_=1, and _funct7_=1110011.
+
+      `fmvh.x.q` is used in conjunction with the existing `fmv.x.d` instruction to move a quad-precision floating-point
+      number to a pair of x-registers.
 definedBy:
   allOf: [Q, Zfa]
 base: 64

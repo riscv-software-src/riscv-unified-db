@@ -6,9 +6,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fnmadd.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Negate-Multiply-Add Quad-Precision
+description:
+  - id: inst-fnmadd.q-behaviour
+    normative: true
+    text: |
+      The `fnmadd.q` instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the
+      value in `fs3`, and writes the final result to `fd`.
+      `fnmadd.q` computes `-(fs1 * fs2) + fs3`.
 definedBy: Q
 assembly: fd, fs1, fs2, fs3, rm
 encoding:

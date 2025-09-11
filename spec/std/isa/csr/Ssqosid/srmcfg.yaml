@@ -1,12 +1,13 @@
 # Copyright (c) Syed Owais Ali Shah
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
 name: srmcfg
 long_name: Supervisor Resource Management Configuration
 address: 0x181
+writable: true
 priv_mode: S
 length: SXLEN
 definedBy: Ssqosid

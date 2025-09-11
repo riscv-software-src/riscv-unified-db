@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -3812,11 +3812,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fldsp]
@@ -3850,11 +3850,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_flw]
@@ -3889,11 +3889,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_flwsp]
@@ -3927,11 +3927,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_fsd]
@@ -3966,11 +3966,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fsdsp]
@@ -4004,11 +4004,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** D, version >= D@2.2.0
-*** Zcd, version >= Zcd@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** D, version >= D@2.2.0
+* Zcd, version >= Zcd@1.0.0
 
 
 [#udb:doc:inst:c_fsw]
@@ -4043,11 +4043,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_fswsp]
@@ -4081,11 +4081,11 @@ Decode Variables::
 |===
 
 Included in::
-* anyOf:
-*** allOf:
-***** C, version >= C@2.0.0
-***** F, version >= F@2.2.0
-*** Zcf, version >= Zcf@1.0.0
+anyOf:
+* allOf:
+** C, version >= C@2.0.0
+** F, version >= F@2.2.0
+* Zcf, version >= Zcf@1.0.0
 
 
 [#udb:doc:inst:c_j]
@@ -5206,18 +5206,18 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":5,"name": "rd","type":4},{"bits":4,"name": 0x0,"type":2}]}
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":5,"name": "xd","type":4},{"bits":4,"name": 0x0,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":5,"name": "rd","type":4},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x0,"type":2}]}
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":5,"name": "xd","type":4},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x0,"type":2}]}
 ....
 
 Description::
-Shift the value in rd left by shamt, and store the result back in rd.
-C.SLLI expands into `slli rd, rd, shamt`.
+Shift the value in xd left by shamt, and store the result back in xd.
+C.SLLI expands into `slli xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5227,7 +5227,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 *RV64:*
@@ -5236,7 +5236,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -5267,19 +5267,19 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x21,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x21,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "rd","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "xd","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
 ....
 
 Description::
-Arithmetic shift (the original sign bit is copied into the vacated upper bits) the value in rd right by shamt, and store the result in rd.
-The rd register index should be used as rd+8 (registers x8-x15).
-C.SRAI expands into `srai rd, rd, shamt`.
+Arithmetic shift (the original sign bit is copied into the vacated upper bits) the value in xd right by shamt, and store the result in xd.
+The xd register index should be used as xd+8 (registers x8-x15).
+C.SRAI expands into `srai xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5289,7 +5289,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 *RV64:*
@@ -5298,7 +5298,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -5329,19 +5329,19 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x20,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0","type":4},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x20,"type":2}]}
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "rd","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "shamt != 0[4:0]","type":4},{"bits":3,"name": "xd","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":1,"name": "shamt != 0[5]","type":4},{"bits":3,"name": 0x4,"type":2}]}
 ....
 
 Description::
-Shift the value in rd right by shamt, and store the result back in rd.
-The rd register index should be used as rd+8 (registers x8-x15).
-C.SRLI expands into `srli rd, rd, shamt`.
+Shift the value in xd right by shamt, and store the result back in xd.
+The xd register index should be used as xd+8 (registers x8-x15).
+C.SRLI expands into `srli xd, xd, shamt`.
 
 
 Decode Variables::
@@ -5351,7 +5351,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |$encoding[6:2]
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 *RV64:*
@@ -5360,7 +5360,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |shamt |{$encoding[12], $encoding[6:2]}
-|rd |$encoding[9:7]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -5860,7 +5860,7 @@ The table below summarizes the options.
 5+^.>h! `cbe.inval` Operation
 .^h! M-mode .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-! 00 ! - ! - ! Invalidate ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+! 00 ! - ! - ! Invalidate ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction`
 ! 01 ! 00 ! 00 ! Invalidate ! Flush  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
 ! 01 ! 00 ! 01 ! Invalidate ! Flush  ! `Illegal Instruction` ! Flush ! `Virtual Instruction`
 ! 01 ! 00 ! 11 ! Invalidate ! Flush  ! `Illegal Instruction` ! Flush ! `Virtual Instruction`
@@ -7146,9 +7146,6 @@ Included in::
 Synopsis::
 No synopsis available
 
-Assembly::
-dret dret
-
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -7338,7 +7335,7 @@ Included in::
 == fadd.q
 
 Synopsis::
-Floating-point Add Quad-precision
+Floating-point Add Quad-Precision
 
 Assembly::
 fadd.q fd, fs1, fs2, rm
@@ -7513,7 +7510,7 @@ Included in::
 == fclass.q
 
 Synopsis::
-No synopsis available
+Floating-Point Classify Quad-Precision
 
 Assembly::
 fclass.q xd, fs1
@@ -7525,7 +7522,30 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] instruction examines the value in floating-point register `rs1` and writes to integer
+register `rd` a 10-bit mask that indicates the class of the floating-point number.
+
+The format of the mask is described in table given below. The corresponding bit in `rd`
+will be set if the property is true and clear otherwise. All other bits in `rd` are cleared.
+
+Note that exactly one bit in `rd` will be set. xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] does not set the floating-point
+exception flags.
+
+.Format of result of `fclass` instruction.
+[%autowidth,float="center",align="center",cols="^,<",options="header",]
+|===
+|_xd_ bit |Meaning
+|0 |_fs1_ is latexmath:[$-\infty$].
+|1 |_fs1_ is a negative normal number.
+|2 |_fs1_ is a negative subnormal number.
+|3 |_fs1_ is latexmath:[$-0$].
+|4 |_fs1_ is latexmath:[$+0$].
+|5 |_fs1_ is a positive subnormal number.
+|6 |_fs1_ is a positive normal number.
+|7 |_fs1_ is latexmath:[$+\infty$].
+|8 |_fs1_ is a signaling NaN.
+|9 |_fs1_ is a quiet NaN.
+|===
 
 
 Decode Variables::
@@ -7767,7 +7787,7 @@ Included in::
 == fcvt.d.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Double-precision
+Floating-Point Convert Quad-Precision to Double-Precision
 
 Assembly::
 fcvt.d.q fd, fs1, rm
@@ -8281,7 +8301,7 @@ Included in::
 == fcvt.l.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Long
+Floating-Point Convert Quad-Precision to Long
 
 Assembly::
 fcvt.l.q xd, fs1, rm
@@ -8435,7 +8455,7 @@ Included in::
 == fcvt.lu.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Unsigned Long
+Floating-Point Convert Quad-Precision to Unsigned Long
 
 Assembly::
 fcvt.lu.q xd, fs1, rm
@@ -8512,7 +8532,7 @@ Included in::
 == fcvt.q.d
 
 Synopsis::
-Floating-point Convert Double-precision to Quad-precision
+Floating-Point Convert Double-Precision to Quad-Precision
 
 Assembly::
 fcvt.q.d fd, fs1, rm
@@ -8590,7 +8610,7 @@ Included in::
 == fcvt.q.l
 
 Synopsis::
-Floating-point Convert Long to Quad-precision
+Floating-Point Convert Long to Quad-Precision
 
 Assembly::
 fcvt.q.l fd, xs1, rm
@@ -8628,7 +8648,7 @@ Included in::
 == fcvt.q.lu
 
 Synopsis::
-Floating-point Convert Unsigned Long to Quad-precision
+Floating-Point Convert Unsigned Long to Quad-Precision
 
 Assembly::
 fcvt.q.lu fd, xs1, rm
@@ -8666,7 +8686,7 @@ Included in::
 == fcvt.q.s
 
 Synopsis::
-Floating-point Convert Single-precision to Quad-precision
+Floating-Point Convert Single-Precision to Quad-Precision
 
 Assembly::
 fcvt.q.s fd, fs1, rm
@@ -8704,7 +8724,7 @@ Included in::
 == fcvt.q.w
 
 Synopsis::
-Floating-point Convert Word to Quad-precision
+Floating-Point Convert Word to Quad-Precision
 
 Assembly::
 fcvt.q.w fd, xs1, rm
@@ -8742,7 +8762,7 @@ Included in::
 == fcvt.q.wu
 
 Synopsis::
-Floating-point Convert Unsigned Word to Quad-precision
+Floating-Point Convert Unsigned Word to Quad-Precision
 
 Assembly::
 fcvt.q.wu fd, xs1, rm
@@ -8979,7 +8999,7 @@ Included in::
 == fcvt.s.q
 
 Synopsis::
-Floating-point Convert Quad-precision to Single-precision
+Floating-Point Convert Quad-Precision to Single-Precision
 
 Assembly::
 fcvt.s.q fd, fs1, rm
@@ -9369,7 +9389,7 @@ Included in::
 == fcvt.wu.q
 
 Synopsis::
-Floating-point Convert Unsigned Quad-precision to Word
+Floating-Point Convert Unsigned Quad-Precision to Word
 
 Assembly::
 fcvt.wu.q xd, fs1, rm
@@ -9600,7 +9620,7 @@ Included in::
 == fdiv.q
 
 Synopsis::
-No synopsis available
+Floating-Point Divide Quad-Precision
 
 Assembly::
 fdiv.q fd, fs1, fs2, rm
@@ -9612,7 +9632,14 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fdiv_q.adoc#udb:doc:inst:fdiv_q[fdiv.q] performs the quad-precision floating-point division of `fs1` by `fs2` and writes
+the result to floating-point register `fd`.`
+The rounding mode is specified by the value in the floating-point Control and Status register (FCSR)
+or by the value in the `rm` field of the instruction.
+
+The operation is performed according to the IEEE 754-2008 standard for quad-precision floating-point arithmetic.
+
+The instruction sets the floating-point exception flags according to the result of the operation.
 
 
 Decode Variables::
@@ -9678,7 +9705,7 @@ Included in::
 == fence
 
 Synopsis::
-Memory oxdering fence
+Memory ordering fence
 
 Assembly::
 fence pred, succ
@@ -9690,12 +9717,12 @@ Encoding::
 ....
 
 Description::
-Oxders memory operations.
+Orders memory operations.
 
-The xref:insts:fence.adoc#udb:doc:inst:fence[fence] instruction is used to oxder device I/O and memory accesses as
+The xref:insts:fence.adoc#udb:doc:inst:fence[fence] instruction is used to order device I/O and memory accesses as
 viewed by other RISC-V harts and external devices or coprocessors. Any
 combination of device input (I), device output (O), memory reads \(R),
-and memory writes (W) may be oxdered with respect to any combination of
+and memory writes (W) may be ordered with respect to any combination of
 the same. Informally, no other RISC-V hart or external device can
 observe any operation in the _successor_ set following a xref:insts:fence.adoc#udb:doc:inst:fence[fence] before
 any operation in the _predecessor_ set preceding the xref:insts:fence.adoc#udb:doc:inst:fence[fence].
@@ -9715,15 +9742,15 @@ The predecessor and successor fields have the same format to specify operation t
 |===
 |_fm_ field |Mnemonic |Meaning
 |0000 |_none_ |Normal Fence
-|1000 |TSO |With `FENCE RW,RW`: exclude write-to-read oxdering; otherwise: _Reserved for future use._
+|1000 |TSO |With `FENCE RW,RW`: exclude write-to-read ordering; otherwise: _Reserved for future use._
 2+|_other_ |_Reserved for future use._
 |===
 
 When the mode field _fm_ is `0001` and both the predecessor and successor sets are 'RW',
-then the instruction acts as a special-case xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso]. xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] oxders all load operations
+then the instruction acts as a special-case xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso]. xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] orders all load operations
 in its predecessor set before all memory operations in its successor set, and all store operations
 in its predecessor set before all store operations in its successor set. This leaves non-AMO store
-operations in the 'fence.tso's predecessor set unoxdered with non-AMO loads in its successor set.
+operations in the 'fence.tso's predecessor set unordered with non-AMO loads in its successor set.
 
 When mode field _fm_ is not `0001`, or when mode field _fm_ is `0001` but the _pred_ and
 _succ_ fields are not both 'RW' (0x3), then the fence acts as a baseline fence (_e.g._, _fm_ is
@@ -10013,7 +10040,7 @@ Included in::
 == feq.q
 
 Synopsis::
-No synopsis available
+Floating-Point Equal Quad-Precision
 
 Assembly::
 feq.q xd, fs1, fs2
@@ -10025,7 +10052,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:feq_q.adoc#udb:doc:inst:feq_q[feq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+and writes 1 to integer register `xd` if the conditon hold, and 0 otherwise.
+
+xref:insts:feq_q.adoc#udb:doc:inst:feq_q[feq.q] performs a quiet comparison:
+it only sets the invalid operation exception flag if either input is a signaling _NaN_.
+The result is 0 if either operand is _NaN_.
 
 
 Decode Variables::
@@ -10211,7 +10243,7 @@ Included in::
 == fle.q
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than or Equal Quad-Precision
 
 Assembly::
 fle.q xd, fs1, fs2
@@ -10223,7 +10255,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
+
+xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
+they set the invalid operation exception flag if either input is _NaN_.
+The result is 0 if either operand is _NaN_.
 
 
 Decode Variables::
@@ -10373,7 +10410,7 @@ Included in::
 == fleq.q
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than or Equal Quad-Precision
 
 Assembly::
 fleq.q xd, fs1, fs2
@@ -10385,7 +10422,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fleq_q.adoc#udb:doc:inst:fleq_q[fleq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
+
+xref:insts:fleq_q.adoc#udb:doc:inst:fleq_q[fleq.q] is defined like xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q], except that quiet _NaN_ inputs do not cause the invalid
+operation exception flag to be set.
+This instruction is encoded like its `flt` counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -10561,22 +10603,18 @@ Decode Variables::
 |===
 
 Included in::
-[options="autowrap,autowidth"]
-|===
-| Extension | Version
-
-| *Zfa* | ~> 1.0.0
-
-| *Zfh* | ~> 1.0.0
-
-|===
+allOf:
+* Zfa, version >= Zfa@1.0.0
+* anyOf:
+** Zfh, version >= Zfh@1.0.0
+** Zvfh, version >= Zvfh@1.0.0
 
 
 [#udb:doc:inst:fli_q]
 == fli.q
 
 Synopsis::
-No synopsis available
+Floating-Point Load Immediate Quad-Precision
 
 Assembly::
 fli.q fd, xs1
@@ -10588,7 +10626,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+The
+The xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `rs1`
+field, into floating-point register `rd`.
+xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] is encoded like xref:insts:fmv_w_x.adoc#udb:doc:inst:fmv_w_x[fmv.w.x], but with _fmt_ = Q.
 
 
 Decode Variables::
@@ -10652,7 +10693,7 @@ Included in::
 == flq
 
 Synopsis::
-No synopsis available
+Floating-Point Load Quad-Precision
 
 Assembly::
 flq fd, xs1, imm
@@ -10664,7 +10705,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:flq.adoc#udb:doc:inst:flq[flq] is the new variant of LOAD-FP, encoded with a new value for the `funct3`.
+
+xref:insts:flq.adoc#udb:doc:inst:flq[flq] is only guaranteed to execute atomically if the effective address is naturally aligned XLEN=128.
+
+xref:insts:flq.adoc#udb:doc:inst:flq[flq] does not modify the bits being transferred; in particular, the payloads of non-canonical
+_NaNs_ are preserved.
 
 
 Decode Variables::
@@ -10767,7 +10813,7 @@ Included in::
 == flt.q
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than Quad-Precision
 
 Assembly::
 flt.q xd, fs1, fs2
@@ -10779,7 +10825,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+and writes 1 to integer register `xd` if the conditon hold, and 0 otherwise.
+
+xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
+they set the invalid operation exception flag if either input is _NaN_.
+The result is 0 if either operand is _NaN_.
 
 
 Decode Variables::
@@ -10927,7 +10978,7 @@ Included in::
 == fltq.q
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than Quiet Quad-Precision
 
 Assembly::
 fltq.q fd, fs1, fs2
@@ -10939,7 +10990,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fltq_q.adoc#udb:doc:inst:fltq_q[fltq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
+
+xref:insts:fltq_q.adoc#udb:doc:inst:fltq_q[fltq.q] is defined like xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q], except that quiet _NaN_ inputs do not cause the invalid
+operation exception flag to be set.
+This instruction is encoded like its `fle` counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -11125,7 +11181,7 @@ Included in::
 == fmadd.q
 
 Synopsis::
-No synopsis available
+Floating-Point Multiply-Add Quad-Precision
 
 Assembly::
 fmadd.q fd, fs1, fs2, fs3, rm
@@ -11137,7 +11193,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmadd_q.adoc#udb:doc:inst:fmadd_q[fmadd.q] instruction performs a floating-point multiply-add operation on the values in registers `fs1`, `fs2`, and `fs3`.
+It computes the result as `(fs1 * fs2) + fs3` and writes the result to the destination register `fd`.
+
+The fused multiply-add instructions must set the invalid operation exception flag when the
+multiplicands are latexmath:[$\infty$] and zero, even when the addend is a quiet _NaN_.
 
 
 Decode Variables::
@@ -11284,7 +11344,7 @@ Included in::
 == fmax.q
 
 Synopsis::
-No synopsis available
+Floating-Point Maximum-Number Quad-Precision
 
 Assembly::
 fmax.q fd, fs1, fs2
@@ -11296,7 +11356,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmax_q.adoc#udb:doc:inst:fmax_q[fmax.q] instruction writes the larger/maximum of `fs1` and `fs2` to `fd`.
+The value `-0.0` is considered to be less than the value `+0.0`.
+If both inputs are _NaN_s, the result is the canonical _NaN_.
+If only one operand is a _NaN_, the result is the non-_NaN_ operand.
+Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
 
 
 Decode Variables::
@@ -11441,7 +11505,7 @@ Included in::
 == fmaxm.q
 
 Synopsis::
-No synopsis available
+Floating-Point Maximum-Number NaN Quad-Precision
 
 Assembly::
 fmaxm.q fd, fs1, fs2
@@ -11453,7 +11517,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmaxm_q.adoc#udb:doc:inst:fmaxm_q[fmaxm.q] instruction, defined like xref:insts:fmax_q.adoc#udb:doc:inst:fmax_q[fmax.q], writes the larger/maximum of `fs1` and `fs2` to `fd`.
+The value `-0.0` is considered to be less than the value `+0.0`.
+If both inputs are _NaN_s, the result is the canonical _NaN_.
+If either input is _NaN_, the result is the canonical _NaN_.
+Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
+This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -11598,7 +11667,7 @@ Included in::
 == fmin.q
 
 Synopsis::
-No synopsis available
+Floating-Point Minimum-Number Quad-Precision
 
 Assembly::
 fmin.q fd, fs1, fs2
@@ -11610,7 +11679,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmin_q.adoc#udb:doc:inst:fmin_q[fmin.q] instruction writes the smaller/minimum of `fs1` and `fs2` to `fd`.
+The value `-0.0` is considered to be less than the value `+0.0`.
+If both inputs are _NaN_s, the result is the canonical _NaN_.
+If only one operand is a _NaN_, the result is the non-_NaN_ operand.
+Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
 
 
 Decode Variables::
@@ -11755,7 +11828,7 @@ Included in::
 == fminm.q
 
 Synopsis::
-No synopsis available
+Floating-Point Minimum-Number NaN Quad-Precision
 
 Assembly::
 fminm.q fd, fs1, fs2
@@ -11767,7 +11840,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] instruction, defined like xref:insts:fmin_q.adoc#udb:doc:inst:fmin_q[fmin.q], writes the smaller/minimum of `fs1` and `fs2` to `fd`.
+The value `-0.0` is considered to be less than the value `+0.0`.
+If both inputs are _NaN_s, the result is the canonical _NaN_.
+If either input is _NaN_, the result is the canonical _NaN_.
+Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
+This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -11913,7 +11991,7 @@ Included in::
 == fmsub.q
 
 Synopsis::
-No synopsis available
+Floating-Point Multiply-Subtract Quad-Precision
 
 Assembly::
 fmsub.q fd, fs1, fs2, fs3, rm
@@ -11925,7 +12003,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmsub_q.adoc#udb:doc:inst:fmsub_q[fmsub.q] instruction performs a floating-point multiply-subtract operation on the values in registers `fs1`, `fs2`, and `fs3`.
+It computes the result as `(fs1 * fs2) - fs3` and writes the result to the destination register `fd`.
 
 
 Decode Variables::
@@ -12073,7 +12152,7 @@ Included in::
 == fmul.q
 
 Synopsis::
-No synopsis available
+Floating-point Multiply Quad-Precision
 
 Assembly::
 fmul.q fd, fs1, fs2, rm
@@ -12085,7 +12164,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+xref:insts:fmul_q.adoc#udb:doc:inst:fmul_q[fmul.q] performs quad-precision floating-point multiplication, between `fs1` and `fs2`.
 
 
 Decode Variables::
@@ -12220,7 +12299,9 @@ Included in::
 |===
 | Extension | Version
 
-| *F* | ~> 2.2.0
+| *Zfhmin* | ~> 1.0.0
+
+| *Zhinx* | ~> 1.0.0
 
 |===
 
@@ -12438,7 +12519,7 @@ Included in::
 == fmvh.x.q
 
 Synopsis::
-No synopsis available
+Floating-Point Move High Half to Integer from Quad-Precision
 
 Assembly::
 fmvh.x.q xd, fs1
@@ -12450,7 +12531,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmvh_x_q.adoc#udb:doc:inst:fmvh_x_q[fmvh.x.q] instruction moves bits `127:64` of floating-point register `fs1` into integer register `xd`.
+It is encoded in the OP-FP major opcode with _funct3_=0, _rs2_=1, and _funct7_=1110011.
+
+xref:insts:fmvh_x_q.adoc#udb:doc:inst:fmvh_x_q[fmvh.x.q] is used in conjunction with the existing xref:insts:fmv_x_d.adoc#udb:doc:inst:fmv_x_d[fmv.x.d] instruction to move a quad-precision floating-point
+number to a pair of x-registers.
 
 
 Decode Variables::
@@ -12519,7 +12604,7 @@ Included in::
 == fmvp.q.x
 
 Synopsis::
-No synopsis available
+Floating-Point Move to Quad-Precision from Integer Pair
 
 Assembly::
 fmvp.q.x fd, xs1, xs2
@@ -12531,7 +12616,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] instruction moves a double-precision number from a pair of integer registers into
+a floating-point register.
+Integer registers xs1 and xs2 supply bits 63:0 and 127:64, respectively; the result is written to
+floating-point register `fd`.
+xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
 
 
 Decode Variables::
@@ -12640,7 +12729,7 @@ Included in::
 == fnmadd.q
 
 Synopsis::
-No synopsis available
+Floating-Point Negate-Multiply-Add Quad-Precision
 
 Assembly::
 fnmadd.q fd, fs1, fs2, fs3, rm
@@ -12652,7 +12741,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fnmadd_q.adoc#udb:doc:inst:fnmadd_q[fnmadd.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the
+value in `fs3`, and writes the final result to `fd`.
+xref:insts:fnmadd_q.adoc#udb:doc:inst:fnmadd_q[fnmadd.q] computes `-(fs1 * fs2) + fs3`.
 
 
 Decode Variables::
@@ -12801,7 +12892,7 @@ Included in::
 == fnmsub.q
 
 Synopsis::
-No synopsis available
+Floating-Point Negate-Multiply-Subtract Quad-Precision
 
 Assembly::
 fnmsub.q fd, fs1, fs2, fs3, rm
@@ -12813,7 +12904,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fnmsub_q.adoc#udb:doc:inst:fnmsub_q[fnmsub.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the
+value in `fs3`, and writes the final result to `fd`.
+xref:insts:fnmsub_q.adoc#udb:doc:inst:fnmsub_q[fnmsub.q] computes `-(fs1 * fs2) - fs3`.
 
 
 Decode Variables::
@@ -12966,7 +13059,7 @@ Included in::
 == fround.q
 
 Synopsis::
-No synopsis available
+Floating-Point Round Quad-Precision
 
 Assembly::
 fround.q fd, fs1, rm
@@ -12978,7 +13071,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] instruction rounds the quad-precision floating-point number in floating-point register
+`fs1` to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
+that integer, represented as a quad-precision floating-point number, to floating-point register `fd`. Zero
+and infinite inputs are copied to `fd` unmodified. Signaling _NaN_ inputs cause the invalid operation
+exception flag to be set; no other exception flags are set. xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] is encoded like xref:insts:fcvt_q_s.adoc#udb:doc:inst:fcvt_q_s[fcvt.q.s], but with
+`rs2`=4.
 
 
 Decode Variables::
@@ -13131,7 +13229,7 @@ Included in::
 == froundnx.q
 
 Synopsis::
-No synopsis available
+Floating-Point Round-to-Integer Inexact Quad-Precision
 
 Assembly::
 froundnx.q fd, fs1, rm
@@ -13143,7 +13241,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:froundnx_q.adoc#udb:doc:inst:froundnx_q[froundnx.q] instruction is encoded like xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] but with `rs2`=5 and it also sets the
+inexact exception flag if the input differs from the rounded result and is not _NaN_.
 
 
 Decode Variables::
@@ -13327,7 +13426,7 @@ Included in::
 == fsgnj.q
 
 Synopsis::
-No synopsis available
+Floating-Point Sign-Inject Quad-Precision
 
 Assembly::
 fsgnj.q fd, fs1, fs2
@@ -13339,7 +13438,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsgnj_q.adoc#udb:doc:inst:fsgnj_q[fsgnj.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination register `fd`.
+xref:insts:fsgnj_q.adoc#udb:doc:inst:fsgnj_q[fsgnj.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13483,7 +13584,7 @@ Included in::
 == fsgnjn.q
 
 Synopsis::
-No synopsis available
+Floating-Point Sign-Inject Negate Quad-Precision
 
 Assembly::
 fsgnjn.q fd, fs1, fs2
@@ -13495,7 +13596,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsgnjn_q.adoc#udb:doc:inst:fsgnjn_q[fsgnjn.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination register `fd`.
+xref:insts:fsgnjn_q.adoc#udb:doc:inst:fsgnjn_q[fsgnjn.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13640,7 +13743,7 @@ Included in::
 == fsgnjx.q
 
 Synopsis::
-No synopsis available
+Floating-Point Sign-Inject XOR Quad-Precision
 
 Assembly::
 fsgnjx.q fd, fs1, fs2
@@ -13652,7 +13755,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsgnjx_q.adoc#udb:doc:inst:fsgnjx_q[fsgnjx.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to the destination register `fd`.
+xref:insts:fsgnjx_q.adoc#udb:doc:inst:fsgnjx_q[fsgnjx.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13767,7 +13872,7 @@ Included in::
 == fsq
 
 Synopsis::
-No synopsis available
+Floating-Point Store Quad-Precision
 
 Assembly::
 fsq fs2, imm(xs1)
@@ -13779,7 +13884,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsq.adoc#udb:doc:inst:fsq[fsq] is the new variant of LOAD-FP, encoded with a new value for the `funct3`.
+
+xref:insts:fsq.adoc#udb:doc:inst:fsq[fsq] is only guaranteed to execute atomically if the effective address is naturally aligned XLEN=128.
+
+xref:insts:fsq.adoc#udb:doc:inst:fsq[fsq] does not modify the bits being transferred; in particular, the payloads of non-canonical
+_NaNs_ are preserved.
 
 
 Decode Variables::
@@ -13883,7 +13993,7 @@ Included in::
 == fsqrt.q
 
 Synopsis::
-No synopsis available
+Floating-Point Square Root Quad-Precision
 
 Assembly::
 fsqrt.q fd, fs1, rm
@@ -13895,7 +14005,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsqrt_q.adoc#udb:doc:inst:fsqrt_q[fsqrt.q] instruction computes the square root of the value in `fs1` and writes the result to `fd`.
 
 
 Decode Variables::
@@ -14038,7 +14148,7 @@ Included in::
 == fsub.q
 
 Synopsis::
-No synopsis available
+Floating-Point Subtract Quad-Precision
 
 Assembly::
 fsub.q fd, fs1, fs2, rm
@@ -14050,7 +14160,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsub_q.adoc#udb:doc:inst:fsub_q[fsub.q] instruction performs the quad-precision floating-point subtraction of `fs2` from `fs1`.
+It computes the result as `fs1 - fs2` and writes the result to the destination register `fd`.
 
 
 Decode Variables::
@@ -15716,9 +15827,6 @@ Included in::
 Synopsis::
 Machine mode resume from the RNMI or Double Trap handler
 
-Assembly::
-mnret mnret
-
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -17264,9 +17372,6 @@ Included in::
 
 Synopsis::
 No synopsis available
-
-Assembly::
-sctrclr sctrclr
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -20715,7 +20820,7 @@ vaeskf1.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x45,"type":2}]}
 ....
 
 Description::
@@ -20727,7 +20832,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -20753,7 +20858,7 @@ vaeskf2.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x55,"type":2}]}
 ....
 
 Description::
@@ -20765,7 +20870,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -37978,7 +38083,7 @@ vsetvli xd, xs1, vtypei
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "xs1","type":4},{"bits":1,"name": 0x0,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "zimm","type":4},{"bits":1,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -37989,7 +38094,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|xs1 |$encoding[30:20]
+|zimm |$encoding[30:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
@@ -38632,7 +38737,7 @@ vsm3c.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x57,"type":2}]}
 ....
 
 Description::
@@ -38644,7 +38749,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -38712,7 +38817,7 @@ vsm4k.vi vd, vs2, imm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x43,"type":2}]}
 ....
 
 Description::
@@ -38724,7 +38829,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -45315,7 +45420,7 @@ vwsll.vi vd, vs2, imm, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "zimm5","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x35,"type":2}]}
 ....
 
 Description::
@@ -45328,7 +45433,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
-|zimm5 |$encoding[19:15]
+|imm |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -46394,10 +46499,10 @@ Decode Variables::
 |===
 
 Included in::
-* allOf:
-*** Zbb, version >= Zbb@1.0.0
-*** not:
-***** Zbkb, version >= Zbkb@1.0.0
+allOf:
+* Zbb, version >= Zbb@1.0.0
+* not:
+** Zbkb, version >= Zbkb@1.0.0
 
 
 [#udb:doc:inst:zip]

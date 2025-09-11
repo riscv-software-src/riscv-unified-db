@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "udb/resolver"
+require 'json'
+require 'tempfile'
 
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
@@ -53,8 +55,36 @@ namespace :gen do
     csr_dir = cfg_arch.path / "csr"
     ext_dir = cfg_arch.path / "ext"
 
-    # Run the C header generator script using the same Python environment
-    # The script generates encoding.h for inclusion in C programs
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --output=#{output_dir}encoding.out.h --include-all"
+    # Process ERB templates in exception codes using Ruby ERB processing
+    resolved_exception_codes = []
+
+    # Collect all exception codes from extensions and resolve ERB templates
+    cfg_arch.extensions.each do |ext|
+      ext.exception_codes.each do |ecode|
+        # Use Ruby's ERB processing to resolve templates in exception names
+        resolved_name = cfg_arch.render_erb(ecode.name, "exception code name: #{ecode.name}")
+
+        resolved_exception_codes << {
+          'num' => ecode.num,
+          'name' => resolved_name,
+          'var' => ecode.var,
+          'ext' => ext.name
+        }
+      end
+    end
+
+    # Write resolved exception codes to a temporary JSON file
+    resolved_codes_file = Tempfile.new(['resolved_exception_codes', '.json'])
+    resolved_codes_file.write(JSON.pretty_generate(resolved_exception_codes))
+    resolved_codes_file.flush
+
+    begin
+      # Run the C header generator script using the same Python environment
+      # The script generates encoding.h for inclusion in C programs
+      sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --resolved-codes=#{resolved_codes_file.path} --output=#{output_dir}encoding.out.h --include-all"
+    ensure
+      resolved_codes_file.close
+      resolved_codes_file.unlink
+    end
   end
 end

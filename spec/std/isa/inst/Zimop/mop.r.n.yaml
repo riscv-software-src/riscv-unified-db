@@ -30,7 +30,7 @@ data_independent_timing: false
 hints:
   - { $ref: inst/Zicfilp/sspopchk.x1.yaml# }
   - { $ref: inst/Zicfilp/sspopchk.x5.yaml# }
-  - { $ref: inst/Zicfilp/ssrdp.yaml# }
+  - { $ref: inst/Zicfiss/ssrdp.yaml# }
 pseudoinstructions:
   - when: n == 0
     to: mop.r.0

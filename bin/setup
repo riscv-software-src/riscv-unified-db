@@ -6,6 +6,34 @@ cd $ROOT
 
 CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
+# Parse command line arguments
+PRESERVE_CONFIG=0
+
+# Only parse arguments if this script is being run directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  for arg in "$@"; do
+    case $arg in
+      --preserve-config)
+        PRESERVE_CONFIG=1
+        shift
+        ;;
+      --help|-h)
+        echo "Usage: $0 [OPTIONS]"
+        echo ""
+        echo "Options:"
+        echo "  --preserve-config    Only create .bundle/config if missing (default: always recreate)"
+        echo "  --help, -h           Show this help message"
+        exit 0
+        ;;
+      *)
+        echo "Unknown option: $arg"
+        echo "Use --help for usage information"
+        exit 1
+        ;;
+    esac
+  done
+fi
+
 # Supported container types:
 #
 # = devcontainer
@@ -87,7 +115,6 @@ elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     else
       DOCKER_BASE="docker run -v ${ROOT}:${ROOT} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
-    RUN="${DOCKER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}
@@ -128,7 +155,10 @@ if [ ! -d $ROOT/.home ]; then
     mkdir $ROOT/.home
 fi
 
-if [ ! -f $ROOT/.bundle/config ]; then
+if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
+    if [ -f $ROOT/.bundle/config ] && [ $PRESERVE_CONFIG -eq 0 ]; then
+        echo "Recreating bundle config..."
+    fi
     OLDDIR=$PWD
     cd $ROOT
     ${RUN} bundle config set --local path ${ROOT}/.home/.gems
