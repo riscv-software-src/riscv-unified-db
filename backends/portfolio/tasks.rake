@@ -159,17 +159,21 @@ def pf_adoc2html(adoc_file, target_pname)
   $logger.info "Generated HTML in #{target_pname}"
 end
 
+# This routine extracts normative rule tags from the specified adoc file
+# and puts them in a file with the same name but with the specified suffix.
+#
 # @param adoc_file [String] Full pathname of source adoc file
 # @param target_pname [String] Full name of tags file being generated
 # @param isa_manual_dirname [String] Full pathname of ISA manual root directory
-def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
+# @param norm_tags_json_suffix [String] Suffix the tags file will have
+def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname, norm_tags_json_suffix)
   target_dirname = File.dirname(target_pname)
 
   # Ensure target directory is present.
   FileUtils.mkdir_p(target_dirname)
 
   # The tags backend will put the tags file in the same directory as the input adoc file.
-  backend_tags_pname = adoc_file.sub(/\.adoc$/, "-norm-tags.json")
+  backend_tags_pname = adoc_file.sub(/\.adoc$/, norm_tags_json_suffix)
 
   $logger.info "Extracting normative rule tags from #{adoc_file} into #{backend_tags_pname}"
   cmd = [
@@ -183,7 +187,7 @@ def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
     "--require=#{isa_manual_dirname}/docs-resources/converters/tags.rb",
     "--backend tags",
     "-a tags-match-prefix='norm:'",
-    "-a tags-output-suffix='-norm-tags.json'",
+    "-a tags-output-suffix='" + norm_tags_json_suffix + "'",
     adoc_file
   ].join(" ")
 
@@ -208,6 +212,8 @@ def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname)
   $logger.info "Moved normative rule tags to #{target_pname}"
 end
 
+# This routine creates a JSON file containing a list of all normative rules for the ISA manual.
+#
 # @param isa_manual_dirname [String] Full pathname of ISA manual root directory
 # @param unpriv_tags_json [String] Full pathname of unpriv ISA manual JSON tags file
 # @param priv_tags_json [String] Full pathname of priv ISA manual JSON tags file
