@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name"],
   "properties": {
@@ -23,8 +22,7 @@
       "description": "The publicly displayed manual name"
     },
     "state": {
-      "$ref": "schema_defs.json#/$defs/spec_state",
-      "description": "State of this version"
+      "$ref": "schema_defs.json#/$defs/spec_state"
     },
     "url": {
       "type": "string",

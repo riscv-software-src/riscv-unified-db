@@ -34,6 +34,16 @@ repos:
       - id: check-yaml
         stages: [pre-commit]
 
+  - repo: local
+    hooks:
+      - id: jsonschema-fix
+        name: jsonschema fix
+        stages: [pre-commit]
+        language: system
+        entry: bash -c 'npx jsonschema lint --fix --ignore spec/schemas/json-schema-draft-07.json spec/schemas/*.json || true'
+        files: ^spec/schemas/.*\.json$
+        exclude: spec/schemas/json-schema-draft-07\.json
+
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.5.3
     hooks:
@@ -41,6 +51,16 @@ repos:
         stages: [pre-commit]
         files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
+
+  - repo: local
+    hooks:
+      - id: jsonschema-lint
+        name: jsonschema lint
+        stages: [pre-commit]
+        language: system
+        entry: bash -c 'npx jsonschema lint --ignore spec/schemas/json-schema-draft-07.json spec/schemas/*.json || true'
+        files: ^spec/schemas/.*\.json$
+        exclude: spec/schemas/json-schema-draft-07\.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0

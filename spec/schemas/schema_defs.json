@@ -1,9 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "title": "Common patterns used by all schemas",
-
-  "$defs": {
+  "x-$defs": {
     "$source": {
       "type": "string",
       "format": "uri-reference",
@@ -34,7 +32,10 @@
     },
     "field_location": {
       "oneOf": [
-        { "type": "integer", "description": "Location of a single bit" },
+        {
+          "type": "integer",
+          "description": "Location of a single bit"
+        },
         {
           "type": "string",
           "pattern": "^[0-9]+-[0-9]+$",
@@ -222,7 +223,9 @@
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
       "oneOf": [
-        { "$ref": "#/$defs/extension_name" },
+        {
+          "$ref": "#/$defs/extension_name"
+        },
         {
           "type": "object",
           "properties": {
@@ -240,7 +243,9 @@
     },
     "requires_entry": {
       "oneOf": [
-        { "$ref": "#/$defs/extension_requirement" },
+        {
+          "$ref": "#/$defs/extension_requirement"
+        },
         {
           "type": "object",
           "properties": {
