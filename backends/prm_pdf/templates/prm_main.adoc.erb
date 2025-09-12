@@ -1,0 +1,67 @@
+= <%= @config_name.upcase %> Processor Programmer's Reference Manual
+:revnumber: 0.1
+:revdate: <%= Time.now.strftime("%B %Y") %>
+:author: RISC-V UDB
+:doctype: book
+:toc: left
+:toclevels: 4
+:sectnums:
+:source-highlighter: rouge
+:imagesdir: images
+:icons: font
+:experimental:
+:pdf-themesdir: <%= @prm_pdf_dir / 'pdf-theme' %>
+:pdf-theme: custom
+:title-logo-image: image:<%= @prm_pdf_dir / 'pdf-theme' / 'logo.svg' %>[top=10%,align=left,pdfwidth=4in]
+<%- wavedrom_path = @root_path / "node_modules/.bin/wavedrom-cli" -%>
+<%- if File.exist?(wavedrom_path) -%>
+:wavedrom: <%= wavedrom_path %>
+<%- end -%>
+<%- bytefield_path = @root_path / "node_modules/.bin/bytefield-svg" -%>
+<%- if File.exist?(bytefield_path) -%>
+:bytefield-svg: <%= bytefield_path %>
+<%- end -%>
+
+<% @chapters.each do |chapter| %>
+<%
+  chapter_id = chapter["id"]
+  chapter_title = chapter["title"]
+  chapter_level = chapter["level"] || 2
+  chapter_type = chapter["type"] || "standard"
+  is_appendix = chapter_type == "appendix" && chapter_id != "appendices"
+%>
+
+<%# Add appendix directive for actual appendices %>
+<% if is_appendix -%>
+[appendix]
+<% end -%>
+<%= "=" * chapter_level %> <%= chapter_title %>
+
+<%# Include non-ISA specifications for this chapter %>
+<%= render_non_isa_specifications(chapter_id, chapter_level) %>
+
+<%# Include external documentation (including ISA manuals) for this chapter %>
+<%= render_external_documentation(chapter_id, chapter_level + 1) %>
+
+<%# Generate auto-generated content %>
+<% if chapter.key?("auto_generate") && chapter["auto_generate"]&.any? %>
+<% chapter["auto_generate"].each do |content_type| %>
+<% if content_type == "instructions" %>
+
+<% @all_instructions.sort_by(&:name).each do |inst| %>
+<%= "=" * (chapter_level + 1) %> <%= inst.name %>
+
+<%= PrmGenerator::FileIncluder.include_file(@adoc_base / "insts" / "#{inst.name}.adoc", 0, true) %>
+<% end %>
+
+<% elsif content_type == "csrs" %>
+
+<% @all_csrs.sort_by(&:name).each do |csr| %>
+<%= "=" * (chapter_level + 1) %> <%= csr.name %>
+
+<%= PrmGenerator::FileIncluder.include_file(@adoc_base / "csrs" / "#{csr.name}.adoc", 0, true) %>
+<% end %>
+<% end %>
+<% end %>
+<% end %>
+<% end %>
