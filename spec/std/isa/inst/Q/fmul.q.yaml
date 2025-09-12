@@ -6,9 +6,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmul.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Multiply Quad-Precision
+description:
+  - id: inst-fmul.q-behaviour
+    normative: false
+    text: |
+      `fmul.q` performs quad-precision floating-point multiplication, between `fs1` and `fs2`.
 definedBy: Q
 assembly: fd, fs1, fs2, rm
 encoding:

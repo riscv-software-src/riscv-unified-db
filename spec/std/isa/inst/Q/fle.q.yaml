@@ -6,9 +6,17 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fle.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Less Than or Equal Quad-Precision
+description:
+  - id: inst-fle.q-behaviour
+    normative: false
+    text: |
+      The `fle.q` performs the specified comparison between floating-point registers `fs1` and `fs2`,
+      and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
+
+      `fle.q` performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
+      they set the invalid operation exception flag if either input is _NaN_.
+      The result is 0 if either operand is _NaN_.
 definedBy: Q
 assembly: xd, fs1, fs2
 encoding:
