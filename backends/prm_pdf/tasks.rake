@@ -1,3 +1,6 @@
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # frozen_string_literal: true
 
 require "udb_helpers/backend_helpers"
