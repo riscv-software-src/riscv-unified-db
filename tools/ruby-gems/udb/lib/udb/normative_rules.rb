@@ -1,6 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: true
 # frozen_string_literal: true
 
 module Udb
@@ -11,8 +12,6 @@ class NormativeRules
   # data - Hash with one key called "normative_rules" with an array of all normative rules.
   sig { params(data: T::Hash[String, T.untyped]).void }
   def initialize(data)
-    raise ArgumentError, "Need hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
-
     nr_array = data["normative_rules"]
     raise ArgumentError, "Expecting an array for key normative_rules but got an #{nr_array.class}" unless nr_array.is_a?(Array)
 
@@ -60,8 +59,6 @@ class NormativeRule
 
   sig { params(data: T::Hash[String, T.untyped]).void }
   def initialize(data)
-    raise ArgumentError, "Need Hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
-
     @name = data["name"]
     raise ArgumentError, "Missing name in normative rule entry" if @name.nil?
 
@@ -99,8 +96,6 @@ class NormativeRuleTag
   # nr_name is normative rule name
   sig { params(data: T::Hash[String, T.untyped], nr_name: String).void }
   def initialize(data, nr_name)
-    raise ArgumentError, "Need Hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
-
     @name = data["name"]
     raise ArgumentError, "Missing tag name in normative rule tag entry in normative rule #{nr_name}" if @name.nil?
 

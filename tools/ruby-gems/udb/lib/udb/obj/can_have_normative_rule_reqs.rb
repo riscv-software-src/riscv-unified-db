@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 # Contains Ruby methods included in Ruby class definition for any database object that can have
 # normative rules listed in the database object's YAML definition.
@@ -18,7 +19,7 @@ module CanHaveNormativeRuleReqs
 
     @normative_rule_reqs = []
     @data["normative_rules"]&.each do |nrr_data|
-      @normative_rule_reqs << NormativeRuleReq.new(nrr_data, self)
+      @normative_rule_reqs << NormativeRuleReq.new(nrr_data, T.cast(self, DatabaseObject))
     end
     @normative_rule_reqs
   end
