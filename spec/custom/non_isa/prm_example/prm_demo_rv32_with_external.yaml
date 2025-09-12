@@ -50,8 +50,10 @@ chapters:
             level_offset: 1
           - file: "cmo.adoc"
             level_offset: 1
+            exclude_content: ["Instructions"]
           - file: "zicond.adoc"
             level_offset: 1
+            exclude_content: ["insns-czero-nez", "insns-czero-eqz"]
           - file: "m-st-ext.adoc"
             level_offset: 1
           - file: "a-st-ext.adoc"
@@ -68,8 +70,10 @@ chapters:
             level_offset: 1
           - file: "zc.adoc"
             level_offset: 1
+            exclude_content: ["Zcb_instructions"]
           - file: "b-st-ext.adoc"
             level_offset: 1
+            exclude_content: ["insns-b"]
           - file: "zca.adoc"
             level_offset: 1
           - file: "zcb.adoc"
@@ -129,12 +133,15 @@ chapters:
             level_offset: 2
           - file: "riscv-cc.adoc"
             level_offset: 2
+            exclude_content: ["bibliography", "appendix"]
           - file: "riscv-elf.adoc"
             title: "ELF Specification"
             level_offset: 2
+            exclude_content: ["bibliography"]
           - file: "riscv-dwarf.adoc"
             title: "DWARF Specification"
             level_offset: 2
+            exclude_content: ["bibliography"]
 
   - id: instruction_reference
     title: "Instruction Reference"

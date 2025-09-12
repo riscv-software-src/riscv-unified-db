@@ -1,32 +1,23 @@
 <%-
-  is_fully_configured = cfg_arch.fully_configured?
-  is_partially_configured = cfg_arch.partially_configured?
+  relevant_extension_versions_for_config = cfg_arch.fully_configured? ?
+    cfg_arch.transitive_implemented_extension_versions :
+    cfg_arch.possible_extension_versions
 
-  relevant_extension_versions_for_config = []
-  relevant_instructions_for_config = []
-
-  if is_fully_configured
-    relevant_extension_versions_for_config = cfg_arch.transitive_implemented_extension_versions
-    relevant_instructions_for_config = cfg_arch.transitive_implemented_instructions
-  elsif is_partially_configured
-    relevant_extension_versions_for_config = cfg_arch.possible_extension_versions
-    relevant_instructions_for_config = cfg_arch.possible_instructions
-  else
-    relevant_extension_versions_for_config = cfg_arch.possible_extension_versions
-    relevant_instructions_for_config = cfg_arch.possible_instructions
-  end
+  relevant_instructions_for_config = cfg_arch.fully_configured? ?
+    cfg_arch.transitive_implemented_instructions :
+    cfg_arch.possible_instructions
 -%>
 
 [ext:<%= ext.name %>-def]
 = <%= ext.name %> Extension
 <%= ext.long_name %>
 
-Documented Version Status in Configuration:: `<%= ext_version.version_str %>` (<%- if relevant_extension_versions_for_config.include?(ext_version) -%>Considered <%- if is_fully_configured -%>Implemented<%- else -%>Possible<%- end -%><%- else -%>Not currently active/possible in this configuration<%- end -%>)
+Documented Version Status in Configuration:: `<%= ext_version.version_str %>` (<%- if relevant_extension_versions_for_config.include?(ext_version) -%>Considered <%- if cfg_arch.fully_configured? -%>Implemented<%- else -%>Possible<%- end -%><%- else -%>Not currently active/possible in this configuration<%- end -%>)
 
 == Versions
 
 <%- ext.versions.sort_by { |version_object| [version_object.version_spec.major, version_object.version_spec.minor, version_object.version_spec.patch] }.reverse.each do |v| -%>
-<%- version_status_in_config = relevant_extension_versions_for_config.include?(v) ? (is_fully_configured ? "Implemented" : "Possible") : "Not active" -%>
+<%- version_status_in_config = relevant_extension_versions_for_config.include?(v) ? (cfg_arch.fully_configured? ? "Implemented" : "Possible") : "Not active" -%>
 <%= v.version_str.is_a?(String) ? v.version_str.gsub('@', '{@}') : v.version_str %> (<%= version_status_in_config %>)::
   Ratification date:::
     <%= v.ratification_date %>
@@ -53,31 +44,11 @@ Documented Version Status in Configuration:: `<%= ext_version.version_str %>` (<
 
 <%= ext.description %>
 
-<%- insts = relevant_instructions_for_config.select do |i|
-      is_defined_by_this_ext = false
-      begin
-        if i.respond_to?(:definedBy)
-          if i.definedBy.is_a?(String)
-            is_defined_by_this_ext = (i.definedBy == ext.name)
-          elsif i.definedBy.is_a?(Array)
-            is_defined_by_this_ext = i.definedBy.include?(ext.name)
-          end
-        elsif i.respond_to?(:defined_by_condition)
-          # Use the defined_by_condition method to check if this extension defines the instruction
-          defined_by_str = i.defined_by_condition.to_s
-          is_defined_by_this_ext = defined_by_str.include?(ext.name)
-        end
-      rescue => e
-        # Skip instructions that have issues with definedBy access
-        is_defined_by_this_ext = false
-      end
-      is_defined_by_this_ext
-    end
--%>
+<%- insts = ext.instructions.select { |i| relevant_instructions_for_config.include?(i) } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
-The following instructions are associated with the <%= ext.name %> extension <%- if is_fully_configured -%>and implemented in the <%= cfg_arch.name %> configuration<%- else -%>(their actual implementation depends on the full configuration of <%= cfg_arch.name %>)<%- end -%>:
+The following instructions are associated with the <%= ext.name %> extension <%- if cfg_arch.fully_configured? -%>and implemented in the <%= cfg_arch.name %> configuration<%- else -%>(their actual implementation depends on the full configuration of <%= cfg_arch.name %>)<%- end -%>:
 
 [cols="1,3"]
 |===

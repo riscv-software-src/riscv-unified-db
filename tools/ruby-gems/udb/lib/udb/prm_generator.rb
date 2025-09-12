@@ -123,7 +123,7 @@ module PrmGenerator
     end
 
     def load_prm
-      prm_path = @resolver.custom_path.parent / "non_isa" / "prm" / "#{prm_name}.yaml"
+      prm_path = @resolver.custom_path.parent / "non_isa" / "prm_example" / "#{prm_name}.yaml"
       raise GenerationError, "PRM file not found: #{prm_path}" unless prm_path.exist?
 
       # Load unconfigured architecture
@@ -188,20 +188,16 @@ module PrmGenerator
       insts_dir = @output_dir / "insts"
       FileUtils.mkdir_p(insts_dir)
 
-      template_path = @template_dir / "templates" / "inst.adoc.erb"
-      return unless template_path.exist?
-
-      template = load_template(template_path)
       instructions = get_instructions
       cfg_arch = @processor_config  # Template compatibility
 
       puts "[INFO] Generating #{instructions.length} instruction files..."
 
       instructions.each do |inst|
-        content = template.result(binding)
+        content = partial("common_templates/adoc/inst.adoc.erb", { inst: inst, cfg_arch: cfg_arch })
         content = ContentSanitizer.sanitize(content)
         content = LinkResolver.resolve(@processor_config, content)
-
+        content += "\n\n<<<\n"
         File.write(insts_dir / "#{inst.name}.adoc", content)
       end
     end
@@ -357,11 +353,11 @@ module PrmGenerator
     def self.resolve(processor_config, content)
       return "" unless content.is_a?(String)
 
-      # Resolve %%LINK% markup
-      content = content.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
-        type = $1.strip
-        name = $2.strip
-        link_text = $3.strip
+      # Resolve %%LINK%...%% and %%UDB_DOC_LINK%...%% markup
+      content = content.gsub(/%%(UDB_DOC_LINK|LINK)%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        type = $2.strip
+        name = $3.strip
+        link_text = $4.strip
 
         create_asciidoc_link(type, name, link_text)
       end
