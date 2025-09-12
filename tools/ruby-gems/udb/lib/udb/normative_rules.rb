@@ -7,7 +7,9 @@ module Udb
 
 # Contains all normative rules for a RISC-V standard.
 class NormativeRules
-  # param data [Hash<String, Array>] Hash with one key called "normative_rules" with an array of all normative rules.
+  extend T::Sig
+  # data - Hash with one key called "normative_rules" with an array of all normative rules.
+  sig { params(data: T::Hash[String, T.untyped]).void }
   def initialize(data)
     raise ArgumentError, "Need hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
 
@@ -24,15 +26,18 @@ class NormativeRules
     end
   end
 
-  # @return [Array<NormativeRule>] List of all normative rules defined in the architecture
+  # Returns a list of all normative rules defined in the architecture
+  sig { returns(T::Array[NormativeRule]) }
   def normative_rules = @normative_rule_hash.values
 
-  # @return [NormativeRule] Returns named normative rule or nil if doesn't exist
+  # Returns named normative rule or nil if doesn't exist
+  sig { params(name: String).returns(T.nilable(NormativeRule)) }
   def normative_rule(name) = @normative_rule_hash[name]
 end
 
 # Contains one Normative Rule
 class NormativeRule
+  extend T::Sig
   # @return [String] Normative rule name (mandatory)
   attr_reader :name
 
@@ -53,7 +58,7 @@ class NormativeRule
 
   attr_reader :tags               # Array<NormativeRuleTag> (optional - can be empty array, never nil)
 
-  # @param data [Hash<String, Object>]
+  sig { params(data: T::Hash[String, T.untyped]).void }
   def initialize(data)
     raise ArgumentError, "Need Hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
 
@@ -75,6 +80,7 @@ end
 
 # Holds all information for one tag.
 class NormativeRuleTag
+  extend T::Sig
   # @return [String] Name of normative rule tag into standards document
   attr_reader :name
 
@@ -90,8 +96,8 @@ class NormativeRuleTag
   # @return [String] Instance name(s) of ISA object associated with tag (nil if kind is nil, otherwise an array)
   attr_reader :instances
 
-  # @param data [Hash<String, Object>]
-  # @param nr_name String
+  # nr_name is normative rule name
+  sig { params(data: T::Hash[String, T.untyped], nr_name: String).void }
   def initialize(data, nr_name)
     raise ArgumentError, "Need Hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
 
@@ -104,7 +110,8 @@ class NormativeRuleTag
     @instances = data["instances"]
   end
 
-  # @return [String] Returns "Priv" or "Unpriv" if tag_filename present. If tag_filename not present, returns empty String.
+  # Returns "Priv" or "Unpriv" if tag_filename present. If tag_filename not present, returns empty String.
+  sig { returns(String) }
   def manual_name
     if @tag_filename.nil?
       ret = ""
@@ -122,7 +129,7 @@ class NormativeRuleTag
     return ret
   end
 
-  # @return String
+  sig { returns(String) }
   def adoc_link
     ret = "<<#{name},#{name}>>"   # default
 

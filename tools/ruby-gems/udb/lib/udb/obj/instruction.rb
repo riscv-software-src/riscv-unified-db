@@ -523,7 +523,6 @@ class Instruction < TopLevelDatabaseObject
         else
           effective_xlen = cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(effective_xlen)
-          # puts " #{name}..."
           symtab = fill_symtab(effective_xlen, pruned_ast)
           e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)

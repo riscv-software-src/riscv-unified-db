@@ -9,14 +9,16 @@ module Udb
 
 # Contains one Normative Rule requirement
 class NormativeRuleReq
+  extend T::Sig
   # @return [String] Normative rule name (mandatory)
   attr_reader :name
 
   # @return [String] When expression (optional)
   attr_reader :when
 
-  # @param data [Hash<String, Object>] Data from YAML file for requirement
-  # @param db_obj [DatabaseObject] Database object that has a normative rule requirement
+  # data - Data from YAML file for requirement
+  # db_obj - Database object that has a normative rule requirement
+  sig { params(data: T::Hash[String, T.untyped], db_obj: DatabaseObject).void }
   def initialize(data, db_obj)
     raise ArgumentError, "Need Hash for data but was passed a #{data.class}" unless data.is_a?(Hash)
     raise ArgumentError, "Need DatabaseObject for db_obj but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)

@@ -10,7 +10,9 @@ require_relative "../normative_rule_req"
 
 module Udb
 module CanHaveNormativeRuleReqs
-  # @return [Array<NormativeRuleReq>] All normative rule requirements defined by this database object sorted by name
+  extend T::Sig
+  # Returns all normative rule requirements defined by this database object sorted by name
+  sig { returns(T::Array[NormativeRuleReq]) }
   def normative_rule_reqs
     return @normative_rule_reqs unless @normative_rule_reqs.nil?
 
@@ -21,7 +23,8 @@ module CanHaveNormativeRuleReqs
     @normative_rule_reqs
   end
 
-  # @return [Hash<String, NormativeRuleReq>] Hash with name as key of all normative rule reqs created by database object
+  # Returns hash with name as key of all normative rule reqs created by database object
+  sig { returns(T::Hash[String, NormativeRuleReq]) }
   def normative_rule_reqs_hash
     return @normative_rule_reqs_hash unless @normative_rule_reqs_hash.nil?
 
@@ -32,9 +35,9 @@ module CanHaveNormativeRuleReqs
     @normative_rule_reqs_hash
   end
 
-  # @param name [String] Name of the normative rule
-  # @return [NormativeRuleReq]
-  # @return [nil] if there is no normative rule req with name of +name+
+  # name - Name of the normative rule
+  # Returns normative rule object with name of +name+ or nil if none
+  sig { params(name: String).returns(T.nilable(NormativeRuleReq)) }
   def normative_rule_req(name) = normative_rule_reqs_hash[name]
 end # module
 end
