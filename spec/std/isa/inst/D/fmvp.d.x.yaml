@@ -6,14 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmvp.d.x
-long_name: Move from Pair Integer-Registers to Double-Precision Floating-Point Register
+long_name: Floating-Point Move Pair from Integer Registers to Double-Precision Register
 description:
   - id: inst-fmvp.d.x-behaviour
     normative: false
     text: |
-      `FMVP.D.X` double-precision number from a pair of integer registers into a floating-point register.
-      Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result is written to
-      floating-point register _fd_.
+      `FMVP.D.X` moves a double-precision number from a pair of integer registers into a floating-point
+      register. Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result
+      written to floating-point register _fd_.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, xs1, xs2

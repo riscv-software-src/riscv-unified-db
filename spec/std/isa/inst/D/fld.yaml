@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fld
-long_name: Load Double-Precision Floating-Point
+long_name: Floating-Point Load Double-Precision
 description:
   - id: inst-fld-behaviour
     normative: false

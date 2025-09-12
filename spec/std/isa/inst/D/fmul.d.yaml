@@ -12,7 +12,7 @@ description:
     normative: false
     text: |
       `FMUL.D` performs the double-precision floating-point multiplication between _fs1_ and _fs2_. It is defined
-      analogously to its single-precision counterpart, but operate on double-precision operands and produce
+      analogously to its single-precision counterpart, but operates on double-precision operands and produces
       double-precision results.
 definedBy: D
 assembly: fd, fs1, fs2, rm

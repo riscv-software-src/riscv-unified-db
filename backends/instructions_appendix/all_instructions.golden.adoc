@@ -9553,7 +9553,7 @@ Encoding::
 
 Description::
 `FDIV.D` performs the double-precision floating-point division of _fs1_ by _fs2_. It is defined analogously
- to its single-precision counterpart, but operate on double-precision operands and produce double-precision
+ to its single-precision counterpart, but operates on double-precision operands and produces double-precision
  results.
 
 
@@ -9963,7 +9963,7 @@ Included in::
 == feq.d
 
 Synopsis::
-Double-Precision Floating-Point Equal
+Floating-Point Equal Double-Precision
 
 Assembly::
 feq.d xd, fs1, fs2
@@ -9976,7 +9976,7 @@ Encoding::
 
 Description::
 `FEQ.D` writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise. It is defined analogously to its
-single-precision counterpart, but operate on double-precision operands.
+single-precision counterpart, but operates on double-precision operands.
 
 
 Decode Variables::
@@ -10125,7 +10125,7 @@ Included in::
 == fld
 
 Synopsis::
-Load Double-Precision Floating-Point
+Floating-Point Load Double-Precision
 
 Assembly::
 fld fd, imm(xs1)
@@ -10166,7 +10166,7 @@ Included in::
 == fle.d
 
 Synopsis::
-Double-Precision Floating-Point Less Than or Equal
+Floating-Point Less Than or Equal Double-Precision
 
 Assembly::
 fle.d xd, fs1, fs2
@@ -10179,7 +10179,7 @@ Encoding::
 
 Description::
 `FLE.D` writes 1 to _xd_ if _fs1_ is less than or equal to _fs2_, and 0 otherwise. It is defined
-analogously to its single-precision counterpart, but operate on double-precision operands.
+analogously to its single-precision counterpart, but operates on double-precision operands.
 
 
 Decode Variables::
@@ -10329,7 +10329,7 @@ Included in::
 == fleq.d
 
 Synopsis::
-Double-Precision Floating-Point Less Than or Equal
+Floating-Point Less Than or Equal Quiet Double-Precision
 
 Assembly::
 fleq.d xd, fs1, fs2
@@ -10539,7 +10539,7 @@ Included in::
 == fli.d
 
 Synopsis::
-Double-Precision Floating-Point Load-Immediate
+Floating-Point Load Immediate Double-Precision
 
 Assembly::
 fli.d fd, xs1
@@ -10736,7 +10736,7 @@ Included in::
 == flt.d
 
 Synopsis::
-Double-Precision Floating-Point Less Than
+Floating-Point Less Than Double-Precision
 
 Assembly::
 flt.d xd, fs1, fs2
@@ -10897,7 +10897,7 @@ Included in::
 == fltq.d
 
 Synopsis::
-Double-Precision Floating-Point Less Than
+Floating-Point Less Than Quiet Double-Precision
 
 Assembly::
 fltq.d xd, fs1, fs2
@@ -11424,7 +11424,7 @@ Included in::
 == fmaxm.d
 
 Synopsis::
-Floating-Point Maximum-Number Double-Precision
+Floating-Point Maximum-Number NaN Double-Precision
 
 Assembly::
 fmaxm.d fd, fs1, fs2
@@ -11747,7 +11747,7 @@ Included in::
 == fminm.d
 
 Synopsis::
-Floating-Point Minimum-Number Double-Precision
+Floating-Point Minimum-Number NaN Double-Precision
 
 Assembly::
 fminm.d fd, fs1, fs2
@@ -12085,7 +12085,7 @@ Encoding::
 
 Description::
 `FMUL.D` performs the double-precision floating-point multiplication between _fs1_ and _fs2_. It is defined
-analogously to its single-precision counterpart, but operate on double-precision operands and produce
+analogously to its single-precision counterpart, but operates on double-precision operands and produces
 double-precision results.
 
 
@@ -12230,7 +12230,7 @@ Included in::
 == fmv.d.x
 
 Synopsis::
-Move from Integer-Register to Double-Precision Floating-Point Register
+Floating-Point Move from Integer Register to Double-Precision Register
 
 Assembly::
 fmv.d.x fd, xs1
@@ -12350,7 +12350,7 @@ Included in::
 == fmv.x.d
 
 Synopsis::
-Move to Integer-Register from Double-Precision Floating-Point Register
+Floating-Point Move from Double-Precision Register to Integer Register
 
 Assembly::
 fmv.x.d xd, fs1
@@ -12478,7 +12478,7 @@ Included in::
 == fmvh.x.d
 
 Synopsis::
-Move High Half from Double-Precision Floating-Point Register to Integer-Register
+Floating-Point Move High Half from Double-Precision Register to Integer Register
 
 Assembly::
 fmvh.x.d xd, fs1
@@ -12562,7 +12562,7 @@ Included in::
 == fmvp.d.x
 
 Synopsis::
-Move from Pair Integer-Registers to Double-Precision Floating-Point Register
+Floating-Point Move Pair from Integer Registers to Double-Precision Register
 
 Assembly::
 fmvp.d.x fd, xs1, xs2
@@ -12574,9 +12574,9 @@ Encoding::
 ....
 
 Description::
-`FMVP.D.X` double-precision number from a pair of integer registers into a floating-point register.
-Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result is written to
-floating-point register _fd_.
+`FMVP.D.X` moves a double-precision number from a pair of integer registers into a floating-point
+register. Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result
+is written to floating-point register _fd_.
 
 
 Decode Variables::
@@ -13308,7 +13308,7 @@ Included in::
 == fsd
 
 Synopsis::
-Store Double-Precision Floating-Point
+Floating-Point Store Double-Precision
 
 Assembly::
 fsd fs2, imm(xs1)
@@ -13915,7 +13915,7 @@ Included in::
 == fsqrt.d
 
 Synopsis::
-Floating-Point Square-Root Double-Precision
+Floating-Point Square Root Double-Precision
 
 Assembly::
 fsqrt.d fd, fs1, rm

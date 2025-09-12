@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fsqrt.d
-long_name: Floating-Point Square-Root Double-Precision
+long_name: Floating-Point Square Root Double-Precision
 description:
   - id: inst-fsqrt.d-behaviour
     normative: false

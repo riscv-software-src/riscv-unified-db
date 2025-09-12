@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmv.d.x
-long_name: Move from Integer-Register to Double-Precision Floating-Point Register
+long_name: Floating-Point Move from Integer Register to Double-Precision Register
 description:
   - id: inst-fmv.d.x-behaviour
     normative: false

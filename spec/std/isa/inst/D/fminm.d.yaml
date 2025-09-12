@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fminm.d
-long_name: Floating-Point Minimum-Number Double-Precision
+long_name: Floating-Point Minimum-Number NaN Double-Precision
 description:
   - id: inst-fminm.d-behaviour
     normative: false

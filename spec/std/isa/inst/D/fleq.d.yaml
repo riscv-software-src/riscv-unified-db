@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fleq.d
-long_name: Double-Precision Floating-Point Less Than or Equal
+long_name: Floating-Point Less Than or Equal Quiet Double-Precision
 description:
   - id: inst-fleq.d-behaviour
     normative: false

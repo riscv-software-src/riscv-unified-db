@@ -6,7 +6,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmaxm.d
-long_name: Floating-Point Maximum-Number Double-Precision
+long_name: Floating-Point Maximum-Number NaN Double-Precision
 description:
   - id: inst-fmaxm.d-behaviour
     normative: false
