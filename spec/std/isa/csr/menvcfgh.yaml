@@ -49,3 +49,13 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+  DTE:
+    location: 27
+    alias: menvcfg.DTE
+    description: |
+      *Double Trap Enable*
+
+      Alias of `menvcfg.DTE`
+    definedBy: Ssdbltrp
+    type: RW
+    reset_value: UNDEFINED_LEGAL

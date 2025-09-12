@@ -147,7 +147,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   erb.filename = template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
+  File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch, config_name).get_binding))
 end
 
 rule %r{#{CPP_HART_GEN_DST}/.*\.[ch](xx)?$} => proc { |tname|
@@ -180,7 +180,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   erb.filename = template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
+  File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch, config_name).get_binding))
 end
 
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/CMakeLists\.txt} => [
@@ -239,7 +239,8 @@ def configs_build_name
   end
 
   config_names = configs.map do |config|
-    $resolver.cfg_arch_for(config).name
+    # Use the filename instead of the YAML name to avoid case mismatches with CMake
+    File.basename(config, ".yaml")
   end
 
   build_name =
