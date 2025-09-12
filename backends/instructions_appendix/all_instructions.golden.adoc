@@ -10410,7 +10410,7 @@ Included in::
 == fleq.q
 
 Synopsis::
-Floating-Point Less Than or Equal Quad-Precision
+Floating-Point Less Than or Equal Quiet Quad-Precision
 
 Assembly::
 fleq.q xd, fs1, fs2
@@ -12604,7 +12604,7 @@ Included in::
 == fmvp.q.x
 
 Synopsis::
-Floating-Point Move to Quad-Precision from Integer Pair
+Floating-Point Move Pair from Integer Registers to Quad-Precision Register
 
 Assembly::
 fmvp.q.x fd, xs1, xs2
