@@ -11,14 +11,11 @@ require "ostruct"
 
 # Add to standard String class.
 class String
-  extend T::Sig
-
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   # Returns new String with periods replaced with hyphens and ampersands replaced with "-and-"
   # Don't use underscore as a replacement character since it is used by doc_links to separate list items.
   #
-  sig { returns(String) }
   def sanitize = String.new(self).gsub(".", "-").gsub("&", "-and-")
 end
 
