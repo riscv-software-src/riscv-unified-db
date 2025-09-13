@@ -26,9 +26,12 @@ def build_match_from_format(format_field):
         return None
 
     opcodes = format_field["opcodes"]
+    variables = format_field["variables"]
 
     # Determine instruction width by finding maximum bit position
     valid_locations = []
+
+    # Check opcodes
     for field_data in opcodes.values():
         if (
             isinstance(field_data, dict)
@@ -45,13 +48,30 @@ def build_match_from_format(format_field):
             except (ValueError, IndexError):
                 continue  # Skip invalid location formats
 
+    # Check variables
+    for var_data in variables.values():
+        if (
+            isinstance(var_data, dict)
+            and "location" in var_data
+            and isinstance(var_data["location"], str)
+        ):
+            try:
+                location = var_data["location"]
+                if "-" in location:
+                    high = int(location.split("-")[0])
+                else:
+                    high = int(location)
+                valid_locations.append(high)
+            except (ValueError, IndexError):
+                continue  # Skip invalid location formats
+
     if not valid_locations:
         return None
 
     max_bit = max(valid_locations)
 
     # Set instruction width based on maximum bit position
-    width = 48 if max_bit >= 32 else 32 if max_bit >= 16 else 16
+    width = max(valid_locations) + 1
     match_bits = ["-"] * width
 
     # Populate match string with opcode bits
