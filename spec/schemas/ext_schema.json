@@ -318,11 +318,8 @@
           "type": "string",
           "description": "Source file where this extension was defined"
         },
-        "cert_normative_rules": {
-          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
-        },
-        "cert_test_procedures": {
-          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
+        "normative_rules": {
+          "$ref": "schema_defs.json#/$defs/normative_rules"
         }
       },
       "additionalProperties": false

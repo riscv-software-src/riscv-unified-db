@@ -57,3 +57,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: or_enc
+  - name: or_op

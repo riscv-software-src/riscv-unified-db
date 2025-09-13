@@ -92,3 +92,10 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: ld_enc
+  # TODO: add "when" statement including this when Zilsd extension is present
+  #- name: ld_op
+  - name: ld_rv64i_op
+    # TODO: add "when" statement saying MXLEN == 64

@@ -63,3 +63,9 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sra_enc
+  - name: sra_op
+  - name: sra_rv64i_sh_amt
+    # TODO: add "when" statement saying MXLEN == 64

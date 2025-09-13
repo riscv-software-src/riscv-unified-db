@@ -57,3 +57,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: xor_enc
+  - name: xor_op

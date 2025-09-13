@@ -79,3 +79,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: bge_enc
+  - name: bge_op

@@ -43,7 +43,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:add_uw]
+[#udb:doc:inst:add-uw]
 == add.uw
 
 Synopsis::
@@ -636,7 +636,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoadd_b]
+[#udb:doc:inst:amoadd-b]
 == amoadd.b
 
 Synopsis::
@@ -676,7 +676,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoadd_d]
+[#udb:doc:inst:amoadd-d]
 == amoadd.d
 
 Synopsis::
@@ -721,7 +721,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoadd_h]
+[#udb:doc:inst:amoadd-h]
 == amoadd.h
 
 Synopsis::
@@ -761,7 +761,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoadd_w]
+[#udb:doc:inst:amoadd-w]
 == amoadd.w
 
 Synopsis::
@@ -806,7 +806,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoand_b]
+[#udb:doc:inst:amoand-b]
 == amoand.b
 
 Synopsis::
@@ -846,7 +846,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoand_d]
+[#udb:doc:inst:amoand-d]
 == amoand.d
 
 Synopsis::
@@ -891,7 +891,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoand_h]
+[#udb:doc:inst:amoand-h]
 == amoand.h
 
 Synopsis::
@@ -931,7 +931,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoand_w]
+[#udb:doc:inst:amoand-w]
 == amoand.w
 
 Synopsis::
@@ -976,7 +976,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amocas_b]
+[#udb:doc:inst:amocas-b]
 == amocas.b
 
 Synopsis::
@@ -1016,7 +1016,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amocas_d]
+[#udb:doc:inst:amocas-d]
 == amocas.d
 
 Synopsis::
@@ -1118,7 +1118,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amocas_h]
+[#udb:doc:inst:amocas-h]
 == amocas.h
 
 Synopsis::
@@ -1158,7 +1158,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amocas_q]
+[#udb:doc:inst:amocas-q]
 == amocas.q
 
 Synopsis::
@@ -1230,7 +1230,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amocas_w]
+[#udb:doc:inst:amocas-w]
 == amocas.w
 
 Synopsis::
@@ -1302,7 +1302,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomax_b]
+[#udb:doc:inst:amomax-b]
 == amomax.b
 
 Synopsis::
@@ -1342,7 +1342,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomax_d]
+[#udb:doc:inst:amomax-d]
 == amomax.d
 
 Synopsis::
@@ -1387,7 +1387,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomax_h]
+[#udb:doc:inst:amomax-h]
 == amomax.h
 
 Synopsis::
@@ -1427,7 +1427,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomax_w]
+[#udb:doc:inst:amomax-w]
 == amomax.w
 
 Synopsis::
@@ -1472,7 +1472,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomaxu_b]
+[#udb:doc:inst:amomaxu-b]
 == amomaxu.b
 
 Synopsis::
@@ -1512,7 +1512,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomaxu_d]
+[#udb:doc:inst:amomaxu-d]
 == amomaxu.d
 
 Synopsis::
@@ -1557,7 +1557,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomaxu_h]
+[#udb:doc:inst:amomaxu-h]
 == amomaxu.h
 
 Synopsis::
@@ -1597,7 +1597,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomaxu_w]
+[#udb:doc:inst:amomaxu-w]
 == amomaxu.w
 
 Synopsis::
@@ -1642,7 +1642,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomin_b]
+[#udb:doc:inst:amomin-b]
 == amomin.b
 
 Synopsis::
@@ -1682,7 +1682,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomin_d]
+[#udb:doc:inst:amomin-d]
 == amomin.d
 
 Synopsis::
@@ -1727,7 +1727,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomin_h]
+[#udb:doc:inst:amomin-h]
 == amomin.h
 
 Synopsis::
@@ -1767,7 +1767,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amomin_w]
+[#udb:doc:inst:amomin-w]
 == amomin.w
 
 Synopsis::
@@ -1812,7 +1812,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amominu_b]
+[#udb:doc:inst:amominu-b]
 == amominu.b
 
 Synopsis::
@@ -1852,7 +1852,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amominu_d]
+[#udb:doc:inst:amominu-d]
 == amominu.d
 
 Synopsis::
@@ -1897,7 +1897,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amominu_h]
+[#udb:doc:inst:amominu-h]
 == amominu.h
 
 Synopsis::
@@ -1937,7 +1937,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amominu_w]
+[#udb:doc:inst:amominu-w]
 == amominu.w
 
 Synopsis::
@@ -1982,7 +1982,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoor_b]
+[#udb:doc:inst:amoor-b]
 == amoor.b
 
 Synopsis::
@@ -2022,7 +2022,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoor_d]
+[#udb:doc:inst:amoor-d]
 == amoor.d
 
 Synopsis::
@@ -2067,7 +2067,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoor_h]
+[#udb:doc:inst:amoor-h]
 == amoor.h
 
 Synopsis::
@@ -2107,7 +2107,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoor_w]
+[#udb:doc:inst:amoor-w]
 == amoor.w
 
 Synopsis::
@@ -2152,7 +2152,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoswap_b]
+[#udb:doc:inst:amoswap-b]
 == amoswap.b
 
 Synopsis::
@@ -2192,7 +2192,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoswap_d]
+[#udb:doc:inst:amoswap-d]
 == amoswap.d
 
 Synopsis::
@@ -2236,7 +2236,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoswap_h]
+[#udb:doc:inst:amoswap-h]
 == amoswap.h
 
 Synopsis::
@@ -2276,7 +2276,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoswap_w]
+[#udb:doc:inst:amoswap-w]
 == amoswap.w
 
 Synopsis::
@@ -2320,7 +2320,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoxor_b]
+[#udb:doc:inst:amoxor-b]
 == amoxor.b
 
 Synopsis::
@@ -2360,7 +2360,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoxor_d]
+[#udb:doc:inst:amoxor-d]
 == amoxor.d
 
 Synopsis::
@@ -2405,7 +2405,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoxor_h]
+[#udb:doc:inst:amoxor-h]
 == amoxor.h
 
 Synopsis::
@@ -2445,7 +2445,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:amoxor_w]
+[#udb:doc:inst:amoxor-w]
 == amoxor.w
 
 Synopsis::
@@ -3328,7 +3328,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_add]
+[#udb:doc:inst:c-add]
 == c.add
 
 Synopsis::
@@ -3368,7 +3368,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_addi]
+[#udb:doc:inst:c-addi]
 == c.addi
 
 Synopsis::
@@ -3410,7 +3410,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_addi16sp]
+[#udb:doc:inst:c-addi16sp]
 == c.addi16sp
 
 Synopsis::
@@ -3451,7 +3451,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_addi4spn]
+[#udb:doc:inst:c-addi4spn]
 == c.addi4spn
 
 Synopsis::
@@ -3493,7 +3493,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_addiw]
+[#udb:doc:inst:c-addiw]
 == c.addiw
 
 Synopsis::
@@ -3535,7 +3535,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_addw]
+[#udb:doc:inst:c-addw]
 == c.addw
 
 Synopsis::
@@ -3576,7 +3576,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_and]
+[#udb:doc:inst:c-and]
 == c.and
 
 Synopsis::
@@ -3617,7 +3617,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_andi]
+[#udb:doc:inst:c-andi]
 == c.andi
 
 Synopsis::
@@ -3658,7 +3658,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_beqz]
+[#udb:doc:inst:c-beqz]
 == c.beqz
 
 Synopsis::
@@ -3698,7 +3698,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_bnez]
+[#udb:doc:inst:c-bnez]
 == c.bnez
 
 Synopsis::
@@ -3738,7 +3738,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_ebreak]
+[#udb:doc:inst:c-ebreak]
 == c.ebreak
 
 Synopsis::
@@ -3756,7 +3756,7 @@ a debugging environment. Unless overridden by an external debug environment,
 C.EBREAK raises a breakpoint exception and performs no other operation.
 
 [NOTE]
-As described in the xref:exts:C.adoc#udb:doc:ext:C[C] Standard Extension for Compressed Instructions, the xref:insts:c_ebreak.adoc#udb:doc:inst:c_ebreak[c.ebreak]
+As described in the xref:exts:C.adoc#udb:doc:ext:C[C] Standard Extension for Compressed Instructions, the xref:insts:c-ebreak.adoc#udb:doc:inst:c-ebreak[c.ebreak]
 instruction performs the same operation as the EBREAK instruction.
 
 EBREAK causes the receiving privilege mode's epc register to be set to the address of
@@ -3780,7 +3780,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_fld]
+[#udb:doc:inst:c-fld]
 == c.fld
 
 Synopsis::
@@ -3819,7 +3819,7 @@ anyOf:
 * Zcd, version >= Zcd@1.0.0
 
 
-[#udb:doc:inst:c_fldsp]
+[#udb:doc:inst:c-fldsp]
 == c.fldsp
 
 Synopsis::
@@ -3857,7 +3857,7 @@ anyOf:
 * Zcd, version >= Zcd@1.0.0
 
 
-[#udb:doc:inst:c_flw]
+[#udb:doc:inst:c-flw]
 == c.flw
 
 Synopsis::
@@ -3896,7 +3896,7 @@ anyOf:
 * Zcf, version >= Zcf@1.0.0
 
 
-[#udb:doc:inst:c_flwsp]
+[#udb:doc:inst:c-flwsp]
 == c.flwsp
 
 Synopsis::
@@ -3934,7 +3934,7 @@ anyOf:
 * Zcf, version >= Zcf@1.0.0
 
 
-[#udb:doc:inst:c_fsd]
+[#udb:doc:inst:c-fsd]
 == c.fsd
 
 Synopsis::
@@ -3973,7 +3973,7 @@ anyOf:
 * Zcd, version >= Zcd@1.0.0
 
 
-[#udb:doc:inst:c_fsdsp]
+[#udb:doc:inst:c-fsdsp]
 == c.fsdsp
 
 Synopsis::
@@ -4011,7 +4011,7 @@ anyOf:
 * Zcd, version >= Zcd@1.0.0
 
 
-[#udb:doc:inst:c_fsw]
+[#udb:doc:inst:c-fsw]
 == c.fsw
 
 Synopsis::
@@ -4050,7 +4050,7 @@ anyOf:
 * Zcf, version >= Zcf@1.0.0
 
 
-[#udb:doc:inst:c_fswsp]
+[#udb:doc:inst:c-fswsp]
 == c.fswsp
 
 Synopsis::
@@ -4088,7 +4088,7 @@ anyOf:
 * Zcf, version >= Zcf@1.0.0
 
 
-[#udb:doc:inst:c_j]
+[#udb:doc:inst:c-j]
 == c.j
 
 Synopsis::
@@ -4127,7 +4127,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_jal]
+[#udb:doc:inst:c-jal]
 == c.jal
 
 Synopsis::
@@ -4166,7 +4166,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_jalr]
+[#udb:doc:inst:c-jalr]
 == c.jalr
 
 Synopsis::
@@ -4205,7 +4205,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_jr]
+[#udb:doc:inst:c-jr]
 == c.jr
 
 Synopsis::
@@ -4244,7 +4244,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lbu]
+[#udb:doc:inst:c-lbu]
 == c.lbu
 
 Synopsis::
@@ -4286,7 +4286,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_ld]
+[#udb:doc:inst:c-ld]
 == c.ld
 
 Synopsis::
@@ -4354,7 +4354,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_ldsp]
+[#udb:doc:inst:c-ldsp]
 == c.ldsp
 
 Synopsis::
@@ -4419,7 +4419,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lh]
+[#udb:doc:inst:c-lh]
 == c.lh
 
 Synopsis::
@@ -4461,7 +4461,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lhu]
+[#udb:doc:inst:c-lhu]
 == c.lhu
 
 Synopsis::
@@ -4503,7 +4503,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_li]
+[#udb:doc:inst:c-li]
 == c.li
 
 Synopsis::
@@ -4544,7 +4544,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lui]
+[#udb:doc:inst:c-lui]
 == c.lui
 
 Synopsis::
@@ -4586,7 +4586,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lw]
+[#udb:doc:inst:c-lw]
 == c.lw
 
 Synopsis::
@@ -4629,7 +4629,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_lwsp]
+[#udb:doc:inst:c-lwsp]
 == c.lwsp
 
 Synopsis::
@@ -4672,7 +4672,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_mop_n]
+[#udb:doc:inst:c-mop-n]
 == c.mop.n
 
 Synopsis::
@@ -4704,7 +4704,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_mul]
+[#udb:doc:inst:c-mul]
 == c.mul
 
 Synopsis::
@@ -4743,7 +4743,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_mv]
+[#udb:doc:inst:c-mv]
 == c.mv
 
 Synopsis::
@@ -4783,7 +4783,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_nop]
+[#udb:doc:inst:c-nop]
 == c.nop
 
 Synopsis::
@@ -4814,7 +4814,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_not]
+[#udb:doc:inst:c-not]
 == c.not
 
 Synopsis::
@@ -4853,7 +4853,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_or]
+[#udb:doc:inst:c-or]
 == c.or
 
 Synopsis::
@@ -4894,7 +4894,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sb]
+[#udb:doc:inst:c-sb]
 == c.sb
 
 Synopsis::
@@ -4936,7 +4936,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sd]
+[#udb:doc:inst:c-sd]
 == c.sd
 
 Synopsis::
@@ -5003,7 +5003,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sdsp]
+[#udb:doc:inst:c-sdsp]
 == c.sdsp
 
 Synopsis::
@@ -5068,7 +5068,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sext_b]
+[#udb:doc:inst:c-sext-b]
 == c.sext.b
 
 Synopsis::
@@ -5108,7 +5108,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sext_h]
+[#udb:doc:inst:c-sext-h]
 == c.sext.h
 
 Synopsis::
@@ -5148,7 +5148,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sh]
+[#udb:doc:inst:c-sh]
 == c.sh
 
 Synopsis::
@@ -5190,7 +5190,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_slli]
+[#udb:doc:inst:c-slli]
 == c.slli
 
 Synopsis::
@@ -5251,7 +5251,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_srai]
+[#udb:doc:inst:c-srai]
 == c.srai
 
 Synopsis::
@@ -5313,7 +5313,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_srli]
+[#udb:doc:inst:c-srli]
 == c.srli
 
 Synopsis::
@@ -5375,7 +5375,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sub]
+[#udb:doc:inst:c-sub]
 == c.sub
 
 Synopsis::
@@ -5416,7 +5416,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_subw]
+[#udb:doc:inst:c-subw]
 == c.subw
 
 Synopsis::
@@ -5457,7 +5457,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_sw]
+[#udb:doc:inst:c-sw]
 == c.sw
 
 Synopsis::
@@ -5500,7 +5500,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_swsp]
+[#udb:doc:inst:c-swsp]
 == c.swsp
 
 Synopsis::
@@ -5542,7 +5542,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_xor]
+[#udb:doc:inst:c-xor]
 == c.xor
 
 Synopsis::
@@ -5583,7 +5583,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_zext_b]
+[#udb:doc:inst:c-zext-b]
 == c.zext.b
 
 Synopsis::
@@ -5623,7 +5623,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_zext_h]
+[#udb:doc:inst:c-zext-h]
 == c.zext.h
 
 Synopsis::
@@ -5663,7 +5663,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:c_zext_w]
+[#udb:doc:inst:c-zext-w]
 == c.zext.w
 
 Synopsis::
@@ -5702,7 +5702,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cbo_clean]
+[#udb:doc:inst:cbo-clean]
 == cbo.clean
 
 Synopsis::
@@ -5726,10 +5726,10 @@ operation():
   * The cache block will be in the clean (not dirty) state in any coherent cache holding a valid copy of the line.
   * The data will be cleaned to a point such that an incoherent load can observe the cleaned data.
 
-xref:insts:cbo_clean.adoc#udb:doc:inst:cbo_clean[cbo.clean] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
+xref:insts:cbo-clean.adoc#udb:doc:inst:cbo-clean[cbo.clean] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
 <%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
-Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_clean.adoc#udb:doc:inst:cbo_clean[cbo.clean] has UNSPECIFIED behavior.
+Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo-clean.adoc#udb:doc:inst:cbo-clean[cbo.clean] has UNSPECIFIED behavior.
 <%- end -%>
 
 Clean operations are treated as stores for page and access permissions. If permission checks fail,
@@ -5766,7 +5766,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cbo_flush]
+[#udb:doc:inst:cbo-flush]
 == cbo.flush
 
 Synopsis::
@@ -5784,10 +5784,10 @@ Encoding::
 Description::
 Flushes an entire cache block by cleaning it and then invalidating it in all caches.
 
-xref:insts:cbo_flush.adoc#udb:doc:inst:cbo_flush[cbo.flush] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
+xref:insts:cbo-flush.adoc#udb:doc:inst:cbo-flush[cbo.flush] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
 <%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
-Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_flush.adoc#udb:doc:inst:cbo_flush[cbo.flush] has UNSPECIFIED behavior.
+Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo-flush.adoc#udb:doc:inst:cbo-flush[cbo.flush] has UNSPECIFIED behavior.
 <%- end -%>
 
 Flush operations are treated as stores for page and access permissions. If permission checks fail,
@@ -5824,7 +5824,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cbo_inval]
+[#udb:doc:inst:cbo-inval]
 == cbo.inval
 
 Synopsis::
@@ -5881,10 +5881,10 @@ The table below summarizes the options.
 ! 11 ! 11 ! 11 ! Invalidate ! Invalidate  ! Invalidate ! Invalidate ! Invalidate
 !===
 
-xref:insts:cbo_inval.adoc#udb:doc:inst:cbo_inval[cbo.inval] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
+xref:insts:cbo-inval.adoc#udb:doc:inst:cbo-inval[cbo.inval] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
 <%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
-Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] has UNSPECIFIED behavior.
+Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo-zero.adoc#udb:doc:inst:cbo-zero[cbo.zero] has UNSPECIFIED behavior.
 <%- end -%>
 
 Invalidate operations are treated as stores for page and access permissions. If permission checks fail,
@@ -5921,7 +5921,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cbo_zero]
+[#udb:doc:inst:cbo-zero]
 == cbo.zero
 
 Synopsis::
@@ -5941,10 +5941,10 @@ Zeros an entire cache block
 
 The block zeroing does not need to be atomic.
 
-xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
+xref:insts:cbo-zero.adoc#udb:doc:inst:cbo-zero[cbo.zero] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
 <%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
-Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] has UNSPECIFIED behavior.
+Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo-zero.adoc#udb:doc:inst:cbo-zero[cbo.zero] has UNSPECIFIED behavior.
 <%- end -%>
 
 Clean operations are treated as stores for page and access permissions. If permission checks fail,
@@ -6178,7 +6178,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_mva01s]
+[#udb:doc:inst:cm-mva01s]
 == cm.mva01s
 
 Synopsis::
@@ -6216,7 +6216,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_mvsa01]
+[#udb:doc:inst:cm-mvsa01]
 == cm.mvsa01
 
 Synopsis::
@@ -6256,7 +6256,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_pop]
+[#udb:doc:inst:cm-pop]
 == cm.pop
 
 Synopsis::
@@ -6301,7 +6301,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_popret]
+[#udb:doc:inst:cm-popret]
 == cm.popret
 
 Synopsis::
@@ -6346,7 +6346,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_popretz]
+[#udb:doc:inst:cm-popretz]
 == cm.popretz
 
 Synopsis::
@@ -6391,7 +6391,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:cm_push]
+[#udb:doc:inst:cm-push]
 == cm.push
 
 Synopsis::
@@ -6885,7 +6885,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:czero_eqz]
+[#udb:doc:inst:czero-eqz]
 == czero.eqz
 
 Synopsis::
@@ -6926,7 +6926,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:czero_nez]
+[#udb:doc:inst:czero-nez]
 == czero.nez
 
 Synopsis::
@@ -7187,7 +7187,7 @@ a debugging environment. Unless overridden by an external debug environment,
 EBREAK raises a breakpoint exception and performs no other operation.
 
 [NOTE]
-As described in the xref:exts:C.adoc#udb:doc:ext:C[C] Standaxd Extension for Compressed Instructions, the xref:insts:c_ebreak.adoc#udb:doc:inst:c_ebreak[c.ebreak]
+As described in the xref:exts:C.adoc#udb:doc:ext:C[C] Standaxd Extension for Compressed Instructions, the xref:insts:c-ebreak.adoc#udb:doc:inst:c-ebreak[c.ebreak]
 instruction performs the same operation as the EBREAK instruction.
 
 EBREAK causes the receiving privilege mode's epc register to be set to the address of
@@ -7252,7 +7252,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fadd_d]
+[#udb:doc:inst:fadd-d]
 == fadd.d
 
 Synopsis::
@@ -7292,7 +7292,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fadd_h]
+[#udb:doc:inst:fadd-h]
 == fadd.h
 
 Synopsis::
@@ -7331,7 +7331,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fadd_q]
+[#udb:doc:inst:fadd-q]
 == fadd.q
 
 Synopsis::
@@ -7347,7 +7347,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fadd_q.adoc#udb:doc:inst:fadd_q[fadd.q] is analogous to xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] and performs double-precision floating-point addition between
+xref:insts:fadd-q.adoc#udb:doc:inst:fadd-q[fadd.q] is analogous to xref:insts:fadd-d.adoc#udb:doc:inst:fadd-d[fadd.d] and performs double-precision floating-point addition between
 `qs1` and `qs2` and writes the final result to `qd`.
 
 
@@ -7371,7 +7371,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fadd_s]
+[#udb:doc:inst:fadd-s]
 == fadd.s
 
 Synopsis::
@@ -7411,7 +7411,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fclass_d]
+[#udb:doc:inst:fclass-d]
 == fclass.d
 
 Synopsis::
@@ -7469,7 +7469,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fclass_h]
+[#udb:doc:inst:fclass-h]
 == fclass.h
 
 Synopsis::
@@ -7506,7 +7506,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fclass_q]
+[#udb:doc:inst:fclass-q]
 == fclass.q
 
 Synopsis::
@@ -7522,13 +7522,13 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] instruction examines the value in floating-point register `rs1` and writes to integer
+The xref:insts:fclass-q.adoc#udb:doc:inst:fclass-q[fclass.q] instruction examines the value in floating-point register `rs1` and writes to integer
 register `rd` a 10-bit mask that indicates the class of the floating-point number.
 
 The format of the mask is described in table given below. The corresponding bit in `rd`
 will be set if the property is true and clear otherwise. All other bits in `rd` are cleared.
 
-Note that exactly one bit in `rd` will be set. xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] does not set the floating-point
+Note that exactly one bit in `rd` will be set. xref:insts:fclass-q.adoc#udb:doc:inst:fclass-q[fclass.q] does not set the floating-point
 exception flags.
 
 .Format of result of `fclass` instruction.
@@ -7566,7 +7566,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fclass_s]
+[#udb:doc:inst:fclass-s]
 == fclass.s
 
 Synopsis::
@@ -7582,7 +7582,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fclass_s.adoc#udb:doc:inst:fclass_s[fclass.s] instruction examines the value in floating-point register
+The xref:insts:fclass-s.adoc#udb:doc:inst:fclass-s[fclass.s] instruction examines the value in floating-point register
 _fs1_ and writes to integer register _xd_ a 10-bit mask that indicates
 the class of the floating-point number.
 The format of the mask is described in the table below.
@@ -7590,7 +7590,7 @@ The corresponding bit in _xd_ will be set if the property is true and
 clear otherwise.
 All other bits in _xd_ are cleared.
 Note that exactly one bit in xd will be set.
-xref:insts:fclass_s.adoc#udb:doc:inst:fclass_s[fclass.s] does not set the floating-point exception flags.
+xref:insts:fclass-s.adoc#udb:doc:inst:fclass-s[fclass.s] does not set the floating-point exception flags.
 
 .Format of result of `fclass` instruction.
 [%autowidth,float="center",align="center",cols="^,<",options="header",]
@@ -7627,7 +7627,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_bf16_s]
+[#udb:doc:inst:fcvt-bf16-s]
 == fcvt.bf16.s
 
 Synopsis::
@@ -7665,7 +7665,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_h]
+[#udb:doc:inst:fcvt-d-h]
 == fcvt.d.h
 
 Synopsis::
@@ -7705,7 +7705,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_l]
+[#udb:doc:inst:fcvt-d-l]
 == fcvt.d.l
 
 Synopsis::
@@ -7744,7 +7744,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_lu]
+[#udb:doc:inst:fcvt-d-lu]
 == fcvt.d.lu
 
 Synopsis::
@@ -7783,7 +7783,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_q]
+[#udb:doc:inst:fcvt-d-q]
 == fcvt.d.q
 
 Synopsis::
@@ -7799,7 +7799,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_d_q.adoc#udb:doc:inst:fcvt_d_q[fcvt.d.q] converts a quad-precision floating-point number to a double-precision floating-point number.
+xref:insts:fcvt-d-q.adoc#udb:doc:inst:fcvt-d-q[fcvt.d.q] converts a quad-precision floating-point number to a double-precision floating-point number.
 
 
 Decode Variables::
@@ -7821,7 +7821,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_s]
+[#udb:doc:inst:fcvt-d-s]
 == fcvt.d.s
 
 Synopsis::
@@ -7862,7 +7862,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_w]
+[#udb:doc:inst:fcvt-d-w]
 == fcvt.d.w
 
 Synopsis::
@@ -7902,7 +7902,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_d_wu]
+[#udb:doc:inst:fcvt-d-wu]
 == fcvt.d.wu
 
 Synopsis::
@@ -7942,7 +7942,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_d]
+[#udb:doc:inst:fcvt-h-d]
 == fcvt.h.d
 
 Synopsis::
@@ -7958,7 +7958,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_d.adoc#udb:doc:inst:fcvt_h_d[fcvt.h.d] converts a Double-precision Floating-point number to a Half-precision floating-point number.
+xref:insts:fcvt-h-d.adoc#udb:doc:inst:fcvt-h-d[fcvt.h.d] converts a Double-precision Floating-point number to a Half-precision floating-point number.
 
 
 Decode Variables::
@@ -7982,7 +7982,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_l]
+[#udb:doc:inst:fcvt-h-l]
 == fcvt.h.l
 
 Synopsis::
@@ -7998,7 +7998,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_l.adoc#udb:doc:inst:fcvt_h_l[fcvt.h.l] converts a 64-bit signed integer to a half-precision floating-point number.
+xref:insts:fcvt-h-l.adoc#udb:doc:inst:fcvt-h-l[fcvt.h.l] converts a 64-bit signed integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -8020,7 +8020,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_lu]
+[#udb:doc:inst:fcvt-h-lu]
 == fcvt.h.lu
 
 Synopsis::
@@ -8036,7 +8036,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_lu.adoc#udb:doc:inst:fcvt_h_lu[fcvt.h.lu] converts a 64-bit unsigned integer to a half-precision floating-point number.
+xref:insts:fcvt-h-lu.adoc#udb:doc:inst:fcvt-h-lu[fcvt.h.lu] converts a 64-bit unsigned integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -8058,7 +8058,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_q]
+[#udb:doc:inst:fcvt-h-q]
 == fcvt.h.q
 
 Synopsis::
@@ -8074,7 +8074,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_q.adoc#udb:doc:inst:fcvt_h_q[fcvt.h.q] converts a Quad-precision Floating-point number to a Half-precision Floating-point number.
+xref:insts:fcvt-h-q.adoc#udb:doc:inst:fcvt-h-q[fcvt.h.q] converts a Quad-precision Floating-point number to a Half-precision Floating-point number.
 
 
 Decode Variables::
@@ -8098,7 +8098,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_s]
+[#udb:doc:inst:fcvt-h-s]
 == fcvt.h.s
 
 Synopsis::
@@ -8117,7 +8117,7 @@ Description::
 Converts a half-precision number in floating-point register _fs1_ into a single-precision floating-point number in
 floating-point register _fd_.
 
-xref:insts:fcvt_h_s.adoc#udb:doc:inst:fcvt_h_s[fcvt.h.s] rounds according to the _rm_ field.
+xref:insts:fcvt-h-s.adoc#udb:doc:inst:fcvt-h-s[fcvt.h.s] rounds according to the _rm_ field.
 
 All floating-point conversion instructions set the Inexact exception flag if the rounded
 result differs from the operand value and the Invalid exception flag is not set.
@@ -8144,7 +8144,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_w]
+[#udb:doc:inst:fcvt-h-w]
 == fcvt.h.w
 
 Synopsis::
@@ -8160,7 +8160,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_w.adoc#udb:doc:inst:fcvt_h_w[fcvt.h.w] converts a 32-bit signed integer to a half-precision floating-point number.
+xref:insts:fcvt-h-w.adoc#udb:doc:inst:fcvt-h-w[fcvt.h.w] converts a 32-bit signed integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -8182,7 +8182,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_h_wu]
+[#udb:doc:inst:fcvt-h-wu]
 == fcvt.h.wu
 
 Synopsis::
@@ -8198,7 +8198,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_h_wu.adoc#udb:doc:inst:fcvt_h_wu[fcvt.h.wu] converts a 32-bit unsigned integer to a half-precision floating-point number.
+xref:insts:fcvt-h-wu.adoc#udb:doc:inst:fcvt-h-wu[fcvt.h.wu] converts a 32-bit unsigned integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -8220,7 +8220,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_l_d]
+[#udb:doc:inst:fcvt-l-d]
 == fcvt.l.d
 
 Synopsis::
@@ -8259,7 +8259,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_l_h]
+[#udb:doc:inst:fcvt-l-h]
 == fcvt.l.h
 
 Synopsis::
@@ -8275,7 +8275,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_h.adoc#udb:doc:inst:fcvt_l_h[fcvt.l.h] converts a half-precision floating-point number to a signed 64-bit integer.
+xref:insts:fcvt-l-h.adoc#udb:doc:inst:fcvt-l-h[fcvt.l.h] converts a half-precision floating-point number to a signed 64-bit integer.
 
 
 Decode Variables::
@@ -8297,7 +8297,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_l_q]
+[#udb:doc:inst:fcvt-l-q]
 == fcvt.l.q
 
 Synopsis::
@@ -8313,7 +8313,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_q.adoc#udb:doc:inst:fcvt_l_q[fcvt.l.q] converts a quad-precision floating-point number to a signed 64-bit integer.
+xref:insts:fcvt-l-q.adoc#udb:doc:inst:fcvt-l-q[fcvt.l.q] converts a quad-precision floating-point number to a signed 64-bit integer.
 
 
 Decode Variables::
@@ -8335,7 +8335,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_l_s]
+[#udb:doc:inst:fcvt-l-s]
 == fcvt.l.s
 
 Synopsis::
@@ -8351,7 +8351,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a signed
+xref:insts:fcvt-l-s.adoc#udb:doc:inst:fcvt-l-s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a signed
 64-bit integer, in integer register `xd`.
 
 
@@ -8374,7 +8374,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_lu_d]
+[#udb:doc:inst:fcvt-lu-d]
 == fcvt.lu.d
 
 Synopsis::
@@ -8413,7 +8413,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_lu_h]
+[#udb:doc:inst:fcvt-lu-h]
 == fcvt.lu.h
 
 Synopsis::
@@ -8429,7 +8429,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_lu_h.adoc#udb:doc:inst:fcvt_lu_h[fcvt.lu.h] converts a half-precision floating-point number to an unsigned 64-bit integer.
+xref:insts:fcvt-lu-h.adoc#udb:doc:inst:fcvt-lu-h[fcvt.lu.h] converts a half-precision floating-point number to an unsigned 64-bit integer.
 
 
 Decode Variables::
@@ -8451,7 +8451,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_lu_q]
+[#udb:doc:inst:fcvt-lu-q]
 == fcvt.lu.q
 
 Synopsis::
@@ -8467,7 +8467,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_lu_q.adoc#udb:doc:inst:fcvt_lu_q[fcvt.lu.q] converts a quad-precision floating-point number to an unsigned 64-bit integer.
+xref:insts:fcvt-lu-q.adoc#udb:doc:inst:fcvt-lu-q[fcvt.lu.q] converts a quad-precision floating-point number to an unsigned 64-bit integer.
 
 
 Decode Variables::
@@ -8489,7 +8489,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_lu_s]
+[#udb:doc:inst:fcvt-lu-s]
 == fcvt.lu.s
 
 Synopsis::
@@ -8505,7 +8505,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a unsigned
+xref:insts:fcvt-l-s.adoc#udb:doc:inst:fcvt-l-s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a unsigned
 64-bit integer, in integer register `xd`.
 
 
@@ -8528,7 +8528,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_d]
+[#udb:doc:inst:fcvt-q-d]
 == fcvt.q.d
 
 Synopsis::
@@ -8544,7 +8544,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_d_q.adoc#udb:doc:inst:fcvt_d_q[fcvt.d.q] converts a double-precision floating-point number to a quad-precision floating-point number.
+xref:insts:fcvt-d-q.adoc#udb:doc:inst:fcvt-d-q[fcvt.d.q] converts a double-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8566,7 +8566,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_h]
+[#udb:doc:inst:fcvt-q-h]
 == fcvt.q.h
 
 Synopsis::
@@ -8582,7 +8582,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_h.adoc#udb:doc:inst:fcvt_q_h[fcvt.q.h] converts a half-precision floating-point number to a quad-precision floating-point number.
+xref:insts:fcvt-q-h.adoc#udb:doc:inst:fcvt-q-h[fcvt.q.h] converts a half-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8606,7 +8606,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_l]
+[#udb:doc:inst:fcvt-q-l]
 == fcvt.q.l
 
 Synopsis::
@@ -8622,7 +8622,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_l.adoc#udb:doc:inst:fcvt_q_l[fcvt.q.l] converts a 64-bit signed integer, into a quad-precision floating-point number.
+xref:insts:fcvt-q-l.adoc#udb:doc:inst:fcvt-q-l[fcvt.q.l] converts a 64-bit signed integer, into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8644,7 +8644,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_lu]
+[#udb:doc:inst:fcvt-q-lu]
 == fcvt.q.lu
 
 Synopsis::
@@ -8660,7 +8660,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_lu.adoc#udb:doc:inst:fcvt_q_lu[fcvt.q.lu] converts a 64-bit unsigned integer, into a quad-precision floating-point number.
+xref:insts:fcvt-q-lu.adoc#udb:doc:inst:fcvt-q-lu[fcvt.q.lu] converts a 64-bit unsigned integer, into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8682,7 +8682,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_s]
+[#udb:doc:inst:fcvt-q-s]
 == fcvt.q.s
 
 Synopsis::
@@ -8698,7 +8698,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_s.adoc#udb:doc:inst:fcvt_q_s[fcvt.q.s] converts a single-precision floating-point number to a quad-precision floating-point number.
+xref:insts:fcvt-q-s.adoc#udb:doc:inst:fcvt-q-s[fcvt.q.s] converts a single-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8720,7 +8720,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_w]
+[#udb:doc:inst:fcvt-q-w]
 == fcvt.q.w
 
 Synopsis::
@@ -8736,7 +8736,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_w.adoc#udb:doc:inst:fcvt_q_w[fcvt.q.w] converts a 32-bit signed integer into a quad-precision floating-point number.
+xref:insts:fcvt-q-w.adoc#udb:doc:inst:fcvt-q-w[fcvt.q.w] converts a 32-bit signed integer into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8758,7 +8758,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_q_wu]
+[#udb:doc:inst:fcvt-q-wu]
 == fcvt.q.wu
 
 Synopsis::
@@ -8774,7 +8774,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_q_wu.adoc#udb:doc:inst:fcvt_q_wu[fcvt.q.wu] converts a 32-bit unsigned integer into a quad-precision floating-point number.
+xref:insts:fcvt-q-wu.adoc#udb:doc:inst:fcvt-q-wu[fcvt.q.wu] converts a 32-bit unsigned integer into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8796,7 +8796,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_bf16]
+[#udb:doc:inst:fcvt-s-bf16]
 == fcvt.s.bf16
 
 Synopsis::
@@ -8834,7 +8834,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_d]
+[#udb:doc:inst:fcvt-s-d]
 == fcvt.s.d
 
 Synopsis::
@@ -8875,7 +8875,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_h]
+[#udb:doc:inst:fcvt-s-h]
 == fcvt.s.h
 
 Synopsis::
@@ -8894,7 +8894,7 @@ Description::
 Converts a single-precision number in floating-point register _fs1_ into a half-precision floating-point number in
 floating-point register _fd_.
 
-xref:insts:fcvt_s_h.adoc#udb:doc:inst:fcvt_s_h[fcvt.s.h] will never round, and so the 'rm' field is effectively ignored.
+xref:insts:fcvt-s-h.adoc#udb:doc:inst:fcvt-s-h[fcvt.s.h] will never round, and so the 'rm' field is effectively ignored.
 
 
 Decode Variables::
@@ -8918,7 +8918,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_l]
+[#udb:doc:inst:fcvt-s-l]
 == fcvt.s.l
 
 Synopsis::
@@ -8934,7 +8934,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_s_l.adoc#udb:doc:inst:fcvt_s_l[fcvt.s.l] converts a 64-bit signed integer in integer register `xs1` into a floating-point
+xref:insts:fcvt-s-l.adoc#udb:doc:inst:fcvt-s-l[fcvt.s.l] converts a 64-bit signed integer in integer register `xs1` into a floating-point
 number in floating-point register `fd`.
 
 
@@ -8957,7 +8957,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_lu]
+[#udb:doc:inst:fcvt-s-lu]
 == fcvt.s.lu
 
 Synopsis::
@@ -8973,7 +8973,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_s_lu.adoc#udb:doc:inst:fcvt_s_lu[fcvt.s.lu] converts a 64-bit unsigned integer into a single-precision floating-point number.
+xref:insts:fcvt-s-lu.adoc#udb:doc:inst:fcvt-s-lu[fcvt.s.lu] converts a 64-bit unsigned integer into a single-precision floating-point number.
 
 
 Decode Variables::
@@ -8995,7 +8995,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_q]
+[#udb:doc:inst:fcvt-s-q]
 == fcvt.s.q
 
 Synopsis::
@@ -9011,7 +9011,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_s_q.adoc#udb:doc:inst:fcvt_s_q[fcvt.s.q] converts a quad-precision floating-point number to a single-precision floating-point number.
+xref:insts:fcvt-s-q.adoc#udb:doc:inst:fcvt-s-q[fcvt.s.q] converts a quad-precision floating-point number to a single-precision floating-point number.
 
 
 Decode Variables::
@@ -9033,7 +9033,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_w]
+[#udb:doc:inst:fcvt-s-w]
 == fcvt.s.w
 
 Synopsis::
@@ -9080,7 +9080,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_s_wu]
+[#udb:doc:inst:fcvt-s-wu]
 == fcvt.s.wu
 
 Synopsis::
@@ -9127,7 +9127,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_w_d]
+[#udb:doc:inst:fcvt-w-d]
 == fcvt.w.d
 
 Synopsis::
@@ -9166,7 +9166,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_w_h]
+[#udb:doc:inst:fcvt-w-h]
 == fcvt.w.h
 
 Synopsis::
@@ -9182,7 +9182,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_w_h.adoc#udb:doc:inst:fcvt_w_h[fcvt.w.h] converts a half-precision floating-point number to a signed 32-bit integer.
+xref:insts:fcvt-w-h.adoc#udb:doc:inst:fcvt-w-h[fcvt.w.h] converts a half-precision floating-point number to a signed 32-bit integer.
 
 
 Decode Variables::
@@ -9204,7 +9204,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_w_q]
+[#udb:doc:inst:fcvt-w-q]
 == fcvt.w.q
 
 Synopsis::
@@ -9220,7 +9220,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_w_q.adoc#udb:doc:inst:fcvt_w_q[fcvt.w.q] converts a quad-precision floating-point number to a 32-bit signed integer.
+xref:insts:fcvt-w-q.adoc#udb:doc:inst:fcvt-w-q[fcvt.w.q] converts a quad-precision floating-point number to a 32-bit signed integer.
 
 
 Decode Variables::
@@ -9242,7 +9242,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_w_s]
+[#udb:doc:inst:fcvt-w-s]
 == fcvt.w.s
 
 Synopsis::
@@ -9261,7 +9261,7 @@ Description::
 Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in
 integer register _xd_.
 
-For XLEN &gt;32, xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] sign-extends the 32-bit result to the destination register width.
+For XLEN &gt;32, xref:insts:fcvt-w-s.adoc#udb:doc:inst:fcvt-w-s[fcvt.w.s] sign-extends the 32-bit result to the destination register width.
 
 If the rounded result is not representable as a 32-bit signed integer, it is clipped to the
 nearest value and the invalid flag is set.
@@ -9308,7 +9308,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_wu_d]
+[#udb:doc:inst:fcvt-wu-d]
 == fcvt.wu.d
 
 Synopsis::
@@ -9347,7 +9347,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_wu_h]
+[#udb:doc:inst:fcvt-wu-h]
 == fcvt.wu.h
 
 Synopsis::
@@ -9363,7 +9363,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_wu_h.adoc#udb:doc:inst:fcvt_wu_h[fcvt.wu.h] converts a half-precision floating-point number to an unsigned 32-bit integer.
+xref:insts:fcvt-wu-h.adoc#udb:doc:inst:fcvt-wu-h[fcvt.wu.h] converts a half-precision floating-point number to an unsigned 32-bit integer.
 
 
 Decode Variables::
@@ -9385,7 +9385,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_wu_q]
+[#udb:doc:inst:fcvt-wu-q]
 == fcvt.wu.q
 
 Synopsis::
@@ -9401,7 +9401,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_wu_q.adoc#udb:doc:inst:fcvt_wu_q[fcvt.wu.q] converts a quad-precision floating-point number to a 32-bit unsigned integer.
+xref:insts:fcvt-wu-q.adoc#udb:doc:inst:fcvt-wu-q[fcvt.wu.q] converts a quad-precision floating-point number to a 32-bit unsigned integer.
 
 
 Decode Variables::
@@ -9423,7 +9423,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvt_wu_s]
+[#udb:doc:inst:fcvt-wu-s]
 == fcvt.wu.s
 
 Synopsis::
@@ -9441,7 +9441,7 @@ Encoding::
 Description::
 Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _xd_.
 
-For XLEN &gt;32, xref:insts:fcvt_wu_s.adoc#udb:doc:inst:fcvt_wu_s[fcvt.wu.s] sign-extends the 32-bit result to the destination register width.
+For XLEN &gt;32, xref:insts:fcvt-wu-s.adoc#udb:doc:inst:fcvt-wu-s[fcvt.wu.s] sign-extends the 32-bit result to the destination register width.
 
 If the rounded result is not representable as a 32-bit unsigned integer, it is clipped to the
 nearest value and the invalid flag is set.
@@ -9488,7 +9488,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fcvtmod_w_d]
+[#udb:doc:inst:fcvtmod-w-d]
 == fcvtmod.w.d
 
 Synopsis::
@@ -9536,7 +9536,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fdiv_d]
+[#udb:doc:inst:fdiv-d]
 == fdiv.d
 
 Synopsis::
@@ -9577,7 +9577,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fdiv_h]
+[#udb:doc:inst:fdiv-h]
 == fdiv.h
 
 Synopsis::
@@ -9616,7 +9616,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fdiv_q]
+[#udb:doc:inst:fdiv-q]
 == fdiv.q
 
 Synopsis::
@@ -9632,7 +9632,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fdiv_q.adoc#udb:doc:inst:fdiv_q[fdiv.q] performs the quad-precision floating-point division of `fs1` by `fs2` and writes
+The xref:insts:fdiv-q.adoc#udb:doc:inst:fdiv-q[fdiv.q] performs the quad-precision floating-point division of `fs1` by `fs2` and writes
 the result to floating-point register `fd`.`
 The rounding mode is specified by the value in the floating-point Control and Status register (FCSR)
 or by the value in the `rm` field of the instruction.
@@ -9662,7 +9662,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fdiv_s]
+[#udb:doc:inst:fdiv-s]
 == fdiv.s
 
 Synopsis::
@@ -9747,7 +9747,7 @@ The predecessor and successor fields have the same format to specify operation t
 |===
 
 When the mode field _fm_ is `0001` and both the predecessor and successor sets are 'RW',
-then the instruction acts as a special-case xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso]. xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] orders all load operations
+then the instruction acts as a special-case xref:insts:fence-tso.adoc#udb:doc:inst:fence-tso[fence.tso]. xref:insts:fence-tso.adoc#udb:doc:inst:fence-tso[fence.tso] orders all load operations
 in its predecessor set before all memory operations in its successor set, and all store operations
 in its predecessor set before all store operations in its successor set. This leaves non-AMO store
 operations in the 'fence.tso's predecessor set unordered with non-AMO loads in its successor set.
@@ -9755,7 +9755,7 @@ operations in the 'fence.tso's predecessor set unordered with non-AMO loads in i
 When mode field _fm_ is not `0001`, or when mode field _fm_ is `0001` but the _pred_ and
 _succ_ fields are not both 'RW' (0x3), then the fence acts as a baseline fence (_e.g._, _fm_ is
 effectively `0000`). This is unaffected by the FIOM bits, described below (implicit promotion does
-not change how xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] is decoded).
+not change how xref:insts:fence-tso.adoc#udb:doc:inst:fence-tso[fence.tso] is decoded).
 
 The `xs1` and `xd` fields are unused and ignored.
 
@@ -9854,7 +9854,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fence_i]
+[#udb:doc:inst:fence-i]
 == fence.i
 
 Synopsis::
@@ -9915,7 +9915,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fence_tso]
+[#udb:doc:inst:fence-tso]
 == fence.tso
 
 Synopsis::
@@ -9930,14 +9930,14 @@ Encoding::
 Description::
 Orders memory operations.
 
-xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] orders all load operations
+xref:insts:fence-tso.adoc#udb:doc:inst:fence-tso[fence.tso] orders all load operations
 in its predecessor set before all memory operations in its successor set, and all store operations
 in its predecessor set before all store operations in its successor set. This leaves non-AMO store
 operations in the 'fence.tso's predecessor set unordered with non-AMO loads in its successor set.
 
 The `xs1` and `xd` fields are unused and ignored.
 
-In modes other than M-mode, xref:insts:fence_tso.adoc#udb:doc:inst:fence_tso[fence.tso] is further affected by xref:csrs:menvcfg.adoc#udb:doc:csr_field:menvcfg:FIOM[menvcfg.FIOM],
+In modes other than M-mode, xref:insts:fence-tso.adoc#udb:doc:inst:fence-tso[fence.tso] is further affected by xref:csrs:menvcfg.adoc#udb:doc:csr_field:menvcfg:FIOM[menvcfg.FIOM],
 xref:csrs:senvcfg.adoc#udb:doc:csr_field:senvcfg:FIOM[senvcfg.FIOM]<% if ext?(:H) %>, and/or xref:csrs:henvcfg.adoc#udb:doc:csr_field:henvcfg:FIOM[henvcfg.FIOM]<% end %>.
 
 
@@ -9959,7 +9959,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:feq_d]
+[#udb:doc:inst:feq-d]
 == feq.d
 
 Synopsis::
@@ -9998,7 +9998,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:feq_h]
+[#udb:doc:inst:feq-h]
 == feq.h
 
 Synopsis::
@@ -10036,7 +10036,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:feq_q]
+[#udb:doc:inst:feq-q]
 == feq.q
 
 Synopsis::
@@ -10052,10 +10052,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:feq_q.adoc#udb:doc:inst:feq_q[feq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+The xref:insts:feq-q.adoc#udb:doc:inst:feq-q[feq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
 and writes 1 to integer register `xd` if the conditon hold, and 0 otherwise.
 
-xref:insts:feq_q.adoc#udb:doc:inst:feq_q[feq.q] performs a quiet comparison:
+xref:insts:feq-q.adoc#udb:doc:inst:feq-q[feq.q] performs a quiet comparison:
 it only sets the invalid operation exception flag if either input is a signaling _NaN_.
 The result is 0 if either operand is _NaN_.
 
@@ -10079,7 +10079,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:feq_s]
+[#udb:doc:inst:feq-s]
 == feq.s
 
 Synopsis::
@@ -10162,7 +10162,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fle_d]
+[#udb:doc:inst:fle-d]
 == fle.d
 
 Synopsis::
@@ -10201,7 +10201,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fle_h]
+[#udb:doc:inst:fle-h]
 == fle.h
 
 Synopsis::
@@ -10239,7 +10239,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fle_q]
+[#udb:doc:inst:fle-q]
 == fle.q
 
 Synopsis::
@@ -10255,10 +10255,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+The xref:insts:fle-q.adoc#udb:doc:inst:fle-q[fle.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
 and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
 
-xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
+xref:insts:fle-q.adoc#udb:doc:inst:fle-q[fle.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
 they set the invalid operation exception flag if either input is _NaN_.
 The result is 0 if either operand is _NaN_.
 
@@ -10282,7 +10282,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fle_s]
+[#udb:doc:inst:fle-s]
 == fle.s
 
 Synopsis::
@@ -10325,7 +10325,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fleq_d]
+[#udb:doc:inst:fleq-d]
 == fleq.d
 
 Synopsis::
@@ -10366,7 +10366,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fleq_h]
+[#udb:doc:inst:fleq-h]
 == fleq.h
 
 Synopsis::
@@ -10406,7 +10406,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fleq_q]
+[#udb:doc:inst:fleq-q]
 == fleq.q
 
 Synopsis::
@@ -10422,10 +10422,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fleq_q.adoc#udb:doc:inst:fleq_q[fleq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+The xref:insts:fleq-q.adoc#udb:doc:inst:fleq-q[fleq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
 and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
 
-xref:insts:fleq_q.adoc#udb:doc:inst:fleq_q[fleq.q] is defined like xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q], except that quiet _NaN_ inputs do not cause the invalid
+xref:insts:fleq-q.adoc#udb:doc:inst:fleq-q[fleq.q] is defined like xref:insts:fle-q.adoc#udb:doc:inst:fle-q[fle.q], except that quiet _NaN_ inputs do not cause the invalid
 operation exception flag to be set.
 This instruction is encoded like its `flt` counterpart, but with instruction bit 14 set to 1.
 
@@ -10451,7 +10451,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fleq_s]
+[#udb:doc:inst:fleq-s]
 == fleq.s
 
 Synopsis::
@@ -10535,7 +10535,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fli_d]
+[#udb:doc:inst:fli-d]
 == fli.d
 
 Synopsis::
@@ -10575,7 +10575,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fli_h]
+[#udb:doc:inst:fli-h]
 == fli.h
 
 Synopsis::
@@ -10610,7 +10610,7 @@ allOf:
 ** Zvfh, version >= Zvfh@1.0.0
 
 
-[#udb:doc:inst:fli_q]
+[#udb:doc:inst:fli-q]
 == fli.q
 
 Synopsis::
@@ -10627,9 +10627,9 @@ Encoding::
 
 Description::
 The
-The xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `rs1`
+The xref:insts:fli-q.adoc#udb:doc:inst:fli-q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `rs1`
 field, into floating-point register `rd`.
-xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] is encoded like xref:insts:fmv_w_x.adoc#udb:doc:inst:fmv_w_x[fmv.w.x], but with _fmt_ = Q.
+xref:insts:fli-q.adoc#udb:doc:inst:fli-q[fli.q] is encoded like xref:insts:fmv-w-x.adoc#udb:doc:inst:fmv-w-x[fmv.w.x], but with _fmt_ = Q.
 
 
 Decode Variables::
@@ -10652,7 +10652,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fli_s]
+[#udb:doc:inst:fli-s]
 == fli.s
 
 Synopsis::
@@ -10732,7 +10732,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:flt_d]
+[#udb:doc:inst:flt-d]
 == flt.d
 
 Synopsis::
@@ -10771,7 +10771,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:flt_h]
+[#udb:doc:inst:flt-h]
 == flt.h
 
 Synopsis::
@@ -10809,7 +10809,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:flt_q]
+[#udb:doc:inst:flt-q]
 == flt.q
 
 Synopsis::
@@ -10825,10 +10825,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+The xref:insts:flt-q.adoc#udb:doc:inst:flt-q[flt.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
 and writes 1 to integer register `xd` if the conditon hold, and 0 otherwise.
 
-xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
+xref:insts:flt-q.adoc#udb:doc:inst:flt-q[flt.q] performs what the IEEE 754-2008 standard refers to as signaling comparisons: that is,
 they set the invalid operation exception flag if either input is _NaN_.
 The result is 0 if either operand is _NaN_.
 
@@ -10852,7 +10852,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:flt_s]
+[#udb:doc:inst:flt-s]
 == flt.s
 
 Synopsis::
@@ -10893,7 +10893,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fltq_d]
+[#udb:doc:inst:fltq-d]
 == fltq.d
 
 Synopsis::
@@ -10934,7 +10934,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fltq_h]
+[#udb:doc:inst:fltq-h]
 == fltq.h
 
 Synopsis::
@@ -10974,7 +10974,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fltq_q]
+[#udb:doc:inst:fltq-q]
 == fltq.q
 
 Synopsis::
@@ -10990,10 +10990,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fltq_q.adoc#udb:doc:inst:fltq_q[fltq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
+The xref:insts:fltq-q.adoc#udb:doc:inst:fltq-q[fltq.q] performs the specified comparison between floating-point registers `fs1` and `fs2`,
 and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
 
-xref:insts:fltq_q.adoc#udb:doc:inst:fltq_q[fltq.q] is defined like xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q], except that quiet _NaN_ inputs do not cause the invalid
+xref:insts:fltq-q.adoc#udb:doc:inst:fltq-q[fltq.q] is defined like xref:insts:flt-q.adoc#udb:doc:inst:flt-q[flt.q], except that quiet _NaN_ inputs do not cause the invalid
 operation exception flag to be set.
 This instruction is encoded like its `fle` counterpart, but with instruction bit 14 set to 1.
 
@@ -11019,7 +11019,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fltq_s]
+[#udb:doc:inst:fltq-s]
 == fltq.s
 
 Synopsis::
@@ -11097,7 +11097,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmadd_d]
+[#udb:doc:inst:fmadd-d]
 == fmadd.d
 
 Synopsis::
@@ -11137,7 +11137,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmadd_h]
+[#udb:doc:inst:fmadd-h]
 == fmadd.h
 
 Synopsis::
@@ -11177,7 +11177,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmadd_q]
+[#udb:doc:inst:fmadd-q]
 == fmadd.q
 
 Synopsis::
@@ -11193,7 +11193,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmadd_q.adoc#udb:doc:inst:fmadd_q[fmadd.q] instruction performs a floating-point multiply-add operation on the values in registers `fs1`, `fs2`, and `fs3`.
+The xref:insts:fmadd-q.adoc#udb:doc:inst:fmadd-q[fmadd.q] instruction performs a floating-point multiply-add operation on the values in registers `fs1`, `fs2`, and `fs3`.
 It computes the result as `(fs1 * fs2) + fs3` and writes the result to the destination register `fd`.
 
 The fused multiply-add instructions must set the invalid operation exception flag when the
@@ -11221,7 +11221,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmadd_s]
+[#udb:doc:inst:fmadd-s]
 == fmadd.s
 
 Synopsis::
@@ -11261,7 +11261,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmax_d]
+[#udb:doc:inst:fmax-d]
 == fmax.d
 
 Synopsis::
@@ -11302,7 +11302,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmax_h]
+[#udb:doc:inst:fmax-h]
 == fmax.h
 
 Synopsis::
@@ -11340,7 +11340,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmax_q]
+[#udb:doc:inst:fmax-q]
 == fmax.q
 
 Synopsis::
@@ -11356,7 +11356,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmax_q.adoc#udb:doc:inst:fmax_q[fmax.q] instruction writes the larger/maximum of `fs1` and `fs2` to `fd`.
+The xref:insts:fmax-q.adoc#udb:doc:inst:fmax-q[fmax.q] instruction writes the larger/maximum of `fs1` and `fs2` to `fd`.
 The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If only one operand is a _NaN_, the result is the non-_NaN_ operand.
@@ -11382,7 +11382,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmax_s]
+[#udb:doc:inst:fmax-s]
 == fmax.s
 
 Synopsis::
@@ -11420,7 +11420,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmaxm_d]
+[#udb:doc:inst:fmaxm-d]
 == fmaxm.d
 
 Synopsis::
@@ -11461,7 +11461,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmaxm_h]
+[#udb:doc:inst:fmaxm-h]
 == fmaxm.h
 
 Synopsis::
@@ -11501,7 +11501,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmaxm_q]
+[#udb:doc:inst:fmaxm-q]
 == fmaxm.q
 
 Synopsis::
@@ -11517,12 +11517,12 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmaxm_q.adoc#udb:doc:inst:fmaxm_q[fmaxm.q] instruction, defined like xref:insts:fmax_q.adoc#udb:doc:inst:fmax_q[fmax.q], writes the larger/maximum of `fs1` and `fs2` to `fd`.
+The xref:insts:fmaxm-q.adoc#udb:doc:inst:fmaxm-q[fmaxm.q] instruction, defined like xref:insts:fmax-q.adoc#udb:doc:inst:fmax-q[fmax.q], writes the larger/maximum of `fs1` and `fs2` to `fd`.
 The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If either input is _NaN_, the result is the canonical _NaN_.
 Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
-This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
+This instruction is encoded like its xref:insts:fminm-q.adoc#udb:doc:inst:fminm-q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -11546,7 +11546,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmaxm_s]
+[#udb:doc:inst:fmaxm-s]
 == fmaxm.s
 
 Synopsis::
@@ -11584,7 +11584,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmin_d]
+[#udb:doc:inst:fmin-d]
 == fmin.d
 
 Synopsis::
@@ -11625,7 +11625,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmin_h]
+[#udb:doc:inst:fmin-h]
 == fmin.h
 
 Synopsis::
@@ -11663,7 +11663,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmin_q]
+[#udb:doc:inst:fmin-q]
 == fmin.q
 
 Synopsis::
@@ -11679,7 +11679,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmin_q.adoc#udb:doc:inst:fmin_q[fmin.q] instruction writes the smaller/minimum of `fs1` and `fs2` to `fd`.
+The xref:insts:fmin-q.adoc#udb:doc:inst:fmin-q[fmin.q] instruction writes the smaller/minimum of `fs1` and `fs2` to `fd`.
 The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If only one operand is a _NaN_, the result is the non-_NaN_ operand.
@@ -11705,7 +11705,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmin_s]
+[#udb:doc:inst:fmin-s]
 == fmin.s
 
 Synopsis::
@@ -11743,7 +11743,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fminm_d]
+[#udb:doc:inst:fminm-d]
 == fminm.d
 
 Synopsis::
@@ -11784,7 +11784,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fminm_h]
+[#udb:doc:inst:fminm-h]
 == fminm.h
 
 Synopsis::
@@ -11824,7 +11824,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fminm_q]
+[#udb:doc:inst:fminm-q]
 == fminm.q
 
 Synopsis::
@@ -11840,12 +11840,12 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] instruction, defined like xref:insts:fmin_q.adoc#udb:doc:inst:fmin_q[fmin.q], writes the smaller/minimum of `fs1` and `fs2` to `fd`.
+The xref:insts:fminm-q.adoc#udb:doc:inst:fminm-q[fminm.q] instruction, defined like xref:insts:fmin-q.adoc#udb:doc:inst:fmin-q[fmin.q], writes the smaller/minimum of `fs1` and `fs2` to `fd`.
 The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If either input is _NaN_, the result is the canonical _NaN_.
 Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
-This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
+This instruction is encoded like its xref:insts:fminm-q.adoc#udb:doc:inst:fminm-q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -11869,7 +11869,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fminm_s]
+[#udb:doc:inst:fminm-s]
 == fminm.s
 
 Synopsis::
@@ -11907,7 +11907,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmsub_d]
+[#udb:doc:inst:fmsub-d]
 == fmsub.d
 
 Synopsis::
@@ -11947,7 +11947,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmsub_h]
+[#udb:doc:inst:fmsub-h]
 == fmsub.h
 
 Synopsis::
@@ -11987,7 +11987,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmsub_q]
+[#udb:doc:inst:fmsub-q]
 == fmsub.q
 
 Synopsis::
@@ -12003,7 +12003,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmsub_q.adoc#udb:doc:inst:fmsub_q[fmsub.q] instruction performs a floating-point multiply-subtract operation on the values in registers `fs1`, `fs2`, and `fs3`.
+The xref:insts:fmsub-q.adoc#udb:doc:inst:fmsub-q[fmsub.q] instruction performs a floating-point multiply-subtract operation on the values in registers `fs1`, `fs2`, and `fs3`.
 It computes the result as `(fs1 * fs2) - fs3` and writes the result to the destination register `fd`.
 
 
@@ -12028,7 +12028,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmsub_s]
+[#udb:doc:inst:fmsub-s]
 == fmsub.s
 
 Synopsis::
@@ -12068,7 +12068,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmul_d]
+[#udb:doc:inst:fmul-d]
 == fmul.d
 
 Synopsis::
@@ -12109,7 +12109,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmul_h]
+[#udb:doc:inst:fmul-h]
 == fmul.h
 
 Synopsis::
@@ -12148,7 +12148,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmul_q]
+[#udb:doc:inst:fmul-q]
 == fmul.q
 
 Synopsis::
@@ -12164,7 +12164,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fmul_q.adoc#udb:doc:inst:fmul_q[fmul.q] performs quad-precision floating-point multiplication, between `fs1` and `fs2`.
+xref:insts:fmul-q.adoc#udb:doc:inst:fmul-q[fmul.q] performs quad-precision floating-point multiplication, between `fs1` and `fs2`.
 
 
 Decode Variables::
@@ -12187,7 +12187,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmul_s]
+[#udb:doc:inst:fmul-s]
 == fmul.s
 
 Synopsis::
@@ -12226,7 +12226,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_d_x]
+[#udb:doc:inst:fmv-d-x]
 == fmv.d.x
 
 Synopsis::
@@ -12264,7 +12264,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_h_x]
+[#udb:doc:inst:fmv-h-x]
 == fmv.h.x
 
 Synopsis::
@@ -12306,7 +12306,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_w_x]
+[#udb:doc:inst:fmv-w-x]
 == fmv.w.x
 
 Synopsis::
@@ -12346,7 +12346,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_x_d]
+[#udb:doc:inst:fmv-x-d]
 == fmv.x.d
 
 Synopsis::
@@ -12384,7 +12384,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_x_h]
+[#udb:doc:inst:fmv-x-h]
 == fmv.x.h
 
 Synopsis::
@@ -12432,7 +12432,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmv_x_w]
+[#udb:doc:inst:fmv-x-w]
 == fmv.x.w
 
 Synopsis::
@@ -12474,7 +12474,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmvh_x_d]
+[#udb:doc:inst:fmvh-x-d]
 == fmvh.x.d
 
 Synopsis::
@@ -12515,7 +12515,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmvh_x_q]
+[#udb:doc:inst:fmvh-x-q]
 == fmvh.x.q
 
 Synopsis::
@@ -12531,10 +12531,10 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmvh_x_q.adoc#udb:doc:inst:fmvh_x_q[fmvh.x.q] instruction moves bits `127:64` of floating-point register `fs1` into integer register `xd`.
+The xref:insts:fmvh-x-q.adoc#udb:doc:inst:fmvh-x-q[fmvh.x.q] instruction moves bits `127:64` of floating-point register `fs1` into integer register `xd`.
 It is encoded in the OP-FP major opcode with _funct3_=0, _rs2_=1, and _funct7_=1110011.
 
-xref:insts:fmvh_x_q.adoc#udb:doc:inst:fmvh_x_q[fmvh.x.q] is used in conjunction with the existing xref:insts:fmv_x_d.adoc#udb:doc:inst:fmv_x_d[fmv.x.d] instruction to move a quad-precision floating-point
+xref:insts:fmvh-x-q.adoc#udb:doc:inst:fmvh-x-q[fmvh.x.q] is used in conjunction with the existing xref:insts:fmv-x-d.adoc#udb:doc:inst:fmv-x-d[fmv.x.d] instruction to move a quad-precision floating-point
 number to a pair of x-registers.
 
 
@@ -12558,7 +12558,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmvp_d_x]
+[#udb:doc:inst:fmvp-d-x]
 == fmvp.d.x
 
 Synopsis::
@@ -12600,7 +12600,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fmvp_q_x]
+[#udb:doc:inst:fmvp-q-x]
 == fmvp.q.x
 
 Synopsis::
@@ -12616,11 +12616,11 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] instruction moves a double-precision number from a pair of integer registers into
+The xref:insts:fmvp-q-x.adoc#udb:doc:inst:fmvp-q-x[fmvp.q.x] instruction moves a double-precision number from a pair of integer registers into
 a floating-point register.
 Integer registers xs1 and xs2 supply bits 63:0 and 127:64, respectively; the result is written to
 floating-point register `fd`.
-xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
+xref:insts:fmvp-q-x.adoc#udb:doc:inst:fmvp-q-x[fmvp.q.x] is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
 
 
 Decode Variables::
@@ -12644,7 +12644,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmadd_d]
+[#udb:doc:inst:fnmadd-d]
 == fnmadd.d
 
 Synopsis::
@@ -12685,7 +12685,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmadd_h]
+[#udb:doc:inst:fnmadd-h]
 == fnmadd.h
 
 Synopsis::
@@ -12725,7 +12725,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmadd_q]
+[#udb:doc:inst:fnmadd-q]
 == fnmadd.q
 
 Synopsis::
@@ -12741,9 +12741,9 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fnmadd_q.adoc#udb:doc:inst:fnmadd_q[fnmadd.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the
+The xref:insts:fnmadd-q.adoc#udb:doc:inst:fnmadd-q[fnmadd.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the
 value in `fs3`, and writes the final result to `fd`.
-xref:insts:fnmadd_q.adoc#udb:doc:inst:fnmadd_q[fnmadd.q] computes `-(fs1 * fs2) + fs3`.
+xref:insts:fnmadd-q.adoc#udb:doc:inst:fnmadd-q[fnmadd.q] computes `-(fs1 * fs2) + fs3`.
 
 
 Decode Variables::
@@ -12767,7 +12767,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmadd_s]
+[#udb:doc:inst:fnmadd-s]
 == fnmadd.s
 
 Synopsis::
@@ -12807,7 +12807,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmsub_d]
+[#udb:doc:inst:fnmsub-d]
 == fnmsub.d
 
 Synopsis::
@@ -12848,7 +12848,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmsub_h]
+[#udb:doc:inst:fnmsub-h]
 == fnmsub.h
 
 Synopsis::
@@ -12888,7 +12888,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmsub_q]
+[#udb:doc:inst:fnmsub-q]
 == fnmsub.q
 
 Synopsis::
@@ -12904,9 +12904,9 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fnmsub_q.adoc#udb:doc:inst:fnmsub_q[fnmsub.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the
+The xref:insts:fnmsub-q.adoc#udb:doc:inst:fnmsub-q[fnmsub.q] instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the
 value in `fs3`, and writes the final result to `fd`.
-xref:insts:fnmsub_q.adoc#udb:doc:inst:fnmsub_q[fnmsub.q] computes `-(fs1 * fs2) - fs3`.
+xref:insts:fnmsub-q.adoc#udb:doc:inst:fnmsub-q[fnmsub.q] computes `-(fs1 * fs2) - fs3`.
 
 
 Decode Variables::
@@ -12930,7 +12930,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fnmsub_s]
+[#udb:doc:inst:fnmsub-s]
 == fnmsub.s
 
 Synopsis::
@@ -12970,7 +12970,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fround_d]
+[#udb:doc:inst:fround-d]
 == fround.d
 
 Synopsis::
@@ -13015,7 +13015,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fround_h]
+[#udb:doc:inst:fround-h]
 == fround.h
 
 Synopsis::
@@ -13055,7 +13055,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fround_q]
+[#udb:doc:inst:fround-q]
 == fround.q
 
 Synopsis::
@@ -13071,11 +13071,11 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] instruction rounds the quad-precision floating-point number in floating-point register
+The xref:insts:fround-q.adoc#udb:doc:inst:fround-q[fround.q] instruction rounds the quad-precision floating-point number in floating-point register
 `fs1` to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
 that integer, represented as a quad-precision floating-point number, to floating-point register `fd`. Zero
 and infinite inputs are copied to `fd` unmodified. Signaling _NaN_ inputs cause the invalid operation
-exception flag to be set; no other exception flags are set. xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] is encoded like xref:insts:fcvt_q_s.adoc#udb:doc:inst:fcvt_q_s[fcvt.q.s], but with
+exception flag to be set; no other exception flags are set. xref:insts:fround-q.adoc#udb:doc:inst:fround-q[fround.q] is encoded like xref:insts:fcvt-q-s.adoc#udb:doc:inst:fcvt-q-s[fcvt.q.s], but with
 `rs2`=4.
 
 
@@ -13100,7 +13100,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fround_s]
+[#udb:doc:inst:fround-s]
 == fround.s
 
 Synopsis::
@@ -13144,7 +13144,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:froundnx_d]
+[#udb:doc:inst:froundnx-d]
 == froundnx.d
 
 Synopsis::
@@ -13185,7 +13185,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:froundnx_h]
+[#udb:doc:inst:froundnx-h]
 == froundnx.h
 
 Synopsis::
@@ -13225,7 +13225,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:froundnx_q]
+[#udb:doc:inst:froundnx-q]
 == froundnx.q
 
 Synopsis::
@@ -13241,7 +13241,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:froundnx_q.adoc#udb:doc:inst:froundnx_q[froundnx.q] instruction is encoded like xref:insts:fround_q.adoc#udb:doc:inst:fround_q[fround.q] but with `rs2`=5 and it also sets the
+The xref:insts:froundnx-q.adoc#udb:doc:inst:froundnx-q[froundnx.q] instruction is encoded like xref:insts:fround-q.adoc#udb:doc:inst:fround-q[fround.q] but with `rs2`=5 and it also sets the
 inexact exception flag if the input differs from the rounded result and is not _NaN_.
 
 
@@ -13266,7 +13266,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:froundnx_s]
+[#udb:doc:inst:froundnx-s]
 == froundnx.s
 
 Synopsis::
@@ -13344,7 +13344,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnj_d]
+[#udb:doc:inst:fsgnj-d]
 == fsgnj.d
 
 Synopsis::
@@ -13384,7 +13384,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnj_h]
+[#udb:doc:inst:fsgnj-h]
 == fsgnj.h
 
 Synopsis::
@@ -13422,7 +13422,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnj_q]
+[#udb:doc:inst:fsgnj-q]
 == fsgnj.q
 
 Synopsis::
@@ -13438,9 +13438,9 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsgnj_q.adoc#udb:doc:inst:fsgnj_q[fsgnj.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The xref:insts:fsgnj-q.adoc#udb:doc:inst:fsgnj-q[fsgnj.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination register `fd`.
-xref:insts:fsgnj_q.adoc#udb:doc:inst:fsgnj_q[fsgnj.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+xref:insts:fsgnj-q.adoc#udb:doc:inst:fsgnj-q[fsgnj.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13462,7 +13462,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnj_s]
+[#udb:doc:inst:fsgnj-s]
 == fsgnj.s
 
 Synopsis::
@@ -13502,7 +13502,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjn_d]
+[#udb:doc:inst:fsgnjn-d]
 == fsgnjn.d
 
 Synopsis::
@@ -13542,7 +13542,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjn_h]
+[#udb:doc:inst:fsgnjn-h]
 == fsgnjn.h
 
 Synopsis::
@@ -13580,7 +13580,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjn_q]
+[#udb:doc:inst:fsgnjn-q]
 == fsgnjn.q
 
 Synopsis::
@@ -13596,9 +13596,9 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsgnjn_q.adoc#udb:doc:inst:fsgnjn_q[fsgnjn.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The xref:insts:fsgnjn-q.adoc#udb:doc:inst:fsgnjn-q[fsgnjn.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination register `fd`.
-xref:insts:fsgnjn_q.adoc#udb:doc:inst:fsgnjn_q[fsgnjn.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+xref:insts:fsgnjn-q.adoc#udb:doc:inst:fsgnjn-q[fsgnjn.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13620,7 +13620,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjn_s]
+[#udb:doc:inst:fsgnjn-s]
 == fsgnjn.s
 
 Synopsis::
@@ -13660,7 +13660,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjx_d]
+[#udb:doc:inst:fsgnjx-d]
 == fsgnjx.d
 
 Synopsis::
@@ -13701,7 +13701,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjx_h]
+[#udb:doc:inst:fsgnjx-h]
 == fsgnjx.h
 
 Synopsis::
@@ -13739,7 +13739,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjx_q]
+[#udb:doc:inst:fsgnjx-q]
 == fsgnjx.q
 
 Synopsis::
@@ -13755,9 +13755,9 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsgnjx_q.adoc#udb:doc:inst:fsgnjx_q[fsgnjx.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The xref:insts:fsgnjx-q.adoc#udb:doc:inst:fsgnjx-q[fsgnjx.q] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to the destination register `fd`.
-xref:insts:fsgnjx_q.adoc#udb:doc:inst:fsgnjx_q[fsgnjx.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+xref:insts:fsgnjx-q.adoc#udb:doc:inst:fsgnjx-q[fsgnjx.q] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 
 
 Decode Variables::
@@ -13779,7 +13779,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsgnjx_s]
+[#udb:doc:inst:fsgnjx-s]
 == fsgnjx.s
 
 Synopsis::
@@ -13911,7 +13911,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsqrt_d]
+[#udb:doc:inst:fsqrt-d]
 == fsqrt.d
 
 Synopsis::
@@ -13951,7 +13951,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsqrt_h]
+[#udb:doc:inst:fsqrt-h]
 == fsqrt.h
 
 Synopsis::
@@ -13989,7 +13989,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsqrt_q]
+[#udb:doc:inst:fsqrt-q]
 == fsqrt.q
 
 Synopsis::
@@ -14005,7 +14005,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsqrt_q.adoc#udb:doc:inst:fsqrt_q[fsqrt.q] instruction computes the square root of the value in `fs1` and writes the result to `fd`.
+The xref:insts:fsqrt-q.adoc#udb:doc:inst:fsqrt-q[fsqrt.q] instruction computes the square root of the value in `fs1` and writes the result to `fd`.
 
 
 Decode Variables::
@@ -14027,7 +14027,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsqrt_s]
+[#udb:doc:inst:fsqrt-s]
 == fsqrt.s
 
 Synopsis::
@@ -14065,7 +14065,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsub_d]
+[#udb:doc:inst:fsub-d]
 == fsub.d
 
 Synopsis::
@@ -14105,7 +14105,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsub_h]
+[#udb:doc:inst:fsub-h]
 == fsub.h
 
 Synopsis::
@@ -14144,7 +14144,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsub_q]
+[#udb:doc:inst:fsub-q]
 == fsub.q
 
 Synopsis::
@@ -14160,7 +14160,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsub_q.adoc#udb:doc:inst:fsub_q[fsub.q] instruction performs the quad-precision floating-point subtraction of `fs2` from `fs1`.
+The xref:insts:fsub-q.adoc#udb:doc:inst:fsub-q[fsub.q] instruction performs the quad-precision floating-point subtraction of `fs2` from `fs1`.
 It computes the result as `fs1 - fs2` and writes the result to the destination register `fd`.
 
 
@@ -14184,7 +14184,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:fsub_s]
+[#udb:doc:inst:fsub-s]
 == fsub.s
 
 Synopsis::
@@ -14264,7 +14264,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hfence_gvma]
+[#udb:doc:inst:hfence-gvma]
 == hfence.gvma
 
 Synopsis::
@@ -14301,7 +14301,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hfence_vvma]
+[#udb:doc:inst:hfence-vvma]
 == hfence.vvma
 
 Synopsis::
@@ -14338,7 +14338,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hinval_gvma]
+[#udb:doc:inst:hinval-gvma]
 == hinval.gvma
 
 Synopsis::
@@ -14354,8 +14354,8 @@ Encoding::
 ....
 
 Description::
-xref:insts:hinval_gvma.adoc#udb:doc:inst:hinval_gvma[hinval.gvma] has the same semantics as xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma] except that it combines with
-xref:insts:sfence_w_inval.adoc#udb:doc:inst:sfence_w_inval[sfence.w.inval] and xref:insts:sfence_inval_ir.adoc#udb:doc:inst:sfence_inval_ir[sfence.inval.ir] to replace xref:insts:hfence_gvma.adoc#udb:doc:inst:hfence_gvma[hfence.gvma] and uses VMID instead of ASID.
+xref:insts:hinval-gvma.adoc#udb:doc:inst:hinval-gvma[hinval.gvma] has the same semantics as xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma] except that it combines with
+xref:insts:sfence-w-inval.adoc#udb:doc:inst:sfence-w-inval[sfence.w.inval] and xref:insts:sfence-inval-ir.adoc#udb:doc:inst:sfence-inval-ir[sfence.inval.ir] to replace xref:insts:hfence-gvma.adoc#udb:doc:inst:hfence-gvma[hfence.gvma] and uses VMID instead of ASID.
 
 
 Decode Variables::
@@ -14378,7 +14378,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hinval_vvma]
+[#udb:doc:inst:hinval-vvma]
 == hinval.vvma
 
 Synopsis::
@@ -14394,8 +14394,8 @@ Encoding::
 ....
 
 Description::
-xref:insts:hinval_vvma.adoc#udb:doc:inst:hinval_vvma[hinval.vvma] has the same semantics as xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma] except that it combines with
-xref:insts:sfence_w_inval.adoc#udb:doc:inst:sfence_w_inval[sfence.w.inval] and xref:insts:sfence_inval_ir.adoc#udb:doc:inst:sfence_inval_ir[sfence.inval.ir] to replace xref:insts:hfence_vvma.adoc#udb:doc:inst:hfence_vvma[hfence.vvma].
+xref:insts:hinval-vvma.adoc#udb:doc:inst:hinval-vvma[hinval.vvma] has the same semantics as xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma] except that it combines with
+xref:insts:sfence-w-inval.adoc#udb:doc:inst:sfence-w-inval[sfence.w.inval] and xref:insts:sfence-inval-ir.adoc#udb:doc:inst:sfence-inval-ir[sfence.inval.ir] to replace xref:insts:hfence-vvma.adoc#udb:doc:inst:hfence-vvma[hfence.vvma].
 
 
 Decode Variables::
@@ -14418,7 +14418,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_b]
+[#udb:doc:inst:hlv-b]
 == hlv.b
 
 Synopsis::
@@ -14455,7 +14455,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_bu]
+[#udb:doc:inst:hlv-bu]
 == hlv.bu
 
 Synopsis::
@@ -14492,7 +14492,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_d]
+[#udb:doc:inst:hlv-d]
 == hlv.d
 
 Synopsis::
@@ -14529,7 +14529,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_h]
+[#udb:doc:inst:hlv-h]
 == hlv.h
 
 Synopsis::
@@ -14566,7 +14566,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_hu]
+[#udb:doc:inst:hlv-hu]
 == hlv.hu
 
 Synopsis::
@@ -14603,7 +14603,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_w]
+[#udb:doc:inst:hlv-w]
 == hlv.w
 
 Synopsis::
@@ -14640,7 +14640,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlv_wu]
+[#udb:doc:inst:hlv-wu]
 == hlv.wu
 
 Synopsis::
@@ -14677,7 +14677,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlvx_hu]
+[#udb:doc:inst:hlvx-hu]
 == hlvx.hu
 
 Synopsis::
@@ -14714,7 +14714,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hlvx_wu]
+[#udb:doc:inst:hlvx-wu]
 == hlvx.wu
 
 Synopsis::
@@ -14751,7 +14751,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hsv_b]
+[#udb:doc:inst:hsv-b]
 == hsv.b
 
 Synopsis::
@@ -14788,7 +14788,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hsv_d]
+[#udb:doc:inst:hsv-d]
 == hsv.d
 
 Synopsis::
@@ -14825,7 +14825,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hsv_h]
+[#udb:doc:inst:hsv-h]
 == hsv.h
 
 Synopsis::
@@ -14862,7 +14862,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:hsv_w]
+[#udb:doc:inst:hsv-w]
 == hsv.w
 
 Synopsis::
@@ -15018,7 +15018,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:lb_aq]
+[#udb:doc:inst:lb-aq]
 == lb.aq
 
 Synopsis::
@@ -15163,7 +15163,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:ld_aq]
+[#udb:doc:inst:ld-aq]
 == ld.aq
 
 Synopsis::
@@ -15240,7 +15240,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:lh_aq]
+[#udb:doc:inst:lh-aq]
 == lh.aq
 
 Synopsis::
@@ -15353,7 +15353,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:lr_d]
+[#udb:doc:inst:lr-d]
 == lr.d
 
 Synopsis::
@@ -15428,7 +15428,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:lr_w]
+[#udb:doc:inst:lr-w]
 == lr.w
 
 Synopsis::
@@ -15584,7 +15584,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:lw_aq]
+[#udb:doc:inst:lw-aq]
 == lw.aq
 
 Synopsis::
@@ -15896,7 +15896,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:mop_r_n]
+[#udb:doc:inst:mop-r-n]
 == mop.r.n
 
 Synopsis::
@@ -15935,7 +15935,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:mop_rr_n]
+[#udb:doc:inst:mop-rr-n]
 == mop.rr.n
 
 Synopsis::
@@ -16291,7 +16291,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:orc_b]
+[#udb:doc:inst:orc-b]
 == orc.b
 
 Synopsis::
@@ -17060,7 +17060,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sb_rl]
+[#udb:doc:inst:sb-rl]
 == sb.rl
 
 Synopsis::
@@ -17097,7 +17097,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sc_d]
+[#udb:doc:inst:sc-d]
 == sc.d
 
 Synopsis::
@@ -17113,14 +17113,14 @@ Encoding::
 ....
 
 Description::
-xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d] conditionally writes a doubleword in _xs2_ to the address in _xs1_:
-the xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d] succeeds only if the reservation is still valid and the
-reservation set contains the bytes being written. If the xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d] succeeds,
+xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d] conditionally writes a doubleword in _xs2_ to the address in _xs1_:
+the xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d] succeeds only if the reservation is still valid and the
+reservation set contains the bytes being written. If the xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d] succeeds,
 the instruction writes the doubleword in _xs2_ to memory, and it writes zero to _xd_.
-If the xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d] fails, the instruction does not write to memory, and it writes a
-nonzero value to _xd_. For the purposes of memory protection, a failed xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d]
+If the xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d] fails, the instruction does not write to memory, and it writes a
+nonzero value to _xd_. For the purposes of memory protection, a failed xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d]
 may be treated like a store. Regardless of success or failure, executing an
-xref:insts:sc_d.adoc#udb:doc:inst:sc_d[sc.d] instruction invalidates any reservation held by this hart.
+xref:insts:sc-d.adoc#udb:doc:inst:sc-d[sc.d] instruction invalidates any reservation held by this hart.
 
 The failure code with value 1 encodes an unspecified failure.
 Other failure codes are reserved at this time.
@@ -17229,7 +17229,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sc_w]
+[#udb:doc:inst:sc-w]
 == sc.w
 
 Synopsis::
@@ -17245,18 +17245,18 @@ Encoding::
 ....
 
 Description::
-xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w] conditionally writes a word in _xs2_ to the address in _xs1_:
-the xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w] succeeds only if the reservation is still valid and the
-reservation set contains the bytes being written. If the xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w] succeeds,
+xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w] conditionally writes a word in _xs2_ to the address in _xs1_:
+the xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w] succeeds only if the reservation is still valid and the
+reservation set contains the bytes being written. If the xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w] succeeds,
 the instruction writes the word in _xs2_ to memory, and it writes zero to _xd_.
-If the xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w] fails, the instruction does not write to memory, and it writes a
-nonzero value to _xd_. For the purposes of memory protection, a failed xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w]
+If the xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w] fails, the instruction does not write to memory, and it writes a
+nonzero value to _xd_. For the purposes of memory protection, a failed xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w]
 may be treated like a store. Regardless of success or failure, executing an
-xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w] instruction invalidates any reservation held by this hart.
+xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w] instruction invalidates any reservation held by this hart.
 
 <%- if MXLEN == 64 -%>
 [NOTE]
-If a value other than 0 or 1 is defined as a result for xref:insts:sc_w.adoc#udb:doc:inst:sc_w[sc.w], the value will before
+If a value other than 0 or 1 is defined as a result for xref:insts:sc-w.adoc#udb:doc:inst:sc-w[sc.w], the value will before
 sign-extended into _xd_.
 <%- end -%>
 
@@ -17462,7 +17462,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sd_rl]
+[#udb:doc:inst:sd-rl]
 == sd.rl
 
 Synopsis::
@@ -17499,7 +17499,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sext_b]
+[#udb:doc:inst:sext-b]
 == sext.b
 
 Synopsis::
@@ -17537,7 +17537,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sext_h]
+[#udb:doc:inst:sext-h]
 == sext.h
 
 Synopsis::
@@ -17575,7 +17575,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sfence_inval_ir]
+[#udb:doc:inst:sfence-inval-ir]
 == sfence.inval.ir
 
 Synopsis::
@@ -17588,7 +17588,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:sfence_inval_ir.adoc#udb:doc:inst:sfence_inval_ir[sfence.inval.ir] instruction guarantees that any previous xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma]
+The xref:insts:sfence-inval-ir.adoc#udb:doc:inst:sfence-inval-ir[sfence.inval.ir] instruction guarantees that any previous xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma]
 instructions executed by the current hart are ordered before subsequent implicit references by
 that hart to the memory-management data structures.
 
@@ -17606,7 +17606,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sfence_vma]
+[#udb:doc:inst:sfence-vma]
 == sfence.vma
 
 Synopsis::
@@ -17843,7 +17843,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sfence_w_inval]
+[#udb:doc:inst:sfence-w-inval]
 == sfence.w.inval
 
 Synopsis::
@@ -17856,8 +17856,8 @@ Encoding::
 ....
 
 Description::
-The xref:insts:sfence_w_inval.adoc#udb:doc:inst:sfence_w_inval[sfence.w.inval] instruction guarantees that any previous stores already visible to the
-current RISC-V hart are ordered before subsequent xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma] instructions executed by the
+The xref:insts:sfence-w-inval.adoc#udb:doc:inst:sfence-w-inval[sfence.w.inval] instruction guarantees that any previous stores already visible to the
+current RISC-V hart are ordered before subsequent xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma] instructions executed by the
 same hart.
 
 
@@ -17913,7 +17913,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sh_rl]
+[#udb:doc:inst:sh-rl]
 == sh.rl
 
 Synopsis::
@@ -17988,7 +17988,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sh1add_uw]
+[#udb:doc:inst:sh1add-uw]
 == sh1add.uw
 
 Synopsis::
@@ -18066,7 +18066,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sh2add_uw]
+[#udb:doc:inst:sh2add-uw]
 == sh2add.uw
 
 Synopsis::
@@ -18144,7 +18144,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sh3add_uw]
+[#udb:doc:inst:sh3add-uw]
 == sh3add.uw
 
 Synopsis::
@@ -18708,7 +18708,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sinval_vma]
+[#udb:doc:inst:sinval-vma]
 == sinval.vma
 
 Synopsis::
@@ -18724,7 +18724,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma] instruction invalidates any address-translation cache entries that an xref:insts:sfence_vma.adoc#udb:doc:inst:sfence_vma[sfence.vma] instruction with the same values of xs1 and xs2 would invalidate. However, unlike xref:insts:sfence_vma.adoc#udb:doc:inst:sfence_vma[sfence.vma], xref:insts:sinval_vma.adoc#udb:doc:inst:sinval_vma[sinval.vma] instructions are only ordered with respect to xref:insts:sfence_vma.adoc#udb:doc:inst:sfence_vma[sfence.vma], xref:insts:sfence_w_inval.adoc#udb:doc:inst:sfence_w_inval[sfence.w.inval], and xref:insts:sfence_inval_ir.adoc#udb:doc:inst:sfence_inval_ir[sfence.inval.ir] instructions as defined below.
+The xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma] instruction invalidates any address-translation cache entries that an xref:insts:sfence-vma.adoc#udb:doc:inst:sfence-vma[sfence.vma] instruction with the same values of xs1 and xs2 would invalidate. However, unlike xref:insts:sfence-vma.adoc#udb:doc:inst:sfence-vma[sfence.vma], xref:insts:sinval-vma.adoc#udb:doc:inst:sinval-vma[sinval.vma] instructions are only ordered with respect to xref:insts:sfence-vma.adoc#udb:doc:inst:sfence-vma[sfence.vma], xref:insts:sfence-w-inval.adoc#udb:doc:inst:sfence-w-inval[sfence.w.inval], and xref:insts:sfence-inval-ir.adoc#udb:doc:inst:sfence-inval-ir[sfence.inval.ir] instructions as defined below.
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
@@ -18841,7 +18841,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:slli_uw]
+[#udb:doc:inst:slli-uw]
 == slli.uw
 
 Synopsis::
@@ -19692,7 +19692,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:ssamoswap_d]
+[#udb:doc:inst:ssamoswap-d]
 == ssamoswap.d
 
 Synopsis::
@@ -19732,7 +19732,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:ssamoswap_w]
+[#udb:doc:inst:ssamoswap-w]
 == ssamoswap.w
 
 Synopsis::
@@ -19772,7 +19772,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspopchk_x1]
+[#udb:doc:inst:sspopchk-x1]
 == sspopchk.x1
 
 Synopsis::
@@ -19804,7 +19804,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspopchk_x5]
+[#udb:doc:inst:sspopchk-x5]
 == sspopchk.x5
 
 Synopsis::
@@ -19836,7 +19836,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspush_x1]
+[#udb:doc:inst:sspush-x1]
 == sspush.x1
 
 Synopsis::
@@ -19868,7 +19868,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sspush_x5]
+[#udb:doc:inst:sspush-x5]
 == sspush.x5
 
 Synopsis::
@@ -20049,7 +20049,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:sw_rl]
+[#udb:doc:inst:sw-rl]
 == sw.rl
 
 Synopsis::
@@ -20125,7 +20125,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaadd_vv]
+[#udb:doc:inst:vaadd-vv]
 == vaadd.vv
 
 Synopsis::
@@ -20164,7 +20164,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaadd_vx]
+[#udb:doc:inst:vaadd-vx]
 == vaadd.vx
 
 Synopsis::
@@ -20203,7 +20203,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaaddu_vv]
+[#udb:doc:inst:vaaddu-vv]
 == vaaddu.vv
 
 Synopsis::
@@ -20242,7 +20242,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaaddu_vx]
+[#udb:doc:inst:vaaddu-vx]
 == vaaddu.vx
 
 Synopsis::
@@ -20281,7 +20281,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadc_vim]
+[#udb:doc:inst:vadc-vim]
 == vadc.vim
 
 Synopsis::
@@ -20319,7 +20319,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadc_vvm]
+[#udb:doc:inst:vadc-vvm]
 == vadc.vvm
 
 Synopsis::
@@ -20357,7 +20357,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadc_vxm]
+[#udb:doc:inst:vadc-vxm]
 == vadc.vxm
 
 Synopsis::
@@ -20395,7 +20395,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadd_vi]
+[#udb:doc:inst:vadd-vi]
 == vadd.vi
 
 Synopsis::
@@ -20434,7 +20434,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadd_vv]
+[#udb:doc:inst:vadd-vv]
 == vadd.vv
 
 Synopsis::
@@ -20473,7 +20473,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vadd_vx]
+[#udb:doc:inst:vadd-vx]
 == vadd.vx
 
 Synopsis::
@@ -20512,7 +20512,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesdf_vs]
+[#udb:doc:inst:vaesdf-vs]
 == vaesdf.vs
 
 Synopsis::
@@ -20549,7 +20549,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesdf_vv]
+[#udb:doc:inst:vaesdf-vv]
 == vaesdf.vv
 
 Synopsis::
@@ -20586,7 +20586,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesdm_vs]
+[#udb:doc:inst:vaesdm-vs]
 == vaesdm.vs
 
 Synopsis::
@@ -20623,7 +20623,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesdm_vv]
+[#udb:doc:inst:vaesdm-vv]
 == vaesdm.vv
 
 Synopsis::
@@ -20660,7 +20660,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesef_vs]
+[#udb:doc:inst:vaesef-vs]
 == vaesef.vs
 
 Synopsis::
@@ -20697,7 +20697,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesef_vv]
+[#udb:doc:inst:vaesef-vv]
 == vaesef.vv
 
 Synopsis::
@@ -20734,7 +20734,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesem_vs]
+[#udb:doc:inst:vaesem-vs]
 == vaesem.vs
 
 Synopsis::
@@ -20771,7 +20771,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesem_vv]
+[#udb:doc:inst:vaesem-vv]
 == vaesem.vv
 
 Synopsis::
@@ -20808,7 +20808,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaeskf1_vi]
+[#udb:doc:inst:vaeskf1-vi]
 == vaeskf1.vi
 
 Synopsis::
@@ -20846,7 +20846,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaeskf2_vi]
+[#udb:doc:inst:vaeskf2-vi]
 == vaeskf2.vi
 
 Synopsis::
@@ -20884,7 +20884,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vaesz_vs]
+[#udb:doc:inst:vaesz-vs]
 == vaesz.vs
 
 Synopsis::
@@ -20921,7 +20921,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vand_vi]
+[#udb:doc:inst:vand-vi]
 == vand.vi
 
 Synopsis::
@@ -20960,7 +20960,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vand_vv]
+[#udb:doc:inst:vand-vv]
 == vand.vv
 
 Synopsis::
@@ -20999,7 +20999,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vand_vx]
+[#udb:doc:inst:vand-vx]
 == vand.vx
 
 Synopsis::
@@ -21038,7 +21038,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vandn_vv]
+[#udb:doc:inst:vandn-vv]
 == vandn.vv
 
 Synopsis::
@@ -21077,7 +21077,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vandn_vx]
+[#udb:doc:inst:vandn-vx]
 == vandn.vx
 
 Synopsis::
@@ -21116,7 +21116,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vasub_vv]
+[#udb:doc:inst:vasub-vv]
 == vasub.vv
 
 Synopsis::
@@ -21155,7 +21155,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vasub_vx]
+[#udb:doc:inst:vasub-vx]
 == vasub.vx
 
 Synopsis::
@@ -21194,7 +21194,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vasubu_vv]
+[#udb:doc:inst:vasubu-vv]
 == vasubu.vv
 
 Synopsis::
@@ -21233,7 +21233,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vasubu_vx]
+[#udb:doc:inst:vasubu-vx]
 == vasubu.vx
 
 Synopsis::
@@ -21272,7 +21272,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vbrev_v]
+[#udb:doc:inst:vbrev-v]
 == vbrev.v
 
 Synopsis::
@@ -21310,7 +21310,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vbrev8_v]
+[#udb:doc:inst:vbrev8-v]
 == vbrev8.v
 
 Synopsis::
@@ -21348,7 +21348,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vclmul_vv]
+[#udb:doc:inst:vclmul-vv]
 == vclmul.vv
 
 Synopsis::
@@ -21387,7 +21387,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vclmul_vx]
+[#udb:doc:inst:vclmul-vx]
 == vclmul.vx
 
 Synopsis::
@@ -21426,7 +21426,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vclmulh_vv]
+[#udb:doc:inst:vclmulh-vv]
 == vclmulh.vv
 
 Synopsis::
@@ -21465,7 +21465,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vclmulh_vx]
+[#udb:doc:inst:vclmulh-vx]
 == vclmulh.vx
 
 Synopsis::
@@ -21504,7 +21504,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vclz_v]
+[#udb:doc:inst:vclz-v]
 == vclz.v
 
 Synopsis::
@@ -21542,7 +21542,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vcompress_vm]
+[#udb:doc:inst:vcompress-vm]
 == vcompress.vm
 
 Synopsis::
@@ -21580,7 +21580,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vcpop_m]
+[#udb:doc:inst:vcpop-m]
 == vcpop.m
 
 Synopsis::
@@ -21618,7 +21618,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vcpop_v]
+[#udb:doc:inst:vcpop-v]
 == vcpop.v
 
 Synopsis::
@@ -21656,7 +21656,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vctz_v]
+[#udb:doc:inst:vctz-v]
 == vctz.v
 
 Synopsis::
@@ -21694,7 +21694,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vdiv_vv]
+[#udb:doc:inst:vdiv-vv]
 == vdiv.vv
 
 Synopsis::
@@ -21733,7 +21733,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vdiv_vx]
+[#udb:doc:inst:vdiv-vx]
 == vdiv.vx
 
 Synopsis::
@@ -21772,7 +21772,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vdivu_vv]
+[#udb:doc:inst:vdivu-vv]
 == vdivu.vv
 
 Synopsis::
@@ -21811,7 +21811,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vdivu_vx]
+[#udb:doc:inst:vdivu-vx]
 == vdivu.vx
 
 Synopsis::
@@ -21850,7 +21850,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfadd_vf]
+[#udb:doc:inst:vfadd-vf]
 == vfadd.vf
 
 Synopsis::
@@ -21889,7 +21889,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfadd_vv]
+[#udb:doc:inst:vfadd-vv]
 == vfadd.vv
 
 Synopsis::
@@ -21928,7 +21928,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfclass_v]
+[#udb:doc:inst:vfclass-v]
 == vfclass.v
 
 Synopsis::
@@ -21966,7 +21966,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_f_x_v]
+[#udb:doc:inst:vfcvt-f-x-v]
 == vfcvt.f.x.v
 
 Synopsis::
@@ -22004,7 +22004,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_f_xu_v]
+[#udb:doc:inst:vfcvt-f-xu-v]
 == vfcvt.f.xu.v
 
 Synopsis::
@@ -22042,7 +22042,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_rtz_x_f_v]
+[#udb:doc:inst:vfcvt-rtz-x-f-v]
 == vfcvt.rtz.x.f.v
 
 Synopsis::
@@ -22080,7 +22080,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_rtz_xu_f_v]
+[#udb:doc:inst:vfcvt-rtz-xu-f-v]
 == vfcvt.rtz.xu.f.v
 
 Synopsis::
@@ -22118,7 +22118,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_x_f_v]
+[#udb:doc:inst:vfcvt-x-f-v]
 == vfcvt.x.f.v
 
 Synopsis::
@@ -22156,7 +22156,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfcvt_xu_f_v]
+[#udb:doc:inst:vfcvt-xu-f-v]
 == vfcvt.xu.f.v
 
 Synopsis::
@@ -22194,7 +22194,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfdiv_vf]
+[#udb:doc:inst:vfdiv-vf]
 == vfdiv.vf
 
 Synopsis::
@@ -22233,7 +22233,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfdiv_vv]
+[#udb:doc:inst:vfdiv-vv]
 == vfdiv.vv
 
 Synopsis::
@@ -22272,7 +22272,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfirst_m]
+[#udb:doc:inst:vfirst-m]
 == vfirst.m
 
 Synopsis::
@@ -22310,7 +22310,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmacc_vf]
+[#udb:doc:inst:vfmacc-vf]
 == vfmacc.vf
 
 Synopsis::
@@ -22349,7 +22349,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmacc_vv]
+[#udb:doc:inst:vfmacc-vv]
 == vfmacc.vv
 
 Synopsis::
@@ -22388,7 +22388,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmadd_vf]
+[#udb:doc:inst:vfmadd-vf]
 == vfmadd.vf
 
 Synopsis::
@@ -22427,7 +22427,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmadd_vv]
+[#udb:doc:inst:vfmadd-vv]
 == vfmadd.vv
 
 Synopsis::
@@ -22466,7 +22466,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmax_vf]
+[#udb:doc:inst:vfmax-vf]
 == vfmax.vf
 
 Synopsis::
@@ -22505,7 +22505,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmax_vv]
+[#udb:doc:inst:vfmax-vv]
 == vfmax.vv
 
 Synopsis::
@@ -22544,7 +22544,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmerge_vfm]
+[#udb:doc:inst:vfmerge-vfm]
 == vfmerge.vfm
 
 Synopsis::
@@ -22582,7 +22582,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmin_vf]
+[#udb:doc:inst:vfmin-vf]
 == vfmin.vf
 
 Synopsis::
@@ -22621,7 +22621,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmin_vv]
+[#udb:doc:inst:vfmin-vv]
 == vfmin.vv
 
 Synopsis::
@@ -22660,7 +22660,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmsac_vf]
+[#udb:doc:inst:vfmsac-vf]
 == vfmsac.vf
 
 Synopsis::
@@ -22699,7 +22699,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmsac_vv]
+[#udb:doc:inst:vfmsac-vv]
 == vfmsac.vv
 
 Synopsis::
@@ -22738,7 +22738,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmsub_vf]
+[#udb:doc:inst:vfmsub-vf]
 == vfmsub.vf
 
 Synopsis::
@@ -22777,7 +22777,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmsub_vv]
+[#udb:doc:inst:vfmsub-vv]
 == vfmsub.vv
 
 Synopsis::
@@ -22816,7 +22816,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmul_vf]
+[#udb:doc:inst:vfmul-vf]
 == vfmul.vf
 
 Synopsis::
@@ -22855,7 +22855,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmul_vv]
+[#udb:doc:inst:vfmul-vv]
 == vfmul.vv
 
 Synopsis::
@@ -22894,7 +22894,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmv_f_s]
+[#udb:doc:inst:vfmv-f-s]
 == vfmv.f.s
 
 Synopsis::
@@ -22931,7 +22931,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmv_s_f]
+[#udb:doc:inst:vfmv-s-f]
 == vfmv.s.f
 
 Synopsis::
@@ -22968,7 +22968,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfmv_v_f]
+[#udb:doc:inst:vfmv-v-f]
 == vfmv.v.f
 
 Synopsis::
@@ -23005,7 +23005,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_f_f_w]
+[#udb:doc:inst:vfncvt-f-f-w]
 == vfncvt.f.f.w
 
 Synopsis::
@@ -23043,7 +23043,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_f_x_w]
+[#udb:doc:inst:vfncvt-f-x-w]
 == vfncvt.f.x.w
 
 Synopsis::
@@ -23081,7 +23081,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_f_xu_w]
+[#udb:doc:inst:vfncvt-f-xu-w]
 == vfncvt.f.xu.w
 
 Synopsis::
@@ -23119,7 +23119,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_rod_f_f_w]
+[#udb:doc:inst:vfncvt-rod-f-f-w]
 == vfncvt.rod.f.f.w
 
 Synopsis::
@@ -23157,7 +23157,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_rtz_x_f_w]
+[#udb:doc:inst:vfncvt-rtz-x-f-w]
 == vfncvt.rtz.x.f.w
 
 Synopsis::
@@ -23195,7 +23195,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_rtz_xu_f_w]
+[#udb:doc:inst:vfncvt-rtz-xu-f-w]
 == vfncvt.rtz.xu.f.w
 
 Synopsis::
@@ -23233,7 +23233,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_x_f_w]
+[#udb:doc:inst:vfncvt-x-f-w]
 == vfncvt.x.f.w
 
 Synopsis::
@@ -23271,7 +23271,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvt_xu_f_w]
+[#udb:doc:inst:vfncvt-xu-f-w]
 == vfncvt.xu.f.w
 
 Synopsis::
@@ -23309,7 +23309,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfncvtbf16_f_f_w]
+[#udb:doc:inst:vfncvtbf16-f-f-w]
 == vfncvtbf16.f.f.w
 
 Synopsis::
@@ -23347,7 +23347,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmacc_vf]
+[#udb:doc:inst:vfnmacc-vf]
 == vfnmacc.vf
 
 Synopsis::
@@ -23386,7 +23386,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmacc_vv]
+[#udb:doc:inst:vfnmacc-vv]
 == vfnmacc.vv
 
 Synopsis::
@@ -23425,7 +23425,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmadd_vf]
+[#udb:doc:inst:vfnmadd-vf]
 == vfnmadd.vf
 
 Synopsis::
@@ -23464,7 +23464,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmadd_vv]
+[#udb:doc:inst:vfnmadd-vv]
 == vfnmadd.vv
 
 Synopsis::
@@ -23503,7 +23503,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmsac_vf]
+[#udb:doc:inst:vfnmsac-vf]
 == vfnmsac.vf
 
 Synopsis::
@@ -23542,7 +23542,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmsac_vv]
+[#udb:doc:inst:vfnmsac-vv]
 == vfnmsac.vv
 
 Synopsis::
@@ -23581,7 +23581,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmsub_vf]
+[#udb:doc:inst:vfnmsub-vf]
 == vfnmsub.vf
 
 Synopsis::
@@ -23620,7 +23620,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfnmsub_vv]
+[#udb:doc:inst:vfnmsub-vv]
 == vfnmsub.vv
 
 Synopsis::
@@ -23659,7 +23659,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfrdiv_vf]
+[#udb:doc:inst:vfrdiv-vf]
 == vfrdiv.vf
 
 Synopsis::
@@ -23698,7 +23698,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfrec7_v]
+[#udb:doc:inst:vfrec7-v]
 == vfrec7.v
 
 Synopsis::
@@ -23736,7 +23736,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfredmax_vs]
+[#udb:doc:inst:vfredmax-vs]
 == vfredmax.vs
 
 Synopsis::
@@ -23775,7 +23775,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfredmin_vs]
+[#udb:doc:inst:vfredmin-vs]
 == vfredmin.vs
 
 Synopsis::
@@ -23814,7 +23814,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfredosum_vs]
+[#udb:doc:inst:vfredosum-vs]
 == vfredosum.vs
 
 Synopsis::
@@ -23853,7 +23853,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfredusum_vs]
+[#udb:doc:inst:vfredusum-vs]
 == vfredusum.vs
 
 Synopsis::
@@ -23892,7 +23892,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfrsqrt7_v]
+[#udb:doc:inst:vfrsqrt7-v]
 == vfrsqrt7.v
 
 Synopsis::
@@ -23930,7 +23930,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfrsub_vf]
+[#udb:doc:inst:vfrsub-vf]
 == vfrsub.vf
 
 Synopsis::
@@ -23969,7 +23969,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnj_vf]
+[#udb:doc:inst:vfsgnj-vf]
 == vfsgnj.vf
 
 Synopsis::
@@ -24008,7 +24008,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnj_vv]
+[#udb:doc:inst:vfsgnj-vv]
 == vfsgnj.vv
 
 Synopsis::
@@ -24047,7 +24047,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnjn_vf]
+[#udb:doc:inst:vfsgnjn-vf]
 == vfsgnjn.vf
 
 Synopsis::
@@ -24086,7 +24086,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnjn_vv]
+[#udb:doc:inst:vfsgnjn-vv]
 == vfsgnjn.vv
 
 Synopsis::
@@ -24125,7 +24125,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnjx_vf]
+[#udb:doc:inst:vfsgnjx-vf]
 == vfsgnjx.vf
 
 Synopsis::
@@ -24164,7 +24164,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsgnjx_vv]
+[#udb:doc:inst:vfsgnjx-vv]
 == vfsgnjx.vv
 
 Synopsis::
@@ -24203,7 +24203,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfslide1down_vf]
+[#udb:doc:inst:vfslide1down-vf]
 == vfslide1down.vf
 
 Synopsis::
@@ -24242,7 +24242,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfslide1up_vf]
+[#udb:doc:inst:vfslide1up-vf]
 == vfslide1up.vf
 
 Synopsis::
@@ -24281,7 +24281,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsqrt_v]
+[#udb:doc:inst:vfsqrt-v]
 == vfsqrt.v
 
 Synopsis::
@@ -24319,7 +24319,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsub_vf]
+[#udb:doc:inst:vfsub-vf]
 == vfsub.vf
 
 Synopsis::
@@ -24358,7 +24358,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfsub_vv]
+[#udb:doc:inst:vfsub-vv]
 == vfsub.vv
 
 Synopsis::
@@ -24397,7 +24397,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwadd_vf]
+[#udb:doc:inst:vfwadd-vf]
 == vfwadd.vf
 
 Synopsis::
@@ -24436,7 +24436,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwadd_vv]
+[#udb:doc:inst:vfwadd-vv]
 == vfwadd.vv
 
 Synopsis::
@@ -24475,7 +24475,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwadd_wf]
+[#udb:doc:inst:vfwadd-wf]
 == vfwadd.wf
 
 Synopsis::
@@ -24514,7 +24514,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwadd_wv]
+[#udb:doc:inst:vfwadd-wv]
 == vfwadd.wv
 
 Synopsis::
@@ -24553,7 +24553,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_f_f_v]
+[#udb:doc:inst:vfwcvt-f-f-v]
 == vfwcvt.f.f.v
 
 Synopsis::
@@ -24591,7 +24591,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_f_x_v]
+[#udb:doc:inst:vfwcvt-f-x-v]
 == vfwcvt.f.x.v
 
 Synopsis::
@@ -24629,7 +24629,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_f_xu_v]
+[#udb:doc:inst:vfwcvt-f-xu-v]
 == vfwcvt.f.xu.v
 
 Synopsis::
@@ -24667,7 +24667,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_rtz_x_f_v]
+[#udb:doc:inst:vfwcvt-rtz-x-f-v]
 == vfwcvt.rtz.x.f.v
 
 Synopsis::
@@ -24705,7 +24705,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_rtz_xu_f_v]
+[#udb:doc:inst:vfwcvt-rtz-xu-f-v]
 == vfwcvt.rtz.xu.f.v
 
 Synopsis::
@@ -24743,7 +24743,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_x_f_v]
+[#udb:doc:inst:vfwcvt-x-f-v]
 == vfwcvt.x.f.v
 
 Synopsis::
@@ -24781,7 +24781,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvt_xu_f_v]
+[#udb:doc:inst:vfwcvt-xu-f-v]
 == vfwcvt.xu.f.v
 
 Synopsis::
@@ -24819,7 +24819,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwcvtbf16_f_f_v]
+[#udb:doc:inst:vfwcvtbf16-f-f-v]
 == vfwcvtbf16.f.f.v
 
 Synopsis::
@@ -24857,7 +24857,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmacc_vf]
+[#udb:doc:inst:vfwmacc-vf]
 == vfwmacc.vf
 
 Synopsis::
@@ -24896,7 +24896,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmacc_vv]
+[#udb:doc:inst:vfwmacc-vv]
 == vfwmacc.vv
 
 Synopsis::
@@ -24935,7 +24935,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmaccbf16_vf]
+[#udb:doc:inst:vfwmaccbf16-vf]
 == vfwmaccbf16.vf
 
 Synopsis::
@@ -24974,7 +24974,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmaccbf16_vv]
+[#udb:doc:inst:vfwmaccbf16-vv]
 == vfwmaccbf16.vv
 
 Synopsis::
@@ -25013,7 +25013,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmsac_vf]
+[#udb:doc:inst:vfwmsac-vf]
 == vfwmsac.vf
 
 Synopsis::
@@ -25052,7 +25052,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmsac_vv]
+[#udb:doc:inst:vfwmsac-vv]
 == vfwmsac.vv
 
 Synopsis::
@@ -25091,7 +25091,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmul_vf]
+[#udb:doc:inst:vfwmul-vf]
 == vfwmul.vf
 
 Synopsis::
@@ -25130,7 +25130,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwmul_vv]
+[#udb:doc:inst:vfwmul-vv]
 == vfwmul.vv
 
 Synopsis::
@@ -25169,7 +25169,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwnmacc_vf]
+[#udb:doc:inst:vfwnmacc-vf]
 == vfwnmacc.vf
 
 Synopsis::
@@ -25208,7 +25208,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwnmacc_vv]
+[#udb:doc:inst:vfwnmacc-vv]
 == vfwnmacc.vv
 
 Synopsis::
@@ -25247,7 +25247,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwnmsac_vf]
+[#udb:doc:inst:vfwnmsac-vf]
 == vfwnmsac.vf
 
 Synopsis::
@@ -25286,7 +25286,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwnmsac_vv]
+[#udb:doc:inst:vfwnmsac-vv]
 == vfwnmsac.vv
 
 Synopsis::
@@ -25325,7 +25325,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwredosum_vs]
+[#udb:doc:inst:vfwredosum-vs]
 == vfwredosum.vs
 
 Synopsis::
@@ -25364,7 +25364,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwredusum_vs]
+[#udb:doc:inst:vfwredusum-vs]
 == vfwredusum.vs
 
 Synopsis::
@@ -25403,7 +25403,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwsub_vf]
+[#udb:doc:inst:vfwsub-vf]
 == vfwsub.vf
 
 Synopsis::
@@ -25442,7 +25442,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwsub_vv]
+[#udb:doc:inst:vfwsub-vv]
 == vfwsub.vv
 
 Synopsis::
@@ -25481,7 +25481,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwsub_wf]
+[#udb:doc:inst:vfwsub-wf]
 == vfwsub.wf
 
 Synopsis::
@@ -25520,7 +25520,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vfwsub_wv]
+[#udb:doc:inst:vfwsub-wv]
 == vfwsub.wv
 
 Synopsis::
@@ -25559,7 +25559,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vghsh_vv]
+[#udb:doc:inst:vghsh-vv]
 == vghsh.vv
 
 Synopsis::
@@ -25597,7 +25597,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vgmul_vv]
+[#udb:doc:inst:vgmul-vv]
 == vgmul.vv
 
 Synopsis::
@@ -25634,7 +25634,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vid_v]
+[#udb:doc:inst:vid-v]
 == vid.v
 
 Synopsis::
@@ -25671,7 +25671,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:viota_m]
+[#udb:doc:inst:viota-m]
 == viota.m
 
 Synopsis::
@@ -25709,7 +25709,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl1re16_v]
+[#udb:doc:inst:vl1re16-v]
 == vl1re16.v
 
 Synopsis::
@@ -25746,7 +25746,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl1re32_v]
+[#udb:doc:inst:vl1re32-v]
 == vl1re32.v
 
 Synopsis::
@@ -25783,7 +25783,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl1re64_v]
+[#udb:doc:inst:vl1re64-v]
 == vl1re64.v
 
 Synopsis::
@@ -25820,7 +25820,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl1re8_v]
+[#udb:doc:inst:vl1re8-v]
 == vl1re8.v
 
 Synopsis::
@@ -25857,7 +25857,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl2re16_v]
+[#udb:doc:inst:vl2re16-v]
 == vl2re16.v
 
 Synopsis::
@@ -25894,7 +25894,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl2re32_v]
+[#udb:doc:inst:vl2re32-v]
 == vl2re32.v
 
 Synopsis::
@@ -25931,7 +25931,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl2re64_v]
+[#udb:doc:inst:vl2re64-v]
 == vl2re64.v
 
 Synopsis::
@@ -25968,7 +25968,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl2re8_v]
+[#udb:doc:inst:vl2re8-v]
 == vl2re8.v
 
 Synopsis::
@@ -26005,7 +26005,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl4re16_v]
+[#udb:doc:inst:vl4re16-v]
 == vl4re16.v
 
 Synopsis::
@@ -26042,7 +26042,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl4re32_v]
+[#udb:doc:inst:vl4re32-v]
 == vl4re32.v
 
 Synopsis::
@@ -26079,7 +26079,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl4re64_v]
+[#udb:doc:inst:vl4re64-v]
 == vl4re64.v
 
 Synopsis::
@@ -26116,7 +26116,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl4re8_v]
+[#udb:doc:inst:vl4re8-v]
 == vl4re8.v
 
 Synopsis::
@@ -26153,7 +26153,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl8re16_v]
+[#udb:doc:inst:vl8re16-v]
 == vl8re16.v
 
 Synopsis::
@@ -26190,7 +26190,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl8re32_v]
+[#udb:doc:inst:vl8re32-v]
 == vl8re32.v
 
 Synopsis::
@@ -26227,7 +26227,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl8re64_v]
+[#udb:doc:inst:vl8re64-v]
 == vl8re64.v
 
 Synopsis::
@@ -26264,7 +26264,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vl8re8_v]
+[#udb:doc:inst:vl8re8-v]
 == vl8re8.v
 
 Synopsis::
@@ -26301,7 +26301,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle16_v]
+[#udb:doc:inst:vle16-v]
 == vle16.v
 
 Synopsis::
@@ -26339,7 +26339,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle16ff_v]
+[#udb:doc:inst:vle16ff-v]
 == vle16ff.v
 
 Synopsis::
@@ -26377,7 +26377,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle32_v]
+[#udb:doc:inst:vle32-v]
 == vle32.v
 
 Synopsis::
@@ -26415,7 +26415,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle32ff_v]
+[#udb:doc:inst:vle32ff-v]
 == vle32ff.v
 
 Synopsis::
@@ -26453,7 +26453,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle64_v]
+[#udb:doc:inst:vle64-v]
 == vle64.v
 
 Synopsis::
@@ -26491,7 +26491,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle64ff_v]
+[#udb:doc:inst:vle64ff-v]
 == vle64ff.v
 
 Synopsis::
@@ -26529,7 +26529,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle8_v]
+[#udb:doc:inst:vle8-v]
 == vle8.v
 
 Synopsis::
@@ -26567,7 +26567,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vle8ff_v]
+[#udb:doc:inst:vle8ff-v]
 == vle8ff.v
 
 Synopsis::
@@ -26605,7 +26605,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlm_v]
+[#udb:doc:inst:vlm-v]
 == vlm.v
 
 Synopsis::
@@ -26642,7 +26642,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxei16_v]
+[#udb:doc:inst:vloxei16-v]
 == vloxei16.v
 
 Synopsis::
@@ -26681,7 +26681,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxei32_v]
+[#udb:doc:inst:vloxei32-v]
 == vloxei32.v
 
 Synopsis::
@@ -26720,7 +26720,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxei64_v]
+[#udb:doc:inst:vloxei64-v]
 == vloxei64.v
 
 Synopsis::
@@ -26759,7 +26759,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxei8_v]
+[#udb:doc:inst:vloxei8-v]
 == vloxei8.v
 
 Synopsis::
@@ -26798,7 +26798,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg2ei16_v]
+[#udb:doc:inst:vloxseg2ei16-v]
 == vloxseg2ei16.v
 
 Synopsis::
@@ -26837,7 +26837,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg2ei32_v]
+[#udb:doc:inst:vloxseg2ei32-v]
 == vloxseg2ei32.v
 
 Synopsis::
@@ -26876,7 +26876,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg2ei64_v]
+[#udb:doc:inst:vloxseg2ei64-v]
 == vloxseg2ei64.v
 
 Synopsis::
@@ -26915,7 +26915,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg2ei8_v]
+[#udb:doc:inst:vloxseg2ei8-v]
 == vloxseg2ei8.v
 
 Synopsis::
@@ -26954,7 +26954,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg3ei16_v]
+[#udb:doc:inst:vloxseg3ei16-v]
 == vloxseg3ei16.v
 
 Synopsis::
@@ -26993,7 +26993,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg3ei32_v]
+[#udb:doc:inst:vloxseg3ei32-v]
 == vloxseg3ei32.v
 
 Synopsis::
@@ -27032,7 +27032,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg3ei64_v]
+[#udb:doc:inst:vloxseg3ei64-v]
 == vloxseg3ei64.v
 
 Synopsis::
@@ -27071,7 +27071,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg3ei8_v]
+[#udb:doc:inst:vloxseg3ei8-v]
 == vloxseg3ei8.v
 
 Synopsis::
@@ -27110,7 +27110,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg4ei16_v]
+[#udb:doc:inst:vloxseg4ei16-v]
 == vloxseg4ei16.v
 
 Synopsis::
@@ -27149,7 +27149,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg4ei32_v]
+[#udb:doc:inst:vloxseg4ei32-v]
 == vloxseg4ei32.v
 
 Synopsis::
@@ -27188,7 +27188,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg4ei64_v]
+[#udb:doc:inst:vloxseg4ei64-v]
 == vloxseg4ei64.v
 
 Synopsis::
@@ -27227,7 +27227,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg4ei8_v]
+[#udb:doc:inst:vloxseg4ei8-v]
 == vloxseg4ei8.v
 
 Synopsis::
@@ -27266,7 +27266,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg5ei16_v]
+[#udb:doc:inst:vloxseg5ei16-v]
 == vloxseg5ei16.v
 
 Synopsis::
@@ -27305,7 +27305,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg5ei32_v]
+[#udb:doc:inst:vloxseg5ei32-v]
 == vloxseg5ei32.v
 
 Synopsis::
@@ -27344,7 +27344,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg5ei64_v]
+[#udb:doc:inst:vloxseg5ei64-v]
 == vloxseg5ei64.v
 
 Synopsis::
@@ -27383,7 +27383,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg5ei8_v]
+[#udb:doc:inst:vloxseg5ei8-v]
 == vloxseg5ei8.v
 
 Synopsis::
@@ -27422,7 +27422,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg6ei16_v]
+[#udb:doc:inst:vloxseg6ei16-v]
 == vloxseg6ei16.v
 
 Synopsis::
@@ -27461,7 +27461,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg6ei32_v]
+[#udb:doc:inst:vloxseg6ei32-v]
 == vloxseg6ei32.v
 
 Synopsis::
@@ -27500,7 +27500,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg6ei64_v]
+[#udb:doc:inst:vloxseg6ei64-v]
 == vloxseg6ei64.v
 
 Synopsis::
@@ -27539,7 +27539,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg6ei8_v]
+[#udb:doc:inst:vloxseg6ei8-v]
 == vloxseg6ei8.v
 
 Synopsis::
@@ -27578,7 +27578,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg7ei16_v]
+[#udb:doc:inst:vloxseg7ei16-v]
 == vloxseg7ei16.v
 
 Synopsis::
@@ -27617,7 +27617,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg7ei32_v]
+[#udb:doc:inst:vloxseg7ei32-v]
 == vloxseg7ei32.v
 
 Synopsis::
@@ -27656,7 +27656,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg7ei64_v]
+[#udb:doc:inst:vloxseg7ei64-v]
 == vloxseg7ei64.v
 
 Synopsis::
@@ -27695,7 +27695,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg7ei8_v]
+[#udb:doc:inst:vloxseg7ei8-v]
 == vloxseg7ei8.v
 
 Synopsis::
@@ -27734,7 +27734,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg8ei16_v]
+[#udb:doc:inst:vloxseg8ei16-v]
 == vloxseg8ei16.v
 
 Synopsis::
@@ -27773,7 +27773,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg8ei32_v]
+[#udb:doc:inst:vloxseg8ei32-v]
 == vloxseg8ei32.v
 
 Synopsis::
@@ -27812,7 +27812,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg8ei64_v]
+[#udb:doc:inst:vloxseg8ei64-v]
 == vloxseg8ei64.v
 
 Synopsis::
@@ -27851,7 +27851,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vloxseg8ei8_v]
+[#udb:doc:inst:vloxseg8ei8-v]
 == vloxseg8ei8.v
 
 Synopsis::
@@ -27890,7 +27890,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlse16_v]
+[#udb:doc:inst:vlse16-v]
 == vlse16.v
 
 Synopsis::
@@ -27929,7 +27929,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlse32_v]
+[#udb:doc:inst:vlse32-v]
 == vlse32.v
 
 Synopsis::
@@ -27968,7 +27968,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlse64_v]
+[#udb:doc:inst:vlse64-v]
 == vlse64.v
 
 Synopsis::
@@ -28007,7 +28007,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlse8_v]
+[#udb:doc:inst:vlse8-v]
 == vlse8.v
 
 Synopsis::
@@ -28046,7 +28046,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e16_v]
+[#udb:doc:inst:vlseg2e16-v]
 == vlseg2e16.v
 
 Synopsis::
@@ -28084,7 +28084,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e16ff_v]
+[#udb:doc:inst:vlseg2e16ff-v]
 == vlseg2e16ff.v
 
 Synopsis::
@@ -28122,7 +28122,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e32_v]
+[#udb:doc:inst:vlseg2e32-v]
 == vlseg2e32.v
 
 Synopsis::
@@ -28160,7 +28160,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e32ff_v]
+[#udb:doc:inst:vlseg2e32ff-v]
 == vlseg2e32ff.v
 
 Synopsis::
@@ -28198,7 +28198,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e64_v]
+[#udb:doc:inst:vlseg2e64-v]
 == vlseg2e64.v
 
 Synopsis::
@@ -28236,7 +28236,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e64ff_v]
+[#udb:doc:inst:vlseg2e64ff-v]
 == vlseg2e64ff.v
 
 Synopsis::
@@ -28274,7 +28274,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e8_v]
+[#udb:doc:inst:vlseg2e8-v]
 == vlseg2e8.v
 
 Synopsis::
@@ -28312,7 +28312,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg2e8ff_v]
+[#udb:doc:inst:vlseg2e8ff-v]
 == vlseg2e8ff.v
 
 Synopsis::
@@ -28350,7 +28350,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e16_v]
+[#udb:doc:inst:vlseg3e16-v]
 == vlseg3e16.v
 
 Synopsis::
@@ -28388,7 +28388,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e16ff_v]
+[#udb:doc:inst:vlseg3e16ff-v]
 == vlseg3e16ff.v
 
 Synopsis::
@@ -28426,7 +28426,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e32_v]
+[#udb:doc:inst:vlseg3e32-v]
 == vlseg3e32.v
 
 Synopsis::
@@ -28464,7 +28464,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e32ff_v]
+[#udb:doc:inst:vlseg3e32ff-v]
 == vlseg3e32ff.v
 
 Synopsis::
@@ -28502,7 +28502,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e64_v]
+[#udb:doc:inst:vlseg3e64-v]
 == vlseg3e64.v
 
 Synopsis::
@@ -28540,7 +28540,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e64ff_v]
+[#udb:doc:inst:vlseg3e64ff-v]
 == vlseg3e64ff.v
 
 Synopsis::
@@ -28578,7 +28578,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e8_v]
+[#udb:doc:inst:vlseg3e8-v]
 == vlseg3e8.v
 
 Synopsis::
@@ -28616,7 +28616,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg3e8ff_v]
+[#udb:doc:inst:vlseg3e8ff-v]
 == vlseg3e8ff.v
 
 Synopsis::
@@ -28654,7 +28654,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e16_v]
+[#udb:doc:inst:vlseg4e16-v]
 == vlseg4e16.v
 
 Synopsis::
@@ -28692,7 +28692,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e16ff_v]
+[#udb:doc:inst:vlseg4e16ff-v]
 == vlseg4e16ff.v
 
 Synopsis::
@@ -28730,7 +28730,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e32_v]
+[#udb:doc:inst:vlseg4e32-v]
 == vlseg4e32.v
 
 Synopsis::
@@ -28768,7 +28768,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e32ff_v]
+[#udb:doc:inst:vlseg4e32ff-v]
 == vlseg4e32ff.v
 
 Synopsis::
@@ -28806,7 +28806,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e64_v]
+[#udb:doc:inst:vlseg4e64-v]
 == vlseg4e64.v
 
 Synopsis::
@@ -28844,7 +28844,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e64ff_v]
+[#udb:doc:inst:vlseg4e64ff-v]
 == vlseg4e64ff.v
 
 Synopsis::
@@ -28882,7 +28882,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e8_v]
+[#udb:doc:inst:vlseg4e8-v]
 == vlseg4e8.v
 
 Synopsis::
@@ -28920,7 +28920,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg4e8ff_v]
+[#udb:doc:inst:vlseg4e8ff-v]
 == vlseg4e8ff.v
 
 Synopsis::
@@ -28958,7 +28958,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e16_v]
+[#udb:doc:inst:vlseg5e16-v]
 == vlseg5e16.v
 
 Synopsis::
@@ -28996,7 +28996,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e16ff_v]
+[#udb:doc:inst:vlseg5e16ff-v]
 == vlseg5e16ff.v
 
 Synopsis::
@@ -29034,7 +29034,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e32_v]
+[#udb:doc:inst:vlseg5e32-v]
 == vlseg5e32.v
 
 Synopsis::
@@ -29072,7 +29072,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e32ff_v]
+[#udb:doc:inst:vlseg5e32ff-v]
 == vlseg5e32ff.v
 
 Synopsis::
@@ -29110,7 +29110,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e64_v]
+[#udb:doc:inst:vlseg5e64-v]
 == vlseg5e64.v
 
 Synopsis::
@@ -29148,7 +29148,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e64ff_v]
+[#udb:doc:inst:vlseg5e64ff-v]
 == vlseg5e64ff.v
 
 Synopsis::
@@ -29186,7 +29186,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e8_v]
+[#udb:doc:inst:vlseg5e8-v]
 == vlseg5e8.v
 
 Synopsis::
@@ -29224,7 +29224,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg5e8ff_v]
+[#udb:doc:inst:vlseg5e8ff-v]
 == vlseg5e8ff.v
 
 Synopsis::
@@ -29262,7 +29262,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e16_v]
+[#udb:doc:inst:vlseg6e16-v]
 == vlseg6e16.v
 
 Synopsis::
@@ -29300,7 +29300,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e16ff_v]
+[#udb:doc:inst:vlseg6e16ff-v]
 == vlseg6e16ff.v
 
 Synopsis::
@@ -29338,7 +29338,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e32_v]
+[#udb:doc:inst:vlseg6e32-v]
 == vlseg6e32.v
 
 Synopsis::
@@ -29376,7 +29376,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e32ff_v]
+[#udb:doc:inst:vlseg6e32ff-v]
 == vlseg6e32ff.v
 
 Synopsis::
@@ -29414,7 +29414,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e64_v]
+[#udb:doc:inst:vlseg6e64-v]
 == vlseg6e64.v
 
 Synopsis::
@@ -29452,7 +29452,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e64ff_v]
+[#udb:doc:inst:vlseg6e64ff-v]
 == vlseg6e64ff.v
 
 Synopsis::
@@ -29490,7 +29490,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e8_v]
+[#udb:doc:inst:vlseg6e8-v]
 == vlseg6e8.v
 
 Synopsis::
@@ -29528,7 +29528,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg6e8ff_v]
+[#udb:doc:inst:vlseg6e8ff-v]
 == vlseg6e8ff.v
 
 Synopsis::
@@ -29566,7 +29566,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e16_v]
+[#udb:doc:inst:vlseg7e16-v]
 == vlseg7e16.v
 
 Synopsis::
@@ -29604,7 +29604,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e16ff_v]
+[#udb:doc:inst:vlseg7e16ff-v]
 == vlseg7e16ff.v
 
 Synopsis::
@@ -29642,7 +29642,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e32_v]
+[#udb:doc:inst:vlseg7e32-v]
 == vlseg7e32.v
 
 Synopsis::
@@ -29680,7 +29680,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e32ff_v]
+[#udb:doc:inst:vlseg7e32ff-v]
 == vlseg7e32ff.v
 
 Synopsis::
@@ -29718,7 +29718,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e64_v]
+[#udb:doc:inst:vlseg7e64-v]
 == vlseg7e64.v
 
 Synopsis::
@@ -29756,7 +29756,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e64ff_v]
+[#udb:doc:inst:vlseg7e64ff-v]
 == vlseg7e64ff.v
 
 Synopsis::
@@ -29794,7 +29794,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e8_v]
+[#udb:doc:inst:vlseg7e8-v]
 == vlseg7e8.v
 
 Synopsis::
@@ -29832,7 +29832,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg7e8ff_v]
+[#udb:doc:inst:vlseg7e8ff-v]
 == vlseg7e8ff.v
 
 Synopsis::
@@ -29870,7 +29870,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e16_v]
+[#udb:doc:inst:vlseg8e16-v]
 == vlseg8e16.v
 
 Synopsis::
@@ -29908,7 +29908,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e16ff_v]
+[#udb:doc:inst:vlseg8e16ff-v]
 == vlseg8e16ff.v
 
 Synopsis::
@@ -29946,7 +29946,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e32_v]
+[#udb:doc:inst:vlseg8e32-v]
 == vlseg8e32.v
 
 Synopsis::
@@ -29984,7 +29984,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e32ff_v]
+[#udb:doc:inst:vlseg8e32ff-v]
 == vlseg8e32ff.v
 
 Synopsis::
@@ -30022,7 +30022,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e64_v]
+[#udb:doc:inst:vlseg8e64-v]
 == vlseg8e64.v
 
 Synopsis::
@@ -30060,7 +30060,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e64ff_v]
+[#udb:doc:inst:vlseg8e64ff-v]
 == vlseg8e64ff.v
 
 Synopsis::
@@ -30098,7 +30098,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e8_v]
+[#udb:doc:inst:vlseg8e8-v]
 == vlseg8e8.v
 
 Synopsis::
@@ -30136,7 +30136,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlseg8e8ff_v]
+[#udb:doc:inst:vlseg8e8ff-v]
 == vlseg8e8ff.v
 
 Synopsis::
@@ -30174,7 +30174,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg2e16_v]
+[#udb:doc:inst:vlsseg2e16-v]
 == vlsseg2e16.v
 
 Synopsis::
@@ -30213,7 +30213,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg2e32_v]
+[#udb:doc:inst:vlsseg2e32-v]
 == vlsseg2e32.v
 
 Synopsis::
@@ -30252,7 +30252,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg2e64_v]
+[#udb:doc:inst:vlsseg2e64-v]
 == vlsseg2e64.v
 
 Synopsis::
@@ -30291,7 +30291,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg2e8_v]
+[#udb:doc:inst:vlsseg2e8-v]
 == vlsseg2e8.v
 
 Synopsis::
@@ -30330,7 +30330,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg3e16_v]
+[#udb:doc:inst:vlsseg3e16-v]
 == vlsseg3e16.v
 
 Synopsis::
@@ -30369,7 +30369,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg3e32_v]
+[#udb:doc:inst:vlsseg3e32-v]
 == vlsseg3e32.v
 
 Synopsis::
@@ -30408,7 +30408,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg3e64_v]
+[#udb:doc:inst:vlsseg3e64-v]
 == vlsseg3e64.v
 
 Synopsis::
@@ -30447,7 +30447,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg3e8_v]
+[#udb:doc:inst:vlsseg3e8-v]
 == vlsseg3e8.v
 
 Synopsis::
@@ -30486,7 +30486,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg4e16_v]
+[#udb:doc:inst:vlsseg4e16-v]
 == vlsseg4e16.v
 
 Synopsis::
@@ -30525,7 +30525,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg4e32_v]
+[#udb:doc:inst:vlsseg4e32-v]
 == vlsseg4e32.v
 
 Synopsis::
@@ -30564,7 +30564,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg4e64_v]
+[#udb:doc:inst:vlsseg4e64-v]
 == vlsseg4e64.v
 
 Synopsis::
@@ -30603,7 +30603,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg4e8_v]
+[#udb:doc:inst:vlsseg4e8-v]
 == vlsseg4e8.v
 
 Synopsis::
@@ -30642,7 +30642,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg5e16_v]
+[#udb:doc:inst:vlsseg5e16-v]
 == vlsseg5e16.v
 
 Synopsis::
@@ -30681,7 +30681,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg5e32_v]
+[#udb:doc:inst:vlsseg5e32-v]
 == vlsseg5e32.v
 
 Synopsis::
@@ -30720,7 +30720,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg5e64_v]
+[#udb:doc:inst:vlsseg5e64-v]
 == vlsseg5e64.v
 
 Synopsis::
@@ -30759,7 +30759,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg5e8_v]
+[#udb:doc:inst:vlsseg5e8-v]
 == vlsseg5e8.v
 
 Synopsis::
@@ -30798,7 +30798,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg6e16_v]
+[#udb:doc:inst:vlsseg6e16-v]
 == vlsseg6e16.v
 
 Synopsis::
@@ -30837,7 +30837,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg6e32_v]
+[#udb:doc:inst:vlsseg6e32-v]
 == vlsseg6e32.v
 
 Synopsis::
@@ -30876,7 +30876,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg6e64_v]
+[#udb:doc:inst:vlsseg6e64-v]
 == vlsseg6e64.v
 
 Synopsis::
@@ -30915,7 +30915,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg6e8_v]
+[#udb:doc:inst:vlsseg6e8-v]
 == vlsseg6e8.v
 
 Synopsis::
@@ -30954,7 +30954,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg7e16_v]
+[#udb:doc:inst:vlsseg7e16-v]
 == vlsseg7e16.v
 
 Synopsis::
@@ -30993,7 +30993,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg7e32_v]
+[#udb:doc:inst:vlsseg7e32-v]
 == vlsseg7e32.v
 
 Synopsis::
@@ -31032,7 +31032,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg7e64_v]
+[#udb:doc:inst:vlsseg7e64-v]
 == vlsseg7e64.v
 
 Synopsis::
@@ -31071,7 +31071,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg7e8_v]
+[#udb:doc:inst:vlsseg7e8-v]
 == vlsseg7e8.v
 
 Synopsis::
@@ -31110,7 +31110,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg8e16_v]
+[#udb:doc:inst:vlsseg8e16-v]
 == vlsseg8e16.v
 
 Synopsis::
@@ -31149,7 +31149,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg8e32_v]
+[#udb:doc:inst:vlsseg8e32-v]
 == vlsseg8e32.v
 
 Synopsis::
@@ -31188,7 +31188,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg8e64_v]
+[#udb:doc:inst:vlsseg8e64-v]
 == vlsseg8e64.v
 
 Synopsis::
@@ -31227,7 +31227,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vlsseg8e8_v]
+[#udb:doc:inst:vlsseg8e8-v]
 == vlsseg8e8.v
 
 Synopsis::
@@ -31266,7 +31266,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxei16_v]
+[#udb:doc:inst:vluxei16-v]
 == vluxei16.v
 
 Synopsis::
@@ -31305,7 +31305,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxei32_v]
+[#udb:doc:inst:vluxei32-v]
 == vluxei32.v
 
 Synopsis::
@@ -31344,7 +31344,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxei64_v]
+[#udb:doc:inst:vluxei64-v]
 == vluxei64.v
 
 Synopsis::
@@ -31383,7 +31383,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxei8_v]
+[#udb:doc:inst:vluxei8-v]
 == vluxei8.v
 
 Synopsis::
@@ -31422,7 +31422,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg2ei16_v]
+[#udb:doc:inst:vluxseg2ei16-v]
 == vluxseg2ei16.v
 
 Synopsis::
@@ -31461,7 +31461,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg2ei32_v]
+[#udb:doc:inst:vluxseg2ei32-v]
 == vluxseg2ei32.v
 
 Synopsis::
@@ -31500,7 +31500,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg2ei64_v]
+[#udb:doc:inst:vluxseg2ei64-v]
 == vluxseg2ei64.v
 
 Synopsis::
@@ -31539,7 +31539,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg2ei8_v]
+[#udb:doc:inst:vluxseg2ei8-v]
 == vluxseg2ei8.v
 
 Synopsis::
@@ -31578,7 +31578,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg3ei16_v]
+[#udb:doc:inst:vluxseg3ei16-v]
 == vluxseg3ei16.v
 
 Synopsis::
@@ -31617,7 +31617,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg3ei32_v]
+[#udb:doc:inst:vluxseg3ei32-v]
 == vluxseg3ei32.v
 
 Synopsis::
@@ -31656,7 +31656,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg3ei64_v]
+[#udb:doc:inst:vluxseg3ei64-v]
 == vluxseg3ei64.v
 
 Synopsis::
@@ -31695,7 +31695,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg3ei8_v]
+[#udb:doc:inst:vluxseg3ei8-v]
 == vluxseg3ei8.v
 
 Synopsis::
@@ -31734,7 +31734,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg4ei16_v]
+[#udb:doc:inst:vluxseg4ei16-v]
 == vluxseg4ei16.v
 
 Synopsis::
@@ -31773,7 +31773,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg4ei32_v]
+[#udb:doc:inst:vluxseg4ei32-v]
 == vluxseg4ei32.v
 
 Synopsis::
@@ -31812,7 +31812,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg4ei64_v]
+[#udb:doc:inst:vluxseg4ei64-v]
 == vluxseg4ei64.v
 
 Synopsis::
@@ -31851,7 +31851,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg4ei8_v]
+[#udb:doc:inst:vluxseg4ei8-v]
 == vluxseg4ei8.v
 
 Synopsis::
@@ -31890,7 +31890,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg5ei16_v]
+[#udb:doc:inst:vluxseg5ei16-v]
 == vluxseg5ei16.v
 
 Synopsis::
@@ -31929,7 +31929,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg5ei32_v]
+[#udb:doc:inst:vluxseg5ei32-v]
 == vluxseg5ei32.v
 
 Synopsis::
@@ -31968,7 +31968,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg5ei64_v]
+[#udb:doc:inst:vluxseg5ei64-v]
 == vluxseg5ei64.v
 
 Synopsis::
@@ -32007,7 +32007,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg5ei8_v]
+[#udb:doc:inst:vluxseg5ei8-v]
 == vluxseg5ei8.v
 
 Synopsis::
@@ -32046,7 +32046,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg6ei16_v]
+[#udb:doc:inst:vluxseg6ei16-v]
 == vluxseg6ei16.v
 
 Synopsis::
@@ -32085,7 +32085,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg6ei32_v]
+[#udb:doc:inst:vluxseg6ei32-v]
 == vluxseg6ei32.v
 
 Synopsis::
@@ -32124,7 +32124,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg6ei64_v]
+[#udb:doc:inst:vluxseg6ei64-v]
 == vluxseg6ei64.v
 
 Synopsis::
@@ -32163,7 +32163,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg6ei8_v]
+[#udb:doc:inst:vluxseg6ei8-v]
 == vluxseg6ei8.v
 
 Synopsis::
@@ -32202,7 +32202,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg7ei16_v]
+[#udb:doc:inst:vluxseg7ei16-v]
 == vluxseg7ei16.v
 
 Synopsis::
@@ -32241,7 +32241,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg7ei32_v]
+[#udb:doc:inst:vluxseg7ei32-v]
 == vluxseg7ei32.v
 
 Synopsis::
@@ -32280,7 +32280,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg7ei64_v]
+[#udb:doc:inst:vluxseg7ei64-v]
 == vluxseg7ei64.v
 
 Synopsis::
@@ -32319,7 +32319,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg7ei8_v]
+[#udb:doc:inst:vluxseg7ei8-v]
 == vluxseg7ei8.v
 
 Synopsis::
@@ -32358,7 +32358,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg8ei16_v]
+[#udb:doc:inst:vluxseg8ei16-v]
 == vluxseg8ei16.v
 
 Synopsis::
@@ -32397,7 +32397,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg8ei32_v]
+[#udb:doc:inst:vluxseg8ei32-v]
 == vluxseg8ei32.v
 
 Synopsis::
@@ -32436,7 +32436,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg8ei64_v]
+[#udb:doc:inst:vluxseg8ei64-v]
 == vluxseg8ei64.v
 
 Synopsis::
@@ -32475,7 +32475,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vluxseg8ei8_v]
+[#udb:doc:inst:vluxseg8ei8-v]
 == vluxseg8ei8.v
 
 Synopsis::
@@ -32514,7 +32514,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmacc_vv]
+[#udb:doc:inst:vmacc-vv]
 == vmacc.vv
 
 Synopsis::
@@ -32553,7 +32553,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmacc_vx]
+[#udb:doc:inst:vmacc-vx]
 == vmacc.vx
 
 Synopsis::
@@ -32592,7 +32592,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vi]
+[#udb:doc:inst:vmadc-vi]
 == vmadc.vi
 
 Synopsis::
@@ -32630,7 +32630,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vim]
+[#udb:doc:inst:vmadc-vim]
 == vmadc.vim
 
 Synopsis::
@@ -32668,7 +32668,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vv]
+[#udb:doc:inst:vmadc-vv]
 == vmadc.vv
 
 Synopsis::
@@ -32706,7 +32706,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vvm]
+[#udb:doc:inst:vmadc-vvm]
 == vmadc.vvm
 
 Synopsis::
@@ -32744,7 +32744,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vx]
+[#udb:doc:inst:vmadc-vx]
 == vmadc.vx
 
 Synopsis::
@@ -32782,7 +32782,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadc_vxm]
+[#udb:doc:inst:vmadc-vxm]
 == vmadc.vxm
 
 Synopsis::
@@ -32820,7 +32820,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadd_vv]
+[#udb:doc:inst:vmadd-vv]
 == vmadd.vv
 
 Synopsis::
@@ -32859,7 +32859,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmadd_vx]
+[#udb:doc:inst:vmadd-vx]
 == vmadd.vx
 
 Synopsis::
@@ -32898,7 +32898,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmand_mm]
+[#udb:doc:inst:vmand-mm]
 == vmand.mm
 
 Synopsis::
@@ -32936,7 +32936,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmandn_mm]
+[#udb:doc:inst:vmandn-mm]
 == vmandn.mm
 
 Synopsis::
@@ -32974,7 +32974,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmax_vv]
+[#udb:doc:inst:vmax-vv]
 == vmax.vv
 
 Synopsis::
@@ -33013,7 +33013,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmax_vx]
+[#udb:doc:inst:vmax-vx]
 == vmax.vx
 
 Synopsis::
@@ -33052,7 +33052,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmaxu_vv]
+[#udb:doc:inst:vmaxu-vv]
 == vmaxu.vv
 
 Synopsis::
@@ -33091,7 +33091,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmaxu_vx]
+[#udb:doc:inst:vmaxu-vx]
 == vmaxu.vx
 
 Synopsis::
@@ -33130,7 +33130,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmerge_vim]
+[#udb:doc:inst:vmerge-vim]
 == vmerge.vim
 
 Synopsis::
@@ -33168,7 +33168,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmerge_vvm]
+[#udb:doc:inst:vmerge-vvm]
 == vmerge.vvm
 
 Synopsis::
@@ -33206,7 +33206,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmerge_vxm]
+[#udb:doc:inst:vmerge-vxm]
 == vmerge.vxm
 
 Synopsis::
@@ -33244,7 +33244,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfeq_vf]
+[#udb:doc:inst:vmfeq-vf]
 == vmfeq.vf
 
 Synopsis::
@@ -33283,7 +33283,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfeq_vv]
+[#udb:doc:inst:vmfeq-vv]
 == vmfeq.vv
 
 Synopsis::
@@ -33322,7 +33322,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfge_vf]
+[#udb:doc:inst:vmfge-vf]
 == vmfge.vf
 
 Synopsis::
@@ -33361,7 +33361,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfgt_vf]
+[#udb:doc:inst:vmfgt-vf]
 == vmfgt.vf
 
 Synopsis::
@@ -33400,7 +33400,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfle_vf]
+[#udb:doc:inst:vmfle-vf]
 == vmfle.vf
 
 Synopsis::
@@ -33439,7 +33439,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfle_vv]
+[#udb:doc:inst:vmfle-vv]
 == vmfle.vv
 
 Synopsis::
@@ -33478,7 +33478,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmflt_vf]
+[#udb:doc:inst:vmflt-vf]
 == vmflt.vf
 
 Synopsis::
@@ -33517,7 +33517,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmflt_vv]
+[#udb:doc:inst:vmflt-vv]
 == vmflt.vv
 
 Synopsis::
@@ -33556,7 +33556,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfne_vf]
+[#udb:doc:inst:vmfne-vf]
 == vmfne.vf
 
 Synopsis::
@@ -33595,7 +33595,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmfne_vv]
+[#udb:doc:inst:vmfne-vv]
 == vmfne.vv
 
 Synopsis::
@@ -33634,7 +33634,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmin_vv]
+[#udb:doc:inst:vmin-vv]
 == vmin.vv
 
 Synopsis::
@@ -33673,7 +33673,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmin_vx]
+[#udb:doc:inst:vmin-vx]
 == vmin.vx
 
 Synopsis::
@@ -33712,7 +33712,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vminu_vv]
+[#udb:doc:inst:vminu-vv]
 == vminu.vv
 
 Synopsis::
@@ -33751,7 +33751,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vminu_vx]
+[#udb:doc:inst:vminu-vx]
 == vminu.vx
 
 Synopsis::
@@ -33790,7 +33790,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmnand_mm]
+[#udb:doc:inst:vmnand-mm]
 == vmnand.mm
 
 Synopsis::
@@ -33828,7 +33828,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmnor_mm]
+[#udb:doc:inst:vmnor-mm]
 == vmnor.mm
 
 Synopsis::
@@ -33866,7 +33866,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmor_mm]
+[#udb:doc:inst:vmor-mm]
 == vmor.mm
 
 Synopsis::
@@ -33904,7 +33904,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmorn_mm]
+[#udb:doc:inst:vmorn-mm]
 == vmorn.mm
 
 Synopsis::
@@ -33942,7 +33942,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsbc_vv]
+[#udb:doc:inst:vmsbc-vv]
 == vmsbc.vv
 
 Synopsis::
@@ -33980,7 +33980,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsbc_vvm]
+[#udb:doc:inst:vmsbc-vvm]
 == vmsbc.vvm
 
 Synopsis::
@@ -34018,7 +34018,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsbc_vx]
+[#udb:doc:inst:vmsbc-vx]
 == vmsbc.vx
 
 Synopsis::
@@ -34056,7 +34056,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsbc_vxm]
+[#udb:doc:inst:vmsbc-vxm]
 == vmsbc.vxm
 
 Synopsis::
@@ -34094,7 +34094,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsbf_m]
+[#udb:doc:inst:vmsbf-m]
 == vmsbf.m
 
 Synopsis::
@@ -34132,7 +34132,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmseq_vi]
+[#udb:doc:inst:vmseq-vi]
 == vmseq.vi
 
 Synopsis::
@@ -34171,7 +34171,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmseq_vv]
+[#udb:doc:inst:vmseq-vv]
 == vmseq.vv
 
 Synopsis::
@@ -34210,7 +34210,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmseq_vx]
+[#udb:doc:inst:vmseq-vx]
 == vmseq.vx
 
 Synopsis::
@@ -34249,7 +34249,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsgt_vi]
+[#udb:doc:inst:vmsgt-vi]
 == vmsgt.vi
 
 Synopsis::
@@ -34288,7 +34288,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsgt_vx]
+[#udb:doc:inst:vmsgt-vx]
 == vmsgt.vx
 
 Synopsis::
@@ -34327,7 +34327,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsgtu_vi]
+[#udb:doc:inst:vmsgtu-vi]
 == vmsgtu.vi
 
 Synopsis::
@@ -34366,7 +34366,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsgtu_vx]
+[#udb:doc:inst:vmsgtu-vx]
 == vmsgtu.vx
 
 Synopsis::
@@ -34405,7 +34405,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsif_m]
+[#udb:doc:inst:vmsif-m]
 == vmsif.m
 
 Synopsis::
@@ -34443,7 +34443,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsle_vi]
+[#udb:doc:inst:vmsle-vi]
 == vmsle.vi
 
 Synopsis::
@@ -34482,7 +34482,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsle_vv]
+[#udb:doc:inst:vmsle-vv]
 == vmsle.vv
 
 Synopsis::
@@ -34521,7 +34521,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsle_vx]
+[#udb:doc:inst:vmsle-vx]
 == vmsle.vx
 
 Synopsis::
@@ -34560,7 +34560,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsleu_vi]
+[#udb:doc:inst:vmsleu-vi]
 == vmsleu.vi
 
 Synopsis::
@@ -34599,7 +34599,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsleu_vv]
+[#udb:doc:inst:vmsleu-vv]
 == vmsleu.vv
 
 Synopsis::
@@ -34638,7 +34638,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsleu_vx]
+[#udb:doc:inst:vmsleu-vx]
 == vmsleu.vx
 
 Synopsis::
@@ -34677,7 +34677,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmslt_vv]
+[#udb:doc:inst:vmslt-vv]
 == vmslt.vv
 
 Synopsis::
@@ -34716,7 +34716,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmslt_vx]
+[#udb:doc:inst:vmslt-vx]
 == vmslt.vx
 
 Synopsis::
@@ -34755,7 +34755,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsltu_vv]
+[#udb:doc:inst:vmsltu-vv]
 == vmsltu.vv
 
 Synopsis::
@@ -34794,7 +34794,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsltu_vx]
+[#udb:doc:inst:vmsltu-vx]
 == vmsltu.vx
 
 Synopsis::
@@ -34833,7 +34833,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsne_vi]
+[#udb:doc:inst:vmsne-vi]
 == vmsne.vi
 
 Synopsis::
@@ -34872,7 +34872,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsne_vv]
+[#udb:doc:inst:vmsne-vv]
 == vmsne.vv
 
 Synopsis::
@@ -34911,7 +34911,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsne_vx]
+[#udb:doc:inst:vmsne-vx]
 == vmsne.vx
 
 Synopsis::
@@ -34950,7 +34950,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmsof_m]
+[#udb:doc:inst:vmsof-m]
 == vmsof.m
 
 Synopsis::
@@ -34988,7 +34988,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmul_vv]
+[#udb:doc:inst:vmul-vv]
 == vmul.vv
 
 Synopsis::
@@ -35027,7 +35027,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmul_vx]
+[#udb:doc:inst:vmul-vx]
 == vmul.vx
 
 Synopsis::
@@ -35066,7 +35066,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulh_vv]
+[#udb:doc:inst:vmulh-vv]
 == vmulh.vv
 
 Synopsis::
@@ -35105,7 +35105,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulh_vx]
+[#udb:doc:inst:vmulh-vx]
 == vmulh.vx
 
 Synopsis::
@@ -35144,7 +35144,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulhsu_vv]
+[#udb:doc:inst:vmulhsu-vv]
 == vmulhsu.vv
 
 Synopsis::
@@ -35183,7 +35183,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulhsu_vx]
+[#udb:doc:inst:vmulhsu-vx]
 == vmulhsu.vx
 
 Synopsis::
@@ -35222,7 +35222,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulhu_vv]
+[#udb:doc:inst:vmulhu-vv]
 == vmulhu.vv
 
 Synopsis::
@@ -35261,7 +35261,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmulhu_vx]
+[#udb:doc:inst:vmulhu-vx]
 == vmulhu.vx
 
 Synopsis::
@@ -35300,7 +35300,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv_s_x]
+[#udb:doc:inst:vmv-s-x]
 == vmv.s.x
 
 Synopsis::
@@ -35337,7 +35337,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv_v_i]
+[#udb:doc:inst:vmv-v-i]
 == vmv.v.i
 
 Synopsis::
@@ -35374,7 +35374,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv_v_v]
+[#udb:doc:inst:vmv-v-v]
 == vmv.v.v
 
 Synopsis::
@@ -35411,7 +35411,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv_v_x]
+[#udb:doc:inst:vmv-v-x]
 == vmv.v.x
 
 Synopsis::
@@ -35448,7 +35448,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv_x_s]
+[#udb:doc:inst:vmv-x-s]
 == vmv.x.s
 
 Synopsis::
@@ -35485,7 +35485,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv1r_v]
+[#udb:doc:inst:vmv1r-v]
 == vmv1r.v
 
 Synopsis::
@@ -35522,7 +35522,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv2r_v]
+[#udb:doc:inst:vmv2r-v]
 == vmv2r.v
 
 Synopsis::
@@ -35559,7 +35559,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv4r_v]
+[#udb:doc:inst:vmv4r-v]
 == vmv4r.v
 
 Synopsis::
@@ -35596,7 +35596,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmv8r_v]
+[#udb:doc:inst:vmv8r-v]
 == vmv8r.v
 
 Synopsis::
@@ -35633,7 +35633,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmxnor_mm]
+[#udb:doc:inst:vmxnor-mm]
 == vmxnor.mm
 
 Synopsis::
@@ -35671,7 +35671,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vmxor_mm]
+[#udb:doc:inst:vmxor-mm]
 == vmxor.mm
 
 Synopsis::
@@ -35709,7 +35709,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclip_wi]
+[#udb:doc:inst:vnclip-wi]
 == vnclip.wi
 
 Synopsis::
@@ -35748,7 +35748,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclip_wv]
+[#udb:doc:inst:vnclip-wv]
 == vnclip.wv
 
 Synopsis::
@@ -35787,7 +35787,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclip_wx]
+[#udb:doc:inst:vnclip-wx]
 == vnclip.wx
 
 Synopsis::
@@ -35826,7 +35826,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclipu_wi]
+[#udb:doc:inst:vnclipu-wi]
 == vnclipu.wi
 
 Synopsis::
@@ -35865,7 +35865,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclipu_wv]
+[#udb:doc:inst:vnclipu-wv]
 == vnclipu.wv
 
 Synopsis::
@@ -35904,7 +35904,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnclipu_wx]
+[#udb:doc:inst:vnclipu-wx]
 == vnclipu.wx
 
 Synopsis::
@@ -35943,7 +35943,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnmsac_vv]
+[#udb:doc:inst:vnmsac-vv]
 == vnmsac.vv
 
 Synopsis::
@@ -35982,7 +35982,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnmsac_vx]
+[#udb:doc:inst:vnmsac-vx]
 == vnmsac.vx
 
 Synopsis::
@@ -36021,7 +36021,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnmsub_vv]
+[#udb:doc:inst:vnmsub-vv]
 == vnmsub.vv
 
 Synopsis::
@@ -36060,7 +36060,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnmsub_vx]
+[#udb:doc:inst:vnmsub-vx]
 == vnmsub.vx
 
 Synopsis::
@@ -36099,7 +36099,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsra_wi]
+[#udb:doc:inst:vnsra-wi]
 == vnsra.wi
 
 Synopsis::
@@ -36138,7 +36138,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsra_wv]
+[#udb:doc:inst:vnsra-wv]
 == vnsra.wv
 
 Synopsis::
@@ -36177,7 +36177,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsra_wx]
+[#udb:doc:inst:vnsra-wx]
 == vnsra.wx
 
 Synopsis::
@@ -36216,7 +36216,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsrl_wi]
+[#udb:doc:inst:vnsrl-wi]
 == vnsrl.wi
 
 Synopsis::
@@ -36255,7 +36255,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsrl_wv]
+[#udb:doc:inst:vnsrl-wv]
 == vnsrl.wv
 
 Synopsis::
@@ -36294,7 +36294,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vnsrl_wx]
+[#udb:doc:inst:vnsrl-wx]
 == vnsrl.wx
 
 Synopsis::
@@ -36333,7 +36333,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vor_vi]
+[#udb:doc:inst:vor-vi]
 == vor.vi
 
 Synopsis::
@@ -36372,7 +36372,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vor_vv]
+[#udb:doc:inst:vor-vv]
 == vor.vv
 
 Synopsis::
@@ -36411,7 +36411,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vor_vx]
+[#udb:doc:inst:vor-vx]
 == vor.vx
 
 Synopsis::
@@ -36450,7 +36450,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredand_vs]
+[#udb:doc:inst:vredand-vs]
 == vredand.vs
 
 Synopsis::
@@ -36489,7 +36489,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredmax_vs]
+[#udb:doc:inst:vredmax-vs]
 == vredmax.vs
 
 Synopsis::
@@ -36528,7 +36528,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredmaxu_vs]
+[#udb:doc:inst:vredmaxu-vs]
 == vredmaxu.vs
 
 Synopsis::
@@ -36567,7 +36567,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredmin_vs]
+[#udb:doc:inst:vredmin-vs]
 == vredmin.vs
 
 Synopsis::
@@ -36606,7 +36606,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredminu_vs]
+[#udb:doc:inst:vredminu-vs]
 == vredminu.vs
 
 Synopsis::
@@ -36645,7 +36645,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredor_vs]
+[#udb:doc:inst:vredor-vs]
 == vredor.vs
 
 Synopsis::
@@ -36684,7 +36684,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredsum_vs]
+[#udb:doc:inst:vredsum-vs]
 == vredsum.vs
 
 Synopsis::
@@ -36723,7 +36723,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vredxor_vs]
+[#udb:doc:inst:vredxor-vs]
 == vredxor.vs
 
 Synopsis::
@@ -36762,7 +36762,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrem_vv]
+[#udb:doc:inst:vrem-vv]
 == vrem.vv
 
 Synopsis::
@@ -36801,7 +36801,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrem_vx]
+[#udb:doc:inst:vrem-vx]
 == vrem.vx
 
 Synopsis::
@@ -36840,7 +36840,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vremu_vv]
+[#udb:doc:inst:vremu-vv]
 == vremu.vv
 
 Synopsis::
@@ -36879,7 +36879,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vremu_vx]
+[#udb:doc:inst:vremu-vx]
 == vremu.vx
 
 Synopsis::
@@ -36918,7 +36918,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrev8_v]
+[#udb:doc:inst:vrev8-v]
 == vrev8.v
 
 Synopsis::
@@ -36956,7 +36956,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrgather_vi]
+[#udb:doc:inst:vrgather-vi]
 == vrgather.vi
 
 Synopsis::
@@ -36995,7 +36995,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrgather_vv]
+[#udb:doc:inst:vrgather-vv]
 == vrgather.vv
 
 Synopsis::
@@ -37034,7 +37034,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrgather_vx]
+[#udb:doc:inst:vrgather-vx]
 == vrgather.vx
 
 Synopsis::
@@ -37073,7 +37073,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrgatherei16_vv]
+[#udb:doc:inst:vrgatherei16-vv]
 == vrgatherei16.vv
 
 Synopsis::
@@ -37112,7 +37112,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrol_vv]
+[#udb:doc:inst:vrol-vv]
 == vrol.vv
 
 Synopsis::
@@ -37151,7 +37151,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrol_vx]
+[#udb:doc:inst:vrol-vx]
 == vrol.vx
 
 Synopsis::
@@ -37190,7 +37190,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vror_vi]
+[#udb:doc:inst:vror-vi]
 == vror.vi
 
 Synopsis::
@@ -37229,7 +37229,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vror_vv]
+[#udb:doc:inst:vror-vv]
 == vror.vv
 
 Synopsis::
@@ -37268,7 +37268,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vror_vx]
+[#udb:doc:inst:vror-vx]
 == vror.vx
 
 Synopsis::
@@ -37307,7 +37307,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrsub_vi]
+[#udb:doc:inst:vrsub-vi]
 == vrsub.vi
 
 Synopsis::
@@ -37346,7 +37346,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vrsub_vx]
+[#udb:doc:inst:vrsub-vx]
 == vrsub.vx
 
 Synopsis::
@@ -37385,7 +37385,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vs1r_v]
+[#udb:doc:inst:vs1r-v]
 == vs1r.v
 
 Synopsis::
@@ -37422,7 +37422,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vs2r_v]
+[#udb:doc:inst:vs2r-v]
 == vs2r.v
 
 Synopsis::
@@ -37459,7 +37459,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vs4r_v]
+[#udb:doc:inst:vs4r-v]
 == vs4r.v
 
 Synopsis::
@@ -37496,7 +37496,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vs8r_v]
+[#udb:doc:inst:vs8r-v]
 == vs8r.v
 
 Synopsis::
@@ -37533,7 +37533,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsadd_vi]
+[#udb:doc:inst:vsadd-vi]
 == vsadd.vi
 
 Synopsis::
@@ -37572,7 +37572,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsadd_vv]
+[#udb:doc:inst:vsadd-vv]
 == vsadd.vv
 
 Synopsis::
@@ -37611,7 +37611,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsadd_vx]
+[#udb:doc:inst:vsadd-vx]
 == vsadd.vx
 
 Synopsis::
@@ -37650,7 +37650,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsaddu_vi]
+[#udb:doc:inst:vsaddu-vi]
 == vsaddu.vi
 
 Synopsis::
@@ -37689,7 +37689,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsaddu_vv]
+[#udb:doc:inst:vsaddu-vv]
 == vsaddu.vv
 
 Synopsis::
@@ -37728,7 +37728,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsaddu_vx]
+[#udb:doc:inst:vsaddu-vx]
 == vsaddu.vx
 
 Synopsis::
@@ -37767,7 +37767,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsbc_vvm]
+[#udb:doc:inst:vsbc-vvm]
 == vsbc.vvm
 
 Synopsis::
@@ -37805,7 +37805,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsbc_vxm]
+[#udb:doc:inst:vsbc-vxm]
 == vsbc.vxm
 
 Synopsis::
@@ -37843,7 +37843,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vse16_v]
+[#udb:doc:inst:vse16-v]
 == vse16.v
 
 Synopsis::
@@ -37881,7 +37881,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vse32_v]
+[#udb:doc:inst:vse32-v]
 == vse32.v
 
 Synopsis::
@@ -37919,7 +37919,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vse64_v]
+[#udb:doc:inst:vse64-v]
 == vse64.v
 
 Synopsis::
@@ -37957,7 +37957,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vse8_v]
+[#udb:doc:inst:vse8-v]
 == vse8.v
 
 Synopsis::
@@ -38109,7 +38109,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsext_vf2]
+[#udb:doc:inst:vsext-vf2]
 == vsext.vf2
 
 Synopsis::
@@ -38147,7 +38147,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsext_vf4]
+[#udb:doc:inst:vsext-vf4]
 == vsext.vf4
 
 Synopsis::
@@ -38185,7 +38185,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsext_vf8]
+[#udb:doc:inst:vsext-vf8]
 == vsext.vf8
 
 Synopsis::
@@ -38223,7 +38223,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsha2ch_vv]
+[#udb:doc:inst:vsha2ch-vv]
 == vsha2ch.vv
 
 Synopsis::
@@ -38261,7 +38261,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsha2cl_vv]
+[#udb:doc:inst:vsha2cl-vv]
 == vsha2cl.vv
 
 Synopsis::
@@ -38299,7 +38299,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsha2ms_vv]
+[#udb:doc:inst:vsha2ms-vv]
 == vsha2ms.vv
 
 Synopsis::
@@ -38337,7 +38337,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslide1down_vx]
+[#udb:doc:inst:vslide1down-vx]
 == vslide1down.vx
 
 Synopsis::
@@ -38376,7 +38376,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslide1up_vx]
+[#udb:doc:inst:vslide1up-vx]
 == vslide1up.vx
 
 Synopsis::
@@ -38415,7 +38415,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslidedown_vi]
+[#udb:doc:inst:vslidedown-vi]
 == vslidedown.vi
 
 Synopsis::
@@ -38454,7 +38454,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslidedown_vx]
+[#udb:doc:inst:vslidedown-vx]
 == vslidedown.vx
 
 Synopsis::
@@ -38493,7 +38493,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslideup_vi]
+[#udb:doc:inst:vslideup-vi]
 == vslideup.vi
 
 Synopsis::
@@ -38532,7 +38532,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vslideup_vx]
+[#udb:doc:inst:vslideup-vx]
 == vslideup.vx
 
 Synopsis::
@@ -38571,7 +38571,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsll_vi]
+[#udb:doc:inst:vsll-vi]
 == vsll.vi
 
 Synopsis::
@@ -38610,7 +38610,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsll_vv]
+[#udb:doc:inst:vsll-vv]
 == vsll.vv
 
 Synopsis::
@@ -38649,7 +38649,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsll_vx]
+[#udb:doc:inst:vsll-vx]
 == vsll.vx
 
 Synopsis::
@@ -38688,7 +38688,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm_v]
+[#udb:doc:inst:vsm-v]
 == vsm.v
 
 Synopsis::
@@ -38725,7 +38725,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm3c_vi]
+[#udb:doc:inst:vsm3c-vi]
 == vsm3c.vi
 
 Synopsis::
@@ -38765,7 +38765,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm3me_vv]
+[#udb:doc:inst:vsm3me-vv]
 == vsm3me.vv
 
 Synopsis::
@@ -38805,7 +38805,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm4k_vi]
+[#udb:doc:inst:vsm4k-vi]
 == vsm4k.vi
 
 Synopsis::
@@ -38845,7 +38845,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm4r_vs]
+[#udb:doc:inst:vsm4r-vs]
 == vsm4r.vs
 
 Synopsis::
@@ -38884,7 +38884,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsm4r_vv]
+[#udb:doc:inst:vsm4r-vv]
 == vsm4r.vv
 
 Synopsis::
@@ -38923,7 +38923,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsmul_vv]
+[#udb:doc:inst:vsmul-vv]
 == vsmul.vv
 
 Synopsis::
@@ -38962,7 +38962,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsmul_vx]
+[#udb:doc:inst:vsmul-vx]
 == vsmul.vx
 
 Synopsis::
@@ -39001,7 +39001,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxei16_v]
+[#udb:doc:inst:vsoxei16-v]
 == vsoxei16.v
 
 Synopsis::
@@ -39040,7 +39040,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxei32_v]
+[#udb:doc:inst:vsoxei32-v]
 == vsoxei32.v
 
 Synopsis::
@@ -39079,7 +39079,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxei64_v]
+[#udb:doc:inst:vsoxei64-v]
 == vsoxei64.v
 
 Synopsis::
@@ -39118,7 +39118,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxei8_v]
+[#udb:doc:inst:vsoxei8-v]
 == vsoxei8.v
 
 Synopsis::
@@ -39157,7 +39157,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg2ei16_v]
+[#udb:doc:inst:vsoxseg2ei16-v]
 == vsoxseg2ei16.v
 
 Synopsis::
@@ -39196,7 +39196,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg2ei32_v]
+[#udb:doc:inst:vsoxseg2ei32-v]
 == vsoxseg2ei32.v
 
 Synopsis::
@@ -39235,7 +39235,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg2ei64_v]
+[#udb:doc:inst:vsoxseg2ei64-v]
 == vsoxseg2ei64.v
 
 Synopsis::
@@ -39274,7 +39274,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg2ei8_v]
+[#udb:doc:inst:vsoxseg2ei8-v]
 == vsoxseg2ei8.v
 
 Synopsis::
@@ -39313,7 +39313,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg3ei16_v]
+[#udb:doc:inst:vsoxseg3ei16-v]
 == vsoxseg3ei16.v
 
 Synopsis::
@@ -39352,7 +39352,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg3ei32_v]
+[#udb:doc:inst:vsoxseg3ei32-v]
 == vsoxseg3ei32.v
 
 Synopsis::
@@ -39391,7 +39391,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg3ei64_v]
+[#udb:doc:inst:vsoxseg3ei64-v]
 == vsoxseg3ei64.v
 
 Synopsis::
@@ -39430,7 +39430,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg3ei8_v]
+[#udb:doc:inst:vsoxseg3ei8-v]
 == vsoxseg3ei8.v
 
 Synopsis::
@@ -39469,7 +39469,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg4ei16_v]
+[#udb:doc:inst:vsoxseg4ei16-v]
 == vsoxseg4ei16.v
 
 Synopsis::
@@ -39508,7 +39508,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg4ei32_v]
+[#udb:doc:inst:vsoxseg4ei32-v]
 == vsoxseg4ei32.v
 
 Synopsis::
@@ -39547,7 +39547,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg4ei64_v]
+[#udb:doc:inst:vsoxseg4ei64-v]
 == vsoxseg4ei64.v
 
 Synopsis::
@@ -39586,7 +39586,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg4ei8_v]
+[#udb:doc:inst:vsoxseg4ei8-v]
 == vsoxseg4ei8.v
 
 Synopsis::
@@ -39625,7 +39625,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg5ei16_v]
+[#udb:doc:inst:vsoxseg5ei16-v]
 == vsoxseg5ei16.v
 
 Synopsis::
@@ -39664,7 +39664,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg5ei32_v]
+[#udb:doc:inst:vsoxseg5ei32-v]
 == vsoxseg5ei32.v
 
 Synopsis::
@@ -39703,7 +39703,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg5ei64_v]
+[#udb:doc:inst:vsoxseg5ei64-v]
 == vsoxseg5ei64.v
 
 Synopsis::
@@ -39742,7 +39742,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg5ei8_v]
+[#udb:doc:inst:vsoxseg5ei8-v]
 == vsoxseg5ei8.v
 
 Synopsis::
@@ -39781,7 +39781,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg6ei16_v]
+[#udb:doc:inst:vsoxseg6ei16-v]
 == vsoxseg6ei16.v
 
 Synopsis::
@@ -39820,7 +39820,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg6ei32_v]
+[#udb:doc:inst:vsoxseg6ei32-v]
 == vsoxseg6ei32.v
 
 Synopsis::
@@ -39859,7 +39859,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg6ei64_v]
+[#udb:doc:inst:vsoxseg6ei64-v]
 == vsoxseg6ei64.v
 
 Synopsis::
@@ -39898,7 +39898,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg6ei8_v]
+[#udb:doc:inst:vsoxseg6ei8-v]
 == vsoxseg6ei8.v
 
 Synopsis::
@@ -39937,7 +39937,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg7ei16_v]
+[#udb:doc:inst:vsoxseg7ei16-v]
 == vsoxseg7ei16.v
 
 Synopsis::
@@ -39976,7 +39976,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg7ei32_v]
+[#udb:doc:inst:vsoxseg7ei32-v]
 == vsoxseg7ei32.v
 
 Synopsis::
@@ -40015,7 +40015,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg7ei64_v]
+[#udb:doc:inst:vsoxseg7ei64-v]
 == vsoxseg7ei64.v
 
 Synopsis::
@@ -40054,7 +40054,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg7ei8_v]
+[#udb:doc:inst:vsoxseg7ei8-v]
 == vsoxseg7ei8.v
 
 Synopsis::
@@ -40093,7 +40093,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg8ei16_v]
+[#udb:doc:inst:vsoxseg8ei16-v]
 == vsoxseg8ei16.v
 
 Synopsis::
@@ -40132,7 +40132,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg8ei32_v]
+[#udb:doc:inst:vsoxseg8ei32-v]
 == vsoxseg8ei32.v
 
 Synopsis::
@@ -40171,7 +40171,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg8ei64_v]
+[#udb:doc:inst:vsoxseg8ei64-v]
 == vsoxseg8ei64.v
 
 Synopsis::
@@ -40210,7 +40210,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsoxseg8ei8_v]
+[#udb:doc:inst:vsoxseg8ei8-v]
 == vsoxseg8ei8.v
 
 Synopsis::
@@ -40249,7 +40249,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsra_vi]
+[#udb:doc:inst:vsra-vi]
 == vsra.vi
 
 Synopsis::
@@ -40288,7 +40288,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsra_vv]
+[#udb:doc:inst:vsra-vv]
 == vsra.vv
 
 Synopsis::
@@ -40327,7 +40327,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsra_vx]
+[#udb:doc:inst:vsra-vx]
 == vsra.vx
 
 Synopsis::
@@ -40366,7 +40366,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsrl_vi]
+[#udb:doc:inst:vsrl-vi]
 == vsrl.vi
 
 Synopsis::
@@ -40405,7 +40405,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsrl_vv]
+[#udb:doc:inst:vsrl-vv]
 == vsrl.vv
 
 Synopsis::
@@ -40444,7 +40444,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsrl_vx]
+[#udb:doc:inst:vsrl-vx]
 == vsrl.vx
 
 Synopsis::
@@ -40483,7 +40483,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsse16_v]
+[#udb:doc:inst:vsse16-v]
 == vsse16.v
 
 Synopsis::
@@ -40522,7 +40522,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsse32_v]
+[#udb:doc:inst:vsse32-v]
 == vsse32.v
 
 Synopsis::
@@ -40561,7 +40561,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsse64_v]
+[#udb:doc:inst:vsse64-v]
 == vsse64.v
 
 Synopsis::
@@ -40600,7 +40600,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsse8_v]
+[#udb:doc:inst:vsse8-v]
 == vsse8.v
 
 Synopsis::
@@ -40639,7 +40639,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg2e16_v]
+[#udb:doc:inst:vsseg2e16-v]
 == vsseg2e16.v
 
 Synopsis::
@@ -40677,7 +40677,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg2e32_v]
+[#udb:doc:inst:vsseg2e32-v]
 == vsseg2e32.v
 
 Synopsis::
@@ -40715,7 +40715,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg2e64_v]
+[#udb:doc:inst:vsseg2e64-v]
 == vsseg2e64.v
 
 Synopsis::
@@ -40753,7 +40753,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg2e8_v]
+[#udb:doc:inst:vsseg2e8-v]
 == vsseg2e8.v
 
 Synopsis::
@@ -40791,7 +40791,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg3e16_v]
+[#udb:doc:inst:vsseg3e16-v]
 == vsseg3e16.v
 
 Synopsis::
@@ -40829,7 +40829,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg3e32_v]
+[#udb:doc:inst:vsseg3e32-v]
 == vsseg3e32.v
 
 Synopsis::
@@ -40867,7 +40867,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg3e64_v]
+[#udb:doc:inst:vsseg3e64-v]
 == vsseg3e64.v
 
 Synopsis::
@@ -40905,7 +40905,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg3e8_v]
+[#udb:doc:inst:vsseg3e8-v]
 == vsseg3e8.v
 
 Synopsis::
@@ -40943,7 +40943,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg4e16_v]
+[#udb:doc:inst:vsseg4e16-v]
 == vsseg4e16.v
 
 Synopsis::
@@ -40981,7 +40981,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg4e32_v]
+[#udb:doc:inst:vsseg4e32-v]
 == vsseg4e32.v
 
 Synopsis::
@@ -41019,7 +41019,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg4e64_v]
+[#udb:doc:inst:vsseg4e64-v]
 == vsseg4e64.v
 
 Synopsis::
@@ -41057,7 +41057,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg4e8_v]
+[#udb:doc:inst:vsseg4e8-v]
 == vsseg4e8.v
 
 Synopsis::
@@ -41095,7 +41095,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg5e16_v]
+[#udb:doc:inst:vsseg5e16-v]
 == vsseg5e16.v
 
 Synopsis::
@@ -41133,7 +41133,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg5e32_v]
+[#udb:doc:inst:vsseg5e32-v]
 == vsseg5e32.v
 
 Synopsis::
@@ -41171,7 +41171,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg5e64_v]
+[#udb:doc:inst:vsseg5e64-v]
 == vsseg5e64.v
 
 Synopsis::
@@ -41209,7 +41209,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg5e8_v]
+[#udb:doc:inst:vsseg5e8-v]
 == vsseg5e8.v
 
 Synopsis::
@@ -41247,7 +41247,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg6e16_v]
+[#udb:doc:inst:vsseg6e16-v]
 == vsseg6e16.v
 
 Synopsis::
@@ -41285,7 +41285,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg6e32_v]
+[#udb:doc:inst:vsseg6e32-v]
 == vsseg6e32.v
 
 Synopsis::
@@ -41323,7 +41323,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg6e64_v]
+[#udb:doc:inst:vsseg6e64-v]
 == vsseg6e64.v
 
 Synopsis::
@@ -41361,7 +41361,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg6e8_v]
+[#udb:doc:inst:vsseg6e8-v]
 == vsseg6e8.v
 
 Synopsis::
@@ -41399,7 +41399,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg7e16_v]
+[#udb:doc:inst:vsseg7e16-v]
 == vsseg7e16.v
 
 Synopsis::
@@ -41437,7 +41437,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg7e32_v]
+[#udb:doc:inst:vsseg7e32-v]
 == vsseg7e32.v
 
 Synopsis::
@@ -41475,7 +41475,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg7e64_v]
+[#udb:doc:inst:vsseg7e64-v]
 == vsseg7e64.v
 
 Synopsis::
@@ -41513,7 +41513,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg7e8_v]
+[#udb:doc:inst:vsseg7e8-v]
 == vsseg7e8.v
 
 Synopsis::
@@ -41551,7 +41551,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg8e16_v]
+[#udb:doc:inst:vsseg8e16-v]
 == vsseg8e16.v
 
 Synopsis::
@@ -41589,7 +41589,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg8e32_v]
+[#udb:doc:inst:vsseg8e32-v]
 == vsseg8e32.v
 
 Synopsis::
@@ -41627,7 +41627,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg8e64_v]
+[#udb:doc:inst:vsseg8e64-v]
 == vsseg8e64.v
 
 Synopsis::
@@ -41665,7 +41665,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsseg8e8_v]
+[#udb:doc:inst:vsseg8e8-v]
 == vsseg8e8.v
 
 Synopsis::
@@ -41703,7 +41703,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssra_vi]
+[#udb:doc:inst:vssra-vi]
 == vssra.vi
 
 Synopsis::
@@ -41742,7 +41742,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssra_vv]
+[#udb:doc:inst:vssra-vv]
 == vssra.vv
 
 Synopsis::
@@ -41781,7 +41781,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssra_vx]
+[#udb:doc:inst:vssra-vx]
 == vssra.vx
 
 Synopsis::
@@ -41820,7 +41820,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssrl_vi]
+[#udb:doc:inst:vssrl-vi]
 == vssrl.vi
 
 Synopsis::
@@ -41859,7 +41859,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssrl_vv]
+[#udb:doc:inst:vssrl-vv]
 == vssrl.vv
 
 Synopsis::
@@ -41898,7 +41898,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssrl_vx]
+[#udb:doc:inst:vssrl-vx]
 == vssrl.vx
 
 Synopsis::
@@ -41937,7 +41937,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg2e16_v]
+[#udb:doc:inst:vssseg2e16-v]
 == vssseg2e16.v
 
 Synopsis::
@@ -41976,7 +41976,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg2e32_v]
+[#udb:doc:inst:vssseg2e32-v]
 == vssseg2e32.v
 
 Synopsis::
@@ -42015,7 +42015,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg2e64_v]
+[#udb:doc:inst:vssseg2e64-v]
 == vssseg2e64.v
 
 Synopsis::
@@ -42054,7 +42054,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg2e8_v]
+[#udb:doc:inst:vssseg2e8-v]
 == vssseg2e8.v
 
 Synopsis::
@@ -42093,7 +42093,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg3e16_v]
+[#udb:doc:inst:vssseg3e16-v]
 == vssseg3e16.v
 
 Synopsis::
@@ -42132,7 +42132,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg3e32_v]
+[#udb:doc:inst:vssseg3e32-v]
 == vssseg3e32.v
 
 Synopsis::
@@ -42171,7 +42171,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg3e64_v]
+[#udb:doc:inst:vssseg3e64-v]
 == vssseg3e64.v
 
 Synopsis::
@@ -42210,7 +42210,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg3e8_v]
+[#udb:doc:inst:vssseg3e8-v]
 == vssseg3e8.v
 
 Synopsis::
@@ -42249,7 +42249,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg4e16_v]
+[#udb:doc:inst:vssseg4e16-v]
 == vssseg4e16.v
 
 Synopsis::
@@ -42288,7 +42288,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg4e32_v]
+[#udb:doc:inst:vssseg4e32-v]
 == vssseg4e32.v
 
 Synopsis::
@@ -42327,7 +42327,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg4e64_v]
+[#udb:doc:inst:vssseg4e64-v]
 == vssseg4e64.v
 
 Synopsis::
@@ -42366,7 +42366,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg4e8_v]
+[#udb:doc:inst:vssseg4e8-v]
 == vssseg4e8.v
 
 Synopsis::
@@ -42405,7 +42405,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg5e16_v]
+[#udb:doc:inst:vssseg5e16-v]
 == vssseg5e16.v
 
 Synopsis::
@@ -42444,7 +42444,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg5e32_v]
+[#udb:doc:inst:vssseg5e32-v]
 == vssseg5e32.v
 
 Synopsis::
@@ -42483,7 +42483,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg5e64_v]
+[#udb:doc:inst:vssseg5e64-v]
 == vssseg5e64.v
 
 Synopsis::
@@ -42522,7 +42522,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg5e8_v]
+[#udb:doc:inst:vssseg5e8-v]
 == vssseg5e8.v
 
 Synopsis::
@@ -42561,7 +42561,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg6e16_v]
+[#udb:doc:inst:vssseg6e16-v]
 == vssseg6e16.v
 
 Synopsis::
@@ -42600,7 +42600,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg6e32_v]
+[#udb:doc:inst:vssseg6e32-v]
 == vssseg6e32.v
 
 Synopsis::
@@ -42639,7 +42639,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg6e64_v]
+[#udb:doc:inst:vssseg6e64-v]
 == vssseg6e64.v
 
 Synopsis::
@@ -42678,7 +42678,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg6e8_v]
+[#udb:doc:inst:vssseg6e8-v]
 == vssseg6e8.v
 
 Synopsis::
@@ -42717,7 +42717,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg7e16_v]
+[#udb:doc:inst:vssseg7e16-v]
 == vssseg7e16.v
 
 Synopsis::
@@ -42756,7 +42756,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg7e32_v]
+[#udb:doc:inst:vssseg7e32-v]
 == vssseg7e32.v
 
 Synopsis::
@@ -42795,7 +42795,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg7e64_v]
+[#udb:doc:inst:vssseg7e64-v]
 == vssseg7e64.v
 
 Synopsis::
@@ -42834,7 +42834,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg7e8_v]
+[#udb:doc:inst:vssseg7e8-v]
 == vssseg7e8.v
 
 Synopsis::
@@ -42873,7 +42873,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg8e16_v]
+[#udb:doc:inst:vssseg8e16-v]
 == vssseg8e16.v
 
 Synopsis::
@@ -42912,7 +42912,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg8e32_v]
+[#udb:doc:inst:vssseg8e32-v]
 == vssseg8e32.v
 
 Synopsis::
@@ -42951,7 +42951,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg8e64_v]
+[#udb:doc:inst:vssseg8e64-v]
 == vssseg8e64.v
 
 Synopsis::
@@ -42990,7 +42990,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssseg8e8_v]
+[#udb:doc:inst:vssseg8e8-v]
 == vssseg8e8.v
 
 Synopsis::
@@ -43029,7 +43029,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssub_vv]
+[#udb:doc:inst:vssub-vv]
 == vssub.vv
 
 Synopsis::
@@ -43068,7 +43068,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssub_vx]
+[#udb:doc:inst:vssub-vx]
 == vssub.vx
 
 Synopsis::
@@ -43107,7 +43107,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssubu_vv]
+[#udb:doc:inst:vssubu-vv]
 == vssubu.vv
 
 Synopsis::
@@ -43146,7 +43146,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vssubu_vx]
+[#udb:doc:inst:vssubu-vx]
 == vssubu.vx
 
 Synopsis::
@@ -43185,7 +43185,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsub_vv]
+[#udb:doc:inst:vsub-vv]
 == vsub.vv
 
 Synopsis::
@@ -43224,7 +43224,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsub_vx]
+[#udb:doc:inst:vsub-vx]
 == vsub.vx
 
 Synopsis::
@@ -43263,7 +43263,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxei16_v]
+[#udb:doc:inst:vsuxei16-v]
 == vsuxei16.v
 
 Synopsis::
@@ -43302,7 +43302,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxei32_v]
+[#udb:doc:inst:vsuxei32-v]
 == vsuxei32.v
 
 Synopsis::
@@ -43341,7 +43341,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxei64_v]
+[#udb:doc:inst:vsuxei64-v]
 == vsuxei64.v
 
 Synopsis::
@@ -43380,7 +43380,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxei8_v]
+[#udb:doc:inst:vsuxei8-v]
 == vsuxei8.v
 
 Synopsis::
@@ -43419,7 +43419,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg2ei16_v]
+[#udb:doc:inst:vsuxseg2ei16-v]
 == vsuxseg2ei16.v
 
 Synopsis::
@@ -43458,7 +43458,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg2ei32_v]
+[#udb:doc:inst:vsuxseg2ei32-v]
 == vsuxseg2ei32.v
 
 Synopsis::
@@ -43497,7 +43497,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg2ei64_v]
+[#udb:doc:inst:vsuxseg2ei64-v]
 == vsuxseg2ei64.v
 
 Synopsis::
@@ -43536,7 +43536,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg2ei8_v]
+[#udb:doc:inst:vsuxseg2ei8-v]
 == vsuxseg2ei8.v
 
 Synopsis::
@@ -43575,7 +43575,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg3ei16_v]
+[#udb:doc:inst:vsuxseg3ei16-v]
 == vsuxseg3ei16.v
 
 Synopsis::
@@ -43614,7 +43614,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg3ei32_v]
+[#udb:doc:inst:vsuxseg3ei32-v]
 == vsuxseg3ei32.v
 
 Synopsis::
@@ -43653,7 +43653,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg3ei64_v]
+[#udb:doc:inst:vsuxseg3ei64-v]
 == vsuxseg3ei64.v
 
 Synopsis::
@@ -43692,7 +43692,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg3ei8_v]
+[#udb:doc:inst:vsuxseg3ei8-v]
 == vsuxseg3ei8.v
 
 Synopsis::
@@ -43731,7 +43731,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg4ei16_v]
+[#udb:doc:inst:vsuxseg4ei16-v]
 == vsuxseg4ei16.v
 
 Synopsis::
@@ -43770,7 +43770,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg4ei32_v]
+[#udb:doc:inst:vsuxseg4ei32-v]
 == vsuxseg4ei32.v
 
 Synopsis::
@@ -43809,7 +43809,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg4ei64_v]
+[#udb:doc:inst:vsuxseg4ei64-v]
 == vsuxseg4ei64.v
 
 Synopsis::
@@ -43848,7 +43848,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg4ei8_v]
+[#udb:doc:inst:vsuxseg4ei8-v]
 == vsuxseg4ei8.v
 
 Synopsis::
@@ -43887,7 +43887,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg5ei16_v]
+[#udb:doc:inst:vsuxseg5ei16-v]
 == vsuxseg5ei16.v
 
 Synopsis::
@@ -43926,7 +43926,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg5ei32_v]
+[#udb:doc:inst:vsuxseg5ei32-v]
 == vsuxseg5ei32.v
 
 Synopsis::
@@ -43965,7 +43965,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg5ei64_v]
+[#udb:doc:inst:vsuxseg5ei64-v]
 == vsuxseg5ei64.v
 
 Synopsis::
@@ -44004,7 +44004,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg5ei8_v]
+[#udb:doc:inst:vsuxseg5ei8-v]
 == vsuxseg5ei8.v
 
 Synopsis::
@@ -44043,7 +44043,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg6ei16_v]
+[#udb:doc:inst:vsuxseg6ei16-v]
 == vsuxseg6ei16.v
 
 Synopsis::
@@ -44082,7 +44082,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg6ei32_v]
+[#udb:doc:inst:vsuxseg6ei32-v]
 == vsuxseg6ei32.v
 
 Synopsis::
@@ -44121,7 +44121,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg6ei64_v]
+[#udb:doc:inst:vsuxseg6ei64-v]
 == vsuxseg6ei64.v
 
 Synopsis::
@@ -44160,7 +44160,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg6ei8_v]
+[#udb:doc:inst:vsuxseg6ei8-v]
 == vsuxseg6ei8.v
 
 Synopsis::
@@ -44199,7 +44199,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg7ei16_v]
+[#udb:doc:inst:vsuxseg7ei16-v]
 == vsuxseg7ei16.v
 
 Synopsis::
@@ -44238,7 +44238,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg7ei32_v]
+[#udb:doc:inst:vsuxseg7ei32-v]
 == vsuxseg7ei32.v
 
 Synopsis::
@@ -44277,7 +44277,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg7ei64_v]
+[#udb:doc:inst:vsuxseg7ei64-v]
 == vsuxseg7ei64.v
 
 Synopsis::
@@ -44316,7 +44316,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg7ei8_v]
+[#udb:doc:inst:vsuxseg7ei8-v]
 == vsuxseg7ei8.v
 
 Synopsis::
@@ -44355,7 +44355,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg8ei16_v]
+[#udb:doc:inst:vsuxseg8ei16-v]
 == vsuxseg8ei16.v
 
 Synopsis::
@@ -44394,7 +44394,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg8ei32_v]
+[#udb:doc:inst:vsuxseg8ei32-v]
 == vsuxseg8ei32.v
 
 Synopsis::
@@ -44433,7 +44433,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg8ei64_v]
+[#udb:doc:inst:vsuxseg8ei64-v]
 == vsuxseg8ei64.v
 
 Synopsis::
@@ -44472,7 +44472,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vsuxseg8ei8_v]
+[#udb:doc:inst:vsuxseg8ei8-v]
 == vsuxseg8ei8.v
 
 Synopsis::
@@ -44511,7 +44511,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwadd_vv]
+[#udb:doc:inst:vwadd-vv]
 == vwadd.vv
 
 Synopsis::
@@ -44550,7 +44550,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwadd_vx]
+[#udb:doc:inst:vwadd-vx]
 == vwadd.vx
 
 Synopsis::
@@ -44589,7 +44589,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwadd_wv]
+[#udb:doc:inst:vwadd-wv]
 == vwadd.wv
 
 Synopsis::
@@ -44628,7 +44628,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwadd_wx]
+[#udb:doc:inst:vwadd-wx]
 == vwadd.wx
 
 Synopsis::
@@ -44667,7 +44667,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwaddu_vv]
+[#udb:doc:inst:vwaddu-vv]
 == vwaddu.vv
 
 Synopsis::
@@ -44706,7 +44706,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwaddu_vx]
+[#udb:doc:inst:vwaddu-vx]
 == vwaddu.vx
 
 Synopsis::
@@ -44745,7 +44745,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwaddu_wv]
+[#udb:doc:inst:vwaddu-wv]
 == vwaddu.wv
 
 Synopsis::
@@ -44784,7 +44784,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwaddu_wx]
+[#udb:doc:inst:vwaddu-wx]
 == vwaddu.wx
 
 Synopsis::
@@ -44823,7 +44823,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmacc_vv]
+[#udb:doc:inst:vwmacc-vv]
 == vwmacc.vv
 
 Synopsis::
@@ -44862,7 +44862,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmacc_vx]
+[#udb:doc:inst:vwmacc-vx]
 == vwmacc.vx
 
 Synopsis::
@@ -44901,7 +44901,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmaccsu_vv]
+[#udb:doc:inst:vwmaccsu-vv]
 == vwmaccsu.vv
 
 Synopsis::
@@ -44940,7 +44940,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmaccsu_vx]
+[#udb:doc:inst:vwmaccsu-vx]
 == vwmaccsu.vx
 
 Synopsis::
@@ -44979,7 +44979,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmaccu_vv]
+[#udb:doc:inst:vwmaccu-vv]
 == vwmaccu.vv
 
 Synopsis::
@@ -45018,7 +45018,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmaccu_vx]
+[#udb:doc:inst:vwmaccu-vx]
 == vwmaccu.vx
 
 Synopsis::
@@ -45057,7 +45057,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmaccus_vx]
+[#udb:doc:inst:vwmaccus-vx]
 == vwmaccus.vx
 
 Synopsis::
@@ -45096,7 +45096,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmul_vv]
+[#udb:doc:inst:vwmul-vv]
 == vwmul.vv
 
 Synopsis::
@@ -45135,7 +45135,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmul_vx]
+[#udb:doc:inst:vwmul-vx]
 == vwmul.vx
 
 Synopsis::
@@ -45174,7 +45174,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmulsu_vv]
+[#udb:doc:inst:vwmulsu-vv]
 == vwmulsu.vv
 
 Synopsis::
@@ -45213,7 +45213,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmulsu_vx]
+[#udb:doc:inst:vwmulsu-vx]
 == vwmulsu.vx
 
 Synopsis::
@@ -45252,7 +45252,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmulu_vv]
+[#udb:doc:inst:vwmulu-vv]
 == vwmulu.vv
 
 Synopsis::
@@ -45291,7 +45291,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwmulu_vx]
+[#udb:doc:inst:vwmulu-vx]
 == vwmulu.vx
 
 Synopsis::
@@ -45330,7 +45330,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwredsum_vs]
+[#udb:doc:inst:vwredsum-vs]
 == vwredsum.vs
 
 Synopsis::
@@ -45369,7 +45369,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwredsumu_vs]
+[#udb:doc:inst:vwredsumu-vs]
 == vwredsumu.vs
 
 Synopsis::
@@ -45408,7 +45408,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsll_vi]
+[#udb:doc:inst:vwsll-vi]
 == vwsll.vi
 
 Synopsis::
@@ -45447,7 +45447,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsll_vv]
+[#udb:doc:inst:vwsll-vv]
 == vwsll.vv
 
 Synopsis::
@@ -45486,7 +45486,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsll_vx]
+[#udb:doc:inst:vwsll-vx]
 == vwsll.vx
 
 Synopsis::
@@ -45525,7 +45525,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsub_vv]
+[#udb:doc:inst:vwsub-vv]
 == vwsub.vv
 
 Synopsis::
@@ -45564,7 +45564,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsub_vx]
+[#udb:doc:inst:vwsub-vx]
 == vwsub.vx
 
 Synopsis::
@@ -45603,7 +45603,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsub_wv]
+[#udb:doc:inst:vwsub-wv]
 == vwsub.wv
 
 Synopsis::
@@ -45642,7 +45642,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsub_wx]
+[#udb:doc:inst:vwsub-wx]
 == vwsub.wx
 
 Synopsis::
@@ -45681,7 +45681,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsubu_vv]
+[#udb:doc:inst:vwsubu-vv]
 == vwsubu.vv
 
 Synopsis::
@@ -45720,7 +45720,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsubu_vx]
+[#udb:doc:inst:vwsubu-vx]
 == vwsubu.vx
 
 Synopsis::
@@ -45759,7 +45759,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsubu_wv]
+[#udb:doc:inst:vwsubu-wv]
 == vwsubu.wv
 
 Synopsis::
@@ -45798,7 +45798,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vwsubu_wx]
+[#udb:doc:inst:vwsubu-wx]
 == vwsubu.wx
 
 Synopsis::
@@ -45837,7 +45837,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vxor_vi]
+[#udb:doc:inst:vxor-vi]
 == vxor.vi
 
 Synopsis::
@@ -45876,7 +45876,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vxor_vv]
+[#udb:doc:inst:vxor-vv]
 == vxor.vv
 
 Synopsis::
@@ -45915,7 +45915,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vxor_vx]
+[#udb:doc:inst:vxor-vx]
 == vxor.vx
 
 Synopsis::
@@ -45954,7 +45954,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vzext_vf2]
+[#udb:doc:inst:vzext-vf2]
 == vzext.vf2
 
 Synopsis::
@@ -45992,7 +45992,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vzext_vf4]
+[#udb:doc:inst:vzext-vf4]
 == vzext.vf4
 
 Synopsis::
@@ -46030,7 +46030,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:vzext_vf8]
+[#udb:doc:inst:vzext-vf8]
 == vzext.vf8
 
 Synopsis::
@@ -46135,7 +46135,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:wrs_nto]
+[#udb:doc:inst:wrs-nto]
 == wrs.nto
 
 Synopsis::
@@ -46148,9 +46148,9 @@ Encoding::
 ....
 
 Description::
-To mitigate the wasteful looping in such usages, a xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] (WRS-with-no-timeout) instruction is provided.
+To mitigate the wasteful looping in such usages, a xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] (WRS-with-no-timeout) instruction is provided.
 Instead of polling for a store to a specific memory location, software registers a reservation set that
-includes all the bytes of the memory location using the LR instruction. Then a subsequent xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto]
+includes all the bytes of the memory location using the LR instruction. Then a subsequent xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto]
 instruction would cause the hart to temporarily stall execution in a low-power state until a store
 occurs to the reservation set or an interrupt is observed.
 
@@ -46158,26 +46158,26 @@ This instruction is not supported in a constrained LR/SC loop.
 While stalled, an implementation is permitted to occasionally terminate the stall and complete
 execution for any reason.
 
-xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] follows the rules of the WFI instruction for resuming execution
+xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] follows the rules of the WFI instruction for resuming execution
 on a pending interrupt.
 
-When the TW (Timeout Wait) bit in xref:csrs:mstatus.adoc#udb:doc:csr:mstatus[mstatus] is set and xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] is executed
+When the TW (Timeout Wait) bit in xref:csrs:mstatus.adoc#udb:doc:csr:mstatus[mstatus] is set and xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] is executed
 in any privilege mode otherthan M mode, and it does not complete within an implementation-specific
-bounded time limit, the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] instruction will cause an illegal instruction exception.
+bounded time limit, the xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] instruction will cause an illegal instruction exception.
 
 When executing in VS or VU mode, if the VTW bit is set in xref:csrs:hstatus.adoc#udb:doc:csr:hstatus[hstatus], the TW bit in xref:csrs:mstatus.adoc#udb:doc:csr:mstatus[mstatus] is clear,
-and the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] does not complete within an implementation-specific bounded time limit,
-the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] instruction will cause a virtual instruction exception.
+and the xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] does not complete within an implementation-specific bounded time limit,
+the xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] instruction will cause a virtual instruction exception.
 
 [Note]
-Since xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] can complete execution for reasons other than stores to the reservation set,
+Since xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] can complete execution for reasons other than stores to the reservation set,
 software will likely need a means of looping until the required stores have occurred.
 
 [Note]
-xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto], unlike WFI, is not specified to cause an illegal instruction exception if executed in U-mode
+xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto], unlike WFI, is not specified to cause an illegal instruction exception if executed in U-mode
 when the governing TW bit is 0. WFI is typically not expected to be used in U-mode and on many systems
 may promptly cause an illegal instruction exception if used at U-mode.
-Unlike WFI, xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] is expected to be used by software in U-mode when waiting on memory but without
+Unlike WFI, xref:insts:wrs-nto.adoc#udb:doc:inst:wrs-nto[wrs.nto] is expected to be used by software in U-mode when waiting on memory but without
 a deadline for that wait.
 
 
@@ -46194,7 +46194,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:wrs_sto]
+[#udb:doc:inst:wrs-sto]
 == wrs.sto
 
 Synopsis::
@@ -46209,29 +46209,29 @@ Encoding::
 Description::
 Instead of polling for a store to a specific memory location, software registers a
 reservation set that includes all the bytes of the memory location using the LR instruction.
-A subsequent xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] instruction would cause the hart to temporarily stall execution in a
+A subsequent xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] instruction would cause the hart to temporarily stall execution in a
 low-power state until a store occurs to the reservation set or an interrupt is observed.
 Sometimes the program waiting on a memory update may also need to carry out a task at a future time
-or otherwise place an upper bound on the wait. To support such use cases, xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] bounds the
+or otherwise place an upper bound on the wait. To support such use cases, xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] bounds the
 stall duration to an implementation-define short timeout such that the stall is terminated on the
 timeout if no other conditions have occurred to terminate the stall. The program using this instruction
 may then determine if its deadline has been reached.
-xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] causes the hart to temporarily stall execution in a low-power state as long as the reservation
-set is valid and no pending interrupts, even if disabled, are observed. For xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] the stall duration
+xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] causes the hart to temporarily stall execution in a low-power state as long as the reservation
+set is valid and no pending interrupts, even if disabled, are observed. For xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] the stall duration
 is bounded by an implementation defined short timeout. These instructions are not supported in a
 constrained LR/SC loop.
 Hart execution may be stalled while the following conditions are all satisfied:
 a. The reservation set is valid
-b. If xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto], a "short" duration since start of stall has not elapsed
+b. If xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto], a "short" duration since start of stall has not elapsed
 c. No pending interrupt is observed (see the rules below)
 
 While stalled, an implementation is permitted to occasionally terminate the stall and complete
-execution for any reason. xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] follows the rules of the WFI instruction for resuming execution
-on a pending interrupt. Since xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] can complete execution for reasons other than stores to
+execution for any reason. xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] follows the rules of the WFI instruction for resuming execution
+on a pending interrupt. Since xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] can complete execution for reasons other than stores to
 the reservation set, software will likely need a means of looping until the required stores have occurred.
 
 [Note]
-The duration of a xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] instruction's timeout may vary significantly within and among implementations.
+The duration of a xref:insts:wrs-sto.adoc#udb:doc:inst:wrs-sto[wrs.sto] instruction's timeout may vary significantly within and among implementations.
 In typical implementations this duration should be roughly in the range of 10 to 100 times an on-chip
 cache miss latency or a cacheless access to main memory.
 
@@ -46443,7 +46443,7 @@ Included in::
 |===
 
 
-[#udb:doc:inst:zext_h]
+[#udb:doc:inst:zext-h]
 == zext.h
 
 Synopsis::

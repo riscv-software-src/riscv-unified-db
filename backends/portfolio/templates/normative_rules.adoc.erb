@@ -1,22 +1,51 @@
-<% unless db_obj.cert_normative_rules.empty? -%>
-<% nice_name = db_obj.is_a?(Udb::CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
-<% if defined?(use_description_list) && use_description_list -%>
+<% unless db_obj.normative_rule_reqs.empty? -%>
+<%   nice_name = db_obj.is_a?(Udb::CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
+<%   if defined?(use_description_list) && use_description_list -%>
 Normative Rules for `<%= nice_name %>`: ::
-<% else -%>
+<%   else -%>
+<%     if defined?(fmt) && fmt == "combo" -%>
 ==== Normative Rules for `<%= nice_name %>`
-<% end -%>
+<%     elsif defined?(fmt) && fmt == "appendix" -%>
+==== Normative Rules
+<%     else -%>
+==== `<%= nice_name %>`
+<%     end -%>
+<%   end -%>
 
-[%autowidth]
+<%   if normative_rules.nil? -%>
 |===
-| ID | Description | Documentation Links
+| Name
 
-<% db_obj.cert_normative_rules.each do |cp| -%>
-| <%= defined?(org) ? anchor_for_udb_doc_cov_pt(org, cp.id) : "" %><%= cp.id %>
-| <%= cp.description %>
-a| <% cp.doc_links.each do |link| -%>
-* <%= link.to_adoc %>
-<% end # each link -%>
-<% end # each normative rule -%>
+<%     db_obj.normative_rule_reqs.sort_by(&:name).each do |nrr| -%>
+| <%= nrr.name %>
+<%     end -%>
 |===
+
+<%   else # normative rule info available -%>
+[cols="20%,80%"]
+|===
+| Name | Information
+
+<%     db_obj.normative_rule_reqs.sort_by(&:name).each do |nrr| -%>
+<%       nr = normative_rules.normative_rule(nrr.name) -%>
+<%       if nr.nil? -%>
+<%         logger.error("Normative rule #{nrr.name} for #{db_obj.kind} '#{nice_name}' doesn't exist") -%>
+<%       else -%>
+<%         info_rows = nr.tags.length + (nr.description.nil? ? 0 : 1) + (nr.summary.nil? ? 0 : 1) -%>
+<%         row_span = (info_rows > 0) ? ".#{info_rows}+" : "" -%>
+<%= "#{row_span}| #{nr.name}" %>
+<%         unless nr.summary.nil? -%>
+a| Summary: <%= nr.summary %>
+<%         end # summary present -%>
+<%         unless nr.description.nil? -%>
+a| Description: <%= nr.description %>
+<%         end # description present -%>
+<%         nr.tags.each do |tag| -%>
+a| <%= tag.manual_name %> <%= tag.adoc_link %>
+<%         end # each tag -%>
+<%       end # if nr nil -%>
+<%     end # each normative rule requirement -%>
+|===
+<%   end # normative rule info available -%>
 
 <% end # unless no normative rules -%>

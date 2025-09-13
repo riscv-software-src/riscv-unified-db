@@ -77,3 +77,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: beq_enc
+  - name: beq_op

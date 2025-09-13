@@ -64,3 +64,9 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: lbu_enc
+  - name: lbu_op
+  - name: lbu_rv64i_op
+    # TODO: add "when" statement saying MXLEN == 64

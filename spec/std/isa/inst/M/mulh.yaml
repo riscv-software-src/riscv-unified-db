@@ -75,3 +75,6 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: mulh_enc

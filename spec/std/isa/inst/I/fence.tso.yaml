@@ -48,3 +48,8 @@ sail(): |
     };
     RETIRE_SUCCESS
   }
+
+normative_rules:
+  - name: fence-tso_enc
+  - name: fence-tso_op
+  - name: fence-tso_ordering_rw_rw_allowed
