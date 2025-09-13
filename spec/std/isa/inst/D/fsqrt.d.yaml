@@ -6,9 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fsqrt.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Square Root Double-Precision
+description:
+  - id: inst-fsqrt.d-behaviour
+    normative: false
+    text: |
+      `FSQRT.D` computes the square root of _fs1_ and result is written in _fd_. It is defined
+      analogously to its single-precision counterpart, but operate on double-precision operands
+      and produce double-precision results.
 definedBy: D
 assembly: fd, fs1, rm
 encoding:

@@ -6,15 +6,15 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.s
-long_name: Floating-point Convert Single-precision to Double-precision
+long_name: Floating-Point Convert Single-Precision to Double-Precision
 description:
   - id: inst-fcvt.d.s-behaviour
     normative: false
     text: |
-      The single-precision to double-precision conversion instruction, `fcvt.d.s` is encoded in the OP-FP
+      The single-precision to double-precision conversion instruction, `FCVT.D.S` is encoded in the OP-FP
       major opcode space and both the source and destination are floating-point registers. The `xs2` field
       encodes the datatype of the source, and the `fmt` field encodes the datatype of the destination.
-      `fcvt.d.s` will never round.
+      `FCVT.D.S` will never round.
 definedBy: D
 assembly: fd, fs1, rm
 encoding:

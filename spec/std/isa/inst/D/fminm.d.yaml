@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fminm.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Minimum-Number NaN Double-Precision
+description:
+  - id: inst-fminm.d-behaviour
+    normative: false
+    text: |
+      `FMINM.D` writes smaller of _fs1_ and _fs2_ to _fd_. It is defined like `FMIN.D` instruction, except
+      that if either input is NaN, the result is the canonical NaN.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, fs1, fs2
