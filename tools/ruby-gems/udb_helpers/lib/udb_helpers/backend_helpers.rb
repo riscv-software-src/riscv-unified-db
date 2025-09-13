@@ -2,20 +2,24 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 # Collection of "helper" functions that can be called from backends and/or ERB templates.
 
+require "sorbet-runtime"
 require "erb"
 require "pathname"
 require "ostruct"
 
 # Add to standard String class.
 class String
+  extend T::Sig
+
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   # Returns new String with periods replaced with hyphens and ampersands replaced with "-and-"
   # Don't use underscore as a replacement character since it is used by doc_links to separate list items.
-  #
+  sig { returns(String) }
   def sanitize = String.new(self).gsub(".", "-").gsub("&", "-and-")
 end
 
