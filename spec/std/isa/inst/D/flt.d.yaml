@@ -11,7 +11,7 @@ description:
   - id: inst-flt.d-behaviour
     normative: false
     text: |
-      `FLT.D` writes 1 to _xd_ if _fs1_ is less than _fs2_, and 0 otherwise. It is defined analogously to its
+      `flt.d` writes 1 to _xd_ if _fs1_ is less than _fs2_, and 0 otherwise. It is defined analogously to its
       single-precision counterpart, but operate on double-precision operands.
 definedBy: D
 assembly: xd, fs1, fs2

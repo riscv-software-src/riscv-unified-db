@@ -11,8 +11,8 @@ description:
   - id: inst-froundnx.d-behaviour
     normative: false
     text: |
-      `FROUNDNX.S` instruction is defined in the same way as `FROUND.D`, but it also sets the inexact exception flag if the input
-      differs from the rounded result and is not NaN. `FROUNDNX.S` is encoded like `FCVT.D.S`, but with _xs2_=5.
+      `froundnx.d` instruction is defined in the same way as `fround.d`, but it also sets the inexact exception flag if the input
+      differs from the rounded result and is not NaN. `froundnx.d` is encoded like `fcvt.d.s`, but with _xs2_ set to 5.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, fs1, rm

@@ -11,7 +11,7 @@ description:
   - id: inst-fmul.d-behaviour
     normative: false
     text: |
-      `FMUL.D` performs the double-precision floating-point multiplication between _fs1_ and _fs2_. It is defined
+      `fmul.d` performs the double-precision floating-point multiplication between _fs1_ and _fs2_. It is defined
       analogously to its single-precision counterpart, but operates on double-precision operands and produces
       double-precision results.
 definedBy: D

@@ -11,7 +11,7 @@ description:
   - id: inst-fcvt.d.lu-behaviour
     normative: false
     text: |
-      `FCVT.D.LU` converts to or from a 64-bit unsigned integer, _xs1_ into a double-precision
+      `fcvt.d.lu` converts to or from a 64-bit unsigned integer, _xs1_ into a double-precision
       floating-point number in floating-point register _fd_.
 definedBy: D
 assembly: fd, xs1, rm

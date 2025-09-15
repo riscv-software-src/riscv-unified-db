@@ -11,7 +11,7 @@ description:
   - id: inst-fmvp.d.x-behaviour
     normative: false
     text: |
-      `FMVP.D.X` moves a double-precision number from a pair of integer registers into a floating-point
+      `fmvp.d.x` moves a double-precision number from a pair of integer registers into a floating-point
       register. Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result
       is written to floating-point register _fd_.
 definedBy:

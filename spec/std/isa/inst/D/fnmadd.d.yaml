@@ -11,7 +11,7 @@ description:
   - id: inst-fnmadd.d-behaviour
     normative: false
     text: |
-      `FNMADD.D` multiplies the values in _fs1_ and _fs2_, negates the product, subtracts the value in _fs3_, and
+      `fnmadd.d` multiplies the values in _fs1_ and _fs2_, negates the product, subtracts the value in _fs3_, and
       writes the final result to _fd_.
 definedBy: D
 assembly: fd, fs1, fs2, fs3, rm

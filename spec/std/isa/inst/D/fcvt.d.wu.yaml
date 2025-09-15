@@ -11,8 +11,8 @@ description:
   - id: inst-fcvt.d.wu-behaviour
     normative: false
     text: |
-      `FCVT.D.WU` converts a 32-bit unsigned integer in integer register _xs1_ into a double-precision
-      floating-point number in floating-point register _fd_. Note `FCVT.D.WU` always produces an exact
+      `fcvt.d.wu` converts a 32-bit unsigned integer in integer register _xs1_ into a double-precision
+      floating-point number in floating-point register _fd_. Note `fcvt.d.wu` always produces an exact
       result and is unaffected by rounding mode.
 definedBy: D
 assembly: fd, xs1, rm

@@ -11,7 +11,7 @@ description:
   - id: inst-fadd.d-behaviour
     normative: false
     text: |
-      `FADD.D` is analogous to `FADD.S` and performs double-precision floating-point addition between
+      `fadd.d` is analogous to `fadd.s` and performs double-precision floating-point addition between
       _fs1_ and _fs2_ and writes the final result to _fd_.
 definedBy: D
 assembly: fd, fs1, fs2, rm

@@ -11,7 +11,7 @@ description:
   - id: inst-fleq.d-behaviour
     normative: false
     text: |
-      `FLEQ.D` is defined like the `FLE.D` instruction, except that quiet NaN inputs do not cause
+      `fleq.d` is defined like the `fle.d` instruction, except that quiet NaN inputs do not cause
       the invalid operation exception flag to be set.
 definedBy:
   allOf: [D, Zfa]

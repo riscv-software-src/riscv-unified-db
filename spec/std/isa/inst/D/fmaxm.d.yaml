@@ -11,7 +11,7 @@ description:
   - id: inst-fmaxm.d-behaviour
     normative: false
     text: |
-      `FMAXM.D` writes larger of _fs1_ and _fs2_ to _fd_. It is defined like `FMAX.D` instruction, except
+      `fmaxm.d` writes larger of _fs1_ and _fs2_ to _fd_. It is defined like `fmax.d` instruction, except
       that if either input is NaN, the result is the canonical NaN.
 definedBy:
   allOf: [D, Zfa]

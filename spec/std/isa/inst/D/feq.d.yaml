@@ -11,7 +11,7 @@ description:
   - id: inst-feq.d-behaviour
     normative: false
     text: |
-      `FEQ.D` writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise. It is defined analogously to its
+      `feq.d` writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise. It is defined analogously to its
       single-precision counterpart, but operates on double-precision operands.
 definedBy: D
 assembly: xd, fs1, fs2

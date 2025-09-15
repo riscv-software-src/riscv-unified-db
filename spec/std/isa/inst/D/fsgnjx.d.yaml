@@ -11,9 +11,9 @@ description:
   - id: inst-fsgnjx.d-behaviour
     normative: false
     text: |
-      `FSGNJX.D` instruction produces a result that takes all bits except the sign bit from _fs1_.
+      `fsgnjx.d` instruction produces a result that takes all bits except the sign bit from _fs1_.
       The result's sign bit is the XOR of sign bits of _fs1_ and _fs2_, and the result is written to
-      the destination register _fd_. `FSGNJX.D` does not set floating-point exception flags, nor do
+      the destination register _fd_. `fsgnjx.d` does not set floating-point exception flags, nor do
       they canonicalize _NaN_s.
 definedBy: D
 assembly: fd, fs1, fs2

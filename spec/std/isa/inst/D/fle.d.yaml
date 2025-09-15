@@ -11,7 +11,7 @@ description:
   - id: inst-fle.d-behaviour
     normative: false
     text: |
-      `FLE.D` writes 1 to _xd_ if _fs1_ is less than or equal to _fs2_, and 0 otherwise. It is defined
+      `fle.d` writes 1 to _xd_ if _fs1_ is less than or equal to _fs2_, and 0 otherwise. It is defined
       analogously to its single-precision counterpart, but operates on double-precision operands.
 definedBy: D
 assembly: xd, fs1, fs2

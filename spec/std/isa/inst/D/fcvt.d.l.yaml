@@ -11,7 +11,7 @@ description:
   - id: inst-fcvt.d.l-behaviour
     normative: false
     text: |
-      `FCVT.D.L` converts a 64-bit signed integer, in integer register _xs1_ into a double-precision
+      `fcvt.d.l` converts a 64-bit signed integer, in integer register _xs1_ into a double-precision
       floating-point number in floating-point register _fd_.
 definedBy: D
 assembly: fd, xs1, rm
