@@ -110,6 +110,6 @@ namespace :gen do
     csr_dir = cfg_arch.path / "csr"
 
     # Run the SystemVerilog generator script using the same Python environment
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/sverilog/sverilog_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.sverilog"
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/sverilog/sverilog_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}riscv_decode_package.svh"
   end
 end
