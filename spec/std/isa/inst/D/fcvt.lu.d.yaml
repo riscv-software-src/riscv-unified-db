@@ -11,8 +11,8 @@ description:
   - id: inst-fcvt.lu.d-behaviour
     normative: false
     text: |
-      `fcvt.lu.d` converts a double-precision floating-point number in floating-point register _fs1_
-      to an unsigned 64-bit integer, in integer register _xd_.
+      The `fcvt.lu.d` instruction converts a double-precision floating-point number in floating-point register `fs1`
+      to an unsigned 64-bit integer, in integer register `xd`.
 definedBy: D
 assembly: xd, fs1, rm
 encoding:

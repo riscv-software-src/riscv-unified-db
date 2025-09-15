@@ -11,9 +11,9 @@ description:
   - id: inst-fsd-behaviour
     normative: false
     text: |
-      `fsd` stores a double-precision value from the floating-point registers to memory. It is guaranteed to execute
-      atomically if the effective address is naturally aligned and XLEN≥64. It doesn't modify the bits being transferred;
-      in particular, the payloads of non-canonical NaNs are preserved.
+      The `fsd` instruction stores a double-precision value from the floating-point registers to memory. It is guaranteed to execute
+      atomically if the effective address is naturally aligned and XLEN≥64. It doesn't modify the bits being transferred; in particular,
+      the payloads of non-canonical NaNs are preserved.
 definedBy: D
 assembly: fs2, imm(xs1)
 encoding:

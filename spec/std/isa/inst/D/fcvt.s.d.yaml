@@ -11,10 +11,10 @@ description:
   - id: inst-fcvt.s.d-behaviour
     normative: false
     text: |
-      `fcvt.s.d` converts a double-precision floating-point number to a single-precision floating-point number.
-       This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
-       registers. The _xs2_ field encodes the datatype of the source, and the _fmt_ field encodes the datatype
-       of the destination. `fcvt.s.d` rounds according to the _rm_ field.
+      The `fcvt.s.d` instruction converts a double-precision floating-point number to a single-precision floating-point
+      number. This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
+      registers. The `xs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype of the
+      destination. `fcvt.s.d` rounds according to the `rm` field.
 definedBy: D
 assembly: fd, fs1, rm
 encoding:

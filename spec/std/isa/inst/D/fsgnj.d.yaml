@@ -11,9 +11,9 @@ description:
   - id: inst-fsgnj.d-behaviour
     normative: false
     text: |
-      `fsgnj.d` instruction produces a result that takes all bits except the sign bit from _fs1_.
-      The result's sign bit is taken from _fs2_'s sign bit, and the result is written to the destination
-      register _fd_. `fsgnj.d` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+      The `fsgnj.d` instruction produces a result that takes all bits except the sign bit from `fs1`.
+      The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination
+      register `fd`. `fsgnj.d` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
 definedBy: D
 assembly: fd, fs1, fs2
 encoding:

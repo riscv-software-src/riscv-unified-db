@@ -11,8 +11,8 @@ description:
   - id: inst-fmvh.x.d-behaviour
     normative: false
     text: |
-      `fmvh.x.d` moves bits 63:32 of floating-point register _fs1_ into integer register _xd_. `fmvh.x.d` is used
-      in conjunction with the existing `fmv.x.w` instruction to move a double-precision floating-point number to a
+      The `fmvh.x.d` instruction moves bits 63:32 of floating-point register `fs1` into integer register `xd`. `fmvh.x.d`
+      is used in conjunction with the existing `fmv.x.w` instruction to move a double-precision floating-point number to a
       pair of integer-registers.
 definedBy:
   allOf: [D, Zfa]

@@ -11,9 +11,9 @@ description:
   - id: inst-fsqrt.d-behaviour
     normative: false
     text: |
-      `fsqrt.d` computes the square root of _fs1_ and result is written in _fd_. It is defined
-      analogously to its single-precision counterpart, but operate on double-precision operands
-      and produce double-precision results.
+      The `fsqrt.d` instruction computes the square root of `fs1` and result is written in `fd`. It is defined
+      analogously to its single-precision counterpart, but operates on double-precision operands and produces
+      double-precision results.
 definedBy: D
 assembly: fd, fs1, rm
 encoding:
