@@ -20,87 +20,98 @@ def check_requirement(req, exts):
 def build_match_from_format(format_field):
     """
     Build a match string from the format field in the new schema.
-    Supports 16-bit, 32-bit, and 48-bit instructions.
     """
     if not format_field or "opcodes" not in format_field:
         return None
 
-    opcodes = format_field["opcodes"]
-    variables = format_field["variables"]
-
     # Determine instruction width by finding maximum bit position
     valid_locations = []
 
+    opcodes = format_field["opcodes"]
     # Check opcodes
     for field_data in opcodes.values():
-        if (
-            isinstance(field_data, dict)
-            and "location" in field_data
-            and isinstance(field_data["location"], str)
-        ):
-            try:
-                location = field_data["location"]
-                if "-" in location:
-                    high = int(location.split("-")[0])
-                else:
-                    high = int(location)
-                valid_locations.append(high)
-            except (ValueError, IndexError):
-                continue  # Skip invalid location formats
+        if isinstance(field_data, dict) and "location" in field_data:
+            if isinstance(field_data["location"], str):
+                try:
+                    location = field_data["location"]
+                    split_location = location.split("|")
+                    high = max(
+                        (
+                            int(location.split("-")[0])
+                            if "-" in location
+                            else int(location)
+                        )
+                        for location in split_location
+                    )
+                    valid_locations.append(high)
+                except (ValueError, IndexError):
+                    raise ValueError(
+                        f"Invalid location format: {field_data['location']}"
+                    )
+            elif isinstance(field_data["location"], int):
+                try:
+                    valid_locations.append(field_data["location"])
+                except (ValueError, IndexError):
+                    raise ValueError(
+                        f"Invalid location format: {field_data['location']}"
+                    )
+            else:
+                raise ValueError(f"Unknown location format: {field_data['location']}")
 
-    # Check variables
-    for var_data in variables.values():
-        if (
-            isinstance(var_data, dict)
-            and "location" in var_data
-            and isinstance(var_data["location"], str)
-        ):
-            try:
-                location = var_data["location"]
-                if "-" in location:
-                    high = int(location.split("-")[0])
+    if "variables" in format_field:
+        variables = format_field["variables"]
+        # Check variables
+        for var_data in variables.values():
+            if isinstance(var_data, dict) and "location" in var_data:
+                if isinstance(var_data["location"], str):
+                    try:
+                        location = var_data["location"]
+                        if "-" in location:
+                            high = int(location.split("-")[0])
+                        else:
+                            high = int(location)
+                        valid_locations.append(high)
+                    except (ValueError, IndexError):
+                        raise ValueError(
+                            f"Invalid location format: {var_data['location']}"
+                        )
+                elif isinstance(var_data["location"], int):
+                    try:
+                        valid_locations.append(var_data["location"])
+                    except (ValueError, IndexError):
+                        raise ValueError(
+                            f"Invalid location format: {var_data['location']}"
+                        )
                 else:
-                    high = int(location)
-                valid_locations.append(high)
-            except (ValueError, IndexError):
-                continue  # Skip invalid location formats
+                    raise ValueError(f"Invalid location format: {var_data['location']}")
 
     if not valid_locations:
-        return None
+        raise ValueError("No valid bit locations found in format field")
 
     max_bit = max(valid_locations)
 
     # Set instruction width based on maximum bit position
-    width = max(valid_locations) + 1
+    width = max_bit + 1
     match_bits = ["-"] * width
 
     # Populate match string with opcode bits
     for field_data in opcodes.values():
-        if (
-            isinstance(field_data, dict)
-            and "location" in field_data
-            and "value" in field_data
-            and isinstance(field_data["location"], str)
-            and isinstance(field_data["value"], int)
-        ):
-
+        if isinstance(field_data, dict):
             try:
                 location = field_data["location"]
-                if "-" in location:
+                if isinstance(location, str) and "-" in location:
                     high, low = map(int, location.split("-"))
                 else:
                     high = low = int(location)
 
                 if high < low or high >= width:
+                    logging.warning(f"Invalid bit range: {location}")
                     continue  # Skip invalid bit ranges
 
                 binary_value = format(field_data["value"], f"0{high - low + 1}b")
-                for i, bit in enumerate(binary_value):
-                    pos = high - i
-                    if 0 <= pos < width:
-                        match_bits[width - 1 - pos] = bit
+                match_bits[width - high - 1 : width - low] = binary_value
             except (ValueError, IndexError):
-                continue  # Skip invalid field data
+                raise ValueError(f"Error processing opcode field: {field_data}")
 
     return "".join(match_bits)
 
@@ -267,25 +278,25 @@ def load_instructions(
             if not encoding:
                 # Check if this instruction uses the new schema with a 'format' field
                 format_field = data.get("format")
-                if format_field:
-                    # Try to build a match string from the format field
-                    match_string = build_match_from_format(format_field)
-                    if match_string:
-                        # Create a synthetic encoding compatible with existing logic
-                        encoding = {"match": match_string, "variables": []}
-                        logging.debug(f"Built encoding from format field for {name}")
-                    else:
-                        logging.error(
-                            f"Could not build encoding from format field in instruction {name} in {path}"
-                        )
-                        encoding_filtered += 1
-                        continue
-                else:
+                if not format_field:
                     logging.error(
                         f"Missing 'encoding' field in instruction {name} in {path}"
                     )
                     encoding_filtered += 1
                     continue
+
+                # Try to build a match string from the format field
+                match_string = build_match_from_format(format_field)
+                if not match_string:
+                    logging.error(
+                        f"Could not build encoding from format field in instruction {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
+
+                # Create a synthetic encoding compatible with existing logic
+                encoding = {"match": match_string, "variables": []}
+                logging.debug(f"Built encoding from format field for {name}")
 
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
