@@ -28,7 +28,7 @@ data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_multiplier) >> (3 + state.vsew);
+  XReg vlmax = (vlen << state.log2_multiplier) >> (3 + state.sew);
   XReg AVL = xs1;
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
 

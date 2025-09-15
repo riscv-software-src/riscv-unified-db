@@ -17,7 +17,6 @@ sw_read(): |
   return CSR[vcsr].VXRM;
 fields:
   VALUE:
-    alias: vcsr.VXRM
     location_rv32: 31-0
     location_rv64: 63-0
     description: |

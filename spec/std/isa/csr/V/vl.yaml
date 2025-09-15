@@ -27,4 +27,5 @@ fields:
       and supporting SEW=8 would need at least six bits in vl to hold the values 0-32
       (VLEN=32, with LMUL=8 and SEW=8, yields VLMAX=32).
     type: RO-H
-    reset_value: 0
+    reset_value(): |
+      return (FOLLOW_VTYPE_RESET_RECOMMENDATION)? 0 : UNDEFINED_LEGAL;

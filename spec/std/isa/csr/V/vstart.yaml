@@ -69,6 +69,11 @@ fields:
       supported vstart element position. Alternatively, migration events can be constrained to
       only occur at mutually supported vstart locations.
     sw_write(csr_value): |
-      return csr_value.VALUE & (VLEN - 1);
+      XReg newval = csr_value.VALUE & (VLEN - 1);
+      if (newval != csr_value.VALUE) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return newval;
+      }
     type: RW-RH
     reset_value: UNDEFINED_LEGAL

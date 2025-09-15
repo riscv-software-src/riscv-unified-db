@@ -56,13 +56,27 @@ params:
     schema:
       type: string
       enum: ["ceil(AVL/2)", "VLMAX", "custom"]
+  FOLLOW_VTYPE_RESET_RECOMMENDATION:
+    description: |
+      The spec recommends - but does not require - that on reset, vill is set, and remaining bits in vtype and vl are set to 0.
+      If this parameter is set to true, the CSR resets will follow this recommandation. If it is false, the resets will be "UNDEFINED_LEGAL".
+    schema:
+      type: boolean
   VLEN:
     description: |
-      The number of bits in a single vector register. VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
+      The number of bits in a single vector register.
     schema:
       type: integer
+#    requirements:
+#      idl(): |
+#        -> (VLEN >= ELEN) && (VLEN <='h10000) && (popcount(VLEN) == 1);
+#      reason: VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
   ELEN:
     description: |
-      The maximum size in bits of a vector element that any operation can produce or consume, ELEN >= 8, which must be a power of 2.
+      The maximum size in bits of a vector element that any operation can produce or consume.
     schema:
       type: integer
+#    requirements:
+#      idl(): |
+#        -> (ELEN >='h8) && (popcount(ELEN) == 1);
+#      reason: ELEN >= 8, which must be a power of 2.
