@@ -39,58 +39,45 @@ Dir.glob("#{$resolver.std_path}/profile_release/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
-    begin
-      # Create architecture object without any knowledge of the profile release.
-      # Just used to get the PortfolioGroup object.
-      arch = pf_create_arch
+    # Create architecture object without any knowledge of the profile release.
+    # Just used to get the PortfolioGroup object.
+    arch = pf_create_arch
 
-      # Create ProfileRelease for specific profile release as specified in its arch YAML file.
-      # The Architecture object also creates all other portfolio-related object instances from their arch YAML files.
-      # None of these objects are provided with a AbstractConfig or Design object when created.
-      $logger.info "Creating ProfileRelease with only an Architecture object for #{release_name}"
-      profile_release_with_arch = arch.profile_release(release_name)
+    # Create ProfileRelease for specific profile release as specified in its arch YAML file.
+    # The Architecture object also creates all other portfolio-related object instances from their arch YAML files.
+    # None of these objects are provided with a AbstractConfig or Design object when created.
+    $logger.info "Creating ProfileRelease with only an Architecture object for #{release_name}"
+    profile_release_with_arch = arch.profile_release(release_name)
 
-      # Now create a ConfiguredArchitecture object for the PortfolioDesign.
-      cfg_arch = pf_create_cfg_arch(profile_release_with_arch.portfolio_grp)
+    # Now create a ConfiguredArchitecture object for the PortfolioDesign.
+    cfg_arch = pf_create_cfg_arch(profile_release_with_arch.portfolio_grp)
 
-      $logger.info "Creating ProfileRelease with a ConfiguredArchitecture object for #{release_name}"
-      profile_release_with_cfg_arch = cfg_arch.profile_release(release_name)
+    $logger.info "Creating ProfileRelease with a ConfiguredArchitecture object for #{release_name}"
+    profile_release_with_cfg_arch = cfg_arch.profile_release(release_name)
 
-      # Create the one PortfolioDesign object required for the ERB evaluation.
-      # Provide it with all the profiles in this ProfileRelease.
-      $logger.info "Creating PortfolioDesign object using profile release #{release_name}"
-      portfolio_design = Udb::PortfolioDesign.new(
-        release_name,
-        cfg_arch,
-        Udb::PortfolioDesign.profile_release_type,
-        profile_release_with_cfg_arch.profiles,
-        profile_release_with_cfg_arch.profile_family,
-        nil # no normative rules
-      )
+    # Create the one PortfolioDesign object required for the ERB evaluation.
+    # Provide it with all the profiles in this ProfileRelease.
+    $logger.info "Creating PortfolioDesign object using profile release #{release_name}"
+    portfolio_design = Udb::PortfolioDesign.new(
+      release_name,
+      cfg_arch,
+      Udb::PortfolioDesign.profile_release_type,
+      profile_release_with_cfg_arch.profiles,
+      profile_release_with_cfg_arch.profile_family,
+      nil # no normative rules
+    )
 
-      # Create empty binding and then specify explicitly which variables the ERB template can access.
-      # Seems to use this method name in stack backtraces (hence its name).
-      def evaluate_erb
-        binding
-      end
-      erb_binding = evaluate_erb
-      portfolio_design.init_erb_binding(erb_binding)
-      erb_binding.local_variable_set(:profile_release, profile_release_with_cfg_arch)
-      erb_binding.local_variable_set(:profile_family, profile_release_with_cfg_arch.profile_family)
-
-      pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
-    rescue => e
-      # Send to stdout since UDB sends tons of cr*p to stderr that floods one with useless information.
-      # Note that the $logger sends to stdout so anything send to $logger actually gets displayed as useful
-      # information if one just redirects stderr to /dev/null (e.g., in bash, run "./do <task-name> 2>/dev/null).
-      puts "Caught error: #{e.message}"
-
-      # Only print out 1st two lines of stack backtrace to stdout.
-      puts e.backtrace.take(2)
-
-      # Send full stacktrace to stderr with "warn".
-      warn e.backtrace
+    # Create empty binding and then specify explicitly which variables the ERB template can access.
+    # Seems to use this method name in stack backtraces (hence its name).
+    def evaluate_erb
+      binding
     end
+    erb_binding = evaluate_erb
+    portfolio_design.init_erb_binding(erb_binding)
+    erb_binding.local_variable_set(:profile_release, profile_release_with_cfg_arch)
+    erb_binding.local_variable_set(:profile_family, profile_release_with_cfg_arch.profile_family)
+
+    pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end
 
   file "#{PROFILE_GEN_DIR}/pdf/#{release_name}ProfileRelease.pdf" => [
