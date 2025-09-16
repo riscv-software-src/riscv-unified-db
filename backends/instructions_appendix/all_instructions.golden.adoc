@@ -12822,7 +12822,7 @@ Encoding::
 ....
 
 Description::
-The `fnsub.d` instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
+The xref:insts:fnmsub_d.adoc#udb:doc:inst:fnmsub_d[fnmsub.d] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
 writes the final result to `fd`.
 
 
@@ -13347,7 +13347,7 @@ Included in::
 == fsgnj.d
 
 Synopsis::
-Floating-Point Sign-Inject Doble-Precision
+Floating-Point Sign-Inject Double-Precision
 
 Assembly::
 fsgnj.d fd, fs1, fs2
@@ -13361,7 +13361,8 @@ Encoding::
 Description::
 The xref:insts:fsgnj_d.adoc#udb:doc:inst:fsgnj_d[fsgnj.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination
-register `fd`. xref:insts:fsgnj_d.adoc#udb:doc:inst:fsgnj_d[fsgnj.d] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13505,7 +13506,7 @@ Included in::
 == fsgnjn.d
 
 Synopsis::
-Floating-Point Sign-Inject Negate Doble-Precision
+Floating-Point Sign-Inject Negate Double-Precision
 
 Assembly::
 fsgnjn.d fd, fs1, fs2
@@ -13519,7 +13520,8 @@ Encoding::
 Description::
 The xref:insts:fsgnjn_d.adoc#udb:doc:inst:fsgnjn_d[fsgnjn.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination
-register `fd`. xref:insts:fsgnjn_d.adoc#udb:doc:inst:fsgnjn_d[fsgnjn.d] does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13677,8 +13679,8 @@ Encoding::
 Description::
 The xref:insts:fsgnjx_d.adoc#udb:doc:inst:fsgnjx_d[fsgnjx.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
 The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to
-the destination register `fd`. xref:insts:fsgnjx_d.adoc#udb:doc:inst:fsgnjx_d[fsgnjx.d] does not set floating-point exception flags, nor do
-they canonicalize _NaN_s.
+the destination register `fd`. Sign-injection instructions do not set floating-point exception
+flags, nor do they canonicalize NaNs.
 
 
 Decode Variables::
