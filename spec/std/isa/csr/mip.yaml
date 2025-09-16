@@ -11,7 +11,7 @@ address: 0x344
 writable: true
 priv_mode: M
 
-# Description is shared with mie CSR (it copies it from here).
+# Description is shared with mie CSR.
 description: |
   The `mie` and `mip` CSRs are MXLEN-bit read/write registers used when
   the CLINT or PLIC interrupt controllers are present.

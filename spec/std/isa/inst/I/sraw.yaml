@@ -51,3 +51,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sraw_enc
+  - name: sraw_op

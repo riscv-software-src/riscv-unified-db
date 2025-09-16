@@ -79,3 +79,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: blt_enc
+  - name: blt_op

@@ -5,8 +5,7 @@
 # typed: false
 
 # The Architecture class is the API to the architecture database.
-# The "database" contains RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.
+# The "database" contains RISC-V standards including extensions, instructions, CSRs, Profiles, and Certificates.
 # The Architecture class is used by backends to export the information in the
 # architecture database to create various outputs.
 #
@@ -50,12 +49,12 @@ require "yaml"
 require_relative "obj/certificate"
 require_relative "obj/csr"
 require_relative "obj/csr_field"
-require_relative "exception_code"
 require_relative "obj/extension"
 require_relative "obj/instruction"
 require_relative "obj/manual"
 require_relative "obj/portfolio"
 require_relative "obj/profile"
+require_relative "exception_code"
 
 module Udb
 

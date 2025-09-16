@@ -3,6 +3,7 @@
 # Contains Rake rules to generate adoc, PDF, and HTML for a CTP (Certification Test Plan).
 
 require "pathname"
+require "json"
 
 PROC_CTP_DOC_DIR = Pathname.new "#{$root}/backends/proc_ctp"
 PROC_CTP_GEN_DIR = $resolver.gen_path / "proc_ctp"
@@ -25,7 +26,6 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{$root}/backends/portfolio/templates/normative_rules.adoc.erb",
-    "#{$root}/backends/portfolio/templates/test_procedures.adoc.erb",
     "#{$root}/backends/proc_cert/templates/typographic.adoc.erb",
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
     "#{$root}/backends/proc_cert/templates/related_specs.adoc.erb",
@@ -33,7 +33,30 @@ Dir.glob("#{$resolver.std_path}/proc_cert_model/*.yaml") do |f|
     "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
   ] do |t|
     pf_get_latest_csc_isa_manual(t.name)
-    proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)
+
+    # Figure out some pathnames/filenames.
+    norm_tags_json_suffix = "-norm-tags.json"
+    isa_manual_dir = "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual"
+    unpriv_adoc = "#{isa_manual_dir}/src/riscv-unprivileged.adoc"
+    priv_adoc = "#{isa_manual_dir}/src/riscv-privileged.adoc"
+    unpriv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-unprivileged#{norm_tags_json_suffix}"
+    priv_tags_json = "#{PROC_CTP_GEN_DIR}/adoc/riscv-privileged#{norm_tags_json_suffix}"
+    norm_rules_json = "#{PROC_CTP_GEN_DIR}/adoc/norm-rules.json"
+
+    # Extract normative rule tags from ISA manuals into JSON files.
+    pf_adoc2norm_tags(unpriv_adoc, unpriv_tags_json, isa_manual_dir, norm_tags_json_suffix)
+    pf_adoc2norm_tags(priv_adoc, priv_tags_json, isa_manual_dir, norm_tags_json_suffix)
+
+    # Create normative rules using ISA manual repository.
+    pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, norm_rules_json)
+
+    # Read in normative rule JSON file to Ruby object.
+    data = JSON.parse(File.read(norm_rules_json))
+
+    # Load normative rules into a Ruby class to provide access to rules when generating CTP.
+    normative_rules = Udb::NormativeRules.new(data)
+
+    proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name, normative_rules)
   end
 
   file "#{PROC_CTP_GEN_DIR}/pdf/#{model_name}-CTP.pdf" => [

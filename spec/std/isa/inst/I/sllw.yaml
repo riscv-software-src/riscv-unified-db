@@ -48,3 +48,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sllw_enc
+  - name: sllw_op

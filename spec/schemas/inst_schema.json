@@ -393,11 +393,8 @@
           "type": "string",
           "description": "Functional description of the instruction using Sail"
         },
-        "cert_normative_rules": {
-          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
-        },
-        "cert_test_procedures": {
-          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
+        "normative_rules": {
+          "$ref": "schema_defs.json#/$defs/normative_rules"
         },
         "assembly": {
           "type": "string",

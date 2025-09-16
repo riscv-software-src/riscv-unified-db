@@ -27,6 +27,7 @@ require "minitest/test_task"
 require "udb/architecture"
 require "udb/portfolio_design"
 require "udb/proc_cert_design"
+require "udb/normative_rules"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO

@@ -49,3 +49,8 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sraiw_enc
+  - name: sraiw_op
+  - name: sraiw_imm5_rsv

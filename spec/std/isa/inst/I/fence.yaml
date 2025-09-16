@@ -235,3 +235,10 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: fence_enc
+  - name: fence_op
+  - name: fence_cons_ok
+  - name: fence_null_pred_succ_inter
+  - name: fence_unused_flds_rsv

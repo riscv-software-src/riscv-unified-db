@@ -48,14 +48,16 @@ end
 
 # @param url [String] Where to clone repository from
 # @param workspace_dir [String] Path to desired workspace directory
-def pf_ensure_repository(url, workspace_dir)
+# @param branch [String] Optional branch to checkout after clone (can be nil)
+def pf_ensure_repository(url, workspace_dir, branch = nil)
   if Dir.exist?(workspace_dir) && !Dir.empty?(workspace_dir)
     # Workspace already exists so just make sure it is up-to-date.
     sh "git -C #{workspace_dir} fetch"
     sh "git -C #{workspace_dir} pull origin main"
   else
     # Need to clone repository.
-    sh "git clone #{url} #{workspace_dir}"
+    branch_opt = branch.nil? ? "" : "-b #{branch} "
+    sh "git clone #{branch_opt}#{url} #{workspace_dir}"
   end
 end
 
@@ -117,7 +119,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
   sh "chmod +x #{run_pname}"
 
   # Now run the actual command.
-  sh cmd
+  sh(cmd)
 
   $logger.info "Generated PDF in #{target_pname}"
 end
@@ -152,7 +154,123 @@ def pf_adoc2html(adoc_file, target_pname)
   sh "chmod +x #{run_pname}"
 
   # Now run the actual command.
-  sh cmd
+  sh(cmd)
 
   $logger.info "Generated HTML in #{target_pname}"
+end
+
+# This routine extracts normative rule tags from the specified adoc file
+# and puts them in a file with the same name but with the specified suffix.
+#
+# @param adoc_file [String] Full pathname of source adoc file
+# @param target_pname [String] Full name of tags file being generated
+# @param isa_manual_dirname [String] Full pathname of ISA manual root directory
+# @param norm_tags_json_suffix [String] Suffix the tags file will have
+def pf_adoc2norm_tags(adoc_file, target_pname, isa_manual_dirname, norm_tags_json_suffix)
+  target_dirname = File.dirname(target_pname)
+
+  # Ensure target directory is present.
+  FileUtils.mkdir_p(target_dirname)
+
+  # The tags backend will put the tags file in the same directory as the input adoc file.
+  backend_tags_pname = adoc_file.sub(/\.adoc$/, norm_tags_json_suffix)
+
+  $logger.info "Extracting normative rule tags from #{adoc_file} into #{backend_tags_pname}"
+  cmd = [
+    "asciidoctor",
+    "-w",
+    "-v",
+    "-a toc",
+    "-a imagesdir=#{isa_manual_dirname}/docs-resources/images",
+    "-r asciidoctor-diagram",
+    "-r idl_highlighter",
+    "--require=#{isa_manual_dirname}/docs-resources/converters/tags.rb",
+    "--backend tags",
+    "-a tags-match-prefix='norm:'",
+    "-a tags-output-suffix='" + norm_tags_json_suffix + "'",
+    adoc_file
+  ].join(" ")
+
+  $logger.info "bundle exec #{cmd}"
+
+  # Write out command used to extract tags to allow running this manually during development.
+  run_pname = "#{target_dirname}/adoc2norm_tags.sh"
+  sh "rm -f #{run_pname}"
+  sh "echo '#!/bin/bash' >#{run_pname}"
+  sh "echo >>#{run_pname}"
+  sh "echo bundle exec #{cmd} >>#{run_pname}"
+  sh "chmod +x #{run_pname}"
+
+  # Now run the actual command.
+  sh(cmd)
+
+  $logger.info "Done extracting normative rule tags from #{adoc_file} into #{backend_tags_pname}"
+
+  # Now move the tags to the target_pname.
+  FileUtils.mv(backend_tags_pname, target_pname)
+
+  $logger.info "Moved normative rule tags to #{target_pname}"
+end
+
+# This routine creates a JSON file containing a list of all normative rules for the ISA manual.
+#
+# @param isa_manual_dirname [String] Full pathname of ISA manual root directory
+# @param unpriv_tags_json [String] Full pathname of unpriv ISA manual JSON tags file
+# @param priv_tags_json [String] Full pathname of priv ISA manual JSON tags file
+# @param target_pname [String] Full pathname where normative rules should end up
+def pf_build_norm_rules(isa_manual_dir, unpriv_tags_json, priv_tags_json, target_pname)
+  target_dirname = File.dirname(target_pname)
+
+  # Ensure target directory is present.
+  FileUtils.mkdir_p(target_dirname)
+
+  $logger.info "Building normative rules JSON tag files"
+
+  cmdArray = [
+    "ruby",
+    "#{isa_manual_dir}/docs-resources/tools/create_normative_rules.rb",
+    "-t #{unpriv_tags_json}",
+    "-t #{priv_tags_json}"
+  ]
+
+  defs_dir = "#{isa_manual_dir}/normative_rule_defs"
+
+  # Add in mock normative rule definition YAML file. Used for test coverage.
+  # TBD - Find a better way to do this.
+  mock_nr_def_yaml = <<~TEXT
+normative_rule_definitions:
+  - name: Xmock_nr1
+    summary: Here's a summary
+    description: Normative rule with multiple tags (one with and without text), description, and summary
+    kind: instruction
+    intances: [add]
+    tags_without_text:
+      - name: "norm:add_enc"
+        kind: instruction
+        instances: [add]
+    tags:
+      - "norm:add_op"
+  - name: Xmock_nr2
+    description: |
+      Normative rule without any tags.
+      Should have lots of room to display this description in the CTP tables.
+TEXT
+
+  File.write("#{defs_dir}/mock.yaml", mock_nr_def_yaml)
+
+  # Add -d option for each normative rule definition YAML file
+  Dir.glob("#{defs_dir}/*.yaml").each do |def_fname|
+    cmdArray.append("-d #{def_fname}")
+  end
+
+  # Add output filename as last command line option
+  cmdArray.append(target_pname)
+
+  cmd = cmdArray.join(" ")
+
+  $logger.info "bundle exec #{cmd}"
+
+  sh(cmd)
+
+  $logger.info "Done building normative rules into #{target_pname}"
 end

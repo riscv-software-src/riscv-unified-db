@@ -65,3 +65,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: lwu_enc
+  - name: lwu_op

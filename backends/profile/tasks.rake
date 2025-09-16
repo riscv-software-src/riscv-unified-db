@@ -63,7 +63,8 @@ Dir.glob("#{$resolver.std_path}/profile_release/*.yaml") do |f|
       cfg_arch,
       Udb::PortfolioDesign.profile_release_type,
       profile_release_with_cfg_arch.profiles,
-      profile_release_with_cfg_arch.profile_family
+      profile_release_with_cfg_arch.profile_family,
+      nil # no normative rules
     )
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.

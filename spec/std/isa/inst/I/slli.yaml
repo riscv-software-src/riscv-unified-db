@@ -62,3 +62,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: slli_enc
+  - name: slli_op

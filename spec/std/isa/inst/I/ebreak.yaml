@@ -46,3 +46,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: ebreak_enc
+  - name: ebreak_op

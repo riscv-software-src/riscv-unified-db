@@ -44,3 +44,8 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: addiw_enc
+  - name: addiw_op
+  - name: addiw_overflow

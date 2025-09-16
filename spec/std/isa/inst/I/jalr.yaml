@@ -74,3 +74,8 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: jalr_enc
+  - name: jalr_op
+  - name: jalr_target

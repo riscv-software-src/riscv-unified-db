@@ -7,14 +7,14 @@
 require "idlc/interfaces"
 
 require_relative "database_obj"
-require_relative "certifiable_obj"
+require_relative "../can_have_normative_rule_reqs"
 
 module Udb
 
 # CSR definition
 class Csr < TopLevelDatabaseObject
-  # Add all methods in this module to this type of database object.
-  include CertifiableObject
+  # Add all methods in these modules to this type of database object.
+  include CanHaveNormativeRuleReqs
 
   include Idl::Csr
 

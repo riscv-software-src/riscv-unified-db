@@ -43,3 +43,9 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: auipc_enc
+  - name: auipc_op
+  - name: auipc_rv64i_op
+    # TODO: add "when" statement saying MXLEN == 64

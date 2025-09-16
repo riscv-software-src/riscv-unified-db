@@ -50,3 +50,7 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: xori_enc
+  - name: xori_op

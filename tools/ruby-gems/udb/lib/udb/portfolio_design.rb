@@ -64,6 +64,9 @@ class PortfolioDesign
   # Provided for backwards-compatibility
   def arch = @cfg_arch
 
+  # @return [NormativeRules] Provides access to normative rules. Optional so can be nil.
+  attr_reader :normative_rules
+
   # Class methods
   def self.profile_release_type = "Profile Release"
   def self.proc_crd_type = "Certification Requirements Document"
@@ -75,16 +78,21 @@ class PortfolioDesign
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
-  def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class)
+  # @param normative_rules [NormativeRules] Some portfolios have access to normative rules from stds docs. Nil if not available.
+  def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class, normative_rules)
     raise ArgumentError, "cfg_arch must be an ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
+    unless normative_rules.nil?
+      raise ArgumentError, "normative_rules must be a NormativeRules but is a #{normative_rules.class}" unless normative_rules.is_a?(NormativeRules)
+    end
 
     @name = name.to_s.freeze
     @name_sym = @name.to_sym.freeze
     @cfg_arch = cfg_arch
     @portfolio_design_type = portfolio_design_type
+    @normative_rules = normative_rules
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
     # Can call @portfolio_grp.each or @portfolio_grp.map and they are handled by the normal Array methods.
@@ -228,17 +236,30 @@ class PortfolioDesign
       portfolio_design_type: @portfolio_design_type,
       portfolio_class: @portfolio_class,
       portfolio_kind: @portfolio_kind,
-      portfolios: @portfolio_grp.portfolios
+      portfolios: @portfolio_grp.portfolios,
+      normative_rules: @normative_rules,
+      logger: $logger
     }
 
     h.merge!(extra_inputs)
   end
 
   # Called from tasks.rake file to add standard set of objects available to ERB templates.
-  def init_erb_binding(erb_binding)
-    raise ArgumentError, "Expected Binding object but got #{erb_binding.class}" unless erb_binding.is_a?(Binding)
+  # @param erb_binding [Binding]
+  # @param extra_bindings [Hash<String, Object>]
+  def init_erb_binding(erb_binding, extra_bindings = nil)
+    raise ArgumentError, "Expected Binding object for erb_binding but got #{erb_binding.class}" unless erb_binding.is_a?(Binding)
+    unless extra_bindings.nil?
+      raise ArgumentError, "Expected Hash object for extra_bindings but got #{extra_bindings.class}" unless extra_bindings.is_a?(Hash)
+    end
 
+    # Call erb_env to get standard set of bindings.
     erb_env.each do |key, obj|
+      erb_binding.local_variable_set(key, obj)
+    end
+
+    # Add extra bindings passed in (if any).
+    extra_bindings&.each do |key, obj|
       erb_binding.local_variable_set(key, obj)
     end
   end

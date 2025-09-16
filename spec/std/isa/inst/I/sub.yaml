@@ -63,3 +63,8 @@ sail(): |
   }
 
 # SPDX-SnippetEnd
+
+normative_rules:
+  - name: sub_enc
+  - name: sub_op
+  - name: sub_overflow

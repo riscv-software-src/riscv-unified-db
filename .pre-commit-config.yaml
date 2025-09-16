@@ -40,7 +40,7 @@ repos:
       - id: prettier
         stages: [pre-commit]
         files: \.(json|toml|yml|yaml)$
-        exclude: schemas/json-schema-draft-07.json
+        exclude: spec/schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0
@@ -49,49 +49,49 @@ repos:
         name: Validate instruction files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-inst
-        files: ^arch/inst/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/inst_schema.json"]
+        files: ^spec/std/isa/inst/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/inst_schema.json"]
       - id: check-jsonschema
         name: Validate CSR files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-csr
-        files: ^arch/csr/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/csr_schema.json"]
+        files: ^spec/std/isa/csr/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/csr_schema.json"]
       - id: check-jsonschema
         name: Validate extension files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-ext
-        files: ^arch/ext/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/ext_schema.json"]
+        files: ^spec/std/isa/ext/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/ext_schema.json"]
       - id: check-jsonschema
         name: Validate cert model files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-cert-model
-        files: ^arch/proc_cert_model/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/proc_cert_model_schema.json"]
+        files: ^spec/std/isa/proc_cert_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/proc_cert_model_schema.json"]
       - id: check-jsonschema
         name: Validate cert class files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-cert-class
-        files: ^arch/proc_cert_class/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
+        files: ^spec/std/isa/proc_cert_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/proc_cert_class_schema.json"]
       - id: check-jsonschema
         name: Validate profile family files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-profile-family
-        files: ^arch/profile_family/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/profile_family_schema.json"]
+        files: ^spec/std/isa/profile_family/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/profile_family_schema.json"]
       - id: check-jsonschema
         name: Validate profile release files with jsonschema
         stages: [pre-commit]
         alias: check-jsonschema-profile-release
-        files: ^arch/profile_release/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/profile_release_schema.json"]
+        files: ^spec/std/isa/profile_release/.*\.(yaml|yml)$
+        args: ["--schemafile", "spec/schemas/profile_release_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version
-      #   files: ^arch/manual/.*\.(yaml|yml)$
-      #   args: ["--schemafile", "schemas/manual_version_schema.json"]
+      #   files: ^spec/std/isa/manual/.*\.(yaml|yml)$
+      #   args: ["--schemafile", "spec/schemas/manual_version_schema.json"]
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: "v20.1.0"
