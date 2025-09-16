@@ -7,7 +7,7 @@
 # require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
-require_relative "can_have_normative_rule_reqs"
+require_relative "../can_have_normative_rule_reqs"
 require_relative "../presence"
 require "udb_helpers/backend_helpers"
 require "awesome_print"

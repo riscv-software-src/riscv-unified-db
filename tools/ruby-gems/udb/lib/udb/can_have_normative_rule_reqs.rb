@@ -7,7 +7,7 @@
 # Contains Ruby methods included in Ruby class definition for any database object that can have
 # normative rules listed in the database object's YAML definition.
 
-require_relative "../normative_rule_req"
+require_relative "normative_rule_req"
 
 module Udb
 module CanHaveNormativeRuleReqs

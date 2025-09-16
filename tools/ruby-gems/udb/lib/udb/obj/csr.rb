@@ -7,7 +7,7 @@
 require "idlc/interfaces"
 
 require_relative "database_obj"
-require_relative "can_have_normative_rule_reqs"
+require_relative "../can_have_normative_rule_reqs"
 
 module Udb
 

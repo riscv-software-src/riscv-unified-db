@@ -5,7 +5,7 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
-require_relative "can_have_normative_rule_reqs"
+require_relative "../can_have_normative_rule_reqs"
 require_relative "parameter"
 require_relative "../schema"
 require_relative "../req_expression"

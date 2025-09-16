@@ -8,7 +8,7 @@ require "sorbet-runtime"
 require "idlc/passes/gen_option_adoc"
 
 require_relative "database_obj"
-require_relative "can_have_normative_rule_reqs"
+require_relative "../can_have_normative_rule_reqs"
 
 module Udb
 
