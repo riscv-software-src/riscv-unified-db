@@ -8,7 +8,10 @@ gem "idl_highlighter", path: "tools/ruby-gems/idl_highlighter"
 gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
 gem "udb", path: "tools/ruby-gems/udb"
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
+
+gem 'bundler'
+gem 'rake', '~> 13.0'
 
 # gem "activesupport"
 gem "asciidoctor-diagram", "~> 2.2"
@@ -19,7 +22,6 @@ gem "concurrent-ruby", require: "concurrent"
 gem "concurrent-ruby-ext"
 gem "json_schemer", "~> 1.0"
 # gem "pygments.rb"
-gem "rake", "~> 13.0"
 #gem "rouge"
 gem "ruby-progressbar", "~> 1.13"
 gem "sorbet-runtime"
