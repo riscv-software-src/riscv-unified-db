@@ -9,7 +9,7 @@ name: fmadd.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy: [Zfh, Zhinx]
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
   match: -----10------------------1000011
@@ -31,3 +31,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::Zhinx)) {
+    # Zhinx: use integer registers
+    X[rd] = fmadd_h(X[rs1], X[rs2], X[rs3], rm);
+  } else {
+    # Zfh: use floating-point registers
+    F[rd] = fmadd_h(F[rs1], F[rs2], F[rs3], rm);
+  }
