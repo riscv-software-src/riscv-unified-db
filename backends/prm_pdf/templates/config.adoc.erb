@@ -27,26 +27,10 @@ No extensions to list for this configuration state.
 |===
 | Extension | Version | Description
 
-<%- extensions_to_list.sort{ |a,b| a.name <=> b.name }.each do |e|
-    ext_name = e.respond_to?(:name) ? e.name : e.ext.name
-    ext_obj = e.respond_to?(:ext) ? e.ext : cfg_arch.extension(ext_name)
-
-    version_display_text = if e.is_a?(Udb::ExtensionVersion)
-      if e.version_str.is_a?(String)
-        "`#{e.version_str.gsub('@', '{@}')}`"
-      else
-        "`#{e.version_str}`"
-      end
-    elsif e.is_a?(Udb::Extension) && is_partially_configured
-      # For partially configured, show any available version
-      "`(any version)`"
-    else
-      "(Not specified)"
-    end
--%>
-| `<%= ext_name %>`
-| <%= version_display_text %>
-| <%= ext_obj.long_name if ext_obj %>
+<%- extensions_to_list.sort{ |a,b| a.name <=> b.name }.each do |ext_ver| -%>
+| `<%= ext_ver.name %>`
+| <%= ext_ver.version_str.is_a?(String) ? "`#{ext_ver.version_str.gsub('@', '{@}')}`" : "`#{ext_ver.version_str}`" %>
+| <%= ext_ver.ext&.long_name %>
 <%- end -%>
 |===
 <% end %>
