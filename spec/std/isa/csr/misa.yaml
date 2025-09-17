@@ -8,10 +8,14 @@ kind: csr
 name: misa
 long_name: Machine ISA Control
 address: 0x301
+# writable when misa CSR is implemented; read-only-0 otherwise
 writable: true
 priv_mode: M
 length: MXLEN
-description: Reports the XLEN and "major" extensions supported by the ISA.
+description: |
+  Reports the XLEN and "major" extensions supported by the ISA.
+  [when,"MISA_CSR_IMPLEMENTED == false"] 
+  This CSR is read-only-0 (all bits hardwired to zero) and cannot be written.
 definedBy: Sm
 fields:
   MXL:
@@ -20,7 +24,11 @@ fields:
     description: XLEN in M-mode.
     type: RO
     reset_value(): |
-      return (MXLEN == 32) ? 2'b01 : 2'b10;
+      if (MISA_CSR_IMPLEMENTED) {
+        return (MXLEN == 32) ? 2'b01 : 2'b10;
+      } else {
+        return 0;
+      }
   A:
     location: 0
     description: |
@@ -29,9 +37,17 @@ fields:
       [when,"MUTABLE_MISA_A == true"]
       Writing 0 to this field will cause all atomic instructions to raise an `IllegalInstruction` exception.
     type(): |
-      return (implemented?(ExtensionName::A) && MUTABLE_MISA_A) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::A) && MUTABLE_MISA_A) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::A) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::A) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: A
   B:
     location: 1
@@ -41,9 +57,17 @@ fields:
       [when,"MUTABLE_MISA_B == true"]
       Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
     type(): |
-      return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::B) && MUTABLE_MISA_B) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::B) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::B) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: B
   C:
     location: 2
@@ -54,9 +78,17 @@ fields:
       Writing 0 to this field will cause all compressed instructions to raise an `IllegalInstruction` exception.
       Additionally, IALIGN becomes 32.
     type(): |
-      return (implemented?(ExtensionName::C) && MUTABLE_MISA_C) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::C) && MUTABLE_MISA_C) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::C) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::C) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: C
   D:
     location: 3
@@ -70,9 +102,17 @@ fields:
       Additionally, the upper 32-bits of the f registers will read as zero.
       --
     type(): |
-      return (implemented?(ExtensionName::D) && MUTABLE_MISA_D) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::D) && MUTABLE_MISA_D) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::D) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::D) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: D
   F:
     location: 5
@@ -86,38 +126,51 @@ fields:
       Writing 0 to this field with `misa.D` set will result in UNDEFINED behavior.
       --
     type(): |
-      return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::F) && MUTABLE_MISA_F) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::F) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::F) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: F
     sw_write(csr_value): |
       if (csr_value.F == 0 && csr_value.D == 1) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
       }
-
       # fall-through; write the intended value
       return csr_value.F;
-    legal?(csr_value): |
-      return !(csr_value.F == 0 && csr_value.D == 1);
   G:
     location: 6
     description: |
       Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, `D`.
     type(): |
-      if ((implemented?(ExtensionName::A) && MUTABLE_MISA_A) ||
-          (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ||
-          (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ||
-          (implemented?(ExtensionName::D) && MUTABLE_MISA_D)) {
-        return CsrFieldType::ROH;
+      if (MISA_CSR_IMPLEMENTED) {
+        if ((implemented?(ExtensionName::A) && MUTABLE_MISA_A) ||
+            (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ||
+            (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ||
+            (implemented?(ExtensionName::D) && MUTABLE_MISA_D)) {
+          return CsrFieldType::ROH;
+        } else {
+          return CsrFieldType::RO;
+        }
       } else {
         return CsrFieldType::RO;
       }
     reset_value(): |
-      return (
-        implemented?(ExtensionName::A) &&
-        implemented?(ExtensionName::M) &&
-        implemented?(ExtensionName::F) &&
-        implemented?(ExtensionName::D)) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return (
+          implemented?(ExtensionName::A) &&
+          implemented?(ExtensionName::M) &&
+          implemented?(ExtensionName::F) &&
+          implemented?(ExtensionName::D)) ? 1 : 0;
+      } else {
+        return 0;
+      }
   H:
     location: 7
     description: |
@@ -126,17 +179,26 @@ fields:
       [when,"MUTABLE_MISA_H == true"]
       Writing 0 to this field will cause all attempts to enter VS- or VU- mode, execute a hypervisor instruction, or access a hypervisor CSR to raise an `IllegalInstruction` fault.
     type(): |
-      return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::H) && MUTABLE_MISA_H) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     definedBy: H
     reset_value(): |
-      return implemented?(ExtensionName::H) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::H) ? 1 : 0;
+      } else {
+        return 0;
+      }
   I:
     location: 8
     description: |
       Indicates support for the `I` (base) extension.
     type: RO
     definedBy: I
-    reset_value: 1
+    reset_value(): |
+      return MISA_CSR_IMPLEMENTED ? 1 : 0;
   M:
     location: 12
     description: |
@@ -145,9 +207,17 @@ fields:
       [when,"MUTABLE_MISA_M == true"]
       Writing 0 to this field will cause all attempts to execute an integer multiply or divide instruction to raise an `IllegalInstruction` exception.
     type(): |
-      return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED) {
+        return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::M) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::M) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: M
     cert_normative_rules:
       - id: csr_field.misa.M.disabled
@@ -182,8 +252,13 @@ fields:
       Writing 0 to this field will cause all quad-precision floating point instructions to raise an `IllegalInstruction` exception.
       --
     type(): |
-      return MUTABLE_MISA_Q ? CsrFieldType::RW : CsrFieldType::RO;
-    reset_value: 1
+      if (MISA_CSR_IMPLEMENTED) {
+        return MUTABLE_MISA_Q ? CsrFieldType::RW : CsrFieldType::RO;
+      } else {
+        return CsrFieldType::RO;
+      }
+    reset_value(): |
+      return MISA_CSR_IMPLEMENTED ? 1 : 0;
     definedBy: Q
     sw_write(csr_value): |
       if ((csr_value.F == 0 || csr_value.D == 0) && csr_value.Q == 1) {
@@ -192,8 +267,6 @@ fields:
 
       # fall-through; write the intended value
       return csr_value.Q;
-    legal?(csr_value): |
-      return !(csr_value.Q == 1 && csr_value.D == 0);
   S:
     location: 18
     description: |
@@ -202,9 +275,17 @@ fields:
       [when,"MUTABLE_MISA_S == true"]
       Writing 0 to this field will cause all attempts to enter S-mode or access S-mode state to raise an exception.
     type(): |
-      return (implemented?(ExtensionName::S) && MUTABLE_MISA_S) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::S) && MUTABLE_MISA_S) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::S) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::S) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: S
   U:
     location: 20
@@ -214,9 +295,17 @@ fields:
       [when,"MUTABLE_MISA_U == true"]
       Writing 0 to this field will cause all attempts to enter U-mode to raise an exception.
     type(): |
-      return (implemented?(ExtensionName::U) && MUTABLE_MISA_U) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::U) && MUTABLE_MISA_U) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::U) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::U) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: U
   V:
     location: 21
@@ -226,11 +315,22 @@ fields:
       [when,"MUTABLE_MISA_V == true"]
       Writing 0 to this field will cause all attempts to execute a vector instruction to raise an `IllegalInstruction` trap.
     type(): |
-      return (implemented?(ExtensionName::V) && MUTABLE_MISA_V) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED && implemented?(ExtensionName::V) && MUTABLE_MISA_V) {
+        return CsrFieldType::RW;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::V) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::V) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: V
 sw_read(): |
+  if (!MISA_CSR_IMPLEMENTED) {
+    return 0;
+  }
   return (
     (CSR[misa].MXL << (xlen() - 2)) |
     (CSR[misa].V << 21) |
@@ -238,10 +338,10 @@ sw_read(): |
     (CSR[misa].S << 18) |
     (CSR[misa].Q << 16) |
     (CSR[misa].M << 12) |
-    (CSR[misa].I << 7) |
-    (CSR[misa].H << 6) |
-    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 5) | # 'G'
-    (CSR[misa].F << 4) |
+    (CSR[misa].I << 8) |
+    (CSR[misa].H << 7) |
+    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 6) | # 'G'
+    (CSR[misa].F << 5) |
     (CSR[misa].D << 3) |
     (CSR[misa].C << 2) |
     (CSR[misa].B << 1) |

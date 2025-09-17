@@ -20,6 +20,7 @@ params:
       Indicates whether or not the `V` extension can be disabled with the `misa.V` bit.
     schema:
       type: boolean
+      extra_validation: assert MISA_CSR_IMPLEMENTED == true
   HW_MSTATUS_VS_DIRTY_UPDATE:
     description: |
       Indicates whether or not hardware will write to `mstatus.VS`
