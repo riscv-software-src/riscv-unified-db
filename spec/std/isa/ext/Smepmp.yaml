@@ -57,7 +57,6 @@ description: |
   - *PMP reset*: A reset process where all PMP settings of the hart, including locked
     rules/settings, are re-initialized to a set of safe defaults, before releasing the hart (back)
     to the firmware / OS / application.
-  --
 params:
   NUM_PMP_ENTRIES1:
     description: |
