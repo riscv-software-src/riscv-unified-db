@@ -11,12 +11,20 @@ runs:
       with:
         path: .singularity/image.sif
         key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - name: Install node dependencies
+      run: npm ci
+      shell: bash
     - name: Get gems and node files from cache
       id: cache-bundle-npm
       uses: actions/cache@v4
       with:
         path: |
-          .home/.gems
+          vendor/bundle
           node_modules
         key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
@@ -24,5 +32,9 @@ runs:
       run: ./bin/build_container
       shell: bash
     - name: Setup project
-      run: ./bin/setup
+      run: |
+        gem install bundler
+        bundle config set --local path 'vendor/bundle'
+        bundle install
+        ./bin/setup
       shell: bash
