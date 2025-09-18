@@ -12,7 +12,9 @@
 require "concurrent"
 require "ruby-prof"
 require "tilt"
-
+require "yaml"
+require "pathname"
+require_relative 'obj/non_isa_specification'
 require_relative "config"
 require_relative "architecture"
 
@@ -812,7 +814,7 @@ class ConfiguredArchitecture < Architecture
         extensions.each do |ext|
           ext.versions.each do |ext_ver|
             next if mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-            next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.include?(ext_ver) }
+            next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.eval.any? { |impl| impl.ext_ver == ext_ver } }
 
             @transitive_prohibited_extension_versions << ext_ver
           end
@@ -1047,7 +1049,8 @@ class ConfiguredArchitecture < Architecture
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
   sig { returns(T::Array[Idl::FunctionDefAst]) }
   def implemented_functions
-    return @implemented_functions unless @implemented_functions.nil?
+    return @implemented_functions if @implemented_functions
+    return [] unless fully_configured?
 
     @implemented_functions = []
 
@@ -1058,7 +1061,7 @@ class ConfiguredArchitecture < Architecture
         if inst.base.nil?
           if multi_xlen?
             (inst.reachable_functions(32) +
-             inst.reachable_functions(64))
+            inst.reachable_functions(64))
           else
             inst.reachable_functions(mxlen)
           end
@@ -1137,6 +1140,50 @@ class ConfiguredArchitecture < Architecture
     @reachable_functions.uniq!
     @reachable_functions
   end
+
+  # @return [Array<NonIsaSpecification>] List of all non-ISA specs that could apply to this configuration
+  sig { returns(T::Array[T.untyped]) }
+  def possible_non_isa_specs
+    return @possible_non_isa_specs if defined?(@possible_non_isa_specs)
+
+
+
+    @possible_non_isa_specs = []
+
+    # Discover local non-ISA specifications
+    non_isa_path = Pathname.new(__dir__).parent.parent.parent.parent.parent / "spec/custom/non_isa"
+    if non_isa_path.exist?
+      non_isa_path.glob("*.yaml").each do |spec_file|
+        next if spec_file.basename.to_s.start_with?('prm') # Skip PRM files
+
+        begin
+          spec_name = spec_file.basename('.yaml').to_s
+          spec_data = YAML.load_file(spec_file)
+          next unless spec_data['kind'] == 'non-isa specification'
+
+          spec_obj = Udb::NonIsaSpecification.new(spec_name, spec_data)
+          @possible_non_isa_specs << spec_obj
+        rescue => e
+          warn "Failed to load non-ISA spec #{spec_file}: #{e.message}"
+        end
+      end
+    end
+
+    @possible_non_isa_specs.sort_by(&:name)
+  end
+
+  # @return [Array<NonIsaSpecification>] List of all implemented non-ISA specs, filtered by configuration
+  sig { returns(T::Array[T.untyped]) }
+  def implemented_non_isa_specs
+    return @implemented_non_isa_specs if defined?(@implemented_non_isa_specs)
+
+    @implemented_non_isa_specs = possible_non_isa_specs.select do |spec|
+      spec.exists_in_cfg?(self)
+    end
+
+    @implemented_non_isa_specs
+  end
+  alias transitive_implemented_non_isa_specs implemented_non_isa_specs
 
   # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
   # and replace them with links to the relevant object page.

@@ -67,3 +67,21 @@ path = [
 ]
 SPDX-FileCopyrightText = "Copyright (c) Derek Hower, Paul Clarke"
 SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = [
+    "backends/prm_pdf/*.rb",
+    "backends/prm_pdf/*.rake",
+    "backends/prm_pdf/tasks.rake",
+    "backends/prm_pdf/lib/**",
+    "backends/prm_pdf/templates/**",
+    "backends/prm_pdf/pdf-theme/*.yml",
+    "backends/prm_pdf/pdf-theme/*.svg",
+    "cfgs/prm_demo_rv32.yaml",
+    "spec/schemas/prm_schema.json",
+    "spec/custom/non_isa/prm_example/prm_demo_rv32_with_external.yaml",
+    "tools/ruby-gems/udb/lib/udb/prm_generator.rb",
+    "tools/ruby-gems/udb/lib/udb/obj/prm.rb"
+]
+SPDX-FileCopyrightText = "Copyright (c) 2025 Synopsys, Inc."
+SPDX-License-Identifier = "BSD-3-Clause-Clear"

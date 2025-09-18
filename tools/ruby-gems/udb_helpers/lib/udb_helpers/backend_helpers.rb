@@ -228,6 +228,12 @@ module Udb::Helpers::TemplateHelpers
     "[[udb:doc:cov_pt:#{org}:#{id.sanitize}]]"
   end
 
+  # @return [String] An anchor for a UDB non-ISA specification documentation
+  # @param name [String] Name of the non-ISA specification
+  def anchor_for_non_isa_spec(name)
+    "[[udb:doc:non_isa:#{name.sanitize}]]"
+  end
+
   # @return [String] An anchor inside IDL instruction code
   # @param func_name [String] Name of the instruction
   # @param id [String] ID within the instruction code

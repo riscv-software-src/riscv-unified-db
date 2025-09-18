@@ -1,0 +1,76 @@
+<%-
+  relevant_extension_versions_for_config = cfg_arch.fully_configured? ?
+    cfg_arch.transitive_implemented_extension_versions :
+    cfg_arch.possible_extension_versions
+
+  relevant_instructions_for_config = cfg_arch.fully_configured? ?
+    cfg_arch.transitive_implemented_instructions :
+    cfg_arch.possible_instructions
+-%>
+
+[ext:<%= ext.name %>-def]
+= <%= ext.name %> Extension
+<%= ext.long_name %>
+
+Documented Version Status in Configuration:: `<%= ext_version.version_str %>` (<%- if relevant_extension_versions_for_config.include?(ext_version) -%>Considered <%- if cfg_arch.fully_configured? -%>Implemented<%- else -%>Possible<%- end -%><%- else -%>Not currently active/possible in this configuration<%- end -%>)
+
+== Versions
+
+<%- ext.versions.sort_by { |version_object| [version_object.version_spec.major, version_object.version_spec.minor, version_object.version_spec.patch] }.reverse.each do |v| -%>
+<%- version_status_in_config = relevant_extension_versions_for_config.include?(v) ? (cfg_arch.fully_configured? ? "Implemented" : "Possible") : "Not active" -%>
+<%= v.version_str.is_a?(String) ? v.version_str.gsub('@', '{@}') : v.version_str %> (<%= version_status_in_config %>)::
+  Ratification date:::
+    <%= v.ratification_date %>
+  <%- unless v.changes.empty? -%>
+  Changes:::
+    <% v.changes.each do |c| -%>
+    * <%= c %>
+    <% end -%>
+  <%- end -%>
+  <%- unless v.url.nil? -%>
+  Ratification document:::
+    <%= v.url %>
+  <%- end -%>
+  <%- unless v.implications.empty? -%>
+  Implies (if this version `<%= v.version_str.is_a?(String) ? v.version_str.gsub('@', '{@}') : v.version_str %>` is active):::
+    <%- v.implications.each do |i| -%>
+    <%-   next unless i.cond.satisfied_by? { |ext_req| relevant_extension_versions_for_config.any? { |cfg_ext_ver| ext_req.satisfied_by?(cfg_ext_ver)}} -%>
+    * `<%= i.ext_ver.name %>` version `<%= i.ext_ver.version_str.is_a?(String) ? i.ext_ver.version_str.gsub('@', '{@}') : i.ext_ver.version_str %>`
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
+
+== Synopsis
+
+<%= ext.description %>
+
+<%- insts = ext.instructions.select { |i| relevant_instructions_for_config.include?(i) } -%>
+<%- unless insts.empty? -%>
+== Instructions
+
+The following instructions are associated with the <%= ext.name %> extension <%- if cfg_arch.fully_configured? -%>and implemented in the <%= cfg_arch.name %> configuration<%- else -%>(their actual implementation depends on the full configuration of <%= cfg_arch.name %>)<%- end -%>:
+
+[cols="1,3"]
+|===
+<%- insts.each do |inst| -%>
+  | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
+<%- end -%>
+|===
+<%- end -%>
+
+<%- unless ext.params.empty? -%>
+== Parameters
+
+This extension has the following implementation options:
+
+<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<%- end -%>
+
+<%- end -%>
+
+<<<

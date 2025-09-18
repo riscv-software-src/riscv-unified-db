@@ -1,0 +1,199 @@
+= PRM PDF Generation Backend
+:doctype: article
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+:icons: font
+:experimental:
+
+== Overview
+
+The PRM PDF backend generates high-quality, professional PDF documentation from RISC-V processor configurations defined in the UDB. It creates comprehensive programmer's reference manuals that include:
+
+* **ISA Documentation**: Automatically includes relevant portions of the RISC-V ISA manual based on implemented extensions
+* **External Specifications**: Integrates external documentation like ABI specifications, debug specifications, etc.
+* **Generated Content**: Auto-generates instruction and CSR reference sections from UDB data
+* **Custom Content**: Supports custom non-ISA specifications for implementation-specific features
+* **Professional Layout**: Uses the standard RISC-v PDF theme with proper typography and formatting
+
+== Architecture and Design
+
+=== Core Components
+
+The PRM generation system consists of several key components working together:
+
+[plantuml, prm-architecture, svg]
+....
+@startuml
+package "PRM Generation System" {
+  [PRM Schema] --> [PRM Config YAML]
+  [PRM Config YAML] --> [PrmGenerator::Generator]
+  [UDB Resolver] --> [PrmGenerator::Generator]
+  [External Docs] --> [ExternalDocumentationRenderer]
+  [Templates] --> [ComponentGenerator]
+
+  [PrmGenerator::Generator] --> [ComponentGenerator]
+  [PrmGenerator::Generator] --> [MainDocumentGenerator]
+  [ComponentGenerator] --> [AsciiDoc Files]
+  [MainDocumentGenerator] --> [Main AsciiDoc]
+  [Main AsciiDoc] --> [PdfGenerator]
+  [AsciiDoc Files] --> [PdfGenerator]
+  [PdfGenerator] --> [Final PDF]
+}
+
+package "External Sources" {
+  [RISC-V ISA Manual] --> [External Docs]
+  [RISC-V ELF psABI] --> [External Docs]
+  [Other Specs] --> [External Docs]
+}
+
+package "UDB Data" {
+  [Architecture Config] --> [UDB Resolver]
+  [Extensions] --> [UDB Resolver]
+  [Instructions] --> [UDB Resolver]
+  [CSRs] --> [UDB Resolver]
+  [Non-ISA Specs] --> [UDB Resolver]
+}
+@enduml
+....
+
+=== Generation Flow
+
+The PRM generation follows a multi-stage process:
+
+1. **Configuration Loading**: Load and validate the PRM configuration YAML
+2. **Component Generation**: Generate individual AsciiDoc files for CSRs, instructions, and extensions
+3. **External Documentation Processing**: Include and process external documentation sources
+4. **Main Document Assembly**: Combine all components into a single main AsciiDoc document
+5. **PDF Generation**: Convert the main AsciiDoc to PDF using Asciidoctor PDF
+
+=== Key Classes
+
+[cols="2,5,3"]
+|===
+| Class | Responsibility | Key Methods
+
+| `PrmGenerator::Generator`
+| Main orchestrator for PRM generation
+| `generate_adoc()`, `generate_pdf()`
+
+| `ComponentGenerator`
+| Generates individual component files (CSRs, instructions, extensions)
+| `generate_csrs()`, `generate_instructions()`, `generate_extensions()`
+
+| `MainDocumentGenerator`
+| Assembles the complete PRM document
+| `generate()`, `prepare_template_variables()`
+
+| `ExternalDocumentationRenderer`
+| Handles external documentation integration
+| `render_external_documentation()`, `render_external_source()`
+
+| `PdfGenerator`
+| Converts AsciiDoc to PDF
+| `generate()`
+
+| `ContentSanitizer`
+| Cleans and sanitizes content for AsciiDoc
+| `sanitize()`
+
+| `LinkResolver`
+| Resolves cross-references and links
+| `resolve()`
+|===
+
+== Configuration Schema
+
+PRM configurations are defined using JSON Schema validation. The schema defines:
+
+=== Required Fields
+
+* `$schema`: Must be `prm_schema.json#`
+* `kind`: Must be `"programmer reference manual"`
+* `name`: Unique identifier for the PRM
+* `description`: Brief description of the PRM
+* `processor_config`: Reference to the processor configuration
+* `chapters`: Array of chapter definitions
+
+=== Chapter Configuration
+
+Each chapter supports multiple content types:
+
+[source,yaml]
+----
+chapters:
+  - id: unprivileged_isa
+    title: "Unprivileged Instruction Set Architecture"
+    level: 2                    # AsciiDoc heading level (1-6)
+    type: standard              # "standard" or "appendix"
+    description: "Chapter description"
+
+    # Auto-generate content from UDB
+    auto_generate: ["instructions", "csrs"]
+
+    # Include external documentation
+    external_documentation:
+      - source: "riscv-isa-manual"
+        type: "isa_manual"
+        path: "ext/riscv-isa-manual/src"
+        resolve_includes: true
+        chapters:
+          - file: "rv32.adoc"
+            level_offset: 1
+            title: "Optional custom title"
+
+    # Include custom non-ISA specifications
+    non_isa_specifications:
+      - name: "memory_management_demo"
+        version: ">= 0"
+----
+== Templates
+
+The system uses ERB templates to generate AsciiDoc content:
+
+=== Template Hierarchy
+
+[source]
+----
+backends/prm_pdf/templates/
+├── prm_main.adoc.erb      # Main document template
+├── config.adoc.erb        # Configuration overview
+├── csr.adoc.erb          # CSR documentation
+├── inst.adoc.erb         # Instruction documentation
+├── ext.adoc.erb          # Extension documentation
+└── non_isa_spec.adoc.erb # Non-ISA specification
+----
+
+== Usage
+
+=== Command Line Interface
+
+[source,bash]
+----
+# Generate AsciiDoc files only
+./do prm:adoc[prm_demo_rv32_with_external]
+
+# Generate PDF (includes AsciiDoc generation)
+./do prm:pdf[prm_demo_rv32_with_external]
+
+# View generated PDF
+./do prm:view[prm_demo_rv32_with_external]
+----
+
+=== Output Structure
+
+[source]
+----
+gen/prm_pdf/prm_name/
+├── adoc/                   # Generated AsciiDoc components
+│   ├── config.adoc        # Configuration overview
+│   ├── csrs/              # Individual CSR files
+│   ├── exts/              # Individual extension files
+│   ├── insts/             # Individual instruction files
+│   └── non_isa/           # Non-ISA specification files
+└── pdf/                   # PDF generation artifacts
+    ├── _prm_main.adoc     # Main assembled document
+    ├── images/            # Generated images and diagrams
+    └── prm_name-specification.pdf  # Final PDF output
+----
