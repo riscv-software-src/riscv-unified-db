@@ -18,7 +18,7 @@ description: |
   The `seed` CSR exposes physical entropy directly to software. This register is useful for cryptographic
   applications and random number generation. Reads may have side effects depending on the implementation.
 
-sw_read: |
+sw_read(): |
   return read_entropy();
 
 fields:
