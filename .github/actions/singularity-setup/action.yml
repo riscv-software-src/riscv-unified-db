@@ -5,18 +5,19 @@ runs:
   steps:
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
-    
+
     - name: Get container from cache
       id: cache-sif
       uses: actions/cache@v4
       with:
         path: .singularity/image.sif
         key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-    
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libruby3.2 ruby3.2-dev
+        sudo apt-get install -y build-essential libruby3.2 ruby3.2-dev ruby3.2 ruby-dev
+        sudo gem update --system
       shell: bash
 
     - name: Set up Ruby
@@ -24,8 +25,41 @@ runs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
-        bundler-cache: true
-    
+        bundler-cache: false # We'll handle gem installation manually for better control
+
+    - name: Install base gems
+      run: |
+        gem install bundler -v 2.4.20
+        gem install bigdecimal -v 3.2.2
+        gem install concurrent-ruby-ext -v 1.3.5
+        gem install debug -v 1.10.0
+        gem install ruby-prof -v 1.7.2
+        gem install nkf -v 0.2.0
+        gem install jaro_winkler -v 1.6.1
+        gem install prism -v 1.4.0
+        gem install rbs -v 3.9.4
+        gem install io-console -v 0.8.0
+        gem install json -v 2.12.2
+        gem install racc -v 1.8.1
+        gem install erb -v 5.0.1
+        gem install psych -v 5.2.6
+        gem install date -v 3.4.1
+        gem install stringio -v 3.1.7
+      shell: bash
+
+    - name: Bundle install
+      run: |
+        bundle config set --local path 'vendor/bundle'
+        bundle install
+      shell: bash
+
+    - name: Rebuild native extensions
+      run: |
+        for ext in bigdecimal concurrent-ruby-ext debug ruby-prof nkf jaro_winkler prism rbs io-console json racc erb psych date stringio; do
+          bundle exec gem pristine $ext || true
+        done
+      shell: bash
+
     - name: Get node_modules cache
       id: cache-node
       uses: actions/cache@v4
@@ -34,19 +68,10 @@ runs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    
+
     - name: Install node dependencies
       if: steps.cache-node.outputs.cache-hit != 'true'
       run: npm ci
-      shell: bash
-
-    - name: Rebuild problematic gems
-      run: |
-        for gem in psych:5.2.6 stringio:3.1.7 date:3.4.1; do
-          name=${gem%:*}
-          version=${gem#*:}
-          gem pristine $name --version $version || true
-        done
       shell: bash
 
     - name: Build container
@@ -57,4 +82,3 @@ runs:
     - name: Setup project
       run: ./bin/setup
       shell: bash
-
