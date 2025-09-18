@@ -57,3 +57,4 @@ runs:
     - name: Setup project
       run: ./bin/setup
       shell: bash
+
