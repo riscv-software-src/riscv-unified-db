@@ -16,14 +16,38 @@ runs:
       with:
         ruby-version: '3.2'
         bundler-cache: true
+    - name: Set up Ruby and system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libruby3.2 ruby3.2 ruby3.2-dev build-essential
+      shell: bash
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
-        bundler-cache: true
+        bundler-cache: false
+    
+    - name: Clean bundler cache
+      run: |
+        rm -rf vendor/bundle
+      shell: bash
+    
+    - name: Install and rebuild gems
+      run: |
+        gem update --system
+        bundle config set --local path 'vendor/bundle'
+        bundle install --jobs 4 --retry 3
+        gem pristine --all
+        gem pristine psych --version 5.2.6
+        gem pristine stringio --version 3.1.7
+        gem pristine date --version 3.4.1
+      shell: bash
+
     - name: Install node dependencies
       run: npm ci
       shell: bash
+
     - name: Get gems and node files from cache
       id: cache-bundle-npm
       uses: actions/cache@v4
@@ -31,7 +55,9 @@ runs:
         path: |
           vendor/bundle
           node_modules
-        key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-ruby-${{ env.ruby-version }}-gems-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-ruby-${{ env.ruby-version }}-gems-
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
       name: Build container
       run: ./bin/build_container
