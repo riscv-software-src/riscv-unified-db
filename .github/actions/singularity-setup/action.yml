@@ -5,49 +5,82 @@ runs:
   steps:
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
+    
     - name: Get container from cache
       id: cache-sif
       uses: actions/cache@v4
       with:
         path: .singularity/image.sif
         key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.2'
-        bundler-cache: true
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.2'
-        bundler-cache: true
-
+    
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential
-      shell: bash
-    
-    - name: Rebuild gems
-      run: |
-        gem pristine --all
-        gem pristine psych --version 5.2.6
-        gem pristine stringio --version 3.1.7
-        gem pristine date --version 3.4.1
+        sudo apt-get install -y build-essential libruby3.2 ruby3.2-dev
       shell: bash
 
+    - name: Set up Ruby
+      id: setup-ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+    
+    - name: Get node_modules cache
+      uses: actions/cache@v4
+      id: cache-node
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    
     - name: Install node dependencies
+      if: steps.cache-node.outputs.cache-hit != 'true'
       run: npm ci
       shell: bash
 
-    - name: Get gems and node files from cache
-      id: cache-bundle-npm
-      uses: actions/cache@v4
+    - name: Rebuild problematic gems
+      run: |
+        for gem in psych:5.2.6 stringio:3.1.7 date:3.4.1; do
+          name=${gem%:*}
+          version=${gem#*:}
+          gem pristine $name --version $version || true
+        done
+      shell: bash
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libruby3.2 ruby3.2-dev
+      shell: bash
+
+    - name: Set up Ruby
+      id: setup-ruby
+      uses: ruby/setup-ruby@v1
       with:
-        path: |
-          vendor/bundle
-          node_modules
-        key: ${{ runner.os }}-ruby-${{ env.ruby-version }}-gems-${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+        ruby-version: '3.2'
+        bundler-cache: true
+
+    - name: Get node_modules cache
+      uses: actions/cache@v4
+      id: cache-node
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install node dependencies
+      if: steps.cache-node.outputs.cache-hit != 'true'
+      run: npm ci
+      shell: bash
+
+    - name: Rebuild problematic gems
+      run: |
+        for gem in psych:5.2.6 stringio:3.1.7 date:3.4.1; do
+          name=${gem%:*}
+          version=${gem#*:}
+          gem pristine $name --version $version || true
+        done
+      shell: bash
         restore-keys: |
           ${{ runner.os }}-ruby-${{ env.ruby-version }}-gems-
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
