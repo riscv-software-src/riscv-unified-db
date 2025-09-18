@@ -66,11 +66,9 @@ fi
 
 # build the container image
 echo "Building container..."
-# Create .singularity directory if it doesn't exist
+# Create .singularity directory if it doesn't exist and ensure clean container path
 mkdir -p $(dirname ${CONTAINER_PATH})
-if [ -e ${CONTAINER_PATH} ]; then
-  rm -f ${CONTAINER_PATH}
-fi
+rm -f ${CONTAINER_PATH}
 
 $SUDO singularity build --force \
   $FAKEROOT \

@@ -16,28 +16,20 @@ runs:
       with:
         ruby-version: '3.2'
         bundler-cache: true
-    - name: Set up Ruby and system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libruby3.2 ruby3.2 ruby3.2-dev build-essential
-      shell: bash
-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
-        bundler-cache: false
-    
-    - name: Clean bundler cache
+        bundler-cache: true
+
+    - name: Install system dependencies
       run: |
-        rm -rf vendor/bundle
+        sudo apt-get update
+        sudo apt-get install -y build-essential
       shell: bash
     
-    - name: Install and rebuild gems
+    - name: Rebuild gems
       run: |
-        gem update --system
-        bundle config set --local path 'vendor/bundle'
-        bundle install --jobs 4 --retry 3
         gem pristine --all
         gem pristine psych --version 5.2.6
         gem pristine stringio --version 3.1.7
