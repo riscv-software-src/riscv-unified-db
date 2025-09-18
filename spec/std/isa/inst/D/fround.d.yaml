@@ -11,12 +11,12 @@ description:
   - id: inst-fround.d-behaviour
     normative: false
     text: |
-      `FROUND.D` instruction rounds the double-precision floating-point number in floating-point register
-      _fs1_ to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
-      that integer, represented as a double-precision floating-point number, to floating-point register _fd_. Zero
-      and infinite inputs are copied to _fd_ unmodified. Signaling NaN inputs cause the invalid operation
-      exception flag to be set; no other exception flags are set. `FROUND.D` is encoded like FCVT.D.S, but with
-      _xs2_=4.
+      The `fround.d` instruction rounds the double-precision floating-point number in floating-point register
+      `fs1` to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
+      that integer, represented as a double-precision floating-point number, to floating-point register `fd`. Zero
+      and infinite inputs are copied to `fd` unmodified. Signaling NaN inputs cause the invalid operation
+      exception flag to be set; no other exception flags are set. `fround.d` is encoded like `fcvt.d.s`, but with
+      `xs2` set to 4.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, fs1, rm

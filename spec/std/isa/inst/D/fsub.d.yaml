@@ -11,8 +11,8 @@ description:
   - id: inst-fsub.d-behaviour
     normative: false
     text: |
-      `FSUB.D` is analogous to `FSUB.S` and performs double-precision floating-point subtraction between
-      _fs1_ and _fs2_ and writes the final result to _fd_.
+      The `fsub.d` instruction is analogous to `fsub.s` and performs double-precision floating-point subtraction between
+      `fs1` and `fs2` and writes the final result to `fd`.
 definedBy: D
 assembly: fd, fs1, fs2, rm
 encoding:

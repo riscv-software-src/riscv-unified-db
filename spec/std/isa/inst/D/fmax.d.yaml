@@ -11,9 +11,9 @@ description:
   - id: inst-fmax.d-behaviour
     normative: false
     text: |
-      `FMAX.D` writes larger of _fs1_ and _fs2_ to _fd_. For the purposes of this instruction, the value
-      `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is the
-      canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+      The `fmax.d` instruction writes larger of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+      the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+      the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
       set the invalid operation exception flag, even when the result is not NaN.
 definedBy: D
 assembly: fd, fs1, fs2
