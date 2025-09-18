@@ -33,6 +33,16 @@ jobs:
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config set --local path 'vendor/bundle'
+          bundle install
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
@@ -53,6 +63,16 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config set --local path 'vendor/bundle'
+          bundle install
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual
@@ -91,6 +111,16 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config set --local path 'vendor/bundle'
+          bundle install
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
