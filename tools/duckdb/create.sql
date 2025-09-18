@@ -6,6 +6,9 @@ LOAD yaml;
 -- Query all UDB yaml files for extensions and insert the results into a table
 CREATE TABLE extensions AS (SELECT * FROM '../../spec/std/isa/ext/*.yaml');
 
+-- Create profiles table
+CREATE TABLE profiles AS (SELECT * FROM '../../spec/std/isa/profile/*.yaml');
+
 SHOW TABLES;
 
 ATTACH 'udb.duckdb';

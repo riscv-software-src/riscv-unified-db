@@ -1,10 +1,3 @@
--- INSTALL yaml FROM community;
--- LOAD yaml;
-
--- CREATE TABLE extensions_for_riscv_info(ext YAML);
--- INSERT INTO extensions_for_riscv_info
-    -- (SELECT printf("E'%s: %s'", name, long_name) FROM udb.extensions);
-
 ATTACH 'udb.duckdb';
 
 .mode ascii
@@ -21,32 +14,42 @@ SELECT printf('');
 SELECT printf('# Base architecture');
 SELECT printf('flags:');
 
-SELECT printf('    %s: "%s"', name, long_name)
+SELECT printf('  %s: "%s"', name, long_name)
 FROM udb.extensions
 WHERE length(name) = 1
 ORDER BY name
 ;
-SELECT printf('# ');
-
+SELECT printf('####');
+SELECT printf('');
 
 SELECT printf('# Known extensions');
 SELECT printf('extensions:');
 
-SELECT printf('    %s: "%s"', name, long_name)
+SELECT printf('  %s: "%s"', name, long_name)
 FROM udb.extensions
 WHERE length(name) > 1
 ORDER BY name
 ;
-SELECT printf('# ');
+SELECT printf('####');
+SELECT printf('');
 
 
 SELECT printf('# Combinations of flags');
 SELECT printf('shorthands:');
-SELECT printf('# ');
+SELECT printf('');
+SELECT printf('####');
+SELECT printf('');
+
 
 SELECT printf('# Known profiles');
 SELECT printf('profiles:');
-SELECT printf('# ');
+SELECT printf(e'  %s:\n    description: "%s"', name, long_name)
+FROM udb.profiles
+ORDER BY name
+;
+SELECT printf('####');
+SELECT printf('');
+
 
 SELECT printf('############################################');
 
