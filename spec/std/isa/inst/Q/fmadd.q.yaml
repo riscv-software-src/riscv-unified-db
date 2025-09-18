@@ -6,9 +6,16 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmadd.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Multiply-Add Quad-Precision
+description:
+  - id: inst-fmadd.q-behaviour
+    normative: true
+    text: |
+      The `fmadd.q` instruction performs a floating-point multiply-add operation on the values in registers `fs1`, `fs2`, and `fs3`.
+      It computes the result as `(fs1 * fs2) + fs3` and writes the result to the destination register `fd`.
+
+      The fused multiply-add instructions must set the invalid operation exception flag when the
+      multiplicands are latexmath:[$\infty$] and zero, even when the addend is a quiet _NaN_.
 definedBy: Q
 assembly: fd, fs1, fs2, fs3, rm
 encoding:

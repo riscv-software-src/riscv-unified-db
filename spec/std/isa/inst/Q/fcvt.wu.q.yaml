@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.wu.q
-long_name: Floating-point Convert Unsigned Quad-precision to Word
+long_name: Floating-Point Convert Unsigned Quad-Precision to Word
 description:
   - id: inst-fcvt.wu.q-behaviour
     normative: false

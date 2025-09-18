@@ -6,9 +6,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmadd.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Multiply-Add Double-Precision
+description:
+  - id: inst-fmadd.d-behaviour
+    normative: false
+    text: |
+      `FMADD.D` multiplies the values in _fs1_ and _fs2_, adds the value in _fs3_, and writes the final result to _fd_.
 definedBy: D
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
