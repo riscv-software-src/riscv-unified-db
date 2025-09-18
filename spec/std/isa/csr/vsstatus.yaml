@@ -57,6 +57,24 @@ fields:
       return (VUXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (VUXLEN == 3264) ? UNDEFINED_LEGAL : VUXLEN;
+  SDT:
+    location: 24
+    long_name: Supervisor Double Trap
+    description: |
+      Written to 1 when entering VS-mode from an exception/interrupt.
+      When returning via an SRET instruction, the bit is written to 0.
+      On reset is set to 0.
+      When vsstatus.SDT=1, direct write by CSR instruction cannot set vsstatus.SIE to 1, if not written together.
+
+      This field is read-only zero if `menvcfg.DTE` is zero.
+    definedBy: Ssdbltrp
+    type: RW-H
+    reset_value: 0
+    sw_write(csr_value): |
+      if (CSR[menvcfg].DTE == 0) {
+        return 0;
+      }
+      return csr_value.SDT;
   MXR:
     alias: mstatus.MXR
     location: 19

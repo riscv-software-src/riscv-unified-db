@@ -14,9 +14,9 @@
 #include <nlohmann/json-schema.hpp>
 
 #include "udb/hart.hpp"
-#include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
-#include "udb/cfgs/<%= cfg_arch.name %>/csr_container.hxx"
-#include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
+#include "udb/cfgs/<%= config_name %>/params.hxx"
+#include "udb/cfgs/<%= config_name %>/csr_container.hxx"
+#include "udb/cfgs/<%= config_name %>/structs.hxx"
 #include "udb/enum.hxx"
 #include "udb/bitfield.hxx"
 #include "udb/util.hpp"
@@ -30,7 +30,7 @@ namespace udb {
   class <%= hart_name -%>;
 }
 
-#include "udb/cfgs/<%= cfg_arch.name %>/inst.hxx"
+#include "udb/cfgs/<%= config_name %>/inst.hxx"
 
 namespace udb {
   template <SocModel SocType>
@@ -89,7 +89,7 @@ namespace udb {
       <%- end -%>
       <%- end -%>
 
-      #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
+      #include "udb/cfgs/<%= config_name %>/func_prototypes.hxx"
 
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;
@@ -546,8 +546,8 @@ namespace udb {
   };
 }
 
-#include "udb/cfgs/<%= cfg_arch.name %>/hart_impl.hxx"
+#include "udb/cfgs/<%= config_name %>/hart_impl.hxx"
 
-#include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"
+#include "udb/cfgs/<%= config_name %>/idl_funcs_impl.hxx"
 
-#include "udb/cfgs/<%= cfg_arch.name %>/inst_impl.hxx"
+#include "udb/cfgs/<%= config_name %>/inst_impl.hxx"
