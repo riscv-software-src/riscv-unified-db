@@ -2,3 +2,5 @@
 *.db*
 *.wal
 *.tmp/
+
+out/
