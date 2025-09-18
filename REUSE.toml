@@ -70,7 +70,13 @@ SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
 path = [
-    "backends/prm_pdf/**",
+    "backends/prm_pdf/*.rb",
+    "backends/prm_pdf/*.rake",
+    "backends/prm_pdf/tasks.rake",
+    "backends/prm_pdf/lib/**",
+    "backends/prm_pdf/templates/**",
+    "backends/prm_pdf/pdf-theme/*.yml",
+    "backends/prm_pdf/pdf-theme/*.svg",
     "cfgs/prm_demo_rv32.yaml",
     "spec/schemas/prm_schema.json",
     "spec/custom/non_isa/prm_example/prm_demo_rv32_with_external.yaml",
