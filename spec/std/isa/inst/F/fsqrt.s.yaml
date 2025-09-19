@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsqrt.s
-long_name: No synopsis available
+long_name: Floating-Point Square Root Single-Precision
 description: |
-  No description available.
+  The `fsqrt.s` instruction computes the square root of `fs1` and writes the result is written to `fd`.
 definedBy: F
 assembly: fd, fs1, rm
 encoding:

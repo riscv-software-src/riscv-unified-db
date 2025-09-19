@@ -6,10 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsub.s
-long_name: Single-precision floating-point subtraction
+long_name: Floating-Point Subtract Single-Precision
 description: |
-  Do the single-precision floating-point subtraction of fs2 from fs1 and store the result in fd.
-  rm is the dynamic Rounding Mode.
+  The `fsub.s` instruction performs the single-precision floating-point subtraction of `fs2` from `fs1` and writes the result in `fd`.
 definedBy: F
 assembly: fd, fs1, fs2, rm
 encoding:

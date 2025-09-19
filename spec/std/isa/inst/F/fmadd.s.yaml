@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmadd.s
-long_name: No synopsis available
+long_name: Floating-Point Multiply-Add Single-Precision
 description: |
-  No description available.
+  The `fmadd.s` multiplies the values in `fs1` and `fs2`, adds the value in `fs3`, and writes the final result to `fd`.
 definedBy: F
 assembly: fd, fs1, fs2, fs3, rm
 encoding:

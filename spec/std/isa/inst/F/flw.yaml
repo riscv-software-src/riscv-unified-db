@@ -6,12 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: flw
-long_name: Single-precision floating-point load
+long_name: Floating-Point Load Single-Precision
 description: |
-  The `flw` instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _fd_.
-
-  `flw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
-
+  The `flw` instruction loads a single-precision floating-point value from memory at address `xs1` + `imm` into floating-point register `fd`.
+  It does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 definedBy: F
 assembly: fd, imm(xs1)
 encoding:

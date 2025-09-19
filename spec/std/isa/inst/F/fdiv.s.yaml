@@ -6,9 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fdiv.s
-long_name: No synopsis available
+long_name: Floating-Point Divide Single-Precision
 description: |
-  No description available.
+  The `fdiv.s` instruction performs the single-precision floating-point division of `fs1` by `fs2`, and
+  writes the final result to `fd`.
 definedBy: F
 assembly: fd, fs1, fs2, rm
 encoding:

@@ -6,9 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmul.s
-long_name: No synopsis available
+long_name: Floating-Point Multiply Single-Precision
 description: |
-  No description available.
+  The `fmul.s` instruction performs the single-precision floating-point multiplication between `fs1` and `fs2`, and
+  writes the result in `fd`.
 definedBy: F
 assembly: fd, fs1, fs2, rm
 encoding:

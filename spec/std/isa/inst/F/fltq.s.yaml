@@ -6,9 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fltq.s
-long_name: No synopsis available
+long_name: Floating-Point Less Than Quiet Single-Precision
 description: |
-  No description available.
+  The `fltq.s` is defined like the `flt.s` instruction, except that quiet NaN inputs do not cause
+  the invalid operation exception flag to be set.
 definedBy: Zfa
 assembly: xd, fs1, fs2
 encoding:

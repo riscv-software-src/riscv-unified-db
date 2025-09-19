@@ -6,9 +6,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmax.s
-long_name: No synopsis available
+long_name: Floating-Point Maximum-Number Single-Precision
 description: |
-  No description available.
+  The `fmax.s` instruction writes larger of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+  the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+  the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+  set the invalid operation exception flag, even when the result is not NaN.
+
+  [NOTE]
+  ====
+  Note that in version 2.2 of the F extension, the `fmin.s` and `fmax.s` instructions were amended to implement
+  the proposed _IEEE 754-201x_ `minimumNumber` and `maximumNumber` operations, rather than the _IEEE 754-2008_
+  _minNum_ and _maxNum_ operations. These operations differ in their handling of signaling NaNs.
+  ====
 definedBy: F
 assembly: fd, fs1, fs2
 encoding:
