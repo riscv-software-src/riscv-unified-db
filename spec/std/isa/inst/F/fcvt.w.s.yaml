@@ -6,12 +6,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.w.s
-long_name: Convert single-precision float to signed word.
+long_name: Floating-Point Convert Single-Precision to Word
 description: |
-  Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in
-  integer register _xd_.
-
-  For XLEN &gt;32, `fcvt.w.s` sign-extends the 32-bit result to the destination register width.
+  The `fcvt.w.s` instruction converts a floating-point number in floating-point register `fs1` to a
+  signed 32-bit integer in integer register `xd`. For XLEN &gt;32, `fcvt.w.s` sign-extends the 32-bit
+  result to the destination register width.
 
   If the rounded result is not representable as a 32-bit signed integer, it is clipped to the
   nearest value and the invalid flag is set.
@@ -31,13 +30,13 @@ description: |
   !===
 
   All floating-point to integer and integer to floating-point conversion instructions round
-  according to the _rm_ field.
+  according to the `rm` field.
+
   A floating-point register can be initialized to floating-point positive zero using
   `fcvt.s.w xd, x0`, which will never set any exception flags.
 
   All floating-point conversion instructions set the Inexact exception flag if the rounded
   result differs from the operand value and the Invalid exception flag is not set.
-
 definedBy: F
 assembly: xd, fs1, rm
 encoding:

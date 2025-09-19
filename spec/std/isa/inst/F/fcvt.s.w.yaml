@@ -6,13 +6,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.s.w
-long_name: Convert signed 32-bit integer to single-precision float
+long_name: Floating-Point Convert Word to Single-Precision
 description: |
-  Converts a 32-bit signed integer in integer register _xs1_ into a floating-point number in
-  floating-point register _fd_.
+  The `fcvt.s.w` instruction converts a 32-bit signed integer in integer register `xs1` into
+  a floating-point number in floating-point register `fd`.
 
   All floating-point to integer and integer to floating-point conversion instructions round
-  according to the _rm_ field.
+  according to the `rm` field.
+
   A floating-point register can be initialized to floating-point positive zero using
   `fcvt.s.w fd, x0`, which will never set any exception flags.
 
