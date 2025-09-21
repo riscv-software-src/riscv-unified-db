@@ -11,7 +11,7 @@ address: 0x00F
 writable: true
 priv_mode: U
 length: MXLEN
-description: Allows access to vxrm and vxsat CSRs
+description: Contains aliases to vxrm and vxsat CSRs
 definedBy: V
 fields:
   VXRM:
