@@ -26,6 +26,6 @@ fields:
 
       The vxsat bit is mirrored in vcsr.
     sw_write(csr_value): |
-      return csr_value.VALUE & (VLEN - 1);
+      return csr_value.VALUE & 1;
     type: RW-H
     reset_value: UNDEFINED_LEGAL
