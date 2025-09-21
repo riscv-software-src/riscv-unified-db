@@ -32,50 +32,13 @@ operation(): |
   XReg AVL = xs1;
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
 
-  if (AVL < vlmax) {
-    CSR[vl].VALUE = AVL;
-  } else if (AVL < 2*vlmax) {
-    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
-    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
-      CSR[vl].VALUE = vlmax;
-    } else {
-      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
-    }
-  } else {
-    CSR[vl].VALUE = vlmax;
-  }
-
   XReg new_vtype = xs2;
-  if (new_vtype[xlen() - 1] == 1'b1) {
-    # software is setting the illegal bit
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if ((new_vtype & 8'd0) != 0) {
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (new_vtype[5] == 1) {
-    # reserved vsew encoding
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (new_vtype[2:0] == 3'b100) {
-    # reserved LMUL
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (xlen() == 32 && new_vtype[2:0] == 3'b101) {
-    # reserved LMUL in RV32
+  if ((new_vtype[xlen() - 1] == 1'b1) # software is setting the illegal bit
+      || ((new_vtype & 8'd0) != 0)    # reserved bits
+      || (new_vtype[5] == 1)          # reserved vsew encoding
+      || (new_vtype[2:0] == 3'b100)   # reserved vlmul encoding
+      || (xlen() == 32 && new_vtype[2:0] == 3'b101)) # reserved LMUL in RV32
+  {
     CSR[vtype].VILL = 1;
     CSR[vtype].VMA = 0;
     CSR[vtype].VTA = 0;
@@ -88,6 +51,20 @@ operation(): |
     CSR[vtype].VTA = new_vtype[6];
     CSR[vtype].VSEW = new_vtype[5:3];
     CSR[vtype].VLMUL = new_vtype[2:0];
+  }
+
+  if (AVL < vlmax) {
+    CSR[vl].VALUE = AVL;
+  } else if (AVL < 2*vlmax) {
+    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
+      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
+    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
+      CSR[vl].VALUE = vlmax;
+    } else {
+      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+    }
+  } else {
+    CSR[vl].VALUE = vlmax;
   }
 
   X[xd] = CSR[vl].VALUE;

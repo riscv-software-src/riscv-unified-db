@@ -32,20 +32,6 @@ operation(): |
   XReg AVL = uimm;
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
 
-  if (AVL < vlmax) {
-    CSR[vl].VALUE = AVL;
-  } else if (AVL < 2*vlmax) {
-    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
-    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
-      CSR[vl].VALUE = vlmax;
-    } else {
-      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
-    }
-  } else {
-    CSR[vl].VALUE = vlmax;
-  }
-
   XReg new_vtype = vtypei;
   if ((new_vtype[xlen() - 1] == 1'b1) # software is setting the illegal bit
       || ((new_vtype & 8'd0) != 0)    # reserved bits
@@ -65,6 +51,20 @@ operation(): |
     CSR[vtype].VTA = new_vtype[6];
     CSR[vtype].VSEW = new_vtype[5:3];
     CSR[vtype].VLMUL = new_vtype[2:0];
+  }
+
+  if (AVL < vlmax) {
+    CSR[vl].VALUE = AVL;
+  } else if (AVL < 2*vlmax) {
+    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
+      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
+    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
+      CSR[vl].VALUE = vlmax;
+    } else {
+      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+    }
+  } else {
+    CSR[vl].VALUE = vlmax;
   }
 
   X[xd] = CSR[vl].VALUE;
