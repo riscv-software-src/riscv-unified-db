@@ -47,35 +47,12 @@ operation(): |
   }
 
   XReg new_vtype = vtypei;
-  if (new_vtype[xlen() - 1] == 1'b1) {
-    # software is setting the illegal bit
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if ((new_vtype & 8'd0) != 0) {
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (new_vtype[5] == 1) {
-    # reserved vsew encoding
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (new_vtype[2:0] == 3'b100) {
-    # reserved LMUL
-    CSR[vtype].VILL = 1;
-    CSR[vtype].VMA = 0;
-    CSR[vtype].VTA = 0;
-    CSR[vtype].VSEW = 0;
-    CSR[vtype].VLMUL = 0;
-  } else if (xlen() == 32 && new_vtype[2:0] == 3'b101) {
-    # reserved LMUL in RV32
+  if ((new_vtype[xlen() - 1] == 1'b1) # software is setting the illegal bit
+      || ((new_vtype & 8'd0) != 0)    # reserved bits
+      || (new_vtype[5] == 1)          # reserved vsew encoding
+      || (new_vtype[2:0] == 3'b100)   # reserved vlmul encoding
+      || (xlen() == 32 && new_vtype[2:0] == 3'b101)) # reserved LMUL in RV32
+  {
     CSR[vtype].VILL = 1;
     CSR[vtype].VMA = 0;
     CSR[vtype].VTA = 0;
