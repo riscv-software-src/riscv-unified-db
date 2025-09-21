@@ -41,6 +41,6 @@ fields:
       ! 11 ! rod ! round-to-odd (OR bits into LSB, aka "jam") ! \!v[d] & v[d-1:0]\!=0
 
     sw_write(csr_value): |
-      return csr_value.VALUE & (VLEN - 1);
+      return csr_value.VALUE & 2b'11;
     type: RW-H
     reset_value: UNDEFINED_LEGAL
