@@ -51,3 +51,14 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if ((CSR[mstatus].TW == 1'b1) && (mode() != PrivilegeMode::M)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (CSR[misa].H == 1) {
+    if ((CSR[hstatus].VTW == 1'b1)) {
+      if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+        raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+    }
+  }
+  wait_on_reservation_set();
