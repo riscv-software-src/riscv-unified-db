@@ -450,7 +450,7 @@ The result of a binary operation is signed if both operands are signed; otherwis
                                                            The result is the same width as the widest operand. +
                                                            The upper half of the multiplication result is discarded.
 
-                | `i \`* j`  | `Bits<L(i) + L(j)>`   | Widening multiply `i` times `j`.
+                | `i +`+* j`  | `Bits<L(i) + L(j)>`   | Widening multiply `i` times `j`.
 
                 | `i / j`    | `Bits<max(L(i), L(j))>`   | Divide `i` by `j`. +
                                                            The result is the same width as the widest operand. +
@@ -468,16 +468,16 @@ The result of a binary operation is signed if both operands are signed; otherwis
                                                            The carry bit is discarded. +
                                                            If the carry bit is needed, the operands can be widened prior to addition.
 
-                | `i \`+ j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Addition
+                | `i +`++ j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Addition
 
                 | `i - j`    | `Bits<max(L(i), L(j))>`   | Subtraction +
                                                            The carry bit is discarded. +
                                                            If the carry bit is needed, the operands can be widened prior to subtraction.
 
-                | `i \`- j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Subtraction
+                | `i +`+- j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Subtraction
 
 .4+| 8          | `i << j`   | `typeof(i)` | Left logical shift
-                | `i \`<< j`   | `Bits<L(i) + value(j)>`   | Widening left logic shift. +
+                | `i +`+<< j`   | `Bits<L(i) + value(j)>`   | Widening left logic shift. +
                                                              `j` *must* be known at compile time -- +
                                                              otherwise, this is a type error
                 | `i >> j`   | `typeof(i)`                 | Right logical shift.
