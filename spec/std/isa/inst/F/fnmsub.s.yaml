@@ -6,9 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fnmsub.s
-long_name: No synopsis available
+long_name: Floating-Point Negate-Multiply-Subtract Single-Precision
 description: |
-  No description available.
+  The `fnmsub.s` instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
+  writes the final result to `fd`.
 definedBy: F
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
