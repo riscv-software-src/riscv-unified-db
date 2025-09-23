@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmv.x.w
-long_name: Floating-Point Move from Single-Precision Register to Integer Register
+long_name: Floating-Point Move Single-Precision Word to Integer Register
 description: |
   The `fmv.x.w` instruction moves the single-precision value in floating-point register `fs1`` represented in `IEEE 754-2008`
   encoding to the lower 32 bits of integer register `xd`. The bits are not modified in the transfer, and in particular, the

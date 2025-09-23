@@ -7387,7 +7387,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] instructions performs single-precision floating-point addition between `xs1` and `xs2`
+The xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] instruction performs single-precision floating-point addition of `xs1` and `xs2`
 and writes the final result to `fd`.
 
 
@@ -12326,7 +12326,7 @@ Included in::
 == fmv.w.x
 
 Synopsis::
-Floating-Point Move from Integer Register to Single-Precision Register
+Floating-Point Move Single-Precision Word from Integer Register
 
 Assembly::
 fmv.w.x fd, xs1
@@ -12451,7 +12451,7 @@ Included in::
 == fmv.x.w
 
 Synopsis::
-Floating-Point Move from Single-Precision Register to Integer Register
+Floating-Point Move Single-Precision Word to Integer Register
 
 Assembly::
 fmv.x.w xd, fs1
