@@ -52,13 +52,17 @@ access:
 data_independent_timing: false
 operation(): |
   if ((CSR[mstatus].TW == 1'b1) && (mode() != PrivilegeMode::M)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    if (wait_on_reservation_set_bounded() == false) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
   }
-  if (CSR[misa].H == 1) {
-    if ((CSR[hstatus].VTW == 1'b1)) {
-      if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+  else if (CSR[misa].H == 1) {
+    if ((CSR[hstatus].VTW == 1'b1) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU))) {
+      if (wait_on_reservation_set_bounded() == false) {
         raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
       }
     }
   }
-  wait_on_reservation_set();
+  else {
+    wait_on_reservation_set($encoding);
+  }
