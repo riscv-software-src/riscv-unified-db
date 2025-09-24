@@ -4,6 +4,7 @@
 # SPDX-License-Identifier = "BSD-3-Clause-Clear"
 ############################################
 
+---
 # Base architecture
 flags:
   A: "Atomic instructions"
@@ -18,6 +19,11 @@ flags:
   S: "Supervisor mode"
   U: "User-mode privilege level"
   V: "Variable-length vector"
+####
+
+# Combinations of flags
+shorthands:
+
 ####
 
 # Known extensions
@@ -156,41 +162,134 @@ extensions:
   Zvkt: "Vector Data-Independent Execution Latency"
 ####
 
-# Combinations of flags
-shorthands:
-
-####
-
 # Known profiles
 profiles:
   MP-S-64:
     description: "S-mode extensions for a Mock 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   MP-U-64:
     description: "U-mode extensions for a Mock 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA20S64:
     description: "S-mode extensions for version 20 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA20U64:
     description: "U-mode extensions for version 20 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA22S64:
     description: "S-mode extensions for version 22 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA22U64:
     description: "U-mode extensions for version 22 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA23M64:
     description: "M-mode extensions for version 23 of the 64-bit Apps Processor profile (not ratified)"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA23S64:
     description: "S-mode extensions for version 23 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVA23U64:
     description: "U-mode extensions for version 23 of the 64-bit Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVB23M64:
     description: "M-mode extensions for version 23 of the 64-bit Bespoke Apps Processor profile (not ratified)"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVB23S64:
     description: "S-mode extensions for version 23 of the 64-bit Bespoke Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVB23U64:
     description: "U-mode extensions for version 23 of the 64-bit Bespoke Apps Processor profile"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVI20U32:
     description: "U-mode extensions for version 20 of a 32-bit processor"
+    bits: 32
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
   RVI20U64:
     description: "U-mode extensions for version 20 of a 64-bit processor"
+    bits: 64
+    flags:
+      mandatory:
+      optional:
+    extensions:
+      mandatory:
+      optional:
 ####
 
-############################################
+###
