@@ -6,12 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsw
-long_name: Single-precision floating-point store
+long_name: Floating-Point Store Single-Precision
 description: |
-  The `fsw` instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
-
-  `fsw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
-
+  The `fsw` instruction stores a single-precision floating-point value in `fs2` to memory at address `xs1` + `imm`.
+  It does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 definedBy: F
 assembly: fs2, imm(xs1)
 encoding:
