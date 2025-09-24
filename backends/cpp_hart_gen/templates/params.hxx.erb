@@ -2,6 +2,9 @@
 
 #include <filesystem>
 #include <string>
+#include <string_view>
+
+using namespace std::string_view_literals;
 
 #include "udb/defines.hpp"
 
@@ -23,7 +26,13 @@ namespace udb {
 
     // all the compile-time-known parameters
     <%- cfg_arch.params_with_value.each do |param| -%>
+    <%- if param.idl_type.to_cxx_no_qualifiers == "std::string" -%>
+    static constexpr const char* <%= param.name %>_VALUE = <%= param.value.to_cxx.gsub(/"([^"]*)"sv/, '"\1"') %>;
+    <%- elsif param.idl_type.to_cxx_no_qualifiers.start_with?("std::vector") || param.idl_type.to_cxx_no_qualifiers.start_with?("std::array") -%>
+    static const <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>_VALUE;
+    <%- else -%>
     static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>_VALUE = <%= param.value.to_cxx %>;
+    <%- end -%>
     <%- end -%>
 
     // read parameters out of a YAML (or JSON) config file

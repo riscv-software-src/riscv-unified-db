@@ -17,6 +17,7 @@ implemented_extensions:
   - [Smpmp, "1.11.0"]
   - [U, "1.0.0"]
   - [Zifencei, "2.0.0"]
+  - [Ssdbltrp, "1.0.0"]
 
 params:
   MXLEN: 32
@@ -112,6 +113,7 @@ params:
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: false
   MSTATUS_FS_WRITABLE: false
   MSTATUS_VS_WRITABLE: false

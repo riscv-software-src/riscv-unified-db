@@ -686,7 +686,7 @@ class CsrField < DatabaseObject
   sig { override.returns(T::Boolean) }
   def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
 
-  sig { params(xlen: Integer).returns(T::Boolean) }
+  sig { override.params(xlen: Integer).returns(T::Boolean) }
   def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
 
   # @return [Boolean] Whether or not this field exists for any XLEN

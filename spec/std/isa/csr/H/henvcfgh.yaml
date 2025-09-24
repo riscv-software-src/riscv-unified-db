@@ -108,5 +108,19 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+  DTE:
+    location: 27
+    alias: henvcfg.DTE
+    long_name: Double Trap Enable
+    description: |
+      Alias of `henvcfg.DTE`.
+    definedBy: Ssdbltrp
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[menvcfg].DTE == 0) {
+        return 0;
+      }
+      return csr_value.DTE;
 sw_read(): |
   return CSR[henvcfg].sw_read()[63:32];

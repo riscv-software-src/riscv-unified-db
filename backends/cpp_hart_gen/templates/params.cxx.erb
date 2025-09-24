@@ -3,7 +3,7 @@
 
 #include "udb/bits.hpp"
 #include "udb/db_data.hxx"
-#include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
+#include "udb/cfgs/<%= config_name %>/params.hxx"
 
 namespace udb {
   template <unsigned N, bool Signed>
@@ -27,6 +27,13 @@ namespace udb {
   }
 }
 
+// Static variable definitions for non-constexpr parameters
+<%- cfg_arch.params_with_value.each do |param| -%>
+<%- if param.idl_type.to_cxx_no_qualifiers.start_with?("std::vector") || param.idl_type.to_cxx_no_qualifiers.start_with?("std::array") -%>
+const <%= param.idl_type.to_cxx_no_qualifiers.gsub(/\b_PossiblyUnknownBits\b/, 'udb::_PossiblyUnknownBits') %> udb::<%= name_of(:params, cfg_arch) %>::<%= param.name %>_VALUE = <%= param.value.to_cxx %>;
+<%- end -%>
+<%- end -%>
+
 void udb::<%= name_of(:params, cfg_arch) %>::set_param(const std::string& param_name, const nlohmann::json& json)
 {
   <%- i = 0 -%>
@@ -36,9 +43,13 @@ void udb::<%= name_of(:params, cfg_arch) %>::set_param(const std::string& param_
   }
   <%- i += 1 -%>
   <%- end -%>
+  <%- if cfg_arch.params_without_value.empty? -%>
+  throw Error(fmt::format("{} is not a settable parameter", param_name));
+  <%- else -%>
   else {
     throw Error(fmt::format("{} is not a settable parameter", param_name));
   }
+  <%- end -%>
 }
 
 void udb::<%= name_of(:params, cfg_arch) %>::set_param_default(const std::string& param_name)
@@ -56,9 +67,13 @@ void udb::<%= name_of(:params, cfg_arch) %>::set_param_default(const std::string
   <%- i += 1 -%>
   <%- end -%>
   <%- end -%>
+  <%- if cfg_arch.params_without_value.select { |p| !p.default.nil? }.empty? -%>
+  throw Error(fmt::format("Missing required parameter '{}'", param_name));
+  <%- else -%>
   else {
     throw Error(fmt::format("Missing required parameter '{}'", param_name));
   }
+  <%- end -%>
 }
 
 static bool builtin_param(const std::string& param_name)
@@ -79,7 +94,14 @@ void udb::<%= name_of(:params, cfg_arch) %>::init(const nlohmann::json& cfg)
   // first, check that any provided built-in parameters match the built-in value
   <%- cfg_arch.params_with_value.each do |param| -%>
   if (params.contains("<%= param.name %>")) {
-    if (params["<%= param.name %>"].get<<%= param.idl_type.to_cxx_no_qualifiers %>>() != <%= param.value.to_cxx %>) {
+    <%- param_type = param.idl_type.to_cxx_no_qualifiers -%>
+    <%- expected_value = param.value.to_cxx -%>
+    <%- if param_type == "std::string" -%>
+    <%= param_type %> expected_<%= param.name.downcase %> = <%= expected_value.gsub(/sv$/, '') %>;
+    <%- else -%>
+    <%= param_type %> expected_<%= param.name.downcase %> = <%= expected_value %>;
+    <%- end -%>
+    if (params["<%= param.name %>"].get<<%= param_type %>>() != expected_<%= param.name.downcase %>) {
       throw Error("Parameter '<%= param.name %>' must be '<%= param.value %>'");
     }
   };

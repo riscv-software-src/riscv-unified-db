@@ -111,6 +111,9 @@ class DecodeGen
     variable_insts = []
 
     tree.insts.each do |inst|
+      # Skip instructions not defined for this xlen (e.g., c.addiw is base:64 only)
+      next unless inst.defined_in_base?(xlen)
+
       inst_format = inst.encoding(xlen).format
       if inst_format.reverse[cur_range].match?(/^[01]+$/)
         # puts "#{inst.name} has opcode bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse})"
