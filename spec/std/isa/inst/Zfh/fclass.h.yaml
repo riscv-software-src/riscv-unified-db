@@ -9,7 +9,7 @@ name: fclass.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy: [Zfh, Zhinx]
 assembly: xd, fs1
 encoding:
   match: 111001000000-----001-----1010011
@@ -25,3 +25,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::Zhinx)) {
+    # Zhinx: use integer registers
+    X[rd] = fclass_h(X[rs1]);
+  } else {
+    # Zfh: use floating-point registers
+    X[rd] = fclass_h(F[rs1]);
+  }
