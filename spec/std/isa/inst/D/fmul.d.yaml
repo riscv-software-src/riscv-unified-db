@@ -6,9 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmul.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Multiply Double-Precision
+description:
+  - id: inst-fmul.d-behaviour
+    normative: false
+    text: |
+      The `fmul.d` instruction performs the double-precision floating-point multiplication between `fs1` and `fs2`.
+      It is defined analogously to its single-precision counterpart, but operates on double-precision operands and
+      produces double-precision results.
 definedBy: D
 assembly: fd, fs1, fs2, rm
 encoding:

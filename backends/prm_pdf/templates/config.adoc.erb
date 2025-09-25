@@ -1,0 +1,57 @@
+<%-
+  is_fully_configured = cfg_arch.fully_configured?
+  is_partially_configured = cfg_arch.partially_configured?
+
+  extensions_to_list = []
+  extensions_section_title = "Extensions"
+
+  if is_fully_configured
+    extensions_to_list = cfg_arch.transitive_implemented_extension_versions
+    extensions_section_title = "Implemented Extensions"
+  elsif is_partially_configured
+    extensions_to_list = cfg_arch.possible_extension_versions
+    extensions_section_title = "Mandatory Extensions"
+  else
+    extensions_to_list = cfg_arch.possible_extension_versions
+    extensions_section_title = "Possible Extensions"
+  end
+-%>
+= Configuration of <%= cfg_arch.name %>
+
+== <%= extensions_section_title %>
+
+<% if extensions_to_list.empty? %>
+No extensions to list for this configuration state.
+<% else %>
+[cols="2,1,5", options="header"]
+|===
+| Extension | Version | Description
+
+<%- extensions_to_list.sort{ |a,b| a.name <=> b.name }.each do |ext_ver| -%>
+| `<%= ext_ver.name %>`
+| <%= ext_ver.version_str.is_a?(String) ? "`#{ext_ver.version_str.gsub('@', '{@}')}`" : "`#{ext_ver.version_str}`" %>
+| <%= ext_ver.ext&.long_name %>
+<%- end -%>
+|===
+<% end %>
+
+== Parameters
+
+<%- params_to_display = cfg_arch.params_with_value.sort_by { |param| param.name } -%>
+<% if params_to_display.empty? && !cfg_arch.unconfigured? %>
+No parameters with defined values to list for this configuration.
+<% elsif cfg_arch.unconfigured? %>
+Parameters are not applicable for an unconfigured architecture definition.
+<% else %>
+[cols="2,1,4,2", options="header"]
+|===
+| Parameter | Value | Description | From Extension(s)
+
+<%- params_to_display.each do |param| -%>
+| *<%= param.name %>*
+| <%= param.value %>
+| <%= param.desc %>
+| <%= param.exts.map { |ext_obj| "`#{ext_obj.name}`" }.join(", ") %>
+<%- end -%>
+|===
+<% end %>

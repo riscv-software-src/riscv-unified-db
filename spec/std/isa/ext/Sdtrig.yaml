@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -26,13 +26,30 @@ description: |
   matches performs the action configured for that trigger.
 
   Triggers do not fire while in Debug Mode.
-type: privileged
-versions:
-  - version: "1.0.0"
-    state: ratified
-    ratification_date: null
-
 params:
+  DBG_HCONTEXT_WIDTH:
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 14
+    description: Specifies the size of HCONTEXT
+  DBG_SCONTEXT_WIDTH:
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 32
+    description: Specifies the size of SCONTEXT
+  MCONTEXT_AVAILABLE:
+    schema:
+      type: boolean
+    description: Specifies if MCONTEXT is available
+  HCONTEXT_AVAILABLE:
+    schema:
+      type: boolean
+    description: Specifies if HCONTEXT is available
+    extra_validation: |
+      # MCONTEXT must exist if HCONTEXT does
+      assert (MCONTEXT_AVAILABLE) if HCONTEXT_AVAILABLE
   MSTATEEN_CONTEXT_TYPE:
     when:
       name: Smstateen
@@ -67,3 +84,8 @@ params:
     extra_validation: |
       assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
       assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

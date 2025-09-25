@@ -6,13 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.wu.d
-long_name: Floating-point Convert Double-precision to Unsigned Word
+long_name: Floating-Point Convert Double-Precision to Unsigned Word
 description:
   - id: inst-fcvt.wu.d-behaviour
     normative: false
     text: |
-      `fcvt.wu.d` converts a double-precision floating-point number in floating-point register `xs1` to an
-      unsigned 32-bit integer, in integer register `fd`.
+      The `fcvt.wu.d` instruction converts a double-precision floating-point number in floating-point register `fs1` to an
+      unsigned 32-bit integer, in integer register `xd`.
 definedBy: D
 assembly: xd, fs1, rm
 encoding:

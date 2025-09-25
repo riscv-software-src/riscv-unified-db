@@ -6,9 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fleq.s
-long_name: No synopsis available
+long_name: Floating-Point Less Than or Equal Quiet Single-Precision
 description: |
-  No description available.
+  The `fleq.s` instruction is defined like the `fle.s` instruction, except that quiet NaN inputs do
+  not cause the invalid operation exception flag to be set.
 definedBy: Zfa
 assembly: xd, fs1, fs2
 encoding:

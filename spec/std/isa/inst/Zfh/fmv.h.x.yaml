@@ -12,7 +12,8 @@ description: |
   from the lower 16 bits of integer register `xs1` to the floating-point
   register `fd`. The bits are not modified in the transfer, and in particular,
   the payloads of non-canonical NaNs are preserved.
-definedBy: F
+definedBy:
+  anyOf: [Zfhmin, Zhinx]
 assembly: fd, xs1
 encoding:
   match: 111101000000-----000-----1010011

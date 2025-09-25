@@ -6,11 +6,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsgnjx.s
-long_name: Single-precision sign inject exclusive or
+long_name: Floating-Point Sign-Inject XOR Single-Precision
 description: |
-  Writes _fd_ with the xor of the sign bits of _fs2_ and _fs1_ and the exponent and mantissa of _fs1_.
-
-  Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
+  The `fsgnjx.s` instruction produces a result that takes all bits except the sign bit from `fs1`.
+  The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to
+  the destination register `fd`. Sign-injection instructions do not set floating-point exception
+  flags, nor do they canonicalize NaNs.
 definedBy: F
 assembly: fd, fs1, fs2
 encoding:

@@ -1,0 +1,172 @@
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/prm_schema.json
+---
+$schema: prm_schema.json#
+kind: programmer reference manual
+name: prm_demo_rv32_with_external
+description: |
+  A demo Programmer's Reference Manual for a RISC-V RV32 processor configuration
+  that demonstrates integration of external non-ISA documentation, including the
+  RISC-V ELF psABI documentation.
+
+processor_config:
+  $ref: ../../../../cfgs/prm_demo_rv32.yaml#
+chapters:
+  - id: front_matter
+    title: "Front Matter"
+    level: 2
+    type: standard
+    description: "Preface, introduction, and other front matter"
+    non_isa_specifications:
+      - name: "preface_demo"
+        version: ">= 0"
+
+  - id: unprivileged_isa
+    title: "Unprivileged Instruction Set Architecture"
+    level: 2
+    type: standard
+    description: "RISC-V base instruction set and unprivileged extensions"
+    external_documentation:
+      - source: "riscv-isa-manual"
+        type: "isa_manual"
+        path: "ext/riscv-isa-manual/src"
+        resolve_includes: true
+        chapters:
+          - file: "rv32.adoc"
+            level_offset: 1
+          - file: "rv32e.adoc"
+            level_offset: 1
+          - file: "zifencei.adoc"
+            level_offset: 1
+          - file: "zicsr.adoc"
+            level_offset: 1
+          - file: "counters.adoc"
+            level_offset: 1
+          - file: "zihintntl.adoc"
+            level_offset: 1
+          - file: "zihintpause.adoc"
+            level_offset: 1
+          - file: "cmo.adoc"
+            level_offset: 1
+            exclude_content: ["Instructions"]
+          - file: "zicond.adoc"
+            level_offset: 1
+            exclude_content: ["insns-czero-nez", "insns-czero-eqz"]
+          - file: "m-st-ext.adoc"
+            level_offset: 1
+          - file: "a-st-ext.adoc"
+            level_offset: 1
+          - file: "rvwmo.adoc"
+            level_offset: 1
+          - file: "f-st-ext.adoc"
+            level_offset: 1
+          - file: "d-st-ext.adoc"
+            level_offset: 1
+          - file: "zfinx.adoc"
+            level_offset: 1
+          - file: "c-st-ext.adoc"
+            level_offset: 1
+          - file: "zc.adoc"
+            level_offset: 1
+            exclude_content: ["Zcb_instructions"]
+          - file: "b-st-ext.adoc"
+            level_offset: 1
+            exclude_content: ["insns-b"]
+          - file: "zca.adoc"
+            level_offset: 1
+          - file: "zcb.adoc"
+            level_offset: 1
+          - file: "zcmp.adoc"
+            level_offset: 1
+          - file: "zcmt.adoc"
+            level_offset: 1
+          - file: "zba.adoc"
+            level_offset: 1
+          - file: "zbb.adoc"
+            level_offset: 1
+          - file: "zbs.adoc"
+            level_offset: 1
+          - file: "v-st-ext.adoc"
+            level_offset: 1
+          - file: "vector-crypto.adoc"
+            level_offset: 1
+          - file: "zicbom.adoc"
+            level_offset: 1
+          - file: "zicbop.adoc"
+            level_offset: 1
+          - file: "zmmul.adoc"
+            level_offset: 1
+
+  - id: privileged_isa
+    title: "Privileged Instruction Set Architecture"
+    level: 2
+    type: standard
+    description: "RISC-V privileged architecture including CSRs"
+    external_documentation:
+      - source: "riscv-isa-manual"
+        type: "isa_manual"
+        path: "ext/riscv-isa-manual/src"
+        resolve_includes: true
+        chapters:
+          - file: "machine.adoc"
+            level_offset: 1
+          - file: "supervisor.adoc"
+            level_offset: 1
+          - file: "hypervisor.adoc"
+            level_offset: 1
+
+  - id: abi_and_calling_conventions
+    title: "RISC-V Application Binary Interface"
+    level: 2
+    type: standard
+    description: "RISC-V ABI, calling conventions, and ELF specifications"
+    external_documentation:
+      - source: "riscv-elf-psabi-doc"
+        type: "external_spec"
+        path: "ext/riscv-elf-psabi-doc"
+        version: ">= 1.0"
+        resolve_includes: true
+        chapters:
+          - file: "introduction.adoc"
+            level_offset: 2
+          - file: "riscv-cc.adoc"
+            level_offset: 2
+            exclude_content: ["bibliography", "appendix"]
+          - file: "riscv-elf.adoc"
+            title: "ELF Specification"
+            level_offset: 2
+            exclude_content: ["bibliography"]
+          - file: "riscv-dwarf.adoc"
+            title: "DWARF Specification"
+            level_offset: 2
+            exclude_content: ["bibliography"]
+
+  - id: instruction_reference
+    title: "Instruction Reference"
+    level: 2
+    type: appendix
+    auto_generate: ["instructions"]
+    description: "Complete reference of all supported instructions"
+
+  - id: csr_reference
+    title: "Control and Status Registers Reference"
+    level: 2
+    type: appendix
+    auto_generate: ["csrs"]
+    description: "Complete reference of all control and status registers"
+
+  - id: abi_reference
+    title: "ABI Quick Reference"
+    level: 2
+    type: appendix
+    description: "Quick reference tables for ABI elements"
+    external_documentation:
+      - source: "riscv-elf-psabi-doc"
+        type: "external_spec"
+        path: "ext/riscv-elf-psabi-doc"
+        resolve_includes: true
+        chapters:
+          - file: "riscv-cc.adoc"
+            title: "Register Usage Summary"

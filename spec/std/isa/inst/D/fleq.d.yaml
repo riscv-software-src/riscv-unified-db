@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fleq.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Less Than or Equal Quiet Double-Precision
+description:
+  - id: inst-fleq.d-behaviour
+    normative: false
+    text: |
+      The `fleq.d` instruction is defined like the `fle.d` instruction, except that quiet NaN inputs do not cause
+      the invalid operation exception flag to be set.
 definedBy:
   allOf: [D, Zfa]
 assembly: xd, fs1, fs2

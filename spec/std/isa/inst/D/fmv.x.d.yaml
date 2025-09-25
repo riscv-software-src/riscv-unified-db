@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmv.x.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Move from Double-Precision Register to Integer Register
+description:
+  - id: inst-fmv.x.d-behaviour
+    normative: false
+    text: |
+      The `fmv.x.d` instruction moves the double-precision value in floating-point register `fs1` to a representation in
+      `IEEE 754-2008` standard encoding in integer register `xd`.
 definedBy: D
 assembly: xd, fs1
 encoding:
