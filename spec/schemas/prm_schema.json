@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "specification_name": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "prm_chapter": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier",
+          "description": "Unique identifier for the chapter"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title for the chapter"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description of the chapter"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "default": 2,
+          "description": "AsciiDoc heading level (1-6)"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["standard", "appendix"],
+          "default": "standard",
+          "description": "Type of chapter - standard or appendix"
+        },
+        "auto_generate": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["instructions", "csrs"]
+          },
+          "uniqueItems": true,
+          "description": "Auto-generate reference content for instructions and/or CSRs"
+        },
+        "external_documentation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/external_documentation"
+          },
+          "description": "External documentation sources to include"
+        },
+        "non_isa_specifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/non_isa_specification"
+          },
+          "description": "UDB non-ISA specification references"
+        }
+      },
+      "additionalProperties": false
+    },
+    "external_documentation": {
+      "description": "External documentation source (ISA manuals, external specs, etc.)",
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Source identifier (e.g., 'riscv-isa-manual', 'riscv-elf-psabi-doc')"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["isa_manual", "external_spec"],
+          "description": "Type of external documentation"
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path from workspace root to documentation directory"
+        },
+        "version": {
+          "$ref": "schema_defs.json#/$defs/version_requirements",
+          "description": "Version requirement"
+        },
+        "chapters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/external_chapter"
+          },
+          "description": "Specific chapters or sections to include"
+        },
+        "resolve_includes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Resolve AsciiDoc include directives"
+        }
+      },
+      "required": ["source", "type", "path"],
+      "additionalProperties": false
+    },
+    "non_isa_specification": {
+      "description": "UDB non-ISA specification reference",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/specification_name",
+          "description": "Name of the UDB non-ISA specification"
+        },
+        "version": {
+          "$ref": "schema_defs.json#/$defs/version_requirements",
+          "description": "Version requirement for the specification"
+        }
+      },
+      "required": ["name", "version"],
+      "additionalProperties": false
+    },
+    "external_chapter": {
+      "description": "Reference to external chapter or section",
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Filename to include (e.g., 'riscv-cc.adoc', 'rv32.adoc')"
+        },
+        "title": {
+          "type": "string",
+          "description": "Custom title for this chapter"
+        },
+        "exclude_content": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Content IDs to exclude (excludes entire sections/chapters and their subsections by AsciiDoc ID)"
+        },
+        "level_offset": {
+          "type": "integer",
+          "minimum": -6,
+          "maximum": 6,
+          "default": 0,
+          "description": "Heading level offset"
+        }
+      },
+      "required": ["file"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "required": [
+    "$schema",
+    "kind",
+    "name",
+    "description",
+    "processor_config",
+    "chapters"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "prm_schema.json#"
+    },
+    "kind": {
+      "const": "programmer reference manual"
+    },
+    "name": {
+      "$ref": "#/$defs/specification_name",
+      "description": "Name (database key) of this PRM"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of this PRM"
+    },
+    "processor_config": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^[^/].*\\.yaml#$",
+          "description": "Reference to the processor configuration file this PRM documents"
+        }
+      },
+      "required": ["$ref"],
+      "additionalProperties": false
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/prm_chapter"
+      },
+      "description": "Ordered list of chapters in the PRM"
+    },
+    "$source": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Path to original file, when this is a copy"
+    }
+  },
+  "additionalProperties": false
+}
