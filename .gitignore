@@ -27,6 +27,7 @@ sorbet
 !tools/ruby-gems/idlc/sorbet
 !tools/ruby-gems/udb/sorbet
 coverage
+.DS_Store*
 
 # emacs backup files
 *~
