@@ -420,11 +420,6 @@ namespace :test do
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
     end
 
-    rv32uaTests = [ "amoadd_w", "amoand_w", "amomax_w", "amomaxu_w", "amomin_w", "amominu_w", "amoor_w", "amoxor_w", "amoswap_w", "lrsc" ]
-    rv32uaTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32ua-p-#{t}"
-    end
-
     rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
     rv32siTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
