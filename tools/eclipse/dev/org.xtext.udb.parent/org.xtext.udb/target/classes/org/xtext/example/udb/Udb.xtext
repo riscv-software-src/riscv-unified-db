@@ -1,9 +1,19 @@
-grammar org.xtext.example.udb.Udb with org.eclipse.xtext.common.Terminals
+grammar org.xtext.clinic.Riscv with org.eclipse.xtext.common.Terminals
 
-generate udb "http://www.xtext.org/example/udb/Udb"
+generate riscv "http://www.xtext.org/clinic/Riscv"
 
 Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' name=ID '!';
+	csrs += Csr*;
+
+/* Taken from Ajit */
+Csr:
+	'csr' name=ID
+		description=STRING
+		address=HEX
+		reset_value=STRING
+		';';
+		
+/* Terminals */
+terminal HEX: 
+	('0x' | '0X')('0'..'9' | 'A'..'F' | 'a'..'f' | '_')+
+;

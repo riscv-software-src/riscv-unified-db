@@ -3,10 +3,12 @@ Automatic-Module-Name: org.xtext.udb.ide
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.ide
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202509261731
+Bundle-Version: 1.0.0.202509262012
 Bundle-SymbolicName: org.xtext.udb.ide; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,org.eclipse.xtext.ide,org.eclipse.xtext.xb
- ase.ide
+ ase.ide,org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: org.xtext.clinic.ide.contentassist.antlr,org.xtext.clini
+ c.ide.contentassist.antlr.internal
 

@@ -8,5 +8,21 @@ Bundle-SymbolicName: org.xtext.udb; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
- org.eclipse.equinox.common;bundle-version="3.19.0"
+ org.eclipse.equinox.common;bundle-version="3.19.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.40.0",
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: org.xtext.clinic.parser.antlr,
+ org.xtext.clinic,
+ org.xtext.clinic.services,
+ org.xtext.clinic.parser.antlr.internal,
+ org.xtext.clinic.serializer,
+ org.xtext.clinic.riscv.impl,
+ org.xtext.clinic.scoping,
+ org.xtext.clinic.generator,
+ org.xtext.clinic.riscv,
+ org.xtext.clinic.validation,
+ org.xtext.clinic.riscv.util
+Import-Package: org.apache.log4j

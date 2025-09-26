@@ -8,5 +8,8 @@ Bundle-SymbolicName: org.xtext.udb.ide; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,
  org.eclipse.xtext.ide,
- org.eclipse.xtext.xbase.ide
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: org.xtext.clinic.ide.contentassist.antlr,
+ org.xtext.clinic.ide.contentassist.antlr.internal
