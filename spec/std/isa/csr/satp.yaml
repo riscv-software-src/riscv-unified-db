@@ -45,28 +45,39 @@ fields:
     reset_value(): |
       return 0;
     sw_write(csr_value): |
-      if (SATP_MODE_BARE) {
-        if (csr_value.MODE == 0) {
-          # In Bare, ASID and PPN must be zero, else the entire write is ignored
-          if (csr_value.ASID == 0 && csr_value.PPN == 0) {
-            if (CSR[satp].MODE != 0) {
-              # changes *to* Bare mode take effect immediately without needing sfence.vma
-              # thus, an implicit sfence.vma occurs now
-              VmaOrderType order_type;
-              order_type.global = true;
-              order_pgtbl_writes_before_vmafence(order_type);
+      if (SATP_MODE_BARE && (csr_value.MODE == 0)) {
+        # In Bare, ASID and PPN must be zero, else the entire write is ignored
+        if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+          if (CSR[satp].MODE != 0) {
+            # changes *to* Bare mode take effect immediately without needing sfence.vma
+            # thus, an implicit sfence.vma occurs now
+            VmaOrderType order_type;
+            order_type.global = true;
+            order_pgtbl_writes_before_vmafence(order_type);
 
-              invalidate_translations(order_type);
+            invalidate_translations(order_type);
 
-              order_pgtbl_reads_after_vmafence(order_type);
-            }
-            return csr_value.MODE;
-          } else {
-            return UNDEFINED_LEGAL_DETERMINISTIC;
+            order_pgtbl_reads_after_vmafence(order_type);
           }
+          return csr_value.MODE;
+        } else {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       }
-      else if (implemented?(ExtensionName::Sv39) && csr_value.MODE == 8) {
+      else if (implemented?(ExtensionName::Sv32) && csr_value.MODE == 1) {
+        if (CSR[satp].MODE == 0) {
+          # changes *from* Bare mode take effect immediately without needing sfence.vma
+          # thus, an implicit sfence.vma occurs now
+          VmaOrderType order_type;
+          order_type.global = true;
+          order_pgtbl_writes_before_vmafence(order_type);
+
+          invalidate_translations(order_type);
+
+          order_pgtbl_reads_after_vmafence(order_type);
+        }
+        return csr_value.MODE;
+      }else if (implemented?(ExtensionName::Sv39) && csr_value.MODE == 8) {
         if (CSR[satp].MODE == 0) {
           # changes *from* Bare mode take effect immediately without needing sfence.vma
           # thus, an implicit sfence.vma occurs now

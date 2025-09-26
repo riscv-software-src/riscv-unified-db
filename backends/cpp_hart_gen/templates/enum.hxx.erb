@@ -56,7 +56,7 @@ namespace udb {
     }
 
     constexpr bool operator!=(const <%= enum.name %>& rhs) const {
-      return m_value == rhs.m_value;
+      return m_value != rhs.m_value;
     }
 
     constexpr bool operator<(const <%= enum.name %>& rhs) const {
