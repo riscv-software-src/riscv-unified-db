@@ -11,51 +11,36 @@ address: 0x60E
 priv_mode: S
 length: 64
 writable: true
-description:
-  - id: csr-hstateen2-purpose
-    normative: true
-    text: |
-      Each bit of a `stateen` CSR controls less-privileged access to an extension’s state,
-      for an extension that was not deemed "worthy" of a full XS field in `sstatus` like the
-      FS and VS fields for the F and V extensions.
-  - id: csr-hstateen2-num-justification
-    normative: false
-    text: |
-      The number of registers provided at each level is four because it is believed that
-      4 * 64 = 256 bits for machine and hypervisor levels, and 4 * 32 = 128 bits for
-      supervisor level, will be adequate for many years to come, perhaps for as long as
-      the RISC-V ISA is in use.
-      The exact number four is an attempted compromise between providing too few bits on
-      the one hand and going overboard with CSRs that will never be used on the other.
-  - id: csr-hstateen2-scope
-    normative: true
-    text: |
-      The `stateen` registers at each level control access to state at all less-privileged
-      levels, but not at its own level.
-  - id: csr-hstateen2-effect
-    normative: true
-    text: |
-      When a `stateen` CSR prevents access to state for a privilege mode, attempting to execute
-      in that privilege mode an instruction that implicitly updates the state without reading
-      it may or may not raise an illegal instruction or virtual instruction exception.
-      Such cases must be disambiguated by being explicitly specified one way or the other.
-      In some cases, the bits of the `stateen` CSRs will have a dual purpose as enables for the
-      ISA extensions that introduce the controlled state.
-  - id: csr-hstateen2-encodings
-    normative: true
-    text: |
-      With the hypervisor extension, the `hstateen` CSRs have identical encodings to the `mstateen` CSRs,
-      except controlling accesses for a virtual machine (from VS and VU modes).
-  - id: csr-hstateen2-zero
-    normative: true
-    text: |
-      For every bit in an `hstateen` CSR that is zero (whether read-only zero or set to zero),
-      the same bit appears as read-only zero in `sstateen` when accessed in VS-mode.
-  - id: csr-hstateen2-read-only
-    normative: true
-    text: |
-      A bit in an `hstateen` CSR cannot be read-only one unless the same bit is read-only one
-      in the matching `mstateen` CSR.
+description: |
+  Each bit of a `stateen` CSR controls less-privileged access to an extension’s state,
+  for an extension that was not deemed "worthy" of a full XS field in `sstatus` like the
+  FS and VS fields for the F and V extensions.
+
+  The number of registers provided at each level is four because it is believed that
+  4 * 64 = 256 bits for machine and hypervisor levels, and 4 * 32 = 128 bits for
+  supervisor level, will be adequate for many years to come, perhaps for as long as
+  the RISC-V ISA is in use.
+  The exact number four is an attempted compromise between providing too few bits on
+  the one hand and going overboard with CSRs that will never be used on the other.
+
+  The `stateen` registers at each level control access to state at all less-privileged
+  levels, but not at its own level.
+
+  When a `stateen` CSR prevents access to state for a privilege mode, attempting to execute
+  in that privilege mode an instruction that implicitly updates the state without reading
+  it may or may not raise an illegal instruction or virtual instruction exception.
+  Such cases must be disambiguated by being explicitly specified one way or the other.
+  In some cases, the bits of the `stateen` CSRs will have a dual purpose as enables for the
+  ISA extensions that introduce the controlled state.
+
+  With the hypervisor extension, the `hstateen` CSRs have identical encodings to the `mstateen` CSRs,
+  except controlling accesses for a virtual machine (from VS and VU modes).
+
+  For every bit in an `hstateen` CSR that is zero (whether read-only zero or set to zero),
+  the same bit appears as read-only zero in `sstateen` when accessed in VS-mode.
+
+  A bit in an `hstateen` CSR cannot be read-only one unless the same bit is read-only one
+  in the matching `mstateen` CSR.
 
 definedBy:
   allOf:
