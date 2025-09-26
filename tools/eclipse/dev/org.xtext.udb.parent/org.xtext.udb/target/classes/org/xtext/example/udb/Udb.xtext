@@ -1,0 +1,9 @@
+grammar org.xtext.example.udb.Udb with org.eclipse.xtext.common.Terminals
+
+generate udb "http://www.xtext.org/example/udb/Udb"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
