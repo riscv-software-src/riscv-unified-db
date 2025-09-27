@@ -1843,9 +1843,15 @@ function gstage_page_walk {
       PteFlags pte_flags = pte[9:0];
 
       # check if any reserved bits are set
-      # Sv32 has no reserved bits, and Sv39/48/57 all have reserved bits at 60:54
-      if ((VA_SIZE != 32) && (pte[60:54] != 0)) {
+      # Sv32 has no reserved bits, and Sv39/48/57 all have reserved bits at 58:54
+      if ((VA_SIZE != 32) && (pte[58:54] != 0)) {
         raise_guest_page_fault(op, gpaddr, vaddr, tinst, effective_mode);
+      }
+      if (!implemented?(ExtensionName::Svrsw60t59b)) {
+        if ((PTESIZE >= 64) && pte[60:59] != 0) {
+          # 60:59 are reserved if Svrsw60t59b is not supported
+          raise_guest_page_fault(op, gpaddr, vaddr, tinst, effective_mode);
+        }
       }
       if (!implemented?(ExtensionName::Svnapot)) {
         if ((PTESIZE >= 64) && pte[63] != 0) {
@@ -2127,8 +2133,8 @@ function stage1_page_walk {
       Boolean ss_page = (pte_flags.R == 0) && (pte_flags.W == 1) && (pte_flags.X == 0);
 
       # check if any reserved bits are set
-      # Sv32 has no reserved bits, and Sv39/48/57 all have reserved bits at 60:54
-      if ((VA_SIZE != 32) && (pte[60:54] != 0)) {
+      # Sv32 has no reserved bits, and Sv39/48/57 all have reserved bits at 58:54
+      if ((VA_SIZE != 32) && (pte[58:54] != 0)) {
         raise(page_fault_code, mode(), vaddr);
       }
 
@@ -2152,6 +2158,13 @@ function stage1_page_walk {
       } else {
         # PBMT is reserved if Svpbmt is not supported)
         if ((PTESIZE >= 64) && (pte[62:61] != 0)) {
+          raise (page_fault_code, mode(), vaddr);
+        }
+      }
+
+      if (!implemented?(ExtensionName::Svrsw60t59b)) {
+        if ((PTESIZE >= 64) && pte[60:59] != 0) {
+          # 60:59 are reserved if Svrsw60t59b is not supported
           raise (page_fault_code, mode(), vaddr);
         }
       }
