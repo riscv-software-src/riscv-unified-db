@@ -31,3 +31,9 @@ coverage
 
 # emacs backup files
 *~
+**/target/
+**/build/
+**/.gradle/
+**/bin/
+udb-vscode/out/
+node_modules/
