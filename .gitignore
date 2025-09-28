@@ -37,3 +37,9 @@ coverage
 **/bin/
 udb-vscode/out/
 node_modules/
+
+!udb-vscode/.vscode/
+!udb-vscode/.vscode/launch.json
+!udb-vscode/.vscode/tasks.json
+udb-vscode/server/*
+!udb-vscode/server/udb-ls-all.jar
