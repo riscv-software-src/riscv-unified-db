@@ -3,7 +3,7 @@ Automatic-Module-Name: org.xtext.udb.tests
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202509262043
+Bundle-Version: 1.0.0.202509280016
 Bundle-SymbolicName: org.xtext.udb.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,org.eclipse.xtext.testing,org.eclipse.xtex

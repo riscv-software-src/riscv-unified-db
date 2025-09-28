@@ -1,0 +1,50 @@
+{
+  "name": "udb-vscode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:udb"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "udb",
+        "aliases": [
+          "UDB"
+        ],
+        "extensions": [
+          ".udb"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "UDB",
+      "properties": {
+        "udb.javaPath": {
+          "type": "string",
+          "default": "java",
+          "description": "Path to the Java executable used to run the language server."
+        }
+      }
+    }
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.17",
+    "@types/vscode": "^1.104.0",
+    "@vscode/test-electron": "^2.5.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

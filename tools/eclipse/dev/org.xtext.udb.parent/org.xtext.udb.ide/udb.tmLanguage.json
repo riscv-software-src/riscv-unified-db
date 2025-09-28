@@ -1,0 +1,43 @@
+{
+"name": "Udb",
+"scopeName": "text.udb",
+"fileTypes": [
+    "udb"
+],
+"repository": {
+    "general": {
+        "patterns": [
+            {
+                "include": "#linecomment"
+            },
+            {
+                "include": "#blockcomment"
+            },
+            {
+                "include": "#keyword"
+            }
+        ]
+    },
+    "linecomment": {
+        "name": "comment.line.double-dash.dmodel",
+        "begin": "(^[ \\t]+)?(?=//)",
+        "end": "(?=$)"
+    },
+    "blockcomment": {
+        "name": "comment.block.dmodel",
+        "begin": "/\\*(\\*)?(?!/)",
+        "end": "\\*/"
+    },
+    "keyword": {
+        "name": "keyword.control.mydsl",
+        "match": "\\b(entity|datatype)\\b|!"
+ 
+    }
+},
+"patterns": [
+    {
+        "include": "#general"
+    }
+],
+"uuid": "8383e49a-fa0d-4bb5-827b-10e8abb294ca"
+}
