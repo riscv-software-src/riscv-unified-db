@@ -158,8 +158,16 @@ module Udb
       method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+      method_option :output, aliases: "-o", type: :string, desc: "Output file, or '-' for stdout", default: "-"
       def extensions
         raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
+
+        out =
+          if options[:output] == "-"
+            $stdout
+          else
+            File.open(options[:output], "w")
+          end
 
         cfg_file =
           if File.file?(options[:config])
@@ -178,7 +186,7 @@ module Udb
           )
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         cfg_arch.possible_extensions.each do |ext|
-          puts ext.name
+          out.puts ext.name
         end
       end
 
