@@ -569,8 +569,6 @@ Encoding::
 Description::
 This instruction implements the rotation, SubBytes and Round Constant addition steps of the AES
 block cipher Key Schedule.
-
-
 `rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.
 
 
@@ -12684,7 +12682,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] instruction is analogous to xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] and performs double-precision floating-point addition between
+The xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] instruction is analogous to xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] and performs double-precision floating-point addition of
 `fs1` and `fs2` and writes the final result to `fd`.
 
 
@@ -12803,7 +12801,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] instruction performs single-precision floating-point addition of `xs1` and `xs2`
+The xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] instruction performs single-precision floating-point addition of `fs1` and `fs2`
 and writes the final result to `fd`.
 
 
@@ -16044,8 +16042,7 @@ Encoding::
 ....
 
 Description::
-The
-The xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `rs1`
+The xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `xs1`
 field, into floating-point register `rd`.
 xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] is encoded like xref:insts:fmv_w_x.adoc#udb:doc:inst:fmv_w_x[fmv.w.x], but with _fmt_ = Q.
 
@@ -17668,7 +17665,7 @@ Included in::
 == fmv.d.x
 
 Synopsis::
-Floating-Point Move from Integer Register to Double-Precision Register
+Floating-Point Move Double-Precision from Integer Register
 
 Assembly::
 fmv.d.x fd, xs1
@@ -17787,7 +17784,7 @@ Included in::
 == fmv.x.d
 
 Synopsis::
-Floating-Point Move from Double-Precision Register to Integer Register
+Floating-Point Move Double-Precision to Integer Register
 
 Assembly::
 fmv.x.d xd, fs1
@@ -18053,7 +18050,7 @@ Encoding::
 Description::
 The xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] instruction moves a double-precision number from a pair of integer registers into
 a floating-point register.
-Integer registers xs1 and xs2 supply bits 63:0 and 127:64, respectively; the result is written to
+Integer registers `xs1` and `xs2` supply bits 63:0 and 127:64, respectively; the result is written to
 floating-point register `fd`.
 xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
 
