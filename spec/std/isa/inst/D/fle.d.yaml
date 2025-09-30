@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fle.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Less Than or Equal Double-Precision
+description:
+  - id: inst-fle.d-behaviour
+    normative: false
+    text: |
+      The `fle.d` instruction writes 1 to `xd` if `fs1` is less than or equal to `fs2`, and 0 otherwise. It is defined
+      analogously to its single-precision counterpart, but operates on double-precision operands.
 definedBy: D
 assembly: xd, fs1, fs2
 encoding:

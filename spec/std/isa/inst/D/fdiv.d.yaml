@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fdiv.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Divide Double-Precision
+description:
+  - id: inst-fdiv.d-behaviour
+    normative: false
+    text: |
+      The `fdiv.d` instruction performs the double-precision floating-point division of `fs1` by `fs2`. It is defined analogously
+      to its single-precision counterpart, but operates on double-precision operands and produces double-precision results.
 definedBy: D
 assembly: fd, fs1, fs2, rm
 encoding:

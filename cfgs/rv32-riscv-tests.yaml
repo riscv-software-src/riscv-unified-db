@@ -3,8 +3,8 @@
 $schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
 kind: architecture configuration
 type: fully configured
-name: MC100-32-riscv-tests
-description: An example MC100-32-compliant full config for riscv-tests
+name: rv32-riscv-tests
+description: A compliant full config for rv32 riscv-tests
 implemented_extensions:
   - [Sm, "1.11.0"]
   - [I, "2.1"]
@@ -17,6 +17,7 @@ implemented_extensions:
   - [Smpmp, "1.11.0"]
   - [U, "1.0.0"]
   - [Zifencei, "2.0.0"]
+  - [Sv32, "1.11.0"]
 
 params:
   MXLEN: 32
@@ -108,7 +109,7 @@ params:
       false,
       false,
     ]
-  STVEC_MODE_DIRECT: false
+  STVEC_MODE_DIRECT: true
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true

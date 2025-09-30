@@ -6,9 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fsd
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Store Double-Precision
+description:
+  - id: inst-fsd-behaviour
+    normative: false
+    text: |
+      The `fsd` instruction stores a double-precision value from the floating-point registers to memory. It is guaranteed to execute
+      atomically if the effective address is naturally aligned and XLEN≥64. It doesn't modify the bits being transferred; in particular,
+      the payloads of non-canonical NaNs are preserved.
 definedBy: D
 assembly: fs2, imm(xs1)
 encoding:

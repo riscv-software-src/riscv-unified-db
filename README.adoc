@@ -95,6 +95,9 @@ For convenience, running Rake inside the container is encapsulated in `do`. For 
 # generate all versions of ISA manual, as an Antora static website
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
 
+# regenerate yaml files for the unresolved architecture
+./do gen:arch
+
 # generate an implementation-specific spec for the 'example_rv64_with_overlay' config
-./do gen:arch[example_rv64_with_overlay]
+./do gen:resolved_arch CFG=example_rv64_with_overlay
 ----

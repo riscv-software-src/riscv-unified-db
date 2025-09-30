@@ -6,13 +6,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: flt.s
-long_name: Single-precision floating-point less than
+long_name: Floating-Point Less Than Single-Precision
 description: |
-  Writes 1 to _xd_ if _fs1_ is less than _fs2_, and 0 otherwise.
-
-  If either operand is NaN, the result is 0 (not equal).
-  If either operand is a NaN (signaling or quiet), the invalid flag is set.
-
+  The `flt.s` instruction writes 1 to `xd` if `fs1` is less than `fs2`, and 0 otherwise.
+  If either operand is NaN, the result is 0 (not equal). If either operand is a NaN
+  (signaling or quiet), the invalid flag is set.
 definedBy: F
 assembly: xd, fs1, fs2
 encoding:

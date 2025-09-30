@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: feq.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Equal Double-Precision
+description:
+  - id: inst-feq.d-behaviour
+    normative: false
+    text: |
+      The `feq.d` instruction writes 1 to `xd` if `fs1` and `fs2` are equal, and 0 otherwise. It is defined analogously to its
+      single-precision counterpart, but operates on double-precision operands.
 definedBy: D
 assembly: xd, fs1, fs2
 encoding:

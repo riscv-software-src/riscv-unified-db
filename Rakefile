@@ -81,9 +81,13 @@ namespace :gen do
     end
   end
 
-  desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
+  desc "Resolve the configuration CFG in arch/, and write it to gen/resolved_arch/<CFG>. Default CFG is the standard, \"_\"."
   task "resolved_arch" do
-    $resolver.cfg_arch_for("_")
+    cfg = ENV["CFG"]
+    if cfg.nil?
+      cfg = "_"
+    end
+    $resolver.cfg_arch_for(cfg)
   end
 end
 
