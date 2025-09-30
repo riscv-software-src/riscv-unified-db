@@ -30,3 +30,5 @@ coverage
 
 # emacs backup files
 *~
+cfgs/rv64F.yaml
+cfgs/rv32F.yaml
