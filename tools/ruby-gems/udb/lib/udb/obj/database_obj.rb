@@ -377,7 +377,7 @@ class TopLevelDatabaseObject < DatabaseObject
   def create_json_schemer_resolver(udb_resolver)
     proc do |pattern|
       if pattern.to_s =~ /^http/
-        JSON.parse(Net::HTTP.get(pattern))
+        JSON.parse(T.must(Net::HTTP.get(pattern)))
       else
         JSON.load_file(udb_resolver.schemas_path / pattern.to_s)
       end
@@ -494,9 +494,9 @@ class License
   sig { returns(String) }
   def text
     if !@data["text_url"].nil?
-      Net::HTTP.get(URI(T.must(@data["text_url"])))
+      T.must(Net::HTTP.get(URI(T.must(@data["text_url"]))))
     else
-      @data["text"]
+      T.must(@data.fetch("text"))
     end
   end
 end
