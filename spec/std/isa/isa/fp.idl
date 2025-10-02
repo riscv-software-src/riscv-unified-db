@@ -772,7 +772,7 @@ function softfloat_addMagsF32 {
 
       U32 sigZ = 0x20000000 + sigA + sigB;
       if ( sigZ < 0x40000000 ) {
-            expZ = expZ - 1;
+            expZ = expZ `- 1'b1;
             sigZ =  sigZ << 1;
         }
     }
