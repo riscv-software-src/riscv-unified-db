@@ -1333,3 +1333,87 @@ function f32_mul {
     return softfloat_roundPackToF32(signZ, expZ, sigZ, mode);
   }
 }
+
+function f32_div {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns quotient of 2 floating point numbers
+  }
+  body {
+    Bits<1> signA = signF32UI(a);
+    Bits<8> expA  = expF32UI(a);
+    Bits<23> sigA = fracF32UI(a);
+    Bits<1> signB = signF32UI(b);
+    Bits<8> expB  = expF32UI(b);
+    Bits<23> sigB = fracF32UI(b);
+    Bits<1> signZ = signA ^ signB;
+    Bits<8> expZ;
+    Bits<23> sigZ;
+
+    U64 sig64A;
+
+    if (expA == 0xFF) {
+      if (sigA != 0) {
+        return softfloat_propagateNaNF32UI(a, b);
+      }
+      if ((expB == 0xFF) && (sigB != 0)) {
+        return softfloat_propagateNaNF32UI(a, b);
+      }
+      if ((expB == 0xFF) && (sigB == 0)) {
+        set_fp_flag(FpFlag::NV);
+        return SP_CANONICAL_NAN;
+      }
+      return packToF32UI(signZ, 0xFF, 0);
+    }
+
+    if (expB == 0xFF) {
+      if (sigB != 0) {
+        return softfloat_propagateNaNF32UI(a, b);
+      }
+      return packToF32UI(signZ, 0, 0);
+    }
+
+    if (expB == 0) {
+      if (sigB == 0) {
+        if ((expA == 0) && (sigA == 0)) {
+          set_fp_flag(FpFlag::NV);
+          return SP_CANONICAL_NAN;
+        }
+        set_fp_flag(FpFlag::OF);
+        set_fp_flag(FpFlag::NX);
+        return packToF32UI(signZ, 0xFF, 0);
+      }
+      (expB, sigB) = softfloat_normSubnormalF32Sig(sigB);
+    }
+    if (expA == 0) {
+      if (sigA == 0) {
+        return packToF32UI(signZ, 0, 0);
+      }
+      (expA, sigA) = softfloat_normSubnormalF32Sig(sigA);
+    }
+
+    expZ = expA - expB + 0x7E;
+    sigA = (sigA | 0x800000);
+    sigB = (sigB | 0x800000);
+
+    if (sigA < sigB) {
+      expZ = expZ - 1;
+      sig64A = sigA `<< 31;
+    } else {
+      sig64A = sigA `<< 30;
+    }
+
+    sigZ = sig64A / sigB;
+    # Check if the lower 6 bits are zero, meaning the division was exact.
+    # This is used to determine if rounding/jamming is needed.
+    if (!(sigZ & 0x3F)) {
+      sigZ = sigZ | ((sigB `* sigZ) != sig64A);
+    }
+
+    return softfloat_roundPackToF32(signZ, expZ, sigZ, mode);
+  }
+}
