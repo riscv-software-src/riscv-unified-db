@@ -28,9 +28,9 @@ assembly: xd, xs1
 encoding:
   match: 011000000010-----001-----0010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -43,15 +43,15 @@ operation(): |
   }
 
   XReg bitcount = 0;
-  XReg rs1_val = X[rs1];
+  XReg xs1_val = X[xs1];
 
   for (U32 i=0; i < xlen(); i++) {
-    if (rs1_val[i] == 1'b1) {
+    if (xs1_val[i] == 1'b1) {
       bitcount = bitcount + 1;
     }
   }
 
-  X[rd] = bitcount;
+  X[xd] = bitcount;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

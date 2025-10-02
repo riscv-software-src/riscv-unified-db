@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent3
 long_name: Machine Hardware Performance Counter 3 Control
 address: 0x323
+writable: true
 priv_mode: M
 length: 64
 description: |

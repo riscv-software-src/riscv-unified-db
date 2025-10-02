@@ -12,7 +12,9 @@
 require "concurrent"
 require "ruby-prof"
 require "tilt"
-
+require "yaml"
+require "pathname"
+require_relative 'obj/non_isa_specification'
 require_relative "config"
 require_relative "architecture"
 
@@ -395,10 +397,10 @@ module Udb
     # @param name [:to_s]      The name associated with this ConfiguredArchitecture
     # @param config [AbstractConfig]   The configuration object
     # @param arch_path [Pathnam] Path to the resolved architecture directory corresponding to the configuration
-    sig { params(name: String, config: AbstractConfig, arch_path: Pathname).void }
-    def initialize(name, config, arch_path)
+    sig { params(name: String, config: AbstractConfig).void }
+    def initialize(name, config)
 
-      super(arch_path)
+      super(config.info.resolved_spec_path)
 
       @name = name.to_s.freeze
       @name_sym = @name.to_sym.freeze
@@ -481,17 +483,10 @@ module Udb
           name: @name,
           csrs:
         )
-      overlay_path =
-        if config.arch_overlay.nil?
-          "/does/not/exist"
-        elsif File.exist?(config.arch_overlay)
-          File.realpath(T.must(config.arch_overlay))
-        else
-          "#{$root}/arch_overlay/#{config.arch_overlay}"
-        end
+      overlay_path = config.info.overlay_path
 
-      custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
-      idl_path = File.exist?(custom_globals_path) ? custom_globals_path : @arch_dir / "isa" / "globals.isa"
+      custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+      idl_path = File.exist?(custom_globals_path) ? custom_globals_path : config.info.spec_path /  "isa" / "globals.isa"
       @global_ast = @idl_compiler.compile_file(
         idl_path
       )
@@ -502,11 +497,6 @@ module Udb
 
       @params_with_value = T.let(nil, T.nilable(T::Array[ParameterWithValue]))
     end
-
-    # Returns a string representation of the object, suitable for debugging.
-    # @return [String] A string representation of the object.
-    sig { override.returns(String) }
-    def inspect = "ConfiguredArchitecture##{name}"
 
     # type check all IDL, including globals, instruction ops, and CSR functions
     #
@@ -705,6 +695,7 @@ module Udb
     end
     alias implemented_extension_versions transitive_implemented_extension_versions
 
+
     # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements (not transitive)
     sig { returns(T::Array[ExtensionRequirement]) }
     def mandatory_extension_reqs
@@ -718,10 +709,8 @@ module Udb
 
           if e["version"].is_a?(Array)
             ExtensionRequirement.new(ename, T.cast(e.fetch("version"), T::Array[String]), presence: Presence.new("mandatory"), arch: self)
-          elsif e["version"].is_a?(String)
-            ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
           else
-            ExtensionRequirement.new(ename, ">= 0", presence: Presence.new("mandatory"), arch: self)
+            ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
           end
         end
     end
@@ -801,7 +790,7 @@ module Udb
           extensions.each do |ext|
             ext.versions.each do |ext_ver|
               next if mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-              next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.include?(ext_ver) }
+              next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.eval.any? { |impl| impl.ext_ver == ext_ver } }
 
               @transitive_prohibited_extension_versions << ext_ver
             end
@@ -815,7 +804,7 @@ module Udb
           end
         end
 
-      # else, unconfigured....nothing to do
+      # else, unconfigured....nothing to do                # rubocop:disable Layout/CommentIndentation
 
       end
 
@@ -1230,6 +1219,78 @@ module Udb
         t.unlink
       end
     end
-  end
 
+
+    # @return [Array<NonIsaSpecification>] List of all non-ISA specs that could apply to this configuration
+    sig { returns(T::Array[T.untyped]) }
+    def possible_non_isa_specs
+      return @possible_non_isa_specs if defined?(@possible_non_isa_specs)
+
+
+
+      @possible_non_isa_specs = []
+
+      # Discover local non-ISA specifications
+      non_isa_path = Pathname.new(__dir__).parent.parent.parent.parent.parent / "spec/custom/non_isa"
+      if non_isa_path.exist?
+        non_isa_path.glob("*.yaml").each do |spec_file|
+          next if spec_file.basename.to_s.start_with?('prm') # Skip PRM files
+
+          begin
+            spec_name = spec_file.basename('.yaml').to_s
+            spec_data = YAML.load_file(spec_file)
+            next unless spec_data['kind'] == 'non-isa specification'
+
+            spec_obj = Udb::NonIsaSpecification.new(spec_name, spec_data)
+            @possible_non_isa_specs << spec_obj
+          rescue => e
+            warn "Failed to load non-ISA spec #{spec_file}: #{e.message}"
+          end
+        end
+      end
+
+      @possible_non_isa_specs.sort_by(&:name)
+    end
+
+    # @return [Array<NonIsaSpecification>] List of all implemented non-ISA specs, filtered by configuration
+    sig { returns(T::Array[T.untyped]) }
+    def implemented_non_isa_specs
+      return @implemented_non_isa_specs if defined?(@implemented_non_isa_specs)
+
+      @implemented_non_isa_specs = possible_non_isa_specs.select do |spec|
+        spec.exists_in_cfg?(self)
+      end
+
+      @implemented_non_isa_specs
+    end
+    alias transitive_implemented_non_isa_specs implemented_non_isa_specs
+
+    # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+    # and replace them with links to the relevant object page.
+    # See backend_helpers.rb for a definition of the proprietary link format.
+    #
+    # @param adoc [String] Asciidoc source
+    # @return [String] Asciidoc source, with link placeholders
+    sig { params(adoc: String).returns(String) }
+    def convert_monospace_to_links(adoc)
+      h = Class.new do include Udb::Helpers::TemplateHelpers end.new
+      adoc.gsub(/`([\w.]+)`/) do |match|
+        name = Regexp.last_match(1)
+        csr_name, field_name = T.must(name).split(".")
+        csr = not_prohibited_csrs.find { |c| c.name == csr_name }
+        if !field_name.nil? && !csr.nil? && csr.field?(field_name)
+          h.link_to_udb_doc_csr_field(csr_name, field_name)
+        elsif !csr.nil?
+          h.link_to_udb_doc_csr(csr_name)
+        elsif not_prohibited_instructions.any? { |inst| inst.name == name }
+          h.link_to_udb_doc_inst(name)
+        elsif not_prohibited_extensions.any? { |ext| ext.name == name }
+          h.link_to_udb_doc_ext(name)
+        else
+          match
+        end
+      end
+    end
+
+  end
 end

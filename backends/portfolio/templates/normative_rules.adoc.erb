@@ -1,5 +1,5 @@
 <% unless db_obj.cert_normative_rules.empty? -%>
-<% nice_name = db_obj.is_a?(CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
+<% nice_name = db_obj.is_a?(Udb::CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
 <% if defined?(use_description_list) && use_description_list -%>
 Normative Rules for `<%= nice_name %>`: ::
 <% else -%>

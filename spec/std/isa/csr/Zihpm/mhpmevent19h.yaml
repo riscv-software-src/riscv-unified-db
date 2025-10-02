@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent19h
 long_name: Machine Hardware Performance Counter 19 Control, High half
 address: 0x733
+writable: true
 priv_mode: M
 length: 32
 base: 32

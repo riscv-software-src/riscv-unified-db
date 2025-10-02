@@ -359,15 +359,15 @@ module Udb
           end
 
         if effective_xlen.nil?
-          <<~LENGTH
-          #{length(32)} when #{cond.sub('%%', '0')}
-          #{length(64)} when #{cond.sub('%%', '1')}
-        LENGTH
+          [
+            "* #{length(32)} when #{cond.sub('%%', '0')}",
+            "* #{length(64)} when #{cond.sub('%%', '1')}"
+          ].join("\n")
         else
           "#{length(effective_xlen)}-bit"
         end
       else
-        "#{length}-bit"
+        "#{length()}-bit"
       end
     end
 
@@ -382,6 +382,8 @@ module Udb
         ["M", "S", "U", "VS", "VU"]
       when "VS"
         ["M", "S", "VS"]
+      when "D"
+        ["M", "D"]
       else
         raise "unexpected priv mode"
       end

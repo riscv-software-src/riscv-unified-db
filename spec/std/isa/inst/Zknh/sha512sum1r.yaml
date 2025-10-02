@@ -17,11 +17,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0101001----------000-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

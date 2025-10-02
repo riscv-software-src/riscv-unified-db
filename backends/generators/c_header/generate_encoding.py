@@ -8,6 +8,7 @@ import sys
 import logging
 import argparse
 import yaml
+import json
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,14 +30,54 @@ def calculate_mask(match_str):
     return int("".join("0" if c == "-" else "1" for c in match_str), 2)
 
 
-def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
-    """Load exception codes from extension YAML files."""
+def load_exception_codes(
+    ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
+):
+    """Load exception codes from extension YAML files or pre-resolved JSON file."""
     exception_codes = []
     found_extensions = 0
     found_files = 0
 
     if enabled_extensions is None:
         enabled_extensions = []
+
+    # If we have a resolved codes file, use it instead of processing YAML files
+    if resolved_codes_file and os.path.exists(resolved_codes_file):
+        try:
+            with open(resolved_codes_file, encoding="utf-8") as f:
+                resolved_codes = json.load(f)
+
+            for code in resolved_codes:
+                num = code.get("num")
+                name = code.get("name")
+                if num is not None and name is not None:
+                    sanitized_name = (
+                        name.lower()
+                        .replace(" ", "_")
+                        .replace("/", "_")
+                        .replace("-", "_")
+                    )
+                    exception_codes.append((num, sanitized_name))
+
+            logging.info(
+                f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}"
+            )
+
+            # Sort by exception code number and deduplicate
+            seen_nums = set()
+            unique_codes = []
+            for num, name in sorted(exception_codes, key=lambda x: x[0]):
+                if num not in seen_nums:
+                    seen_nums.add(num)
+                    unique_codes.append((num, name))
+
+            return unique_codes
+
+        except Exception as e:
+            logging.error(
+                f"Error loading resolved codes file {resolved_codes_file}: {e}"
+            )
+            # Fall back to processing YAML files
 
     for dirpath, _, filenames in os.walk(ext_dir):
         for fname in filenames:
@@ -79,7 +120,10 @@ def load_exception_codes(ext_dir, enabled_extensions=None, include_all=False):
 
                     if num is not None and name is not None:
                         sanitized_name = (
-                            name.lower().replace(" ", "_").replace("/", "_")
+                            name.lower()
+                            .replace(" ", "_")
+                            .replace("/", "_")
+                            .replace("-", "_")
                         )
                         exception_codes.append((num, sanitized_name))
 
@@ -295,6 +339,10 @@ def main():
         action="store_true",
         help="Fallback to hardcoded exception causes if none are loaded from files",
     )
+    parser.add_argument(
+        "--resolved-codes",
+        help="JSON file containing pre-resolved exception codes",
+    )
 
     args = parser.parse_args()
 
@@ -318,7 +366,10 @@ def main():
     # Load exception codes
     logging.info(f"Loading exception codes from {args.ext_dir}")
     causes = load_exception_codes(
-        args.ext_dir, args.extensions, include_all=args.include_all
+        args.ext_dir,
+        args.extensions,
+        include_all=args.include_all,
+        resolved_codes_file=args.resolved_codes,
     )
 
     # Process instructions and calculate masks
@@ -361,8 +412,8 @@ def main():
     csr_names_str = ""
     declare_csr_str = ""
     for addr, name in sorted(csrs.items()):
-        csr_names_str += f"#define CSR_{name.upper()} 0x{addr:x}\n"
-        declare_csr_str += f"DECLARE_CSR({name.lower()}, CSR_{name.upper()})\n"
+        csr_names_str += f"#define CSR_{name.upper().replace(".","_")} 0x{addr:x}\n"
+        declare_csr_str += f"DECLARE_CSR({name.lower().replace(".","_")}, CSR_{name.upper().replace(".","_")})\n"
 
     causes_str = ""
     declare_cause_str = ""

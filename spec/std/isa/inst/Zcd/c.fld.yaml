@@ -19,7 +19,7 @@ definedBy:
           - name: C
           - name: D
       - name: Zcd
-assembly: xd, imm(xs1)
+assembly: fd, imm(xs1)
 encoding:
   match: 001-----------00
   variables:

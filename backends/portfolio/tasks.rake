@@ -13,13 +13,12 @@ require "idlc/passes/gen_adoc"
 
 require "udb/config"
 
-# @return [Architecture]
+sig { returns(Udb::ConfiguredArchitecture) }
 def pf_create_arch
   $resolver.cfg_arch_for("_")
 end
 
-# @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).
-# @return [ConfiguredArchitecture]
+# @param portfolio_grp_with_arch Contains one or more Portfolio objects that have an arch (not a cfg_arch).
 sig { params(portfolio_grp_with_arch: Udb::PortfolioGroup).returns(Udb::ConfiguredArchitecture) }
 def pf_create_cfg_arch(portfolio_grp_with_arch)
   # Create a ConfiguredArchitecture object and provide it a PortfolioGroupConfig object to implement the AbstractConfig API.
@@ -29,8 +28,7 @@ def pf_create_cfg_arch(portfolio_grp_with_arch)
   # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
   Udb::ConfiguredArchitecture.new(
     portfolio_grp_with_arch.name,
-    Udb::AbstractConfig.create(portfolio_grp_with_arch),
-    $resolver.gen_path / "resolved_spec" / "_"
+    Udb::AbstractConfig.create(portfolio_grp_with_arch, $resolver.cfg_info("_"))
   )
 end
 
@@ -101,6 +99,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
     "-a pdf-theme=#{$root}/ext/docs-resources/themes/riscv-pdf.yml",
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a bytefield-svg=#{$root}/node_modules/.bin/bytefield-svg",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{target_pname}",
@@ -136,6 +135,7 @@ def pf_adoc2html(adoc_file, target_pname)
     "-v",
     "-a toc",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a bytefield-svg=#{$root}/node_modules/.bin/bytefield-svg",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{target_pname}",

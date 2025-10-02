@@ -3,9 +3,6 @@ permissions:
   contents: read
   pull-requests: write
 on:
-  push:
-    branches:
-      - main
   merge_group:
     types: [checks_requested]
   pull_request:
@@ -40,6 +37,13 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
         run: ./do test:smoke
+      - name: Upload idlc coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/idlc/coverage/coverage.xml
+          flags: idlc
   regress-udb-gem:
     runs-on: ubuntu-latest
     env:
@@ -51,6 +55,13 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run udb gem unit tests
         run: ./bin/ruby tools/ruby-gems/test/run.rb
+      - name: Upload udb coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/udb/coverage/coverage.xml
+          flags: udb
   regress-gen-isa-manual:
     runs-on: ubuntu-latest
     env:
@@ -208,3 +219,29 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
+  regress-riscv-tests:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run riscv-tests
+        run: ./do test:riscv_tests CONFIG=rv32 JOBS=4
+  regress-xqci-doc:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run cpp unit tests
+        run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest
+  call-deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      dry-run: true

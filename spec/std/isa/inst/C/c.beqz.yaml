@@ -8,8 +8,8 @@ kind: instruction
 name: c.beqz
 long_name: Branch if Equal Zero
 description: |
-  C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a &pm;256 B range. C.BEQZ takes the branch if the value in register rs1' is zero.
-  It expands to `beq` `rs1, x0, offset`.
+  C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a &pm;256 B range. C.BEQZ takes the branch if the value in register xs1' is zero.
+  It expands to `beq` `xs1, x0, offset`.
 definedBy:
   extension:
     anyOf:

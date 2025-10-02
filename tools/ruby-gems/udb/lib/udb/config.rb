@@ -50,20 +50,15 @@ module Udb
     sig { returns(T.nilable(String)) }
     def arch_overlay = @data["arch_overlay"]
 
-    # @return [String] Absolute path to the arch_overlay
-    # @return [nil] No arch_overlay for this config
-    sig { returns(T.nilable(String)) }
+    # @return Absolute path to the arch_overlay
+    # @return No arch_overlay for this config
+    sig { returns(T.nilable(Pathname)) }
     def arch_overlay_abs
-      return nil unless @data.key?("arch_overlay")
-
-      if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
-        "#{$root}/arch_overlay/#{@data['arch_overlay']}"
-      elsif File.directory?(@data["arch_overlay"])
-        @data["arch_overlay"]
-      else
-        raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
-      end
+      @info.overlay_path
     end
+
+    sig { returns(Resolver::ConfigInfo) }
+    attr_reader :info
 
     sig { abstract.returns(T.nilable(Integer)) }
     def mxlen; end
@@ -84,9 +79,10 @@ module Udb
     # use AbstractConfig#create instead
     private_class_method :new
 
-    sig { params(data: T::Hash[String, T.untyped]).void }
-    def initialize(data)
+    sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+    def initialize(data, info)
       @data = data
+      @info = info
       @name = @data.fetch("name")
       @name.freeze
       @type = ConfigType.deserialize(T.cast(@data.fetch("type"), String))
@@ -120,8 +116,8 @@ module Udb
     # on the contents of cfg_file_path_or_portfolio_grp
     #
     # @return [AbstractConfig] A new AbstractConfig object
-    sig { params(cfg_file_path_or_portfolio_grp: T.any(Pathname, PortfolioGroup)).returns(AbstractConfig) }
-    def self.create(cfg_file_path_or_portfolio_grp)
+    sig { params(cfg_file_path_or_portfolio_grp: T.any(Pathname, PortfolioGroup), info: Resolver::ConfigInfo).returns(AbstractConfig) }
+    def self.create(cfg_file_path_or_portfolio_grp, info)
       if cfg_file_path_or_portfolio_grp.is_a?(Pathname)
         cfg_file_path = T.cast(cfg_file_path_or_portfolio_grp, Pathname)
         raise ArgumentError, "Cannot find #{cfg_file_path}" unless cfg_file_path.exist?
@@ -133,51 +129,51 @@ module Udb
 
         case data["type"]
         when "fully configured"
-          FullConfig.send(:new, data)
+          FullConfig.send(:new, data, info)
         when "partially configured"
-          PartialConfig.send(:new, data)
+          PartialConfig.send(:new, data, info)
         when "unconfigured"
-          UnConfig.send(:new, data)
+          UnConfig.send(:new, data, info)
         else
           raise "Unexpected type (#{data['type']}) in config"
         end
       elsif cfg_file_path_or_portfolio_grp.is_a?(PortfolioGroup)
-        portfolio_grp = T.cast(cfg_file_path_or_portfolio_grp, PortfolioGroup)
-        data = {
-          "$schema" => "config_schema.json#",
-          "kind" => "architecture configuration",
-          "type" => "partially configured",
-          "name" => portfolio_grp.name,
-          "description" => "Partial config construction from Portfolio Group #{portfolio_grp.name}",
-          "params" => portfolio_grp.param_values,
-          "mandatory_extensions" => portfolio_grp.mandatory_ext_reqs.map do |ext_req|
-            {
-              "name" => ext_req.name,
-              "version" => ext_req.requirement_specs.map(&:to_s)
-            }
-          end
-        }
-        data.fetch("params")["MXLEN"] = portfolio_grp.max_base
-        freeze_data(data)
-        PartialConfig.send(:new, data)
+          portfolio_grp = T.cast(cfg_file_path_or_portfolio_grp, PortfolioGroup)
+          data = {
+            "$schema" => "config_schema.json#",
+            "kind" => "architecture configuration",
+            "type" => "partially configured",
+            "name" => portfolio_grp.name,
+            "description" => "Partial config construction from Portfolio Group #{portfolio_grp.name}",
+            "params" => portfolio_grp.param_values,
+            "mandatory_extensions" => portfolio_grp.mandatory_ext_reqs.map do |ext_req|
+              {
+                "name" => ext_req.name,
+                "version" => ext_req.requirement_specs.map(&:to_s)
+              }
+            end
+          }
+          data.fetch("params")["MXLEN"] = portfolio_grp.max_base
+          freeze_data(data)
+          PartialConfig.send(:new, data, info)
       else
         T.absurd(cfg_file_path_or_portfolio_grp)
       end
     end
   end
 
-#################################################################
-# This class represents a configuration that is "unconfigured". #
-# It doesn't know anything about extensions or parameters.      #
-#################################################################
+  #################################################################
+  # This class represents a configuration that is "unconfigured". #
+  # It doesn't know anything about extensions or parameters.      #
+  #################################################################
   class UnConfig < AbstractConfig
     ########################
     # NON-ABSTRACT METHODS #
     ########################
 
-    sig { params(data: T::Hash[String, T.untyped]).void }
-    def initialize(data)
-      super(data)
+    sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+    def initialize(data, info)
+      super(data, info)
 
       @param_values = {}.freeze
     end
@@ -211,9 +207,9 @@ module Udb
     # NON-ABSTRACT METHODS #
     ########################
 
-    sig { params(data: T::Hash[String, T.untyped]).void }
-    def initialize(data)
-      super(data)
+    sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+    def initialize(data, info)
+      super(data, info)
 
       @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
@@ -276,18 +272,18 @@ module Udb
     def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
   end
 
-################################################################################################################
-# This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
-# It has a complete list of extensions and parameters (all are a single value at this point).                  #
-################################################################################################################
+  ################################################################################################################
+  # This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
+  # It has a complete list of extensions and parameters (all are a single value at this point).                  #
+  ################################################################################################################
   class FullConfig < AbstractConfig
     ########################
     # NON-ABSTRACT METHODS #
     ########################
 
-    sig { params(data: T::Hash[String, T.untyped]).void }
-    def initialize(data)
-      super(data)
+    sig { params(data: T::Hash[String, T.untyped], info: Resolver::ConfigInfo).void }
+    def initialize(data, info)
+      super(data, info)
 
       @param_values = @data["params"]
 

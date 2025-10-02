@@ -11875,6 +11875,135 @@ module Idl
     r0
   end
 
+  module ForLoopIterationVariableDeclaration0
+    def type_name
+      elements[0]
+    end
+
+    def id
+      elements[2]
+    end
+
+    def ary_size
+      elements[4]
+    end
+
+    def rval
+      elements[8]
+    end
+  end
+
+  def _nt_for_loop_iteration_variable_declaration
+    start_index = index
+    if node_cache[:for_loop_iteration_variable_declaration].has_key?(index)
+      cached = node_cache[:for_loop_iteration_variable_declaration][index]
+      if cached
+        node_cache[:for_loop_iteration_variable_declaration][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r1 = _nt_type_name
+    s0 << r1
+    if r1
+      s2, i2 = [], index
+      loop do
+        r3 = _nt_space
+        if r3
+          s2 << r3
+        else
+          break
+        end
+      end
+      if s2.empty?
+        @index = i2
+        r2 = nil
+      else
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+      end
+      s0 << r2
+      if r2
+        r4 = _nt_id
+        s0 << r4
+        if r4
+          s5, i5 = [], index
+          loop do
+            r6 = _nt_space
+            if r6
+              s5 << r6
+            else
+              break
+            end
+          end
+          r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+          s0 << r5
+          if r5
+            r8 = _nt_ary_size_decl
+            if r8
+              r7 = r8
+            else
+              r7 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s0 << r7
+            if r7
+              s9, i9 = [], index
+              loop do
+                r10 = _nt_space
+                if r10
+                  s9 << r10
+                else
+                  break
+                end
+              end
+              r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
+              s0 << r9
+              if r9
+                if (match_len = has_terminal?('=', false, index))
+                  r11 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('\'=\'')
+                  r11 = nil
+                end
+                s0 << r11
+                if r11
+                  s12, i12 = [], index
+                  loop do
+                    r13 = _nt_space
+                    if r13
+                      s12 << r13
+                    else
+                      break
+                    end
+                  end
+                  r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+                  s0 << r12
+                  if r12
+                    r14 = _nt_expression
+                    s0 << r14
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    if s0.last
+      r0 = instantiate_node(Idl::ForLoopIterationVariableDeclarationSyntaxNode,input, i0...index, s0)
+      r0.extend(ForLoopIterationVariableDeclaration0)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:for_loop_iteration_variable_declaration][start_index] = r0
+
+    r0
+  end
+
   module Declaration0
     def id
       elements[3]
@@ -14036,7 +14165,7 @@ module Idl
   end
 
   module ForLoop1
-    def single_declaration_with_initialization
+    def for_loop_iteration_variable_declaration
       elements[4]
     end
 
@@ -14108,7 +14237,7 @@ module Idl
           r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
           s0 << r5
           if r5
-            r7 = _nt_single_declaration_with_initialization
+            r7 = _nt_for_loop_iteration_variable_declaration
             s0 << r7
             if r7
               s8, i8 = [], index
@@ -14330,6 +14459,19 @@ module Idl
                                             r40 = nil
                                           end
                                           s0 << r40
+                                          if r40
+                                            s41, i41 = [], index
+                                            loop do
+                                              r42 = _nt_space
+                                              if r42
+                                                s41 << r42
+                                              else
+                                                break
+                                              end
+                                            end
+                                            r41 = instantiate_node(SyntaxNode,input, i41...index, s41)
+                                            s0 << r41
+                                          end
                                         end
                                       end
                                     end

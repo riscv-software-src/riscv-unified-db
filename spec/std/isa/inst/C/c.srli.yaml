@@ -8,9 +8,9 @@ kind: instruction
 name: c.srli
 long_name: Shift right logical immediate
 description: |
-  Shift the value in rd right by shamt, and store the result back in rd.
-  The rd register index should be used as rd+8 (registers x8-x15).
-  C.SRLI expands into `srli rd, rd, shamt`.
+  Shift the value in xd right by shamt, and store the result back in xd.
+  The xd register index should be used as xd+8 (registers x8-x15).
+  C.SRLI expands into `srli xd, xd, shamt`.
 definedBy:
   extension:
     anyOf:
@@ -24,7 +24,7 @@ encoding:
       - name: shamt
         location: 6-2
         not: 0
-      - name: rd
+      - name: xd
         location: 9-7
   RV64:
     match: 100-00--------01
@@ -32,7 +32,7 @@ encoding:
       - name: shamt
         location: 12|6-2
         not: 0
-      - name: rd
+      - name: xd
         location: 9-7
 access:
   s: always
@@ -41,7 +41,7 @@ access:
   vu: always
 operation(): |
   # shamt is between 0-63
-  X[creg2reg(rd)] = X[creg2reg(rd)] >> shamt;
+  X[creg2reg(xd)] = X[creg2reg(xd)] >> shamt;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

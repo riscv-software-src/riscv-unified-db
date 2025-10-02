@@ -141,14 +141,13 @@ fields:
     type(): |
       return (S_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
-    # if endianness is mutable, MBE comes out of reset in little-endian mode
     reset_value(): |
       if (S_MODE_ENDIANNESS == "little") {
         return 0;
       } else if (S_MODE_ENDIANNESS == "big") {
         return 1;
       } else {
-        return UNDEFINED_LEGAL;
+        return 0; # little endian
       }
   SXL:
     location: 35-34
@@ -433,7 +432,8 @@ fields:
       enter the privilege level stored in MPP before clearing the field.
       * When `mstatus.MPRV` is set, loads and stores behave as if the current privilege level were MPP.
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return 2'b11;
     sw_write(csr_value): |
       if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
@@ -492,13 +492,13 @@ fields:
       }
     sw_write(csr_value): |
       if (CSR[misa].V == 1'b1){
-        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.VS) ? csr_value.VS : UNDEFINED_LEGAL_DETERMINISTIC;
       } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
         # must be read-only-0
         return 0;
       } else {
         # there will be no hardware update in this case because we know the V extension isn't implemented
-        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.VS) ? csr_value.VS : UNDEFINED_LEGAL_DETERMINISTIC;
       }
   SPP:
     location: 8

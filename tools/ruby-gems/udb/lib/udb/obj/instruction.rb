@@ -327,6 +327,23 @@ module Udb
           Instruction.deprecated_validate_encoding(@data["encoding"]["RV64"], name)
         end
       end
+
+      # Validate hint references
+      if @data.key?("hints")
+        @data["hints"].each_with_index do |hint, index|
+          if hint.key?("$ref")
+            begin
+              # Try to dereference the hint to validate it exists
+              hint_inst = @cfg_arch.ref(hint["$ref"])
+              if hint_inst.nil?
+                raise "Invalid hint reference in instruction '#{name}' at hints[#{index}]: '#{hint["$ref"]}' - reference not found"
+              end
+            rescue => e
+              raise "Invalid hint reference in instruction '#{name}' at hints[#{index}]: '#{hint["$ref"]}' - #{e.message}"
+            end
+          end
+        end
+      end
     end
 
     def ==(other)
@@ -336,7 +353,6 @@ module Udb
         raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
       end
     end
-
     alias eql? ==
 
     def <=>(other)

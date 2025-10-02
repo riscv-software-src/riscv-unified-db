@@ -1,8 +1,12 @@
+
+# typed: true
 # frozen_string_literal: true
-#
+
 # Generate
 
+require "sorbet-runtime"
 require "write_xlsx"
+
 require "udb/architecture"
 
 # @param presence [String] Can be nil
@@ -21,7 +25,7 @@ def presence2char(presence)
   end
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
@@ -39,9 +43,9 @@ def arch2ext_table(arch)
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Implied By", formatter: "textarea", sorter: "alphanum"},
-      {name: "Requires", formatter: "textarea", sorter: "alphanum"},
-      {name: "Incompatible", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implies\n(Exts)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Requires\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum"},
       {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
       {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       sorted_profile_releases.map do |pr|
@@ -58,7 +62,7 @@ def arch2ext_table(arch)
       ext.name,           # Name
       ext.long_name,      # Description
       ext.compact_priv_type,  # IC
-      ext.max_version.implied_by.map(&:name),  # Implied By
+      ext.max_version.implications.map{|cond_ext_ver| cond_ext_ver.ext_ver.name}.uniq,  # Implies
       ext.max_version.requirement_condition.empty? ? "" : ext.max_version.requirement_condition.to_logic_tree.to_s, # Requires
       ext.conflicts_condition.empty? ? "" : ext.conflicts_condition.to_logic_tree.to_s, # Incompatible
       ext.ratified,
@@ -83,11 +87,10 @@ def arch2ext_table(arch)
   return ext_table
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Instruction table data
+sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2inst_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   inst_table = {
@@ -132,11 +135,10 @@ def arch2inst_table(arch)
   return inst_table
 end
 
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] CSR table data
+sig { params(arch: Udb::Architecture).returns(T::Hash[String, T::Array[String]]) }
 def arch2csr_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   csr_table = {
@@ -228,11 +230,10 @@ end
 
 # Create ISA Explorer tables as XLSX file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
+sig { params(arch: Udb::Architecture, output_pname: String).void }
 def gen_xlsx(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
-  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Create a new Excel workbook
   $logger.info "Creating Excel workboook #{output_pname}"
@@ -345,12 +346,18 @@ def gen_js_table(table, div_name, output_pname)
     fp.write "  ]\n"
     fp.write "});\n"
     fp.write "\n"
+
+    fp.write "// Load data in chunks after table is built\n"
+    fp.write "table.on(\"tableBuilt\", function() {\n"
+    fp.write "    loadDataInChunks(tabledata);\n"
+    fp.write "});\n"
+    fp.write "\n"
   end
 end
 
 # Create ISA Explorer extension table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
@@ -366,10 +373,10 @@ end
 
 # Create ISA Explorer instruction table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_inst_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to inst_table data structure
@@ -382,10 +389,10 @@ end
 
 # Create ISA Explorer CSR table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param arch [Udb::Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_csr_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to csr_table data structure
@@ -396,10 +403,10 @@ def gen_js_csr_table(arch, output_pname)
   gen_js_table(csr_table, "csr_table", output_pname)
 end
 
-# param [Architecture] arch
+# param [Udb::Architecture] arch
 # return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
 def get_sorted_profile_releases(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Udb::Architecture" unless arch.is_a?(Udb::Architecture)
 
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)

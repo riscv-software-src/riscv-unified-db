@@ -56,6 +56,7 @@ require_relative "obj/instruction"
 require_relative "obj/manual"
 require_relative "obj/portfolio"
 require_relative "obj/profile"
+require_relative "obj/prm"
 
 module Udb
 
@@ -233,6 +234,12 @@ module Udb
         arch_dir: "profile",
         klass: Profile,
         kind: DatabaseObject::Kind::Profile
+      },
+      {
+        fn_name: "prm",
+        arch_dir: "prm",
+        klass: Prm,
+        kind: DatabaseObject::Kind::Prm
       }
     ].freeze
 

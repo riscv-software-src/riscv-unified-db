@@ -124,6 +124,50 @@ module Idl
       ast
     end
 
+    sig { params(loop: String, symtab: SymbolTable, pass_error: T::Boolean).returns(ForLoopAst) }
+    def compile_for_loop(loop, symtab, pass_error: false)
+      m = @parser.parse(loop, root: :for_loop)
+      if m.nil?
+        raise SyntaxError, <<~MSG
+          While parsing #{loop}:#{@parser.failure_line}:#{@parser.failure_column}
+
+          #{@parser.failure_reason}
+        MSG
+      end
+
+      ast = m.to_ast
+      ast.set_input_file("[LOOP]", 0)
+      value_result = ast.value_try do
+        ast.freeze_tree(symtab)
+      end
+      if value_result == :unknown_value
+        raise AstNode::TypeError, "Bad literal value" if pass_error
+
+        warn "Compiling #{loop}"
+        warn "Bad literal value"
+        exit 1
+      end
+      begin
+        ast.type_check(symtab)
+      rescue AstNode::TypeError => e
+        raise e if pass_error
+
+        warn "Compiling #{loop}"
+        warn e.what
+        warn T.must(e.backtrace).join("\n")
+        exit 1
+      rescue AstNode::InternalError => e
+        raise e if pass_error
+
+        warn "Compiling #{loop}"
+        warn e.what
+        warn T.must(e.backtrace).join("\n")
+        exit 1
+      end
+
+      ast
+    end
+
     # compile a function body, and return the abstract syntax tree
     #
     # @param body [String] Function body source code
@@ -185,7 +229,7 @@ module Idl
 
           warn "In function #{name}:"
           warn e.what
-          warn T.must(e.backtrace)
+          warn T.must(e.backtrace).join("\n")
           exit 1
         ensure
           cloned_symtab.pop
@@ -255,7 +299,7 @@ module Idl
       rescue AstNode::InternalError => e
         warn "While type checking #{what}:"
         warn e.what
-        warn T.must(e.backtrace)
+        warn T.must(e.backtrace).join("\n")
         exit 1
       end
 
@@ -291,14 +335,14 @@ module Idl
 
         warn "Compiling #{expression}"
         warn e.what
-        warn T.must(e.backtrace)
+        warn T.must(e.backtrace).join("\n")
         exit 1
       rescue AstNode::InternalError => e
         raise e if pass_error
 
         warn "Compiling #{expression}"
         warn e.what
-        warn T.must(e.backtrace)
+        warn T.must(e.backtrace).join("\n")
         exit 1
       end
 
@@ -335,7 +379,7 @@ module Idl
 
         warn "Compiling #{body}"
         warn e.what
-        warn T.must(e.backtrace)
+        warn T.must(e.backtrace).join("\n")
         exit 1
       end
 

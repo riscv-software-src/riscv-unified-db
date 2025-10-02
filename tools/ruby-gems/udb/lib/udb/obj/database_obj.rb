@@ -36,6 +36,8 @@ module Udb
         Profile = new("profile")
         ProfileFamily = new("profile family")
         ProfileRelease = new("profile release")
+        Prm = new("programmer reference manual")
+        NonIsaSpec = new("non-isa specification")
       end
     end
 
@@ -52,7 +54,7 @@ module Udb
     attr_reader :long_name
 
     sig { returns(String) }
-    def kind = @kind.to_s
+    def kind = @kind.serialize
 
     # @return [Architecture] If only a specification (no config) is known
     # @return [ConfiguredArchitecture] If a specification and config is known

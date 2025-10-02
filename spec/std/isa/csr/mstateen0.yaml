@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -10,6 +10,7 @@ long_name: Machine State Enable 0 Register
 address: 0x30C
 priv_mode: M
 length: 64
+writable: true
 description:
   - id: csr-mstateen0-purpose
     normative: true

@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fadd.q
-long_name: Floating-point Add Quad-precision
+long_name: Floating-point Add Quad-Precision
 description:
   - id: inst-fadd.q-behaviour
     normative: false

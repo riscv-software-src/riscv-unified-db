@@ -8,8 +8,8 @@ kind: instruction
 name: c.jr
 long_name: Jump Register
 description: |
-  C.JR (jump register) performs an unconditional control transfer to the address in register rs1.
-  C.JR expands to jalr x0, 0(rs1).
+  C.JR (jump register) performs an unconditional control transfer to the address in register xs1.
+  C.JR expands to jalr x0, 0(xs1).
 definedBy:
   extension:
     anyOf:
@@ -19,7 +19,7 @@ assembly: xs1
 encoding:
   match: 1000-----0000010
   variables:
-    - name: rs1
+    - name: xs1
       location: 11-7
       not: 0
 access:
@@ -32,4 +32,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  jump(X[rs1]);
+  jump(X[xs1]);

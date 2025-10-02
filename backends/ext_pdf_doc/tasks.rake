@@ -34,6 +34,7 @@ rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |t
     "-a pdf-theme=#{ENV['THEME']}",
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{t.name}",
@@ -62,6 +63,7 @@ rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/html/.*_extension\.html} => proc { 
     "-v",
     "-a toc",
     "-r asciidoctor-diagram",
+    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
     "-o #{t.name}",
     adoc_file
   ].join(" ")
@@ -72,9 +74,9 @@ end
 
 rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$resolver.gen_path}/ext_pdf_doc").to_s.split("/")[0]
-  arch_yaml_paths = Dir.glob("#{$root}/arch/**/*.yaml")
+  arch_yaml_paths = Dir.glob("#{$resolver.resolved_spec_path(config_name)}/**/*.yaml")
   cfg_path = $resolver.gen_path / "ext_pdf_doc" / "#{config_name}.yaml"
-  cfg = Udb::AbstractConfig.create(cfg_path)
+  cfg = Udb::AbstractConfig.create(cfg_path, $resolver.cfg_info(config_name))
   arch_yaml_paths += Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") unless cfg.arch_overlay.nil?
   [
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,

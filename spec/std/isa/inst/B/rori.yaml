@@ -8,7 +8,7 @@ kind: instruction
 name: rori
 long_name: Rotate right (Immediate)
 description: |
-  Performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
+  Performs a rotate right of xs1 by the amount in the least-significant log2(XLEN) bits of shamt.
   For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 definedBy:
   extension:
@@ -22,18 +22,18 @@ encoding:
     variables:
       - name: shamt
         location: 24-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 011000-----------101-----0010011
     variables:
       - name: shamt
         location: 25-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -48,7 +48,7 @@ operation(): |
 
   XReg shamt = (xlen() == 32) ? shamt[4:0] : shamt[5:0];
 
-  X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
+  X[xd] = (X[xs1] >> shamt) | (X[xs1] << (xlen() - shamt));
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

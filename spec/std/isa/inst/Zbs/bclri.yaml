@@ -8,7 +8,7 @@ kind: instruction
 name: bclri
 long_name: Single-Bit clear (Immediate)
 description: |
-  Returns rs1 with a single bit cleared at the index specified in shamt. The
+  Returns xs1 with a single bit cleared at the index specified in shamt. The
   index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings corresponding
   to shamt[5]=1 are reserved.
 definedBy:
@@ -21,18 +21,18 @@ encoding:
     variables:
       - name: shamt
         location: 24-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 010010-----------001-----0010011
     variables:
       - name: shamt
         location: 25-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -45,7 +45,7 @@ operation(): |
   }
 
   XReg index = shamt & (xlen() - 1);
-  X[rd] = X[rs1] & ~(1 << index);
+  X[xd] = X[xs1] & ~(1 << index);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

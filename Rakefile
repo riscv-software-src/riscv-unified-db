@@ -64,6 +64,12 @@ namespace :chore do
 
     sh "bundle update"
   end
+
+  desc "Update golden instruction appendix"
+  task :update_golden_appendix do
+    Rake::Task["gen:instruction_appendix_adoc"].invoke
+    sh "mv #{$root}/gen/instructions_appendix/all_instructions.adoc #{$root}/backends/instructions_appendix/all_instructions.golden.adoc"
+  end
 end
 
 namespace :gen do
@@ -75,9 +81,13 @@ namespace :gen do
     end
   end
 
-  desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
+  desc "Resolve the configuration CFG in arch/, and write it to gen/resolved_arch/<CFG>. Default CFG is the standard, \"_\"."
   task "resolved_arch" do
-    $resolver.cfg_arch_for("_")
+    cfg = ENV["CFG"]
+    if cfg.nil?
+      cfg = "_"
+    end
+    $resolver.cfg_arch_for(cfg)
   end
 end
 
@@ -483,6 +493,10 @@ task :portfolios do
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVI20-32-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"].invoke
+  portfolio_start_msg("RVI20-64-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CTP")
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CRD")
@@ -528,6 +542,8 @@ task "MockCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MockProcessorCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MockCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
 task "MockProcessorCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
+task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
+task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"

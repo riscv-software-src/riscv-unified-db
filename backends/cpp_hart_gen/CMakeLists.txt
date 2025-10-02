@@ -140,11 +140,28 @@ target_link_libraries(iss PRIVATE hart elf CLI11::CLI11)
 
 ## TESTS
 
-add_executable(test_bits
-  ${CMAKE_SOURCE_DIR}/test/test_bits.cpp
+add_executable(test_bits_directed
+  ${CMAKE_SOURCE_DIR}/test/test_bits_directed.cpp
 )
-target_include_directories(test_bits PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(test_bits PRIVATE hart Catch2::Catch2WithMain)
+target_include_directories(test_bits_directed PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_bits_directed PRIVATE hart Catch2::Catch2WithMain)
+target_compile_options(test_bits_directed PRIVATE -fprofile-arcs -ftest-coverage)
+target_link_options(test_bits_directed PRIVATE -fprofile-arcs -ftest-coverage)
+
+set(RANDOM_TESTS "")
+foreach (i RANGE 5)
+  add_executable(test_bits_random_${i}
+    ${CMAKE_SOURCE_DIR}/test/test_bits_random_${i}.cpp
+  )
+  target_include_directories(test_bits_random_${i} PUBLIC ${CMAKE_SOURCE_DIR}/include)
+  target_link_libraries(test_bits_random_${i} PRIVATE hart Catch2::Catch2WithMain)
+  target_compile_options(test_bits_random_${i} PRIVATE -fprofile-arcs -ftest-coverage)
+  target_link_options(test_bits_random_${i} PRIVATE -fprofile-arcs -ftest-coverage)
+
+  list(APPEND RANDOM_TESTS test_bits_random_${i})
+endforeach()
+add_custom_target(test_bits_random)
+add_dependencies(test_bits_random ${RANDOM_TESTS})
 
 add_executable(test_util
   ${CMAKE_SOURCE_DIR}/test/test_util.cpp
@@ -172,4 +189,11 @@ target_link_libraries(test_version PRIVATE hart Catch2::Catch2WithMain)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(test_bits test_util test_csr test_version) # test_decode)
+catch_discover_tests(test_bits_directed)
+
+foreach (random_test IN LISTS RANDOM_TESTS)
+  catch_discover_tests(${random_test})
+endforeach()
+
+# catch_discover_tests(test_version)
+# catch_discover_tests(test_csr)

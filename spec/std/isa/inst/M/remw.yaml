@@ -8,12 +8,12 @@ kind: instruction
 name: remw
 long_name: Signed 32-bit remainder
 description: |
-  Calculate the remainder of signed division of the 32-bit values rs1 by rs2,
-  and store the sign-extended result in rd.
+  Calculate the remainder of signed division of the 32-bit values xs1 by xs2,
+  and store the sign-extended result in xd.
 
-  If the value in register rs2 is zero, write the sign-extended 32-bit value in rs1 into rd;
+  If the value in register xs2 is zero, write the sign-extended 32-bit value in xs1 into xd;
 
-  If the result of the division overflows, write zero into rd;
+  If the result of the division overflows, write zero into xd;
 definedBy:
   extension:
     name: M
@@ -22,11 +22,11 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0111011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -38,26 +38,26 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  Bits<32> src1 = X[rs1][31:0];
-  Bits<32> src2 = X[rs2][31:0];
+  Bits<32> src1 = X[xs1][31:0];
+  Bits<32> src2 = X[xs2][31:0];
 
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the dividend, sign extended to into the 64-bit register
     Bits<1> sign_bit = src1[31];
-    X[rd] = {{32{sign_bit}}, src1};
+    X[xd] = {{32{sign_bit}}, src1};
 
   } else if ((src1 == {33'b1, 31'b0}) && (src2 == 32'b1)) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
-    X[rd] = 0;
+    X[xd] = 0;
 
   } else {
     # no special case
     Bits<32> result = $signed(src1) % $signed(src2);
     Bits<1> sign_bit = result[31];
 
-    X[rd] = {{32{sign_bit}}, result};
+    X[xd] = {{32{sign_bit}}, result};
   }
 
 # SPDX-SnippetBegin

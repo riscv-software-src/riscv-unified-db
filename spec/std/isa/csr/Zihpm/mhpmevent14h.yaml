@@ -9,6 +9,7 @@ kind: csr
 name: mhpmevent14h
 long_name: Machine Hardware Performance Counter 14 Control, High half
 address: 0x72E
+writable: true
 priv_mode: M
 length: 32
 base: 32

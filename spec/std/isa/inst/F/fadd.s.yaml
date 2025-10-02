@@ -6,10 +6,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fadd.s
-long_name: Single-precision floating-point addition
+long_name: Floating-Point Add Single-Precision
 description: |
-  Do the single-precision floating-point addition of fs1 and fs2 and store the result in fd.
-  rm is the dynamic Rounding Mode.
+  The `fadd.s` instruction performs single-precision floating-point addition of `xs1` and `xs2`
+  and writes the final result to `fd`.
 definedBy:
   extension:
     name: F
@@ -34,7 +34,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
   RoundingMode mode = rm_to_mode(rm, $encoding);
-  X[fd] = f32_add(X[fs1], X[fs2], mode);
+  f[fd] = f32_add(f[fs1], f[fs2], mode);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
