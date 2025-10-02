@@ -1310,14 +1310,14 @@ function f32_mul {
 
     if (expA == 0) {
       if (sigA == 0) {
-        return packtoF32UI(signZ, 0, 0);
+        return packToF32UI(signZ, 0, 0);
       }
       (expA, sigA) = softfloat_normSubnormalF32Sig(sigA);
     }
 
     if (expB == 0) {
       if (sigB == 0) {
-        return packtoF32UI(signZ, 0, 0);
+        return packToF32UI(signZ, 0, 0);
       }
       (expB, sigB) = softfloat_normSubnormalF32Sig(sigB);
     }
