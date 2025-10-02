@@ -475,6 +475,19 @@ function softfloat_normSubnormalF16Sig {
   }
 }
 
+function softfloat_normSubnormalF32Sig {
+  returns Bits<8>, Bits<23>
+  arguments
+    Bits<32> sp_value
+  description {
+    normalize subnormal single-precision value
+  }
+  body {
+    Bits<8> shift_dist = count_leading_zeros<32>(sp_value) - 8;
+    return 1 - shift_dist, sp_value << shift_dist;
+  }
+}
+
 function softfloat_roundPackToF32 {
   returns Bits<32>     # single precision value
   arguments
@@ -759,7 +772,7 @@ function softfloat_addMagsF32 {
 
       U32 sigZ = 0x20000000 + sigA + sigB;
       if ( sigZ < 0x40000000 ) {
-            expZ = expZ - 1;
+            expZ = expZ `- 1'b1;
             sigZ =  sigZ << 1;
         }
     }
