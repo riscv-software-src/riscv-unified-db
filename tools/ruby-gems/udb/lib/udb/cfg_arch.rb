@@ -707,10 +707,14 @@ module Udb
           ext = extension(ename)
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
-          if e["version"].is_a?(Array)
-            ExtensionRequirement.new(ename, T.cast(e.fetch("version"), T::Array[String]), presence: Presence.new("mandatory"), arch: self)
+          if e["version"].nil?
+            ExtensionRequirement.new(ename, ">= 0", presence: Presence.new("mandatory"), arch: self)
           else
-            ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
+            if e["version"].is_a?(Array)
+              ExtensionRequirement.new(ename, T.cast(e.fetch("version"), T::Array[String]), presence: Presence.new("mandatory"), arch: self)
+            else
+              ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
+            end
           end
         end
     end

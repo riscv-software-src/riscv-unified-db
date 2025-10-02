@@ -404,7 +404,7 @@ grammar Idl
   end
 
   rule implication_for_loop
-    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+    'for' space* '(' space* for_loop_iteration_variable_declaration space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
       stmts:(s:(implication_statement / implication_for_loop) space*)+
     '}' <Idl::ForLoopSyntaxNode>
   end

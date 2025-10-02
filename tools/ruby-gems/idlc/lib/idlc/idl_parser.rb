@@ -8073,7 +8073,7 @@ module Idl
   end
 
   module ImplicationForLoop1
-    def single_declaration_with_initialization
+    def for_loop_iteration_variable_declaration
       elements[4]
     end
 
@@ -8145,7 +8145,7 @@ module Idl
           r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
           s0 << r5
           if r5
-            r7 = _nt_single_declaration_with_initialization
+            r7 = _nt_for_loop_iteration_variable_declaration
             s0 << r7
             if r7
               s8, i8 = [], index
