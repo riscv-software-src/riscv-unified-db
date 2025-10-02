@@ -227,17 +227,15 @@ end
 
 # source://treetop//lib/treetop/runtime/compiled_parser.rb#1
 module Treetop
-  class << self
-    # compile a treetop source file and load it
-    #
-    # source://treetop//lib/treetop/compiler/grammar_compiler.rb#35
-    def load(path); end
+  # compile a treetop source file and load it
+  #
+  # source://treetop//lib/treetop/compiler/grammar_compiler.rb#35
+  def self.load(path); end
 
-    # compile a treetop source string and load it
-    #
-    # source://treetop//lib/treetop/compiler/grammar_compiler.rb#48
-    def load_from_string(s); end
-  end
+  # compile a treetop source string and load it
+  #
+  # source://treetop//lib/treetop/compiler/grammar_compiler.rb#48
+  def self.load_from_string(s); end
 end
 
 # source://treetop//lib/treetop/compiler/lexical_address_space.rb#2
@@ -1729,10 +1727,10 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
   def input; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#17
+  # source://idlc/0.1.0/lib/idlc.rb#18
   def input_file; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#28
+  # source://idlc/0.1.0/lib/idlc.rb#29
   def instantiate_node(node_type, *args); end
 
   # Returns the value of attribute max_terminal_failure_index.
@@ -1750,7 +1748,7 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#7
   def root=(_arg0); end
 
-  # source://idlc/0.1.0/lib/idlc.rb#19
+  # source://idlc/0.1.0/lib/idlc.rb#20
   def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#54

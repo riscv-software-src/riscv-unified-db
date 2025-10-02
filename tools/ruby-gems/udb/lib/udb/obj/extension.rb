@@ -18,6 +18,7 @@ module Udb
   class Extension < TopLevelDatabaseObject
     # Add all methods in this module to this type of database object.
     include CertifiableObject
+    include Comparable
 
     # @return [String] Long name of the extension
     sig { returns(String) }
@@ -97,11 +98,12 @@ module Udb
       return @params unless @params.nil?
 
       @params = []
-      if @data.key?("params")
-        @data["params"].each do |param_name, param_data|
-          @params << Parameter.new(self, param_name, param_data)
+      cfg_arch.params.each do |param|
+        if param.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
+          @params << param
         end
       end
+
       @params
     end
 
@@ -116,36 +118,28 @@ module Udb
       end
     end
 
-    # @return Logic expression for conflicts
-    sig { returns(AbstractCondition) }
-    def conflicts_condition
-      @conflicts_condition ||=
-        if @data["conflicts_with"].nil?
-          AlwaysFalseCondition.new
-        else
-          Condition.new(@data["conflicts_with"], @cfg_arch)
-        end
-    end
-
     sig { returns(AbstractCondition) }
     def requirements_condition
       @requirements_condition ||=
-        if @data["requirements"].nil?
-          AlwaysTrueCondition
-        else
-          Condition.new(@data["requirements"], @cfg_arch)
-        end
+        @data.key?("requirements") \
+          ? Condition.new(@data.fetch("requirements"), @cfg_arch, input_file: Pathname.new(__source), input_line: source_line(["requirements"]))
+          : AlwaysTrueCondition.new
     end
 
     # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
     def instructions
       @instructions ||=
-        cfg_arch.instructions.select { |i| i.defined_by_condition.could_be_satisfied_by_ext_ver_list?(versions) }
+        cfg_arch.instructions.select do |i|
+          i.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
+        end
     end
 
     # @return [Array<Csr>] the list of CSRs implemented by *any version* of this extension (may be empty)
     def csrs
-      @csrs ||= cfg_arch.csrs.select { |csr| versions.any? { |v| csr.defined_by_condition.possibly_satisfied_by?(v) } }
+      @csrs ||= \
+        cfg_arch.csrs.select do |csr|
+          csr.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
+        end
     end
 
     # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
@@ -164,8 +158,6 @@ module Udb
         funcs += inst.reachable_functions(64) if inst.defined_in_base?(64)
       end
 
-      # The one place in this file that needs a ConfiguredArchitecture object instead of just Architecture.
-      raise "In #{name}, need to provide ConfiguredArchitecture" if cfg_arch.nil?
       csrs.each do |csr|
         funcs += csr.reachable_functions
       end
@@ -173,8 +165,9 @@ module Udb
       @reachable_functions = funcs.uniq
     end
 
+    sig { params(other_ext: Object).returns(T.nilable(Integer)) }
     def <=>(other_ext)
-      raise ArgumentError, "Can only compare two Extensions" unless other_ext.is_a?(Extension)
+      return nil unless other_ext.is_a?(Extension)
       other_ext.name <=> name
     end
 
@@ -182,7 +175,7 @@ module Udb
     sig { returns(T::Array[ExceptionCode]) }
     def exception_codes
       @cfg_arch.exception_codes.select do |ecode|
-        ecode.defined_by_condition.satisfied_by_ext_ver_list?(versions)
+        ecode.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
       end
     end
 
@@ -190,8 +183,14 @@ module Udb
     sig { returns(T::Array[InterruptCode]) }
     def interrupt_codes
       @cfg_arch.interrupt_codes.select do |icode|
-        icode.defined_by_condition.satisfied_by_ext_ver_list?(versions)
+        icode.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
       end
+    end
+
+    # returns an ext req that will be satisfied by any known version of this extension
+    sig { returns(ExtensionRequirement) }
+    def to_ext_req
+      ExtensionRequirement.new(name, ">= 0", arch: @cfg_arch)
     end
   end
 
@@ -258,10 +257,11 @@ module Udb
 
     sig { returns(ExtensionTerm) }
     def to_term
-      @term ||= ExtensionTerm.new(@name, @version_str)
+      @term ||= ExtensionTerm.new(@name, "=", @version_str)
     end
 
     # @return List of known ExtensionVersions that are compatible with this ExtensionVersion (i.e., have larger version number and are not breaking)
+    # the list is inclsive (this version is present)
     sig { returns(T::Array[ExtensionVersion]) }
     def compatible_versions
       return @compatible_versions unless @compatible_versions.nil?
@@ -334,13 +334,7 @@ module Udb
     sig { returns(T::Array[Parameter]) }
     def params
       @ext.params.select do |p|
-        p.when.satisfied_by? do |ext_req|
-          if ext_req.name == name
-            ext_req.satisfied_by?(self)
-          else
-            @arch.possible_extension_versions.any? { |poss_ext_ver| ext_req.satisfied_by?(poss_ext_ver) }
-          end
-        end
+        p.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
       end
     end
 
@@ -361,69 +355,90 @@ module Udb
 
     # @return Condition that must be met for this version to be allowed.
     sig { returns(AbstractCondition) }
-    def requirement_condition
-      return @requirement_condition unless @requirement_condition.nil?
-
-      if !@data.key?("required_extensions") && !@data.key?("restrictions")
-        @requirement_condition = AlwaysTrueCondition.new
-      else
-        cond_yaml = {}
-        if @data.key?("required_extensions")
-          ext_conds = []
-          req_list = ExtensionRequirementList.new(@data.fetch("required_extensions"), @arch)
-          req_list.list.each do |cond_ext_req|
-            if cond_ext_req.cond.empty?
-              ext_conds << {
-                "name" => cond_ext_req.ext_req.name,
-                "version" => cond_ext_req.ext_req.requirement_specs.map { |s| s.to_s }
-              }
-            else
-              ext_conds << {
-                "if" => cond_ext_req.cond.to_h,
-                "then" => {
-                  "name" => cond_ext_req.ext_req.name,
-                  "version" => cond_ext_req.ext_req.requirement_specs.map { |s| s.to_s }
-                }
-              }
-            end
-          end
-          if ext_conds.size == 1
-            cond_yaml["extension"] = ext_conds.fetch(0)
-          else
-            cond_yaml["extension"] = { "allOf": ext_conds }
-          end
-        end
-        if @data.key("param_restrictions")
-          param_cond = ParamCondition.new(@data.fetch("parameter_restrictions"), @arch)
-          cond_yaml["param"] = param_cond.to_h
-        end
-        @requirement_condition = Condition.new(cond_yaml, @arch)
-      end
-
-      @requirement_condition
+    def requirements_condition
+      @requirements_condition ||=
+        @data.key?("requirements") \
+          ? Condition.new(
+              @data.fetch("requirements"),
+              @arch,
+              input_file: Pathname.new(ext.__source),
+              input_line: ext.source_line(["versions", ext.data.fetch("versions").index { |v| VersionSpec.new(v["version"]) == version_spec }])
+            )
+          : AlwaysTrueCondition.new
     end
 
-    # @return Condition with extensions that conflict with this version
+    # the combination of this extension version requirement along with the overall extension requirements
     sig { returns(AbstractCondition) }
-    def conflicts_condition
-      ext.conflicts_condition
+    def combined_requirements_condition
+      if @data.key?("requirements") && !ext.requirements_condition.empty?
+        Condition.new(
+          {
+            "allOf": [
+              @data.fetch("requirements"),
+              ext.data.fetch("requirements")
+            ]
+          },
+          @cfg_arch
+        )
+      elsif requirements_condition.empty?
+        ext.requirements_condition
+      else
+        requirements_condition
+      end
     end
 
     # Returns array of ExtensionVersions implied by this ExtensionVersion, along with a condition
     # under which it is in the list (which may be an AlwaysTrueCondition)
     #
-    # @example
-    #   ext_ver.implications #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => Condition.new(...) }
+    # specifically, this returns the complete list of positive terms (terms that are not negated
+    # in solution) of requirements,
+    # along with a condition under which the positive term applies
     #
-    # @return
-    #      List of extension versions that this ExtensionVersion implies
-    #      This list is *not* transitive; if an implication I1 implies another extension I2,
-    #      only I1 shows up in the list
+    # @example
+    #   given the equation (reqpresenting implications of the "C" extension):
+    #      Zca AND (!F OR Zcf) AND (!D OR Zcd)
+    #
+    #   return:
+    #     [
+    #        { ext_ver: Zca, cond: True },
+    #        { ext_ver: Zcf, cond: !F },
+    #        { ext_ver: Zcd, cond: !D }
+    #     ]
+    # @example
+    #   given the equation
+    #     Zc AND ((Zc1 AND Zc2) OR (!Zcond))
+    #
+    #   return
+    #     [
+    #       { ext_ver: Zc,  cond True},
+    #       { ext_ver: Zc1, cond: !Zcond},
+    #       { ext_ver: Zc2, cond: !Zcond}
+    #     ]
+    #
+    # This list is *not* transitive; if an implication I1 implies another extension I2,
+    # only I1 shows up in the list
     sig { returns(T::Array[ExtensionRequirementList::ConditionalExtensionVersion]) }
     def implications
-      return [] if @data["required_extensions"].nil?
-
-      ExtensionRequirementList.new(@data["required_extensions"], @arch).implied_extension_versions
+      @implications ||= requirements_condition.implied_extensions.map do |cond_ext_req|
+        if cond_ext_req.ext_req.is_ext_ver?
+          satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@cfg_arch)
+          if satisfied == SatisfiedResult::Yes
+            ConditionalExtensionVersion.new(
+              ext_ver: cond_ext_req.ext_req.to_ext_ver,
+              cond: AlwaysTrueCondition.new
+            )
+          elsif satisfied == SatisfiedResult::Maybe
+            ConditionalExtensionVersion.new(
+              ext_ver: cond_ext_req.ext_req.to_ext_ver,
+              cond: cond_ext_req.cond
+            )
+          else
+            nil
+          end
+        else
+          nil
+        end
+      end.compact
     end
 
     # @return [Array<ExtensionVersion>] List of extension versions that might imply this ExtensionVersion
@@ -440,7 +455,7 @@ module Udb
 
         ext.versions.each do |ext_ver|
           ext_ver.implications.each do |implication|
-            @implied_by << ext_ver if implication.ext_ver == self && implication.cond.could_be_true?(@arch)
+            @implied_by << ext_ver if implication.ext_ver == self && implication.cond.could_be_satisfied_by_cfg_arch?(@arch)
           end
         end
       end
@@ -455,7 +470,7 @@ module Udb
     #
     # @example
     #   zba_ext_ver.implied_by_with_condition #=> [{ ext_ver: "B 1.0", cond: AlwaysTrueCondition}]
-    sig { returns(T::Array[ExtensionRequirementList::ConditionalExtensionVersion]) }
+    sig { returns(T::Array[ConditionalExtensionVersion]) }
     def implied_by_with_condition
       return @implied_by_with_condition unless @implied_by_with_condition.nil?
 
@@ -467,7 +482,7 @@ module Udb
           raise "????" if ext_ver.arch.nil?
           ext_ver.implications.each do |implication|
             if implication.ext_ver == self
-              @implied_by_with_condition << ExtensionRequirementList::ConditionalExtensionVersion.new(ext_ver: ext_ver, cond: implication.cond)
+              @implied_by_with_condition << ConditionalExtensionVersion.new(ext_ver: ext_ver, cond: implication.cond)
             end
           end
         end
@@ -488,42 +503,26 @@ module Udb
       end
     end
 
-    # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
-    def implemented_csrs
-      return @implemented_csrs unless @implemented_csrs.nil?
-
-      raise "implemented_csrs needs an cfg_arch" if @cfg_arch.nil?
-
-      @implemented_csrs = @cfg_arch.csrs.select do |csr|
-        csr.defined_by_condition.possibly_satisfied_by?(self)
-      end
-    end
-
-    # @return the list of insts implemented by this extension version (may be empty)
-    sig { returns(T::Array[Instruction]) }
-    def implemented_instructions
-      return @implemented_instructions unless @implemented_instructions.nil?
-
-      raise "implemented_instructions needs an cfg_arch" if @cfg_arch.nil?
-
-      @implemented_instructions = @cfg_arch.instructions.select do |inst|
-        inst.defined_by_condition.could_be_satisfied_by_ext_ver_list?([self])
-      end
-    end
-    alias_method(:instructions, :implemented_instructions)
-
+    # the list of exception codes that require this extension version (or a compatible version)
+    # in order to be defined
     sig { returns(T::Array[ExceptionCode]) }
     def exception_codes
-      @cfg_arch.exception_codes.select do |ecode|
-        ecode.defined_by_condition.satisfied_by_ext_ver_list?([self])
-      end
+      @exception_codes ||=
+        @cfg_arch.exception_codes.select do |ecode|
+          # define every extension version except this one (and compatible),
+          # and test if the condition can be satisfied
+          ecode.defined_by_condition.satisfiability_depends_on_ext_req?(ExtensionRequirement.new(@name, "~> #{@version_spec}", arch: @cfg_arch))
+        end
     end
 
+    # the list of interrupt codes that require this extension version (or a compatible version)
+    # in order to be defined
     sig { returns(T::Array[InterruptCode]) }
     def interrupt_codes
-      @cfg_arch.interrupt_codes.select do |ecode|
-        ecode.defined_by_condition.satisfied_by_ext_ver_list?([self])
-      end
+      @interrupt_codes ||=
+        @cfg_arch.interrupt_codes.select do |ecode|
+          ecode.defined_by_condition.satisfiability_depends_on_ext_req?(ExtensionRequirement.new(@name, "~> #{@version_spec}", arch: @cfg_arch))
+        end
     end
 
     # @param design [Design] The design
@@ -535,7 +534,7 @@ module Udb
       return @in_scope_csrs unless @in_scope_csrs.nil?
 
       @in_scope_csrs = @arch.csrs.select do |csr|
-        csr.defined_by_condition.possibly_satisfied_by?(self) &&
+        csr.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
         (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
       end
     end
@@ -549,7 +548,7 @@ module Udb
       return @in_scope_instructions unless @in_scope_instructions.nil?
 
       @in_scope_instructions = @arch.instructions.select do |inst|
-        inst.defined_by_condition.possibly_satisfied_by?(self) &&
+        inst.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
         (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
       end
     end
@@ -584,15 +583,52 @@ module Udb
     # @return [String,nil], Optional presence (e.g., mandatory, optional, etc.)
     attr_reader :presence
 
-    # @return [Array<RequirementSpec>] Set of requirement specifications
-    def requirement_specs = @requirements
+    sig { returns(ExtensionTerm) }
+    def to_term
+      if @requirements.size == 1
+        ExtensionTerm.new(name, @requirements.fetch(0).op, @requirements.fetch(0).version_spec)
+      else
 
-    def requirement_specs_to_s
-      "#{@requirements.map(&:to_s).join(', ')}"
+      end
     end
 
+    sig { returns(ConfiguredArchitecture) }
+    def cfg_arch = @arch
+
+    # returns true when the version requirement is ">= 0"
+    sig { returns(T::Boolean) }
+    def satified_by_any_version?
+      @requirements.size == 1 && \
+        @requirements.fetch(0).op == ">=" && \
+        @requirements.fetch(0).version_spec == "0"
+    end
+
+    # @return Set of requirement specifications
+    sig { returns(T::Array[RequirementSpec]) }
+    def requirement_specs = @requirements
+
+    # pretty display of requirements, with special case that ">= 0" is "any"
+    def requirement_specs_to_s_pretty
+      if satified_by_any_version?
+        "any"
+      else
+        "#{@requirements.map(&:to_s).join(" and ")}"
+      end
+    end
+
+    sig { override.returns(String) }
     def to_s
       "#{name} " + requirement_specs_to_s
+    end
+
+    # like to_s, but omits the requirement if the requirement is ">= 0"
+    sig { returns(String) }
+    def to_s_pretty
+      if satified_by_any_version?
+        name
+      else
+        to_s
+      end
     end
 
     # @return [Extension] The extension that this requirement is for
@@ -615,6 +651,20 @@ module Udb
           ">= 0"
         end
       ExtensionRequirement.new(yaml.fetch("name"), requirements, arch: cfg_arch)
+    end
+
+    sig { returns(T::Boolean) }
+    def is_ext_ver?
+      @requirements.size == 1 && @requirements.op == "="
+    end
+
+    sig { returns(ExtensionVersion) }
+    def to_ext_ver
+      unless is_ext_ver?
+        raise "ExtensionRequirement can only be converted to and ExtensionVersion when there is a single equality version requirement"
+      end
+
+      ExtensionVersion.new(name, @requirements.fetch(0).version_spec, @cfg_arch)
     end
 
     # @param name [#to_s] Extension name
@@ -795,9 +845,7 @@ module Udb
     sig { returns(T::Array[Csr]) }
     def csrs
       @csrs ||= @arch.csrs.select do |csr|
-        satisfying_versions.any? do |ext_ver|
-          csr.defined_by_condition.possibly_satisfied_by?(ext_ver)
-        end
+        csr.defined_by_condition.satisfiability_depends_on_ext_req?(self)
       end
     end
 

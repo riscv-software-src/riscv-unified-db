@@ -173,8 +173,8 @@ module Udb
           say <<~INFO
             #{param_name}
 
-              Defined by extension:
-              #{param.exts.map { |e| "    - #{e.name}" }.join("\n")}
+              Defined by:
+              #{param.defined_by_condition.to_s_pretty}
 
               Description:
                 #{param.desc.gsub("\n", "\n    ")}
@@ -225,7 +225,7 @@ module Udb
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :extensions, aliases: "-e", type: :array, desc: "Only list parameters from extensions"
-      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: 'ascii'
+      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: "ascii"
       method_option :output, aliases: "-o", type: :string, desc: "Output file, or '-' for stdout", default: "-"
       def parameters
         raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
@@ -255,7 +255,7 @@ module Udb
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         params =
           if options[:extensions]
-            cfg_arch.possible_extensions.select{ |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
+            cfg_arch.possible_extensions.select { |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
           else
             cfg_arch.possible_extensions.map(&:params).flatten.uniq(&:name).sort
           end

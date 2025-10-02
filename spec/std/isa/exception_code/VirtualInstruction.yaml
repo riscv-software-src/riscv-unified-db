@@ -5,7 +5,7 @@
 
 $schema: exception_code_schema.json#
 kind: exception_code
-name: VScall
+name: VirtualInstruction
 num: 22
 display_name: Virtual instruction
 definedBy:

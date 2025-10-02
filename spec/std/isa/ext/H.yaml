@@ -12,9 +12,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2019-12
-    required_extensions:
-      name: S
-      version: ">= 1.12.0"
+requirements:
+  extension:
+    name: S
+    version: ">= 1.12.0"
 
 description: |
   This chapter describes the RISC-V hypervisor extension, which

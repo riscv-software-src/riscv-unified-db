@@ -341,6 +341,10 @@ grammar Idl
   end
 
   rule unary_expression
+    'true' <Idl::TrueExpressionSyntaxNode>
+    /
+    'false' <Idl::FalseExpressionSyntaxNode>
+    /
     '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralSyntaxNode>
     /
     ary_access
@@ -361,6 +365,8 @@ grammar Idl
     '$enum' space* '(' space* user_type_name space* ',' space* expression space* ')' <Idl::EnumCastSyntaxNode>
     /
     '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
+    /
+    '$array_includes?' space* '(' space* ary_var:id space* ',' space* value:expression space* ')' <Idl::ArrayIncludesSyntaxNode>
     /
     paren_expression
     /
@@ -394,7 +400,7 @@ grammar Idl
   end
 
   rule implication_expression
-    antecedent:p9_binary_expression space* '->' space* consequent:p9_binary_expression <Idl::ImplicationExpressionSyntaxNode>
+    antecedent:p9_binary_expression? space* '->' space* consequent:p9_binary_expression <Idl::ImplicationExpressionSyntaxNode>
   end
 
   rule implication_for_loop
@@ -622,7 +628,9 @@ grammar Idl
     'generated' ![A-Za-z0-9_] /
     'enum' ![A-Za-z0-9_]  /
     'bitfield' ![A-Za-z0-9_] /
-    'CSR' ![A-Za-z0-9_]
+    'CSR' ![A-Za-z0-9_] /
+    'true' ![A-Za-z0-9_] /
+    'false' ![A-Za-z0-9_]
   end
 
   rule user_type_name

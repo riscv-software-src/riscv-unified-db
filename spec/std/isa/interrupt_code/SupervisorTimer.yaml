@@ -6,7 +6,7 @@
 $schema: interrupt_code_schema.json#
 kind: interrupt_code
 name: SupervisorTimer
-num: 7
+num: 5
 display_name: Supervisor timer
 definedBy:
   extension:

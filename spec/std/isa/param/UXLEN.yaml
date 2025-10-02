@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: UXLEN
+description: |
+  Set of XLENs supported in U-mode. When both 32 and 64 are supported, SXLEN can be changed,
+  via mstatus.UXL, between 32 and 64.
+long_name: TODO
+schema:
+  type: array
+  items:
+    enum:
+      - 32
+      - 64
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true
+requirements:
+  idl(): |
+    !$array_includes?(MXLEN, 64) -> !$array_includes?(UXLEN, 64);
+    $array_includes?(SXLEN, 32) -> $array_includes?(UXLEN, 32);
+  reason: |
+    XLEN in U-mode can never be larger than XLEN in M-mode
+
+    If S-mode supports RV32, then U mode must also support it.
+definedBy:
+  extension:
+    name: U

@@ -12,12 +12,14 @@ require "treetop"
 module Udb
 
   class LogicNode; end
+
+  # parses the equation format from `eqntott` / `espresso` and converts it to a LogicNode
   class Eqn
 
     EQN_GRAMMAR = <<~GRAMMAR
       grammar Eqn
         rule eqn
-          expression ';' <Udb::Eqn::EqnTop>
+          expression space* ';' space* <Udb::Eqn::EqnTop>
         end
 
         rule name
@@ -33,11 +35,13 @@ module Udb
         end
 
         rule paren
-          '(' space* expression space* ')' <Udb::Eqn::EqnParen>
+          '(' space* ')' <Udb::Eqn::EmptyEqnParen>
+          /
+          '(' space* conjunction space* ')' <Udb::Eqn::EqnParen>
         end
 
         rule not
-          '!' space* expression <Udb::Eqn::EqnNot>
+          '!' space* name <Udb::Eqn::EqnNot>
         end
 
         rule unary_expression
@@ -75,7 +79,7 @@ module Udb
       extend T::Sig
       sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
-        expression.to_logic_tree(term_map)
+        send(:expression).to_logic_tree(term_map)
       end
     end
 
@@ -107,11 +111,19 @@ module Udb
       end
     end
 
+    class EmptyEqnParen < Treetop::Runtime::SyntaxNode
+      extend T::Sig
+      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      def to_logic_tree(term_map)
+        LogicNode::True
+      end
+    end
+
     class EqnParen < Treetop::Runtime::SyntaxNode
       extend T::Sig
       sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
-        expression.to_logic_tree(term_map)
+        send(:conjunction).to_logic_tree(term_map)
       end
     end
 
@@ -119,7 +131,7 @@ module Udb
       extend T::Sig
       sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
-        LogicNode.new(LogicNodeType::Not, [expression.to_logic_tree(term_map)])
+        LogicNode.new(LogicNodeType::Not, [send(:name).to_logic_tree(term_map)])
       end
     end
 
@@ -128,8 +140,8 @@ module Udb
       sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         children = T.let([], T::Array[LogicNode])
-        children << first.to_logic_tree(term_map)
-        r.elements.each do |e|
+        children << send(:first).to_logic_tree(term_map)
+        send(:r).elements.each do |e|
           children << e.unary_expression.to_logic_tree(term_map)
         end
         LogicNode.new(LogicNodeType::And, children)
@@ -141,8 +153,8 @@ module Udb
       sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         children = T.let([], T::Array[LogicNode])
-        children << first.to_logic_tree(term_map)
-        r.elements.each do |e|
+        children << send(:first).to_logic_tree(term_map)
+        send(:r).elements.each do |e|
           children << e.conjunction.to_logic_tree(term_map)
         end
         LogicNode.new(LogicNodeType::Or, children)
@@ -162,6 +174,9 @@ module Udb
     def to_logic_tree(term_map)
       m = @parser.parse(@eqn)
       if m.nil?
+        puts "start"
+        pp @eqn
+        puts "end"
         raise "Error parsing eqn: #{@parser.failure_reason}"
       end
 

@@ -544,7 +544,7 @@
             {
               "type": "object",
               "additionalProperties": false,
-              "required": ["name", "reason"],
+              "required": ["name"],
               "properties": {
                 "name": {
                   "$ref": "#/$defs/param_name"
@@ -559,6 +559,40 @@
                     },
                     {
                       "type": "boolean"
+                    }
+                  ]
+                },
+                "oneOf": {
+                  "type": "array",
+                  "minItems": 2,
+                  "oneOf": [
+                    {
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1
+                      }
                     }
                   ]
                 },
@@ -602,8 +636,8 @@
                   "type": "string"
                 }
               },
-              "$comment": "Mandating exactly 3 properties, together with required properties 'name' and 'reason', means that exactly one logic condition may be specified",
-              "minProperties": 3,
+              "$comment": "Mandating 2-3 properties, depending on if reason is given",
+              "minProperties": 2,
               "maxProperties": 3
             },
             {
@@ -659,7 +693,7 @@
     "idl_condition": {
       "description": "A condition expressed with IDL",
       "type": "object",
-      "required": ["idl()", "reason"],
+      "required": ["idl()"],
       "properties": {
         "idl()": {
           "description": "IDL function containing one or more implications (e.g., A -> B).",

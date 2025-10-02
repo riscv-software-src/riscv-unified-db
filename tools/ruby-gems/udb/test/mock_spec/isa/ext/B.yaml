@@ -12,8 +12,9 @@ versions:
   - version: "2.1.0"
     state: ratified
     ratification_date: 2019-06
-    required_extensions:
-      name: A
-      version: = 1.0.0
+    requirements:
+      extension:
+        name: A
+        version: = 1.0.0
 description: |
   Something descriptive

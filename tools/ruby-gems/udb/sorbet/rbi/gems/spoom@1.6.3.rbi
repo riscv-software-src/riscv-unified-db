@@ -128,13 +128,13 @@ class Spoom::Cli::Main < ::Thor
   # source://spoom//lib/spoom/cli.rb#64
   def coverage(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def deadcode(*args); end
 
   # source://spoom//lib/spoom/cli.rb#74
   def lsp(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def srb(*args); end
 
   # source://spoom//lib/spoom/cli.rb#93
@@ -268,24 +268,24 @@ end
 
 # source://spoom//lib/spoom/cli/srb.rb#14
 class Spoom::Cli::Srb::Main < ::Thor
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def assertions(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def bump(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def coverage(*args); end
 
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def lsp(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def sigs(*args); end
 
-  # source://thor/1.3.2/lib/thor.rb#334
+  # source://thor/1.4.0/lib/thor.rb#334
   def tc(*args); end
 end
 
@@ -899,7 +899,7 @@ class Spoom::Coverage::D3::ColorPalette < ::T::Struct
   prop :strong, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1227,7 +1227,7 @@ class Spoom::Coverage::Snapshot < ::T::Struct
     sig { params(obj: T::Hash[::String, T.untyped]).returns(::Spoom::Coverage::Snapshot) }
     def from_obj(obj); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1349,7 +1349,7 @@ class Spoom::Deadcode::Definition < ::T::Struct
   def to_json(*args); end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2043,7 +2043,7 @@ class Spoom::Deadcode::Send < ::T::Struct
   def each_arg_assoc(&block); end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2063,7 +2063,7 @@ class Spoom::ExecResult < ::T::Struct
   def to_s; end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2224,7 +2224,7 @@ class Spoom::FileTree::Node < ::T::Struct
   def path; end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2282,7 +2282,7 @@ class Spoom::Git::Commit < ::T::Struct
   def timestamp; end
 
   class << self
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
 
     # source://spoom//lib/spoom/context/git.rb#10
@@ -2386,7 +2386,7 @@ class Spoom::LSP::Diagnostic < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::Diagnostic) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2419,7 +2419,7 @@ class Spoom::LSP::DocumentSymbol < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::DocumentSymbol) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2477,7 +2477,7 @@ class Spoom::LSP::Hover < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::Hover) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2502,7 +2502,7 @@ class Spoom::LSP::Location < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::Location) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2557,7 +2557,7 @@ class Spoom::LSP::Position < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::Position) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2591,7 +2591,7 @@ class Spoom::LSP::Range < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::Range) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2653,7 +2653,7 @@ class Spoom::LSP::SignatureHelp < ::T::Struct
     sig { params(json: T::Hash[T.untyped, T.untyped]).returns(::Spoom::LSP::SignatureHelp) }
     def from_json(json); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -3043,7 +3043,7 @@ class Spoom::Model::Reference < ::T::Struct
     sig { params(name: ::String, location: ::Spoom::Location).returns(::Spoom::Model::Reference) }
     def constant(name, location); end
 
-    # source://sorbet-runtime/0.5.12184/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12550/lib/types/struct.rb#13
     def inherited(s); end
 
     # source://spoom//lib/spoom/model/reference.rb#25

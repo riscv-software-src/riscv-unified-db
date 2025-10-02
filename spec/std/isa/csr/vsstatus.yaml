@@ -56,9 +56,9 @@ fields:
       Since the hart only supports VUXLEN==64, this is hardwired to 1.
 
     type(): |
-      return (VUXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+      return ($array_size(VUXLEN) > 1) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
-      return (VUXLEN == 3264) ? UNDEFINED_LEGAL : VUXLEN;
+      return ($array_size(VUXLEN) > 1) ? UNDEFINED_LEGAL : VUXLEN;
   MXR:
     alias: mstatus.MXR
     location: 19

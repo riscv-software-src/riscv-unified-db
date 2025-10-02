@@ -106,7 +106,7 @@ module Udb
         return true if unconfigured?
 
         if fully_configured?
-          ext?(:S) && (param_values["SXLEN"] == 3264)
+          ext?(:S) && (param_values["SXLEN"].size > 1)
         elsif partially_configured?
           return false if prohibited_ext?(:S)
 
@@ -114,7 +114,7 @@ module Udb
 
           return true unless param_values.key?("SXLEN")
 
-          param_values["SXLEN"] == 3264
+          param_values["SXLEN"].size > 1
         else
           raise "Unexpected configuration state"
         end
@@ -124,13 +124,13 @@ module Udb
         return true if unconfigured?
 
         if fully_configured?
-          ext?(:U) && (param_values["UXLEN"] == 3264)
+          ext?(:U) && (param_values["UXLEN"].size > 1)
         elsif partially_configured?
           return true unless ext?(:U) # if U is not known to be implemented, we can't say anything about it
 
           return true unless param_values.key?("UXLEN")
 
-          param_values["UXLEN"] == 3264
+          param_values["UXLEN"].size > 1
         else
           raise "Unexpected configuration state"
         end
@@ -140,13 +140,13 @@ module Udb
         return true if unconfigured?
 
         if fully_configured?
-          ext?(:H) && (param_values["VSXLEN"] == 3264)
+          ext?(:H) && (param_values["VSXLEN"].size > 1)
         elsif partially_configured?
           return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
 
           return true unless param_values.key?("VSXLEN")
 
-          param_values["VSXLEN"] == 3264
+          param_values["VSXLEN"].size > 1
         else
           raise "Unexpected configuration state"
         end
@@ -156,13 +156,13 @@ module Udb
         return true if unconfigured?
 
         if fully_configured?
-          ext?(:H) && (param_values["VUXLEN"] == 3264)
+          ext?(:H) && (param_values["VUXLEN"].size > 1)
         elsif partially_configured?
           return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
 
           return true unless param_values.key?("VUXLEN")
 
-          param_values["VUXLEN"] == 3264
+          param_values["VUXLEN"].size > 1
         else
           raise "Unexpected configuration state"
         end
@@ -934,9 +934,7 @@ module Udb
 
       @transitive_implemented_csrs ||=
         csrs.select do |csr|
-          csr.defined_by_condition.satisfied_by? do |ext_req|
-            transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
-          end
+          csr.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
         end
     end
     alias implemented_csrs transitive_implemented_csrs
@@ -949,9 +947,7 @@ module Udb
           transitive_implemented_csrs
         elsif @config.partially_configured?
           csrs.select do |csr|
-            csr.defined_by_condition.satisfied_by? do |ext_req|
-              not_prohibited_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
-            end
+            csr.defined_by_condition.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
           end
         else
           csrs
@@ -968,9 +964,7 @@ module Udb
 
       @transitive_implemented_instructions ||=
         instructions.select do |inst|
-          inst.defined_by_condition.satisfied_by? do |ext_req|
-            transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
-          end
+          inst.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
         end
     end
     alias implemented_instructions transitive_implemented_instructions
@@ -984,9 +978,7 @@ module Udb
           instructions - transitive_implemented_instructions
         elsif partially_configured?
           instructions.select do |inst|
-            inst.defined_by_condition.satisfied_by? do |ext_req|
-              not_prohibited_extension_versions.none? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
-            end
+            inst.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::No
           end
         else
           []
@@ -1007,9 +999,7 @@ module Udb
           elsif @config.partially_configured?
             instructions.select do |inst|
               possible_xlens.any? { |xlen| inst.defined_in_base?(xlen) } && \
-                inst.defined_by_condition.satisfied_by? do |ext_req|
-                  not_prohibited_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
-                end
+                inst.defined_by_condition.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
             end
           else
             instructions

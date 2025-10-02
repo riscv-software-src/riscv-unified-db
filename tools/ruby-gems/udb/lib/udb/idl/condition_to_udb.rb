@@ -4,68 +4,87 @@
 # typed: true
 # frozen_string_literal: true
 
+require "sorbet-runtime"
+
 require "idlc/ast"
 
 module Idl
   class AstNode
-    sig { overridable.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    extend T::Sig
+
+    UdbHashType = T.type_alias do T.any(T::Hash[String, T.untyped], T::Boolean) end
+
+    sig { overridable.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       raise "Need to implement #{self.class.name}::to_udb_h in #{__FILE__}"
     end
   end
 
   class ImplicationExpressionAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
-      {
-        "if" => antecedent.to_udb_h(symtab),
-        "then" => consequent.to_udb_h(symtab)
-      }
+      if antecedent.is_a?(TrueExpressionAst)
+        consequent.to_udb_h(symtab)
+      else
+        {
+          "if" => antecedent.to_udb_h(symtab),
+          "then" => consequent.to_udb_h(symtab)
+        }
+      end
     end
   end
 
   class ParenExpressionAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       expression.to_udb_h(symtab)
     end
   end
 
   class ImplicationStatementAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       expression.to_udb_h(symtab)
     end
   end
 
   class ConstraintBodyAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       if @children.size == 1
         @children.fetch(0).to_udb_h(symtab)
       else
         {
-          "allOf": @children.map { |child| child.to_udb_h(symtab) }
+          "allOf" => @children.map { |child| child.to_udb_h(symtab) }
         }
       end
     end
   end
 
+  class TrueExpressionAst < AstNode
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
+    def to_udb_h(symtab) = true
+  end
+
+  class FalseExpressionAst < AstNode
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
+    def to_udb_h(symtab) = false
+  end
+
   class IdAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       {
         "param" => {
           "name" => name,
-          "equal" => true,
-          "reason" => ""
+          "equal" => true
         }
       }
     end
   end
 
   class ForLoopAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       res = { "allOf" => [] }
 
@@ -88,7 +107,7 @@ module Idl
   end
 
   class AryElementAccessAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       {
         "param" => {
@@ -100,8 +119,24 @@ module Idl
     end
   end
 
+  class UnaryOperatorExpressionAst < AstNode
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
+    def to_udb_h(symtab)
+      case @op
+      when "!"
+        {
+          "not" => exp.to_udb_h(symtab)
+        }
+      when "-", "~"
+        raise "No conversion for -/~"
+      else
+        raise "Unexpected"
+      end
+    end
+  end
+
   class FunctionCallExpressionAst < AstNode
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       case name
       when "implemented?"
@@ -113,14 +148,14 @@ module Idl
         }
       when "implemented_version?"
         type_error "Bad first argument to implemented_version?" unless args.fetch(0).text_value =~ /^ExtensionName::[A-Z][a-z0-9]*$/
-        type_error "Bad second argument to implemented_version?" unless args.fetch(1).text_value =~ /([0-9]+)(?:\.([0-9]+)(?:\.([0-9]+)(?:-(pre))?)?)?/
+        type_error "Bad second argument to implemented_version?" unless args.fetch(1).text_value =~ /((?:>=)|(?:>)|(?:~>)|(?:<)|(?:<=)|(?:!=)|(?:=))\s*([0-9]+)(?:\.([0-9]+)(?:\.([0-9]+)(?:-(pre))?)?)?/
         {
           "extension" => {
             "name" => args.fetch(0).text_value.gsub("ExtensionName::", ""),
-            "version" => "= #{args.fetch(1).text_value}"
+            "version" => args.fetch(1).text_value.gsub('"', "")
           }
         }
-      when "$ary_includes?"
+      when "$array_includes?"
         {
           "param" => {
             "name" => args.fetch(0).text_value,
@@ -142,7 +177,7 @@ module Idl
       ">=" => "greater_than_or_equal",
       "<=" => "less_than_or_equal"
     }
-    sig { override.params(symtab: Idl::SymbolTable).returns(T::Hash[String, T.untyped]) }
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
       case @op
       when "&&"

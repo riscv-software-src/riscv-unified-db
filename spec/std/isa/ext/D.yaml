@@ -14,9 +14,10 @@ versions:
     ratification_date: 2019-12
     changes:
       - Define NaN-boxing scheme, changed definition of FMAX and FMIN
-    required_extensions:
-      name: F
-      version: "2.2.0"
+    requirements:
+      extension:
+        name: F
+        version: = 2.2.0
 description: |
   The `D` extension adds
   double-precision floating-point computational instructions compliant

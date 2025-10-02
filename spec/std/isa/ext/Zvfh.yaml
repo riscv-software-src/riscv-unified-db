@@ -36,7 +36,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      allOf:
-        - name: Zve32f
-        - name: Zfhmin
+requirements:
+  extension:
+    allOf:
+      - name: Zve32f
+      - name: Zfhmin

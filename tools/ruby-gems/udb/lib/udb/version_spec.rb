@@ -117,6 +117,29 @@ module Udb
       end
     end
 
+    sig { returns(VersionSpec) }
+    def increment_patch
+      dup.instance_variable_set(:@patch, @patch + 1)
+    end
+
+    sig { returns(VersionSpec) }
+    def decrement_patch
+      copy = dup
+      if @patch > 0
+        copy.instance_variable_set(:@patch, @patch - 1)
+      elsif @minor > 0
+        copy.instance_variable_set(:@minor, @minor - 1)
+        copy.instance_variable_set(:@patch, 9999)
+      elsif @major > 0
+        copy.instance_variable_set(:@major, @major - 1)
+        copy.instance_variable_set(:@minor, 9999)
+        copy.instance_variable_set(:@patch, 9999)
+      else
+        raise "Cannot decrement version 0"
+      end
+      copy
+    end
+
     # @param other [VersionSpec] Comparison
     # @return [Boolean] Whether or not +other+ is an VersionSpec with the same canonical version
     sig { params(other: T.any(String, VersionSpec)).returns(T::Boolean) }

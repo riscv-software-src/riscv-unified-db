@@ -12,19 +12,14 @@ versions:
 - version: "1.11.0"
   state: ratified
   ratification_date: 2019-06
-  required_extensions:
-    name: U
-    version: "= 1.0.0"
 - version: "1.12.0"
   state: ratified
   ratification_date: 2021-12
-  required_extensions:
-    name: U
-    version: "= 1.0.0"
 - version: "1.13.0"
   state: ratified
   ratification_date: null
-  required_extensions:
+requirements:
+  extension:
     name: U
     version: "= 1.0.0"
 description: |

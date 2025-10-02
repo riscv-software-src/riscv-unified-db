@@ -220,9 +220,9 @@ Version requirements are specified as conditions using the following operators:
 <%= version.name %> defines a single sub-extension:
 <%-     end -%>
 
-<%-     version.implications.each do |implication_hsh| -%>
-<%-       sub_ext = implication_hsh.ext_ver -%>
-<%-       cond = implication_hsh.cond -%>
+<%-     version.implications.each do |cond_ext_ver| -%>
+<%-       sub_ext = cond_ext_ver.ext_ver -%>
+<%-       cond = cond_ext_ver.cond -%>
 ==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>) <%= "if #{cond.to_asciidoc(join: ', ')}" unless cond.empty? %>
 
 <%= cfg_arch.extension(sub_ext.name).description %>
@@ -262,7 +262,7 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 <%- if has_implications -%>
 === Instructions by sub-extension
 
-<%- implications = versions.map { |v| v.implications.to_a }.flatten -%>
+<%- implications = versions.map { |v| v.implications }.flatten -%>
 
 [%autowidth]
 |===
@@ -270,7 +270,7 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 <%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |e| i.defined_by_condition.could_be_satisfied_by_ext_ver_list?([e.ext_ver]) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by_condition.satisfiability_depends_on_ext_req?(ExtensionRequirement.new(e.ext_ver.name, "~> #{e.ext_ver.version}", arch: cfg_arch)) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 

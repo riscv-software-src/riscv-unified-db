@@ -37,29 +37,29 @@ fields:
           ! 0     ! 32
           ! 1     ! 64
           !===
-        when(): return VSXLEN == 3264;
+        when(): return $array_size(VSXLEN) > 1;
       - id: csr-hstatus-vsxl-rv32
         normative: false
         text: |
           Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.
-        when(): return VSXLEN == 32;
+        when(): return $array_size(VSXLEN) > 1;
       - id: csr-hstatus-vsxl-rv64
         normative: false
         text: |
           Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
-        when(): return VSXLEN == 64;
+        when(): return $array_size(VSXLEN) > 1;
 
     type(): |
-      if ((VSXLEN == 32) || (VSXLEN == 64)) {
+      if ($array_size(VSXLEN) == 1) {
         return CsrFieldType::RO;
       } else {
         return CsrFieldType::RW;
       }
     reset_value(): |
-      if (VSXLEN == 32) {
+      if ($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) {
         # immutable, always 0
         return 0;
-      } else if (VSXLEN == 64) {
+      } else if ($array_size(VSXLEN) == 1 && VSXLEN[0] == 64) {
         # immutable, always 1
         return 1;
       } else {

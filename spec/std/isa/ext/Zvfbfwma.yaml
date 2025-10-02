@@ -16,7 +16,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      allOf:
-        - name: Zvfbfmin
-        - name: Zfbfmin
+requirements:
+  extension:
+    allOf:
+      - name: Zvfbfmin
+      - name: Zfbfmin

@@ -41,16 +41,21 @@ type: unprivileged
 company:
   name: RISC-V International
   url: https://riscv.org
-conflicts_with:
-  extension:
-    anyOf:
-      - name: Zcd
-      - allOf:
-        - name: C
-        - name: D
-      - allOf:
-        - name: Zca
-        - name: D
+requirements:
+  allOf:
+    -
+      extension:
+        allOf:
+          - name: Zca
+          - name: Zicsr
+    -
+      not:
+        extension:
+          anyOf:
+            - name: Zcd
+            - allOf:
+              - name: C
+              - name: D
 versions:
   - version: "1.0.0"
     state: ratified
@@ -74,9 +79,3 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
-    required_extensions:
-      allOf:
-        - name: Zca
-          version: "1.0.0"
-        - name: Zicsr
-          version: "2.0.0"

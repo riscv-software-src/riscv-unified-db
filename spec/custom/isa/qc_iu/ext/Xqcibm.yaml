@@ -32,7 +32,8 @@ versions:
   changes:
     - Add information about instruction formats of each instruction
     - Fix description and functionality of qc.c.extu instruction
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.3.0"
   state: frozen
   ratification_date: null
@@ -45,7 +46,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix description and functionality of qc.c.extu instruction
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.4.0"
   state: frozen
   ratification_date: null
@@ -58,7 +60,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix encoding for qc.c.extu
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.5.0"
   state: frozen
   ratification_date: null
@@ -73,7 +76,8 @@ versions:
     - Fix qc.cto instruction IDL code
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.6.0"
   state: frozen
   ratification_date: null
@@ -90,7 +94,8 @@ versions:
     - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
     - Fix IDL code and description to look correct in PDF for qc.insbhr and qc.insbh instructions
     - Fix IDL code to to match description for qc.insbr instruction
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.7.0"
   state: frozen
   ratification_date: null
@@ -107,7 +112,8 @@ versions:
     - Fix IDL code and description increasing shift to 6 bit for qc.extdr and qc.extdur instructions
     - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
     - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.8.0"
   state: frozen
   ratification_date: null
@@ -124,7 +130,8 @@ versions:
     - Fix IDL code for qc.extdpr, qc.extdprh, qc.extdupr and qc.extduprh instructions because change in IDL '<<' operator
     - Fix IDL code for qc.insb, qc.insbi, qc.insbr and qc.insbri instructions because change in IDL '<<' operator
     - Fix IDL code for qc.insbh, qc.insbhr, qc.insbpr and qc.insbprh instructions because change in IDL '<<' operator
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcibm extension includes thirty eight instructions that perform bit manipulation,
   include insertion and extraction.

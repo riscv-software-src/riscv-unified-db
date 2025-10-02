@@ -17,13 +17,5 @@ versions:
     ratification_date: 2019-06
     changes:
       - Change 1
-exception_codes:
-  - num: 1
-    name: An exception
-    var: Exception1
-interrupt_codes:
-  - num: 1
-    name: An interrupt
-    var: Interrupt1
 description: |
   Something descriptive

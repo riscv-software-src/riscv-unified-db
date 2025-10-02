@@ -35,12 +35,22 @@ module Treetop
   end
 end
 
+# rebuild the idl parser if the grammar has changed
+tt_path = Pathname.new(__dir__) / "idlc" / "idl.treetop"
+rb_path = Pathname.new(__dir__) / "idlc" / "idl_parser.rb"
+needs_grammar_recompile = !rb_path.exist? || (rb_path.mtime < tt_path.mtime)
+if needs_grammar_recompile
+  tt_compiler = Treetop::Compiler::GrammarCompiler.new
+  tt_compiler.compile(tt_path, rb_path)
+
+  # make sure there is a single newline at the end
+  compiler_src = File.read rb_path
+  File.write rb_path, "#{compiler_src.strip}\n"
+end
+
 require_relative "idlc/ast"
 require_relative "idlc/symbol_table"
-
-# pre-declare so sorbet is happy with this dynamically-generated class
-class IdlParser < Treetop::Runtime::CompiledParser; end
-Treetop.load((Pathname.new(__FILE__).dirname / "idlc" / "idl").to_s)
+require_relative "idlc/idl_parser"
 
 module Idl
   # the Idl compiler
@@ -175,7 +185,7 @@ module Idl
 
           warn "In function #{name}:"
           warn e.what
-          warn T.must(e.backtrace).to_s
+          warn T.must(e.backtrace)
           exit 1
         ensure
           cloned_symtab.pop
@@ -245,7 +255,7 @@ module Idl
       rescue AstNode::InternalError => e
         warn "While type checking #{what}:"
         warn e.what
-        warn T.must(e.backtrace).to_s
+        warn T.must(e.backtrace)
         exit 1
       end
 
@@ -281,14 +291,14 @@ module Idl
 
         warn "Compiling #{expression}"
         warn e.what
-        warn T.must(e.backtrace).to_s
+        warn T.must(e.backtrace)
         exit 1
       rescue AstNode::InternalError => e
         raise e if pass_error
 
         warn "Compiling #{expression}"
         warn e.what
-        warn T.must(e.backtrace).to_s
+        warn T.must(e.backtrace)
         exit 1
       end
 
@@ -318,14 +328,14 @@ module Idl
 
         warn "Compiling #{body}"
         warn e.what
-        warn T.must(e.backtrace).to_s
+        warn T.must(e.backtrace)
         exit 1
       rescue AstNode::InternalError => e
         raise e if pass_error
 
         warn "Compiling #{body}"
         warn e.what
-        warn T.must(e.backtrace).to_s
+        warn T.must(e.backtrace)
         exit 1
       end
 

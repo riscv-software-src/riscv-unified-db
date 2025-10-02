@@ -17,12 +17,16 @@ versions:
     ratification_date: 2019-06
     changes:
       - Change 1
-    required_extensions:
-      name: A
-      version: = 1.0
-      when:
+requirements:
+  oneOf:
+    - extension:
+        allOf:
+          - name: A
+          - name: C
+    - not:
         extension:
           name: C
+
 
 description: |
   Something descriptive

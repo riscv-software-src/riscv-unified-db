@@ -21,6 +21,6 @@ versions:
     ratification_date: null
 requirements:
   idl(): |
-    implemented?(ExtensionName::Shvstvecd) -> VSTVEC_MODE_DIRECT;
+    -> VSTVEC_MODE_DIRECT;
   reason:
     Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).

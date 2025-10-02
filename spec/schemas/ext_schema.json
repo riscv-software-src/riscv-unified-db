@@ -47,10 +47,6 @@
       "enum": ["unprivileged", "privileged"],
       "description": "Either unprivileged or privileged"
     },
-    "conflicts_with": {
-      "description": "Condition represeting all the conflicts with this extension. If the condition is true, the extension cannot be implemented",
-      "$ref": "schema_defs.json#/$defs/condition"
-    },
     "requirements": {
       "description": "Condition represeting requirements of this extension. If the condition is false, the extension cannot be implemented",
       "$ref": "schema_defs.json#/$defs/condition"
@@ -125,10 +121,6 @@
             "format": "uri",
             "description": "Link to ratified document"
           },
-          "required_extensions": {
-            "description": "Extension(s) required by this extension",
-            "$ref": "schema_defs.json#/$defs/extension_requirement_list"
-          },
           "contributors": {
             "description": "List of contributors to this version of the extension",
             "type": "array",
@@ -150,52 +142,10 @@
                 }
               }
             }
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "exception_codes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "description": "Exceptions defined by this extension",
-        "required": ["num", "name", "var"],
-        "properties": {
-          "num": {
-            "type": "integer"
           },
-          "name": {
-            "type": "string",
-            "description": "Long-form name (can have special characters)"
-          },
-          "var": {
-            "type": "string",
-            "description": "Field name for the InterruptCode enum in IDL"
-          },
-          "when": {
+          "requirements": {
+            "description": "Condition represeting requirements of this extension version _in addition to any specified for the extension overall_. If the condition is false, the extension version cannot be implemented",
             "$ref": "schema_defs.json#/$defs/condition"
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "interrupt_codes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "description": "Interrupts defined by this extension",
-        "properties": {
-          "num": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string",
-            "description": "Long-form name (can have special characters)"
-          },
-          "var": {
-            "type": "string",
-            "description": "Field name for the InterruptCode enum in IDL"
           }
         },
         "additionalProperties": false

@@ -19,6 +19,9 @@
       "type": "integer",
       "description": "Interrupt number, as reported in the `*cause` CSRs (not including the leading INT bit)"
     },
-    "definedBy": { "$ref": "schema_defs.json#/$defs/condition" }
+    "definedBy": { "$ref": "schema_defs.json#/$defs/condition" },
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
+    }
   }
 }

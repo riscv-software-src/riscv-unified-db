@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 RUBY_UDB_ROOT = Kernel.__dir__
 
@@ -28,10 +28,11 @@ namespace :chore do
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(RUBY_UDB_ROOT) do
-        sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        # sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+        # sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
+        # sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
       end
     end
 

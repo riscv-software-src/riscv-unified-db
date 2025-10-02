@@ -18,9 +18,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      allOf:
-        - name: Zvkn
-          version: "= 1.0.0"
-        - name: Zvkg
-          version: "= 1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zvkn
+            version: "= 1.0.0"
+          - name: Zvkg
+            version: "= 1.0.0"

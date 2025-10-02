@@ -19,6 +19,9 @@
       "type": "integer",
       "description": "Exception number, as reported in the `*cause` CSRs"
     },
-    "definedBy": { "$ref": "schema_defs.json#/$defs/condition" }
+    "definedBy": { "$ref": "schema_defs.json#/$defs/condition" },
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
+    }
   }
 }

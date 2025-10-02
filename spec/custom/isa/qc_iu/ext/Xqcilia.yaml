@@ -31,7 +31,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcilia extension includes eight 48-bit instructions that perform arithmetic using
   large immediates.

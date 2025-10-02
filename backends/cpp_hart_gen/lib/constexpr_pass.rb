@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 module Idl
@@ -9,6 +10,12 @@ module Idl
         children.all? { |child| child.constexpr?(symtab) }
       end
     end
+  end
+  class TrueExpressionAst < AstNode
+    def constexpr?(symtab) = true
+  end
+  class FalseExpressionAst < AstNode
+    def constexpr?(symtab) = true
   end
   class IdAst < AstNode
     def constexpr?(symtab)

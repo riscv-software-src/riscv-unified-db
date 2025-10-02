@@ -400,13 +400,11 @@ module Udb
       raise "Can't find instruction object '#{inst_name}' in arch class" if inst.nil?
 
       is_mandatory = mandatory_ext_reqs.any? do |ext_req|
-        ext_versions = ext_req.satisfying_versions
-        ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+        inst.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
       end
 
-      is_optional = optional_ext_reqs.any? do |ext_req|
-        ext_versions = ext_req.satisfying_versions
-        ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      is_optional = !is_mandatory && optional_ext_reqs.any? do |ext_req|
+        inst.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch_for_optional) == SatisfiedResult::Yes
       end
 
       @instruction_presence_obj[inst_name] =
@@ -417,6 +415,89 @@ module Udb
         else
           nil
         end
+    end
+
+    # returns a config arch that treats the Portfolio like a partial config
+    sig { returns(ConfiguredArchitecture) }
+    def to_cfg_arch
+      @cfg_arch ||= begin
+        config = PartialConfig.new(
+          {
+            "$schema" => "config_schema.json#",
+            "kind" => "architecture configuration",
+            "type" => "partially configured",
+            "name" => name,
+            "description" => description,
+            "params" => all_in_scope_params.map do |p|
+              if p.single_value?
+                [p.name, p.value]
+              else
+                nil
+              end
+            end.compact.to_h,
+            "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
+              {
+                "name" => ext_req.name,
+                "version" => \
+                  if ext_req.requirement_specs.size == 1
+                    ext_req.requirement_specs.fetch(0).to_s
+                  else
+                    ext_req.requirement_specs.map(&:to_s)
+                  end
+              }
+            end,
+            "non_mandatory_extensions" => optional_ext_reqs.map do |ext_req|
+              {
+                "name" => ext_req.name,
+                "version" => \
+                  if ext_req.requirement_specs.size == 1
+                    ext_req.requirement_specs.fetch(0).to_s
+                  else
+                    ext_req.requirement_specs.map(&:to_s)
+                  end
+              }
+            end,
+            "additional_extensions" => true
+          }
+        )
+        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+      end
+    end
+
+    # returns a config arch that treats the *optional* extensions in Portfolio like a partial config
+    sig { returns(ConfiguredArchitecture) }
+    def to_cfg_arch_for_optional
+      @cfg_arch_for_optional ||= begin
+        config = PartialConfig.new(
+          {
+            "$schema" => "config_schema.json#",
+            "kind" => "architecture configuration",
+            "type" => "partially configured",
+            "name" => name,
+            "description" => description,
+            "params" => all_in_scope_params.map do |p|
+              if p.single_value?
+                [p.name, p.value]
+              else
+                nil
+              end
+            end.compact.to_h,
+            "mandatory_extensions" => optional_ext_reqs.map do |ext_req|
+              {
+                "name" => ext_req.name,
+                "version" => \
+                  if ext_req.requirement_specs.size == 1
+                    ext_req.requirement_specs.fetch(0).to_s
+                  else
+                    ext_req.requirement_specs.map(&:to_s)
+                  end
+              }
+            end,
+            "additional_extensions" => true
+          }
+        )
+        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+      end
     end
 
     # @return [String] Given an instruction +inst_name+, return the presence as a string.
@@ -443,13 +524,11 @@ module Udb
       raise "Can't find CSR object '#{csr_name}' in arch class" if csr.nil?
 
       is_mandatory = mandatory_ext_reqs.any? do |ext_req|
-        ext_versions = ext_req.satisfying_versions
-        ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+        csr.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
       end
 
-      is_optional = optional_ext_reqs.any? do |ext_req|
-        ext_versions = ext_req.satisfying_versions
-        ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+      is_optional = !is_mandatory && optional_ext_reqs.any? do |ext_req|
+        csr.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch_for_optional) == SatisfiedResult::Yes
       end
 
       @csr_presence_obj[csr_name] =

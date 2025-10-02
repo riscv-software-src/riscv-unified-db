@@ -48,21 +48,22 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      allOf:
-        - name: H
-          version: "= 1.0.0"
-        - name: Ssstateen
-          version: "= 1.0.0"
-        - name: Shcounterenw
-          version: "= 1.0.0"
-        - name: Shvstvala
-          version: "= 1.0.0"
-        - name: Shtvala
-          version: "= 1.0.0"
-        - name: Shvstvecd
-          version: "= 1.0.0"
-        - name: Shvsatpa
-          version: "= 1.0.0"
-        - name: Shgatpa
-          version: "= 1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: H
+            version: "= 1.0.0"
+          - name: Ssstateen
+            version: "= 1.0.0"
+          - name: Shcounterenw
+            version: "= 1.0.0"
+          - name: Shvstvala
+            version: "= 1.0.0"
+          - name: Shtvala
+            version: "= 1.0.0"
+          - name: Shvstvecd
+            version: "= 1.0.0"
+          - name: Shvsatpa
+            version: "= 1.0.0"
+          - name: Shgatpa
+            version: "= 1.0.0"

@@ -19,15 +19,13 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      name: H
-      version: "= 1.0.0"
 requirements:
   idl(): |
-    implemented?(ExtensionName:Sv32) -> SV32X4_TRANSLATION;
-    implemented?(ExtensionName:Sv39) -> SV39X4_TRANSLATION;
-    implemented?(ExtensionName:Sv48) -> SV48X4_TRANSLATION;
-    implemented?(ExtensionName:Sv57) -> SV57X4_TRANSLATION;
+    -> implemented?(ExtensionName::H);
+    implemented?(ExtensionName::Sv32) -> SV32X4_TRANSLATION;
+    implemented?(ExtensionName::Sv39) -> SV39X4_TRANSLATION;
+    implemented?(ExtensionName::Sv48) -> SV48X4_TRANSLATION;
+    implemented?(ExtensionName::Sv57) -> SV57X4_TRANSLATION;
   reason: |
     Shgatpa mandates that or each supported virtual memory scheme SvNN supported in
     `satp`, the corresponding hgatp SvNNx4 mode must be supported.

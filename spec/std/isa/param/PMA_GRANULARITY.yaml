@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: PMA_GRANULARITY
+long_name: |
+  log2 of the smallest supported PMA region
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  Generally, for systems with an MMU, should not be smaller than 12,
+  as that would preclude caching PMA results in the TLB along with
+  virtual memory translations
+schema:
+  type: integer
+  minimum: 2
+  maximum: 66

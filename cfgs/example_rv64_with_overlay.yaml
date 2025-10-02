@@ -457,29 +457,29 @@ params:
   #
   #  * 32:   SXLEN is always 32
   #  * 64:   SXLEN is always 64
-  #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
-  SXLEN: 64
+  #  * [32, 64]: SXLEN can be changed (via mstatus.SXL) between 32 and 64
+  SXLEN: [64]
 
   # XLENs supported in U-mode. Can be one of:
   #
   #  * 32:   SXLEN is always 32
   #  * 64:   SXLEN is always 64
-  #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
-  UXLEN: 64
+  #  * [32, 64]: SXLEN can be changed (via mstatus.SXL) between 32 and 64
+  UXLEN: [64]
 
   # XLENs supported in VS-mode. Can be one of:
   #
   #  * 32:   VSXLEN is always 32
   #  * 64:   VSXLEN is always 64
-  #  * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
-  VSXLEN: 64
+  #  * [32, 64]: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
+  VSXLEN: [64]
 
   # XLENs supported in VS-mode. Can be one of:
   #
   #  * 32:   VSXLEN is always 32
   #  * 64:   VSXLEN is always 64
-  #  * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
-  VUXLEN: 64
+  #  * [32, 64]: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
+  VUXLEN: [64]
 
   # Strategy used to handle reservation sets
   #

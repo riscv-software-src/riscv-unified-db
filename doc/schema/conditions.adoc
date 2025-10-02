@@ -49,8 +49,8 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    # required_extensions: is a list of extension requirements, possibly with a condition under which it applies
-    required_extensions:
+    # requirements: is a list of extension requirements, possibly with a condition under which it applies
+    requirements:
       allOf:
         - name: Zca
           version: = 1.0.0
@@ -218,6 +218,7 @@ The comparison is one of:
 | includes              | Array parameter includes a value            | includes: 5 +
                                                                         includes: "string value" +
                                                                         includes: true
+| oneOf                 | Parameter value is equal to one element of an array | oneOf: [5, 7]
 |===
 
 For example:
@@ -256,7 +257,7 @@ reason: Extension is only defined in RV32
 [source,yaml]
 ----
 idl(): |
-  -> $ary_includes?(MTVEC_MODES, 0);
+  -> $array_includes?(MTVEC_MODES, 0);
 reason: Only relevant when direct mode is supported
 ----
 
@@ -460,7 +461,7 @@ The available functions are:
 ** True if ExtensionName::A is either listed as an implemented extension in the config, or if A is implied by an implemented extension.
 * `implemented_version?(ExtensionName::A, ">= 1.0")`
 ** True if ExtensionName::A, version greater than or equal to 1.0 is either listed as an implemented extension in the config, or if A, version greater than or equal to 1.0 is implied by an implemented extension.
-* `$ary_includes?(ARY_PARAM, 1)`
+* `$array_includes?(ARY_PARAM, 1)`
 ** True if ARY_PARAM includes the value 1
 * `$ary_size(ARY_PARAM)`
 ** Returns the number of elements in ARY_PARAM

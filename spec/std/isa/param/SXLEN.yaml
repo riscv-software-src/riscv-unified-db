@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SXLEN
+description: |
+  Set of XLENs supported in S-mode. Can be one of:
+
+    * 32:   SXLEN is always 32
+    * 64:   SXLEN is always 64
+    * [32, 64]: SXLEN can be changed (via mstatus.SXL) between 32 and 64
+long_name: TODO
+schema:
+  type: array
+  items:
+    enum:
+      - 32
+      - 64
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true
+requirements:
+  idl(): |
+    !$array_includes?(MXLEN, 64) -> !$array_includes?(SXLEN, 64);
+  reason: XLEN in S-mode can never be larger than XLEN in M-mode
+definedBy:
+  extension:
+    name: S

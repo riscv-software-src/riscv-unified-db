@@ -13,19 +13,22 @@ versions:
   - version: "1.11.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      name: Sv39
-      version: ">= 1.11"
+    requirements:
+      extension:
+        name: Sv39
+        version: ">= 1.11"
   - version: "1.12.0"
     state: ratified
     ratification_date: null
     url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
-    required_extensions:
-      name: Sv39
-      version: ">= 1.12"
+    requirements:
+      extension:
+        name: Sv39
+        version: ">= 1.12"
   - version: "1.13.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      name: Sv39
-      version: ">= 1.13"
+    requirements:
+      extension:
+        name: Sv39
+        version: ">= 1.13"

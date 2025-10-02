@@ -81,16 +81,28 @@ Decode Variables::
 <%- end -%>
 
 Included in::
-<%- if inst.defined_by_condition.flat? -%>
-[options="autowrap,autowidth"]
+
+<%- if inst.defining_extension_requirements.any? { |cond_ext_req| !cond_ext_req.cond.satisfied_by_cfg_arch?(cfg_arch) != SatisfiedResult::Yes } -%>
+
+|===
+| Extension | Version | When
+
+<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
+| *<%= cond_ext_req.ext_req.to_s_pretty %>*
+| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
+| <%= cond_ext_req.cond.to_asciidoc %>
+<%-   end -%>
+|===
+
+<%- else -%>
+
 |===
 | Extension | Version
-<% inst.defined_by_condition.flat_versions.each do |r| %>
-| *<%= r.name %>* | <%= inst.fix_entities(r.requirement_specs_to_s) %>
-<% end %>
-|===
-<%- else -%>
-<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
-<%- end -%>
 
-<% end %>
+<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
+| *<%= cond_ext_req.ext_req.to_s_pretty %>*
+| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
+<%-   end -%>
+|===
+
+<%- end -%>

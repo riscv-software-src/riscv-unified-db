@@ -22,12 +22,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      name: H
-      version: "= 1.0.0"
 requirements:
   idl(): |
-    implemented?(ExtensionName::Shvstvala) ->
+    -> implemented?(ExtensionName::H);
+    ->
       REPORT_VA_IN_VSTVAL_ON_BREAKPOINT &&
       REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED &&
       REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED &&

@@ -38,7 +38,6 @@ Gem::Specification.new do |s|
   s.add_dependency "treetop", "1.6.12"
 
   s.add_development_dependency "minitest"
-  s.add_development_dependency "ruby-debug-ide"
   s.add_development_dependency "rouge"
   s.add_development_dependency "rubocop-github"
   s.add_development_dependency "rubocop-minitest"
@@ -47,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "simplecov"
   s.add_development_dependency "sorbet"
   s.add_development_dependency "spoom"
-  s.add_development_dependency "tapioca"
+  s.add_development_dependency "tapioca", "~> 0.16"
   s.add_development_dependency "yard"
   s.add_development_dependency "yard-sorbet"
 end

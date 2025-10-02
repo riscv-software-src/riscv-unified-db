@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
+long_name: |
+  What happens when `mtvec` is written with an illegal value
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  Options:
+
+    retain::
+      When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain its curent value
+
+    custom::
+      When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will obtain an unpredictable value
+
+  Other values may be added over time once other common behaviors are identified.
+schema:
+  enum: [retain, custom]

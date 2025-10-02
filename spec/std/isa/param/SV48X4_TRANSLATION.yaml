@@ -1,0 +1,27 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SV48X4_TRANSLATION
+description: "Whether or not Sv48x4 translation mode is supported.
+
+  "
+long_name: TODO
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    # at least one of Bare, SvQQx4 must be supported
+    !GSTAGE_MODE_BARE && !SV39X4_TRANSLATION && !SV57X4_TRANSLATION
+      -> SV48X4_TRANSLATION;
+  reason: at least one of Bare, SvQQx4 must be supported
+definedBy:
+  allOf:
+    - extension:
+        name: H
+    - param:
+        name: SXLEN
+        includes: 64

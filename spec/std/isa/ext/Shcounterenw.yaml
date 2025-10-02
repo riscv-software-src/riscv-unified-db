@@ -19,11 +19,10 @@ versions:
     state: ratified
     ratification_date: 2023-08
     url: https://drive.google.com/file/d/1KcjgbLM5L1ZKY8934aJl8aQwGlMz6Cbo/view?usp=drive_link
-    required_extensions:
-      name: H
-      version: "= 1.0.0"
 requirements:
   idl(): |
+    -> implemented?(ExtensionName::H);
+
     for (U32 i = 3; i < 32; i++){
       HPM_COUNTER_EN[i] -> HCOUNTENABLE_EN[i];
     }

@@ -20,10 +20,10 @@ namespace :chore do
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(IDLC_ROOT) do
-        sh "bundle install --gemfile #{IDLC_ROOT}/Gemfile"
-        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca gems"
-        # sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca dsl"
-        # sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca annotations"
+        sh "bundle update --gemfile #{IDLC_ROOT}/Gemfile"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca gems --all"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca annotations"
       end
     end
   end

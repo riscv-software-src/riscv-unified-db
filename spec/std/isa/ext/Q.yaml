@@ -20,5 +20,7 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    required_extensions:
-      name: D
+    requirements:
+      extension:
+        name: D
+        version: = 2.2.0

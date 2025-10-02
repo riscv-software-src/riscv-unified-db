@@ -41,5 +41,5 @@ versions:
     state: ratified
     ratification_date: "2024-11"
     url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
-    required_extensions:
-      { name: S, version: "~> 1.13" }
+requirements:
+  extension: { name: S, version: "~> 1.13" }

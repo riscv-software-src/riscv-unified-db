@@ -32,7 +32,8 @@ versions:
   changes:
     - Fix decoding of qc.pputci instruction
     - Add requirement to include Zca extension since has 16-bit instructions
-  required_extensions: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcisim extension includes ten hint instructions to interface simulation environment.
   On real target any instruction from this extension executed as "no-operation" and have no effect.

@@ -13,6 +13,6 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    required_extensions:
-      name: Zicsr
-      version: ">= 2.0"
+requirements:
+  extension:
+    name: Zicsr

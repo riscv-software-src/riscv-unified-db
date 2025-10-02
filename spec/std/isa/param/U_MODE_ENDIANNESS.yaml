@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: U_MODE_ENDIANNESS
+description: |
+  Endianness of data in U-mode. Can be one of:
+
+   * little:  U-mode data is always little endian
+   * big:     U-mode data is always big endian
+   * dynamic: U-mode data can be either little or big endian,
+              depending on the CSR field `mstatus.UBE`
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - little
+    - big
+    - dynamic
+definedBy:
+  extension:
+    name: U

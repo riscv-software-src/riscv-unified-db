@@ -176,13 +176,13 @@ fields:
       It is UNDEFINED_LEGAL to set the MSB of SXL.
       --
     type(): |
-      return (implemented?(ExtensionName::S) && SXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+      return (implemented?(ExtensionName::S) && $array_size(SXLEN) > 1) ? CsrFieldType::RW : CsrFieldType::RO;
 
     legal?(csr_value): |
-      if (SXLEN == 32) {
+      if ($array_size(SXLEN) == 1 && SXLEN[0] == 32) {
         # SXLEN == 32 is encoded as 0
         return csr_value.SXL == 0;
-      } else if (SXLEN == 64) {
+      } else if ($array_size(SXLEN) == 1 && SXLEN[0] == 64) {
         # SXLEN == 64 is encoded as 1
         return csr_value.SXL == 1;
       } else {
@@ -228,7 +228,7 @@ fields:
       It is UNDEFINED_LEGAL to set the MSB of UXL.
       --
     type(): |
-      return (UXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+      return ($array_size(UXLEN) > 1) ? CsrFieldType::RW : CsrFieldType::RO;
 
     sw_write(csr_value): |
       if (csr_value.SXL < csr_value.UXL) {
@@ -240,19 +240,10 @@ fields:
         return csr_value.UXL;
       }
 
-    legal?(csr_value): |
-      if (UXLEN == 32) {
-        return csr_value.UXL == 0;
-      } else if (UXLEN == 64) {
-        return csr_value.UXL == 1;
-      } else {
-        return csr_value.UXL <= 1;
-      }
-
     reset_value(): |
-      if (UXLEN == 32) {
+      if ($array_size(UXLEN) == 1 && UXLEN[0] == 32) {
         return 0;
-      } else if (UXLEN == 64) {
+      } else if ($array_size(UXLEN) == 1 && UXLEN[0] == 64) {
         return 1;
       } else {
         return UNDEFINED_LEGAL;

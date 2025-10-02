@@ -40,6 +40,17 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
         run: ./do test:smoke
+  regress-udb-gem:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem unit tests
+        run: ./bin/ruby tools/ruby-gems/test/run.rb
   regress-gen-isa-manual:
     runs-on: ubuntu-latest
     env:

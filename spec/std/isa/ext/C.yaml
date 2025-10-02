@@ -18,22 +18,13 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    required_extensions:
-      allOf:
-        - name: Zca
-          version: = 1.0.0
-        - name: Zcf
-          version: = 1.0.0
-          when:
-            extension:
-              name: F
-              version: ~> 2.2
-        - name: Zcd
-          version: = 1.0.0
-          when:
-            extension:
-              name: D
-              version: ~> 2.2
+    requirements:
+      idl(): |
+        -> implemented_version?(ExtensionName::Zca, "= 1.0.0") &&
+           (!implemented?(ExtensionName::F) || implemented_version?(ExtensionName::Zcf, "= 1.0.0")) &&
+           (!implemented?(ExtensionName::D) || implemented_version?(ExtensionName::Zcd, "= 1.0.0"));
+      reason: |
+        Zca is the non-FP subset of C. "C" + "F" implies Zcf. "C" + "D" implies Zcd.
 description: |
   The `C` extension reduces static and dynamic code size by
   adding short 16-bit instruction encodings for common operations. The C

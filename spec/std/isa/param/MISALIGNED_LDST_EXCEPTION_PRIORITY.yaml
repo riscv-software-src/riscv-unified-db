@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+long_name: |
+  The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+  or access-fault exceptions.
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+description: |
+  The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+  or access-fault exceptions.
+
+  May be one of:
+
+  [separator="!"]
+  !===
+  ! low  ! Misaligned load/store/AMO exceptions are always lower priority than load/store/AMO page-fault and access-fault exceptions.
+  ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
+  !===
+
+  MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+  is non-zero, since the atomicity of an access cannot be determined in that case until after
+  address translation.
+schema:
+  type: string
+  enum: ["low", "high"]
+requirements:
+  idl(): |
+    (MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 1) -> (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low");
+  reason:
+    MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+    is non-zero, since the atomicity of an access cannot be determined in that case until after
+    address translation.

@@ -6,6 +6,7 @@
 
 require "sorbet-runtime"
 
+require_relative "log"
 require_relative "type"
 require_relative "interfaces"
 
@@ -232,10 +233,26 @@ module Idl
 
       }]
       params.each do |param|
+        idl_type =
+          if param.schema_known?
+            param.idl_type
+          else
+            possible_idl_types = param.possible_schemas.map { |schema| schema.to_idl_type }
+            if possible_idl_types.fetch(0).kind == :bits
+              # use the worst case sizing
+              if !(t = possible_idl_types.find { |t| t.width == :unknown }).nil?
+                t
+              else
+                possible_idl_types.max { |t1, t2| T.cast(t1.width, Integer) <=> T.cast(t2.width, Integer) }
+              end
+            else
+              possible_idl_types.at(0)
+            end
+          end
         if param.value_known?
-          add!(param.name, Var.new(param.name, param.idl_type, param.value, param: true))
+          add!(param.name, Var.new(param.name, idl_type, param.value, param: true))
         else
-          add!(param.name, Var.new(param.name, param.idl_type, param: true))
+          add!(param.name, Var.new(param.name, idl_type, param: true))
         end
       end
       @params = params.freeze
@@ -451,7 +468,7 @@ module Idl
       end
 
       # need more!
-      $logger.info "Allocating more SymbolTables"
+      Idl.logger.debug "Allocating more SymbolTables"
       5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])

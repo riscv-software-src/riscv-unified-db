@@ -23,14 +23,15 @@ versions:
         email: ved@rivosinc.com
         company: Rivos, Inc.
     url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
-    required_extensions:
-      allOf:
-        - name: Zba
-          version: "= 1.0.0"
-        - name: Zbb
-          version: "= 1.0.0"
-        - name: Zbs
-          version: "= 1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zba
+            version: "= 1.0.0"
+          - name: Zbb
+            version: "= 1.0.0"
+          - name: Zbs
+            version: "= 1.0.0"
 description: |
   The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 

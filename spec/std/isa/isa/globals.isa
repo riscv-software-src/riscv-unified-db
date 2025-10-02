@@ -1552,7 +1552,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002000;
           } else {
             return 0x00003000;
@@ -1566,7 +1566,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002020;
           } else {
             return 0x00003020;
@@ -1580,9 +1580,9 @@ function tinst_value_for_guest_page_fault {
     } else {
       if (REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT) {
         # spec states hardware must write the pseduo-instruction values to *tinst
-        if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+        if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
           return 0x00002000;
-        } else if ((VSXLEN == 64) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
+        } else if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 64) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
           return 0x00003000;
         }
       }

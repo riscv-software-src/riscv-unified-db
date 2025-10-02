@@ -137,14 +137,16 @@ module Udb
       @cache[fn_name] ||= yield
     end
 
-    # @return Extension(s) that define the instruction.
-    sig { returns(Condition) }
+    # @return Condition for when the object exists
+    sig { returns(AbstractCondition) }
     def defined_by_condition
       @defined_by_condition ||=
         begin
-          raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-          Condition.new(@data["definedBy"], @cfg_arch)
+          if @data.key?("definedBy")
+            Condition.new(@data["definedBy"], @cfg_arch)
+          else
+            AlwaysTrueCondition.new
+          end
         end
     end
 
@@ -235,7 +237,7 @@ module Udb
     #   06: YAML
     #   misa_csr.source_line("sw_read()")  #=> 2
     #   mis_csr.source_line("fields", "A", "type()") #=> 5
-    sig { params(path: T::Array[String]).returns(Integer) }
+    sig { params(path: T::Array[T.any(String, Integer)]).returns(Integer) }
     def source_line(path)
 
       # find the line number of this operation() in the *original* file
@@ -378,7 +380,7 @@ module Udb
     def create_json_schemer_resolver(udb_resolver)
       proc do |pattern|
         if pattern.to_s =~ /^http/
-          JSON.parse(Net::HTTP.get(pattern))
+          JSON.parse(T.must(Net::HTTP.get(pattern)))
         else
           JSON.load_file(udb_resolver.schemas_path / pattern.to_s)
         end
@@ -446,13 +448,6 @@ module Udb
     # @return (see Hash#key?)
     sig { params(k: String).returns(T::Boolean) }
     def key?(k) = @data.key?(k)
-
-
-    # @return [ExtensionRequirement] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
-    sig { returns(ExtensionRequirement) }
-    def primary_defined_by
-      defined_by_condition.first_requirement
-    end
   end
 
 # A company description
@@ -495,9 +490,9 @@ module Udb
     sig { returns(String) }
     def text
       if !@data["text_url"].nil?
-        Net::HTTP.get(URI(T.must(@data["text_url"])))
+        T.must(Net::HTTP.get(URI(T.must(@data["text_url"]))))
       else
-        @data["text"]
+        T.cast(@data.fetch("text"), String)
       end
     end
   end
