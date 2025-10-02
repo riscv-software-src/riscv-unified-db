@@ -12,11 +12,9 @@ address: 0x757
 writable: true
 priv_mode: M
 length: 32
-description: Machine Security Configuration
+description: |
+  The `mseccfgh` is a 32-bit read/write register that aliases bits 63:32 of `mseccfg`.
 definedBy:
-  allOf:
-    - name: Sm
-      version: ">=1.12"
-    - name: Smepmp
-      version: ">= 1.0.0"
+  name: Smepmp
+  version: ~> 1.0.0
 fields: {}

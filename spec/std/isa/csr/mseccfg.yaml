@@ -11,15 +11,12 @@ address: 0x747
 writable: true
 priv_mode: M
 length: MXLEN
-description: Machine Security Configuration register is used for configuring various security mechanisms present on the hart and only accessible in Machine mode.
+description: Machine Security Configuration register is used for configuring various security mechanisms present on the hart.
 definedBy:
-  allOf:
-    - name: Sm
-      version: ">=1.12"
-    - name: Smepmp
-      version: ">= 1.0.0"
+  name: Smepmp
+  version: ~> 1.0.0
 fields:
-  MML:
+  MMsL:
     location: 0
     description: |
       Machine Mode Lockdown (mseccfg.MML) enforces strong isolation between Machine Mode and lower-privilege modes. This is a _sticky bit_
@@ -91,29 +88,101 @@ fields:
     type: RW
     definedBy: Smepmp
     reset_value: UNDEFINED_LEGAL
+  MML:
+    location: 0
+    definedBy: Smepmp
+    description: |
+      Machine Mode Lockdown (mseccfg.MML) is a sticky bit, meaning that once set it cannot be unset until a PMP reset. When `mseccfg.MML` is set
+      the system's behavior changes in the following way:
+
+        a.  The meaning of `pmpcfg.L` changes: Instead of marking a rule as locked and enforced in all modes, it now marks a rule as M-mode-only
+            when set and S/U-mode-only when unset. The formerly reserved encoding of `pmpcfg.RW=01`, and the encoding `pmpcfg.LRWX=1111`, now encode
+            a Shared-Region.
+
+            An M-mode-only rule is enforced on Machine mode and denied in Supervisor or User mode. It also remains locked so that any further
+            modifications to its associated configuration or address registers are ignored until a PMP reset, unless `mseccfg.RLB` is set.
+
+            An S/U-mode-only rule is enforced on Supervisor and User modes and denied on Machine mode.
+
+            A Shared-Region rule is enforced on all modes, with restrictions depending on the `pmpcfg.L` and `pmpcfg.X` bits:
+
+              - A Shared-Region rule where `pmpcfg.L` is not set can be used for sharing data between M-mode and S/U-mode, so is not executable. M-mode
+                has read/write access to that region, and S/U-mode has read access if `pmpcfg.X` is not set, or read/write access if `pmpcfg.X` is set.
+
+              - A Shared-Region rule where `pmpcfg.L` is set can be used for sharing code between M-mode and S/U-mode, so is not writable. Both M-mode and
+                S/U-mode have execute access on the region, and M-mode also has read access if `pmpcfg.X` is set. The rule remains locked so that any further
+                modifications to its associated configuration or address registers are ignored until a PMP reset, unless `mseccfg.RLB` is set.
+
+              - The encoding `pmpcfg.LRWX=1111` can be used for sharing data between M-mode and S/U mode, where both modes only have read-only access to the
+                region. The rule remains locked so that any further modifications to its associated configuration or address registers are ignored until a PMP
+                reset, unless `mseccfg.RLB` is set.
+
+        b.  Adding a rule with executable privileges that either is M-mode-only or a locked Shared-Region is not possible and such pmpcfg writes are ignored,
+            leaving pmpcfg unchanged. This restriction can be temporarily lifted by setting `mseccfg.RLB` e.g. during the boot process.
+
+        c.  Executing code with Machine mode privileges is only possible from memory regions with a matching M-mode-only rule or a locked Shared-Region rule
+            with executable privileges. Executing code from a region without a matching rule or with a matching S/U-mode-only rule is denied.
+
+        d.  If mseccfg.MML is not set, the combination of `pmpcfg.RW=01` remains reserved for future standard use.
+
+      The truth table when the `mseccfg.MML` is set:
+
+      [cols="4*^.^1,2*^.^3", separator="!", %autowidth, options="header"]
+      !====
+      4+^! Bits on _pmpcfg_ register 2+^! Result
+      ! L ! R ! W ! X ! M Mode ! S/U Mode
+
+      ! 0 ! 0 ! 0 ! 0 2+^! Inaccessible region (Access Exception)
+      ! 0 ! 0 ! 0 ! 1 ! Access Exception ! Execute-only region
+      ! 0 ! 0 ! 1 ! 0 2+^! Shared data region: Read/write on M mode, Read-only on S/U mode
+      ! 0 ! 0 ! 1 ! 1 2+^! Shared data region: Read/write for both M and S/U mode
+      ! 0 ! 1 ! 0 ! 0 ! Access Exception ! Read-only region
+      ! 0 ! 1 ! 0 ! 1 ! Access Exception ! Read/Execute region
+      ! 0 ! 1 ! 1 ! 0 ! Access Exception ! Read/Write region
+      ! 0 ! 1 ! 1 ! 1 ! Access Exception ! Read/Write/Execute region
+      ! 1 ! 0 ! 0 ! 0 2+^! Locked inaccessible region* (Access Exception)
+      ! 1 ! 0 ! 0 ! 1 ! Locked Execute-only region* ! Access Exception
+      ! 1 ! 0 ! 1 ! 0 2+^! Locked Shared code region: Execute only on both M and S/U mode.*
+      ! 1 ! 0 ! 1 ! 1 2+^! Locked Shared code region: Execute only on S/U mode, read/execute on M mode.*
+      ! 1 ! 1 ! 0 ! 0 ! Locked Read-only region* ! Access Exception
+      ! 1 ! 1 ! 0 ! 1 ! Locked Read/Execute region* ! Access Exception
+      ! 1 ! 1 ! 1 ! 0 ! Locked Read/Write region* ! Access Exception
+      ! 1 ! 1 ! 1 ! 1 2+^! Locked Shared data region: Read only on both M and S/U mode.*
+      !====
+
+      *Locked rules cannot be removed or modified until a PMP reset, unless mseccfg.RLB is set.
+    type(): |
+      if (MSECCFG_MML_TYPE == "read-only-0" || MSECCFG_MML_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      } else if (MSECCFG_MML_TYPE == "sticky") {
+        return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
+      }
+    sw_write(csr_value): return csr_value.MML | CSR[mseccfg].MML;
+    reset_value: UNDEFINED_LEGAL
   MMWP:
     location: 1
-    description: |
-      Machine Mode Whitelist Policy (mseccfg.MMWP). This is a _sticky bit_ meaning that once set, it can only be reset on PMP Reset.
-
-      When 1 (set), it changes the default PMP policy for M-mode when accessing memory regions that do not have a matching PMP rule, to
-      *denied* instead of *ignored*.
-
-      When set to 0, `mseccfg.MMWP` enables the default PMP behavior in Machine mode, meaning that M-mode can access any memory region
-      even if it is not explicitly covered by a PMP rule.
-
-    type: RW
     definedBy: Smepmp
+    description: |
+      Machine-Mode Allowlist Policy (mseccfg.MMWP) is a sticky bit, meaning that once set it cannot be unset until a PMP reset. When set it
+      changes the default PMP policy for M-mode when accessing memory regions that don't have a matching PMP rule, to denied instead of ignored.
+    type(): |
+      if (MSECCFG_MML_TYPE == "read-only-0" || MSECCFG_MML_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      } else if (MSECCFG_MML_TYPE == "sticky") {
+        return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
+      }
+    sw_write(csr_value): return csr_value.MMWP | CSR[mseccfg].MMWP;
     reset_value: UNDEFINED_LEGAL
   RLB:
     location: 2
     description: |
-      Rule Locking Bypass (mseccfg.RLB). This field can be set to 1 and once it is set back to 0, then it cannot be changed until the PMP Reset.
+      Rule Locking Bypass (mseccfg.RLB) bit has the following functionality:
 
-      When 1, locked PMP rules may be removed/modified and locked PMP enteries may be edited.
+        a.  When `mseccfg.RLB` is 1 locked PMP rules may be removed/modified and locked PMP entries may be edited.
 
-      When 0, with `pmpcfg.L=1` in any rule or entry (including disabled enteries), then mseccfg.RLB
-      remains 0 and any further modifications to mseccfg.RLB are ignored until a PMP reset.
-    type: RW
+        b.  When `mseccfg.RLB` is 0 and `pmpcfg.L` is 1 in any rule or entry (including disabled entries), then
+            remains 0 and any further modifications to `mseccfg.RLB` are ignored until a PMP reset.
+    type(): |
+      return MUTABLE_MSECCFG_RLB ? CsrFieldType::RW : CsrFieldType:RO;
     definedBy: Smepmp
     reset_value: UNDEFINED_LEGAL
