@@ -313,6 +313,7 @@ function softfloat_shiftRightJam32 {
   }
 }
 
+
 function softfloat_shiftRightJam64 {
   returns Bits<64>
   arguments
@@ -1247,5 +1248,88 @@ function round_f32_to_integral {
     intermediate = f32_to_i32_no_flag(a, mode);
     # represent the integer as floating point number
     return i32_to_f32_no_flag(intermediate, mode);
+  }
+}
+
+function f32_mul {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns product of 2 floating point numbers
+  }
+  body {
+    Bits<1> signA = signF32UI(a);
+    Bits<8> expA  = expF32UI(a);
+    Bits<23> sigA = fracF32UI(a);
+    Bits<1> signB = signF32UI(b);
+    Bits<8> expB  = expF32UI(b);
+    Bits<23> sigB = fracF32UI(b);
+
+    # declare a variable to store significand of product
+    U32 sigZ;
+
+    # declare a variable to store sign of product
+    Bits<1> signZ;
+
+    # declare a variable to store the exponent part of product
+    Bits<8> expZ;
+
+    # calculate sign of product
+    signZ = signA ^ signB;
+
+    U32 magBits;
+
+    if (expA == 0xFF) {
+      if ((sigA != 0) ||  ((expB == 0xFF) && (sigB != 0))) {
+        return softfloat_propagateNaNF32UI(a, b);
+        magBits = expB | sigB;
+        if (magBits == 0) {
+          set_fp_flag(FpFlag::NV);
+          return UI32_NAN;
+        } else {
+          return packToF32UI(signZ, 0xFF, 0);
+        }
+      }
+    }
+
+    if (expB == 0xFF) {
+      if (sigB != 0) {
+        return softfloat_propagateNaNF32UI(a, b);
+      }
+      magBits = expA | sigA;
+      if (magBits == 0) {
+          set_fp_flag(FpFlag::NV);
+          return UI32_NAN;
+      } else {
+          return packToF32UI(signZ, 0xFF, 0);
+      }
+    }
+
+    if (expA == 0) {
+      if (sigA == 0) {
+        return packtoF32UI(signZ, 0, 0);
+      }
+      (expA, sigA) = softfloat_normSubnormalF32Sig(sigA);
+    }
+
+    if (expB == 0) {
+      if (sigB == 0) {
+        return packtoF32UI(signZ, 0, 0);
+      }
+      (expB, sigB) = softfloat_normSubnormalF32Sig(sigB);
+    }
+
+    expZ = expA + expB - 0x7F;
+    sigA = (sigA | 0x00800000)<<7;
+    sigB = (sigB | 0x00800000)<<8;
+    sigZ = softfloat_shiftRightJam64(sigA `* sigB, 32);
+    if (sigZ < 0x40000000) {
+      expZ = expZ `- 1'b1;
+      sigZ = sigZ << 1;
+    }
+    return softfloat_roundPackToF32(signZ, expZ, sigZ);
   }
 }
