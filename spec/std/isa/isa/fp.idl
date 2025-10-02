@@ -1330,6 +1330,6 @@ function f32_mul {
       expZ = expZ `- 1'b1;
       sigZ = sigZ << 1;
     }
-    return softfloat_roundPackToF32(signZ, expZ, sigZ);
+    return softfloat_roundPackToF32(signZ, expZ, sigZ, mode);
   }
 }
