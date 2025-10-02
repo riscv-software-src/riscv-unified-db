@@ -1,0 +1,217 @@
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/register_schema.json
+
+$schema: register_schema.json#
+kind: register_file
+name: X
+long_name: General Purpose Registers
+description: |
+  The 'X' register file contains the general-purpose integer registers accessible to
+  scalar instructions. Register widths track the current XLEN. Register 'x0' is hardwired
+  to zero, while the remaining registers hold architecturally visible integer state used
+  by the calling convention and execution environment.
+definedBy: I
+register_class: general_purpose
+length: XLEN
+count:
+  default: 32
+  variants:
+    - value: 16
+      when: { name: E }
+      description: |
+        The embedded base architecture (E) reduces the integer register file to 16 entries.
+registers:
+  - name: x0
+    index: 0
+    abi_mnemonic: zero
+    roles: [zero]
+    description: |
+      Register x0 is hardwired with all bits equal to 0.
+  - name: x1
+    index: 1
+    abi_mnemonic: ra
+    roles: [return_address, caller_saved]
+    description: Return address register used by CALL/JAL instructions.
+  - name: x2
+    index: 2
+    abi_mnemonic: sp
+    roles: [stack_pointer, callee_saved]
+    description: Stack pointer.
+  - name: x3
+    index: 3
+    abi_mnemonic: gp
+    roles: [global_pointer]
+    description: Global pointer.
+  - name: x4
+    index: 4
+    abi_mnemonic: tp
+    roles: [thread_pointer]
+    description: Thread pointer or TLS base.
+  - name: x5
+    index: 5
+    abi_mnemonic: t0
+    roles: [temporary, caller_saved]
+    description: Temporary register / linkage scratch.
+  - name: x6
+    index: 6
+    abi_mnemonic: t1
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+  - name: x7
+    index: 7
+    abi_mnemonic: t2
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+  - name: x8
+    index: 8
+    abi_mnemonic: s0
+    roles: [callee_saved, frame_pointer]
+    description: Callee-saved register; used as frame pointer when required.
+  - name: x9
+    index: 9
+    abi_mnemonic: s1
+    roles: [callee_saved]
+    description: Callee-saved register.
+  - name: x10
+    index: 10
+    abi_mnemonic: a0
+    roles: [argument, return_value, caller_saved]
+    description: Function argument / return value register 0.
+  - name: x11
+    index: 11
+    abi_mnemonic: a1
+    roles: [argument, return_value, caller_saved]
+    description: Function argument / return value register 1.
+  - name: x12
+    index: 12
+    abi_mnemonic: a2
+    roles: [argument, caller_saved]
+    description: Function argument register 2.
+  - name: x13
+    index: 13
+    abi_mnemonic: a3
+    roles: [argument, caller_saved]
+    description: Function argument register 3.
+  - name: x14
+    index: 14
+    abi_mnemonic: a4
+    roles: [argument, caller_saved]
+    description: Function argument register 4.
+  - name: x15
+    index: 15
+    abi_mnemonic: a5
+    roles: [argument, caller_saved]
+    description: Function argument register 5.
+  - name: x16
+    index: 16
+    abi_mnemonic: a6
+    roles: [argument, caller_saved]
+    description: Function argument register 6.
+    when:
+      not: { name: E }
+  - name: x17
+    index: 17
+    abi_mnemonic: a7
+    roles: [argument, caller_saved]
+    description: Function argument register 7 / syscall ID.
+    when:
+      not: { name: E }
+  - name: x18
+    index: 18
+    abi_mnemonic: s2
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x19
+    index: 19
+    abi_mnemonic: s3
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x20
+    index: 20
+    abi_mnemonic: s4
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x21
+    index: 21
+    abi_mnemonic: s5
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x22
+    index: 22
+    abi_mnemonic: s6
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x23
+    index: 23
+    abi_mnemonic: s7
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x24
+    index: 24
+    abi_mnemonic: s8
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x25
+    index: 25
+    abi_mnemonic: s9
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x26
+    index: 26
+    abi_mnemonic: s10
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x27
+    index: 27
+    abi_mnemonic: s11
+    roles: [callee_saved]
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x28
+    index: 28
+    abi_mnemonic: t3
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x29
+    index: 29
+    abi_mnemonic: t4
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x30
+    index: 30
+    abi_mnemonic: t5
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x31
+    index: 31
+    abi_mnemonic: t6
+    roles: [temporary, caller_saved]
+    description: Temporary register.
+    when:
+      not: { name: E }

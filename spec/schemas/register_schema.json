@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "title": "Register File Schema",
+  "description": "Schema for describing a register file",
+
+  "$defs": {
+    "count_variant": {
+      "type": "object",
+      "required": ["value", "when"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "integer",
+          "description": "Override count when condition is satisfied"
+        },
+        "when": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text"
+        }
+      }
+    },
+    "register_entry": {
+      "type": "object",
+      "required": ["name", "index"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "schema_defs.json#/$defs/register_name"
+        },
+        "abi_mnemonic": {
+          "$ref": "schema_defs.json#/$defs/register_alias"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Register index"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "when": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "length": {
+          "$ref": "schema_defs.json#/$defs/bit_length_value"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "zero",
+              "return_address",
+              "stack_pointer",
+              "global_pointer",
+              "thread_pointer",
+              "frame_pointer",
+              "return_value",
+              "argument",
+              "caller_saved",
+              "callee_saved",
+              "temporary"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "register_file": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "description",
+        "length",
+        "registers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "register_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "register_file"
+        },
+        "name": {
+          "$ref": "schema_defs.json#/$defs/register_name"
+        },
+        "long_name": {
+          "type": "string"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "register_class": {
+          "type": "string",
+          "enum": ["general_purpose", "floating_point", "vector"]
+        },
+        "length": {
+          "$ref": "schema_defs.json#/$defs/bit_length_value"
+        },
+        "count": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "object",
+              "required": ["default"],
+              "additionalProperties": false,
+              "properties": {
+                "default": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "variants": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/count_variant"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "registers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/register_entry"
+          }
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/register_file"
+}
