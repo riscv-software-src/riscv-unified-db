@@ -407,22 +407,22 @@ namespace :test do
       "srli", "sub", "xor", "xori"]
 
     rv32uiTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
     end
 
     rv32umTests = [ "div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu" ]
     rv32umTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
     end
 
     rv32ucTests = [ "rvc" ]
     rv32ucTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
     end
 
     rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
     rv32siTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
     end
   end
 end
