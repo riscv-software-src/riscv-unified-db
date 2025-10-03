@@ -4,7 +4,7 @@ $schema: inst_schema.json#
 kind: instruction
 name: sctrclr
 long_name: Supervisor Control Transfer Record (CTR) clear
-description:
+description: |
   - id: inst-sctrclr-operation
     normative: false
     text: |
@@ -34,7 +34,7 @@ description:
     normative: false
     text: |
       SCTRCLR execution  causes a `VirtualInstruciton` exception if `mstateen0.CTR`=1 and:
-      
+
       * The instruction is executed in VS-mode and `hstateen0.CTR`=0
       * The instruction is executed in VU-mode
 definedBy:
@@ -50,3 +50,31 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::Smstateen)) {
+    if (CSR[mstateen0].CTR == 1'b0) {
+      if (mode() != PrivilegeMode::M) {
+        raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+    }
+    else if (implemented?(ExtensionName::H)) {
+      if (CSR[hstateen0].CTR == 1'b0 && mode() == PrivilegeMode::VS) {
+        raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+    }
+  }
+  if (mode() == PrivilegeMode::U) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU) {
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  else {
+    for (U32 i = 0; i < (16 << CSR[sctrdepth].DEPTH); i++) {
+      CSR[siselect] = (0x200 + i);
+      CSR[sireg1] = 0;
+      CSR[sireg2] = 0;
+      CSR[sireg3] = 0;
+    }
+    CTRCycleCounter = 16'b0;
+    CycleCountValid = 1'b0;
+  }
