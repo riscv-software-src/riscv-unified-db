@@ -39,6 +39,25 @@ description: |
   which logical entry in the buffer it wishes to read or write.
   Logical entry 0 always corresponds to the youngest recorded transfer, followed by entry 1 as the
   next youngest, and so on.
+params:
+  CTR_CYCLE_COUNTER:
+    description: |
+      The elapsed cycle counter includes a count of CPU cycles elapsed since the prior CTR record.
+      It is represented by the CC field, which has a 12-bit mantissa component
+      (Cycle Count Mantissa, or CCM) and a 4-bit exponent component (Cycle Count Exponent, or CCE).
+      It increments at the same rate as the mcycle counter.
+      The CtrCycleCounter is reset on writes to xctrctl , and on execution of SCTRCLR, to ensure that any
+      accumulated cycle counts do not persist across a context switch.
+    schema:
+      type: integer
+  CCV:
+    description: |
+      The CC value is valid only when the Cycle Count Valid (CCV) bit is set. The next record will
+      have CCV=0 after a write to xctrctl , or execution of SCTRCLR, since CtrCycleCounter is reset. CCV
+      should additionally be cleared after any other implementation-specific scenarios where active cycles
+      might not be counted in CtrCycleCounter.
+    schema:
+      type: boolean
 type: privileged
 versions:
   - version: "1.0.0"
