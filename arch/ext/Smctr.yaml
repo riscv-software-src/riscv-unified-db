@@ -42,20 +42,20 @@ description: |
 params:
   CTR_CYCLE_COUNTER:
     description: |
-      The elapsed cycle counter includes a count of CPU cycles elapsed since the prior CTR record.
-      It is represented by the CC field, which has a 12-bit mantissa component
-      (Cycle Count Mantissa, or CCM) and a 4-bit exponent component (Cycle Count Exponent, or CCE).
-      It increments at the same rate as the mcycle counter.
-      The CtrCycleCounter is reset on writes to xctrctl , and on execution of SCTRCLR, to ensure that any
-      accumulated cycle counts do not persist across a context switch.
+      An internal counter used to count CPU cycles while CTR is active, where active implies that the
+      current privilege mode is enabled for recording and CTR is not frozen. This counter is only for
+      implementations that support cycle counting. It increments at the same rate as the mcycle counter.
+      This counter is used to populate the CC field of ctrdata when a qualified control transfer occurs.
+      It resets on writes to xctrctl and on execution of SCTRCLR.
     schema:
       type: integer
-  CCV:
+  CCV_HW:
     description: |
-      The CC value is valid only when the Cycle Count Valid (CCV) bit is set. The next record will
-      have CCV=0 after a write to xctrctl , or execution of SCTRCLR, since CtrCycleCounter is reset. CCV
-      should additionally be cleared after any other implementation-specific scenarios where active cycles
-      might not be counted in CtrCycleCounter.
+      An internal hardware flag, which is stored in ctrdata.CCV of the next record in case of a qualified
+      control transfer.
+      It is cleared out after a write to xctrctl or execution of SCTRCLR, since CTR_CYCLE_COUNTER is reset.
+      This flag should additionally be cleared after any other implementation-specific scenarios where
+      active cycles might not be counted in CTR_CYCLE_COUNTER.
     schema:
       type: boolean
 type: privileged
