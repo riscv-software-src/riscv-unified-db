@@ -3,7 +3,7 @@ Automatic-Module-Name: org.xtext.udb.ui.tests
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.ui.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202509291920
+Bundle-Version: 1.0.0.202510042122
 Bundle-SymbolicName: org.xtext.udb.ui.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb.ui,org.eclipse.xtext.testing,org.eclipse.x
@@ -12,6 +12,7 @@ Require-Bundle: org.xtext.udb.ui,org.eclipse.xtext.testing,org.eclipse.x
  n:=optional
 Import-Package: org.junit.jupiter.api;version="[5.1.0,6.0.0)",org.junit.
  jupiter.api.extension;version="[5.1.0,6.0.0)"
-Export-Package: org.xtext.clinic.ui.tests;x-internal=true
+Export-Package: org.xtext.example.udb.ui.tests;x-internal=true,org.xtext
+ .example.udb.ui.tests;x-internal=true
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 

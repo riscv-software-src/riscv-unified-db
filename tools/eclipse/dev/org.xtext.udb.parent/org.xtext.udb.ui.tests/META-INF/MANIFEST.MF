@@ -16,4 +16,5 @@ Require-Bundle: org.xtext.udb.ui,
 Import-Package: org.junit.jupiter.api;version="[5.1.0,6.0.0)",
  org.junit.jupiter.api.extension;version="[5.1.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Export-Package: org.xtext.clinic.ui.tests;x-internal=true
+Export-Package: org.xtext.example.udb.ui.tests;x-internal=true,
+ org.xtext.example.udb.ui.tests;x-internal=true

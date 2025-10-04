@@ -18,7 +18,9 @@ Require-Bundle: org.xtext.udb,
  org.eclipse.xtext.builder
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Export-Package: org.xtext.clinic.ui.contentassist,
+Export-Package: org.xtext.example.udb.ui.contentassist,
  org.xtext.udb.ui.internal,
- org.xtext.clinic.ui.quickfix
+ org.xtext.example.udb.ui.quickfix,
+ org.xtext.example.udb.ui.contentassist,
+ org.xtext.example.udb.ui.quickfix
 Bundle-Activator: org.xtext.udb.ui.internal.UdbActivator

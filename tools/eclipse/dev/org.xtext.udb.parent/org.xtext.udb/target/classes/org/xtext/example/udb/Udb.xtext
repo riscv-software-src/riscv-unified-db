@@ -1,6 +1,6 @@
-grammar org.xtext.clinic.Riscv with org.eclipse.xtext.common.Terminals
+grammar org.xtext.example.udb.Udb with org.eclipse.xtext.common.Terminals
 
-generate riscv "http://www.xtext.org/clinic/Riscv"
+generate udb "http://www.xtext.org/example/udb/Udb"
 
 Model:
 	csrs += Csr*;

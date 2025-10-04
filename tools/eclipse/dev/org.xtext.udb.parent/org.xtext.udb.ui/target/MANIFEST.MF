@@ -3,7 +3,7 @@ Automatic-Module-Name: org.xtext.udb.ui
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.ui
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202509291920
+Bundle-Version: 1.0.0.202510042129
 Bundle-SymbolicName: org.xtext.udb.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,org.xtext.udb.ide,org.eclipse.xtext.ui,org
@@ -12,8 +12,9 @@ Require-Bundle: org.xtext.udb,org.xtext.udb.ide,org.eclipse.xtext.ui,org
  ion="3.18.500",org.eclipse.ui,org.eclipse.compare,org.eclipse.xtext.bui
  lder
 Import-Package: org.apache.log4j
-Export-Package: org.xtext.clinic.ui.contentassist,org.xtext.udb.ui.inter
- nal,org.xtext.clinic.ui.quickfix
+Export-Package: org.xtext.example.udb.ui.contentassist,org.xtext.udb.ui.
+ internal,org.xtext.example.udb.ui.quickfix,org.xtext.example.udb.ui.con
+ tentassist,org.xtext.example.udb.ui.quickfix
 Bundle-Activator: org.xtext.udb.ui.internal.UdbActivator
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 

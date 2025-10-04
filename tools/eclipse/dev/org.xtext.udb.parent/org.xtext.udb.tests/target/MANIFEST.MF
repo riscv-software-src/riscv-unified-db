@@ -3,14 +3,15 @@ Automatic-Module-Name: org.xtext.udb.tests
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202509291920
+Bundle-Version: 1.0.0.202510042122
 Bundle-SymbolicName: org.xtext.udb.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,org.eclipse.xtext.testing,org.eclipse.xtex
- t.xbase.testing,org.eclipse.xtext.xbase.lib;bundle-version="2.40.0",jav
- ax.inject;bundle-version="1.0.0"
+ t.xbase.testing,javax.inject;bundle-version="1.0.0",org.eclipse.xtext.x
+ base.lib;bundle-version="2.40.0"
 Import-Package: org.junit.jupiter.api;version="[5.1.0,6.0.0)",org.junit.
  jupiter.api.extension;version="[5.1.0,6.0.0)"
-Export-Package: org.xtext.clinic.tests;x-internal=true
+Export-Package: org.xtext.example.udb.tests;x-internal=true,org.xtext.ex
+ ample.udb.tests;x-internal=true
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
 
