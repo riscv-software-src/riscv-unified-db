@@ -1561,7 +1561,7 @@ function f32_muladd {
     if (expC == 0) {
       if (sigC == 0) {
         expZ = expProd - 1;
-        sigZ = softfloat_ShiftRightJam64(sigProd, 31);
+        sigZ = softfloat_shiftRightJam64(sigProd, 31);
         return softfloat_roundPackToF32(signZ, expZ, sigZ);
       }
       (expC, sigC) = softfloat_normSubnormalF32Sig( sigC );
@@ -1578,7 +1578,7 @@ function f32_muladd {
                 sigProd
                     + softfloat_shiftRightJam64(
                            sigC `<< 32, expDiff );
-            sigZ = softfloat_shortShiftRightJam64( sig64Z, 32 );
+            sigZ = softfloat_shiftRightJam64( sig64Z, 32 );
         }
         if ( sigZ < 0x40000000 ) {
             expZ = expZ - 1;
@@ -1605,11 +1605,11 @@ function f32_muladd {
             expZ = expProd;
             sig64Z = sigProd - softfloat_shiftRightJam64( sig64C, expDiff );
         }
-        shiftDist = softfloat_countLeadingZeros64( sig64Z ) - 1;
+        shiftDist = count_leading_zeros<64>( sig64Z ) - 1;
         expZ = expZ - shiftDist;
         shiftDist = shiftDist - 32;
         if ( shiftDist < 0 ) {
-            sigZ = softfloat_ShiftRightJam64( sig64Z, -shiftDist );
+            sigZ = softfloat_shiftRightJam64( sig64Z, -shiftDist );
         } else {
             sigZ = sig64Z<<shiftDist;
         }
