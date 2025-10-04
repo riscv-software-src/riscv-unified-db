@@ -33,7 +33,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
   RoundingMode mode = rm_to_mode(rm, $encoding);
-  F32MulAddOp op = Softfloat_mulAdd_addC;
+  F32MulAddOp op = F32MulAddOp::Softfloat_mulAdd_addC;
   f[fd] = f32_muladd(f[fs1], f[fs2], op, mode);
   mark_f_state_dirty();
 
