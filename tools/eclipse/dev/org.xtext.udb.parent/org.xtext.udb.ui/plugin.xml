@@ -4,48 +4,48 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
 			extensions="udb"
-			id="org.xtext.clinic.Riscv"
-			name="Riscv Editor">
+			id="org.xtext.example.udb.Udb"
+			name="Udb Editor">
 		</editor>
 	</extension>
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
 			commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
-			commandId="org.xtext.clinic.Riscv.validate">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+			commandId="org.xtext.example.udb.Udb.validate">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<!-- copy qualified name -->
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName">
 			<activeWhen>
-				<reference definitionId="org.xtext.clinic.Riscv.Editor.opened" />
+				<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 			</activeWhen>
 		</handler>
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName">
 			<activeWhen>
 				<and>
-					<reference definitionId="org.xtext.clinic.Riscv.XtextEditor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.XtextEditor.opened" />
 					<iterate>
 						<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 					</iterate>
@@ -54,22 +54,22 @@
 		</handler>
 	</extension>
 	<extension point="org.eclipse.core.expressions.definitions">
-		<definition id="org.xtext.clinic.Riscv.Editor.opened">
+		<definition id="org.xtext.example.udb.Udb.Editor.opened">
 			<and>
 				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="org.xtext.clinic.Riscv"
+						value="org.xtext.example.udb.Udb"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
 		</definition>
-		<definition id="org.xtext.clinic.Riscv.XtextEditor.opened">
+		<definition id="org.xtext.example.udb.Udb.XtextEditor.opened">
 			<and>
 				<reference definitionId="isXtextEditorActive"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="org.xtext.clinic.Riscv"
+						value="org.xtext.example.udb.Udb"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
@@ -78,33 +78,33 @@
 	<extension
 			point="org.eclipse.ui.preferencePages">
 		<page
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="org.xtext.clinic.Riscv"
-			name="Riscv">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.xtext.example.udb.Udb"
+			name="Udb">
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
-			id="org.xtext.clinic.Riscv.coloring"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+			id="org.xtext.example.udb.Udb.coloring"
 			name="Syntax Coloring">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
-			id="org.xtext.clinic.Riscv.templates"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+			id="org.xtext.example.udb.Udb.templates"
 			name="Templates">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
 		<page
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="org.xtext.clinic.Riscv"
-			name="Riscv">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.xtext.example.udb.Udb"
+			name="Udb">
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -114,14 +114,14 @@
 	<extension
 		point="org.eclipse.ui.keywords">
 		<keyword
-			id="org.xtext.clinic.ui.keyword_Riscv"
-			label="Riscv"/>
+			id="org.xtext.example.udb.ui.keyword_Udb"
+			label="Udb"/>
 	</extension>
 	<extension
 		point="org.eclipse.ui.commands">
 		<command
 			description="Trigger expensive validation"
-			id="org.xtext.clinic.Riscv.validate"
+			id="org.xtext.example.udb.Udb.validate"
 			name="Validate">
 		</command>
 		<!-- copy qualified name -->
@@ -142,12 +142,12 @@
 		<menuContribution
 			locationURI="popup:#TextEditorContext?after=group.edit">
 			<command
-				commandId="org.xtext.clinic.Riscv.validate"
+				commandId="org.xtext.example.udb.Udb.validate"
 				style="push"
 				tooltip="Trigger expensive validation">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="org.xtext.clinic.Riscv.Editor.opened">
+						definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -157,7 +157,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.clinic.Riscv.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -165,7 +165,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.clinic.Riscv.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -174,7 +174,7 @@
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<and>
-						<reference definitionId="org.xtext.clinic.Riscv.XtextEditor.opened" />
+						<reference definitionId="org.xtext.example.udb.Udb.XtextEditor.opened" />
 						<iterate>
 							<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 						</iterate>
@@ -187,7 +187,7 @@
 		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
 			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -195,11 +195,11 @@
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
 			commandId="org.eclipse.xtext.ui.editor.FindReferences">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -208,8 +208,8 @@
 		<content-type
 			base-type="org.eclipse.core.runtime.text"
 			file-extensions="udb"
-			id="org.xtext.clinic.Riscv.contenttype"
-			name="Riscv File"
+			id="org.xtext.example.udb.Udb.contenttype"
+			name="Udb File"
 			priority="normal">
 		</content-type>
 	</extension>
@@ -217,68 +217,68 @@
 	<extension
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
 			type="udb">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
 			uriExtension="udb">
 		</resourceServiceProvider>
 	</extension>
-	<!-- marker definitions for org.xtext.clinic.Riscv -->
+	<!-- marker definitions for org.xtext.example.udb.Udb -->
 	<extension
-			id="riscv.check.fast"
-			name="Riscv Problem"
+			id="udb.check.fast"
+			name="Udb Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.fast"/>
 		<persistent value="true"/>
 	</extension>
 	<extension
-			id="riscv.check.normal"
-			name="Riscv Problem"
+			id="udb.check.normal"
+			name="Udb Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.normal"/>
 		<persistent value="true"/>
 	</extension>
 	<extension
-			id="riscv.check.expensive"
-			name="Riscv Problem"
+			id="udb.check.expensive"
+			name="Udb Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.expensive"/>
 		<persistent value="true"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
-			id="org.xtext.clinic.Riscv.validator.preferencePage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
+			id="org.xtext.example.udb.Udb.validator.preferencePage"
 			name="Errors/Warnings">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
 			fileExtensions="udb"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="org.xtext.clinic.Riscv.compiler.preferencePage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.xtext.example.udb.Udb.compiler.preferencePage"
 			name="Compiler">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="org.xtext.clinic.Riscv.compiler.propertyPage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.xtext.example.udb.Udb.compiler.propertyPage"
 			name="Compiler">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -289,20 +289,20 @@
 		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
 			<command
 				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
-				id="org.xtext.clinic.Riscv.OpenGeneratedCode"
+				id="org.xtext.example.udb.Udb.OpenGeneratedCode"
 				style="push">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.clinic.Riscv.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
 			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
 			<activeWhen>
-				<reference definitionId="org.xtext.clinic.Riscv.Editor.opened" />
+				<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 			</activeWhen>
 		</handler>
 	</extension>
@@ -310,11 +310,11 @@
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
 			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -334,33 +334,33 @@
 				style="push"
 				tooltip="Open Quick Outline">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.clinic.Riscv.Editor.opened"/>
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened"/>
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
-	<!-- quickfix marker resolution generator for org.xtext.clinic.Riscv -->
+	<!-- quickfix marker resolution generator for org.xtext.example.udb.Udb -->
 	<extension
 			point="org.eclipse.ui.ide.markerResolution">
 		<markerResolutionGenerator
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="org.xtext.udb.ui.riscv.check.fast">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.xtext.udb.ui.udb.check.fast">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="org.xtext.udb.ui.riscv.check.normal">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.xtext.udb.ui.udb.check.normal">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="org.xtext.udb.ui.riscv.check.expensive">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.xtext.udb.ui.udb.check.expensive">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
@@ -370,11 +370,11 @@
 	<!-- Rename Refactoring -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
 			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.clinic.Riscv.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -386,7 +386,7 @@
 				style="push">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="org.xtext.clinic.Riscv.Editor.opened">
+						definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -394,34 +394,34 @@
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.clinic.Riscv"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
-			id="org.xtext.clinic.Riscv.refactoring"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="org.xtext.example.udb.Udb.refactoring"
 			name="Refactoring">
-			<keywordReference id="org.xtext.clinic.ui.keyword_Riscv"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.compare.contentViewers">
-		<viewer id="org.xtext.clinic.Riscv.compare.contentViewers"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+		<viewer id="org.xtext.example.udb.Udb.compare.contentViewers"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
 			extensions="udb">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="org.xtext.clinic.Riscv.contenttype"
-			contentViewerId="org.xtext.clinic.Riscv.compare.contentViewers" />
+			contentTypeId="org.xtext.example.udb.Udb.contenttype"
+			contentViewerId="org.xtext.example.udb.Udb.compare.contentViewers" />
 	</extension>
 	<extension point="org.eclipse.compare.contentMergeViewers">
-		<viewer id="org.xtext.clinic.Riscv.compare.contentMergeViewers"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="udb" label="Riscv Compare">
+		<viewer id="org.xtext.example.udb.Udb.compare.contentMergeViewers"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="udb" label="Udb Compare">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="org.xtext.clinic.Riscv.contenttype"
-			contentMergeViewerId="org.xtext.clinic.Riscv.compare.contentMergeViewers" />
+			contentTypeId="org.xtext.example.udb.Udb.contenttype"
+			contentMergeViewerId="org.xtext.example.udb.Udb.compare.contentMergeViewers" />
 	</extension>
 	<extension point="org.eclipse.ui.editors.documentProviders">
-		<provider id="org.xtext.clinic.Riscv.editors.documentProviders"
-			class="org.xtext.clinic.ui.RiscvExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+		<provider id="org.xtext.example.udb.Udb.editors.documentProviders"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
 			extensions="udb">
 		</provider>
 	</extension>

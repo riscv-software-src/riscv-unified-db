@@ -3,8 +3,8 @@
 <plugin>
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package
-			uri = "http://www.xtext.org/clinic/Riscv"
-			class = "org.xtext.clinic.riscv.RiscvPackage"
-			genModel = "model/generated/Riscv.genmodel" />
+			uri = "http://www.xtext.org/example/udb/Udb"
+			class = "org.xtext.example.udb.udb.UdbPackage"
+			genModel = "model/generated/Udb.genmodel" />
 	</extension>
 </plugin>
