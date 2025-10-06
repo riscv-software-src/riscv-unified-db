@@ -1,0 +1,112 @@
+# Copyright (c) Synopsys Inc.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+---
+$schema: non_isa_schema.json#
+kind: non-isa specification
+name: preface
+long_name: Preface (Demo)
+version: 1.0.0
+ratification_date: "2025-08-08"
+description:
+  - id: spec-preface-overview
+    normative: false
+    text: |
+      This Programmer's Reference Manual (PRM) provides comprehensive documentation for a generic RISC-V processor implementation. It is intended for system designers, integrators, verification engineers, and software developers working with RISC-V-based systems.
+
+      The manual covers the processor architecture, instruction set, control and status registers, memory management, debug and trace features, and other essential aspects. It aims to clarify both standard RISC-V features and implementation-defined options, supporting robust and portable software development.
+
+      This document is suitable for public distribution and does not contain proprietary or vendor-specific content. All examples and descriptions are generic and based on open RISC-V standards.
+authors:
+  - name: RISC-V Community
+    organization:
+      name: RISC-V International
+      url: https://riscv.org
+license:
+  name: CC0 1.0 Universal
+  id: CC0-1.0
+  url: https://spdx.org/licenses/CC0-1.0.html
+sections:
+  - title: About This Manual
+    content:
+      - id: sec-preface-about
+        normative: false
+        text: |
+          This manual is organized to guide users through the essential features of a RISC-V processor. It begins with an overview of the architecture and programming model, followed by chapters on the instruction set, privilege levels, memory subsystem, and system integration topics. Each chapter provides references to the official RISC-V specifications and highlights implementation-defined aspects where relevant.
+
+          The manual is designed to be accessible to both new and experienced users, with clear explanations, diagrams, and practical examples. It emphasizes portability, compliance with RISC-V standards, and best practices for system design and software development.
+  - title: Audience
+    content:
+      - id: sec-preface-audience
+        normative: false
+        text: |
+          This document is intended for:
+
+          * System architects and designers
+          * Hardware and software engineers
+          * Verification and validation teams
+          * Technical writers and educators
+
+          The manual assumes a basic familiarity with computer architecture and programming concepts, but provides background information and references for further study.
+      - id: sec-preface-audience-conditional
+        normative: false
+        text: |
+          This section is only included for educational distributions.
+        when(): "distribution_type == 'educational'"
+  - title: Notation and Conventions
+    content:
+      - id: sec-preface-notation
+        normative: false
+        text: |
+          The following conventions are used throughout this manual:
+
+          * Register and field names are shown in `monospace` font.
+          * Bit values are indicated as 0 (read-only zero) or 1 (read-only one).
+          * References to RISC-V specifications are provided for standard features.
+          * Implementation-defined options are clearly marked and explained.
+  - title: Document Organization
+    content:
+      - id: sec-preface-organization
+        normative: false
+        text: |
+          Chapters include:
+
+          * Architecture Overview
+          * Instruction Set Architecture
+          * Privileged Architecture
+          * Interrupts and Exceptions
+          * Memory Subsystem
+          * Memory Management
+          * Reliability, Availability, and Serviceability (RAS)
+          * Floating Point Unit
+          * Debug and Trace
+          * Triggers and Watchpoints
+          * Power Management
+          * Performance Monitoring
+          * Timers and Watchdog
+          * Security Features
+          * Control and Status Registers
+          * Build and Configuration Options
+          * Acronyms and Definitions
+          * References
+
+          Each chapter is self-contained and provides links to related topics and external resources.
+  - title: Web Resources
+    content:
+      - id: sec-preface-web
+        normative: true
+        text: |
+          For more information on RISC-V standards and open-source resources, visit:
+
+          * https://riscv.org
+          * https://github.com/riscv/riscv-isa-manual
+          * https://github.com/riscv/riscv-debug-spec
+          * https://github.com/riscv-software-src
+
+          Community forums, mailing lists, and technical documentation are available to support developers and users worldwide.
+  - title: Revision History
+    content:
+      - id: sec-preface-history
+        normative: true
+        text: |
+          Version 1.0.0 (2025-08-08): Initial public release of the demo Programmer's Reference Manual for RISC-V processors.

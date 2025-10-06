@@ -11,9 +11,8 @@ description:
   - id: inst-fdiv.d-behaviour
     normative: false
     text: |
-      `FDIV.D` performs the double-precision floating-point division of _fs1_ by _fs2_. It is defined analogously
-       to its single-precision counterpart, but operates on double-precision operands and produces double-precision
-       results.
+      The `fdiv.d` instruction performs the double-precision floating-point division of `fs1` by `fs2`. It is defined analogously
+      to its single-precision counterpart, but operates on double-precision operands and produces double-precision results.
 definedBy: D
 assembly: fd, fs1, fs2, rm
 encoding:

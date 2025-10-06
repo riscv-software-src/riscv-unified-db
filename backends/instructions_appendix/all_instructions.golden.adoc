@@ -7268,8 +7268,8 @@ Encoding::
 ....
 
 Description::
-`FADD.D` is analogous to `FADD.S` and performs double-precision floating-point addition between
-_fs1_ and _fs2_ and writes the final result to _fd_.
+The xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] instruction is analogous to xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] and performs double-precision floating-point addition between
+`fs1` and `fs2` and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -7375,7 +7375,7 @@ Included in::
 == fadd.s
 
 Synopsis::
-Single-precision floating-point addition
+Floating-Point Add Single-Precision
 
 Assembly::
 fadd.s fd, fs1, fs2, rm
@@ -7387,8 +7387,8 @@ Encoding::
 ....
 
 Description::
-Do the single-precision floating-point addition of fs1 and fs2 and store the result in fd.
-rm is the dynamic Rounding Mode.
+The xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] instruction performs single-precision floating-point addition of `xs1` and `xs2`
+and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -7427,12 +7427,12 @@ Encoding::
 ....
 
 Description::
-`FCLASS.D` is defined analogously to its single-precision counterpart, but operates on double-precision operands.
-It examines the value in floating-point register _fs1_ and writes to integer register _xd_ a 10-bit mask that
+The xref:insts:fclass_d.adoc#udb:doc:inst:fclass_d[fclass.d] instruction is defined analogously to its single-precision counterpart, but operates on double-precision
+operands. It examines the value in floating-point register `fs1` and writes to integer register `xd` a 10-bit mask that
 indicates the class of the floating point number.
 
-The format of the mask is described in the table below. The corresponding bit in _xd_ will be set if the property
-is true and clear otherwise. All other bits in _xd_ are cleared. Note that exactly one bit in xd will be set.
+The format of the mask is described in the table below. The corresponding bit in `xd` will be set if the property
+is true and clear otherwise. All other bits in `xd` are cleared. Note that exactly one bit in `xd` will be set.
 
 .Format of result of `fclass` instruction.
 [%autowidth,float="center",align="center",cols="^,<",options="header",]
@@ -7570,7 +7570,7 @@ Included in::
 == fclass.s
 
 Synopsis::
-Single-precision floating-point classify
+Floating-Point Classify Single-Precision
 
 Assembly::
 fclass.s xd, fs1
@@ -7582,14 +7582,11 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fclass_s.adoc#udb:doc:inst:fclass_s[fclass.s] instruction examines the value in floating-point register
-_fs1_ and writes to integer register _xd_ a 10-bit mask that indicates
-the class of the floating-point number.
-The format of the mask is described in the table below.
-The corresponding bit in _xd_ will be set if the property is true and
-clear otherwise.
-All other bits in _xd_ are cleared.
-Note that exactly one bit in xd will be set.
+The xref:insts:fclass_s.adoc#udb:doc:inst:fclass_s[fclass.s] instruction examines the value in floating-point register `fs1` and writes to integer register `xd`
+a 10-bit mask that indicates the class of the floating-point number.
+
+The format of the mask is described in the table below. The corresponding bit in `xd` will be set if the property
+is true and clear otherwise. All other bits in `xd` are cleared. Note that exactly one bit in `xd` will be set.
 xref:insts:fclass_s.adoc#udb:doc:inst:fclass_s[fclass.s] does not set the floating-point exception flags.
 
 .Format of result of `fclass` instruction.
@@ -7721,8 +7718,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.D.L` converts a 64-bit signed integer, in integer register _xs1_ into a double-precision
-floating-point number in floating-point register _fd_.
+The xref:insts:fcvt_d_l.adoc#udb:doc:inst:fcvt_d_l[fcvt.d.l] instruction converts a 64-bit signed integer, in integer register `xs1` into a double-precision
+floating-point number in floating-point register `fd`.
 
 
 Decode Variables::
@@ -7760,8 +7757,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.D.LU` converts to or from a 64-bit unsigned integer, _xs1_ into a double-precision
-floating-point number in floating-point register _fd_.
+The xref:insts:fcvt_d_lu.adoc#udb:doc:inst:fcvt_d_lu[fcvt.d.lu] instruction converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
+floating-point number in floating-point register `fd`.
 
 
 Decode Variables::
@@ -7837,10 +7834,10 @@ Encoding::
 ....
 
 Description::
-The single-precision to double-precision conversion instruction, `FCVT.D.S` is encoded in the OP-FP
+The single-precision to double-precision conversion instruction, xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s] is encoded in the OP-FP
 major opcode space and both the source and destination are floating-point registers. The `xs2` field
 encodes the datatype of the source, and the `fmt` field encodes the datatype of the destination.
-`FCVT.D.S` will never round.
+xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s] will never round.
 
 
 Decode Variables::
@@ -7878,9 +7875,9 @@ Encoding::
 ....
 
 Description::
-`FCVT.D.W` converts a 32-bit signed integer, in integer register _xs1_ into a double-precision
-floating-point number in floating-point register _fd_. Note `FCVT.D.W` always produces an exact
-result and is unaffected by rounding mode.
+The xref:insts:fcvt_d_w.adoc#udb:doc:inst:fcvt_d_w[fcvt.d.w] instruction converts a 32-bit signed integer, in integer register `xs1` into a double-precision
+floating-point number in floating-point register `fd`. Note xref:insts:fcvt_d_w.adoc#udb:doc:inst:fcvt_d_w[fcvt.d.w] always produces an exact result and is
+unaffected by rounding mode.
 
 
 Decode Variables::
@@ -7918,9 +7915,9 @@ Encoding::
 ....
 
 Description::
-`FCVT.D.WU` converts a 32-bit unsigned integer in integer register _xs1_ into a double-precision
-floating-point number in floating-point register _fd_. Note `FCVT.D.WU` always produces an exact
-result and is unaffected by rounding mode.
+The xref:insts:fcvt_d_wu.adoc#udb:doc:inst:fcvt_d_wu[fcvt.d.wu] instruction converts a 32-bit unsigned integer in integer register `xs1` into a double-precision
+floating-point number in floating-point register `fd`. Note xref:insts:fcvt_d_wu.adoc#udb:doc:inst:fcvt_d_wu[fcvt.d.wu] always produces an exact result and is
+unaffected by rounding mode.
 
 
 Decode Variables::
@@ -8236,8 +8233,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.L.D` converts a double-precision floating-point number in floating-point register _fs1_
-to a signed 64-bit integer, in integer register _xd_.
+The xref:insts:fcvt_l_d.adoc#udb:doc:inst:fcvt_l_d[fcvt.l.d] instruction converts a double-precision floating-point number in floating-point register `fs1`
+to a signed 64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -8339,7 +8336,7 @@ Included in::
 == fcvt.l.s
 
 Synopsis::
-Floating-point Convert Single-precision to Long
+Floating-Point Convert Single-Precision to Long
 
 Assembly::
 fcvt.l.s xd, fs1, rm
@@ -8351,7 +8348,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a signed
+The xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] instruction converts a floating-point number in floating-point register `fs1` to a signed
 64-bit integer, in integer register `xd`.
 
 
@@ -8390,8 +8387,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.LU.D` converts a double-precision floating-point number in floating-point register _fs1_
-to an unsigned 64-bit integer, in integer register _xd_.
+The xref:insts:fcvt_lu_d.adoc#udb:doc:inst:fcvt_lu_d[fcvt.lu.d] instruction converts a double-precision floating-point number in floating-point register `fs1`
+to an unsigned 64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -8493,7 +8490,7 @@ Included in::
 == fcvt.lu.s
 
 Synopsis::
-Floating-point Convert Single-precision to Unsigned Long
+Floating-Point Convert Single-Precision to Unsigned Long
 
 Assembly::
 fcvt.lu.s xd, fs1, rm
@@ -8505,7 +8502,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a unsigned
+The xref:insts:fcvt_lu_s.adoc#udb:doc:inst:fcvt_lu_s[fcvt.lu.s] instruction converts a floating-point number in floating-point register `fs1` to a unsigned
 64-bit integer, in integer register `xd`.
 
 
@@ -8850,10 +8847,10 @@ Encoding::
 ....
 
 Description::
-`FCVT.S.D` converts a double-precision floating-point number to a single-precision floating-point number.
- This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
- registers. The `xs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype
- of the destination. `FCVT.S.D` rounds according to the RM field.
+The xref:insts:fcvt_s_d.adoc#udb:doc:inst:fcvt_s_d[fcvt.s.d] instruction converts a double-precision floating-point number to a single-precision floating-point
+number. This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
+registers. The `xs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype of the
+destination. xref:insts:fcvt_s_d.adoc#udb:doc:inst:fcvt_s_d[fcvt.s.d] rounds according to the `rm` field.
 
 
 Decode Variables::
@@ -8922,7 +8919,7 @@ Included in::
 == fcvt.s.l
 
 Synopsis::
-Floating-point Convert Long to Single-precision
+Floating-Point Convert Long to Single-Precision
 
 Assembly::
 fcvt.s.l fd, xs1, rm
@@ -8934,7 +8931,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_s_l.adoc#udb:doc:inst:fcvt_s_l[fcvt.s.l] converts a 64-bit signed integer in integer register `xs1` into a floating-point
+The xref:insts:fcvt_s_l.adoc#udb:doc:inst:fcvt_s_l[fcvt.s.l] instruction converts a 64-bit signed integer in integer register `xs1` into a floating-point
 number in floating-point register `fd`.
 
 
@@ -8961,7 +8958,7 @@ Included in::
 == fcvt.s.lu
 
 Synopsis::
-Floating-point Convert Unsigned Long to Single-precision
+Floating-Point Convert Unsigned Long to Single-Precision
 
 Assembly::
 fcvt.s.lu fd, xs1, rm
@@ -8973,7 +8970,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_s_lu.adoc#udb:doc:inst:fcvt_s_lu[fcvt.s.lu] converts a 64-bit unsigned integer into a single-precision floating-point number.
+The xref:insts:fcvt_s_lu.adoc#udb:doc:inst:fcvt_s_lu[fcvt.s.lu] instruction converts a 64-bit unsigned integer into a single-precision floating-point number.
 
 
 Decode Variables::
@@ -9037,7 +9034,7 @@ Included in::
 == fcvt.s.w
 
 Synopsis::
-Convert signed 32-bit integer to single-precision float
+Floating-Point Convert Word to Single-Precision
 
 Assembly::
 fcvt.s.w fd, xs1, rm
@@ -9049,11 +9046,12 @@ Encoding::
 ....
 
 Description::
-Converts a 32-bit signed integer in integer register _xs1_ into a floating-point number in
-floating-point register _fd_.
+The xref:insts:fcvt_s_w.adoc#udb:doc:inst:fcvt_s_w[fcvt.s.w] instruction converts a 32-bit signed integer in integer register `xs1` into
+a floating-point number in floating-point register `fd`.
 
 All floating-point to integer and integer to floating-point conversion instructions round
-according to the _rm_ field.
+according to the `rm` field.
+
 A floating-point register can be initialized to floating-point positive zero using
 `fcvt.s.w fd, x0`, which will never set any exception flags.
 
@@ -9084,7 +9082,7 @@ Included in::
 == fcvt.s.wu
 
 Synopsis::
-Convert unsigned 32-bit integer to single-precision float
+Floating-Point Convert Unsigned Word to Single-Precision
 
 Assembly::
 fcvt.s.wu fd, xs1, rm
@@ -9096,11 +9094,12 @@ Encoding::
 ....
 
 Description::
-Converts a 32-bit unsigned integer in integer register _xs1_ into a floating-point number in
-floating-point register _fd_.
+The xref:insts:fcvt_s_wu.adoc#udb:doc:inst:fcvt_s_wu[fcvt.s.wu] instruction converts a 32-bit unsigned integer in integer register `xs1` into
+a floating-point number in floating-point register `fd`.
 
 All floating-point to integer and integer to floating-point conversion instructions round
-according to the _rm_ field.
+according to the `rm` field.
+
 A floating-point register can be initialized to floating-point positive zero using
 `fcvt.s.w rd, x0`, which will never set any exception flags.
 
@@ -9143,8 +9142,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.W.D` converts a double-precision floating-point number in floating-point register _fs1_ to a
-signed 32-bit integer, in integer register _xd_.
+The xref:insts:fcvt_w_d.adoc#udb:doc:inst:fcvt_w_d[fcvt.w.d] instruction converts a double-precision floating-point number in floating-point register `fs1` to a
+signed 32-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -9246,7 +9245,7 @@ Included in::
 == fcvt.w.s
 
 Synopsis::
-Convert single-precision float to signed word.
+Floating-Point Convert Single-Precision to Word
 
 Assembly::
 fcvt.w.s xd, fs1, rm
@@ -9258,10 +9257,9 @@ Encoding::
 ....
 
 Description::
-Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in
-integer register _xd_.
-
-For XLEN &gt;32, xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] sign-extends the 32-bit result to the destination register width.
+The xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] instruction converts a floating-point number in floating-point register `fs1` to a
+signed 32-bit integer in integer register `xd`. For XLEN &gt;32, xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] sign-extends the 32-bit
+result to the destination register width.
 
 If the rounded result is not representable as a 32-bit signed integer, it is clipped to the
 nearest value and the invalid flag is set.
@@ -9281,7 +9279,8 @@ h! Output for `+∞` for `NaN` ! `2^31 - 1`
 !===
 
 All floating-point to integer and integer to floating-point conversion instructions round
-according to the _rm_ field.
+according to the `rm` field.
+
 A floating-point register can be initialized to floating-point positive zero using
 `fcvt.s.w xd, x0`, which will never set any exception flags.
 
@@ -9324,8 +9323,8 @@ Encoding::
 ....
 
 Description::
-`FCVT.WU.D.d` converts a double-precision floating-point number in floating-point register _fs1_ to an
-unsigned 32-bit integer, in integer register _xd_.
+The xref:insts:fcvt_wu_d.adoc#udb:doc:inst:fcvt_wu_d[fcvt.wu.d] instruction converts a double-precision floating-point number in floating-point register `fs1` to an
+unsigned 32-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -9427,7 +9426,7 @@ Included in::
 == fcvt.wu.s
 
 Synopsis::
-Convert single-precision float to unsigned word.
+Floating-Point Convert Single-Precision to Unsigned Word
 
 Assembly::
 fcvt.wu.s xd, fs1, rm
@@ -9439,9 +9438,9 @@ Encoding::
 ....
 
 Description::
-Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _xd_.
-
-For XLEN &gt;32, xref:insts:fcvt_wu_s.adoc#udb:doc:inst:fcvt_wu_s[fcvt.wu.s] sign-extends the 32-bit result to the destination register width.
+Converts a floating-point number in floating-point register `fs1` to an unsigned 32-bit integer
+in integer register `xd`. For XLEN &gt;32, xref:insts:fcvt_wu_s.adoc#udb:doc:inst:fcvt_wu_s[fcvt.wu.s] sign-extends the 32-bit result to the
+destination register width.
 
 If the rounded result is not representable as a 32-bit unsigned integer, it is clipped to the
 nearest value and the invalid flag is set.
@@ -9461,7 +9460,8 @@ h! Output for `+∞` for `NaN` ! `2^32 - 1`
 !===
 
 All floating-point to integer and integer to floating-point conversion instructions round
-according to the _rm_ field.
+according to the `rm` field.
+
 A floating-point register can be initialized to floating-point positive zero using
 `fcvt.s.w xd, x0`, which will never set any exception flags.
 
@@ -9504,14 +9504,14 @@ Encoding::
 ....
 
 Description::
-`FCVTMOD.W.D` always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded two's
-complement result, then sign-extended to XLEN bits and written to integer register _xd_. ±∞ and
+The xref:insts:fcvtmod_w_d.adoc#udb:doc:inst:fcvtmod_w_d[fcvtmod.w.d] instruction always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded
+two's complement result, then sign-extended to XLEN bits and written to integer register `xd`. ±∞ and
 NaN are converted to zero.
 
-Floating-point exception flags are raised the same as they would be for `FCVT.W.D` with the same input
+Floating-point exception flags are raised the same as they would be for xref:insts:fcvt_w_d.adoc#udb:doc:inst:fcvt_w_d[fcvt.w.d] with the same input
 operand.
 
-This instruction is only provided if the D extension is implemented. It is encoded like `FCVT.W.D`, but
+This instruction is only provided if the D extension is implemented. It is encoded like xref:insts:fcvt_w_d.adoc#udb:doc:inst:fcvt_w_d[fcvt.w.d], but
 with the `xs2` field set to 8 and the `rm` field set to 1 (RTZ). Other `rm` values are reserved.
 
 
@@ -9552,9 +9552,8 @@ Encoding::
 ....
 
 Description::
-`FDIV.D` performs the double-precision floating-point division of _fs1_ by _fs2_. It is defined analogously
- to its single-precision counterpart, but operates on double-precision operands and produces double-precision
- results.
+The xref:insts:fdiv_d.adoc#udb:doc:inst:fdiv_d[fdiv.d] instruction performs the double-precision floating-point division of `fs1` by `fs2`. It is defined analogously
+to its single-precision counterpart, but operates on double-precision operands and produces double-precision results.
 
 
 Decode Variables::
@@ -9666,7 +9665,7 @@ Included in::
 == fdiv.s
 
 Synopsis::
-No synopsis available
+Floating-Point Divide Single-Precision
 
 Assembly::
 fdiv.s fd, fs1, fs2, rm
@@ -9678,7 +9677,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fdiv_s.adoc#udb:doc:inst:fdiv_s[fdiv.s] instruction performs the single-precision floating-point division of `fs1` by `fs2`, and
+writes the final result to `fd`.
 
 
 Decode Variables::
@@ -9975,7 +9975,7 @@ Encoding::
 ....
 
 Description::
-`FEQ.D` writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise. It is defined analogously to its
+The xref:insts:feq_d.adoc#udb:doc:inst:feq_d[feq.d] instruction writes 1 to `xd` if `fs1` and `fs2` are equal, and 0 otherwise. It is defined analogously to its
 single-precision counterpart, but operates on double-precision operands.
 
 
@@ -10083,7 +10083,7 @@ Included in::
 == feq.s
 
 Synopsis::
-Single-precision floating-point equal
+Floating-Point Equal Single-Precision
 
 Assembly::
 feq.s xd, fs1, fs2
@@ -10095,11 +10095,9 @@ Encoding::
 ....
 
 Description::
-Writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise.
-
-If either operand is NaN, the result is 0 (not equal). If either operand is a signaling NaN, the invalid flag is set.
-
-Positive zero is considered equal to negative zero.
+The xref:insts:feq_s.adoc#udb:doc:inst:feq_s[feq.s] instruction writes 1 to `xd` if `fs1` and `fs2` are equal, and 0 otherwise.
+If either operand is NaN, the result is 0 (not equal). If either operand is a signaling NaN,
+the invalid flag is set. Positive zero is considered equal to negative zero.
 
 
 Decode Variables::
@@ -10137,8 +10135,8 @@ Encoding::
 ....
 
 Description::
-`FLD` instruction loads a double-precision floating-point value from memory into floating-point
-register _fd_. It is guaranteed to execute atomically if the effective address is naturally aligned
+The xref:insts:fld.adoc#udb:doc:inst:fld[fld] instruction loads a double-precision floating-point value from memory into floating-point
+register `fd`. It is guaranteed to execute atomically if the effective address is naturally aligned
 and XLEN≥64. It doesn't modify the bits being transferred; in particular, the payloads of non-canonical
 NaNs are preserved.
 
@@ -10178,7 +10176,7 @@ Encoding::
 ....
 
 Description::
-`FLE.D` writes 1 to _xd_ if _fs1_ is less than or equal to _fs2_, and 0 otherwise. It is defined
+The xref:insts:fle_d.adoc#udb:doc:inst:fle_d[fle.d] instruction writes 1 to `xd` if `fs1` is less than or equal to `fs2`, and 0 otherwise. It is defined
 analogously to its single-precision counterpart, but operates on double-precision operands.
 
 
@@ -10286,7 +10284,7 @@ Included in::
 == fle.s
 
 Synopsis::
-Single-precision floating-point less than or equal
+Floating-Point Less Than or Equal Single-Precision
 
 Assembly::
 fle.s xd, fs1, fs2
@@ -10298,12 +10296,9 @@ Encoding::
 ....
 
 Description::
-Writes 1 to _xd_ if _fs1_ is less than or equal to _fs2_, and 0 otherwise.
-
-If either operand is NaN, the result is 0 (not equal).
-If either operand is a NaN (signaling or quiet), the invalid flag is set.
-
-Positive zero and negative zero are considered equal.
+The xref:insts:fle_s.adoc#udb:doc:inst:fle_s[fle.s] instruction writes 1 to `xd` if `fs1` is less than or equal to `fs2`, and 0 otherwise.
+If either operand is NaN, the result is 0 (not equal). If either operand is a NaN (signaling or quiet),
+the invalid flag is set. Positive zero and negative zero are considered equal.
 
 
 Decode Variables::
@@ -10341,7 +10336,7 @@ Encoding::
 ....
 
 Description::
-`FLEQ.D` is defined like the `FLE.D` instruction, except that quiet NaN inputs do not cause
+The xref:insts:fleq_d.adoc#udb:doc:inst:fleq_d[fleq.d] instruction is defined like the xref:insts:fle_d.adoc#udb:doc:inst:fle_d[fle.d] instruction, except that quiet NaN inputs do not cause
 the invalid operation exception flag to be set.
 
 
@@ -10455,7 +10450,7 @@ Included in::
 == fleq.s
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than or Equal Quiet Single-Precision
 
 Assembly::
 fleq.s xd, fs1, fs2
@@ -10467,7 +10462,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fleq_s.adoc#udb:doc:inst:fleq_s[fleq.s] instruction is defined like the xref:insts:fle_s.adoc#udb:doc:inst:fle_s[fle.s] instruction, except that quiet NaN inputs do
+not cause the invalid operation exception flag to be set.
 
 
 Decode Variables::
@@ -10551,8 +10547,8 @@ Encoding::
 ....
 
 Description::
-`FLI.D` instruction loads one of 32 double-precision floating-point constants, encoded in the `xs1`
-field, into floating-point register _fd_. `FLI.D` is encoded like `FLI.S`, but with fmt=D.
+The xref:insts:fli_d.adoc#udb:doc:inst:fli_d[fli.d] instruction instruction loads one of 32 double-precision floating-point constants, encoded in the `xs1`
+field, into floating-point register `fd`. xref:insts:fli_d.adoc#udb:doc:inst:fli_d[fli.d] is encoded like xref:insts:fli_s.adoc#udb:doc:inst:fli_s[fli.s], but with `fmt` set to D.
 
 
 Decode Variables::
@@ -10748,8 +10744,8 @@ Encoding::
 ....
 
 Description::
-`FLT.D` writes 1 to _xd_ if _fs1_ is less than _fs2_, and 0 otherwise. It is defined analogously to its
-single-precision counterpart, but operate on double-precision operands.
+The xref:insts:flt_d.adoc#udb:doc:inst:flt_d[flt.d] instruction writes 1 to `xd` if `fs1` is less than `fs2`, and 0 otherwise. It is defined analogously to its
+single-precision counterpart, but operates on double-precision operands.
 
 
 Decode Variables::
@@ -10856,7 +10852,7 @@ Included in::
 == flt.s
 
 Synopsis::
-Single-precision floating-point less than
+Floating-Point Less Than Single-Precision
 
 Assembly::
 flt.s xd, fs1, fs2
@@ -10868,10 +10864,9 @@ Encoding::
 ....
 
 Description::
-Writes 1 to _xd_ if _fs1_ is less than _fs2_, and 0 otherwise.
-
-If either operand is NaN, the result is 0 (not equal).
-If either operand is a NaN (signaling or quiet), the invalid flag is set.
+The xref:insts:flt_s.adoc#udb:doc:inst:flt_s[flt.s] instruction writes 1 to `xd` if `fs1` is less than `fs2`, and 0 otherwise.
+If either operand is NaN, the result is 0 (not equal). If either operand is a NaN
+(signaling or quiet), the invalid flag is set.
 
 
 Decode Variables::
@@ -10909,7 +10904,7 @@ Encoding::
 ....
 
 Description::
-`FLTQ.D` is defined like the `FLT.D` instruction, except that quiet NaN inputs do not cause
+The xref:insts:fltq_d.adoc#udb:doc:inst:fltq_d[fltq.d] instruction is defined like the xref:insts:flt_d.adoc#udb:doc:inst:flt_d[flt.d] instruction, except that quiet NaN inputs do not cause
 the invalid operation exception flag to be set.
 
 
@@ -11023,7 +11018,7 @@ Included in::
 == fltq.s
 
 Synopsis::
-No synopsis available
+Floating-Point Less Than Quiet Single-Precision
 
 Assembly::
 fltq.s xd, fs1, fs2
@@ -11035,7 +11030,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fltq_s.adoc#udb:doc:inst:fltq_s[fltq.s] is defined like the xref:insts:flt_s.adoc#udb:doc:inst:flt_s[flt.s] instruction, except that quiet NaN inputs do not cause
+the invalid operation exception flag to be set.
 
 
 Decode Variables::
@@ -11061,7 +11057,7 @@ Included in::
 == flw
 
 Synopsis::
-Single-precision floating-point load
+Floating-Point Load Single-Precision
 
 Assembly::
 flw fd, imm(xs1)
@@ -11073,9 +11069,8 @@ Encoding::
 ....
 
 Description::
-The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _fd_.
-
-xref:insts:flw.adoc#udb:doc:inst:flw[flw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
+The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address `xs1` + `imm` into floating-point register `fd`.
+It does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
 
 Decode Variables::
@@ -11113,7 +11108,7 @@ Encoding::
 ....
 
 Description::
-`FMADD.D` multiplies the values in _fs1_ and _fs2_, adds the value in _fs3_, and writes the final result to _fd_.
+The xref:insts:fmadd_d.adoc#udb:doc:inst:fmadd_d[fmadd.d] instruction multiplies the values in `fs1` and `fs2`, adds the value in `fs3`, and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -11225,7 +11220,7 @@ Included in::
 == fmadd.s
 
 Synopsis::
-No synopsis available
+Floating-Point Multiply-Add Single-Precision
 
 Assembly::
 fmadd.s fd, fs1, fs2, fs3, rm
@@ -11237,7 +11232,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmadd_s.adoc#udb:doc:inst:fmadd_s[fmadd.s] multiplies the values in `fs1` and `fs2`, adds the value in `fs3`, and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -11277,9 +11272,9 @@ Encoding::
 ....
 
 Description::
-`FMAX.D` writes larger of _fs1_ and _fs2_ to _fd_. For the purposes of this instruction, the value
-`-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is the
-canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+The xref:insts:fmax_d.adoc#udb:doc:inst:fmax_d[fmax.d] instruction writes larger of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
 set the invalid operation exception flag, even when the result is not NaN.
 
 
@@ -11386,7 +11381,7 @@ Included in::
 == fmax.s
 
 Synopsis::
-No synopsis available
+Floating-Point Maximum-Number Single-Precision
 
 Assembly::
 fmax.s fd, fs1, fs2
@@ -11398,7 +11393,17 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmax_s.adoc#udb:doc:inst:fmax_s[fmax.s] instruction writes larger of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+set the invalid operation exception flag, even when the result is not NaN.
+
+[NOTE]
+====
+Note that in version 2.2 of the F extension, the xref:insts:fmin_s.adoc#udb:doc:inst:fmin_s[fmin.s] and xref:insts:fmax_s.adoc#udb:doc:inst:fmax_s[fmax.s] instructions were amended to implement
+the proposed _IEEE 754-201x_ `minimumNumber` and `maximumNumber` operations, rather than the _IEEE 754-2008_
+_minNum_ and _maxNum_ operations. These operations differ in their handling of signaling NaNs.
+====
 
 
 Decode Variables::
@@ -11436,7 +11441,7 @@ Encoding::
 ....
 
 Description::
-`FMAXM.D` writes larger of _fs1_ and _fs2_ to _fd_. It is defined like `FMAX.D` instruction, except
+The xref:insts:fmaxm_d.adoc#udb:doc:inst:fmaxm_d[fmaxm.d] instruction writes larger of `fs1` and `fs2` to `fd`. It is defined like xref:insts:fmax_d.adoc#udb:doc:inst:fmax_d[fmax.d] instruction, except
 that if either input is NaN, the result is the canonical NaN.
 
 
@@ -11600,9 +11605,9 @@ Encoding::
 ....
 
 Description::
-`FMIN.D` writes smaller of _fs1_ and _fs2_ to _fd_. For the purposes of this instruction, the value
-`-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is the
-canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+The xref:insts:fmin_d.adoc#udb:doc:inst:fmin_d[fmin.d] instruction writes smaller of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
 set the invalid operation exception flag, even when the result is not NaN.
 
 
@@ -11709,7 +11714,7 @@ Included in::
 == fmin.s
 
 Synopsis::
-No synopsis available
+Floating-Point Minimum-Number Single-Precision
 
 Assembly::
 fmin.s fd, fs1, fs2
@@ -11721,7 +11726,17 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmin_s.adoc#udb:doc:inst:fmin_s[fmin.s] instruction writes smaller of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
+the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
+the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
+set the invalid operation exception flag, even when the result is not NaN.
+
+[NOTE]
+====
+Note that in version 2.2 of the F extension, the xref:insts:fmin_s.adoc#udb:doc:inst:fmin_s[fmin.s] and xref:insts:fmax_s.adoc#udb:doc:inst:fmax_s[fmax.s] instructions were amended to implement
+the proposed _IEEE 754-201x_ `minimumNumber` and `maximumNumber` operations, rather than the _IEEE 754-2008_
+_minNum_ and _maxNum_ operations. These operations differ in their handling of signaling NaNs.
+====
 
 
 Decode Variables::
@@ -11759,7 +11774,7 @@ Encoding::
 ....
 
 Description::
-`FMINM.D` writes smaller of _fs1_ and _fs2_ to _fd_. It is defined like `FMIN.D` instruction, except
+The xref:insts:fminm_d.adoc#udb:doc:inst:fminm_d[fminm.d] instruction writes smaller of `fs1` and `fs2` to `fd`. It is defined like xref:insts:fmin_d.adoc#udb:doc:inst:fmin_d[fmin.d] instruction, except
 that if either input is NaN, the result is the canonical NaN.
 
 
@@ -11923,7 +11938,7 @@ Encoding::
 ....
 
 Description::
-`FMSUB.D` multiplies the values in _fs1_ and _fs2_, subtracts the value in _fs3_, and writes the final result to _fd_.
+The xref:insts:fmsub_d.adoc#udb:doc:inst:fmsub_d[fmsub.d] instruction multiplies the values in `fs1` and `fs2`, subtracts the value in `fs3`, and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12032,7 +12047,7 @@ Included in::
 == fmsub.s
 
 Synopsis::
-No synopsis available
+Floating-Point Multiply-Subtract Single-Precision
 
 Assembly::
 fmsub.s fd, fs1, fs2, fs3, rm
@@ -12044,7 +12059,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmsub_s.adoc#udb:doc:inst:fmsub_s[fmsub.s] multiplies the values in `fs1` and `fs2`, subtracts the value in `fs3`, and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12084,9 +12099,9 @@ Encoding::
 ....
 
 Description::
-`FMUL.D` performs the double-precision floating-point multiplication between _fs1_ and _fs2_. It is defined
-analogously to its single-precision counterpart, but operates on double-precision operands and produces
-double-precision results.
+The xref:insts:fmul_d.adoc#udb:doc:inst:fmul_d[fmul.d] instruction performs the double-precision floating-point multiplication between `fs1` and `fs2`.
+It is defined analogously to its single-precision counterpart, but operates on double-precision operands and
+produces double-precision results.
 
 
 Decode Variables::
@@ -12191,7 +12206,7 @@ Included in::
 == fmul.s
 
 Synopsis::
-No synopsis available
+Floating-Point Multiply Single-Precision
 
 Assembly::
 fmul.s fd, fs1, fs2, rm
@@ -12203,7 +12218,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fmul_s.adoc#udb:doc:inst:fmul_s[fmul.s] instruction performs the single-precision floating-point multiplication between `fs1` and `fs2`, and
+writes the result in `fd`.
 
 
 Decode Variables::
@@ -12242,8 +12258,8 @@ Encoding::
 ....
 
 Description::
-`FMV.D.X` moves the double-precision value encoded in `IEEE 754-2008` standard encoding from the integer
-register _xs1_ to the floating-point register _fd_.
+The xref:insts:fmv_d_x.adoc#udb:doc:inst:fmv_d_x[fmv.d.x] instruction moves the double-precision value encoded in `IEEE 754-2008` standard encoding from the integer
+register `xs1` to the floating-point register `fd`.
 
 
 Decode Variables::
@@ -12310,7 +12326,7 @@ Included in::
 == fmv.w.x
 
 Synopsis::
-Single-precision floating-point move from integer
+Floating-Point Move Single-Precision Word from Integer Register
 
 Assembly::
 fmv.w.x fd, xs1
@@ -12322,10 +12338,9 @@ Encoding::
 ....
 
 Description::
-Moves the single-precision value encoded in IEEE 754-2008 standard encoding
-from the lower 32 bits of integer register `xs1` to the floating-point
-register `fd`. The bits are not modified in the transfer, and in particular,
-the payloads of non-canonical NaNs are preserved.
+The xref:insts:fmv_w_x.adoc#udb:doc:inst:fmv_w_x[fmv.w.x] instruction moves the single-precision value encoded in `IEEE 754-2008` standard encoding
+from the lower 32 bits of integer register `xs1` to the floating-point register `fd`. The bits are not
+modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved.
 
 
 Decode Variables::
@@ -12362,8 +12377,8 @@ Encoding::
 ....
 
 Description::
-`FMV.X.D` moves the double-precision value in floating-point register _fs1_ to a representation in
-`IEEE 754-2008` standard encoding in integer register _xd_.
+The xref:insts:fmv_x_d.adoc#udb:doc:inst:fmv_x_d[fmv.x.d] instruction moves the double-precision value in floating-point register `fs1` to a representation in
+`IEEE 754-2008` standard encoding in integer register `xd`.
 
 
 Decode Variables::
@@ -12436,7 +12451,7 @@ Included in::
 == fmv.x.w
 
 Synopsis::
-Move single-precision value from floating-point to integer register
+Floating-Point Move Single-Precision Word to Integer Register
 
 Assembly::
 fmv.x.w xd, fs1
@@ -12448,12 +12463,10 @@ Encoding::
 ....
 
 Description::
-Moves the single-precision value in floating-point register fs1 represented in IEEE 754-2008
-encoding to the lower 32 bits of integer register xd.
-The bits are not modified in the transfer, and in particular, the payloads of non-canonical
-NaNs are preserved.
-For RV64, the higher 32 bits of the destination register are filled with copies of the
-floating-point number's sign bit.
+The xref:insts:fmv_x_w.adoc#udb:doc:inst:fmv_x_w[fmv.x.w] instruction moves the single-precision value in floating-point register `fs1`` represented in `IEEE 754-2008`
+encoding to the lower 32 bits of integer register `xd`. The bits are not modified in the transfer, and in particular, the
+payloads of non-canonical NaNs are preserved. For RV64, the higher 32 bits of the destination register are filled with copies
+of the floating-point number's sign bit.
 
 
 Decode Variables::
@@ -12490,8 +12503,8 @@ Encoding::
 ....
 
 Description::
-`FMVH.X.D` moves bits 63:32 of floating-point register _fs1_ into integer register _xd_. `FMVH.X.D` is used
-in conjunction with the existing `FMV.X.W` instruction to move a double-precision floating-point number to a
+The xref:insts:fmvh_x_d.adoc#udb:doc:inst:fmvh_x_d[fmvh.x.d] instruction moves bits 63:32 of floating-point register `fs1` into integer register `xd`. xref:insts:fmvh_x_d.adoc#udb:doc:inst:fmvh_x_d[fmvh.x.d]
+is used in conjunction with the existing xref:insts:fmv_x_w.adoc#udb:doc:inst:fmv_x_w[fmv.x.w] instruction to move a double-precision floating-point number to a
 pair of integer-registers.
 
 
@@ -12574,9 +12587,9 @@ Encoding::
 ....
 
 Description::
-`FMVP.D.X` moves a double-precision number from a pair of integer registers into a floating-point
-register. Integer registers _xs1_ and _xs2_ supply bits 31:0 and 63:32, respectively; the result
-is written to floating-point register _fd_.
+The xref:insts:fmvp_d_x.adoc#udb:doc:inst:fmvp_d_x[fmvp.d.x] instruction moves a double-precision number from a pair of integer registers into a floating-point
+register. Integer registers `xs1` and `xs2` supply bits 31:0 and 63:32, respectively; the result is written to
+floating-point register `fd`.
 
 
 Decode Variables::
@@ -12660,8 +12673,8 @@ Encoding::
 ....
 
 Description::
-`FNMADD.D` multiplies the values in _fs1_ and _fs2_, negates the product, subtracts the value in _fs3_, and
-writes the final result to _fd_.
+The xref:insts:fnmadd_d.adoc#udb:doc:inst:fnmadd_d[fnmadd.d] instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the value in `fs3`, and
+writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12771,7 +12784,7 @@ Included in::
 == fnmadd.s
 
 Synopsis::
-No synopsis available
+Floating-Point Negate-Multiply-Add Single-Precision
 
 Assembly::
 fnmadd.s fd, fs1, fs2, fs3, rm
@@ -12783,7 +12796,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fnmadd_s.adoc#udb:doc:inst:fnmadd_s[fnmadd.s] multiplies the values in `fs1` and `fs2`, negates the product, subtracts the value in `fs3`, and
+writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12823,8 +12837,8 @@ Encoding::
 ....
 
 Description::
-`FNMSUB.D` multiplies the values in _fs1_ and _fs2_, negates the product, adds the value in _fs3_, and
-writes the final result to _fd_.
+The xref:insts:fnmsub_d.adoc#udb:doc:inst:fnmsub_d[fnmsub.d] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
+writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12934,7 +12948,7 @@ Included in::
 == fnmsub.s
 
 Synopsis::
-No synopsis available
+Floating-Point Negate-Multiply-Subtract Single-Precision
 
 Assembly::
 fnmsub.s fd, fs1, fs2, fs3, rm
@@ -12946,7 +12960,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fnmsub_s.adoc#udb:doc:inst:fnmsub_s[fnmsub.s] instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
+writes the final result to `fd`.
 
 
 Decode Variables::
@@ -12986,12 +13001,12 @@ Encoding::
 ....
 
 Description::
-`FROUND.D` instruction rounds the double-precision floating-point number in floating-point register
-_fs1_ to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
-that integer, represented as a double-precision floating-point number, to floating-point register _fd_. Zero
-and infinite inputs are copied to _fd_ unmodified. Signaling NaN inputs cause the invalid operation
-exception flag to be set; no other exception flags are set. `FROUND.D` is encoded like FCVT.D.S, but with
-_xs2_=4.
+The xref:insts:fround_d.adoc#udb:doc:inst:fround_d[fround.d] instruction rounds the double-precision floating-point number in floating-point register
+`fs1` to an integer, according to the rounding mode specified in the instruction's `rm` field. It then writes
+that integer, represented as a double-precision floating-point number, to floating-point register `fd`. Zero
+and infinite inputs are copied to `fd` unmodified. Signaling NaN inputs cause the invalid operation
+exception flag to be set; no other exception flags are set. xref:insts:fround_d.adoc#udb:doc:inst:fround_d[fround.d] is encoded like xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s], but with
+`xs2` set to 4.
 
 
 Decode Variables::
@@ -13160,8 +13175,8 @@ Encoding::
 ....
 
 Description::
-`FROUNDNX.S` instruction is defined in the same way as `FROUND.D`, but it also sets the inexact exception flag if the input
-differs from the rounded result and is not NaN. `FROUNDNX.S` is encoded like `FCVT.D.S`, but with _xs2_=5.
+The xref:insts:froundnx_d.adoc#udb:doc:inst:froundnx_d[froundnx.d] instruction is defined in the same way as xref:insts:fround_d.adoc#udb:doc:inst:fround_d[fround.d], but it also sets the inexact exception flag if the input
+differs from the rounded result and is not NaN. xref:insts:froundnx_d.adoc#udb:doc:inst:froundnx_d[froundnx.d] is encoded like xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s], but with `xs2` set to 5.
 
 
 Decode Variables::
@@ -13320,9 +13335,9 @@ Encoding::
 ....
 
 Description::
-`FSD` stores a double-precision value from the floating-point registers to memory. It is guaranteed to execute
-atomically if the effective address is naturally aligned and XLEN≥64. It doesn't modify the bits being transferred;
-in particular, the payloads of non-canonical NaNs are preserved.
+The xref:insts:fsd.adoc#udb:doc:inst:fsd[fsd] instruction stores a double-precision value from the floating-point registers to memory. It is guaranteed to execute
+atomically if the effective address is naturally aligned and XLEN≥64. It doesn't modify the bits being transferred; in particular,
+the payloads of non-canonical NaNs are preserved.
 
 
 Decode Variables::
@@ -13348,7 +13363,7 @@ Included in::
 == fsgnj.d
 
 Synopsis::
-Floating-Point Sign-Inject Doble-Precision
+Floating-Point Sign-Inject Double-Precision
 
 Assembly::
 fsgnj.d fd, fs1, fs2
@@ -13360,9 +13375,10 @@ Encoding::
 ....
 
 Description::
-`FSGNJ.D` instruction produces a result that takes all bits except the sign bit from _fs1_.
-The result's sign bit is taken from _fs2_'s sign bit, and the result is written to the destination
-register _fd_. `FSGNJ.D` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+The xref:insts:fsgnj_d.adoc#udb:doc:inst:fsgnj_d[fsgnj.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13466,7 +13482,7 @@ Included in::
 == fsgnj.s
 
 Synopsis::
-Single-precision sign inject
+Floating-Point Sign-Inject Single-Precision
 
 Assembly::
 fsgnj.s fd, fs1, fs2
@@ -13478,9 +13494,10 @@ Encoding::
 ....
 
 Description::
-Writes _fd_ with sign bit of _fs2_ and the exponent and mantissa of _fs1_.
-
-Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
+The xref:insts:fsgnj_s.adoc#udb:doc:inst:fsgnj_s[fsgnj.s] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13506,7 +13523,7 @@ Included in::
 == fsgnjn.d
 
 Synopsis::
-Floating-Point Sign-Inject Negate Doble-Precision
+Floating-Point Sign-Inject Negate Double-Precision
 
 Assembly::
 fsgnjn.d fd, fs1, fs2
@@ -13518,9 +13535,10 @@ Encoding::
 ....
 
 Description::
-`FSGNJN.D` instruction produces a result that takes all bits except the sign bit from _fs1_.
-The result's sign bit is opposite of _fs2_'s sign bit, and the result is written to the destination
-register _fd_. `FSGNJN.D` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
+The xref:insts:fsgnjn_d.adoc#udb:doc:inst:fsgnjn_d[fsgnjn.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13624,7 +13642,7 @@ Included in::
 == fsgnjn.s
 
 Synopsis::
-Single-precision sign inject negate
+Floating-Point Sign-Inject Negate Single-Precision
 
 Assembly::
 fsgnjn.s fd, fs1, fs2
@@ -13636,9 +13654,10 @@ Encoding::
 ....
 
 Description::
-Writes _fd_ with the opposite of the sign bit of _fs2_ and the exponent and mantissa of _fs1_.
-
-Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
+The xref:insts:fsgnjn_s.adoc#udb:doc:inst:fsgnjn_s[fsgnjn.s] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is opposite of `fs2`'s sign bit, and the result is written to the destination
+register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
+canonicalize NaNs.
 
 
 Decode Variables::
@@ -13676,10 +13695,10 @@ Encoding::
 ....
 
 Description::
-`FSGNJX.D` instruction produces a result that takes all bits except the sign bit from _fs1_.
-The result's sign bit is the XOR of sign bits of _fs1_ and _fs2_, and the result is written to
-the destination register _fd_. `FSGNJX.D` does not set floating-point exception flags, nor do
-they canonicalize _NaN_s.
+The xref:insts:fsgnjx_d.adoc#udb:doc:inst:fsgnjx_d[fsgnjx.d] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to
+the destination register `fd`. Sign-injection instructions do not set floating-point exception
+flags, nor do they canonicalize NaNs.
 
 
 Decode Variables::
@@ -13783,7 +13802,7 @@ Included in::
 == fsgnjx.s
 
 Synopsis::
-Single-precision sign inject exclusive or
+Floating-Point Sign-Inject XOR Single-Precision
 
 Assembly::
 fsgnjx.s fd, fs1, fs2
@@ -13795,9 +13814,10 @@ Encoding::
 ....
 
 Description::
-Writes _fd_ with the xor of the sign bits of _fs2_ and _fs1_ and the exponent and mantissa of _fs1_.
-
-Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
+The xref:insts:fsgnjx_s.adoc#udb:doc:inst:fsgnjx_s[fsgnjx.s] instruction produces a result that takes all bits except the sign bit from `fs1`.
+The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to
+the destination register `fd`. Sign-injection instructions do not set floating-point exception
+flags, nor do they canonicalize NaNs.
 
 
 Decode Variables::
@@ -13927,9 +13947,9 @@ Encoding::
 ....
 
 Description::
-`FSQRT.D` computes the square root of _fs1_ and result is written in _fd_. It is defined
-analogously to its single-precision counterpart, but operate on double-precision operands
-and produce double-precision results.
+The xref:insts:fsqrt_d.adoc#udb:doc:inst:fsqrt_d[fsqrt.d] instruction computes the square root of `fs1` and result is written in `fd`. It is defined
+analogously to its single-precision counterpart, but operates on double-precision operands and produces
+double-precision results.
 
 
 Decode Variables::
@@ -14031,7 +14051,7 @@ Included in::
 == fsqrt.s
 
 Synopsis::
-No synopsis available
+Floating-Point Square Root Single-Precision
 
 Assembly::
 fsqrt.s fd, fs1, rm
@@ -14043,7 +14063,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+The xref:insts:fsqrt_s.adoc#udb:doc:inst:fsqrt_s[fsqrt.s] instruction computes the square root of `fs1` and writes the result is written to `fd`.
 
 
 Decode Variables::
@@ -14081,8 +14101,8 @@ Encoding::
 ....
 
 Description::
-`FSUB.D` is analogous to `FSUB.S` and performs double-precision floating-point subtraction between
-_fs1_ and _fs2_ and writes the final result to _fd_.
+The xref:insts:fsub_d.adoc#udb:doc:inst:fsub_d[fsub.d] instruction is analogous to xref:insts:fsub_s.adoc#udb:doc:inst:fsub_s[fsub.s] and performs double-precision floating-point subtraction between
+`fs1` and `fs2` and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -14188,7 +14208,7 @@ Included in::
 == fsub.s
 
 Synopsis::
-Single-precision floating-point subtraction
+Floating-Point Subtract Single-Precision
 
 Assembly::
 fsub.s fd, fs1, fs2, rm
@@ -14200,8 +14220,7 @@ Encoding::
 ....
 
 Description::
-Do the single-precision floating-point subtraction of fs2 from fs1 and store the result in fd.
-rm is the dynamic Rounding Mode.
+The xref:insts:fsub_s.adoc#udb:doc:inst:fsub_s[fsub.s] instruction performs the single-precision floating-point subtraction of `fs2` from `fs1` and writes the result in `fd`.
 
 
 Decode Variables::
@@ -14228,7 +14247,7 @@ Included in::
 == fsw
 
 Synopsis::
-Single-precision floating-point store
+Floating-Point Store Single-Precision
 
 Assembly::
 fsw fs2, imm(xs1)
@@ -14240,9 +14259,8 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
-
-xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
+The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in `fs2` to memory at address `xs1` + `imm`.
+It does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
 
 Decode Variables::

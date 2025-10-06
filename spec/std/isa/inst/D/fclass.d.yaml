@@ -11,12 +11,12 @@ description:
   - id: inst-fclass.d-behaviour
     normative: false
     text: |
-      `FCLASS.D` is defined analogously to its single-precision counterpart, but operates on double-precision operands.
-      It examines the value in floating-point register _fs1_ and writes to integer register _xd_ a 10-bit mask that
+      The `fclass.d` instruction is defined analogously to its single-precision counterpart, but operates on double-precision
+      operands. It examines the value in floating-point register `fs1` and writes to integer register `xd` a 10-bit mask that
       indicates the class of the floating point number.
 
-      The format of the mask is described in the table below. The corresponding bit in _xd_ will be set if the property
-      is true and clear otherwise. All other bits in _xd_ are cleared. Note that exactly one bit in xd will be set.
+      The format of the mask is described in the table below. The corresponding bit in `xd` will be set if the property
+      is true and clear otherwise. All other bits in `xd` are cleared. Note that exactly one bit in `xd` will be set.
 
       .Format of result of `fclass` instruction.
       [%autowidth,float="center",align="center",cols="^,<",options="header",]

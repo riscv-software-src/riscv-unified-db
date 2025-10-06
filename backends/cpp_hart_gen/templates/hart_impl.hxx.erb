@@ -138,10 +138,19 @@ namespace udb {
         for (unsigned b = 0; b < bb_size; b++) {
           inst = current_bb->pop();
 
+          fmt::print("PC {:x} {}\n", m_pc, inst->disassemble());
+          for (auto r : inst->srcRegs()) {
+            fmt::print("R {} {:x}\n", r.to_string(), _xreg(r.get_num()));
+          }
+
           // set the fall-through next pc
           m_next_pc = m_pc + Bits<MXLEN>{inst->enc_len()};
 
           inst->execute();
+
+          for (auto r : inst->dstRegs()) {
+            fmt::print("R= {} {:x}\n", r.to_string(), _xreg(r.get_num()));
+          }
 
           advance_pc();
           if (this->m_exit_requested) {
