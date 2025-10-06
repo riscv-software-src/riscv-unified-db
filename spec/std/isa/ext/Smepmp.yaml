@@ -158,6 +158,7 @@ description: |
 params:
   MSECCFG_MML_TYPE:
     schema:
+      type: string
       enum: [read-only-0, read-only-1, sticky]
     description: |
       Determines the behavior of the mseccfg.MML bit:
@@ -167,6 +168,7 @@ params:
       * "sticky": Bit resets to 0, can be set to 1 by software, but once set it cannot be cleared until reset.
   MSECCFG_MMWP_TYPE:
     schema:
+      type: string
       enum: [read-only-0, read-only-1, sticky]
     description: |
       Determines the behavior of the mseccfg.MMWP bit:

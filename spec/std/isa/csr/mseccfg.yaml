@@ -80,13 +80,20 @@ fields:
 
       *Locked rules cannot be removed or modified until a PMP reset, unless mseccfg.RLB is set.
     type(): |
-      if (MSECCFG_MML_TYPE == "read-only-0" || MSECCFG_MML_TYPE == "read-only-1") {
+      if ((MSECCFG_MML_TYPE == "read-only-0") || (MSECCFG_MML_TYPE == "read-only-1")) {
         return CsrFieldType::RO;
       } else if (MSECCFG_MML_TYPE == "sticky") {
         return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
       }
-    sw_write(csr_value): return csr_value.MML | CSR[mseccfg].MML;
-    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      return (MSECCFG_MML_TYPE == "read-only-1") ? 1 : (csr_value.MML | CSR[mseccfg].MML);
+    reset_value(): |
+      if ((MSECCFG_MML_TYPE == "read-only-0") || (MSECCFG_MML_TYPE == "sticky")) {
+        return 0;
+      } else if (MSECCFG_MML_TYPE == "read-only-1") {
+        return 1;
+      }
+      return UNDEFINED_LEGAL;
   MMWP:
     location: 1
     definedBy: Smepmp
@@ -94,13 +101,20 @@ fields:
       Machine-Mode Allowlist Policy (mseccfg.MMWP) is a sticky bit, meaning that once set it cannot be unset until a PMP reset. When set it
       changes the default PMP policy for M-mode when accessing memory regions that don't have a matching PMP rule, to denied instead of ignored.
     type(): |
-      if (MSECCFG_MML_TYPE == "read-only-0" || MSECCFG_MML_TYPE == "read-only-1") {
+      if ((MSECCFG_MMWP_TYPE == "read-only-0") || (MSECCFG_MMWP_TYPE == "read-only-1")) {
         return CsrFieldType::RO;
-      } else if (MSECCFG_MML_TYPE == "sticky") {
+      } else if (MSECCFG_MMWP_TYPE == "sticky") {
         return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
       }
-    sw_write(csr_value): return csr_value.MMWP | CSR[mseccfg].MMWP;
-    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      return (MSECCFG_MMWP_TYPE == "read-only-1") ? 1 : (csr_value.MMWP | CSR[mseccfg].MMWP);
+    reset_value(): |
+      if ((MSECCFG_MMWP_TYPE == "read-only-0") || (MSECCFG_MMWP_TYPE == "sticky")) {
+        return 0;
+      } else if (MSECCFG_MMWP_TYPE == "read-only-1") {
+        return 1;
+      }
+      return UNDEFINED_LEGAL;
   RLB:
     location: 2
     description: |
@@ -113,4 +127,5 @@ fields:
     type(): |
       return MUTABLE_MSECCFG_RLB ? CsrFieldType::RW : CsrFieldType:RO;
     definedBy: Smepmp
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): |
+      return MUTABLE_MSECCFG_RLB ? 0 : UNDEFINED_LEGAL;
