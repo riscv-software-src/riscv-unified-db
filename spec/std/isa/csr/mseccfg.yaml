@@ -83,7 +83,8 @@ fields:
       if ((MSECCFG_MML_TYPE == "read-only-0") || (MSECCFG_MML_TYPE == "read-only-1")) {
         return CsrFieldType::RO;
       } else if (MSECCFG_MML_TYPE == "sticky") {
-        return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
+        # Restricted: 0→1 allowed, 1→0 not allowed
+        return CsrFieldType::RWR;
       }
     sw_write(csr_value): |
       return (MSECCFG_MML_TYPE == "read-only-1") ? 1 : (csr_value.MML | CSR[mseccfg].MML);
@@ -104,7 +105,8 @@ fields:
       if ((MSECCFG_MMWP_TYPE == "read-only-0") || (MSECCFG_MMWP_TYPE == "read-only-1")) {
         return CsrFieldType::RO;
       } else if (MSECCFG_MMWP_TYPE == "sticky") {
-        return CsrFieldType::RW-R; // restricted: 0→1 allowed, 1→0 not allowed
+        # Restricted: 0→1 allowed, 1→0 not allowed
+        return CsrFieldType::RWR;
       }
     sw_write(csr_value): |
       return (MSECCFG_MMWP_TYPE == "read-only-1") ? 1 : (csr_value.MMWP | CSR[mseccfg].MMWP);
@@ -125,7 +127,7 @@ fields:
         b.  When `mseccfg.RLB` is 0 and `pmpcfg.L` is 1 in any rule or entry (including disabled entries), then
             remains 0 and any further modifications to `mseccfg.RLB` are ignored until a PMP reset.
     type(): |
-      return MUTABLE_MSECCFG_RLB ? CsrFieldType::RW : CsrFieldType:RO;
+      return MUTABLE_MSECCFG_RLB ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy: Smepmp
     reset_value(): |
       return MUTABLE_MSECCFG_RLB ? 0 : UNDEFINED_LEGAL;
