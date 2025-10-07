@@ -87,7 +87,7 @@ fields:
         return CsrFieldType::RWR;
       }
     sw_write(csr_value): |
-      return (MSECCFG_MML_TYPE == "read-only-1") ? 1 : (csr_value.MML | CSR[mseccfg].MML);
+      return csr_value.MML | CSR[mseccfg].MML;
     reset_value(): |
       if ((MSECCFG_MML_TYPE == "read-only-0") || (MSECCFG_MML_TYPE == "sticky")) {
         return 0;
@@ -109,7 +109,7 @@ fields:
         return CsrFieldType::RWR;
       }
     sw_write(csr_value): |
-      return (MSECCFG_MMWP_TYPE == "read-only-1") ? 1 : (csr_value.MMWP | CSR[mseccfg].MMWP);
+      return csr_value.MMWP | CSR[mseccfg].MMWP;
     reset_value(): |
       if ((MSECCFG_MMWP_TYPE == "read-only-0") || (MSECCFG_MMWP_TYPE == "sticky")) {
         return 0;
