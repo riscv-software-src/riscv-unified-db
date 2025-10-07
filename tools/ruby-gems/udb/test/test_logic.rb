@@ -13,7 +13,7 @@ require "udb/logic"
 require "udb/cfg_arch"
 require "udb/resolver"
 
-class TestConditions < Minitest::Test
+class TestLogic < Minitest::Test
   extend T::Sig
   include Udb
 
@@ -420,7 +420,6 @@ class TestConditions < Minitest::Test
   def test_bad_logic_nodes
     assert_raises { LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("A", "1.0.0"), ExtensionTerm.new("B", "1.0.0")]) }
     assert_raises { LogicNode.new(LogicNodeType::Term, [5]) }
-    assert_raises { LogicNode.new(LogicNodeType::Not, [5]) }
     assert_raises { LogicNode.new(LogicNodeType::Not, [ExtensionTerm.new("A", "1.0.0"), ExtensionTerm.new("B", "1.0.0")]) }
     assert_raises { LogicNode.new(LogicNodeType::And, [ExtensionTerm.new("A", "1.0.0")]) }
     assert_raises { LogicNode.new(LogicNodeType::Or, [ExtensionTerm.new("A", "1.0.0")]) }

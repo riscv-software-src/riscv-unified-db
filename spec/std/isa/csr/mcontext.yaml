@@ -19,7 +19,9 @@ description: |
   given VM is executing. It is also useful in systems where M-Mode implements something like
   a hypervisor directly.
 
-definedBy: Sdtrig
+definedBy:
+  extension:
+    name: Sdtrig
 fields:
   HCONTEXT:
     location: 13-0

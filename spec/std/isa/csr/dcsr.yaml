@@ -1,7 +1,7 @@
 # Copyright (c) Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -31,7 +31,9 @@ description: |
 
   This CSR is read/write.
 
-definedBy: Sdext
+definedBy:
+  extension:
+    name: Sdext
 fields:
   DEBUGVER:
     location: 31-28
@@ -55,7 +57,9 @@ fields:
   CETRIG:
     location: 19
     type: RW
-    definedBy: Smdbltrp
+    definedBy:
+      extension:
+        name: Smdbltrp
     description: |
       This bit is part of Smdbltrp and only exists when that extension is implemented.
       0 (disabled):: A hart in a critical error state does not enter
@@ -80,7 +84,9 @@ fields:
   PELP:
     location: 18
     type: RW
-    definedBy: Zicfilp
+    definedBy:
+      extension:
+        name: Zicfilp
     description: |
       This bit is part of Zicfilp and only exists when that extension is implemented.
       0 (NO_LP_EXPECTED):: No landing pad instruction expected.
@@ -89,7 +95,9 @@ fields:
   EBREAKVS:
     location: 17
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     description: |
       0 (exception):: ebreak instructions in VS-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in VS-mode enter Debug Mode.
@@ -98,7 +106,9 @@ fields:
   EBREAKVU:
     location: 16
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     description: |
       0 (exception):: ebreak instructions in VU-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in VU-mode enter Debug Mode.
@@ -114,7 +124,9 @@ fields:
   EBREAKS:
     location: 13
     type: RW
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     description: |
       0 (exception):: ebreak instructions in S-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in S-mode enter Debug Mode.
@@ -123,7 +135,9 @@ fields:
   EBREAKU:
     location: 12
     type: RW
-    definedBy: U
+    definedBy:
+      extension:
+        name: U
     description: |
       0 (exception):: ebreak instructions in U-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in U-mode enter Debug Mode.
@@ -220,7 +234,9 @@ fields:
   V:
     location: 5
     type: RW
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     description: |
       Extends the prv field with the virtualization mode the hart was operating in
       when Debug Mode was entered. A debugger can change this value to change the

@@ -19,6 +19,10 @@ versions:
 requirements:
   allOf:
     -
+      param:
+        name: MXLEN
+        equal: 32
+    -
       not:
         extension:
           name: Zcf

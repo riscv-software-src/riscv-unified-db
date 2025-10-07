@@ -9,9 +9,8 @@ name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
 long_name: |
   Whether or not `mtval` is written with the virtual address of a fetch causing an access fault
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

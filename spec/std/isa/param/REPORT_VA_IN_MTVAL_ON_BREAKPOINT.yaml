@@ -9,9 +9,8 @@ name: REPORT_VA_IN_MTVAL_ON_BREAKPOINT
 long_name: |
   Whether or not `mtval` is written with the virtual PC of an EBREAK instruction.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

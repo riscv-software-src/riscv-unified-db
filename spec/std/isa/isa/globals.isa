@@ -841,7 +841,7 @@ function valid_interrupt_code? {
       # code is too large
       return false;
     }
-    if (ary_includes?<$enum_size(InterruptCode), $enum_element_size(InterruptCode)>($enum_to_a(InterruptCode), code)) {
+    if ($array_includes?($enum_to_a(InterruptCode), code)) {
       return true;
     } else {
       return false;
@@ -860,7 +860,7 @@ function valid_exception_code? {
       # code is too large
       return false;
     }
-    if (ary_includes?<$enum_size(InterruptCode), $enum_element_size(InterruptCode)>($enum_to_a(InterruptCode), code)) {
+    if ($array_includes?($enum_to_a(ExceptionCode), code)) {
       return true;
     } else {
       return false;

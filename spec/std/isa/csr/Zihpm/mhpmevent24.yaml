@@ -161,7 +161,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if (ary_includes?<$array_size(HPM_EVENTS), 58>(HPM_EVENTS, csr_value.EVENT)) {
+      if ($array_includes?(HPM_EVENTS, csr_value.EVENT)) {
         return csr_value.EVENT;
       } else {
         return UNDEFINED_LEGAL_DETERMINISTIC;

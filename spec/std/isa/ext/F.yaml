@@ -14,7 +14,9 @@ versions:
     ratification_date: 2019-12
     changes:
       - Define NaN-boxing scheme, changed definition of FMAX and FMIN
-    requires: Zicsr
+requirements:
+  extension:
+    name: Zicsr
 description: |
   This chapter describes the standard instruction-set extension for
   single-precision floating-point, which is named "F" and adds

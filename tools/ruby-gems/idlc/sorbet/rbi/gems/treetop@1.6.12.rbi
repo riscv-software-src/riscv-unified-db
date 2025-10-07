@@ -1766,9 +1766,6 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#106
   def has_terminal?(terminal, mode, index); end
 
-  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
-  def idlc_instantiate_node(node_type, *args); end
-
   # Sets the attribute index
   #
   # @param value the value to set the attribute index to.

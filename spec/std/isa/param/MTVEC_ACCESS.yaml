@@ -9,9 +9,8 @@ name: MTVEC_ACCESS
 long_name: |
   Acess type of the `mtvec` CSR (read-only or read-write).
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

@@ -165,7 +165,7 @@ module Udb
       @reachable_functions = funcs.uniq
     end
 
-    sig { params(other_ext: Object).returns(T.nilable(Integer)) }
+    sig { override.params(other_ext: Object).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other_ext)
       return nil unless other_ext.is_a?(Extension)
       other_ext.name <=> name
@@ -217,6 +217,33 @@ module Udb
     sig { returns(ConfiguredArchitecture) }
     attr_reader :arch
 
+    # create an ExtensionVersion from YAML
+    sig {
+      params(
+        yaml: T::Hash[String, T.untyped],
+        cfg_arch: ConfiguredArchitecture
+      ).returns(ExtensionVersion)
+    }
+    def self.create(yaml, cfg_arch)
+      requirements =
+        if yaml.key?("version")
+          yaml.fetch("version")
+        else
+          raise "not an extension version"
+        end
+      if requirements.is_a?(Array)
+        if requirements.size != 1
+          raise "not an extension version: #{requirements} (#{requirements.size})"
+        end
+        requirements = requirements.fetch(0)
+      end
+      begin
+        ExtensionVersion.new(yaml.fetch("name"), RequirementSpec.new(requirements).version_spec.canonical, cfg_arch)
+      rescue
+        raise "not an extension version"
+      end
+    end
+
     # @param name [#to_s] The extension name
     # @param version [String] The version specifier
     # @param arch [Architecture] The architecture definition
@@ -255,9 +282,26 @@ module Udb
       ExtensionRequirement.new(ext_vers.fetch(0).name, "~> #{T.must(sorted.min).version_str}", arch: ext_vers.fetch(0).arch)
     end
 
+    # @api private
     sig { returns(ExtensionTerm) }
     def to_term
       @term ||= ExtensionTerm.new(@name, "=", @version_str)
+    end
+
+    sig { returns(AbstractCondition) }
+    def to_condition
+      @condition ||=
+        Condition.new(condition_hash, @arch)
+    end
+
+    sig { returns(T.any(T::Hash[String, T.untyped], FalseClass)) }
+    def condition_hash
+      {
+        "extension" => {
+          "name" => name,
+          "version" => "= #{version_str}"
+        }
+      }
     end
 
     # @return List of known ExtensionVersions that are compatible with this ExtensionVersion (i.e., have larger version number and are not breaking)
@@ -417,7 +461,7 @@ module Udb
     #
     # This list is *not* transitive; if an implication I1 implies another extension I2,
     # only I1 shows up in the list
-    sig { returns(T::Array[ExtensionRequirementList::ConditionalExtensionVersion]) }
+    sig { returns(T::Array[ConditionalExtensionVersion]) }
     def implications
       @implications ||= requirements_condition.implied_extensions.map do |cond_ext_req|
         if cond_ext_req.ext_req.is_ext_ver?
@@ -491,6 +535,7 @@ module Udb
     end
 
     # sorts extension by name, then by version
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other)
       unless other.is_a?(ExtensionVersion)
         raise ArgumentError, "ExtensionVersions are only comparable to other extension versions"
@@ -588,7 +633,7 @@ module Udb
       if @requirements.size == 1
         ExtensionTerm.new(name, @requirements.fetch(0).op, @requirements.fetch(0).version_spec)
       else
-
+        raise "TODO"
       end
     end
 
@@ -618,7 +663,7 @@ module Udb
 
     sig { override.returns(String) }
     def to_s
-      "#{name} " + requirement_specs_to_s
+      "#{name} " + requirement_specs_to_s_pretty
     end
 
     # like to_s, but omits the requirement if the requirement is ">= 0"
@@ -720,6 +765,47 @@ module Udb
       ext = @arch.extension(@name)
 
       @satisfying_versions = ext.nil? ? [] : ext.versions.select { |v| satisfied_by?(v) }
+    end
+
+    sig { returns(AbstractCondition) }
+    def to_condition
+      @condition ||=
+        Condition.new(condition_hash, @arch)
+    end
+
+    sig { returns(T.any(T::Hash[String, T.untyped], FalseClass)) }
+    def condition_hash
+      if @requirements.size == 1
+        {
+          "extension" => {
+            "name" => name,
+            "version" => @requirements.fetch(0).to_s
+          }
+        }
+      else
+        # conditions don't handle multi-reqs, so return the list of satisfying versions instead
+        if satisfying_versions.size == 0
+          false
+        elsif satisfying_versions.size == 1
+          {
+            "extension" => {
+              "name" => name,
+              "version" => "= #{satisfying_versions.fetch(0).version_str}"
+            }
+          }
+        else
+          {
+            "anyOf" => satisfying_versions.map do |ext_ver|
+              {
+                "extension" => {
+                  "name" => name,
+                  "version" => "= #{ext_ver.version_str}"
+                }
+              }
+            end
+          }
+        end
+      end
     end
 
     def params
@@ -858,7 +944,7 @@ module Udb
     end
 
     # sorts by name
-    sig { params(other: ExtensionRequirement).returns(T.nilable(Integer)) }
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other)
       return nil unless other.is_a?(ExtensionRequirement)
 

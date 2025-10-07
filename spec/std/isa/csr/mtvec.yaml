@@ -44,13 +44,13 @@ fields:
       return ($array_size(MTVEC_MODES) == 1) ? CsrFieldType::RO : CsrFieldType::RWR;
     sw_write(csr_value): |
       if (csr_value.MODE == 0) {
-        if (ary_includes?<$array_size(MTVEC_MODES), 2>(MTVEC_MODES, 0)) {
+        if ($array_includes?(MTVEC_MODES, 0)) {
           return csr_value.MODE;
         } else {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       } else if (csr_value.MODE == 1) {
-        if (ary_includes?<$array_size(MTVEC_MODES), 2>(MTVEC_MODES, 1)) {
+        if ($array_includes?(MTVEC_MODES, 1)) {
           return csr_value.MODE;
         } else {
           return UNDEFINED_LEGAL_DETERMINISTIC;

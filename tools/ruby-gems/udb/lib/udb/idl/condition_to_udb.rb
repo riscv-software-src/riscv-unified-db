@@ -94,6 +94,8 @@ module Idl
         stmts.each do |stmt|
           if stmt.is_a?(ImplicationStatementAst)
             res["allOf"] << stmt.to_udb_h(symtab)
+          elsif stmt.is_a?(ReturnStatementAst)
+            raise "Returns are not allowed in constraints"
           else
             stmt.execute(symtab)
           end

@@ -9,9 +9,8 @@ name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
 long_name: |
   What happens when `mtvec` is written with an illegal value
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

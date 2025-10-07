@@ -77,7 +77,7 @@ module Udb
 
     class EqnTop < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         send(:expression).to_logic_tree(term_map)
       end
@@ -85,7 +85,7 @@ module Udb
 
     class EqnName < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         term = term_map.fetch(text_value)
         LogicNode.new(
@@ -97,7 +97,7 @@ module Udb
 
     class EqnOne < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         LogicNode.new(LogicNodeType::True, [])
       end
@@ -105,7 +105,7 @@ module Udb
 
     class EqnZero < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         LogicNode.new(LogicNodeType::False, [])
       end
@@ -113,7 +113,7 @@ module Udb
 
     class EmptyEqnParen < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         LogicNode::True
       end
@@ -121,7 +121,7 @@ module Udb
 
     class EqnParen < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         send(:conjunction).to_logic_tree(term_map)
       end
@@ -129,7 +129,7 @@ module Udb
 
     class EqnNot < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         LogicNode.new(LogicNodeType::Not, [send(:name).to_logic_tree(term_map)])
       end
@@ -137,7 +137,7 @@ module Udb
 
     class EqnAnd < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         children = T.let([], T::Array[LogicNode])
         children << send(:first).to_logic_tree(term_map)
@@ -150,7 +150,7 @@ module Udb
 
     class EqnOr < Treetop::Runtime::SyntaxNode
       extend T::Sig
-      sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+      sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
       def to_logic_tree(term_map)
         children = T.let([], T::Array[LogicNode])
         children << send(:first).to_logic_tree(term_map)
@@ -170,7 +170,7 @@ module Udb
       @parser = EqnParser.new
     end
 
-    sig { params(term_map: T::Hash[String, LogicNode::TermType]).returns(LogicNode) }
+    sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }
     def to_logic_tree(term_map)
       m = @parser.parse(@eqn)
       if m.nil?

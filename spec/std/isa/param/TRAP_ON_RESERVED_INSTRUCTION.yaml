@@ -10,9 +10,8 @@ long_name: |
   Whether or not fetching an unimplemented standard instruction and/or an undefined standard
   instruction from the standard/reserved opcode space causes a trap
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

@@ -372,7 +372,7 @@ module Idl
 
         warn "Compiling #{body}"
         warn e.what
-        warn T.must(e.backtrace)
+        warn T.must(e.backtrace).join("\n")
         exit 1
       rescue AstNode::InternalError => e
         raise e if pass_error

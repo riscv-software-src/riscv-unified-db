@@ -8,9 +8,8 @@ kind: parameter
 name: VENDOR_ID_OFFSET
 long_name: JEDEC Vendor ID offset, for `mvendorid`.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Encodes the final byte of a JEDEC manufactor ID, discarding the parity bit.
 schema:

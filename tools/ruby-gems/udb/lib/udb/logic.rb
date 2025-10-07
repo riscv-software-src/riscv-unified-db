@@ -515,11 +515,12 @@ module Udb
     end
   end
 
+  TermType = T.type_alias { T.any(ExtensionTerm, ParameterTerm, FreeTerm) }
+
   # Abstract syntax tree of the condition logic
   class LogicNode
     extend T::Sig
 
-    TermType = T.type_alias { T.any(ExtensionTerm, ParameterTerm, FreeTerm) }
     ChildType = T.type_alias { T.any(LogicNode, TermType) }
 
     sig { returns(LogicNodeType) }
@@ -568,26 +569,26 @@ module Udb
 
     sig { params(type: LogicNodeType, children: T::Array[ChildType]).void }
     def initialize(type, children)
-      # if [LogicNodeType::Term, LogicNodeType::Not].include?(type) && children.size != 1
-      #   raise ArgumentError, "Children must be singular"
-      # end
-      # if [LogicNodeType::And, LogicNodeType::Or, LogicNodeType::Xor, LogicNodeType::None, LogicNodeType::If].include?(type) && children.size < 2
-      #   raise ArgumentError, "Children must have at least two elements"
-      # end
+      if [LogicNodeType::Term, LogicNodeType::Not].include?(type) && children.size != 1
+        raise ArgumentError, "Children must be singular"
+      end
+      if [LogicNodeType::And, LogicNodeType::Or, LogicNodeType::Xor, LogicNodeType::None, LogicNodeType::If].include?(type) && children.size < 2
+        raise ArgumentError, "Children must have at least two elements"
+      end
 
       @children = children
       @children.freeze
       @node_children = (@type == LogicNodeType::Term) ? nil : T.cast(@children, T::Array[LogicNode])
 
 
-      # if [LogicNodeType::True, LogicNodeType::False].include?(type) && !children.empty?
-      #   raise ArgumentError, "Children must be empty"
-      # elsif type == LogicNodeType::Term
-      #   # ensure the children are TermType
-      #   children.each { |child| T.assert_type!(T.cast(child, TermType), TermType) }
-      # else
-      #   # raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
-      # end
+      if [LogicNodeType::True, LogicNodeType::False].include?(type) && !children.empty?
+        raise ArgumentError, "Children must be empty"
+      elsif type == LogicNodeType::Term
+        # ensure the children are TermType
+        children.each { |child| T.assert_type!(T.cast(child, TermType), TermType) }
+      else
+        # raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
+      end
 
       @type = type
       @type.freeze
@@ -960,15 +961,10 @@ module Udb
       when LogicNodeType::If
         cond_ext_ret = node_children.fetch(0)
         res = cond_ext_ret.eval_cb(callback)
-        case res
-        when SatisfiedResult::Yes
+        if res == SatisfiedResult::Yes
           node_children.fetch(1).eval_cb(callback)
-        when SatisfiedResult::Maybe
-          SatisfiedResult::Maybe
-        when SatisfiedResult::No
-          SatisfiedResult::Yes
         else
-          T.absurd(res)
+          res
         end
       when LogicNodeType::Not
         res = node_children.fetch(0).eval_cb(callback)
@@ -983,39 +979,77 @@ module Udb
           T.absurd(res)
         end
       when LogicNodeType::And
-        if node_children.any? { |child| child.eval_cb(callback) == SatisfiedResult::No }
-          SatisfiedResult::No
-        elsif node_children.all? { |child| child.eval_cb(callback) == SatisfiedResult::Yes }
+        yes_cnt = 0
+        node_children.each do |child|
+          res1 = child.eval_cb(callback)
+          return SatisfiedResult::No if res1 == SatisfiedResult::No
+
+          yes_cnt += 1 if res == SatisfiedResult::Yes
+        end
+        if yes_cnt == node_children.size
           SatisfiedResult::Yes
         else
           SatisfiedResult::Maybe
         end
       when LogicNodeType::Or
-        if node_children.any? { |child| child.eval_cb(callback) == SatisfiedResult::Yes }
-          SatisfiedResult::Yes
-        elsif node_children.all? { |child| child.eval_cb(callback) == SatisfiedResult::No }
+        no_cnt = 0
+        node_children.each do |child|
+          res1 = child.eval_cb(callback)
+          return SatisfiedResult::Yes if res1 == SatisfiedResult::Yes
+
+          no_cnt += 1 if res1 == SatisfiedResult::No
+        end
+        if no_cnt == node_children.size
           SatisfiedResult::No
         else
           SatisfiedResult::Maybe
         end
       when LogicNodeType::None
-        if node_children.any? { |child| child.eval_cb(callback) == SatisfiedResult::Yes }
-          SatisfiedResult::No
-        elsif node_children.all? { |child| child.eval_cb(callback) == SatisfiedResult::No }
+        no_cnt = 0
+        node_children.each do |child|
+          res1 = child.eval_cb(callback)
+          return SatisfiedResult::No if res1 == SatisfiedResult::Yes
+
+          no_cnt += 1 if res1 == SatisfiedResult::No
+        end
+        if no_cnt == node_children.size
           SatisfiedResult::Yes
         else
           SatisfiedResult::Maybe
         end
       when LogicNodeType::Xor
-        if node_children.any? { |child| child.eval_cb(callback) == SatisfiedResult::Maybe }
-          SatisfiedResult::Maybe
-        elsif node_children.count { |child| child.eval_cb(callback) == SatisfiedResult::Yes } == 1
+        yes_cnt = 0
+        node_children.each do |child|
+          res1 = child.eval_cb(callback)
+
+          yes_cnt += 1 if res1 == SatisfiedResult::Yes
+          return SatisfiedResult::No if yes_cnt > 1
+        end
+        if yes_cnt == 1
           SatisfiedResult::Yes
         else
-          SatisfiedResult::No
+          SatisfiedResult::Maybe
         end
       else
         T.absurd(@type)
+      end
+    end
+
+    # partially evalute -- replace anything known with true/false, and otherwise leave it alone
+    sig { params(cb: EvalCallbackType).returns(LogicNode) }
+    def partial_evaluate(cb)
+      case @type
+      when LogicNodeType::Term
+        res = cb.call(T.cast(@children.fetch(0), TermType))
+        if res == SatisfiedResult::Yes
+          True
+        elsif res == SatisfiedResult::No
+          False
+        else
+          self
+        end
+      else
+        LogicNode.new(@type, node_children.map { |child| child.partial_evaluate(cb) })
       end
     end
 

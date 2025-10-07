@@ -8,9 +8,8 @@ kind: parameter
 name: VENDOR_ID_BANK
 long_name: JEDEC Vendor ID bank, for `mvendorid`.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Encodes the number of one-byte continuation codes in the Bank field of `mvendorid`.
 

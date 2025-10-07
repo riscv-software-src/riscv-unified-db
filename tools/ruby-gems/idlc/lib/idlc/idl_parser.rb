@@ -6182,48 +6182,54 @@ module Idl
     end
 
     i0 = index
-    r1 = _nt_paren_expression
+    r1 = _nt_enum_to_a
     if r1
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      r2 = _nt_replication_expression
+      r2 = _nt_paren_expression
       if r2
         r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
       else
-        r3 = _nt_concatenation_expression
+        r3 = _nt_replication_expression
         if r3
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
         else
-          r4 = _nt_field_access_expression
+          r4 = _nt_concatenation_expression
           if r4
             r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
             r0 = r4
           else
-            r5 = _nt_function_call
+            r5 = _nt_field_access_expression
             if r5
               r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
               r0 = r5
             else
-              r6 = _nt_csr_field_access_expression
+              r6 = _nt_function_call
               if r6
                 r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
                 r0 = r6
               else
-                r7 = _nt_bits_cast
+                r7 = _nt_csr_field_access_expression
                 if r7
                   r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
                   r0 = r7
                 else
-                  r8 = _nt_rval
+                  r8 = _nt_bits_cast
                   if r8
                     r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
                     r0 = r8
                   else
-                    @index = i0
-                    r0 = nil
+                    r9 = _nt_rval
+                    if r9
+                      r9 = SyntaxNode.new(input, (index-1)...index) if r9 == true
+                      r0 = r9
+                    else
+                      @index = i0
+                      r0 = nil
+                    end
                   end
                 end
               end
@@ -6683,6 +6689,96 @@ module Idl
     r0
   end
 
+  module EnumToA0
+    def user_type_name
+      elements[4]
+    end
+
+  end
+
+  def _nt_enum_to_a
+    start_index = index
+    if node_cache[:enum_to_a].has_key?(index)
+      cached = node_cache[:enum_to_a][index]
+      if cached
+        node_cache[:enum_to_a][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    if (match_len = has_terminal?('$enum_to_a', false, index))
+      r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+      @index += match_len
+    else
+      terminal_parse_failure('\'$enum_to_a\'')
+      r1 = nil
+    end
+    s0 << r1
+    if r1
+      s2, i2 = [], index
+      loop do
+        r3 = _nt_space
+        if r3
+          s2 << r3
+        else
+          break
+        end
+      end
+      r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+      s0 << r2
+      if r2
+        if (match_len = has_terminal?('(', false, index))
+          r4 = true
+          @index += match_len
+        else
+          terminal_parse_failure('\'(\'')
+          r4 = nil
+        end
+        s0 << r4
+        if r4
+          s5, i5 = [], index
+          loop do
+            r6 = _nt_space
+            if r6
+              s5 << r6
+            else
+              break
+            end
+          end
+          r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+          s0 << r5
+          if r5
+            r7 = _nt_user_type_name
+            s0 << r7
+            if r7
+              if (match_len = has_terminal?(')', false, index))
+                r8 = true
+                @index += match_len
+              else
+                terminal_parse_failure('\')\'')
+                r8 = nil
+              end
+              s0 << r8
+            end
+          end
+        end
+      end
+    end
+    if s0.last
+      r0 = instantiate_node(Idl::EnumArrayCastSyntaxNode,input, i0...index, s0)
+      r0.extend(EnumToA0)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:enum_to_a][start_index] = r0
+
+    r0
+  end
+
   module UnaryExpression0
     def expression
       elements[3]
@@ -6733,28 +6829,21 @@ module Idl
       elements[4]
     end
 
-  end
-
-  module UnaryExpression7
-    def user_type_name
-      elements[4]
-    end
-
     def expression
       elements[8]
     end
 
   end
 
-  module UnaryExpression8
+  module UnaryExpression7
     def expression
       elements[4]
     end
 
   end
 
-  module UnaryExpression9
-    def ary_var
+  module UnaryExpression8
+    def ary
       elements[4]
     end
 
@@ -6764,7 +6853,7 @@ module Idl
 
   end
 
-  module UnaryExpression10
+  module UnaryExpression9
     def o
       elements[0]
     end
@@ -7242,178 +7331,113 @@ module Idl
                       r52 = SyntaxNode.new(input, (index-1)...index) if r52 == true
                       r0 = r52
                     else
-                      i61, s61 = index, []
-                      if (match_len = has_terminal?('$enum_to_a', false, index))
-                        r62 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                        @index += match_len
-                      else
-                        terminal_parse_failure('\'$enum_to_a\'')
-                        r62 = nil
-                      end
-                      s61 << r62
-                      if r62
-                        s63, i63 = [], index
-                        loop do
-                          r64 = _nt_space
-                          if r64
-                            s63 << r64
-                          else
-                            break
-                          end
-                        end
-                        r63 = instantiate_node(SyntaxNode,input, i63...index, s63)
-                        s61 << r63
-                        if r63
-                          if (match_len = has_terminal?('(', false, index))
-                            r65 = true
-                            @index += match_len
-                          else
-                            terminal_parse_failure('\'(\'')
-                            r65 = nil
-                          end
-                          s61 << r65
-                          if r65
-                            s66, i66 = [], index
-                            loop do
-                              r67 = _nt_space
-                              if r67
-                                s66 << r67
-                              else
-                                break
-                              end
-                            end
-                            r66 = instantiate_node(SyntaxNode,input, i66...index, s66)
-                            s61 << r66
-                            if r66
-                              r68 = _nt_user_type_name
-                              s61 << r68
-                              if r68
-                                if (match_len = has_terminal?(')', false, index))
-                                  r69 = true
-                                  @index += match_len
-                                else
-                                  terminal_parse_failure('\')\'')
-                                  r69 = nil
-                                end
-                                s61 << r69
-                              end
-                            end
-                          end
-                        end
-                      end
-                      if s61.last
-                        r61 = instantiate_node(Idl::EnumArrayCastSyntaxNode,input, i61...index, s61)
-                        r61.extend(UnaryExpression6)
-                      else
-                        @index = i61
-                        r61 = nil
-                      end
+                      r61 = _nt_enum_to_a
                       if r61
                         r61 = SyntaxNode.new(input, (index-1)...index) if r61 == true
                         r0 = r61
                       else
-                        i70, s70 = index, []
+                        i62, s62 = index, []
                         if (match_len = has_terminal?('$enum', false, index))
-                          r71 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                          r63 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                           @index += match_len
                         else
                           terminal_parse_failure('\'$enum\'')
-                          r71 = nil
+                          r63 = nil
                         end
-                        s70 << r71
-                        if r71
-                          s72, i72 = [], index
+                        s62 << r63
+                        if r63
+                          s64, i64 = [], index
                           loop do
-                            r73 = _nt_space
-                            if r73
-                              s72 << r73
+                            r65 = _nt_space
+                            if r65
+                              s64 << r65
                             else
                               break
                             end
                           end
-                          r72 = instantiate_node(SyntaxNode,input, i72...index, s72)
-                          s70 << r72
-                          if r72
+                          r64 = instantiate_node(SyntaxNode,input, i64...index, s64)
+                          s62 << r64
+                          if r64
                             if (match_len = has_terminal?('(', false, index))
-                              r74 = true
+                              r66 = true
                               @index += match_len
                             else
                               terminal_parse_failure('\'(\'')
-                              r74 = nil
+                              r66 = nil
                             end
-                            s70 << r74
-                            if r74
-                              s75, i75 = [], index
+                            s62 << r66
+                            if r66
+                              s67, i67 = [], index
                               loop do
-                                r76 = _nt_space
-                                if r76
-                                  s75 << r76
+                                r68 = _nt_space
+                                if r68
+                                  s67 << r68
                                 else
                                   break
                                 end
                               end
-                              r75 = instantiate_node(SyntaxNode,input, i75...index, s75)
-                              s70 << r75
-                              if r75
-                                r77 = _nt_user_type_name
-                                s70 << r77
-                                if r77
-                                  s78, i78 = [], index
+                              r67 = instantiate_node(SyntaxNode,input, i67...index, s67)
+                              s62 << r67
+                              if r67
+                                r69 = _nt_user_type_name
+                                s62 << r69
+                                if r69
+                                  s70, i70 = [], index
                                   loop do
-                                    r79 = _nt_space
-                                    if r79
-                                      s78 << r79
+                                    r71 = _nt_space
+                                    if r71
+                                      s70 << r71
                                     else
                                       break
                                     end
                                   end
-                                  r78 = instantiate_node(SyntaxNode,input, i78...index, s78)
-                                  s70 << r78
-                                  if r78
+                                  r70 = instantiate_node(SyntaxNode,input, i70...index, s70)
+                                  s62 << r70
+                                  if r70
                                     if (match_len = has_terminal?(',', false, index))
-                                      r80 = true
+                                      r72 = true
                                       @index += match_len
                                     else
                                       terminal_parse_failure('\',\'')
-                                      r80 = nil
+                                      r72 = nil
                                     end
-                                    s70 << r80
-                                    if r80
-                                      s81, i81 = [], index
+                                    s62 << r72
+                                    if r72
+                                      s73, i73 = [], index
                                       loop do
-                                        r82 = _nt_space
-                                        if r82
-                                          s81 << r82
+                                        r74 = _nt_space
+                                        if r74
+                                          s73 << r74
                                         else
                                           break
                                         end
                                       end
-                                      r81 = instantiate_node(SyntaxNode,input, i81...index, s81)
-                                      s70 << r81
-                                      if r81
-                                        r83 = _nt_expression
-                                        s70 << r83
-                                        if r83
-                                          s84, i84 = [], index
+                                      r73 = instantiate_node(SyntaxNode,input, i73...index, s73)
+                                      s62 << r73
+                                      if r73
+                                        r75 = _nt_expression
+                                        s62 << r75
+                                        if r75
+                                          s76, i76 = [], index
                                           loop do
-                                            r85 = _nt_space
-                                            if r85
-                                              s84 << r85
+                                            r77 = _nt_space
+                                            if r77
+                                              s76 << r77
                                             else
                                               break
                                             end
                                           end
-                                          r84 = instantiate_node(SyntaxNode,input, i84...index, s84)
-                                          s70 << r84
-                                          if r84
+                                          r76 = instantiate_node(SyntaxNode,input, i76...index, s76)
+                                          s62 << r76
+                                          if r76
                                             if (match_len = has_terminal?(')', false, index))
-                                              r86 = true
+                                              r78 = true
                                               @index += match_len
                                             else
                                               terminal_parse_failure('\')\'')
-                                              r86 = nil
+                                              r78 = nil
                                             end
-                                            s70 << r86
+                                            s62 << r78
                                           end
                                         end
                                       end
@@ -7424,189 +7448,189 @@ module Idl
                             end
                           end
                         end
-                        if s70.last
-                          r70 = instantiate_node(Idl::EnumCastSyntaxNode,input, i70...index, s70)
-                          r70.extend(UnaryExpression7)
+                        if s62.last
+                          r62 = instantiate_node(Idl::EnumCastSyntaxNode,input, i62...index, s62)
+                          r62.extend(UnaryExpression6)
                         else
-                          @index = i70
-                          r70 = nil
+                          @index = i62
+                          r62 = nil
                         end
-                        if r70
-                          r70 = SyntaxNode.new(input, (index-1)...index) if r70 == true
-                          r0 = r70
+                        if r62
+                          r62 = SyntaxNode.new(input, (index-1)...index) if r62 == true
+                          r0 = r62
                         else
-                          i87, s87 = index, []
+                          i79, s79 = index, []
                           if (match_len = has_terminal?('$array_size', false, index))
-                            r88 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                            r80 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                             @index += match_len
                           else
                             terminal_parse_failure('\'$array_size\'')
-                            r88 = nil
+                            r80 = nil
                           end
-                          s87 << r88
-                          if r88
-                            s89, i89 = [], index
+                          s79 << r80
+                          if r80
+                            s81, i81 = [], index
                             loop do
-                              r90 = _nt_space
-                              if r90
-                                s89 << r90
+                              r82 = _nt_space
+                              if r82
+                                s81 << r82
                               else
                                 break
                               end
                             end
-                            r89 = instantiate_node(SyntaxNode,input, i89...index, s89)
-                            s87 << r89
-                            if r89
+                            r81 = instantiate_node(SyntaxNode,input, i81...index, s81)
+                            s79 << r81
+                            if r81
                               if (match_len = has_terminal?('(', false, index))
-                                r91 = true
+                                r83 = true
                                 @index += match_len
                               else
                                 terminal_parse_failure('\'(\'')
-                                r91 = nil
+                                r83 = nil
                               end
-                              s87 << r91
-                              if r91
-                                s92, i92 = [], index
+                              s79 << r83
+                              if r83
+                                s84, i84 = [], index
                                 loop do
-                                  r93 = _nt_space
-                                  if r93
-                                    s92 << r93
+                                  r85 = _nt_space
+                                  if r85
+                                    s84 << r85
                                   else
                                     break
                                   end
                                 end
-                                r92 = instantiate_node(SyntaxNode,input, i92...index, s92)
-                                s87 << r92
-                                if r92
-                                  r94 = _nt_expression
-                                  s87 << r94
-                                  if r94
+                                r84 = instantiate_node(SyntaxNode,input, i84...index, s84)
+                                s79 << r84
+                                if r84
+                                  r86 = _nt_expression
+                                  s79 << r86
+                                  if r86
                                     if (match_len = has_terminal?(')', false, index))
-                                      r95 = true
+                                      r87 = true
                                       @index += match_len
                                     else
                                       terminal_parse_failure('\')\'')
-                                      r95 = nil
+                                      r87 = nil
                                     end
-                                    s87 << r95
+                                    s79 << r87
                                   end
                                 end
                               end
                             end
                           end
-                          if s87.last
-                            r87 = instantiate_node(Idl::ArraySizeSyntaxNode,input, i87...index, s87)
-                            r87.extend(UnaryExpression8)
+                          if s79.last
+                            r79 = instantiate_node(Idl::ArraySizeSyntaxNode,input, i79...index, s79)
+                            r79.extend(UnaryExpression7)
                           else
-                            @index = i87
-                            r87 = nil
+                            @index = i79
+                            r79 = nil
                           end
-                          if r87
-                            r87 = SyntaxNode.new(input, (index-1)...index) if r87 == true
-                            r0 = r87
+                          if r79
+                            r79 = SyntaxNode.new(input, (index-1)...index) if r79 == true
+                            r0 = r79
                           else
-                            i96, s96 = index, []
+                            i88, s88 = index, []
                             if (match_len = has_terminal?('$array_includes?', false, index))
-                              r97 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                              r89 = instantiate_node(SyntaxNode,input, index...(index + match_len))
                               @index += match_len
                             else
                               terminal_parse_failure('\'$array_includes?\'')
-                              r97 = nil
+                              r89 = nil
                             end
-                            s96 << r97
-                            if r97
-                              s98, i98 = [], index
+                            s88 << r89
+                            if r89
+                              s90, i90 = [], index
                               loop do
-                                r99 = _nt_space
-                                if r99
-                                  s98 << r99
+                                r91 = _nt_space
+                                if r91
+                                  s90 << r91
                                 else
                                   break
                                 end
                               end
-                              r98 = instantiate_node(SyntaxNode,input, i98...index, s98)
-                              s96 << r98
-                              if r98
+                              r90 = instantiate_node(SyntaxNode,input, i90...index, s90)
+                              s88 << r90
+                              if r90
                                 if (match_len = has_terminal?('(', false, index))
-                                  r100 = true
+                                  r92 = true
                                   @index += match_len
                                 else
                                   terminal_parse_failure('\'(\'')
-                                  r100 = nil
+                                  r92 = nil
                                 end
-                                s96 << r100
-                                if r100
-                                  s101, i101 = [], index
+                                s88 << r92
+                                if r92
+                                  s93, i93 = [], index
                                   loop do
-                                    r102 = _nt_space
-                                    if r102
-                                      s101 << r102
+                                    r94 = _nt_space
+                                    if r94
+                                      s93 << r94
                                     else
                                       break
                                     end
                                   end
-                                  r101 = instantiate_node(SyntaxNode,input, i101...index, s101)
-                                  s96 << r101
-                                  if r101
-                                    r103 = _nt_id
-                                    s96 << r103
-                                    if r103
-                                      s104, i104 = [], index
+                                  r93 = instantiate_node(SyntaxNode,input, i93...index, s93)
+                                  s88 << r93
+                                  if r93
+                                    r95 = _nt_ary_eligible_expression
+                                    s88 << r95
+                                    if r95
+                                      s96, i96 = [], index
                                       loop do
-                                        r105 = _nt_space
-                                        if r105
-                                          s104 << r105
+                                        r97 = _nt_space
+                                        if r97
+                                          s96 << r97
                                         else
                                           break
                                         end
                                       end
-                                      r104 = instantiate_node(SyntaxNode,input, i104...index, s104)
-                                      s96 << r104
-                                      if r104
+                                      r96 = instantiate_node(SyntaxNode,input, i96...index, s96)
+                                      s88 << r96
+                                      if r96
                                         if (match_len = has_terminal?(',', false, index))
-                                          r106 = true
+                                          r98 = true
                                           @index += match_len
                                         else
                                           terminal_parse_failure('\',\'')
-                                          r106 = nil
+                                          r98 = nil
                                         end
-                                        s96 << r106
-                                        if r106
-                                          s107, i107 = [], index
+                                        s88 << r98
+                                        if r98
+                                          s99, i99 = [], index
                                           loop do
-                                            r108 = _nt_space
-                                            if r108
-                                              s107 << r108
+                                            r100 = _nt_space
+                                            if r100
+                                              s99 << r100
                                             else
                                               break
                                             end
                                           end
-                                          r107 = instantiate_node(SyntaxNode,input, i107...index, s107)
-                                          s96 << r107
-                                          if r107
-                                            r109 = _nt_expression
-                                            s96 << r109
-                                            if r109
-                                              s110, i110 = [], index
+                                          r99 = instantiate_node(SyntaxNode,input, i99...index, s99)
+                                          s88 << r99
+                                          if r99
+                                            r101 = _nt_expression
+                                            s88 << r101
+                                            if r101
+                                              s102, i102 = [], index
                                               loop do
-                                                r111 = _nt_space
-                                                if r111
-                                                  s110 << r111
+                                                r103 = _nt_space
+                                                if r103
+                                                  s102 << r103
                                                 else
                                                   break
                                                 end
                                               end
-                                              r110 = instantiate_node(SyntaxNode,input, i110...index, s110)
-                                              s96 << r110
-                                              if r110
+                                              r102 = instantiate_node(SyntaxNode,input, i102...index, s102)
+                                              s88 << r102
+                                              if r102
                                                 if (match_len = has_terminal?(')', false, index))
-                                                  r112 = true
+                                                  r104 = true
                                                   @index += match_len
                                                 else
                                                   terminal_parse_failure('\')\'')
-                                                  r112 = nil
+                                                  r104 = nil
                                                 end
-                                                s96 << r112
+                                                s88 << r104
                                               end
                                             end
                                           end
@@ -7617,97 +7641,97 @@ module Idl
                                 end
                               end
                             end
-                            if s96.last
-                              r96 = instantiate_node(Idl::ArrayIncludesSyntaxNode,input, i96...index, s96)
-                              r96.extend(UnaryExpression9)
+                            if s88.last
+                              r88 = instantiate_node(Idl::ArrayIncludesSyntaxNode,input, i88...index, s88)
+                              r88.extend(UnaryExpression8)
                             else
-                              @index = i96
-                              r96 = nil
+                              @index = i88
+                              r88 = nil
                             end
-                            if r96
-                              r96 = SyntaxNode.new(input, (index-1)...index) if r96 == true
-                              r0 = r96
+                            if r88
+                              r88 = SyntaxNode.new(input, (index-1)...index) if r88 == true
+                              r0 = r88
                             else
-                              r113 = _nt_paren_expression
-                              if r113
-                                r113 = SyntaxNode.new(input, (index-1)...index) if r113 == true
-                                r0 = r113
+                              r105 = _nt_paren_expression
+                              if r105
+                                r105 = SyntaxNode.new(input, (index-1)...index) if r105 == true
+                                r0 = r105
                               else
-                                i114, s114 = index, []
-                                r115 = _nt_unary_operator
-                                s114 << r115
-                                if r115
-                                  s116, i116 = [], index
+                                i106, s106 = index, []
+                                r107 = _nt_unary_operator
+                                s106 << r107
+                                if r107
+                                  s108, i108 = [], index
                                   loop do
-                                    r117 = _nt_space
-                                    if r117
-                                      s116 << r117
+                                    r109 = _nt_space
+                                    if r109
+                                      s108 << r109
                                     else
                                       break
                                     end
                                   end
-                                  r116 = instantiate_node(SyntaxNode,input, i116...index, s116)
-                                  s114 << r116
-                                  if r116
-                                    r118 = _nt_expression
-                                    s114 << r118
+                                  r108 = instantiate_node(SyntaxNode,input, i108...index, s108)
+                                  s106 << r108
+                                  if r108
+                                    r110 = _nt_unary_expression
+                                    s106 << r110
                                   end
                                 end
-                                if s114.last
-                                  r114 = instantiate_node(Idl::UnaryOperatorExpressionSyntaxNode,input, i114...index, s114)
-                                  r114.extend(UnaryExpression10)
+                                if s106.last
+                                  r106 = instantiate_node(Idl::UnaryOperatorExpressionSyntaxNode,input, i106...index, s106)
+                                  r106.extend(UnaryExpression9)
                                 else
-                                  @index = i114
-                                  r114 = nil
+                                  @index = i106
+                                  r106 = nil
                                 end
-                                if r114
-                                  r114 = SyntaxNode.new(input, (index-1)...index) if r114 == true
-                                  r0 = r114
+                                if r106
+                                  r106 = SyntaxNode.new(input, (index-1)...index) if r106 == true
+                                  r0 = r106
                                 else
-                                  r119 = _nt_post_dec
-                                  if r119
-                                    r119 = SyntaxNode.new(input, (index-1)...index) if r119 == true
-                                    r0 = r119
+                                  r111 = _nt_post_dec
+                                  if r111
+                                    r111 = SyntaxNode.new(input, (index-1)...index) if r111 == true
+                                    r0 = r111
                                   else
-                                    r120 = _nt_post_inc
-                                    if r120
-                                      r120 = SyntaxNode.new(input, (index-1)...index) if r120 == true
-                                      r0 = r120
+                                    r112 = _nt_post_inc
+                                    if r112
+                                      r112 = SyntaxNode.new(input, (index-1)...index) if r112 == true
+                                      r0 = r112
                                     else
-                                      r121 = _nt_replication_expression
-                                      if r121
-                                        r121 = SyntaxNode.new(input, (index-1)...index) if r121 == true
-                                        r0 = r121
+                                      r113 = _nt_replication_expression
+                                      if r113
+                                        r113 = SyntaxNode.new(input, (index-1)...index) if r113 == true
+                                        r0 = r113
                                       else
-                                        r122 = _nt_concatenation_expression
-                                        if r122
-                                          r122 = SyntaxNode.new(input, (index-1)...index) if r122 == true
-                                          r0 = r122
+                                        r114 = _nt_concatenation_expression
+                                        if r114
+                                          r114 = SyntaxNode.new(input, (index-1)...index) if r114 == true
+                                          r0 = r114
                                         else
-                                          r123 = _nt_field_access_expression
-                                          if r123
-                                            r123 = SyntaxNode.new(input, (index-1)...index) if r123 == true
-                                            r0 = r123
+                                          r115 = _nt_field_access_expression
+                                          if r115
+                                            r115 = SyntaxNode.new(input, (index-1)...index) if r115 == true
+                                            r0 = r115
                                           else
-                                            r124 = _nt_function_call
-                                            if r124
-                                              r124 = SyntaxNode.new(input, (index-1)...index) if r124 == true
-                                              r0 = r124
+                                            r116 = _nt_function_call
+                                            if r116
+                                              r116 = SyntaxNode.new(input, (index-1)...index) if r116 == true
+                                              r0 = r116
                                             else
-                                              r125 = _nt_csr_field_access_expression
-                                              if r125
-                                                r125 = SyntaxNode.new(input, (index-1)...index) if r125 == true
-                                                r0 = r125
+                                              r117 = _nt_csr_field_access_expression
+                                              if r117
+                                                r117 = SyntaxNode.new(input, (index-1)...index) if r117 == true
+                                                r0 = r117
                                               else
-                                                r126 = _nt_enum_ref
-                                                if r126
-                                                  r126 = SyntaxNode.new(input, (index-1)...index) if r126 == true
-                                                  r0 = r126
+                                                r118 = _nt_enum_ref
+                                                if r118
+                                                  r118 = SyntaxNode.new(input, (index-1)...index) if r118 == true
+                                                  r0 = r118
                                                 else
-                                                  r127 = _nt_rval
-                                                  if r127
-                                                    r127 = SyntaxNode.new(input, (index-1)...index) if r127 == true
-                                                    r0 = r127
+                                                  r119 = _nt_rval
+                                                  if r119
+                                                    r119 = SyntaxNode.new(input, (index-1)...index) if r119 == true
+                                                    r0 = r119
                                                   else
                                                     @index = i0
                                                     r0 = nil
@@ -8451,6 +8475,12 @@ module Idl
 
   end
 
+  module ConstraintBody1
+    def b
+      elements[1]
+    end
+  end
+
   def _nt_constraint_body
     start_index = index
     if node_cache[:constraint_body].has_key?(index)
@@ -8462,56 +8492,78 @@ module Idl
       return cached
     end
 
-    s0, i0 = [], index
+    i0, s0 = index, []
+    s1, i1 = [], index
     loop do
-      i1, s1 = index, []
-      i2 = index
-      r3 = _nt_implication_statement
-      if r3
-        r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-        r2 = r3
-      else
-        r4 = _nt_implication_for_loop
-        if r4
-          r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-          r2 = r4
-        else
-          @index = i2
-          r2 = nil
-        end
-      end
-      s1 << r2
+      r2 = _nt_space
       if r2
-        s5, i5 = [], index
-        loop do
-          r6 = _nt_space
-          if r6
-            s5 << r6
-          else
-            break
-          end
-        end
-        r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-        s1 << r5
-      end
-      if s1.last
-        r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-        r1.extend(ConstraintBody0)
-      else
-        @index = i1
-        r1 = nil
-      end
-      if r1
-        s0 << r1
+        s1 << r2
       else
         break
       end
     end
-    if s0.empty?
+    r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+    s0 << r1
+    if r1
+      s3, i3 = [], index
+      loop do
+        i4, s4 = index, []
+        i5 = index
+        r6 = _nt_implication_statement
+        if r6
+          r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+          r5 = r6
+        else
+          r7 = _nt_implication_for_loop
+          if r7
+            r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+            r5 = r7
+          else
+            @index = i5
+            r5 = nil
+          end
+        end
+        s4 << r5
+        if r5
+          s8, i8 = [], index
+          loop do
+            r9 = _nt_space
+            if r9
+              s8 << r9
+            else
+              break
+            end
+          end
+          r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
+          s4 << r8
+        end
+        if s4.last
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+          r4.extend(ConstraintBody0)
+        else
+          @index = i4
+          r4 = nil
+        end
+        if r4
+          s3 << r4
+        else
+          break
+        end
+      end
+      if s3.empty?
+        @index = i3
+        r3 = nil
+      else
+        r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+      end
+      s0 << r3
+    end
+    if s0.last
+      r0 = instantiate_node(Idl::ConstraintBodySyntaxNode,input, i0...index, s0)
+      r0.extend(ConstraintBody1)
+    else
       @index = i0
       r0 = nil
-    else
-      r0 = instantiate_node(Idl::ConstraintBodySyntaxNode,input, i0...index, s0)
     end
 
     node_cache[:constraint_body][start_index] = r0

@@ -1118,34 +1118,34 @@ module Idl
 
   class ArrayIncludesSyntaxNode < SyntaxNode
     def to_ast
-      ArrayIncludesAst.new(input, interval, send(:var).to_ast, send(:value).to_ast)
+      ArrayIncludesAst.new(input, interval, send(:ary).to_ast, send(:value).to_ast)
     end
   end
 
   class ArrayIncludesAst < AstNode
     include Rvalue
 
-    sig { returns(IdAst) }
-    def var = T.cast(children[0], IdAst)
+    sig { returns(RvalueAst) }
+    def ary = T.cast(children[0], RvalueAst)
 
     sig { returns(RvalueAst) }
     def expr = T.cast(children[1], RvalueAst)
 
-    sig { params(input: String, interval: T::Range[Integer], var: IdAst, value: RvalueAst).void }
-    def initialize(input, interval, var, value)
-      super(input, interval, [var, value])
+    sig { params(input: String, interval: T::Range[Integer], ary: RvalueAst, value: RvalueAst).void }
+    def initialize(input, interval, ary, value)
+      super(input, interval, [ary, value])
     end
 
     sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
-      var.type_check(symtab)
-      var_type = var.type(symtab)
-      type_error "First argument of $array_includes? must be an array. Found #{var_type}" unless var_type.kind == :array
+      ary.type_check(symtab)
+      ary_type = ary.type(symtab)
+      type_error "First argument of $array_includes? must be an array. Found #{ary_type}" unless ary_type.kind == :array
 
       expr.type_check(symtab)
       value_type = expr.type(symtab)
-      unless value_type.comparable_to?(var_type.sub_type)
-        type_error "Second argument of $array_includes? must be comparable to the array element type. Found #{var_type.sub_type} and #{value_type}"
+      unless value_type.comparable_to?(ary_type.sub_type)
+        type_error "Second argument of $array_includes? must be comparable to the array element type. Found #{ary_type.sub_type} and #{value_type}"
       end
     end
 
@@ -1156,14 +1156,14 @@ module Idl
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def value(symtab)
-      var.value(symtab).include?(expr.value(symtab))
+      T.cast(ary.value(symtab), T::Array[T.untyped]).include?(expr.value(symtab))
     end
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = true
 
     sig { override.returns(String) }
-    def to_idl = "$array_size(#{var.to_idl}, #{expr.to_idl})"
+    def to_idl = "$array_size(#{ary.to_idl}, #{expr.to_idl})"
   end
 
   class ArraySizeSyntaxNode < SyntaxNode
@@ -1349,6 +1349,8 @@ module Idl
   #
   #  $enum_to_a(PrivilegeMode) #=> [3, 1, 1, 0, 5, 4]
   class EnumArrayCastAst < AstNode
+    include Rvalue
+
     def enum_class = children[0]
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
@@ -3249,7 +3251,7 @@ module Idl
     sig { override.returns(ConstraintBodyAst) }
     def to_ast
       stmts = []
-      elements.each do |e|
+      b.elements.each do |e|
         stmts << e.i.to_ast
       end
       ConstraintBodyAst.new(input, interval, stmts)
@@ -3617,7 +3619,7 @@ module Idl
         end
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
-        qualifiers << :known if lhs_type.known? && (short_circuit || rhs_type.known?)
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         if [lhs_type.width, rhs_type.width].include?(:unknown)
           Type.new(:bits, width: :unknown, qualifiers:)
         else
@@ -4755,7 +4757,7 @@ module Idl
 
       @enum_def_type = global_symtab.get(@enum_class_name)
 
-      unless @enum_def_type.kind == :enum
+      if @enum_def_type.nil? || @enum_def_type.kind != :enum
         type_error "#{@enum_class_name} is not a defined Enum"
       end
 
@@ -6170,7 +6172,8 @@ module Idl
 
       func_def_type.return_value(template_values, arg_nodes, symtab, self)
     end
-    alias execute value
+
+    def execute(symtab) = value(symtab)
 
     def name
       @name
@@ -6316,7 +6319,8 @@ module Idl
 
       value_error "No function body statement returned a value"
     end
-    alias execute return_value
+
+    def execute(symtab) = return_value(symtab)
 
     sig { override.params(symtab: SymbolTable).void }
     def execute_unknown(symtab)
@@ -6853,8 +6857,9 @@ end,
     sig { returns(ExecutableAst) }
     def update = T.cast(@children.fetch(2), ExecutableAst)
 
-    sig { returns(T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)]) }
-    def stmts = T.cast(@children[3..], T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)])
+    StmtType = T.type_alias { T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst, ImplicationStatementAst) }
+    sig { returns(T::Array[StmtType]) }
+    def stmts = T.cast(@children[3..], T::Array[StmtType])
 
     def initialize(input, interval, init, condition, update, stmts)
       super(input, interval, [init, condition, update] + stmts)
@@ -6879,7 +6884,7 @@ end,
         init.execute(symtab)
         while condition.value(symtab)
           stmts.each do |s|
-            return false unless s.satisfied?(symtab)
+            return false unless T.cast(s, ImplicationStatementAst).satisfied?(symtab)
           end
           update.execute(symtab)
         end
@@ -6905,7 +6910,9 @@ end,
                   return v
                 end
               else
-                s.execute(symtab)
+                unless s.is_a?(ImplicationStatementAst)
+                  s.execute(symtab)
+                end
               end
             end
             update.execute(symtab)
@@ -6954,7 +6961,9 @@ end,
                     values += s.return_values(symtab)
                   end
                 else
-                  s.execute(symtab)
+                  unless s.is_a?(ImplicationStatementAst)
+                    s.execute(symtab)
+                  end
                 end
               end
               update.execute(symtab)
@@ -6970,7 +6979,7 @@ end,
     end
 
     # @!macro execute
-    alias execute return_value
+    def execute(symtab) = return_value(symtab)
 
     sig { override.params(symtab: SymbolTable).void }
     def execute_unknown(symtab)
@@ -6981,7 +6990,7 @@ end,
           init.execute_unknown(symtab)
 
           stmts.each do |s|
-            unless s.is_a?(ReturnStatementAst)
+            unless s.is_a?(ReturnStatementAst) || s.is_a?(ImplicationStatementAst)
               s.execute_unknown(symtab)
             end
           end

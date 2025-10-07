@@ -11,9 +11,10 @@ description: |
   Globally restore interrupts, write bit 3 of rs1 to `mstatus.MIE` and `qc.mcause.MIE`.
   Instruction encoded in CI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqciint
 assembly: " xs1"
 base: 32
 encoding:

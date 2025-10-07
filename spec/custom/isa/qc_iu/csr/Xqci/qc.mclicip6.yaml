@@ -12,9 +12,10 @@ length: 32
 priv_mode: M
 base: 32
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqciint
 writable: true
 description: |
   Pending bits for IRQs 192-223

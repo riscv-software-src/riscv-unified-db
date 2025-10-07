@@ -14,9 +14,10 @@ length: MXLEN
 writable: true
 description: Controls where NMI jump.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqciint
 fields:
   BASE:
     location: 31-2

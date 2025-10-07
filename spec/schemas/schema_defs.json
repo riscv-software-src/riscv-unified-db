@@ -487,28 +487,28 @@
                   "items": {
                     "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "anyOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "oneOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "noneOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "not": {
                   "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
@@ -649,28 +649,28 @@
                   "items": {
                     "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "anyOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "oneOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "noneOf": {
                   "type": "array",
                   "items": {
                     "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
                   },
-                  "minItems": 1
+                  "minItems": 2
                 },
                 "not": {
                   "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
@@ -717,28 +717,28 @@
               "items": {
                 "$ref": "#/$defs/yaml_condition"
               },
-              "minItems": 1
+              "minItems": 2
             },
             "anyOf": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/yaml_condition"
               },
-              "minItems": 1
+              "minItems": 2
             },
             "oneOf": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/yaml_condition"
               },
-              "minItems": 1
+              "minItems": 2
             },
             "noneOf": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/yaml_condition"
               },
-              "minItems": 1
+              "minItems": 2
             },
             "not": {
               "$ref": "#/$defs/yaml_condition"

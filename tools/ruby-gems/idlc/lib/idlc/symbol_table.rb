@@ -198,20 +198,23 @@ module Idl
     def param(param_name) = params_hash[param_name]
 
     sig { returns(T::Hash[String, RuntimeParam]) }
-    def params_hash = @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
+    def params_hash
+      @params_hash ||= @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
+    end
 
     sig {
       params(
         mxlen: T.nilable(Integer),
         possible_xlens: T::Array[Integer],
-        params: T::Array[RuntimeParam],
+        builtin_global_vars: T::Array[Var],
         builtin_enums: T::Array[EnumDef],
         builtin_funcs: T.nilable(BuiltinFunctionCallbacks),
         csrs: T::Array[Csr],
+        params: T::Array[RuntimeParam],
         name: String
       ).void
     }
-    def initialize(mxlen: nil, possible_xlens: [32, 64], params: [], builtin_enums: [], builtin_funcs: nil, csrs: [], name: "")
+    def initialize(mxlen: nil, possible_xlens: [32, 64], builtin_global_vars: [], builtin_enums: [], builtin_funcs: nil, csrs: [], params: [], name: "")
       @mutex = Thread::Mutex.new
       @mxlen = mxlen
       @possible_xlens = possible_xlens
@@ -238,36 +241,19 @@ module Idl
         )
 
       }]
-      params.each do |param|
-        idl_type =
-          if param.schema_known?
-            param.idl_type
-          else
-            possible_idl_types = param.possible_schemas.map { |schema| schema.to_idl_type }
-            if possible_idl_types.fetch(0).kind == :bits
-              # use the worst case sizing
-              if !(t = possible_idl_types.find { |t| t.width == :unknown }).nil?
-                t
-              else
-                possible_idl_types.max { |t1, t2| T.cast(t1.width, Integer) <=> T.cast(t2.width, Integer) }
-              end
-            else
-              possible_idl_types.at(0)
-            end
-          end
-        if param.value_known?
-          add!(param.name, Var.new(param.name, idl_type, param.value, param: true))
-        else
-          add!(param.name, Var.new(param.name, idl_type, param: true))
-        end
+      builtin_global_vars.each do |v|
+        add!(v.name, v)
       end
-      @params = params.freeze
       builtin_enums.each do |enum_def|
         add!(enum_def.name, EnumerationType.new(enum_def.name, enum_def.element_names, enum_def.element_values))
       end
       @builtin_funcs = builtin_funcs
       @csrs = csrs
       @csr_hash = @csrs.map { |csr| [csr.name.freeze, csr].freeze }.to_h.freeze
+      @params = params
+
+      # set up the global clone that be used as a mutable table
+      @global_clone_pool = T.let([], T::Array[SymbolTable])
     end
 
     # @return [String] inspection string
@@ -286,9 +272,6 @@ module Idl
 
       # set frozen_hash so that we can quickly compare symtabs
       @frozen_hash = [@scopes.hash, @name.hash].hash
-
-      # set up the global clone that be used as a mutable table
-      @global_clone_pool = Concurrent::Array.new
 
       5.times do
         copy = SymbolTable.allocate

@@ -112,11 +112,12 @@ module Udb
       obj
     end
 
-    sig { params(other: DatabaseObject).returns(T.nilable(Integer)) }
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return nil unless other.is_a?(DatabaseObject)
+      return nil unless @Kind == other.kind
 
-      name <=> other.name
+      @name <=> other.name
     end
 
     # @return [String] Source file that data for this object can be attributed to

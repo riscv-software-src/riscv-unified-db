@@ -9,9 +9,8 @@ name: MISA_CSR_IMPLEMENTED
 long_name: |
   Whether or not the `misa` CSR is implemented
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

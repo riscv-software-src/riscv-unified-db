@@ -9,9 +9,8 @@ name: MTVEC_MODES
 long_name: |
   Modes supported by `mtvec.MODE`
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

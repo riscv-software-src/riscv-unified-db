@@ -43,10 +43,10 @@ params:
   NAME: example_rv64_with_overlay
 
   # vendor-specific architecture ID in marchid
-  ARCH_ID: 0x1000000000000000
+  ARCH_ID_VALUE: 0x1000000000000000
 
   # vendor-specific implementation ID in mimpid
-  IMP_ID: 0x0
+  IMP_ID_VALUE: 0x0
 
   # JEDEC Vendor ID bank
   VENDOR_ID_BANK: 0x0

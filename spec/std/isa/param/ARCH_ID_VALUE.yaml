@@ -23,7 +23,7 @@ schema:
     - when:
         param:
           name: MXLEN
-          value: 32
+          equal: 32
       schema:
         allOf:
           - $ref: schema_defs.json#/$defs/uint32
@@ -34,7 +34,7 @@ schema:
     - when:
         param:
           name: MXLEN
-          value: 64
+          equal: 64
       schema:
         allOf:
           - $ref: schema_defs.json#/$defs/uint64

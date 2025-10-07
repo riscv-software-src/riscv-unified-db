@@ -33,6 +33,9 @@ module Idl
     sig { abstract.returns(T::Array[Schema]) }
     def possible_schemas; end
 
+    sig { abstract.returns(T::Array[Schema]) }
+    def all_schemas; end
+
     sig { abstract.returns(T::Boolean) }
     def value_known?; end
 

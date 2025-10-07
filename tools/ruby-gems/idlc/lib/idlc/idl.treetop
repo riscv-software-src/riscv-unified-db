@@ -299,6 +299,8 @@ grammar Idl
 
   # expression that can accept an array index operator (expr[])
   rule ary_eligible_expression
+    enum_to_a
+    /
     paren_expression
     /
     replication_expression
@@ -340,6 +342,10 @@ grammar Idl
     space* ')' <Idl::BitsCastSyntaxNode>
   end
 
+  rule enum_to_a
+    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+  end
+
   rule unary_expression
     'true' <Idl::TrueExpressionSyntaxNode>
     /
@@ -360,17 +366,17 @@ grammar Idl
     /
     '$enum_element_size' space* '(' space* user_type_name ')' <Idl::EnumElementSizeSyntaxNode>
     /
-    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+    enum_to_a
     /
     '$enum' space* '(' space* user_type_name space* ',' space* expression space* ')' <Idl::EnumCastSyntaxNode>
     /
     '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
     /
-    '$array_includes?' space* '(' space* ary_var:id space* ',' space* value:expression space* ')' <Idl::ArrayIncludesSyntaxNode>
+    '$array_includes?' space* '(' space* ary:ary_eligible_expression space* ',' space* value:expression space* ')' <Idl::ArrayIncludesSyntaxNode>
     /
     paren_expression
     /
-    o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
+    o:unary_operator space* e:unary_expression <Idl::UnaryOperatorExpressionSyntaxNode>
     /
     post_dec
     /
@@ -414,7 +420,7 @@ grammar Idl
   end
 
   rule constraint_body
-    (i:(implication_statement / implication_for_loop) space*)+ <Idl::ConstraintBodySyntaxNode>
+    space* b:(i:(implication_statement / implication_for_loop) space*)+ <Idl::ConstraintBodySyntaxNode>
   end
 
   rule expression

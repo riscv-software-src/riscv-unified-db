@@ -138,13 +138,22 @@ end
 
 module Idl
   class AstNode
-    sig { abstract.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
-    def gen_cpp(symtab, indent = 0, indent_spaces: 2); end
+    sig { overridable.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      raise "Need to implement #{self.class.name}#gen_cpp"
+    end
   end
 
   class NoopAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2) = ";"
+  end
+
+  class AryIncludesAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      "#{' ' * indent}#{ary.gen_cpp(symtab, 0, indent_spaces:)}.size()"
+    end
   end
 
   class AryRangeAssignmentAst < AstNode
@@ -976,16 +985,7 @@ module Idl
   class FunctionCallExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      if name == "ary_includes?"
-        # special case
-        if arg_nodes[0].type(symtab).width == :unknown
-          # vector
-          "__UDB_FUNC_CALL ary_includes_Q_(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
-        else
-          # array
-          "__UDB_CONSTEXPR_FUNC_CALL template ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
-        end
-      elsif name == "implemented?"
+      if name == "implemented?"
         "__UDB_FUNC_CALL template _implemented_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}>()"
       elsif name == "implemented_version?"
         "__UDB_FUNC_CALL template _implemented_version_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].text_value}>()"

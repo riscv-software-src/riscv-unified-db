@@ -15,8 +15,8 @@ implemented_extensions:
   - [Smrnmi, "1.0"]
 params:
   MXLEN: 32
-  ARCH_ID: 0
-  IMP_ID: 0
+  ARCH_ID_VALUE: 0
+  IMP_ID_VALUE: 0
   VENDOR_ID_BANK: 1
   VENDOR_ID_OFFSET: 1
   MISALIGNED_LDST: true

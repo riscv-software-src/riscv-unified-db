@@ -9,9 +9,8 @@ name: MTVAL_WIDTH
 long_name: |
   Width of the `mtval` CSR
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   The number of implemented bits in the `mtval` CSR.
   This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to

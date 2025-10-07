@@ -33,8 +33,8 @@ extensions:
         schema:
           const: 4
       MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID: {} # Unconstrained
-      IMP_ID: {} # Unconstrained
+      ARCH_ID_VALUE: {} # Unconstrained
+      IMP_ID_VALUE: {} # Unconstrained
       VENDOR_ID_BANK: {} # Unconstrained
       VENDOR_ID_OFFSET: {} # Unconstrained
       MISA_CSR_IMPLEMENTED: {} # Unconstrained

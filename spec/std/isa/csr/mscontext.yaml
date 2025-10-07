@@ -22,9 +22,10 @@ description: |
   debuggers will not use this CSR if `scontext` is available.
 
 definedBy:
-  allOf:
-    - Sdtrig
-    - S
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: S
 fields:
   DATA:
     location_rv32: 31-0

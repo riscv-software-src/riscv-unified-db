@@ -8,9 +8,8 @@ kind: parameter
 name: MISALIGNED_LDST
 long_name: Support for misaligned loads and stores to main memory.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Does the implementation perform non-atomic misaligned loads and stores to main memory
   (does *not* affect misaligned support to device memory)?

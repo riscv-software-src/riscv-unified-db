@@ -9,9 +9,8 @@ name: TRAP_ON_UNIMPLEMENTED_INSTRUCTION
 long_name: |
   Whether or not fetching an unimplemented instruction causes a trap
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

@@ -9,9 +9,8 @@ name: M_MODE_ENDIANNESS
 long_name: |
   Endianness of data in M-mode
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

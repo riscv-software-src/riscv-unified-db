@@ -32,18 +32,6 @@ namespace udb {
 <%# next unless func.templated? || func.constexpr?(cfg_arch.symtab) # non-templated functions come next -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(func) -%>
 
-<%- if func.name == "ary_includes?" -%>
-template <SocModel SocType>
-template <unsigned ARY_SIZE, typename ElementType, typename ValueType>
-constexpr bool <%= name_of(:hart, cfg_arch) %><SocType>::ary_includes_Q_(const std::array<ElementType, ARY_SIZE>& ary, const ValueType& value) {
-  return std::ranges::find(ary, static_cast<ElementType>(value)) != std::ranges::end(ary);
-}
-template <SocModel SocType>
-template <typename ElementType, typename ValueType>
-bool <%= name_of(:hart, cfg_arch) %><SocType>::ary_includes_Q_(const std::vector<ElementType>& ary, const ValueType& value) {
-  return std::ranges::find(ary, static_cast<ElementType>(value)) != std::ranges::end(ary);
-}
-<%- else -%>
 //
 // <%= func.description.gsub("\n", "\n// ") %>
 template <SocModel SocType>
@@ -73,7 +61,6 @@ template <SocModel SocType>
   <%- pruned_func = func.prune(symtab).freeze_tree(symtab) -%>
   <%= pruned_func.body.gen_cpp(symtab) %>
 }
-<%- end -%>
 <%- symtab.release -%>
 <%- end -%>
 

@@ -17,23 +17,6 @@ function power_of_2? {
   }
 }
 
-function ary_includes? {
-  template U32 ARY_SIZE, U32 ELEMENT_SIZE
-  returns Boolean
-  arguments Bits<ELEMENT_SIZE> ary[ARY_SIZE], Bits<ELEMENT_SIZE> value
-  description {
-    Returns true if _value_ is an element of ary, and false otherwise
-  }
-  body {
-    for (U32 i = 0; i < ARY_SIZE; i++) {
-      if (ary[i] == value) {
-        return true;
-      }
-    }
-    return false;
-  }
-}
-
 function has_virt_mem? {
   returns Boolean
   description {

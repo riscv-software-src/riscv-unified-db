@@ -55,4 +55,4 @@ fields:
     location_rv64: 63-0
     type: RO
     description: Vendor-specific microarchitecture ID.
-    reset_value(): return ARCH_ID;
+    reset_value(): return ARCH_ID_VALUE;

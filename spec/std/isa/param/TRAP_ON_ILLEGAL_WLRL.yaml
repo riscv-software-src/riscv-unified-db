@@ -9,9 +9,8 @@ name: TRAP_ON_ILLEGAL_WLRL
 long_name: |
   Whether or not writing an illegal value to a WLRL CSR field causes a trap.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

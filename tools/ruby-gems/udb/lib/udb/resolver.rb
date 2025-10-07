@@ -174,7 +174,7 @@ module Udb
     def run(cmd)
       puts cmd.join(" ") unless @quiet
       if @quiet
-        T.unsafe(self).send(:system, *cmd, :out=>"/dev/null", :err=>"/dev/null")
+        T.unsafe(self).send(:system, *cmd, out: "/dev/null", err: "/dev/null")
       else
         T.unsafe(self).send(:system, *cmd)
       end
@@ -275,6 +275,10 @@ module Udb
         end
 
       config_yaml = YAML.safe_load_file(config_path)
+      if config_yaml.nil?
+        puts File.read(config_path)
+        raise "Could not load config at #{config_path}"
+      end
 
       overlay_path =
         if config_yaml["arch_overlay"].nil?

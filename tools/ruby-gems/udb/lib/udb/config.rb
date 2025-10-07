@@ -138,24 +138,24 @@ module Udb
           raise "Unexpected type (#{data['type']}) in config"
         end
       elsif cfg_file_path_or_portfolio_grp.is_a?(PortfolioGroup)
-          portfolio_grp = T.cast(cfg_file_path_or_portfolio_grp, PortfolioGroup)
-          data = {
-            "$schema" => "config_schema.json#",
-            "kind" => "architecture configuration",
-            "type" => "partially configured",
-            "name" => portfolio_grp.name,
-            "description" => "Partial config construction from Portfolio Group #{portfolio_grp.name}",
-            "params" => portfolio_grp.param_values,
-            "mandatory_extensions" => portfolio_grp.mandatory_ext_reqs.map do |ext_req|
-              {
-                "name" => ext_req.name,
-                "version" => ext_req.requirement_specs.map(&:to_s)
-              }
-            end
-          }
-          data.fetch("params")["MXLEN"] = portfolio_grp.max_base
-          freeze_data(data)
-          PartialConfig.send(:new, data, info)
+        portfolio_grp = T.cast(cfg_file_path_or_portfolio_grp, PortfolioGroup)
+        data = {
+          "$schema" => "config_schema.json#",
+          "kind" => "architecture configuration",
+          "type" => "partially configured",
+          "name" => portfolio_grp.name,
+          "description" => "Partial config construction from Portfolio Group #{portfolio_grp.name}",
+          "params" => portfolio_grp.param_values,
+          "mandatory_extensions" => portfolio_grp.mandatory_ext_reqs.map do |ext_req|
+            {
+              "name" => ext_req.name,
+              "version" => ext_req.requirement_specs.map(&:to_s)
+            }
+          end
+        }
+        data.fetch("params")["MXLEN"] = portfolio_grp.max_base
+        freeze_data(data)
+        PartialConfig.send(:new, data, info)
       else
         T.absurd(cfg_file_path_or_portfolio_grp)
       end

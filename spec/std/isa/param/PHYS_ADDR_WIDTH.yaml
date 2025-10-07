@@ -9,9 +9,8 @@ name: PHYS_ADDR_WIDTH
 long_name: |
   Number of bits in a physical address
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Implementation-defined size of the physical address space.
 schema:

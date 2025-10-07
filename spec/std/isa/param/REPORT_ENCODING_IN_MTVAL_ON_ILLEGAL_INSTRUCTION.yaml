@@ -9,9 +9,8 @@ name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
 long_name: |
   Whether or not `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Options:
 

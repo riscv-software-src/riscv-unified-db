@@ -28,7 +28,7 @@ schema:
     - when:
         param:
           name: MXLEN
-          value: 32
+          equal: 32
       schema:
         description: An unsigned power of 2 greater than or equal to 4 that fits in 32 bits
         enum:
@@ -67,7 +67,7 @@ schema:
     - when:
         param:
           name: MXLEN
-          value: 64
+          equal: 64
       schema:
         description: An unsigned power of 2 greater than or equal to 4 that fits in 64 bits
         enum:

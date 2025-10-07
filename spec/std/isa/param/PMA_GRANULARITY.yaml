@@ -9,9 +9,8 @@ name: PMA_GRANULARITY
 long_name: |
   log2 of the smallest supported PMA region
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   Generally, for systems with an MMU, should not be smaller than 12,
   as that would preclude caching PMA results in the TLB along with

@@ -10,9 +10,8 @@ long_name: |
   The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
   or access-fault exceptions.
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
+  extension:
+    name: Sm
 description: |
   The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
   or access-fault exceptions.

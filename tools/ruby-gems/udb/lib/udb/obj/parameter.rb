@@ -99,7 +99,7 @@ module Udb
         if @schemas.size == 1
           true
         else
-          1 == @schemas.count { |cond_schema| cond_schema.cond.satisfied_by_cfg_arch?(@cfg_arch) != SatisfiedResult::No }
+          1 == @schemas.count { |cond_schema| cond_schema.cond.could_be_satisfied_by_cfg_arch?(@cfg_arch) }
         end
       end
     end
@@ -122,6 +122,11 @@ module Udb
     sig { override.returns(T::Array[Schema]) }
     def possible_schemas
       @possible_schemas ||= @schemas.select { |s| s.cond.could_be_satisfied_by_cfg_arch?(@cfg_arch) }.map(&:schema)
+    end
+
+    sig { override.returns(T::Array[Schema]) }
+    def all_schemas
+      @schemas.map(&:schema)
     end
 
     # @returns Type of the parameter
@@ -156,8 +161,12 @@ module Udb
     end
 
     # sorts by name
-    sig { params(other: Parameter).returns(T.nilable(Integer)) }
-    def <=>(other) = @name <=> other.name
+    sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
+    def <=>(other)
+      return nil unless other.is_a?(Idl::RuntimeParam)
+
+      @name <=> other.name
+    end
 
     sig { returns(String) }
     def to_idl = "#{idl_type.to_idl} #{name}"
@@ -175,7 +184,7 @@ module Udb
     include Idl::RuntimeParam
 
     def_delegators :@param,
-      :name, :desc, :schema_known?, :schema, :schemas, :possible_schemas, :idl_type
+      :name, :desc, :schema_known?, :schema, :schemas, :possible_schemas, :all_schemas, :idl_type
 
     # @return [Object] The parameter value
     sig { override.returns(Idl::RuntimeParam::ValueType) }

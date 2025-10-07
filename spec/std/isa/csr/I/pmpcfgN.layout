@@ -16,7 +16,9 @@ writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
-definedBy: Smpmp
+definedBy:
+  extension:
+    name: Smpmp
 fields:
   <%- (pmpcfg_num.odd? ? 4 : 8).times do |i| -%>
   pmp<%= pmpcfg_num*4 + i %>cfg:
