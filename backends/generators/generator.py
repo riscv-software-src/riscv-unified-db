@@ -3,46 +3,9 @@ import os
 import yaml
 import logging
 import pprint
-import re
-import glob
-from typing import Dict, List, Tuple, Optional
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
-
-
-def calculate_location_width(location) -> int:
-    """Calculate the total bit width from a location string or integer."""
-    if not location:
-        return 0
-    
-    # Handle case where location is an integer (single bit)
-    if isinstance(location, int):
-        return 1
-
-    location_str = str(location)
-    total_width = 0
-    parts = location_str.split('|')
-    
-    for part in parts:
-        part = part.strip()
-        if '-' in part:
-            try:
-                a, b = map(int, part.split('-'))
-                total_width += abs(a - b) + 1
-            except ValueError:
-                logging.debug(f"Could not parse bit range '{part}' in location '{location_str}'")
-                continue
-        else:
-            try:
-                int(part)
-                total_width += 1
-            except ValueError:
-                logging.debug(f"Could not parse bit '{part}' in location '{location_str}'")
-                continue
-    
-    return total_width
-
 
 
 def check_requirement(req, exts):

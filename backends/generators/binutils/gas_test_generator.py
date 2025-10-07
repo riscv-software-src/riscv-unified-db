@@ -21,12 +21,43 @@ import yaml
 import glob
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Set
-from collections import defaultdict
+from typing import Dict, List, Tuple
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generator import (parse_extension_requirements, load_csrs, calculate_location_width)
+from generator import (parse_extension_requirements, load_csrs)
 
+
+def calculate_location_width(location) -> int:
+    """Calculate the total bit width from a location string or integer."""
+    if not location:
+        return 0
+    
+    # Handle case where location is an integer (single bit)
+    if isinstance(location, int):
+        return 1
+
+    location_str = str(location)
+    total_width = 0
+    parts = location_str.split('|')
+    
+    for part in parts:
+        part = part.strip()
+        if '-' in part:
+            try:
+                a, b = map(int, part.split('-'))
+                total_width += abs(a - b) + 1
+            except ValueError:
+                logging.debug(f"Could not parse bit range '{part}' in location '{location_str}'")
+                continue
+        else:
+            try:
+                int(part)
+                total_width += 1
+            except ValueError:
+                logging.debug(f"Could not parse bit '{part}' in location '{location_str}'")
+                continue
+    
+    return total_width
 
 
 def extract_instruction_constraints(name: str, data: dict) -> dict:
@@ -139,12 +170,9 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 class TestInstructionGroup:
     """Represents a group of related instructions for test generation."""
     
-    def __init__(self, extension: str, base_arch: str = "rv32i"):
+    def __init__(self, extension: str):
         self.extension = extension
-        self.base_arch = base_arch
         self.instructions = []
-        self.aliases = []
-        self.compressed_variants = []
         self.error_cases = []
         self.arch_specific = {"rv32": [], "rv64": []}
     
@@ -152,18 +180,11 @@ class TestInstructionGroup:
         """Add an instruction to this group."""
         self.instructions.append((name, info))
         
-        if name.startswith('c.'):
-            self.compressed_variants.append((name, info))
-        
         base = info.get('base')
         if base == 32:
             self.arch_specific["rv32"].append((name, info))
         elif base == 64:
             self.arch_specific["rv64"].append((name, info))
-    
-    def add_alias(self, name: str, base_name: str, info: dict):
-        """Add an instruction alias."""
-        self.aliases.append((name, base_name, info))
     
     def add_error_case(self, instruction: str, invalid_assembly: str, error_msg: str):
         """Add a negative test case."""
@@ -179,7 +200,7 @@ class AssemblyExampleGenerator:
         
         self._load_operand_definitions()
         self._load_csr_examples()
-        self.all_instruction_data, self.instruction_constraints, self.extension_base_requirements = self._load_all_instruction_data()
+        self.all_instruction_data, self.instruction_constraints = self._load_all_instruction_data()
         self.extension_classification = self._classify_extensions()
     
     def _load_operand_definitions(self):
@@ -212,12 +233,6 @@ class AssemblyExampleGenerator:
         
         self.rounding_mode_examples = RISCV_FP_ROUNDING_MODES
         self.fence_examples = RISCV_FENCE_ORDERING
-
-        self.imm_examples = {
-            "small": [0, 1, 2, 4, 8, 16, -1, -2],
-            "medium": [100, 255, 512, 1024, -100, -255],
-            "large": [2047, -2048, 4095, -4096]
-        }
     
     def _load_csr_examples(self):
         """Load CSR examples from the unified database."""
@@ -228,10 +243,9 @@ class AssemblyExampleGenerator:
             logging.warning(f"Failed to load CSRs from {self.csr_dir}: {e}. Using fallback CSR list.")
             self.csr_examples = ["mstatus", "mtvec", "mscratch", "cycle", "time"]
     
-    def _load_all_instruction_data(self) -> Tuple[Dict[str, dict], Dict[str, dict], Dict[str, set]]:
+    def _load_all_instruction_data(self) -> Tuple[Dict[str, dict], Dict[str, dict]]:
         instruction_data = {}
         instruction_constraints = {}
-        extension_base_requirements = defaultdict(set)
 
         yaml_files = glob.glob(os.path.join(self.inst_dir, "**/*.yaml"), recursive=True)
         
@@ -252,20 +266,13 @@ class AssemblyExampleGenerator:
                 constraints = extract_instruction_constraints(name, data)
                 if constraints:
                     instruction_constraints[name] = constraints
-                
-                defined_by = data.get('definedBy')
-                if defined_by:
-                    ext_name = self._extract_extension_name(defined_by)
-                    base = data.get('base')
-                    if base in [32, 64]:
-                        extension_base_requirements[ext_name].add(base)
                         
             except Exception as e:
                 logging.debug(f"Error loading {yaml_file}: {e}")
                 continue
         
-        logging.debug(f"Single-pass loaded {len(instruction_data)} instructions, {len(instruction_constraints)} constraints, {len(extension_base_requirements)} extension base requirements")
-        return instruction_data, instruction_constraints, extension_base_requirements
+        logging.debug(f"Single-pass loaded {len(instruction_data)} instructions, {len(instruction_constraints)} constraints")
+        return instruction_data, instruction_constraints
     
     def _classify_extensions(self) -> dict:
         """Classify extensions based on actual data from the unified database, not hardcoded patterns."""
@@ -417,7 +424,7 @@ class AssemblyExampleGenerator:
         
         return min_val if not not_zero or min_val != 0 else (min_val + 1 if min_val + 1 <= max_val else max_val)
     
-    def generate_examples(self, name: str, assembly: str, encoding_info: dict) -> List[str]:
+    def generate_examples(self, name: str, assembly: str) -> List[str]:
         """Generate assembly examples using YAML assembly field as the authoritative source."""
         instruction_data = self.all_instruction_data.get(name, {})
         actual_assembly = instruction_data.get('assembly', assembly)
@@ -475,7 +482,6 @@ class AssemblyExampleGenerator:
                         replacements['succ'] = self.fence_examples[(i + 1) % len(self.fence_examples)]
             
             operands = self._parse_assembly_operands(assembly)
-            import re
             
             for placeholder, value in replacements.items():
                 operand_found = any(op.get("raw") == placeholder or 
@@ -668,7 +674,6 @@ class GasTestGenerator:
     def __init__(self, output_dir: str = "gas_tests", csr_dir: str = "../../../spec/std/isa/csr/", inst_dir: str = "../../../spec/std/isa/inst/"):
         self.output_dir = Path(output_dir)
         self.example_generator = AssemblyExampleGenerator(csr_dir, inst_dir)
-        self.instruction_groups = {}
         self.output_dir.mkdir(exist_ok=True)
     
     def load_instructions(self, inst_dir: str, enabled_extensions: List[str] = None, 
@@ -797,12 +802,12 @@ class GasTestGenerator:
             
             for name, info in main_instructions:
                 assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 f.write(f"\t# {name} instruction\n")
                 
                 for example in examples:
-                    f.write(f"{example}\n")
+                    f.write(f"\t{example}\n")
                 
                 f.write("\n")
         
@@ -824,7 +829,7 @@ class GasTestGenerator:
             addr = 0
             for name, info in main_instructions:
                 assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 for example in examples:
                     pattern = self._create_disasm_pattern(addr, name, example)
@@ -847,11 +852,11 @@ class GasTestGenerator:
             
             for name, info in arch_instructions:
                 assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 f.write(f"\t# {name} instruction ({arch.upper()} only)\n")
                 for example in examples:
-                    f.write(f"{example}\n")
+                    f.write(f"\t{example}\n")
                 f.write("\n")
         
         base_arch = f"{arch}i"
@@ -872,7 +877,7 @@ class GasTestGenerator:
             addr = 0
             for name, info in arch_instructions:
                 assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 for example in examples:
                     pattern = self._create_disasm_pattern(addr, name, example)
@@ -937,7 +942,7 @@ class GasTestGenerator:
             addr = 0
             for name, info in main_instructions:
                 assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 for example in examples:
                     pattern = self._create_disasm_pattern(addr, name, example, no_aliases=True)
@@ -952,7 +957,7 @@ class GasTestGenerator:
             assembly = info.get('assembly', '')
             
             if assembly:
-                examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                examples = self.example_generator.generate_examples(name, assembly)
                 
                 if examples:
                     base_example = examples[0].strip()
@@ -962,9 +967,17 @@ class GasTestGenerator:
                         if operands:
 
                             if any(reg in operands for reg in ['a0', 'a1', 't0', 't1', 'fa0', 'fs0']):
-                                invalid_operands = operands.replace('a0', 'x32').replace('a1', 'x33')
-                                invalid_operands = invalid_operands.replace('t0', 'x34').replace('t1', 'x35')
-                                invalid_operands = invalid_operands.replace('fa0', 'f32').replace('fs0', 'f33')
+                                replace_map = {
+                                    'fa0': 'f32',
+                                    'fs0': 'f33',
+                                    't0': 'x34',
+                                    't1': 'x35',
+                                    'a0': 'x32',
+                                    'a1': 'x33',
+                                }
+                                invalid_operands = operands
+                                for src, dest in replace_map.items():
+                                    invalid_operands = re.sub(rf'\b{src}\b', dest, invalid_operands)
                                 group.add_error_case(name, f"{inst_name}\t{invalid_operands}", f"illegal operands `{inst_name} {invalid_operands}'")
                                 instructions_with_errors.append(name)
                             
@@ -983,7 +996,7 @@ class GasTestGenerator:
                                     instructions_with_errors.append(name)
                 
                 if 'csr' in assembly.lower():
-                    examples = self.example_generator.generate_examples(name, assembly, info.get('encoding', {}))
+                    examples = self.example_generator.generate_examples(name, assembly)
                     if examples:
                         base_example = examples[0].strip()
                         if '\t' in base_example:
@@ -994,7 +1007,7 @@ class GasTestGenerator:
         
         if not instructions_with_errors and group.instructions:
             name, info = group.instructions[0]
-            group.add_error_case(name, f"{name}\tx32, x0", "illegal operands `{name} x32, x0'")
+            group.add_error_case(name, f"{name}\tx32, x0", f"illegal operands `{name} x32, x0'")
     
     def _get_binutils_filename(self, extension: str) -> str:
         """Get binutils-style filename for extension."""
