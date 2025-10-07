@@ -41,7 +41,6 @@ sections:
       The manual assumes a basic familiarity with computer architecture and programming concepts, but provides background information and references for further study.
 
       This section is only included for educational distributions.
-    when(): "distribution_type == 'educational'"
   - title: Notation and Conventions
     content: |
       The following conventions are used throughout this manual:
