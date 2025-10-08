@@ -1,3 +1,4 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # Copyright (c) Anirudh Narang
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -9,7 +10,7 @@ name: seed
 long_name: Entropy Seed Register
 address: 0x015
 priv_mode: U
-length: 64
+length: 32
 writable: false
 definedBy:
   name: Zkr
@@ -19,15 +20,68 @@ description: |
   applications and random number generation. Reads may have side effects depending on the implementation.
 
 sw_read(): |
-  return read_entropy();
+  if(mode() == PrivilegeMode::U && CSR[mseccfg].useed == 0)
+  {
+    #Any seed CSR access raises an illegal-instruction exception.
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if(mode() == PrivilegeMode::S && CSR[mseccfg].sseed == 0)
+  {
+    #Any seed CSR access raises an illegal-instruction exception.
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if((mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) && CSR[mseccfg].sseed == 0)
+  {
+    #Any seed CSR access raises an illegal-instruction exception.
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if((mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) && CSR[mseccfg].sseed == 1)
+  {
+    #A read-write seed access raises a virtual-instruction exception, while other
+    #access conditions raise an illegal-instruction exception.
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+
+  #Emulate the entropy state machine:
+  #Move from BIST or WAIT to ES16 and return entropy,
+  #if DEAD stay in DEAD state
+  if(CSR[seed].OPST != 2'b11)
+  {
+    CSR[seed].OPST = 2'b10;
+    CSR[seed].entropy = read_entropy();
+  }
+
+  return { CSR[seed].OPST, CSR[seed].reserved, CSR[seed].custom, CSR[seed].entropy };
 
 fields:
-  seed_value:
-    location_rv32: 31-0
-    location_rv64: 63-0
+  OPST:
+    location: 31-30
     type: RO-H
+    reset_value(): |
+      return 2'b00;
+    description: |
+      Status bits seed[31:30] = OPST may be ES16 (10), indicating successful polling,
+      or one of three entropy polling failure statuses BIST (00), WAIT (01), or DEAD (11)
+  reserved:
+    location: 29-24
+    type: RO-H
+    reset_value(): |
+      return 6'b000000;
+    description: |
+      For future use by the RISC-V specification.
+  custom:
+    location: 23-16
+    type: RO-H
+    reset_value(): |
+      return 8'b00000000;
+    description: |
+      Designated for custom and experimental use.
+  entropy:
+    location: 15-0
+    type: RO-H
+    reset_value(): |
+      return 16'b0000000000000000;
     description: |
       Entropy bits returned from the physical entropy source.
       This field is WARL and read-only. On each read, the value may be consumed
       or updated depending on platform behavior (see `ZKR_READ_SIDE_EFFECTS`).
-    reset_value: UNDEFINED_LEGAL

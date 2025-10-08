@@ -15,4 +15,14 @@ description: Machine Security Configuration
 definedBy:
   name: Sm
   version: ">= 1.12"
-fields: {}
+fields:
+  sseed:
+    location: 9
+    type: RW
+    reset_value: 0
+    description: Supervisor mode seed CSR access
+  useed:
+    location: 8
+    type: RW
+    reset_value: 0
+    description: User mode seed CSR access
