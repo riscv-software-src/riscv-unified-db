@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vadd.vv
-long_name: No synopsis available
+long_name: Vector-vector integer addition
 description: |
-  No description available.
+  Add source vector register groups from vs1 and vs2 according to mask vm and store results in vd.
 definedBy: V
 assembly: vd, vs2, vs1, vm
 encoding:
@@ -29,6 +29,14 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
+  VectorState state = vector_state();
+  XReg vlen = VLEN;
+  XReg sew = state.sew;
+  XReg lmul = state.lmul;
+  VectorLmulType lmul_type = state.lmul_type;
+
+  v[vd] = v[vs2] + v[vs1];
+  CSR[vstart].VALUE = 0;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
