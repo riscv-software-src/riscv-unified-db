@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -15998,7 +15998,7 @@ Included in::
 == mret
 
 Synopsis::
-Machine Exception Return
+Machine-mode Return from Trap
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -16007,7 +16007,7 @@ Encoding::
 ....
 
 Description::
-Returns from an exception in M-mode.
+Return from machine mode after handling a trap.
 
 
 Decode Variables::
@@ -19476,7 +19476,7 @@ Included in::
 == sret
 
 Synopsis::
-Supervisor Exception Return
+Supervisor Mode Return from Trap
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -19485,7 +19485,7 @@ Encoding::
 ....
 
 Description::
-Returns from an exception.
+Returns from supervisor mode after handling a trap.
 
 When xref:insts:sret.adoc#udb:doc:inst:sret[sret] is allowed to execute, its behavior depends on whether or not the current privilege
 mode is virtualized.
