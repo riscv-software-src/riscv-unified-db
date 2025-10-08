@@ -95,6 +95,7 @@ LINKAGE typedef struct {
   // returns 1 if pma applies to the *entire* region [paddr, paddr + len)
   // returns 0 otherwise
   uint8_t (*pma_applies_Q_)(PmaAttributeValueType pma, uint64_t paddr, uint32_t len);
+  uint16_t (*read_entropy)();
 } FnPointerSocModel;
 
 LINKAGE int32_t tlib_init(char *cpu_name);

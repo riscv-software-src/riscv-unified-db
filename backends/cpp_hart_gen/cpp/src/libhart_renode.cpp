@@ -103,6 +103,9 @@ struct RenodeSocModel {
                          uint32_t len) {
     return 0;
   }
+  uint16_t read_entropy() {
+      return (uint16_t)(rand() & 0xffff);
+  }
 };
 
 static RenodeSocModel callbacks;

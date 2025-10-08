@@ -114,5 +114,7 @@ namespace udb {
       s.pma_applies_Q_(PmaAttribute::ValueType{}, static_cast<uint64_t>(0),
                        static_cast<uint32_t>(0))
     } -> std::same_as<uint8_t>;
+
+    { s.read_entropy() } -> std::same_as<uint16_t>;
   };
 }  // namespace udb

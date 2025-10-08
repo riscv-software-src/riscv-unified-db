@@ -299,6 +299,10 @@ namespace udb {
       return true;
     }
 
+    uint16_t read_entropy() {
+      return (uint16_t)(rand() & 0xffff);
+    }
+
    private:
     DenseMemory m_memory;
   };
