@@ -1,0 +1,126 @@
+<%= anchor_for_udb_doc_csr(csr.name) %>
+= <%= csr.name %>
+
+*<%= csr.long_name %>*
+
+<%= cfg_arch.render_erb(csr.description) %>
+
+**Attributes**
+[%autowidth]
+|===
+h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
+<%- if csr.priv_mode == 'VS' -%>
+h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
+<%- end -%>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
+h| Length         | <%= csr.length_pretty() %>
+h| Privilege Mode | <%= csr.priv_mode %>
+|===
+
+**Format**
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } -%>
+.<%= csr.name %> format
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, cfg_arch.param_values["MXLEN"], exclude_unimplemented: true) %>
+....
+<%- else -%>
+This CSR format changes dynamically.
+
+<%- if csr.length_cond32 -%>
+.<%= csr.name %> Format when <%= csr.length_cond32 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32, exclude_unimplemented: true) %>
+....
+<%- end -%>
+
+<%- if csr.length_cond64 -%>
+.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64, exclude_unimplemented: true) %>
+....
+<%- end -%>
+<%- end -%>
+
+**Field Summary**
+
+[%autowidth,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+|===
+|Name | Location | Type | Reset Value
+
+<%- csr.possible_fields.each do |field| -%>
+| `<%= field.name %>`
+| <%= field.location_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]) %>
+| <%= Udb::Helpers::AsciidocUtils.resolve_links(field.type_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0])) %>
+| <%- begin -%><%= field.reset_value %><%- rescue -%>_undefined_<%- end %>
+
+<%- end -%>
+|===
+
+**Fields**
+
+<%- if csr.possible_fields.empty? -%>
+This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
+<%- else -%>
+<%- csr.possible_fields.each do |field| -%>
+<%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
+***<%= field.name %>***
+
+Location::
+`<%= field.csr.name %>[<%= field.location_pretty %>]`
+
+Description::
+<%= cfg_arch.render_erb(field.description).gsub("\n\n", "\n+\n") %>
+
+Type::
+[%autowidth]
+|===
+| <%= field.type %> | <%= field.type_desc %>
+|===
+
+Reset value::
+<%- begin -%><%= field.reset_value %><%- rescue -%>_undefined_<%- end -%>
+
+<%- if field.has_custom_sw_write? -%>
+Software write::
+This field has special behavior when written by software (_e.g._, through `csrrw`).
++
+When software tries to write `csr_value`, the field will be written with the return value of the function below.
++
+<%- if cfg_arch.multi_xlen? && csr.defined_in_all_bases? && field.defined_in_all_bases? -%>
+.RV32
+[source,idl,subs="specialchars,macros"]
+----
+<%= Udb::Helpers::AsciidocUtils.resolve_links(field.pruned_sw_write_ast(32).gen_adoc) %>
+----
+
+.RV64
+[source,idl,subs="specialchars,macros"]
+----
+<%= Udb::Helpers::AsciidocUtils.resolve_links(field.pruned_sw_write_ast(64).gen_adoc) %>
+----
+<%- else -%>
+<%- xlen = !cfg_arch.multi_xlen? ? cfg_arch.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= Udb::Helpers::AsciidocUtils.resolve_links(field.pruned_sw_write_ast(xlen).gen_adoc) %>
+----
+<%- end -%>
+<%- end -%>
+<%- end -%>
+<%- end -%>
+
+<%- if csr.has_custom_sw_read? -%>
+**Software read**
+
+This CSR may return a value that is different from what is stored in hardware.
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= Udb::Helpers::AsciidocUtils.resolve_links(csr.pruned_sw_read_ast(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]).gen_adoc) %>
+----
+<%- end -%>
+
+<<<

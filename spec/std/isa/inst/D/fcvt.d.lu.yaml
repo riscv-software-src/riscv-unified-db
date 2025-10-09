@@ -6,12 +6,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.lu
-long_name: Floating-point Convert Unsigned Long to Double-precision
+long_name: Floating-Point Convert Unsigned Long to Double-Precision
 description:
   - id: inst-fcvt.d.lu-behaviour
     normative: false
     text: |
-      `fcvt.d.lu` converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
+      The `fcvt.d.lu` instruction converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
       floating-point number in floating-point register `fd`.
 definedBy: D
 assembly: fd, xs1, rm

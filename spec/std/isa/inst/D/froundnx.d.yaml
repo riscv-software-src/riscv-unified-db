@@ -6,9 +6,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: froundnx.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Round-to-Integer Inexact Double-Precision
+description:
+  - id: inst-froundnx.d-behaviour
+    normative: false
+    text: |
+      The `froundnx.d` instruction is defined in the same way as `fround.d`, but it also sets the inexact exception flag if the input
+      differs from the rounded result and is not NaN. `froundnx.d` is encoded like `fcvt.d.s`, but with `xs2` set to 5.
 definedBy:
   allOf: [D, Zfa]
 assembly: fd, fs1, rm

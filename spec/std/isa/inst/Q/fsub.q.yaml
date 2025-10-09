@@ -6,9 +6,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsub.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Subtract Quad-Precision
+description:
+  - id: inst-fsub.q-behaviour
+    normative: false
+    text: |
+      The `fsub.q` instruction performs the quad-precision floating-point subtraction of `fs2` from `fs1`.
+      It computes the result as `fs1 - fs2` and writes the result to the destination register `fd`.
 definedBy: Q
 assembly: fd, fs1, fs2, rm
 encoding:

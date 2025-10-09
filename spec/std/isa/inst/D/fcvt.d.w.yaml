@@ -6,14 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.w
-long_name: Floating-point Convert Word to Double-precision
+long_name: Floating-Point Convert Word to Double-Precision
 description:
   - id: inst-fcvt.d.w-behaviour
     normative: false
     text: |
-      `fcvt.d.w` converts a 32-bit signed integer, in integer register `xs1` into a double-precision
-      floating-point number in floating-point register `fd`.
-      Note `fcvt.d.w` always produces an exact result and is unaffected by rounding mode.
+      The `fcvt.d.w` instruction converts a 32-bit signed integer, in integer register `xs1` into a double-precision
+      floating-point number in floating-point register `fd`. Note `fcvt.d.w` always produces an exact result and is
+      unaffected by rounding mode.
 definedBy: D
 assembly: fd, xs1, rm
 encoding:

@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: sret
-long_name: Supervisor Exception Return
+long_name: Supervisor Mode Return from Trap
 description: |
-  Returns from an exception.
+  Returns from supervisor mode after handling a trap.
 
   When `sret` is allowed to execute, its behavior depends on whether or not the current privilege
   mode is virtualized.
@@ -98,7 +98,7 @@ operation(): |
       }
     }
   } else {
-    if (mode() != PrivilegeMode::U) {
+    if (mode() == PrivilegeMode::U) {
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   }
@@ -107,13 +107,25 @@ operation(): |
   if (!virtual_mode?()) {
     if (implemented?(ExtensionName::H)) {
       if (CSR[hstatus].SPV == 1'b1) {
-        if (CSR[mstatus].SPP == 2'b01) {
+        if (CSR[mstatus].SPP == 1'b1) {
           set_mode(PrivilegeMode::VS);
-        } else if (CSR[mstatus].SPP == 2'b00) {
+        } else {
           set_mode(PrivilegeMode::VU);
+        }
+      } else {
+        if (CSR[mstatus].SPP == 1'b1) {
+          set_mode(PrivilegeMode::S);
+        } else {
+          set_mode(PrivilegeMode::U);
         }
       }
       CSR[hstatus].SPV = 0;
+    } else {
+      if (CSR[mstatus].SPP == 1'b1) {
+        set_mode(PrivilegeMode::S);
+      } else {
+        set_mode(PrivilegeMode::U);
+      }
     }
     CSR[mstatus].SIE = CSR[mstatus].SPIE;
     CSR[mstatus].SPIE = 1;

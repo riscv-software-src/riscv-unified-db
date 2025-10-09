@@ -6,14 +6,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmv.x.w
-long_name: Move single-precision value from floating-point to integer register
+long_name: Floating-Point Move Single-Precision Word to Integer Register
 description: |
-  Moves the single-precision value in floating-point register fs1 represented in IEEE 754-2008
-  encoding to the lower 32 bits of integer register xd.
-  The bits are not modified in the transfer, and in particular, the payloads of non-canonical
-  NaNs are preserved.
-  For RV64, the higher 32 bits of the destination register are filled with copies of the
-  floating-point number's sign bit.
+  The `fmv.x.w` instruction moves the single-precision value in floating-point register `fs1`` represented in `IEEE 754-2008`
+  encoding to the lower 32 bits of integer register `xd`. The bits are not modified in the transfer, and in particular, the
+  payloads of non-canonical NaNs are preserved. For RV64, the higher 32 bits of the destination register are filled with copies
+  of the floating-point number's sign bit.
 definedBy: F
 assembly: xd, fs1
 encoding:

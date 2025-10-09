@@ -6,16 +6,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fclass.s
-long_name: Single-precision floating-point classify
+long_name: Floating-Point Classify Single-Precision
 description: |
-  The `fclass.s` instruction examines the value in floating-point register
-  _fs1_ and writes to integer register _xd_ a 10-bit mask that indicates
-  the class of the floating-point number.
-  The format of the mask is described in the table below.
-  The corresponding bit in _xd_ will be set if the property is true and
-  clear otherwise.
-  All other bits in _xd_ are cleared.
-  Note that exactly one bit in xd will be set.
+  The `fclass.s` instruction examines the value in floating-point register `fs1` and writes to integer register `xd`
+  a 10-bit mask that indicates the class of the floating-point number.
+
+  The format of the mask is described in the table below. The corresponding bit in `xd` will be set if the property
+  is true and clear otherwise. All other bits in `xd` are cleared. Note that exactly one bit in `xd` will be set.
   `fclass.s` does not set the floating-point exception flags.
 
   .Format of result of `fclass` instruction.
@@ -33,7 +30,6 @@ description: |
   |8 |_fs1_ is a signaling NaN.
   |9 |_fs1_ is a quiet NaN.
   |===
-
 definedBy: F
 assembly: xd, fs1
 encoding:
