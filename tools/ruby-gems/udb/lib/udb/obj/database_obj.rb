@@ -26,7 +26,7 @@ class DatabaseObject
       Csr = new("csr")
       CsrField = new("csr_field")
       Extension = new("extension")
-      RegisterFile = new("register file")
+      RegisterFile = new("register_file")
       Manual = new("manual")
       ManualVersion = new("manual version")
       ProcessorCertificateClass = new("processor certificate class")

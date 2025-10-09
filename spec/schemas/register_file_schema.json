@@ -5,50 +5,46 @@
   "description": "Schema for describing a register file",
 
   "$defs": {
-    "count_variant": {
-      "type": "object",
-      "required": ["value", "when"],
-      "additionalProperties": false,
-      "properties": {
-        "value": {
-          "type": "integer",
-          "description": "Override count when condition is satisfied"
-        },
-        "when": {
-          "$ref": "schema_defs.json#/$defs/requires_entry"
-        },
-        "description": {
-          "$ref": "schema_defs.json#/$defs/spec_text"
-        }
-      }
-    },
     "register_entry": {
       "type": "object",
-      "required": ["name", "index"],
+      "required": ["name"],
       "additionalProperties": false,
       "properties": {
         "name": {
           "$ref": "schema_defs.json#/$defs/register_name"
         },
-        "abi_mnemonic": {
-          "$ref": "schema_defs.json#/$defs/register_alias"
-        },
-        "index": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Register index"
+        "abi_mnemonics": {
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/register_alias"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "ABI mnemonic names for the register"
         },
         "description": {
           "$ref": "schema_defs.json#/$defs/spec_text"
         },
-        "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry"
-        },
         "when": {
           "$ref": "schema_defs.json#/$defs/requires_entry"
         },
-        "length": {
-          "$ref": "schema_defs.json#/$defs/bit_length_value"
+        "sw_read()": {
+          "type": "string",
+          "description": "Function that returns the value of the register when read by software. Use this to define special behavior for registers (e.g., x0 always reads as zero)."
+        },
+        "sw_write(value)": {
+          "type": "string",
+          "description": "Function implementing custom write behavior for the register. Given a 'value', return either the value to be written or a modified value. Use this to define special behavior for registers (e.g., x0 ignores writes)."
+        },
+        "caller_saved": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the register is caller-saved"
+        },
+        "callee_saved": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the register is callee-saved"
         },
         "roles": {
           "type": "array",
@@ -63,8 +59,6 @@
               "frame_pointer",
               "return_value",
               "argument",
-              "caller_saved",
-              "callee_saved",
               "temporary"
             ]
           },
@@ -80,7 +74,7 @@
         "name",
         "long_name",
         "description",
-        "length",
+        "register_length",
         "registers"
       ],
       "additionalProperties": false,
@@ -88,7 +82,7 @@
         "$schema": {
           "type": "string",
           "format": "uri-reference",
-          "const": "register_schema.json#",
+          "const": "register_file_schema.json#",
           "description": "Path to schema, relative to <UDB ROOT>/schemas"
         },
         "kind": {
@@ -96,7 +90,7 @@
           "const": "register_file"
         },
         "name": {
-          "$ref": "schema_defs.json#/$defs/register_name"
+          "$ref": "schema_defs.json#/$defs/register_file_name"
         },
         "long_name": {
           "type": "string"
@@ -111,33 +105,8 @@
           "type": "string",
           "enum": ["general_purpose", "floating_point", "vector"]
         },
-        "length": {
+        "register_length": {
           "$ref": "schema_defs.json#/$defs/bit_length_value"
-        },
-        "count": {
-          "oneOf": [
-            {
-              "type": "integer",
-              "minimum": 0
-            },
-            {
-              "type": "object",
-              "required": ["default"],
-              "additionalProperties": false,
-              "properties": {
-                "default": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "variants": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/count_variant"
-                  }
-                }
-              }
-            }
-          ]
         },
         "registers": {
           "type": "array",
@@ -152,6 +121,5 @@
         }
       }
     }
-  },
-  "$ref": "#/$defs/register_file"
+  }
 }

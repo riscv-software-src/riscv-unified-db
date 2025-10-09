@@ -29,8 +29,8 @@ Three standard configs are present:
  * `rv64`: A configuration where only `MXLEN` is known to be 64, i.e., the RV64 ISA.
 
 The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
-files for _Extensions_, _Instructions_, _Registers_, and _Control and Status Registers (CSRs)_.
-Each extension/instruction/register/CSR has its own file.
+files for _Extensions_, _Instructions_, _RegFiles_, and _Control and Status Registers (CSRs)_.
+Each extension/instruction/regfile/CSR has its own file.
 
 == Flow
 
@@ -142,38 +142,39 @@ H: # <1>
 
 === Instructions
 
-=== Registers
+=== Register Files
 
 .Example register file specification
 [source,yaml]
 ----
-$schema: register_schema.json#
+$schema: register_file_schema.json#
 kind: register_file
 name: X
 long_name: Integer General Purpose Registers
 definedBy: I
 register_class: general_purpose
-length: XLEN # <1>
-count:
-  default: 32
-  variants:
-    - value: 16
-      when: { name: E } # <2>
+register_length: MXLEN # <1>
 registers:
-  - name: x0
-    index: 0
-    abi_mnemonic: zero # <3>
+  - name: x0    # <2>
+    abi_mnemonics: [zero] # <3>
     roles: [zero]
+    sw_read(): | # <4>
+      return 0;
+    sw_write(value): |
+      # x0 ignores all writes
   - name: x1
-    index: 1
-    abi_mnemonic: ra
+    abi_mnemonics: [ra]
     roles: [return_address]
+  - name: x8
+    abi_mnemonics: [s0, fp] # <5>
+    roles: [callee_saved, frame_pointer]
 ----
 
-<1> Register files are defined independently of the resolved XLEN; individual register entries
-    may override the default bit length when necessary.
-<2> Conditional presence uses the same `when`/`definedBy` semantics as other database objects.
-<3> Entries can record ABI mnemonics and semantic roles.
+<1> Registers can have either a fixed architecture width or take their width from a parameter (e.g., MXLEN, VLEN).
+<2> Each register has a unique name (e.g., x0, x1, x2, etc.). The register's index is inferred from its position in the array (starting from 0).
+<3> Registers can optionally have ABI mnemonics (e.g., ra, sp, fp, etc.).
+<4> Individual registers can define `sw_read()` and `sw_write()` for special behavior (e.g., x0 hardwired to zero).
+<5> A register can have multiple ABI mnemonics (e.g., x8 is known as both s0 and fp).
 
 [source,yaml]
 ----

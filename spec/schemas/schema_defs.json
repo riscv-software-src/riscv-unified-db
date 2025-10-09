@@ -52,7 +52,8 @@
         },
         {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "enum": ["MXLEN"]
         }
       ]
     },
@@ -60,6 +61,11 @@
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
       "description": "Register name"
+    },
+    "register_file_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+      "description": "Register file name"
     },
     "register_alias": {
       "type": "string",
