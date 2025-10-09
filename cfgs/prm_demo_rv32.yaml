@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: demo_rv32
+description: |
+  A demo RISC-V RV32 processor configuration for demonstrating
+  the Programmer's Reference Manual generation capabilities.
+
+params:
+  MXLEN: 32
+
+mandatory_extensions:
+  - name: "I"
+    version: ">= 2.1"
+  - name: "Sm"
+    version: ">= 0"
+  - name: "Zicsr"
+    version: ">= 2.0"
+  - name: "Zifencei"
+    version: ">= 2.0"
+  - name: "M"
+    version: ">= 2.0"
+  - name: "C"
+    version: ">= 2.0"
+
+additional_extensions: false

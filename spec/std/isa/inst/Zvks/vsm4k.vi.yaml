@@ -17,7 +17,7 @@ encoding:
   variables:
     - name: vs2
       location: 24-20
-    - name: zimm5
+    - name: imm
       location: 19-15
     - name: vd
       location: 11-7

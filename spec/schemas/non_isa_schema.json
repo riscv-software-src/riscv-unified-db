@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema for Non-ISA specification definitions",
+  "type": "object",
+  "required": ["$schema", "kind", "name", "description", "sections"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference",
+      "const": "non_isa_schema.json#"
+    },
+    "kind": {
+      "type": "string",
+      "const": "non-isa specification"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "Name of the non-ISA specification"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "Human-readable name for the specification"
+    },
+    "version": {
+      "$ref": "schema_defs.json#/$defs/semantic_version",
+      "description": "Version of this non-ISA specification"
+    },
+    "ratification_date": {
+      "$ref": "schema_defs.json#/$defs/date",
+      "description": "Date this specification was ratified or released"
+    },
+    "description": {
+      "type": "array",
+      "description": "Structured prose description of the specification. Each item must follow the tagged statement format: id, normative, text, and optionally when(). See doc/prose-schema.adoc for conventions.",
+      "items": {
+        "$ref": "schema_defs.json#/$defs/tagged_text"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "description": "Organized sections of the specification. Each section's content must be an array of tagged statements (see prose-schema.adoc)",
+      "items": {
+        "type": "object",
+        "required": ["title", "content"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Section title"
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6,
+            "default": 3,
+            "description": "AsciiDoc heading level (1-6)"
+          },
+          "content": {
+            "type": "array",
+            "description": "Structured prose content for this section. Each item must have id, normative, text, and optionally when().",
+            "items": {
+              "$ref": "schema_defs.json#/$defs/tagged_text"
+            }
+          },
+          "when()": {
+            "type": "string",
+            "description": "IDL boolean expression. When true, this section applies"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "references": {
+      "type": "array",
+      "description": "External references and links",
+      "items": {
+        "type": "object",
+        "required": ["title", "url"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "authors": {
+      "type": "array",
+      "description": "Authors of this specification",
+      "items": {
+        "$ref": "schema_defs.json#/$defs/author"
+      }
+    },
+    "license": {
+      "$ref": "schema_defs.json#/$defs/license",
+      "description": "License under which this specification is released"
+    }
+  },
+  "additionalProperties": false
+}

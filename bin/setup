@@ -115,7 +115,6 @@ elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     else
       DOCKER_BASE="docker run -v ${ROOT}:${ROOT} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
-    RUN="${DOCKER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}

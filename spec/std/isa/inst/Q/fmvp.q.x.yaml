@@ -6,9 +6,16 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fmvp.q.x
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-Point Move Pair from Integer Registers to Quad-Precision Register
+description:
+  - id: inst-fmvp.q.x-behaviour
+    normative: false
+    text: |
+      The `fmvp.q.x` instruction moves a double-precision number from a pair of integer registers into
+      a floating-point register.
+      Integer registers xs1 and xs2 supply bits 63:0 and 127:64, respectively; the result is written to
+      floating-point register `fd`.
+      `fmvp.q.x` is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
 definedBy:
   allOf: [Q, Zfa]
 base: 64
