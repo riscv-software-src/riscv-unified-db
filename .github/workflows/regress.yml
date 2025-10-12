@@ -62,7 +62,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run udb gem ${{ matrix.test }} unit tests
-        run: ./bin/ruby tools/ruby-gems/test/test_${{ matrix.test }}.rb
+        run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
       - name: Rename coverage file
         run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
       - name: Save coverage report
