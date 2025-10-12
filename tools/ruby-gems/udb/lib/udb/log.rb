@@ -5,18 +5,21 @@
 # frozen_string_literal: true
 
 require "logger"
+require "tty-logger"
 
 require "sorbet-runtime"
 
 module Udb
   extend T::Sig
 
-  sig { returns(Logger).checked(:never) }
+  sig { returns(T.any(Logger, TTY::Logger)).checked(:never) }
   def self.logger
-    @logger ||= Logger.new($stdout, level: :warn)
+    @logger ||= TTY::Logger.new do |config|
+      config.level = :warn
+    end
   end
 
-  sig { params(logger: Logger).returns(Logger) }
+  sig { params(logger: T.any(Logger, TTY::Logger)).returns(T.any(Logger, TTY::Logger)) }
   def self.set_logger(logger)
     @logger = logger
   end

@@ -781,7 +781,7 @@ module Idl
   end
 
   class FalseExpressionSyntaxNode < SyntaxNode
-    def to_ast = TrueExpressionAst.new(input, interval)
+    def to_ast = FalseExpressionAst.new(input, interval)
   end
 
   class FalseExpressionAst < AstNode
@@ -1977,14 +1977,16 @@ module Idl
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab)
-      if var.name == "X"
+      v = var
+      if v.is_a?(IdAst) && v.name == "X"
         false
       else
-        var.const_eval?(symtab) && msb.const_eval?(symtab).const_eval? && lsb.const_eval?(symtab)
+        v.const_eval?(symtab) && msb.const_eval?(symtab).const_eval? && lsb.const_eval?(symtab)
       end
     end
 
-    def var = @children[0]
+    sig { returns(RvalueAst) }
+    def var = T.cast(@children[0], RvalueAst)
     def msb = @children[1]
     def lsb = @children[2]
 
@@ -2036,7 +2038,7 @@ module Idl
     # @!macro value
     def value(symtab)
       mask = (1 << (msb.value(symtab) - lsb.value(symtab) + 1)) - 1
-      (var.value(symtab) >> lsb.value(symtab)) & mask
+      (T.cast(var.value(symtab), Integer) >> lsb.value(symtab)) & mask
     end
 
     # @!macro to_idl
@@ -3251,7 +3253,7 @@ module Idl
     sig { override.returns(ConstraintBodyAst) }
     def to_ast
       stmts = []
-      b.elements.each do |e|
+      send(:b).elements.each do |e|
         stmts << e.i.to_ast
       end
       ConstraintBodyAst.new(input, interval, stmts)
@@ -6105,13 +6107,13 @@ module Idl
       func_def_type = func_type(symtab)
       type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
       if func_def_type.generated?
-        value_error "builtin functions not provided" if @builtin_funcs.nil?
+        value_error "builtin functions not provided" if symtab.builtin_funcs.nil?
 
         if name == "implemented?"
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
 
-          v = @builtin_funcs.implemented?.call(extname_ref.member_name)
+          v = symtab.builtin_funcs.implemented.call(extname_ref.member_name)
           if v.nil?
             value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -6123,7 +6125,7 @@ module Idl
 
           ver_req = arg_nodes[1].text_value[1..-2]
 
-          v = @builtin_funcs.implemented_version?.call(extname_ref.member_name, ver_req)
+          v = symtab.builtin_funcs.implemented_version.call(extname_ref.member_name, ver_req)
           if v.nil?
             value_error "implemented_version? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -6131,7 +6133,7 @@ module Idl
 
         elsif name == "implemented_csr?"
           csr_addr = arg_nodes[0].value(symtab)
-          v = @builtin_funcs.implemented_csr?.call(csr_addr)
+          v = symtab.builtin_funcs.implemented_csr.call(csr_addr)
           if v.nil?
             value_error "implemented_csr? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -7509,6 +7511,12 @@ end,
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
+    class MemoizedState < T::Struct
+      prop :type, T.nilable(Type)
+      prop :value_calculated, T::Boolean
+      prop :value, T.nilable(Integer)
+    end
+
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = !@value.nil?
 
@@ -7517,6 +7525,7 @@ end,
 
       @csr = csr
       @field_name = field_name
+      @memo = MemoizedState.new(value_calculated: false)
     end
 
     def freeze_tree(symtab)
@@ -7526,15 +7535,6 @@ end,
 
       @csr_obj = @csr.csr_def(symtab)
       type_error "No CSR '#{@csr.text_value}'" if @csr_obj.nil?
-
-      value_result = value_try do
-        @value = calc_value(symtab)
-      end
-      value_else(value_result) do
-        @value = nil
-      end
-
-      @type = calc_type(symtab)
 
       freeze
     end
@@ -7570,7 +7570,7 @@ end,
 
     # @!macro type
     def type(symtab)
-      @type
+      @memo.type ||= calc_type(symtab)
     end
 
     def calc_type(symtab)
@@ -7592,12 +7592,24 @@ end,
       end
     end
 
+    def calc_value(symtab)
+      value_result = value_try do
+        @memo.value = calc_value(symtab)
+      end
+      value_else(value_result) do
+        @memo.value = nil
+      end
+      @memo.value_calculated = true
+    end
+
     # @!macro value
     def value(symtab)
-      if @value.nil?
+      calc_value(symtab) unless @memo.value_calculated
+
+      if @memo.value.nil?
         value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
       else
-        @value
+        @memo.value
       end
     end
 

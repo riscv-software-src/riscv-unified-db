@@ -38,7 +38,13 @@ module Idl
     def constexpr?(symtab) = false
   end
   class FunctionCallExpressionAst < AstNode
-    def constexpr?(symtab) = false # conservative, can do better...
+    def constexpr?(symtab)
+      if name == "implemented?"
+        true
+      else
+        false # conservative, can do better...
+      end
+    end
   end
   class CsrFieldReadExpressionAst < AstNode
     def constexpr?(symtab) = false

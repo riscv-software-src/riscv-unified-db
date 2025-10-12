@@ -152,11 +152,27 @@ module Idl
       end
     end
 
+    PossibleXlensCallbackType = T.type_alias { T.proc.returns(T::Array[Integer]) }
+
     sig { returns(T::Boolean) }
-    def multi_xlen? = @possible_xlens.size > 1
+    def multi_xlen? = possible_xlens.size > 1
+
+    class MemoizedState < T::Struct
+      prop :possible_xlens, T.nilable(T::Array[Integer])
+    end
 
     sig { returns(T::Array[Integer]) }
-    attr_reader :possible_xlens
+    def possible_xlens
+      @memo.possible_xlens ||=
+        begin
+          if @possible_xlens_cb.nil?
+            Idl.logger.error "Symbol table was not initialized with a possible xlens callback, so #possible_xlens is not available"
+            raise
+          end
+
+          @possible_xlens_cb.call
+        end
+    end
 
     ImplementedCallbackType = T.type_alias { T.proc.params(arg0: String).returns(T.nilable(T::Boolean)) }
 
@@ -185,6 +201,8 @@ module Idl
       prop :implemented_csr, ImplementedCsrCallbackType
     end
 
+    attr_reader :builtin_funcs
+
     sig { params(csr_name: String).returns(T::Boolean) }
     def csr?(csr_name) = csr_hash.key?(csr_name)
 
@@ -205,7 +223,7 @@ module Idl
     sig {
       params(
         mxlen: T.nilable(Integer),
-        possible_xlens: T::Array[Integer],
+        possible_xlens_cb: T.nilable(PossibleXlensCallbackType),
         builtin_global_vars: T::Array[Var],
         builtin_enums: T::Array[EnumDef],
         builtin_funcs: T.nilable(BuiltinFunctionCallbacks),
@@ -214,12 +232,13 @@ module Idl
         name: String
       ).void
     }
-    def initialize(mxlen: nil, possible_xlens: [32, 64], builtin_global_vars: [], builtin_enums: [], builtin_funcs: nil, csrs: [], params: [], name: "")
+    def initialize(mxlen: nil, possible_xlens_cb: nil, builtin_global_vars: [], builtin_enums: [], builtin_funcs: nil, csrs: [], params: [], name: "")
       @mutex = Thread::Mutex.new
       @mxlen = mxlen
-      @possible_xlens = possible_xlens
+      @possible_xlens_cb = possible_xlens_cb
       @callstack = [nil]
       @name = name
+      @memo = MemoizedState.new
 
       # builtin types
       @scopes = [{
@@ -280,7 +299,8 @@ module Idl
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@name, @name)
-        copy.instance_variable_set(:@possible_xlens, @possible_xlens)
+        copy.instance_variable_set(:@memo, @memo.dup)
+        copy.instance_variable_set(:@possible_xlens_cb, @possible_xlens_cb)
         copy.instance_variable_set(:@params, @params)
         copy.instance_variable_set(:@builtin_funcs, @builtin_funcs)
         copy.instance_variable_set(:@csrs, @csrs)
@@ -465,7 +485,8 @@ module Idl
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@name, @name)
-        copy.instance_variable_set(:@possible_xlens, @possible_xlens)
+        copy.instance_variable_set(:@memo, @memo.dup)
+        copy.instance_variable_set(:@possible_xlens_cb, @possible_xlens_cb)
         copy.instance_variable_set(:@params, @params)
         copy.instance_variable_set(:@builtin_funcs, @builtin_funcs)
         copy.instance_variable_set(:@csrs, @csrs)

@@ -6,6 +6,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "pastel"
 require "thor"
 require "terminal-table"
 
@@ -19,6 +20,12 @@ class SubCommandBase < Thor
   def self.subcommand_prefix
     T.must(name).gsub(/.*::/, "").gsub(/^[A-Z]/) { |match| T.must(match[0]).downcase }.gsub(/[A-Z]/) do |match|
       "-#{T.must(match[0]).downcase}"
+    end
+  end
+
+  no_commands do
+    def pastel
+      @pastel ||= Pastel.new(enabled: $stdout.tty?)
     end
   end
 end
@@ -85,13 +92,23 @@ module Udb
           else
             raise ArgumentError, "Cannot find config: #{name_or_path}"
           end
-        result = ConfiguredArchitecture.validate(cfg_file)
+        resolver =
+          Udb::Resolver.new(
+            std_path_override: Pathname.new(options[:std]),
+            gen_path_override: Pathname.new(options[:gen]),
+            custom_path_override: Pathname.new(options[:custom])
+          )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        result = cfg_arch.valid?
 
-        cfg_spec = YAML.load_file(cfg_file)
-        if result
-          say "Config #{cfg_spec.fetch('name')} is valid"
+        if result.valid
+          say "Config #{pastel.bold(cfg_arch.name)} is #{pastel.green.bold("valid")}"
         else
-          say "Config #{cfg_spec.fetch('name')} is invalid"
+          say "Config #{pastel.bold(cfg_arch.name)} is #{pastel.red.bold("invalid")}"
+          say ""
+          result.reasons.each do |r|
+            say "  * #{pastel.yellow.bold(r)}"
+          end
           exit 1
         end
       end

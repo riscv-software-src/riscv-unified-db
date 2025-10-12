@@ -12,7 +12,7 @@ definedBy:
     - extension:
         name: Sm
     - param:
-        name: ARCH_ID_IMPLEMENTED
+        name: MARCHID_IMPLEMENTED
         equal: true
         reason: When `marchid` is not implemented, its value is not relevant.
 description: |

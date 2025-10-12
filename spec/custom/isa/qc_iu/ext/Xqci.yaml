@@ -49,21 +49,21 @@ versions:
   requirements:
     extension:
       allOf:
-        - { name: Xqcia, version: "0.1.0" }
-        - { name: Xqciac, version: "0.1.0" }
-        - { name: Xqcibi, version: "0.1.0" }
-        - { name: Xqcibm, version: "0.1.0" }
-        - { name: Xqcicli, version: "0.1.0" }
-        - { name: Xqcicm, version: "0.1.0" }
-        - { name: Xqcics, version: "0.1.0" }
-        - { name: Xqcicsr, version: "0.1.0" }
-        - { name: Xqciint, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.1.0" }
-        - { name: Xqcili, version: "0.1.0" }
-        - { name: Xqcilia, version: "0.1.0" }
-        - { name: Xqcilo, version: "0.1.0" }
-        - { name: Xqcilsm, version: "0.1.0" }
-        - { name: Xqcisls, version: "0.1.0" }
+        - { name: Xqcia, version: "= 0.1.0" }
+        - { name: Xqciac, version: "= 0.1.0" }
+        - { name: Xqcibi, version: "= 0.1.0" }
+        - { name: Xqcibm, version: "= 0.1.0" }
+        - { name: Xqcicli, version: "= 0.1.0" }
+        - { name: Xqcicm, version: "= 0.1.0" }
+        - { name: Xqcics, version: "= 0.1.0" }
+        - { name: Xqcicsr, version: "= 0.1.0" }
+        - { name: Xqciint, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.1.0" }
+        - { name: Xqcili, version: "= 0.1.0" }
+        - { name: Xqcilia, version: "= 0.1.0" }
+        - { name: Xqcilo, version: "= 0.1.0" }
+        - { name: Xqcilsm, version: "= 0.1.0" }
+        - { name: Xqcisls, version: "= 0.1.0" }
 - version: "0.4.0"
   state: frozen
   ratification_date: null
@@ -83,21 +83,21 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.2.0" }
-        - { name: Xqciac, version: "0.2.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.2.0" }
-        - { name: Xqcicli, version: "0.2.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.2.0" }
-        - { name: Xqciint, version: "0.2.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.2.0" }
-        - { name: Xqcilsm, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.2.0" }
+        - { name: Xqciac, version: "= 0.2.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.2.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.2.0" }
+        - { name: Xqciint, version: "= 0.2.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
 - version: "0.5.0"
   state: frozen
   ratification_date: null
@@ -126,24 +126,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.3.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.3.0" }
-        - { name: Xqcicli, version: "0.2.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.2.0" }
-        - { name: Xqciint, version: "0.3.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.2.0" }
-        - { name: Xqcilsm, version: "0.3.0" }
-        - { name: Xqcisim, version: "0.1.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.1.0" }
+        - { name: Xqcia, version: "= 0.3.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.3.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.2.0" }
+        - { name: Xqciint, version: "= 0.3.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.3.0" }
+        - { name: Xqcisim, version: "= 0.1.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.1.0" }
 - version: "0.6.0"
   state: frozen
   ratification_date: null
@@ -169,24 +169,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.4.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.4.0" }
-        - { name: Xqcicli, version: "0.2.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.3.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.2.0" }
-        - { name: Xqcilsm, version: "0.4.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.4.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.4.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.3.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.7.0"
   state: frozen
   ratification_date: null
@@ -219,24 +219,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.5.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.5.0" }
-        - { name: Xqcicli, version: "0.2.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.4.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.2.0" }
-        - { name: Xqcilsm, version: "0.4.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.5.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.5.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.4.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.8.0"
   state: frozen
   ratification_date: null
@@ -260,24 +260,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.5.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.6.0" }
-        - { name: Xqcicli, version: "0.2.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.5.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.2.0" }
-        - { name: Xqcilsm, version: "0.4.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.5.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.6.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.5.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.9.0"
   state: frozen
   ratification_date: null
@@ -305,24 +305,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.6.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.7.0" }
-        - { name: Xqcicli, version: "0.3.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.6.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.3.0" }
-        - { name: Xqcilsm, version: "0.5.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.6.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.7.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.6.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.10.0"
   state: frozen
   ratification_date: null
@@ -340,24 +340,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.6.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.7.0" }
-        - { name: Xqcicli, version: "0.3.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.7.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.3.0" }
-        - { name: Xqcilsm, version: "0.5.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.2.0" }
+        - { name: Xqcia, version: "= 0.6.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.7.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.7.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.11.0"
   state: frozen
   ratification_date: null
@@ -387,24 +387,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.7.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.8.0" }
-        - { name: Xqcicli, version: "0.3.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.8.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.3.0" }
-        - { name: Xqcilsm, version: "0.5.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.3.0" }
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.8.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 - version: "0.12.0"
   state: frozen
   ratification_date: null
@@ -424,24 +424,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.7.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.8.0" }
-        - { name: Xqcicli, version: "0.3.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.3.0" }
-        - { name: Xqciint, version: "0.9.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.3.0" }
-        - { name: Xqcilsm, version: "0.6.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.3.0" }
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.9.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.6.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 - version: "0.13.0"
   state: frozen
   ratification_date: null
@@ -461,24 +461,24 @@ versions:
       allOf:
         - name: Zca
           version: ">= 1.0.0"
-        - { name: Xqcia, version: "0.7.0" }
-        - { name: Xqciac, version: "0.3.0" }
-        - { name: Xqcibi, version: "0.2.0" }
-        - { name: Xqcibm, version: "0.8.0" }
-        - { name: Xqcicli, version: "0.3.0" }
-        - { name: Xqcicm, version: "0.2.0" }
-        - { name: Xqcics, version: "0.2.0" }
-        - { name: Xqcicsr, version: "0.4.0" }
-        - { name: Xqciint, version: "0.10.0" }
-        - { name: Xqciio, version: "0.1.0" }
-        - { name: Xqcilb, version: "0.2.0" }
-        - { name: Xqcili, version: "0.2.0" }
-        - { name: Xqcilia, version: "0.2.0" }
-        - { name: Xqcilo, version: "0.3.0" }
-        - { name: Xqcilsm, version: "0.6.0" }
-        - { name: Xqcisim, version: "0.2.0" }
-        - { name: Xqcisls, version: "0.2.0" }
-        - { name: Xqcisync, version: "0.3.0" }
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.4.0" }
+        - { name: Xqciint, version: "= 0.10.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.6.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 description: |
   The Xqci extension includes a set of instructions that improve RISC-V code density and
   performance in microontrollers. It fills several gaps:

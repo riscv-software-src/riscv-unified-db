@@ -21,7 +21,7 @@ schema:
   uniqueItems: true
 requirements:
   idl(): |
-    !$array_includes?(VSXLEN, 64) -> !$array_includes?(VUXLEN, 64)
+    !$array_includes?(VSXLEN, 64) -> !$array_includes?(VUXLEN, 64);
   reason: |
     XLEN in VU-mode can never be larger than XLEN in VS-mode
     (and, transitively, cannot be larger than XLEN in S-mode or M-mode).

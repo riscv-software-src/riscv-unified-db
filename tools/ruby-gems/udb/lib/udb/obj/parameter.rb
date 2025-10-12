@@ -13,6 +13,7 @@ require_relative "../version"
 
 
 module Udb
+  class Schema; end
   # A parameter (AKA option, AKA implementation-defined value) supported by an extension
   class Parameter < TopLevelDatabaseObject
     extend T::Sig
@@ -37,22 +38,19 @@ module Udb
       @schema.to_pretty_s
     end
 
-    sig { returns(T::Array[Constraint]) }
-    def restrictions
-      @restrictions ||=
+    sig { returns(AbstractCondition) }
+    def requirements_condition
+      @requirements_condition ||=
         begin
-          if @data["restrictions"].nil?
-            []
+          if @data["requirements"].nil?
+            Condition::True
           else
-            @data["restictoins"].map do |restriction|
-              Constraint.new(
-                restriction["constraint()"],
-                input_file: nil,
-                input_line: nil,
-                cfg_arch: @cfg_arch,
-                reason: restriction["reason"]
-              )
-            end
+            Condition.new(
+              @data.fetch("requirements"),
+              @cfg_arch,
+              input_file: Pathname.new(__source),
+              input_line: source_line(["requirements"])
+            )
           end
         end
     end
@@ -90,6 +88,11 @@ module Udb
       end
     end
 
+    sig { override.params(resolver: Resolver).void }
+    def validate(resolver)
+
+    end
+
     # whether or not the schema is unambiguously known
     # since schemas can change based on parameter values and/or extension presence,
     # non-full configs may not be able to know which schema applies
@@ -118,10 +121,19 @@ module Udb
     sig { returns(T::Array[ConditionalSchema]) }
     attr_reader :schemas
 
+    class NoMatchingSchemaError < RuntimeError; end
+
     # @return list of schemas that are possible for this config
     sig { override.returns(T::Array[Schema]) }
     def possible_schemas
-      @possible_schemas ||= @schemas.select { |s| s.cond.could_be_satisfied_by_cfg_arch?(@cfg_arch) }.map(&:schema)
+      @possible_schemas ||=
+        begin
+          list = @schemas.select { |s| s.cond.could_be_satisfied_by_cfg_arch?(@cfg_arch) }.map(&:schema)
+          if list.empty?
+            raise NoMatchingSchemaError, "Parameter #{name} has no matching schema for #{@cfg_arch.name}"
+          end
+          list
+        end
     end
 
     sig { override.returns(T::Array[Schema]) }
@@ -184,7 +196,8 @@ module Udb
     include Idl::RuntimeParam
 
     def_delegators :@param,
-      :name, :desc, :schema_known?, :schema, :schemas, :possible_schemas, :all_schemas, :idl_type
+      :name, :desc, :schema_known?, :schema, :schemas, :possible_schemas, :all_schemas, :idl_type,
+      :defined_by_condition, :requirements_condition
 
     # @return [Object] The parameter value
     sig { override.returns(Idl::RuntimeParam::ValueType) }

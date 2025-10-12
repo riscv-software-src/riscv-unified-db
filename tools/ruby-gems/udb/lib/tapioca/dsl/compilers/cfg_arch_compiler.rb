@@ -1,19 +1,19 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "active_support/inflector/methods"
 
-require "udb/architecture"
+require "udb/cfg_arch"
 
 module Tapioca
   module Compilers
     class Encryptable < Tapioca::Dsl::Compiler
       extend T::Sig
 
-      ConstantType = type_member { { fixed: T.class_of(Udb::Architecture) } }
+      ConstantType = type_member { { fixed: T.class_of(Udb::ConfiguredArchitecture) } }
 
       sig { override.returns(T::Enumerable[Module]) }
       def self.gather_constants

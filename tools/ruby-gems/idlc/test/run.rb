@@ -1,4 +1,3 @@
-# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -12,9 +11,13 @@ require "simplecov-cobertura"
 
 SimpleCov.start do
   enable_coverage :branch
+  add_filter "/test/"
   root IDLC_ROOT.to_s
   coverage_dir (IDLC_ROOT / "coverage").to_s
-  formatter SimpleCov::Formatter::CoberturaFormatter
+  formatter SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::CoberturaFormatter,
+    SimpleCov::Formatter::HTMLFormatter,
+  ])
 end
 
 puts "[SimpleCov] Coverage started."

@@ -21,8 +21,8 @@ module Udb
     class Kind < T::Enum
       enums do
         Instruction = new("instruction")
-        InstructionType = new("instruction type")
-        InstructionSubtype = new("instruction subtype")
+        InstructionType = new("instruction_type")
+        InstructionSubtype = new("instruction_subtype")
         Csr = new("csr")
         CsrField = new("csr_field")
         Extension = new("extension")
@@ -380,7 +380,7 @@ module Udb
 
     @@schemas ||= {}
     sig { params(udb_resolver: Resolver).returns(T.proc.params(pattern: Regexp).returns(T.untyped)) }
-    def create_json_schemer_resolver(udb_resolver)
+    def self.create_json_schemer_resolver(udb_resolver)
       proc do |pattern|
         if pattern.to_s =~ /^http/
           JSON.parse(T.must(Net::HTTP.get(pattern)))
@@ -396,7 +396,7 @@ module Udb
     def validate(resolver)
       @@schemas[resolver] ||= {}
       schemas = @@schemas[resolver]
-      ref_resolver = create_json_schemer_resolver(resolver)
+      ref_resolver = TopLevelDatabaseObject.create_json_schemer_resolver(resolver)
 
       if @data.key?("$schema")
         schema_path = data["$schema"]

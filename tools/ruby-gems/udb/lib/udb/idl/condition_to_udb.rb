@@ -137,6 +137,27 @@ module Idl
     end
   end
 
+  class ArrayIncludesAst < AstNode
+    sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
+    def to_udb_h(symtab)
+      a = ary
+      raise "not a parameter: #{a.text_value}" unless a.is_a?(IdAst)
+
+      value_result = value_try do
+        return {
+          "param" =>
+            {
+              "name" => a.name,
+              "includes" => expr.value(symtab)
+            }
+        }
+      end
+      value_else(value_result) do
+        raise "Comparison value (#{expr.text_value}) must be compile-time evaluatable in #{text_value}"
+      end
+    end
+  end
+
   class FunctionCallExpressionAst < AstNode
     sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
@@ -155,13 +176,6 @@ module Idl
           "extension" => {
             "name" => args.fetch(0).text_value.gsub("ExtensionName::", ""),
             "version" => args.fetch(1).text_value.gsub('"', "")
-          }
-        }
-      when "$array_includes?"
-        {
-          "param" => {
-            "name" => args.fetch(0).text_value,
-            "includes" => args.fetch(1).value(symtab)
           }
         }
       else
@@ -207,7 +221,11 @@ module Idl
             }
           end
           value_else(value_result) do
-            raise "Comparison value (#{lhs.text_value}) must be compile-time evaluatable in #{text_value}"
+            raise <<~MSG
+              Comparison value (#{rhs.text_value}) must be compile-time evaluatable in #{text_value}
+                While evaluating value of #{AstNode.value_error_ast.text_value}:
+                  '#{AstNode.value_error_reason}'
+            MSG
           end
         elsif lhs.is_a?(AryElementAccessAst)
           raise "#{lhs.var.text_value} is not a parameter" unless lhs.var.is_a?(IdAst)
@@ -232,11 +250,42 @@ module Idl
           value_else(value_result) do
             raise "Comparison value (#{rhs.text_value}) must be compile-time evaluatable in #{text_value}"
           end
+        elsif lhs.is_a?(AryRangeAccessAst)
+          raise "#{lhs.var.text_value} is not a parameter" unless lhs.var.is_a?(IdAst)
+
+          value_result = value_try do
+            return {
+              "param" => {
+                "name" => lhs.var.name,
+                "range" => "#{lhs.msb.value(symtab)}-#{lhs.lsb.value(symtab)}",
+                OP_TO_KEY.fetch(@op) => rhs.value(symtab)
+              }
+            }
+          end
+          value_else(value_result) do
+            raise "Comparison value, msb, and lsb must all be compile-time evaluatable in #{text_value}"
+          end
+
+        elsif lhs.is_a?(ArraySizeAst)
+          raise "#{lhs.expression.text_value} is not a parameter" unless lhs.expression.is_a?(IdAst)
+
+          value_result = value_try do
+            return {
+              "param" => {
+                "name" => lhs.expression.name,
+                OP_TO_KEY.fetch(@op) => rhs.value(symtab),
+                "size" => true
+              }
+            }
+          end
+          value_else(value_result) do
+            raise "Comparison value (#{rhs.text_value}) must be compile-time evaluatable in #{text_value}"
+          end
         elsif rhs.is_a?(IdAst)
           value_result = value_try do
             return {
               "param" => {
-                "name"  => rhs.name,
+                "name" => rhs.name,
                 OP_TO_KEY.fetch(@op) => lhs.value(symtab)
               }
             }
@@ -261,6 +310,37 @@ module Idl
                 "name" => rhs.name,
                 OP_TO_KEY.fetch(@op) => lhs.value(symtab),
                 "index" => T.must(index_value)
+              }
+            }
+          end
+          value_else(value_result) do
+            raise "Comparison value (#{lhs.text_value}) must be compile-time evaluatable in #{text_value}"
+          end
+        elsif rhs.is_a?(AryRangeAccessAst)
+          raise "#{rhs.var.text_value} is not a parameter" unless rhs.var.is_a?(IdAst)
+
+          value_result = value_try do
+            return {
+              "param" => {
+                "name" => rhs.var.name,
+                "range" => "#{rhs.msb.value(symtab)}-#{rhs.lsb.value(symtab)}",
+                OP_TO_KEY.fetch(@op) => lhs.value(symtab)
+              }
+            }
+          end
+          value_else(value_result) do
+            raise "Comparison value, msb, and lsb must all be compile-time evaluatable in #{text_value}"
+          end
+
+        elsif rhs.is_a?(ArraySizeAst)
+          raise "#{rhs.expression.text_value} is not a parameter" unless rhs.expression.is_a?(IdAst)
+
+          value_result = value_try do
+            return {
+              "param" => {
+                "name" => rhs.expression.name,
+                OP_TO_KEY.fetch(@op) => lhs.value(symtab),
+                "size" => true
               }
             }
           end

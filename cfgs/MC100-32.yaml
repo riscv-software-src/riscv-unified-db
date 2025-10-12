@@ -15,6 +15,7 @@ mandatory_extensions:
 additional_extensions: false
 params:
   MXLEN: 32
+  MISALIGNED_LDST: true
   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true

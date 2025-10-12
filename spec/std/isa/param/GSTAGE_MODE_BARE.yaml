@@ -13,11 +13,11 @@ schema:
 requirements:
   idl(): |
     # if host is 32 bit, then one of Bare or Sv32X4 must be supported
-    $array_includes(SXLEN, 32) && !SV32X4_TRANSLATION
+    $array_includes?(SXLEN, 32) && !SV32X4_TRANSLATION
       -> GSTAGE_MODE_BARE;
 
     # if host is 64 bit, then one of Bare, Sv39X4, Sv48x4, or Sv57x4 must be supported
-    $array_includes(SXLEN, 64) && !SV39X4_TRANSLATION && !SV48X4_TRANSLATION && !SV57X4_TRANSLATION
+    $array_includes?(SXLEN, 64) && !SV39X4_TRANSLATION && !SV48X4_TRANSLATION && !SV57X4_TRANSLATION
       -> GSTAGE_MODE_BARE;
 definedBy:
   extension:

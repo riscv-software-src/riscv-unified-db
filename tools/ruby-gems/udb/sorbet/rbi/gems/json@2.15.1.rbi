@@ -355,6 +355,7 @@ class Object < ::BasicObject
   include ::Kernel
   include ::PP::ObjectMixin
   include ::JSON::Ext::Generator::GeneratorMethods::Object
+  include ::Udb::Helpers::WavedromUtil
 end
 
 class String

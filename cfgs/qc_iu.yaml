@@ -7,20 +7,20 @@ name: qc_iu
 arch_overlay: qc_iu
 description: Configuration with the Xqci and Xqccmp custom extensions.
 implemented_extensions:
-  - { name: Sm, version: "1.13" }
-  - { name: Smhpm, version: "1.13" }
-  - { name: Smrnmi, version: "1.0" }
-  - { name: Smdbltrp, version: "1.0" }
-  - { name: I, version: "2.1" }
-  - { name: M, version: "2.0" }
-  - { name: B, version: "1.0" }
-  - { name: Zca, version: "1.0" }
-  - { name: Zcb, version: "1.0" }
-  - { name: Zicntr, version: "2.0" }
-  - { name: Zicsr, version: "2.0" }
-  - { name: Zihpm, version: "2.0" }
-  - { name: Xqccmp, version: "0.3" }
-  - { name: Xqci, version: "0.8" }
+  - { name: Sm, version: "= 1.13" }
+  - { name: Smhpm, version: "= 1.13" }
+  - { name: Smrnmi, version: "= 1.0" }
+  - { name: Smdbltrp, version: "= 1.0" }
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: B, version: "= 1.0" }
+  - { name: Zca, version: "= 1.0" }
+  - { name: Zcb, version: "= 1.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zihpm, version: "= 2.0" }
+  - { name: Xqccmp, version: "= 0.3" }
+  - { name: Xqci, version: "= 0.8" }
 params:
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32

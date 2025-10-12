@@ -30,6 +30,32 @@ function has_virt_mem? {
   }
 }
 
+function max_va_size {
+  returns Bits<8>
+  description {
+    Returns the largest possible Virtual Address width in any supported translation mode
+  }
+  body {
+    Bits<8> translated_va_size = 0;
+    if (implemented?(ExtensionName::Sv57)) {
+      translated_va_size = 57;
+    } else if (implemented?(ExtensionName::Sv48)) {
+      translated_va_size = 48;
+    } else if (implemented?(ExtensionName::Sv39)) {
+      translated_va_size = 39;
+    } else if (implemented?(ExtensionName::Sv32)) {
+      translated_va_size = 32;
+    }
+
+    if ((!implemented?(ExtensionName::S) || SATP_MODE_BARE) &&
+        (PHYS_ADDR_WIDTH > translated_va_size)) {
+      return PHYS_ADDR_WIDTH;
+    } else {
+      return translated_va_size;
+    }
+  }
+}
+
 function highest_set_bit {
   returns Bits<8>
   arguments XReg value

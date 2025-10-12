@@ -68,14 +68,15 @@ module Udb
 
     # return type of #cfg_info
     class ConfigInfo < T::Struct
-      const :name, String
-      const :path, Pathname
+      prop :name, String
+      prop :path, Pathname
       prop :overlay_path, T.nilable(Pathname)
       const :unresolved_yaml, T::Hash[String, T.untyped]
       prop :resolved_yaml, T.nilable(T::Hash[String, T.untyped])
       const :spec_path, Pathname
       const :merged_spec_path, Pathname
       const :resolved_spec_path, Pathname
+      const :resolver, Resolver
     end
 
     # path to find database schema files
@@ -298,7 +299,8 @@ module Udb
         unresolved_yaml: config_yaml,
         spec_path: std_path,
         merged_spec_path: @gen_path / "spec" / config_yaml["name"],
-        resolved_spec_path: @gen_path / "resolved_spec" / config_yaml["name"]
+        resolved_spec_path: @gen_path / "resolved_spec" / config_yaml["name"],
+        resolver: self
       )
       @cfg_info[config_path] = info
       @cfg_info[info.name] = info

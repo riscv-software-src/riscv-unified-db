@@ -197,6 +197,7 @@ module Udb
 # A specific version of an extension
   class ExtensionVersion
     extend T::Sig
+    include Comparable
 
     # @return [String] Name of the extension
     sig { returns(String) }
@@ -256,16 +257,31 @@ module Udb
       @arch = arch
 
       @ext = @arch.extension(@name)
-      raise "Extension #{name} not found in architecture" if @ext.nil?
+      if fail_if_version_does_not_exist && @ext.nil?
+        raise "Extension #{name} not found in architecture"
+      elsif @ext.nil?
+        Udb.logger.warn "Extension #{name} not found in architecture"
+        return # can't go futher
+      end
 
       @data = @ext.data["versions"].find { |v| VersionSpec.new(v["version"]) == @version_spec }
 
       if fail_if_version_does_not_exist && @data.nil?
         raise ArgumentError, "Version #{version_str} of #{@name} extension is not defined"
       elsif @data.nil?
-        warn "Version #{version_str} of #{@name} extension is not defined"
+        Udb.logger.warn "Version #{version_str} of #{@name} extension is not defined"
       end
     end
+
+    # @api private
+    def inspect
+      to_s
+    end
+
+    # true if the extension {name, version} is defined in the database, regardless of config
+    # false otherwise
+    sig { returns(T::Boolean) }
+    def valid? = !@data.nil?
 
     # given a set of extension versions from the *same* extension, return the minimal set of
     # extension requirements that would cover then all
@@ -338,15 +354,30 @@ module Udb
     # @param other [ExtensionVersion] An extension name and version
     # @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
     sig { params(other: ExtensionVersion).returns(T::Boolean) }
-    def eql?(other)
-      @ext.name == other.ext.name && @version_spec.eql?(other.version_spec)
+    def <=>(other)
+      if other.is_a?(ExtensionVersion)
+        if @ext.name == other.ext.name
+          @version_spec <=> other.version_spec
+        else
+          @ext.name <=> other.ext.name
+        end
+      else
+        nil
+      end
     end
 
-    # @param other [ExtensionVersion] An extension name and version
-    # @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
-    sig { params(other: ExtensionVersion).returns(T::Boolean) }
-    def ==(other)
-      eql?(other)
+    sig { override.params(other: T.untyped).returns(T::Boolean) }
+    def eql?(other)
+      if other.is_a?(ExtensionVersion)
+        self.==(other)
+      else
+        false
+      end
+    end
+
+    sig { override.returns(Integer) }
+    def hash
+      [@name, @version_spec].hash
     end
 
     # @return [String] The state of the extension version ('ratified', 'developemnt', etc)
@@ -417,12 +448,12 @@ module Udb
       if @data.key?("requirements") && !ext.requirements_condition.empty?
         Condition.new(
           {
-            "allOf": [
+            "allOf" => [
               @data.fetch("requirements"),
               ext.data.fetch("requirements")
             ]
           },
-          @cfg_arch
+          @arch
         )
       elsif requirements_condition.empty?
         ext.requirements_condition
@@ -463,7 +494,7 @@ module Udb
     # only I1 shows up in the list
     sig { returns(T::Array[ConditionalExtensionVersion]) }
     def implications
-      @implications ||= requirements_condition.implied_extensions.map do |cond_ext_req|
+      @implications ||= requirements_condition.implied_extension_requirements.map do |cond_ext_req|
         if cond_ext_req.ext_req.is_ext_ver?
           satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@cfg_arch)
           if satisfied == SatisfiedResult::Yes
@@ -731,20 +762,24 @@ module Udb
       @name = name.to_s.freeze
       @arch = arch
       @ext = @arch.extension(@name)
-      raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
+      Udb.logger.warn "Could not find extension named '#{@name}'" if @ext.nil?
 
       requirements_ary =
-        case requirements
-        when Array
-          if requirements.empty?
-            ["~> #{@ext.min_version.version_str}"]
-          else
-            requirements
-          end
-        when String
-          [requirements]
+        if @ext.nil?
+          []
         else
-          T.absurd(requirements)
+          case requirements
+          when Array
+            if requirements.empty?
+              ["~> #{@ext.min_version.version_str}"]
+            else
+              requirements
+            end
+          when String
+            [requirements]
+          else
+            T.absurd(requirements)
+          end
         end
       @requirements = requirements_ary.map { |r| RequirementSpec.new(r) }
 
@@ -757,6 +792,11 @@ module Udb
       @requirements.each(&:invert!)
     end
 
+    # true if there is at least one matching extension version defined in the database
+    # false otherwise (meaning there is no definition)
+    sig { returns(T::Boolean) }
+    def valid? = !satisfying_versions.empty?
+
     # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
     sig { returns(T::Array[ExtensionVersion]) }
     def satisfying_versions
@@ -765,6 +805,16 @@ module Udb
       ext = @arch.extension(@name)
 
       @satisfying_versions = ext.nil? ? [] : ext.versions.select { |v| satisfied_by?(v) }
+    end
+
+    # @return the disjunction of the requirements condition of all satisfying versions
+    sig { returns(AbstractCondition) }
+    def requirements_condition
+      @requirements_condition ||=
+        Condition.disjunction(
+          satisfying_versions.map { |ext_ver| ext_ver.combined_requirements_condition },
+          @arch
+        )
     end
 
     sig { returns(AbstractCondition) }

@@ -60,6 +60,9 @@ module Udb
     sig { returns(Resolver::ConfigInfo) }
     attr_reader :info
 
+    sig { returns(String) }
+    def description = @data["description"]
+
     sig { abstract.returns(T.nilable(Integer)) }
     def mxlen; end
 
@@ -319,8 +322,8 @@ module Udb
           @data["implemented_extensions"].map do |e|
             if e.is_a?(Array)
               { "name" => e[0], "version" => e[1] }
-            else
-              e
+            elsif e.is_a?(Hash)
+              { "name" => e.fetch("name"), "version" => RequirementSpec.new(e.fetch("version")).version_spec.to_s }
             end
           end
         end

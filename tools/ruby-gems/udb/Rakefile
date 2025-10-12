@@ -41,6 +41,19 @@ namespace :chore do
         sh "bundle exec srb tc --lsp --disable-watchman"
       end
     end
+
+    task :collate_cov, [:cov_dir] do |t, args|
+      require "simplecov"
+      require "simplecov-cobertura"
+
+      SimpleCov.collate Dir["#{args[:cov_dir]}/*.resultset.json"] do
+        coverage_dir (UDB_ROOT / "coverage").to_s
+        formatter SimpleCov::Formatter::MultiFormatter.new([
+          SimpleCov::Formatter::CoberturaFormatter,
+          SimpleCov::Formatter::HTMLFormatter,
+        ])
+      end
+    end
   end
 end
 

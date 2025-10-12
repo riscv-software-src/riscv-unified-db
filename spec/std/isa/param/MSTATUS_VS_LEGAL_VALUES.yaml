@@ -24,13 +24,13 @@ requirements:
   idl(): |
     # [RULE] If the v registers are implemented, the VS field shall not be read-only zero.
     implemented?(ExtensionName::V)
-      -> $ary_size(MSTATUS_VS_LEGAL_VALUES) > 1;
+      -> $array_size(MSTATUS_VS_LEGAL_VALUES) > 1;
 
     # [RULE] If there is a hardware update to mstatus.VS, then the Dirty state must be supported
     implemented?(ExtensionName::V) &&
     (HW_MSTATUS_VS_DIRTY_UPDATE == "precise" || HW_MSTATUS_VS_DIRTY_UPDATE == "imprecise")
       -> $array_includes?(MSTATUS_VS_LEGAL_VALUES, 0) &&
-         $array_includes?(MSTATUS_VS_LEGAL_VALUES, 3)
+         $array_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
 
   reason: |
     If V is supported, both Off (0) and Dirty (3) must be supported

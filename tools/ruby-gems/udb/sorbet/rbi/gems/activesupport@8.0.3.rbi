@@ -5,7 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem activesupport`.
 
 
-# source://activesupport//lib/active_support/array_inquirer.rb#3
+# source://activesupport//lib/active_support/deep_mergeable.rb#3
 module ActiveSupport
   extend ::ActiveSupport::LazyLoadHooks
 
@@ -2245,7 +2245,7 @@ class Float < ::Numeric
   def as_json(options = T.unsafe(nil)); end
 end
 
-# source://activesupport//lib/active_support/core_ext/hash/keys.rb#3
+# source://activesupport//lib/active_support/core_ext/hash/deep_merge.rb#5
 class Hash
   include ::Enumerable
   include ::ActiveSupport::DeepMergeable
@@ -2532,6 +2532,7 @@ end
 class Object < ::BasicObject
   include ::Kernel
   include ::PP::ObjectMixin
+  include ::Udb::Helpers::WavedromUtil
   include ::ActiveSupport::Tryable
   include ::ActiveSupport::ToJsonWithActiveSupportEncoder
 

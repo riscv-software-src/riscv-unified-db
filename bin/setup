@@ -156,9 +156,6 @@ if [ ! -d $ROOT/.home ]; then
 fi
 
 if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
-    if [ -f $ROOT/.bundle/config ] && [ $PRESERVE_CONFIG -eq 0 ]; then
-        echo "Recreating bundle config..."
-    fi
     OLDDIR=$PWD
     cd $ROOT
     ${RUN} bundle config set --local path ${ROOT}/.home/.gems

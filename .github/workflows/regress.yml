@@ -44,7 +44,33 @@ jobs:
           disable_search: true
           files: tools/ruby-gems/idlc/coverage/coverage.xml
           flags: idlc
-  regress-udb-gem:
+  regress-udb-unit-test:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    strategy:
+      matrix:
+        test:
+          - logic
+          - conditions
+          - cli
+          - yaml_loader
+          - cfg_arch
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem ${{ matrix.test }} unit tests
+        run: ./bin/ruby tools/ruby-gems/test/test_${{ matrix.test }}.rb
+      - name: Rename coverage file
+        run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+      - name: Save coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: udb-${{ matrix.test }}-cov
+          path: tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+  regress-udb-cov-report:
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
@@ -53,8 +79,16 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Run udb gem unit tests
-        run: ./bin/ruby tools/ruby-gems/test/run.rb
+      - name: download coverage
+        uses: actions/download-artifact@v5
+        with:
+          pattern: udb-*-cov
+          path: _cov/udb
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Collate coverage
+        run: ./do chore:udb:collate_cov[_cov/udb]
       - name: Upload udb coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:

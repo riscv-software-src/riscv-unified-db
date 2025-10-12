@@ -4,21 +4,21 @@
 
 # typed: true
 # frozen_string_literal: true
-require 'erb'
-require 'asciidoctor-pdf'
-require 'rouge'
-require 'asciidoctor-diagram'
-require 'fileutils'
-require 'pathname'
-require 'yaml'
-require 'cgi'
-require 'set'
-require 'open3'
-require 'sorbet-runtime'
-require_relative 'obj/prm'
-require_relative '../../../udb_helpers/lib/udb_helpers/backend_helpers'
-require_relative 'obj/non_isa_specification'
-require_relative 'external_documentation_renderer'
+require "erb"
+require "asciidoctor-pdf"
+require "rouge"
+require "asciidoctor-diagram"
+require "fileutils"
+require "pathname"
+require "yaml"
+require "cgi"
+require "set"
+require "open3"
+require "sorbet-runtime"
+require_relative "obj/prm"
+require_relative "../../../udb_helpers/lib/udb_helpers/backend_helpers"
+require_relative "obj/non_isa_specification"
+require_relative "external_documentation_renderer"
 
 module PrmGenerator
   # Utility to adjust heading levels in AsciiDoc content
@@ -31,7 +31,7 @@ module PrmGenerator
       # Calculate new level but cap at 6 to avoid excessive nesting
       new_level_count = [equals.length + level_offset, 6].min
       new_level_count = [new_level_count, 1].max  # Ensure at least level 1
-      new_level = '=' * new_level_count
+      new_level = "=" * new_level_count
       "#{new_level}#{spaces}"
     end
   end
@@ -266,14 +266,14 @@ module PrmGenerator
     end
 
     def load_template(path)
-      template = ERB.new(File.read(path, encoding: 'UTF-8'), trim_mode: "-")
+      template = ERB.new(File.read(path, encoding: "UTF-8"), trim_mode: "-")
       template.filename = path.to_s
       template
     end
 
     def get_csrs
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_csrs
+        @processor_config.implemented_csrs
       else
         @processor_config.possible_csrs
       end
@@ -281,7 +281,7 @@ module PrmGenerator
 
     def get_instructions
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_instructions
+        @processor_config.implemented_instructions
       else
         @processor_config.possible_instructions
       end
@@ -289,7 +289,7 @@ module PrmGenerator
 
     def get_extensions
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_extension_versions
+        @processor_config.implemented_extension_versions
       elsif @processor_config.partially_configured?
         @processor_config.possible_extension_versions
       else
@@ -315,28 +315,28 @@ module PrmGenerator
       return "" unless content.is_a?(String)
 
       # Fix HTML entities that cause AsciiDoctor parsing errors
-      content = content.gsub(/&ne;/, '≠')
-      content = content.gsub(/&ge;/, '≥')
-      content = content.gsub(/&le;/, '≤')
-      content = content.gsub(/&gt;/, '>')
-      content = content.gsub(/&lt;/, '<')
-      content = content.gsub(/&amp;/, '&')
-      content = content.gsub(/&pm;/, '±')
-      content = content.gsub(/&times;/, '×')
-      content = content.gsub(/&divide;/, '÷')
+      content = content.gsub(/&ne;/, "≠")
+      content = content.gsub(/&ge;/, "≥")
+      content = content.gsub(/&le;/, "≤")
+      content = content.gsub(/&gt;/, ">")
+      content = content.gsub(/&lt;/, "<")
+      content = content.gsub(/&amp;/, "&")
+      content = content.gsub(/&pm;/, "±")
+      content = content.gsub(/&times;/, "×")
+      content = content.gsub(/&divide;/, "÷")
 
       # Fix other common HTML entities
-      content = content.gsub(/&nbsp;/, ' ')
+      content = content.gsub(/&nbsp;/, " ")
       content = content.gsub(/&quot;/, '"')
-      content = content.gsub(/&#([0-9]+);/) { [$1.to_i].pack('U*') }
-      content = content.gsub(/&#x([0-9a-fA-F]+);/) { [$1.to_i(16)].pack('U*') }
+      content = content.gsub(/&#([0-9]+);/) { [$1.to_i].pack("U*") }
+      content = content.gsub(/&#x([0-9a-fA-F]+);/) { [$1.to_i(16)].pack("U*") }
 
       # Clean up problematic AsciiDoc constructs
       content = content.gsub(/\n\n\n+/, "\n\n")  # Remove excessive blank lines
       content = content.gsub(/\r\n/, "\n")       # Normalize line endings
 
       # Ensure UTF-8 encoding
-      content.force_encoding('UTF-8')
+      content.force_encoding("UTF-8")
 
       content
     rescue StandardError => e
@@ -373,11 +373,11 @@ module PrmGenerator
     private
 
     def self.create_asciidoc_link(type, name, link_text)
-      escaped_text = link_text.gsub(']', '\\]').gsub(',', '\\,')
+      escaped_text = link_text.gsub("]", '\\]').gsub(",", '\\,')
 
       case type
       when "csr_field"
-        base_csr_name, field_name = name.split('.', 2)
+        base_csr_name, field_name = name.split(".", 2)
         "<<csr:#{base_csr_name}-#{field_name}-def,#{escaped_text}>>"
       when "func"
         "<<#{name}-func-def,#{escaped_text}>>"
@@ -415,7 +415,7 @@ module PrmGenerator
       template_path = @template_dir / "templates" / "prm_main.adoc.erb"
       raise GenerationError, "Main template not found: #{template_path}" unless template_path.exist?
 
-      template = ERB.new(File.read(template_path, encoding: 'UTF-8'), trim_mode: "-")
+      template = ERB.new(File.read(template_path, encoding: "UTF-8"), trim_mode: "-")
       template.filename = template_path.to_s
 
       # Prepare template variables
@@ -464,7 +464,7 @@ module PrmGenerator
 
     def get_extensions_list
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_extension_versions
+        @processor_config.implemented_extension_versions
       elsif @processor_config.partially_configured?
         @processor_config.possible_extension_versions
       else
@@ -474,7 +474,7 @@ module PrmGenerator
 
     def get_all_instructions
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_instructions
+        @processor_config.implemented_instructions
       else
         @processor_config.possible_instructions
       end
@@ -482,7 +482,7 @@ module PrmGenerator
 
     def get_all_csrs
       if @processor_config.fully_configured?
-        @processor_config.transitive_implemented_csrs
+        @processor_config.implemented_csrs
       else
         @processor_config.possible_csrs
       end
@@ -727,12 +727,12 @@ module PrmGenerator
       return "_Documentation not available_" unless File.exist?(file_path)
 
       begin
-        content = File.read(file_path, encoding: 'UTF-8')
+        content = File.read(file_path, encoding: "UTF-8")
         content = ContentSanitizer.sanitize(content)
 
         # Strip the first heading if requested (for auto-generated content)
         if strip_title
-          content = content.gsub(/^=+\s+.*?\n/, '')
+          content = content.gsub(/^=+\s+.*?\n/, "")
         end
 
         # Resolve relative includes

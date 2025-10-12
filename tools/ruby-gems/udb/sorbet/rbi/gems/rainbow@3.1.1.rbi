@@ -8,6 +8,7 @@
 class Object < ::BasicObject
   include ::Kernel
   include ::PP::ObjectMixin
+  include ::Udb::Helpers::WavedromUtil
 
   private
 

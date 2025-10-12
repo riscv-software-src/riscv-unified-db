@@ -4,11 +4,12 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative "test_helper"
+
 require "fileutils"
 require "tmpdir"
 require "yaml"
 
-require "minitest/autorun"
 require "udb/condition"
 require "udb/resolver"
 

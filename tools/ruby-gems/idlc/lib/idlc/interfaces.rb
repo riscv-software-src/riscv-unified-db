@@ -15,6 +15,8 @@ module Idl
     extend T::Helpers
     interface!
 
+    include Kernel
+
     ValueType =
       T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[T::Boolean]) }
 

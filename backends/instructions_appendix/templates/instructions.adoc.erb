@@ -82,7 +82,7 @@ Decode Variables::
 
 Included in::
 
-<%- if inst.defining_extension_requirements.any? { |cond_ext_req| !cond_ext_req.cond.satisfied_by_cfg_arch?(cfg_arch) != SatisfiedResult::Yes } -%>
+<%- if inst.defining_extension_requirements.any? { |cond_ext_req| cond_ext_req.cond.satisfied_by_cfg_arch?(cfg_arch) != SatisfiedResult::Yes } -%>
 
 |===
 | Extension | Version | When

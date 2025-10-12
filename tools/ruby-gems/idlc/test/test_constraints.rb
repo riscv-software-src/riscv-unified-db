@@ -57,17 +57,19 @@ class ConstraintTestFactory
             constraint_ast = nil
             if test["r"].nil?
               assert_raises Idl::AstNode::TypeError do
-                @compiler.compile_constraint(test["c"], @symtab, pass_error: true)
+                ast = @compiler.compile_constraint(test["c"], @symtab, pass_error: true)
+                ast.type_check(@symtab)
               end
             else
               out, err = capture_io do
                 constraint_ast = @compiler.compile_constraint(test["c"], @symtab)
+                constraint_ast.type_check(@symtab)
               end
 
               if test["r"]
-                assert constraint_ast.satisfied?(@symtab)
+                assert constraint_ast.satisfied?(@symtab), "Expected '#{constraint_ast.text_value}' to be true"
               else
-                refute constraint_ast.satisfied?(@symtab)
+                refute constraint_ast.satisfied?(@symtab), "Expected '#{constraint_ast.text_value}' to be false"
               end
             end
 

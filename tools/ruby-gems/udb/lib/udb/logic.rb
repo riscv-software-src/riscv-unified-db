@@ -5,6 +5,8 @@
 # frozen_string_literal: true
 
 require "numbers_and_words"
+require "minisat"
+require "tempfile"
 require "treetop"
 
 require "idlc/symbol_table"
@@ -227,6 +229,9 @@ module Udb
     sig { returns(T.nilable(Integer)) }
     def index = @yaml["index"]
 
+    sig { returns(T.nilable(T::Boolean)) }
+    def size = @yaml["size"]
+
     sig { returns(ValueType) }
     def comparison_value
       @yaml.fetch(comparison_type.serialize)
@@ -272,7 +277,7 @@ module Udb
       when ParameterComparisonType::GreaterThanOrEqual
         (value >= @yaml["greater_than_or_equal"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::Includes
-        (value.includes?(@yaml["includes"])) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value.include?(@yaml["includes"])) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::OneOf
         (@yaml["oneOf"].include?(value)) ? SatisfiedResult::Yes : SatisfiedResult::No
       else
@@ -280,33 +285,57 @@ module Udb
       end
     end
 
-    sig { params(symtab: Idl::SymbolTable).returns(SatisfiedResult) }
-    def eval(symtab)
-      var = symtab.get(name)
-      raise "Could not find symbol #{name}" if var.nil?
+    sig { params(param_values: T::Hash[String, T.untyped]).returns(SatisfiedResult) }
+    def _eval(param_values)
+      val = param_values[name]
 
-      raise "Expecting a var" unless var.is_a?(Idl::Var)
+      # don't have the value, so can't say either way
+      return SatisfiedResult::Maybe if val.nil?
 
-      # don't know anything about this parameter, so could go either way
-      return SatisfiedResult::Maybe if var.value.nil?
-
-      if var.type.kind == :array
-        raise "Missing index or includes" unless @yaml.key?("index") || @yaml.key("includes")
+      if val.is_a?(Array)
+        raise "Missing index, includes, or size key in #{@yaml}" unless @yaml.key?("index") || @yaml.key?("includes") || @yaml.key?("size")
 
         if @yaml.key?("index")
-          raise "Index out of range" if T.cast(@yaml.fetch("index"), Integer) >= T.cast(var.value, Array).size
+          raise "Index out of range" if T.cast(@yaml.fetch("index"), Integer) >= T.cast(val, Array).size
 
-          value = var.value.fetch(@yaml.fetch("index"))
+          value = val.fetch(@yaml.fetch("index"))
           eval_value(value)
         elsif @yaml.key?("includes")
-          eval_value(var.value)
+          eval_value(val)
+        elsif @yaml.key?("size")
+          value = val.size
+          eval_value(value)
         else
           raise "unreachable"
         end
+      elsif val.is_a?(Integer)
+        if @yaml.key?("range")
+          msb, lsb = @yaml.fetch("range").split("-").map(&:to_i)
+          eval_value((val >> lsb) & (1 << (msb - lsb)))
+        else
+          eval_value(val)
+        end
       else
-        eval_value(var.value)
+        eval_value(val)
       end
     end
+
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+    def eval(cfg_arch)
+      p = cfg_arch.param(name)
+
+      # we know nothing at all about this param. it might not even be valid
+      return SatisfiedResult::No if p.nil?
+
+      # since conditions are involved in ConfiguredArchitecture creation
+      # (to, for example, determine the list of implemented extensions)
+      # we use the parameter values directly from the config instead of the symtab
+      # (which may not be constructed yet)
+      _eval(cfg_arch.config.param_values)
+    end
+
+    sig { params(param_values: T::Hash[String, T.untyped]).returns(SatisfiedResult) }
+    def partial_eval(param_values) = _eval(param_values)
 
     sig { returns(T::Hash[String, T.untyped]) }
     def to_h
@@ -340,10 +369,12 @@ module Udb
 
     sig { returns(String) }
     def param_to_s
-      if index.nil?
-        name
-      else
+      if !index.nil?
         "#{name}[#{index}]"
+      elsif !size.nil?
+        "$array_size(#{name})"
+      else
+        name
       end
     end
 
@@ -478,6 +509,13 @@ module Udb
     def to_s
       "t#{@id}"
     end
+
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(String) }
+    def to_idl(cfg_arch)
+      "FreeTerm"
+    end
+
+    def to_h = {}
 
     sig { returns(String) }
     def to_s_pretty = to_s
@@ -963,8 +1001,14 @@ module Udb
         res = cond_ext_ret.eval_cb(callback)
         if res == SatisfiedResult::Yes
           node_children.fetch(1).eval_cb(callback)
+        elsif res == SatisfiedResult::Maybe
+          ## if "then" is true, then res doesn't matter....
+          node_children.fetch(1).eval_cb(callback) == SatisfiedResult::Yes \
+            ? SatisfiedResult::Yes
+            : SatisfiedResult::Maybe
         else
-          res
+          # if antecedent is false, implication is true
+          SatisfiedResult::Yes
         end
       when LogicNodeType::Not
         res = node_children.fetch(0).eval_cb(callback)
@@ -984,7 +1028,7 @@ module Udb
           res1 = child.eval_cb(callback)
           return SatisfiedResult::No if res1 == SatisfiedResult::No
 
-          yes_cnt += 1 if res == SatisfiedResult::Yes
+          yes_cnt += 1 if res1 == SatisfiedResult::Yes
         end
         if yes_cnt == node_children.size
           SatisfiedResult::Yes
@@ -1018,17 +1062,21 @@ module Udb
           SatisfiedResult::Maybe
         end
       when LogicNodeType::Xor
-        yes_cnt = 0
+        yes_cnt = T.let(0, Integer)
+        has_maybe = T.let(false, T::Boolean)
         node_children.each do |child|
           res1 = child.eval_cb(callback)
 
+          has_maybe ||= (res1 == SatisfiedResult::Maybe)
           yes_cnt += 1 if res1 == SatisfiedResult::Yes
           return SatisfiedResult::No if yes_cnt > 1
         end
-        if yes_cnt == 1
+        if yes_cnt == 1 && !has_maybe
           SatisfiedResult::Yes
-        else
+        elsif has_maybe
           SatisfiedResult::Maybe
+        else
+          SatisfiedResult::No
         end
       else
         T.absurd(@type)
@@ -1070,7 +1118,7 @@ module Udb
         AND: "&&",
         OR: "||",
         XOR: "^",
-        IMPLIES: "DOES NOT EXIST"
+        IMPLIES: "->" # making this up; there is no implication operator in C
       },
       LogicSymbolFormat::Eqn => {
         TRUE: "ONE",
@@ -1680,7 +1728,7 @@ module Udb
           non_literal_kids = flattened_kids.reject { |child| child.type == LogicNodeType::True }
           flat_children = non_literal_kids.flat_map do |child|
             if child.type == LogicNodeType::And
-              child.children
+              child.node_children
             else
               child
             end
@@ -1704,7 +1752,7 @@ module Udb
           non_literal_kids = flattened_kids.reject { |child| child.type == LogicNodeType::False }
           flat_children = non_literal_kids.flat_map do |child|
             if child.type == LogicNodeType::Or
-              child.children
+              child.node_children
             else
               child
             end
@@ -1753,7 +1801,7 @@ module Udb
 
               # a contradiction (a && !a) will make the conjunction false
               (child.type == LogicNodeType::Term &&
-                node_children.any? do |other_child|
+                reduced.node_children.any? do |other_child|
 
                   other_child.type == LogicNodeType::Not && \
                   other_child.node_children.fetch(0).type == LogicNodeType::Term && \
@@ -1790,7 +1838,7 @@ module Udb
 
               # a tautology (a || !a) will make the disjunction true
               (child.type == LogicNodeType::Term &&
-                node_children.any? do |other_child|
+                reduced.node_children.any? do |other_child|
 
                   other_child.type == LogicNodeType::Not && \
                   other_child.node_children.fetch(0).type == LogicNodeType::Term && \
@@ -1831,10 +1879,15 @@ module Udb
         when LogicNodeType::If
           reduced = LogicNode.new(LogicNodeType::If, node_children.map { |child| child.reduce })
           antecedent = reduced.node_children.fetch(0)
+          consequent = reduced.node_children.fetch(1)
           if antecedent.type == LogicNodeType::True
-            reduced.node_children.fetch(1)
+            consequent
           elsif antecedent.type == LogicNodeType::False
             return True
+          elsif consequent.type == LogicNodeType::True
+            return True
+          elsif consequent.type == LogicNodeType::False
+            return LogicNode.new(LogicNodeType::Not, [antecedent])
           else
             reduced
           end
@@ -1887,7 +1940,8 @@ module Udb
 
           candidate = n.reduce
           candidate = n.group_by_2
-          result = flatten_cnf(do_equiv_cnf(candidate, raise_on_explosion:)).reduce
+          unflattened = do_equiv_cnf(candidate, raise_on_explosion:)
+          result = flatten_cnf(unflattened).reduce
           if result.frozen?
             raise "?" unless result.memo.is_cnf == true
           else
@@ -2126,7 +2180,7 @@ module Udb
     sig { params(solver: MiniSat::Solver, node: LogicNode, term_map: T::Hash[TermType, MiniSat::Variable], cur_or: T::nilable(T::Array[T.untyped])).void }
     def build_solver(solver, node, term_map, cur_or)
       if node.type == LogicNodeType::Term
-        v = term_map[T.cast(node.children.fetch(0), TermType)]
+        v = term_map.fetch(T.cast(node.children.fetch(0), TermType))
         if cur_or.nil?
           solver << v
         else
@@ -2135,7 +2189,7 @@ module Udb
       elsif node.type == LogicNodeType::Not
         child = node.node_children.fetch(0)
         term = T.cast(child.children.fetch(0), TermType)
-        v = -term_map[term]
+        v = -term_map.fetch(term)
         if cur_or.nil?
           solver << v
         else
@@ -2163,6 +2217,7 @@ module Udb
       @memo.is_satisfiable ||=
         begin
           nterms = terms.size
+
           if nterms < 4 && literals.size <= 32
             # just brute force it
 
@@ -2176,10 +2231,14 @@ module Udb
               ((val_out_of_loop >> term_idx.fetch(term)) & 1).zero? ? SatisfiedResult::No : SatisfiedResult::Yes
             end
 
-            (2**nterms).to_i.times do |i|
-              val_out_of_loop = i
-              if eval_cb(cb) == SatisfiedResult::Yes
-                return true
+            if nterms.zero?
+              return eval_cb(cb) == SatisfiedResult::Yes
+            else
+              (2**nterms).to_i.times do |i|
+                val_out_of_loop = i
+                if eval_cb(cb) == SatisfiedResult::Yes
+                  return true
+                end
               end
             end
             return false
@@ -2470,6 +2529,129 @@ module Udb
         flatten_cnf(equisatisfiable_formula).reduce
       end
     end
+
+    sig { returns(String) }
+    def to_dimacs
+      if @type == LogicNodeType::Term
+        <<~DIMACS
+          p cnf 1 1
+          1 0
+        DIMACS
+      elsif @type == LogicNodeType::Not
+        <<~DIMACS
+          p cnf 1 1
+          -1 0
+        DIMACS
+      elsif @type == LogicNodeType::True || @type == LogicNodeType::False
+        raise "Cannot represent true/false in DIMACS"
+      elsif @type == LogicNodeType::And
+        lines = ["p cnf #{terms.size} #{@children.size}"]
+        lines += node_children.map do |child|
+          if child.type == LogicNodeType::Or
+            term_line = child.node_children.map do |grandchild|
+              if grandchild.type == LogicNodeType::Not
+                (-(T.must(terms.index(grandchild.node_children.fetch(0).node_children.fetch(0))) + 1)).to_s
+              elsif grandchild.type == LogicNodeType::Term
+                (T.must(terms.index(grandchild.node_children.fetch(0))) + 1).to_s
+              end
+            end.join(" ")
+            "#{term_line} 0"
+          elsif child.type == LogicNodeType::Term
+            "#{T.must(terms.index(child.children.fetch(0))) + 1} 0"
+          elsif child.type == LogicNodeType::Not
+            "-#{T.must(terms.index(child.node_children.fetch(0).children.fetch(0))) + 1} 0"
+          else
+            raise "Not CNF"
+          end
+        end
+
+        lines.join("\n")
+      else
+        raise "Not CNF"
+      end
+    end
+
+    sig { params(dimacs: String).returns(LogicNode) }
+    def from_dimacs(dimacs)
+      nodes = dimacs.each_line.map do |line|
+        if line =~ /^(((-?\d+) )+)0/
+          ts = T.let($1.strip.split(" "), T::Array[String])
+          if ts.size == 1
+            t = ts.fetch(0)
+            if t[0] == "-"
+              index = t[1..].to_i - 1
+              LogicNode.new(
+                LogicNodeType::Not,
+                [LogicNode.new(LogicNodeType::Term, [terms.fetch(index)])]
+              )
+            else
+              index = t.to_i - 1
+              LogicNode.new(LogicNodeType::Term, [terms.fetch(index)])
+            end
+          else
+            LogicNode.new(LogicNodeType::Or,
+              ts.map do |t|
+                if t[0] == "-"
+                  i = t[1..].to_i - 1
+                  LogicNode.new(
+                    LogicNodeType::Not,
+                    [LogicNode.new(LogicNodeType::Term, [terms.fetch(i)])]
+                  )
+                else
+                  i = t.to_i - 1
+                  LogicNode.new(LogicNodeType::Term, [terms.fetch(i)])
+                end
+              end
+            )
+          end
+        else
+          nil
+        end
+      end.compact
+
+      if nodes.size == 1
+        nodes.fetch(0)
+      else
+        LogicNode.new(LogicNodeType::And, nodes)
+      end
+    end
+
+    # return minimally unsatisfiable subsets of the unstatisfiable formula
+    sig { returns(T::Array[LogicNode]) }
+    def minimal_unsat_subsets
+      r = reduce
+      c = r.equiv_cnf(raise_on_explosion: false)
+      Tempfile.create(%w/formula .cnf/) do |f|
+        f.write c.to_dimacs
+        f.flush
+
+        Tempfile.create do |rf|
+          # run must, re-use the tempfile for the result
+          `must -o #{rf.path} #{f.path}`
+          unless $?.success?
+            raise "could not find minimal subsets"
+          end
+
+          rf.rewind
+          result = rf.read
+
+          mus_dimacs = T.let([], T::Array[String])
+          cur_dimacs = T.let(nil, T.nilable(String))
+          result.each_line do |line|
+            if line =~ /MUS #\d+/
+              mus_dimacs << cur_dimacs unless cur_dimacs.nil?
+              cur_dimacs = ""
+            else
+              cur_dimacs = T.must(cur_dimacs) + line
+            end
+          end
+          mus_dimacs << T.must(cur_dimacs)
+
+          return mus_dimacs.map { |d| c.from_dimacs(d) }
+        end
+      end
+    end
+
 
     # minimize the function using espresso
     sig {

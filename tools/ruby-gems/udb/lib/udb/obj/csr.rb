@@ -367,7 +367,7 @@ module Udb
           "#{length(effective_xlen)}-bit"
         end
       else
-        "#{length()}-bit"
+        "#{length}-bit"
       end
     end
 

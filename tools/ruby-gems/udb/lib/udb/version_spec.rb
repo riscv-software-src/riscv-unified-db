@@ -96,7 +96,7 @@ module Udb
     sig { returns(String) }
     def to_s = @version_str
 
-    sig { params(other: T.any(String, VersionSpec)).returns(T.nilable(Integer)) }
+    sig { params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       if other.is_a?(String)
         VersionSpec.new(other) <=> self
@@ -113,8 +113,22 @@ module Udb
           0
         end
       else
-        T.absurd(other)
+        nil
       end
+    end
+
+    sig { override.params(other: T.untyped).returns(T::Boolean) }
+    def eql?(other)
+      if other.is_a?(VersionSpec)
+        self.==(VersionSpec)
+      else
+        false
+      end
+    end
+
+    sig { override.returns(Integer) }
+    def hash
+      [@major, @minor, @patch, @pre].hash
     end
 
     sig { returns(VersionSpec) }
@@ -138,22 +152,6 @@ module Udb
         raise "Cannot decrement version 0"
       end
       copy
-    end
-
-    # @param other [VersionSpec] Comparison
-    # @return [Boolean] Whether or not +other+ is an VersionSpec with the same canonical version
-    sig { params(other: T.any(String, VersionSpec)).returns(T::Boolean) }
-    def eql?(other)
-      if other.is_a?(String)
-        eql?(VersionSpec.new(other))
-      elsif other.is_a?(VersionSpec)
-        other.major == @major && \
-          other.minor == @minor && \
-          other.patch == @patch && \
-          other.pre == @pre
-      else
-        T.absurd(other)
-      end
     end
   end
 

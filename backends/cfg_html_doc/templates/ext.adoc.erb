@@ -7,7 +7,7 @@ Implemented Version:: <%= ext_version.version_str %>
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = cfg_arch.transitive_implemented_extension_versions.include?(v) -%>
+<%- implemented = cfg_arch.implemented_extension_versions.include?(v) -%>
 <%= v.version_str %>::
   Ratification date:::
     <%= v.ratification_date %>

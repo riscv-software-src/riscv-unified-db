@@ -25,7 +25,7 @@ schema:
 requirements:
   idl(): |
     implemented?(ExtensionName::F) &&
-      (HW_MSTATUS_FS_DIRTY_UPDATE == "precise") ||
+      (HW_MSTATUS_FS_DIRTY_UPDATE == "precise" ||
        HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise")
     ->
       $array_includes?(MSTATUS_FS_LEGAL_VALUES, 3);

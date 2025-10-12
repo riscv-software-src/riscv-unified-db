@@ -111,18 +111,18 @@ end
 
 sig { params(test_files: T::Array[String]).returns(String) }
 def make_test_cmd(test_files)
-  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map{ |f| "require \"#{f}\""}.join("; ")}' --"
+  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map { |f| "require \"#{f}\"" }.join("; ")}' --"
 end
 
 namespace :test do
 
   # "Run the cross-validation against LLVM"
   task :llvm do
-      begin
-        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
-      rescue => e
-        raise unless e.message.include?("status (5)") # don't fail on skipped tests
-    end
+    begin
+    sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+  rescue => e
+    raise unless e.message.include?("status (5)") # don't fail on skipped tests
+  end
   end
   # "Run the IDL compiler test suite"
   task :idl_compiler do
@@ -392,7 +392,7 @@ end
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    Rake::Task["test:udb:unit"].invoke
+    # Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC

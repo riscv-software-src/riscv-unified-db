@@ -10,9 +10,9 @@
 # or created at runtime for things like profiles and certificate models.
 
 require "concurrent"
-require "ruby-prof"
 require "ruby-progressbar"
 require "tilt"
+require "tty-progressbar"
 require "yaml"
 require "pathname"
 require_relative "obj/non_isa_specification"
@@ -41,10 +41,6 @@ module Udb
     sig { returns(Idl::Compiler) }
     attr_reader :idl_compiler
 
-    # @return [Idl::IsaAst] Abstract syntax tree of global scope
-    sig { returns(Idl::IsaAst) }
-    attr_reader :global_ast
-
     # @return [String] Name of this definition. Special names are:
     #                  * '_'   - The generic architecture, with no configuration settings.
     #                  * 'rv32' - A generic RV32 architecture, with only one parameter set (XLEN == 32)
@@ -64,9 +60,11 @@ module Udb
     sig { returns(T::Boolean) }
     def unconfigured? = @config.unconfigured?
 
+    # MXLEN parameter value, or nil if it is not known
     sig { returns(T.nilable(Integer)) }
     def mxlen = @config.mxlen
 
+    # known parameter values as a hash of param_name => param_value
     sig { returns(T::Hash[String, T.untyped]) }
     def param_values = @config.param_values
 
@@ -78,8 +76,8 @@ module Udb
     #   3. It is not known if the mode is implemented.
     #
     #
-    # @return [Boolean] true if this configuration might execute in multiple xlen environments
-    #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
+    # @return true if this configuration might execute in multiple xlen environments
+    #           (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
     sig { returns(T::Boolean) }
     def multi_xlen?
       return true if @mxlen.nil?
@@ -96,9 +94,9 @@ module Udb
     #
     # Will return false if +mode+ is not possible (e.g., because U is a prohibited extension)
     #
-    # @param mode [String] mode to check. One of "M", "S", "U", "VS", "VU"
-    # @return [Boolean] true if this configuration might execute in multiple xlen environments in +mode+
-    #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
+    # @param mode mode to check. One of "M", "S", "U", "VS", "VU"
+    # @return true if this configuration might execute in multiple xlen environments in +mode+
+    #           (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
     sig { params(mode: String).returns(T::Boolean) }
     def multi_xlen_in_mode?(mode)
       return false if mxlen == 32
@@ -179,16 +177,42 @@ module Udb
     sig { returns(T::Array[Integer]) }
     def possible_xlens = multi_xlen? ? [32, 64] : [mxlen]
 
+    # @api private
     # hash for Hash lookup
     sig { override.returns(Integer) }
     def hash = @name_sym.hash
 
-    # @return [Idl::SymbolTable] Symbol table with global scope
-    # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
+    # @return Symbol table with global scope included
     sig { returns(Idl::SymbolTable) }
     def symtab
-      @symtab
+      @symtab ||=
+        begin
+          @symtab = create_symtab
+
+          global_ast.add_global_symbols(@symtab)
+
+          @symtab.deep_freeze
+          raise if @symtab.name.nil?
+          global_ast.freeze_tree(@symtab)
+          @symtab
+        end
     end
+
+    # @api private
+    sig { returns(Idl::IsaAst) }
+    def global_ast
+      @global_ast ||=
+        begin
+          # now add globals to the phase1 symtab
+          overlay_path = @config.info.overlay_path
+          custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+          idl_path = File.exist?(custom_globals_path) ? custom_globals_path : @config.info.spec_path / "isa" / "globals.isa"
+          @idl_compiler.compile_file(
+            idl_path
+          )
+        end
+    end
+    private :global_ast
 
     sig { returns(ConfigType) }
     def config_type = @config_type
@@ -223,163 +247,139 @@ module Udb
       syms
     end
 
-    # validate a configuration
-    sig {
-      params(
-        config_path: Pathname,
-        std_path: Pathname,   # path to standard architecture spec
-        custom_path: Pathname, # path to custom overlay, if needed
-        gen_path: Pathname    # path to put generated files
-      ).returns(T::Boolean)
-    }
-    def self.validate(
-      config_path,
-      std_path: Udb.default_std_isa_path,
-      custom_path: Udb.default_custom_isa_path,
-      gen_path: Udb.default_gen_path
-    )
+    # return type for #valid?
+    class ValidationResult < T::Struct
+      const :valid, T::Boolean
+      const :reasons, T::Array[String]   # filled with messages if valid is false
+    end
 
-      config_spec = YAML.load_file(config_path)
-      case config_spec.fetch("type")
-      when "unconfigured"
-        true  # nothing else to do!
-      when "fully configured"
-        validate_full_config(config_path, std_path:, custom_path:, gen_path:)
-      when "partially configured"
-        validate_partial_config(config_path, std_path:, custom_path:, gen_path:)
+    # whether or not the configuration is valid. if it's not, reasons are provided
+    sig { returns(ValidationResult) }
+    def valid?
+      if fully_configured?
+        full_config_valid?
+      elsif partially_configured?
+        partial_config_valid?
       else
-        raise "Not a valid configuration type: #{config_spec.fetch('type')}"
+        ValidationResult.new(valid: true, reasons: [])
       end
     end
 
-    sig {
-      params(
-        config_path: Pathname,
-        gen_path: Pathname,
-        std_path: Pathname,
-        custom_path: Pathname
-      ).returns(T::Boolean)
-    }
-    def self.validate_full_config(config_path, gen_path:, std_path:, custom_path:)
-      config_spec = YAML.load_file(config_path)
-      resolver = Resolver.new(
-        gen_path_override: gen_path,
-        std_path_override: std_path,
-        custom_path_override: custom_path
-      )
-      resolver.resolve_arch(config_spec)
-      resolved_path = resolver.gen_path / "resolved_spec" / config_spec["name"]
+    # @api private
+    sig { returns(ValidationResult) }
+    def full_config_valid?
+      # check extension requirements
+      reasons = []
 
-      # first, check that all the extensions are defined
-      config_spec.fetch("implemented_extensions").each do |e|
-        ext_name = T.let("", String)
-        ext_version = T.let("", String)
-        if e.is_a?(Array)
-          ext_name = e.fetch(0)
-          ext_version = e.fetch(1)
-        else
-          ext_name = e.fetch("name")
-          ext_version = e.fetch("version")
+      explicitly_implemented_extension_versions.each do |ext_ver|
+        unless ext_ver.valid?
+          reasons << "Extension version has no definition: #{ext_ver}"
+          next
         end
 
-        unless (resolved_path / "ext" / "#{ext_name}.yaml").file?
-          raise "Cannot find defintion of extension #{ext_name} #{resolved_path / "ext" / "#{ext_name}.yaml"}"
-        end
-
-        ext_spec = YAML.load_file(resolved_path / "ext" / "#{ext_name}.yaml")
-        has_ver = ext_spec.fetch("versions").any? do |ext_ver|
-          VersionSpec.new(ext_ver.fetch("version")).eql?(ext_version)
-        end
-
-        raise "Cannot find version #{ext_version} of #{ext_name}" unless has_ver
-      end
-
-      cfg_arch = resolver.cfg_arch_for(config_path)
-
-      param_missing = T.let(false, T::Boolean)
-      # check params
-      cfg_arch.params.each do |param|
-        if param.defined_by_condition.satisfied_by_cfg_arch?(cfg_arch)
-          unless config_spec.fetch("params").key?(param.name)
-            warn "missing required parameter #{param.name}"
-            param_missing = true
-            next
-          end
-
-          unless param.schema.validate(config_spec.fetch("params").fetch(param.name))
-            warn "value of parameter #{param.name} is not valid"
-            param_missing = true
-          end
-
+        unless ext_ver.combined_requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+          reasons << "Extension requirement is unmet: #{ext_ver}. Needs: #{ext_ver.combined_requirements_condition}"
         end
       end
 
-      warn "Parameter(s) are missing or invalid" if param_missing
-      !param_missing
+      # check parameter requirements
+      config.param_values.each do |param_name, param_value|
+        p = param(param_name)
+        if p.nil?
+          reasons << "Parameter has no definition: '#{param_name}'"
+          next
+        end
+        unless p.schema.validate(param_value, udb_resolver: @config.info.resolver)
+          reasons << "Parameter value violates the schema: '#{param_name}' = '#{param_value}'"
+        end
+        unless p.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+          reasons << "Parameter is not defined by this config: '#{param_name}'. Needs: #{p.defined_by_condition}"
+        end
+        unless p.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition}"
+        end
+      end
+
+      # to know all of the parameters that must be listed, we have to expand the implemented extension versions
+      # and then collect all of the defined parameters
+      required_parameters = params.select do |param|
+        param.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+      end
+
+      missing_params = required_parameters.reject do |param|
+        config.param_values.key?(param.name)
+      end
+      unless missing_params.empty?
+        reasons += missing_params.map { |p| "Parameter is required but missing: '#{p.name}'" }
+      end
+
+      if reasons.empty?
+        ValidationResult.new(valid: true, reasons: [])
+      else
+        ValidationResult.new(valid: false, reasons:)
+      end
     end
-    private_class_method :validate_full_config
+    private :full_config_valid?
 
-    sig {
-      params(
-        config_path: Pathname,
-        gen_path: Pathname,
-        std_path: Pathname,
-        custom_path: Pathname
-      ).returns(T::Boolean)
-    }
-    def self.validate_partial_config(config_path, gen_path:, std_path:, custom_path:)
-      config_spec = YAML.load_file(config_path)
-      resolver = Resolver.new(
-        gen_path_override: gen_path,
-        std_path_override: std_path,
-        custom_path_override: custom_path
-      )
-      resolver.resolve_arch(config_spec)
-      resolved_path = resolver.gen_path / "resolved_spec" / config_spec["name"]
+    # @api private
+    sig { returns(ValidationResult) }
+    def partial_config_valid?
+      reasons = []
 
-      # first, check that all the extensions are defined
-      config_spec.fetch("mandatory_extensions").each do |e|
-        ext_name = e.fetch("name")
-        ext_req = RequirementSpec.new(e.fetch("version"))
-
-        unless (resolved_path / "ext" / "#{ext_name}.yaml").file?
-          raise "Cannot find defintion of extension #{ext_name} #{resolved_path / "ext" / "#{ext_name}.yaml"}"
-        end
-
-        ext_spec = YAML.load_file(resolved_path / "ext" / "#{ext_name}.yaml")
-        has_ver = ext_spec.fetch("versions").any? do |ext_ver|
-          ext_req.satisfied_by?(VersionSpec.new(ext_ver.fetch("version")), ext_spec)
-        end
-
-        raise "Cannot find any version of #{ext_name} that satisfies #{ext_req}" unless has_ver
-      end
-
-      cfg_arch = resolver.cfg_arch_for(config_path)
-
-      invalid_param = T.let(false, T::Boolean)
-      # check params
-      possible_params = cfg_arch.mandatory_extension_reqs.map(&:params).flatten.uniq
-      if config_spec.key?("params")
-        config_spec.fetch("params").each do |pname, pvalue|
-          unless possible_params.any? { |param| param.name == pname }
-            warn "Parameter #{pname} is not from a mandatory extension"
-            invalid_param = true
-            next
-          end
-
-          param = possible_params.find { |param| param.name == pname }
-          unless param.schema.validate(pvalue)
-            warn "value of parameter #{param.name} is not valid"
-            invalid_param = true
-          end
+      mandatory_extension_reqs.each do |ext_req|
+        unless ext_req.valid?
+          reasons << "Extension requirement can never be met (no match in the database): #{ext_req}"
         end
       end
 
-      warn "Parameter(s) are invalid" if invalid_param
-      !invalid_param
+      # first check extension requirements
+      # need to make sure that it is possible to construct a config that
+      # meets the requirements without introducing a conflict
+      mandatory_cond =
+        Condition.conjunction(
+          mandatory_extension_reqs.select(&:valid?).map { |ext_req| ext_req.to_condition },
+          self
+        )
+      unless mandatory_cond.satisfiable?
+        mandatory_cond.to_logic_tree(expand: true).minimal_unsat_subsets.each do |min|
+          reasons << "Mandatory extension requirements conflict: This is not satisfiable: #{min.to_s(format: LogicNode::LogicSymbolFormat::C)}"
+        end
+      end
+
+      # check that provided param values are defined and match the schema
+      config.param_values.each do |param_name, param_value|
+        p = param(param_name)
+        # pwv.name is not a defined parameter
+        if p.nil?
+          reasons << "Parameter has no definition: '#{param_name}'"
+          next
+        end
+
+        unless p.schema.validate(param_value, udb_resolver: @config.info.resolver)
+          reasons << "Parameter value violates the schema: '#{param_name}' = '#{param_value}'"
+        end
+
+        # check that parameter is defined by the partial config (e.g., is defined by a mandatory
+        # extension and/or other param value).
+        unless p.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+          reasons << "Parameter is not defined by this config: '#{param_name}'. Needs #{p.defined_by_condition}"
+        end
+
+        if p.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::No
+          reasons << "Parameter requirements cannot be met: '#{param_name}'. Needs: #{p.requirements_condition}"
+        end
+      end
+
+      unless reasons.empty?
+        return ValidationResult.new(valid: false, reasons:)
+      end
+
+      ValidationResult.new(valid: true, reasons: [])
     end
-    private_class_method :validate_partial_config
+    private :partial_config_valid?
 
+    # @api private
+    # Return callbacks needed by a SymbolTable to check properties of the configuration
     sig { returns(Idl::SymbolTable::BuiltinFunctionCallbacks) }
     def symtab_callbacks
       Idl::SymbolTable::BuiltinFunctionCallbacks.new(
@@ -414,7 +414,7 @@ module Udb
         implemented_csr: (
           Idl::SymbolTable.make_implemented_csr_callback do |csr_addr|
             if fully_configured?
-              if transitive_implemented_csrs.any? { |c| c.address == csr_addr }
+              if implemented_csrs.any? { |c| c.address == csr_addr }
                 true
               end
             else
@@ -428,6 +428,8 @@ module Udb
     end
     private :symtab_callbacks
 
+    # @api private
+    # generated enum defintions for the symbol table
     sig { returns(T::Array[Idl::SymbolTable::EnumDef]) }
     def symtab_enums
       [
@@ -452,69 +454,47 @@ module Udb
 
     # @api private
     sig { returns(Idl::SymbolTable) }
-    def phase1_symtab
-      phase1_params =
-        params_with_value \
-          + params.reject { |p| @config.param_values.key?(p.name) }
-      phase1_param_vars = phase1_params.map do |param|
-        # at this point, we can't refine the schemas, so bootstrap with the worst-case
-        idl_types =
-          param.all_schemas.map do |schema|
-            schema.to_idl_type
+    def create_symtab
+      all_params = # including both those will value/without value, and those in scope/out of scope
+        @config.param_values.map do |pname, pvalue|
+          p = param(pname)
+          unless p.nil?
+            ParameterWithValue.new(p, pvalue)
           end
-        idl_type =
-          if idl_types.fetch(0).kind == :bits
-            # use the worst case sizing
-            if !(t = idl_types.find { |t| t.width == :unknown }).nil?
-              t
-            else
-              idl_types.max { |t1, t2| T.cast(t1.width, Integer) <=> T.cast(t2.width, Integer) }
-            end
-          else
-            idl_types.at(0)
-          end
-        if param.value_known?
-          Idl::Var.new(param.name, idl_type, param.value, param: true)
-        else
-          Idl::Var.new(param.name, idl_type, param: true)
-        end
-      end
-
-      Idl::SymbolTable.new(
-        mxlen:,
-        possible_xlens: [],
-        builtin_global_vars: phase1_param_vars,
-        builtin_funcs: symtab_callbacks,
-        builtin_enums: symtab_enums,
-        name: @name,
-        csrs: [],
-        params: phase1_params
-      )
-    end
-    private :phase1_symtab
-
-    # @api private
-    sig { returns(Idl::SymbolTable) }
-    def final_symtab
-      pruned_params = params_with_value + params_without_value
-      final_param_vars = pruned_params.map do |param|
+        end.compact \
+        + params.reject { |p| @config.param_values.key?(p.name) }
+      final_param_vars = all_params.map do |param|
         idl_type =
           if param.schema_known?
             param.idl_type
           else
-            idl_types =
-              param.possible_schemas.map do |schema|
-                schema.to_idl_type
-              end
-            if idl_types.fetch(0).kind == :bits
-              # use the worst case sizing
-              if !(t = idl_types.find { |t| t.width == :unknown }).nil?
-                t
+            begin
+              idl_types =
+                param.possible_schemas.map do |schema|
+                  schema.to_idl_type
+                end
+              if idl_types.fetch(0).kind == :bits
+                # use the worst case sizing
+                if !(t = idl_types.find { |t| t.width == :unknown }).nil?
+                  t
+                else
+                  idl_types.max { |t1, t2| T.cast(t1.width, Integer) <=> T.cast(t2.width, Integer) }
+                end
               else
-                idl_types.max { |t1, t2| T.cast(t1.width, Integer) <=> T.cast(t2.width, Integer) }
+                idl_types.at(0)
               end
-            else
-              idl_types.at(0)
+            rescue Parameter::NoMatchingSchemaError
+              # nothing matched. That's only OK if this parameter is not defined in this config
+              # unfortunately, we can't easily check that there because that requires a constructed
+              # symtab ;(
+              # we are just going to assume the user has validated the config (or is in the process
+              # of validating it)
+              # if param.defined_by_condition.satisfied_by_cfg_arch?(self)
+              #   Udb.logger.warn "Parameter '#{param.name}' is defined, but has no matching schema"
+              # end
+
+              # just pick some possible schema
+              param.all_schemas.fetch(0).to_idl_type
             end
           end
         if param.value_known?
@@ -526,16 +506,16 @@ module Udb
 
       Idl::SymbolTable.new(
         mxlen:,
-        possible_xlens:,
+        possible_xlens_cb: proc { possible_xlens },
         builtin_global_vars: final_param_vars,
         builtin_funcs: symtab_callbacks,
         builtin_enums: symtab_enums,
         name: @name,
         csrs:,
-        params: pruned_params
+        params: all_params
       )
     end
-    private :phase1_symtab
+    private :create_symtab
 
     # Initialize a new configured architecture definition
     #
@@ -556,56 +536,98 @@ module Udb
       @mxlen.freeze
 
       @idl_compiler = Idl::Compiler.new
+    end
 
-      # because the existence of a parameter, and even the type of a parameter,
-      # can depend on other parameters, we have to bootstrap them into the symbol table
-      # multiple phases
-      #
-      # in the first phase, we give the symtab all of the parameters defined by the architecture
-      # along with any parameter values defined by the config
-      #
-      # in the second phase, we prune out any parameters that can be eliminated
-      # and refine their types if needed
-      Udb.logger.debug "Bootstrapping symbol table for ConfiguredArchiture##{name}"
-      @symtab = phase1_symtab
+    def inspect
+      "CfgArch##{name}"
+    end
 
-      # now add globals to the phase1 symtab
-      overlay_path = config.info.overlay_path
-      custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
-      idl_path = File.exist?(custom_globals_path) ? custom_globals_path : config.info.spec_path / "isa" / "globals.isa"
-      @global_ast = @idl_compiler.compile_file(
-        idl_path
-      )
-      @global_ast.add_global_symbols(@symtab)
+    # @api private
+    # metaprogramming function to create accessor methods for top-level database objects
+    #
+    # This is defined in ConfiguredArchitecture, rather than Architecture because the object
+    # models all expect to work with a ConfiguredArchitecture
+    #
+    # For example, created the following functions:
+    #   extensions        # array of all extensions
+    #   extension_hash    # hash of all extensions, indexed by name
+    #   extension(name)   # getter for extension 'name'
+    #   instructions      # array of all extensions
+    #   instruction_hash  # hash of all extensions, indexed by name
+    #   instruction(name) # getter for extension 'name'
+    #   ...
+    #
+    # @!macro [attach] generate_obj_methods
+    #   @method $1s
+    #   @return [Array<$3>] List of all $1s defined in the standard
+    #
+    #   @method $1_hash
+    #   @return [Hash<String, $3>] Hash of all $1s
+    #
+    #   @method $1
+    #   @param name [String] The $1 name
+    #   @return [$3] The $1
+    #   @return [nil] if there is no $1 named +name+
+    sig { params(fn_name: String, arch_dir: String, obj_class: T.class_of(TopLevelDatabaseObject)).void }
+    def self.generate_obj_methods(fn_name, arch_dir, obj_class)
 
-      # now re-create the symtab, this time checking for parameter existance and type
-      Udb.logger.debug "Creating final symbol table for ConfiguredArchiture##{name}"
-      @symtab = final_symtab
-      @global_ast.add_global_symbols(@symtab)
+      plural_fn = ActiveSupport::Inflector.pluralize(fn_name)
 
+      define_method(plural_fn) do
+        return @objects[arch_dir] unless @objects[arch_dir].nil?
 
-      @symtab.deep_freeze
-      raise if @symtab.name.nil?
-      @global_ast.freeze_tree(@symtab)
-      Udb.logger.debug "ConfiguredArchiture##{name} created"
+        @objects[arch_dir] = Concurrent::Array.new
+        @object_hashes[arch_dir] = Concurrent::Hash.new
+        Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
+          f = File.open(obj_path)
+          f.flock(File::LOCK_EX)
+          obj_yaml = YAML.load(f.read, filename: obj_path, permitted_classes: [Date])
+          f.flock(File::LOCK_UN)
+          @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, T.cast(self, ConfiguredArchitecture))
+          @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
+        end
+        @objects[arch_dir]
+      end
+
+      define_method("#{fn_name}_hash") do
+        return @object_hashes[arch_dir] unless @object_hashes[arch_dir].nil?
+
+        send(plural_fn) # create the hash
+
+        @object_hashes[arch_dir]
+      end
+
+      define_method(fn_name) do |name|
+        return @object_hashes[arch_dir][name] unless @object_hashes[arch_dir].nil?
+
+        send(plural_fn) # create the hash
+
+        @object_hashes[arch_dir][name]
+      end
+    end
+
+    # call generate_obj_methods for each known top-level database object
+    OBJS.each do |obj_info|
+      generate_obj_methods(obj_info[:fn_name], obj_info[:arch_dir], obj_info[:klass])
     end
 
     # type check all IDL, including globals, instruction ops, and CSR functions
     #
-    # @param config [AbstractConfig] Configuration
-    # @param show_progress [Boolean] whether to show progress bars
-    # @param io [IO] where to write progress bars
+    # @param show_progress whether to show progress bars
+    # @param io where to write progress bars
     # @return [void]
     sig { params(show_progress: T::Boolean, io: IO).void }
     def type_check(show_progress: true, io: $stdout)
       io.puts "Type checking IDL code for #{@config.name}..." if show_progress
+      insts = possible_instructions(show_progress:)
+
       progressbar =
         if show_progress
-          ProgressBar.create(title: "Instructions", total: possible_instructions.size)
+          TTY::ProgressBar.new("type checking possible instructions [:bar]", total: insts.size, output: $stdout)
         end
 
       possible_instructions.each do |inst|
-        progressbar.increment if show_progress
+        progressbar.advance if show_progress
         if @mxlen == 32
           inst.type_checked_operation_ast(32) if inst.rv32?
         elsif @mxlen == 64
@@ -644,21 +666,21 @@ module Udb
               field.type_checked_reset_value_ast if csr.defined_in_base32? && field.defined_in_base32?
             end
           end
-          unless field.sw_write_ast(@symtab).nil?
-            field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
-            field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
+          unless field.sw_write_ast(symtab).nil?
+            field.type_checked_sw_write_ast(symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+            field.type_checked_sw_write_ast(symtab, 64) if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
           end
         end
       end
 
-      func_list = reachable_functions
+      func_list = reachable_functions(show_progress:)
       progressbar =
         if show_progress
           ProgressBar.create(title: "Functions", total: func_list.size)
         end
       func_list.each do |func|
         progressbar.increment if show_progress
-        func.type_check(@symtab)
+        func.type_check(symtab)
       end
 
       puts "done" if show_progress
@@ -670,10 +692,12 @@ module Udb
       @params_with_value ||=
         @config.param_values.map do |param_name, param_value|
           p = param(param_name)
-          raise "#{param_name} is not a parameter" if p.nil?
-
-          ParameterWithValue.new(p, param_value)
-        end
+          if p.nil?
+            Udb.logger.warn "#{param_name} is not a parameter"
+          else
+            ParameterWithValue.new(p, param_value)
+          end
+        end.compact
     end
 
     # List of all available parameters without one known value in the config
@@ -701,10 +725,9 @@ module Udb
       @out_of_scope_params
     end
 
-    # @return [Array<ExtensionVersion>] List of extension versions explicitly marked as implemented in the config.
-    #                                   Does *not* include extensions implied by explicitly implemented extensions.
+    # @return List of extension versions explicitly marked as implemented in the config.
     sig { returns(T::Array[ExtensionVersion]) }
-    def explicitly_implemented_extension_versions
+    def implemented_extension_versions
       return @explicitly_implemented_extension_versions if defined?(@explicitly_implemented_extension_versions)
 
       unless fully_configured?
@@ -713,79 +736,52 @@ module Udb
 
       @explicitly_implemented_extension_versions ||=
         T.cast(@config, FullConfig).implemented_extensions.map do |e|
-          ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: true)
+          ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: false)
         end
     end
 
+    # @deprecated in favor of implemented_extension_versions
+    def explicitly_implemented_extension_versions = implemented_extension_versions
+
+    # @deprecated in favor of implemented_extension_versions
+    def transitive_implemented_extension_versions = implemented_extension_versions
+
+
+    # given the current (invalid) config, try to come up with a list of extension versions that,
+    # if added, might make the config valid
+    #
+    # For example, if C, F, and D are implemented but not Zca, Zcf, Zcd, return [Zca, Zcf, Zcd]
     sig { params(ext_vers: T::Array[ExtensionVersion]).returns(T::Array[ExtensionVersion]) }
     def expand_implemented_extension_list(ext_vers)
+
       # build up a condition requiring all ext_vers, have it expand, and then minimize it
       # what's left is the full list
       condition =
         Condition.conjunction(ext_vers.map(&:to_condition), self)
 
       res = condition.implied_extension_requirements
+      (ext_vers +
       res.map do |cond_ext_req|
         if cond_ext_req.cond.empty?
           cond_ext_req.ext_req.satisfying_versions.fetch(0)
         else
           nil
         end
-      end.compact
+      end.compact).uniq
     end
 
-    # List of all extensions known to be implemented in this config, including transitive implications
-    sig { returns(T::Array[ExtensionVersion]) }
-    def transitive_implemented_extension_versions
-      return @transitive_implemented_extension_versions unless @transitive_implemented_extension_versions.nil?
 
-      raise "transitive_implemented_extension_versions is only valid for a fully configured definition" unless @config.fully_configured?
+    sig { params(ext_name: String).returns(T.nilable(ExtensionVersion)) }
+    def implemented_extension_version(ext_name)
+      @implemented_extension_version_hash ||=
+        implemented_extension_versions.map do |ext_ver|
+          [ext_ver.name, ext_ver]
+        end.to_h
 
-      # collect all implemented
-      implemented_ext_vers =
-        T.cast(@config, FullConfig).implemented_extensions.map do |ext_ver_data|
-          ExtensionVersion.create(ext_ver_data, self)
-        end
-      implemented_condition =
-        Condition.conjunction(implemented_ext_vers.map(&:to_condition), self)
-      puts implemented_condition.to_logic_tree
-      puts implemented_condition.to_logic_tree.satisfiable?
-
-      # select all versions that are implemented (transitively expanded by Condition)
-      @transitive_implemented_extension_versions =
-        extensions.map(&:versions).flatten.select do |ext_ver|
-          condition =
-            Condition.conjunction([implemented_condition, ext_ver.to_condition], self)
-          condition.satisfiable?
-        end
-
-
-      # @transitive_implemented_extension_versions = explicitly_implemented_extension_versions.dup
-
-      # added_ext_vers = []
-      # loop do
-      #   @transitive_implemented_extension_versions.each do |ext_ver|
-      #     ext_ver.implications.each do |cond_ext_ver|
-      #       applies = cond_ext_ver.cond.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-      #       if applies && !@transitive_implemented_extension_versions.include?(cond_ext_ver.ext_ver)
-      #         added_ext_vers << cond_ext_ver.ext_ver
-      #       end
-      #     end
-      #   end
-      #   break if added_ext_vers.empty?
-
-      #   added_ext_vers.each { |ext_ver| @transitive_implemented_extension_versions << ext_ver }
-
-      #   added_ext_vers = []
-      # end
-
-      # @transitive_implemented_extension_versions.sort!
-      # @transitive_implemented_extension_versions
+      @implemented_extension_version_hash[ext_name]
     end
-    alias implemented_extension_versions transitive_implemented_extension_versions
 
-
-    # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements (not transitive)
+    # @return List of all mandatory extension requirements (not transitive)
     sig { returns(T::Array[ExtensionRequirement]) }
     def mandatory_extension_reqs
       @mandatory_extension_reqs ||=
@@ -794,8 +790,6 @@ module Udb
 
           @config.mandatory_extensions.map do |e|
             ename = T.cast(e["name"], String)
-            ext = extension(ename)
-            raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
             if e["version"].nil?
               ExtensionRequirement.new(ename, ">= 0", presence: Presence.new("mandatory"), arch: self)
@@ -810,30 +804,51 @@ module Udb
         end
     end
 
+    # list of all the extension versions that optional, i.e:
+    # lis of all the extension versions would not fufill a mandatory requirement and are not prhohibited
+    sig { returns(T::Array[ExtensionRequirement]) }
+    def optional_extension_versions
+      @optional_extension_versions ||=
+        begin
+          if fully_configured?
+            []
+          elsif partially_configured?
+            # optional is all extensions - mandatory - prohibited
+            extension_versions.reject do |ext_ver|
+              mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) } ||
+                prohibited_extension_versions.any? { |prohibited_ext_ver| prohibited_ext_ver == ext_ver }
+            end
+          else
+            # unconfig; all extension versions are optional
+            extension_versions
+          end
+        end
+    end
+
     # @return [Array<Extension>] List of extensions that are possibly supported
     sig { returns(T::Array[Extension]) }
-    def not_prohibited_extensions
+    def possible_extensions
       return @not_prohibited_extensions if defined?(@not_prohibited_extensions)
 
       @not_prohibited_extensions ||=
         if @config.fully_configured?
-          transitive_implemented_extension_versions.map { |ext_ver| ext_ver.ext }.uniq
+          implemented_extension_versions.map { |ext_ver| ext_ver.ext }.uniq
         elsif @config.partially_configured?
           # reject any extension in which all of the extension versions are prohibited
-          extensions.reject { |ext| (ext.versions - transitive_prohibited_extension_versions).empty? }
+          extensions.reject { |ext| (ext.versions - prohibited_extension_versions).empty? }
         else
           extensions
         end
     end
-    alias possible_extensions not_prohibited_extensions
+    alias not_prohibited_extensions possible_extensions
 
-    # @return [Array<ExtensionVersion>] List of all extension versions that are prohibited.
-    #                                   This includes extensions explicitly prohibited by the config file
-    #                                   and extensions that conflict with a mandatory extension.
+    # @return List of all extension versions that are prohibited.
+    #           This includes extensions explicitly prohibited by the config file
+    #           and extensions that conflict with a mandatory extension.
     sig { returns(T::Array[ExtensionVersion]) }
-    def transitive_prohibited_extension_versions
-      @transitive_prohibited_extension_versions ||=
-        extensions.map(&:versions).flatten - possible_extension_versions
+    def prohibited_extension_versions
+      @prohibited_extension_versions ||=
+        extension_versions - possible_extension_versions
     end
 
     # the complete set of extension versions that could be implemented in this config
@@ -893,7 +908,7 @@ module Udb
             end
           elsif @config.fully_configured?
             # full config: only the implemented versions are possible
-            transitive_implemented_extension_versions
+            implemented_extension_versions
           else
             # unconfig; everything is possible
             extensions.map(&:versions).flatten
@@ -913,9 +928,9 @@ module Udb
     sig { params(ext: T.any(ExtensionVersion, String, Symbol)).returns(T::Boolean) }
     def prohibited_ext?(ext)
       if ext.is_a?(ExtensionVersion)
-        transitive_prohibited_extension_versions.include?(ext)
+        prohibited_extension_versions.include?(ext)
       elsif ext.is_a?(String) || ext.is_a?(Symbol)
-        transitive_prohibited_extension_versions.any? { |ext_ver| ext_ver.name == ext.to_s }
+        prohibited_extension_versions.any? { |ext_ver| ext_ver.name == ext.to_s }
       else
         raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
       end
@@ -942,7 +957,7 @@ module Udb
 
       result =
         if @config.fully_configured?
-          transitive_implemented_extension_versions.any? do |e|
+          implemented_extension_versions.any? do |e|
             if ext_version_requirements.empty?
               e.name == ext_name.to_s
             else
@@ -986,13 +1001,13 @@ module Udb
     # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
     sig { returns(T::Array[Idl::FunctionBodyAst]) }
     def functions
-      @functions ||= @global_ast.functions
+      @functions ||= global_ast.functions
     end
 
     # @return [Idl::FetchAst] Fetch block
     sig { returns(Idl::FetchAst) }
     def fetch
-      @fetch ||= @global_ast.fetch
+      @fetch ||= global_ast.fetch
     end
 
     # @return [Array<Idl::GlobalAst>] List of globals
@@ -1000,16 +1015,16 @@ module Udb
     def globals
       return @globals unless @globals.nil?
 
-      @globals = @global_ast.globals
+      @globals = global_ast.globals
     end
 
     # @return [Array<Csr>] List of all implemented CSRs
     sig { returns(T::Array[Csr]) }
-    def transitive_implemented_csrs
-      @transitive_implemented_csrs ||=
+    def implemented_csrs
+      @implemented_csrs ||=
         begin
           unless fully_configured?
-            raise ArgumentError, "transitive_implemented_csrs is only defined for fully configured systems"
+            raise ArgumentError, "implemented_csrs is only defined for fully configured systems"
           end
 
           csrs.select do |csr|
@@ -1017,45 +1032,54 @@ module Udb
           end
         end
     end
-    alias implemented_csrs transitive_implemented_csrs
+
+    # @deprecated in favor of implemented_csrs
+    def transitive_implemented_csrs = implemented_csrs
 
     # @return [Array<Csr>] List of all CSRs that it is possible to implement
-    sig { returns(T::Array[Csr]) }
-    def not_prohibited_csrs
+    sig { params(show_progress: T::Boolean).returns(T::Array[Csr]) }
+    def possible_csrs(show_progress: false)
       @not_prohibited_csrs ||=
         if @config.fully_configured?
-          transitive_implemented_csrs
+          implemented_csrs
         elsif @config.partially_configured?
+          bar =
+            if show_progress
+              TTY::ProgressBar.new("determining possible CSRs", total: csrs.size)
+            end
           csrs.select do |csr|
+            bar.advance if show_progress
             csr.defined_by_condition.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
           end
         else
           csrs
         end
     end
-    alias possible_csrs not_prohibited_csrs
+    alias not_prohibited_csrs possible_csrs
 
-    # @return [Array<Instruction>] List of all implemented instructions, sorted by name
+    # @return List of all implemented instructions, sorted by name
     sig { returns(T::Array[Instruction]) }
-    def transitive_implemented_instructions
+    def implemented_instructions
       unless fully_configured?
-        raise ArgumentError, "transitive_implemented_instructions is only defined for fully configured systems"
+        raise ArgumentError, "implemented_instructions is only defined for fully configured systems"
       end
 
-      @transitive_implemented_instructions ||=
+      @implemented_instructions ||=
         instructions.select do |inst|
           inst.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
         end
     end
-    alias implemented_instructions transitive_implemented_instructions
+
+    # @depracted in favor of #implemented_instructions
+    def transitive_implemented_instructions = implemented_instructions
 
     # @return [Array<Instruction>] List of all prohibited instructions, sorted by name
     sig { returns(T::Array[Instruction]) }
-    def transitive_prohibited_instructions
+    def prohibited_instructions
       # an instruction is prohibited if it is not defined by any .... TODO LEFT OFF HERE....
-      @transitive_prohibited_instructions ||=
+      @prohibited_instructions ||=
         if fully_configured?
-          instructions - transitive_implemented_instructions
+          instructions - implemented_instructions
         elsif partially_configured?
           instructions.select do |inst|
             inst.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::No
@@ -1064,43 +1088,42 @@ module Udb
           []
         end
     end
-    alias prohibited_instructions transitive_prohibited_instructions
 
-    # @return [Array<Instruction>] List of all instructions that are not prohibited by the config, sorted by name
-    sig { returns(T::Array[Instruction]) }
-    def not_prohibited_instructions
+    # @depracated in favor of #prohibited_instructions
+    def transitive_prohibited_instructions = prohibited_instructions
+
+    # @return List of all instructions that are not prohibited by the config, sorted by name
+    sig { params(show_progress: T::Boolean).returns(T::Array[Instruction]) }
+    def possible_instructions(show_progress: false)
       return @not_prohibited_instructions if defined?(@not_prohibited_instructions)
 
-      @not_prohibited_instructions_mutex ||= Thread::Mutex.new
-      @not_prohibited_instructions_mutex.synchronize do
-        @not_prohibited_instructions ||=
-          if @config.fully_configured?
-            transitive_implemented_instructions
-          elsif @config.partially_configured?
-            instructions.select do |inst|
-              possible_xlens.any? { |xlen| inst.defined_in_base?(xlen) } && \
-                inst.defined_by_condition.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
+      @not_prohibited_instructions ||=
+        if @config.fully_configured?
+          implemented_instructions
+        elsif @config.partially_configured?
+          bar =
+            if show_progress
+              TTY::ProgressBar.new("determining possible instructions [:bar]", total: instructions.size, output: $stdout)
             end
-          else
-            instructions
+          instructions.select do |inst|
+            bar.advance if show_progress
+
+            possible_xlens.any? { |xlen| inst.defined_in_base?(xlen) } && \
+              inst.defined_by_condition.satisfied_by_cfg_arch?(self) != SatisfiedResult::No
           end
-      end
+        else
+          instructions
+        end
 
       @not_prohibited_instructions
     end
-    alias possible_instructions not_prohibited_instructions
+
+    alias not_prohibited_instructions possible_instructions
 
     # @return [Integer] The largest instruction encoding in the config
     sig { returns(Integer) }
     def largest_encoding
-      @largest_encoding ||=
-        if fully_configured?
-          transitive_implemented_instructions.map(&:max_encoding_width).max
-        elsif partially_configured?
-          not_prohibited_instructions.map(&:max_encoding_width).max
-        else
-          instructions.map(&:max_encoding_width).max
-        end
+      @largest_encoding ||= possible_instructions.map(&:max_encoding_width).max
     end
 
     # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
@@ -1110,9 +1133,9 @@ module Udb
 
       @implemented_functions = []
 
-      puts "  Finding all reachable functions from instruction operations"
+      Udb.logger.info "  Finding all reachable functions from instruction operations"
 
-      transitive_implemented_instructions.each do |inst|
+      implemented_instructions.each do |inst|
         @implemented_functions <<
           if inst.base.nil?
             if multi_xlen?
@@ -1128,9 +1151,9 @@ module Udb
       @implemented_functions = @implemented_functions.flatten
       @implemented_functions.uniq!(&:name)
 
-      puts "  Finding all reachable functions from CSR operations"
+      Udb.logger.info "  Finding all reachable functions from CSR operations"
 
-      transitive_implemented_csrs.each do |csr|
+      implemented_csrs.each do |csr|
         csr_funcs = csr.reachable_functions
         csr_funcs.each do |f|
           @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
@@ -1138,26 +1161,35 @@ module Udb
       end
 
       # now add everything from fetch
-      symtab = @symtab.global_clone
-      symtab.push(@global_ast.fetch.body)
-      fetch_fns = @global_ast.fetch.body.reachable_functions(symtab)
+      st = symtab.global_clone
+      st.push(global_ast.fetch.body)
+      fetch_fns = global_ast.fetch.body.reachable_functions(st)
       fetch_fns.each do |f|
         @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
       end
-      symtab.release
+      st.release
 
       @implemented_functions
     end
 
     # @return [Array<FunctionDefAst>] List of functions that can be reached by the configuration
-    sig { returns(T::Array[Idl::FunctionDefAst]) }
-    def reachable_functions
+    sig { params(show_progress: T::Boolean).returns(T::Array[Idl::FunctionDefAst]) }
+    def reachable_functions(show_progress: false)
       return @reachable_functions unless @reachable_functions.nil?
 
-      insts = not_prohibited_instructions
       @reachable_functions = []
 
-      insts.each do |inst|
+      insts = possible_instructions(show_progress:)
+      csrs = possible_csrs(show_progress:)
+
+      bar =
+        if show_progress
+          TTY::ProgressBar.new("determining reachable IDL functions [:bar]", total: insts.size + csrs.size + 1 + global_ast.functions.size, output: $stdout)
+        end
+
+      possible_instructions.each do |inst|
+        bar.advance if show_progress
+
         fns =
           if inst.base.nil?
             if multi_xlen?
@@ -1174,24 +1206,30 @@ module Udb
       end
 
       @reachable_functions +=
-        not_prohibited_csrs.flat_map(&:reachable_functions).uniq
+        possible_csrs.flat_map do |csr|
+          bar.advance if show_progress
+
+          csr.reachable_functions
+        end.uniq
 
       # now add everything from fetch
-      symtab = @symtab.global_clone
-      symtab.push(@global_ast.fetch.body)
-      @reachable_functions += @global_ast.fetch.body.reachable_functions(symtab)
-      symtab.release
+      st = @symtab.global_clone
+      st.push(global_ast.fetch.body)
+      @reachable_functions += global_ast.fetch.body.reachable_functions(st)
+      bar.advance if show_progress
+      st.release
 
       # now add everything from external functions
-      symtab = @symtab.global_clone
-      @global_ast.functions.select { |fn| fn.external? }.each do |fn|
-        symtab.push(fn)
+      st = @symtab.global_clone
+      global_ast.functions.select { |fn| fn.external? }.each do |fn|
+        st.push(fn)
         @reachable_functions << fn
-        fn.apply_template_and_arg_syms(symtab)
-        @reachable_functions += fn.reachable_functions(symtab)
-        symtab.pop
+        fn.apply_template_and_arg_syms(st)
+        @reachable_functions += fn.reachable_functions(st)
+        bar.advance if show_progress
+        st.pop
       end
-      symtab.release
+      st.release
 
       @reachable_functions.uniq!
       @reachable_functions
@@ -1354,7 +1392,9 @@ module Udb
 
       @implemented_non_isa_specs
     end
-    alias transitive_implemented_non_isa_specs implemented_non_isa_specs
+
+    # @deprecated in favor of #implemented_non_isa_specs
+    def transitive_implemented_non_isa_specs = implemented_non_isa_specs
 
     # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
     # and replace them with links to the relevant object page.

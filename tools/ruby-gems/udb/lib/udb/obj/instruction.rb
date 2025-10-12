@@ -13,24 +13,23 @@ require "udb_helpers/backend_helpers"
 require "awesome_print"
 
 module Udb
-  class InstructionType < DatabaseObject
+  class InstructionType < TopLevelDatabaseObject
     sig {
       params(
         data: T::Hash[String, T.untyped],
         data_path: T.any(String, Pathname),
-        arch: ConfiguredArchitecture,
-        name: T.nilable(String)
+        arch: ConfiguredArchitecture
       ).void
     }
-    def initialize(data, data_path, arch, name: nil)
-      super(data, data_path, arch, DatabaseObject::Kind::InstructionType, name:)
+    def initialize(data, data_path, arch)
+      super(data, data_path, arch)
     end
 
     def length = @data["length"]
     def size = length
   end
 
-  class InstructionSubtype < DatabaseObject
+  class InstructionSubtype < TopLevelDatabaseObject
     class Opcode
       extend T::Sig
 
@@ -60,12 +59,11 @@ module Udb
       params(
         data: T::Hash[String, T.untyped],
         data_path: T.any(String, Pathname),
-        arch: ConfiguredArchitecture,
-        name: T.nilable(String)
+        arch: ConfiguredArchitecture
       ).void
     }
-    def initialize(data, data_path, arch, name: nil)
-      super(data, data_path, arch, DatabaseObject::Kind::InstructionSubtype, name:)
+    def initialize(data, data_path, arch)
+      super(data, data_path, arch)
     end
 
     sig { returns(InstructionType) }
@@ -1172,7 +1170,7 @@ module Udb
 
     sig { returns(T::Array[ConditionalExtensionRequirement]) }
     def defining_extension_requirements
-      defined_by_condition.implied_extensions
+      defined_by_condition.implied_extension_requirements
     end
 
     # return a list of profiles that mandate that this instruction be implemented

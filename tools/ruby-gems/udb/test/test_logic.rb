@@ -4,11 +4,12 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative "test_helper"
+
 require "fileutils"
 require "tmpdir"
 require "yaml"
 
-require "minitest/autorun"
 require "udb/logic"
 require "udb/cfg_arch"
 require "udb/resolver"
@@ -440,7 +441,7 @@ class TestLogic < Minitest::Test
           SatisfiedResult::No
         end
       else
-        term.eval(cfg_arch.symtab)
+        term.eval(cfg_arch)
       end
     end
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb))
@@ -499,7 +500,10 @@ class TestLogic < Minitest::Test
     )
     assert_equal(SatisfiedResult::No, n.eval_cb(cb))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    assert_equal(
+      SatisfiedResult::Maybe,
+      n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes })
+    )
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
@@ -515,9 +519,16 @@ class TestLogic < Minitest::Test
     )
     assert_equal(SatisfiedResult::No, n.eval_cb(cb))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "C" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    assert_equal(
+      SatisfiedResult::No,
+      n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes })
+    )
+    assert_equal(
+      SatisfiedResult::No,
+      n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    assert_equal(
+      SatisfiedResult::No,
+      n.eval_cb(proc { |term| term.name == "C" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "C" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
@@ -554,7 +565,7 @@ class TestLogic < Minitest::Test
     )
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    assert_equal(SatisfiedResult::Yes, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Yes, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
@@ -641,7 +652,7 @@ class TestLogic < Minitest::Test
           SatisfiedResult::No
         end
       else
-        term.eval(partial_cfg_arch.symtab)
+        term.eval(partial_cfg_arch)
       end
     end
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
@@ -1570,15 +1581,26 @@ class TestLogic < Minitest::Test
         assert node.equisatisfiable?(cnf)
 
         pos = node.minimize(LogicNode::CanonicalizationType::ProductOfSums)
-        assert node.equivalent?(pos)
+        assert \
+          node.equivalent?(pos),
+          "#{node} was minimized to #{pos}, which is not equivalent"
         assert pos.cnf?
 
         sop = node.minimize(LogicNode::CanonicalizationType::SumOfProducts)
         assert node.equivalent?(sop)
         assert sop.dnf?
       else
-        assert_equal LogicNodeType::False, node.minimize(LogicNode::CanonicalizationType::ProductOfSums).type
-        assert_equal LogicNodeType::False, node.minimize(LogicNode::CanonicalizationType::SumOfProducts).type
+        min = node.minimize(LogicNode::CanonicalizationType::ProductOfSums)
+        assert_equal \
+          LogicNodeType::False,
+          min.type,
+          "Unsatisfiable equation #{node} did not minimize to false. Got #{min}"
+
+        min = node.minimize(LogicNode::CanonicalizationType::SumOfProducts)
+        assert_equal \
+          LogicNodeType::False,
+          min.type,
+          "Unsatisfiable equation #{node} did not minimize to false. Got #{min}"
       end
     end
   end

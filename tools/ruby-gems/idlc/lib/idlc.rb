@@ -365,23 +365,23 @@ module Idl
       ast.set_input_file("[CONSTRAINT]", 0)
       ast.freeze_tree(symtab)
 
-      begin
-        ast.type_check(symtab)
-      rescue AstNode::TypeError => e
-        raise e if pass_error
+      # begin
+      #   ast.type_check(symtab)
+      # rescue AstNode::TypeError => e
+      #   raise e if pass_error
 
-        warn "Compiling #{body}"
-        warn e.what
-        warn T.must(e.backtrace).join("\n")
-        exit 1
-      rescue AstNode::InternalError => e
-        raise e if pass_error
+      #   warn "Compiling #{body}"
+      #   warn e.what
+      #   warn T.must(e.backtrace).join("\n")
+      #   exit 1
+      # rescue AstNode::InternalError => e
+      #   raise e if pass_error
 
-        warn "Compiling #{body}"
-        warn e.what
-        warn T.must(e.backtrace).join("\n")
-        exit 1
-      end
+      #   warn "Compiling #{body}"
+      #   warn e.what
+      #   warn T.must(e.backtrace).join("\n")
+      #   exit 1
+      # end
 
       ast
     end

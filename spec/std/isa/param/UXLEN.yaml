@@ -21,7 +21,7 @@ schema:
   uniqueItems: true
 requirements:
   idl(): |
-    !$array_includes?(MXLEN, 64) -> !$array_includes?(UXLEN, 64);
+    MXLEN == 32 -> !$array_includes?(UXLEN, 64);
     $array_includes?(SXLEN, 32) -> $array_includes?(UXLEN, 32);
   reason: |
     XLEN in U-mode can never be larger than XLEN in M-mode

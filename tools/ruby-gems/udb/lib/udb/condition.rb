@@ -403,7 +403,7 @@ module Udb
         if term.is_a?(ExtensionTerm)
           SatisfiedResult::Maybe
         elsif term.is_a?(ParameterTerm)
-          term.eval(cfg_arch.symtab)
+          term.partial_eval(cfg_arch.config.param_values)
         elsif term.is_a?(FreeTerm)
           raise "unreachable"
         else
@@ -422,12 +422,13 @@ module Udb
       if cfg_arch.fully_configured?
         implemented_ext_cb = make_cb_proc do |term|
           if term.is_a?(ExtensionTerm)
-            satisfied = cfg_arch.transitive_implemented_extension_versions.any? do |ext_ver|
-              term.to_ext_req(cfg_arch).satisfied_by?(ext_ver)
-            end
-            satisfied ? SatisfiedResult::Yes : SatisfiedResult::No
+            ext_ver = cfg_arch.implemented_extension_version(term.name)
+            next SatisfiedResult::No if ext_ver.nil?
+            term.to_ext_req(cfg_arch).satisfied_by?(ext_ver) \
+              ? SatisfiedResult::Yes
+              : SatisfiedResult::No
           elsif term.is_a?(ParameterTerm)
-            term.eval(cfg_arch.symtab)
+            term.eval(cfg_arch)
           elsif term.is_a?(FreeTerm)
             raise "unreachable"
           else
@@ -450,7 +451,7 @@ module Udb
               SatisfiedResult::No
             end
           elsif term.is_a?(ParameterTerm)
-            term.eval(cfg_arch.symtab)
+            term.eval(cfg_arch)
           elsif term.is_a?(FreeTerm)
             raise "unreachable"
           else
@@ -506,36 +507,46 @@ module Udb
       @implications ||= begin
         reqs = []
         pos = to_logic_tree(expand: true).minimize(LogicNode::CanonicalizationType::ProductOfSums)
-        pos.children.each do |child|
-          child = T.cast(child, LogicNode)
-          if child.type == LogicNodeType::Term
-            reqs << \
-              ConditionalExtensionRequirement.new(
-                ext_req: T.cast(child.children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch),
-                cond: AlwaysTrueCondition.new
-              )
-          elsif child.children.all? { |child| T.cast(child, LogicNode).type == LogicNodeType::Not }
-            # there is no positive term, so do nothing
-          else
-            raise "? #{child.type}" unless child.type == LogicNodeType::Or
+        if pos.type == LogicNodeType::Term
+          reqs << pos
+        elsif pos.type == LogicNodeType::Not
+          # there are no positive terms, do nothing
+        elsif pos.type == LogicNodeType::And
+          pos.children.each do |child|
+            child = T.cast(child, LogicNode)
+            if child.type == LogicNodeType::Term
+              term = child.children.fetch(0)
+              if term.is_a?(ExtensionTerm)
+                reqs << \
+                  ConditionalExtensionRequirement.new(
+                    ext_req: term.to_ext_req(@cfg_arch),
+                    cond: AlwaysTrueCondition.new
+                  )
+              end
+            elsif child.children.all? { |child| T.cast(child, LogicNode).type == LogicNodeType::Not }
+              # there is no positive term, so do nothing
+            else
+              raise "? #{child.type}" unless child.type == LogicNodeType::Or
 
-            positive_terms = child.children.select { |and_child| T.cast(and_child, LogicNode).type == LogicNodeType::Term }
-            negative_terms =
-              child.children.select { |and_child| T.cast(and_child, LogicNode).type == LogicNodeType::Not }
-                .map { |neg_term| T.cast(neg_term, LogicNode).children.fetch(0) }
-            positive_terms.each do |pterm|
-              cond_node =
-                T.cast(negative_terms.size == 1 \
-                  ? negative_terms.fetch(0)
-                  : LogicNode.new(LogicNodeType::Or, negative_terms), LogicNode)
+              positive_terms =
+                child.node_children.select { |and_child| and_child.type == LogicNodeType::Term }
+              negative_terms =
+                child.node_children.select { |and_child| and_child.type == LogicNodeType::Not }
+                .map { |neg_term| neg_term.node_children.fetch(0) }
+              positive_terms.each do |pterm|
+                cond_node =
+                  negative_terms.size == 1 \
+                    ? negative_terms.fetch(0)
+                    : LogicNode.new(LogicNodeType::Or, negative_terms)
 
-              reqs << \
-                ConditionalExtensionRequirement.new(
-                  ext_req: T.cast(T.cast(pterm, LogicNode).children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch),
-                  cond: Condition.new(cond_node.to_h, @cfg_arch)
-                )
+                reqs << \
+                  ConditionalExtensionRequirement.new(
+                    ext_req: T.cast(pterm.children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch),
+                    cond: Condition.new(cond_node.to_h, @cfg_arch)
+                  )
+              end
+              reqs
             end
-            reqs
           end
         end
         reqs
@@ -570,6 +581,30 @@ module Udb
         Condition.new(
           LogicNode.new(
             LogicNodeType::And,
+            conditions.map { |c| c.to_logic_tree_internal(expand: false, expanded_ext_vers: {}) }
+          ).to_h,
+          cfg_arch
+        )
+      end
+    end
+
+    # return a new Condition that the logical OR of conditions
+    sig {
+      params(
+        conditions: T::Array[AbstractCondition],
+        cfg_arch: ConfiguredArchitecture,
+      )
+      .returns(AbstractCondition)
+    }
+    def self.disjunction(conditions, cfg_arch)
+      if conditions.empty?
+        AlwaysFalseCondition.new
+      elsif conditions.size == 1
+        conditions.fetch(0)
+      else
+        Condition.new(
+          LogicNode.new(
+            LogicNodeType::Or,
             conditions.map { |c| c.to_logic_tree_internal(expand: false, expanded_ext_vers: {}) }
           ).to_h,
           cfg_arch
@@ -738,6 +773,11 @@ module Udb
 
     sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_requirements = []
+  end
+
+  class Condition
+    True = AlwaysTrueCondition.new.freeze
+    False = AlwaysFalseCondition.new.freeze
   end
 
   class ParamCondition < Condition

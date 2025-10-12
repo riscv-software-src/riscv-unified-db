@@ -657,10 +657,10 @@ module Udb
         if csr_length.nil?
           # we don't know the csr length for sure, so we can only check again max_length
           if e > csr.max_length
-            raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length}) in #{csr.name}.#{name}"
+            Udb.logger.warn "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length}) in #{csr.name}.#{name}"
           end
         elsif e > csr_length
-          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
+          Udb.logger.warn "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
 
         end
 

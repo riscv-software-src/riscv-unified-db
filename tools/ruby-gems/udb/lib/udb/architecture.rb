@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # The Architecture class is the API to the architecture database.
@@ -63,10 +63,11 @@ module Udb
   class Architecture
     extend T::Sig
 
-    # @return [Pathname] Path to the directory with the standard YAML files
+    # Path to the directory with the standard YAML files
     attr_reader :path
 
     # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
+    sig { params(arch_dir: T.any(Pathname, String)).void }
     def initialize(arch_dir)
       @arch_dir = Pathname.new(arch_dir)
       raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
@@ -88,59 +89,6 @@ module Udb
 
         progressbar.increment if show_progress
         obj.validate(resolver)
-      end
-    end
-
-    # These instance methods are create when this Architecture class is first loaded.
-    # This is a Ruby "class" method and so self is the entire Architecture class, not an instance it.
-    # However, this class method creates normal instance methods and when they are called
-    # self is an instance of the Architecture class.
-    #
-    # @!macro [attach] generate_obj_methods
-    #   @method $1s
-    #   @return [Array<$3>] List of all $1s defined in the standard
-    #
-    #   @method $1_hash
-    #   @return [Hash<String, $3>] Hash of all $1s
-    #
-    #   @method $1
-    #   @param name [String] The $1 name
-    #   @return [$3] The $1
-    #   @return [nil] if there is no $1 named +name+
-    sig { params(fn_name: String, arch_dir: String, obj_class: T.class_of(DatabaseObject)).void }
-    def self.generate_obj_methods(fn_name, arch_dir, obj_class)
-      plural_fn = ActiveSupport::Inflector.pluralize(fn_name)
-
-      define_method(plural_fn) do
-        return @objects[arch_dir] unless @objects[arch_dir].nil?
-
-        @objects[arch_dir] = Concurrent::Array.new
-        @object_hashes[arch_dir] = Concurrent::Hash.new
-        Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
-          f = File.open(obj_path)
-          f.flock(File::LOCK_EX)
-          obj_yaml = YAML.load(f.read, filename: obj_path, permitted_classes: [Date])
-          f.flock(File::LOCK_UN)
-          @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, self)
-          @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
-        end
-        @objects[arch_dir]
-      end
-
-      define_method("#{fn_name}_hash") do
-        return @object_hashes[arch_dir] unless @object_hashes[arch_dir].nil?
-
-        send(plural_fn) # create the hash
-
-        @object_hashes[arch_dir]
-      end
-
-      define_method(fn_name) do |name|
-        return @object_hashes[arch_dir][name] unless @object_hashes[arch_dir].nil?
-
-        send(plural_fn) # create the hash
-
-        @object_hashes[arch_dir][name]
       end
     end
 
@@ -243,10 +191,6 @@ module Udb
       }
     ].freeze
 
-    OBJS.each do |obj_info|
-      generate_obj_methods(obj_info[:fn_name], obj_info[:arch_dir], obj_info[:klass])
-    end
-
     # @return [Array<DatabaseObject>] All known objects
     sig { returns(T::Array[TopLevelDatabaseObject]) }
     def objs
@@ -259,14 +203,22 @@ module Udb
       @objs.freeze
     end
 
-    # @return [Array<PortfolioClass>] Alphabetical list of all portfolio classes defined in the architecture
+    # @return All known extension versions
+    sig { returns(T::Array[ExtensionVersion]) }
+    def extension_versions
+      @extension_versions ||= extensions.map(&:versions).flatten.freeze
+    end
+
+    # @return Alphabetical list of all portfolio classes defined in the architecture
+    sig { returns(T::Array[PortfolioClass]) }
     def portfolio_classes
       return @portfolio_classes unless @portfolio_classes.nil?
 
-      @portfolio_classes = profile_families.concat(proc_cert_classes).sort_by!(&:name)
+      @portfolio_classes = profile_families.concat(proc_cert_classes).sort_by!(&:name).freeze
     end
 
-    # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
+    # @return Hash of all portfolio classes defined in the architecture
+    sig { returns(T::Hash[String, PortfolioClass]) }
     def portfolio_class_hash
       return @portfolio_class_hash unless @portfolio_class_hash.nil?
 
@@ -274,7 +226,7 @@ module Udb
       portfolio_classes.each do |portfolio_class|
         @portfolio_class_hash[portfolio_class.name] = portfolio_class
       end
-      @portfolio_class_hash
+      @portfolio_class_hash.freeze
     end
 
     # @return [PortfolioClass] Portfolio class named +name+
@@ -309,11 +261,13 @@ module Udb
     #
     # @params uri [String] JSON Reference pointer
     # @return [Object] The pointed-to object
-    sig { params(uri: String).returns(DatabaseObject) }
+    sig { params(uri: String).returns(T.untyped) }
     def ref(uri)
       raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 
       file_path, obj_path = uri.split("#")
+      file_path = T.must(file_path)
+      obj = T.let(nil, T.untyped)
       obj =
         case file_path
         when /^proc_cert_class.*/
