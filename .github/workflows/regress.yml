@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
+    needs: regress-udb-unit-test
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
