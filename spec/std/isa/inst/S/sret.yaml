@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: sret
-long_name: Supervisor Exception Return
+long_name: Supervisor Mode Return from Trap
 description: |
-  Returns from an exception.
+  Returns from supervisor mode after handling a trap.
 
   When `sret` is allowed to execute, its behavior depends on whether or not the current privilege
   mode is virtualized.
