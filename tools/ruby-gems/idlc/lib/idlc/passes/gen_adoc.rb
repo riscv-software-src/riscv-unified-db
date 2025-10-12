@@ -308,7 +308,7 @@ module Idl
 
   class CsrFieldReadExpressionAst < AstNode
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}" + link_to_udb_doc_csr_field("#{@csr_obj.name}", "#{@field_name}")
+      "#{' ' * indent}" + link_to_udb_doc_csr_field("#{@csr_name}", "#{@field_name}")
     end
   end
 

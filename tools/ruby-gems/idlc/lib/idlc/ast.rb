@@ -7512,6 +7512,7 @@ end,
     include Rvalue
 
     class MemoizedState < T::Struct
+      prop :csr, T.nilable(Csr)
       prop :type, T.nilable(Type)
       prop :value_calculated, T::Boolean
       prop :value, T.nilable(Integer)
@@ -7528,15 +7529,14 @@ end,
       @memo = MemoizedState.new(value_calculated: false)
     end
 
-    def freeze_tree(symtab)
-      return if frozen?
+    def csr_obj(symtab)
+      @memo.csr ||=
+        begin
+          obj = @csr.csr_def(symtab)
+          type_error "No CSR '#{@csr.text_value}'" if obj.nil?
 
-      @children.each { |child| child.freeze_tree(symtab) }
-
-      @csr_obj = @csr.csr_def(symtab)
-      type_error "No CSR '#{@csr.text_value}'" if @csr_obj.nil?
-
-      freeze
+          obj
+        end
     end
 
     # @!macro type_check

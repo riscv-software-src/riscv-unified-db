@@ -731,7 +731,7 @@ module Udb
 
     sig { returns(T::Boolean) }
     def is_ext_ver?
-      @requirements.size == 1 && @requirements.op == "="
+      @requirements.size == 1 && @requirements.fetch(0).op == "="
     end
 
     sig { returns(ExtensionVersion) }

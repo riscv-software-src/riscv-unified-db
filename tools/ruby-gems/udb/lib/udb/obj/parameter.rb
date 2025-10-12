@@ -28,10 +28,6 @@ module Udb
     sig { override.returns(String) }
     def name = @name
 
-    # @return Asciidoc description
-    sig { override.returns(String) }
-    attr_reader :desc
-
     # Pretty convert extension schema to a string.
     sig { returns(String) }
     def schema_type

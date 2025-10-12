@@ -505,10 +505,10 @@ module Udb
       #   3. for each product, find the negative terms. These are the "conditions" when the positive terms apply
 
       @implications ||= begin
-        reqs = []
+        reqs = T.let([], T::Array[ConditionalExtensionRequirement])
         pos = to_logic_tree(expand: true).minimize(LogicNode::CanonicalizationType::ProductOfSums)
         if pos.type == LogicNodeType::Term
-          reqs << pos
+          reqs << ConditionalExtensionRequirement.new(ext_req: T.cast(pos.children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch), cond: Condition::True)
         elsif pos.type == LogicNodeType::Not
           # there are no positive terms, do nothing
         elsif pos.type == LogicNodeType::And
@@ -523,21 +523,33 @@ module Udb
                     cond: AlwaysTrueCondition.new
                   )
               end
+            elsif child.type == LogicNodeType::Not
+              # not a positive term; do nothing
             elsif child.children.all? { |child| T.cast(child, LogicNode).type == LogicNodeType::Not }
               # there is no positive term, so do nothing
             else
               raise "? #{child.type}" unless child.type == LogicNodeType::Or
 
               positive_terms =
-                child.node_children.select { |and_child| and_child.type == LogicNodeType::Term }
-              negative_terms =
+                child.node_children.select do |and_child|
+                  and_child.type == LogicNodeType::Term && and_child.children.fetch(0).is_a?(ExtensionTerm)
+                end
+              cond_terms =
                 child.node_children.select { |and_child| and_child.type == LogicNodeType::Not }
                 .map { |neg_term| neg_term.node_children.fetch(0) }
+              cond_terms +=
+                child.node_children.select do |and_child|
+                  and_child.type == LogicNodeType::Term && and_child.children.fetch(0).is_a?(ParameterTerm)
+                end
               positive_terms.each do |pterm|
                 cond_node =
-                  negative_terms.size == 1 \
-                    ? negative_terms.fetch(0)
-                    : LogicNode.new(LogicNodeType::Or, negative_terms)
+                  if cond_terms.empty?
+                    LogicNode::True
+                  else
+                    cond_terms.size == 1 \
+                        ? cond_terms.fetch(0)
+                        : LogicNode.new(LogicNodeType::Or, cond_terms)
+                  end
 
                 reqs << \
                   ConditionalExtensionRequirement.new(
