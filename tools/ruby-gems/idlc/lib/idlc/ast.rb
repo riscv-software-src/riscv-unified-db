@@ -7521,6 +7521,7 @@ end,
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = !@value.nil?
 
+    sig { params(input: String, interval: T::Range[Integer], csr: CsrReadExpressionAst, field_name: String).void }
     def initialize(input, interval, csr, field_name)
       super(input, interval, [csr])
 
@@ -7529,6 +7530,7 @@ end,
       @memo = MemoizedState.new(value_calculated: false)
     end
 
+    sig { params(symtab: SymbolTable).returns(Csr) }
     def csr_obj(symtab)
       @memo.csr ||=
         begin
@@ -7540,26 +7542,30 @@ end,
     end
 
     # @!macro type_check
+    sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
       @csr.type_check(symtab)
 
-      type_error "CSR[#{csr_name}] has no field named #{@field_name}" if field_def(symtab).nil?
       type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV32" if symtab.mxlen == 32 && !field_def(symtab).defined_in_base32?
       type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV64" if symtab.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
+    sig { params(symtab: SymbolTable).returns(Csr) }
     def csr_def(symtab)
-      @csr_obj
+      csr_obj(symtab)
     end
 
+    sig { returns(String) }
     def csr_name = @csr.csr_name
 
+    sig { params(symtab: SymbolTable).returns(CsrField) }
     def field_def(symtab)
-      @csr_obj.fields.find { |f| f.name == @field_name }
+      T.must(csr_obj(symtab).fields.find { |f| f.name == @field_name })
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def field_name(symtab)
-      field_def(symtab)&.name
+      field_def(symtab).name
     end
 
     # @!macro to_idl
@@ -7569,13 +7575,15 @@ end,
     end
 
     # @!macro type
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
       @memo.type ||= calc_type(symtab)
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).void }
     def calc_type(symtab)
       fd = field_def(symtab)
-      internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
 
       if fd.defined_in_all_bases?
         Type.new(:bits, width: symtab.possible_xlens.map { |xlen| fd.width(xlen) }.max)
@@ -7592,6 +7600,8 @@ end,
       end
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).void }
     def calc_value(symtab)
       value_result = value_try do
         @memo.value = calc_value(symtab)
@@ -7603,6 +7613,7 @@ end,
     end
 
     # @!macro value
+    sig { override.params(symtab: SymbolTable).returns(ValueRbType) }
     def value(symtab)
       calc_value(symtab) unless @memo.value_calculated
 
@@ -7613,9 +7624,11 @@ end,
       end
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).void }
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
-      return 0 if field_def(symtab).nil? || !field_def(symtab).exists?
+      return 0 if !field_def(symtab).exists?
 
       symtab.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"

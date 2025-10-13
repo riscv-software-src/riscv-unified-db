@@ -60,7 +60,7 @@ module Udb
       return @versions unless @versions.nil?
 
       @versions = @data["versions"].map do |v|
-        ExtensionVersion.new(name, v["version"], arch)
+        ExtensionVersion.new(name, v["version"], cfg_arch)
       end
       @versions.sort!
       @versions
@@ -385,7 +385,7 @@ module Udb
     def state = T.cast(@data.fetch("state"), String)
 
     sig { returns(T.nilable(String)) }
-    def ratification_date = T.cast(@data.fetch("ratification_date"), String)
+    def ratification_date = @data["ratification_date"]
 
     sig { returns(T.nilable(T::Array[String])) }
     def changes = @data["changes"].nil? ? [] : T.cast(@data.fetch("changes"), T::Array[String])
@@ -496,7 +496,7 @@ module Udb
     def implications
       @implications ||= requirements_condition.implied_extension_requirements.map do |cond_ext_req|
         if cond_ext_req.ext_req.is_ext_ver?
-          satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@cfg_arch)
+          satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@arch)
           if satisfied == SatisfiedResult::Yes
             ConditionalExtensionVersion.new(
               ext_ver: cond_ext_req.ext_req.to_ext_ver,
@@ -740,7 +740,7 @@ module Udb
         raise "ExtensionRequirement can only be converted to and ExtensionVersion when there is a single equality version requirement"
       end
 
-      ExtensionVersion.new(name, @requirements.fetch(0).version_spec, @cfg_arch)
+      ExtensionVersion.new(name, @requirements.fetch(0).version_spec.to_s, @arch)
     end
 
     # @param name [#to_s] Extension name

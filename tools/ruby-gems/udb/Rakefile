@@ -29,10 +29,10 @@ namespace :chore do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(RUBY_UDB_ROOT) do
         sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
-        # sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
-        # sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
-        # sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
       end
     end
 

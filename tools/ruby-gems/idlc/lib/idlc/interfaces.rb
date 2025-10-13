@@ -24,7 +24,7 @@ module Idl
     def name; end
 
     sig { abstract.returns(String) }
-    def desc; end
+    def description; end
 
     sig { abstract.returns(T::Boolean) }
     def schema_known?; end
@@ -101,10 +101,19 @@ module Idl
     sig { abstract.params(base: T.nilable(Integer)).returns(T::Range[Integer]) }
     def location(base); end
 
+    sig { abstract.params(base: T.nilable(Integer)).returns(Integer) }
+    def width(base); end
+
+    sig { abstract.params(base: T.nilable(Integer)).returns(T.nilable(String)) }
+    def type(base); end
+
     # whether or not the field is supposed to exist/be implemented in the
     # execution context
     sig { abstract.returns(T::Boolean) }
     def exists?; end
+
+    sig { abstract.returns(ValueRbType) }
+    def reset_value; end
   end
 
   module Csr

@@ -196,7 +196,7 @@ module Udb
     #      'RW-H'  => Read-write, with a hardware update
     #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
     # @return [nil] when the type isn't knowable
-    sig { params(effective_xlen: T.nilable(Integer)).returns(T.nilable(String)) }
+    sig { override.params(effective_xlen: T.nilable(Integer)).returns(T.nilable(String)) }
     def type(effective_xlen = nil)
       @type ||= { 32 => nil, 64 => nil }
       return @type[effective_xlen] unless @type[effective_xlen].nil?
@@ -399,6 +399,7 @@ module Udb
 
     # @return [Integer] The reset value of this field
     # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
+    sig { override.returns(Idl::ValueRbType) }
     def reset_value
       @reset_value ||=
         if @data.key?("reset_value")
@@ -691,7 +692,7 @@ module Udb
 
     # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
     # @return [Integer] Number of bits in the field
-    sig { params(effective_xlen: T.nilable(Integer)).returns(Integer) }
+    sig { override.params(effective_xlen: T.nilable(Integer)).returns(Integer) }
     def width(effective_xlen)
       T.must(location(effective_xlen).size)
     end
