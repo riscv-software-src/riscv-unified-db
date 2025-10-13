@@ -87,7 +87,7 @@ class TestConditions < Minitest::Test
       end
     end
     assert_equal SatisfiedResult::No, tree.eval_cb(cb)
-    assert_equal "(A=1.0 \u2228 A=2.0)", tree.to_s
+    assert_equal "((A=1.0 ∨ A=2.0) ∧ (A=1.0 → (true ∧ true)) ∧ (A=2.0 → (true ∧ true)))", tree.to_s
   end
 
   def test_requirements_with_single_unconditional_implication

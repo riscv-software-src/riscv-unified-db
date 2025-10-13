@@ -300,6 +300,12 @@ module Idl
     end
   end
 
+  class ArrayIncludesAst < AstNode
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{' ' * indent}$array_includes?(#{ary.gen_adoc(0, indent_spaces:)}, #{expr.gen_adoc(0, indent_spaces:)})"
+    end
+  end
+
   class FunctionBodyAst < AstNode
     def gen_adoc(indent = 0, indent_spaces: 2)
       statements.map { |s| "#{' ' * indent}#{s.gen_adoc(0, indent_spaces:)}" }.join("\n")
