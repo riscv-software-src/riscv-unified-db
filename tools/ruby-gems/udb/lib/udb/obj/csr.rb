@@ -69,7 +69,7 @@ module Udb
     def value
       return nil unless fields.all? { |f| f.type == "RO" }
 
-      fields.reduce(0) { |val, f| val | (f.reset_value << f.location.begin) }
+      fields.reduce(0) { |val, f| val | (T.cast(f.reset_value, Integer) << f.location.begin) }
     end
 
     def writable

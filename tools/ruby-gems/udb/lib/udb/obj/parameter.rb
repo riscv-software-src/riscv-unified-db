@@ -192,7 +192,7 @@ module Udb
     include Idl::RuntimeParam
 
     def_delegators :@param,
-      :name, :desc, :schema_known?, :schema, :schemas, :possible_schemas, :all_schemas, :idl_type,
+      :name, :description, :schema_known?, :schema, :schemas, :possible_schemas, :all_schemas, :idl_type,
       :defined_by_condition, :requirements_condition
 
     # @return [Object] The parameter value

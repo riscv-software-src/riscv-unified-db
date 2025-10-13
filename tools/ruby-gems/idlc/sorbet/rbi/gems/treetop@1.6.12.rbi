@@ -227,17 +227,15 @@ end
 
 # source://treetop//lib/treetop/runtime/compiled_parser.rb#1
 module Treetop
-  class << self
-    # compile a treetop source file and load it
-    #
-    # source://treetop//lib/treetop/compiler/grammar_compiler.rb#35
-    def load(path); end
+  # compile a treetop source file and load it
+  #
+  # source://treetop//lib/treetop/compiler/grammar_compiler.rb#35
+  def self.load(path); end
 
-    # compile a treetop source string and load it
-    #
-    # source://treetop//lib/treetop/compiler/grammar_compiler.rb#48
-    def load_from_string(s); end
-  end
+  # compile a treetop source string and load it
+  #
+  # source://treetop//lib/treetop/compiler/grammar_compiler.rb#48
+  def self.load_from_string(s); end
 end
 
 # source://treetop//lib/treetop/compiler/lexical_address_space.rb#2
@@ -1765,9 +1763,6 @@ class Treetop::Runtime::CompiledParser
   #
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#106
   def has_terminal?(terminal, mode, index); end
-
-  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
-  def idlc_instantiate_node(node_type, *args); end
 
   # Sets the attribute index
   #

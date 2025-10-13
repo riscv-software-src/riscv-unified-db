@@ -434,7 +434,7 @@ module Udb
     def reset_value_pretty
       str = T.let(nil, T.nilable(String))
       value_result = Idl::AstNode.value_try do
-        str = reset_value
+        str = T.cast(reset_value, T.nilable(String))
       end
       Idl::AstNode.value_else(value_result) do
         ast = T.must(reset_value_ast)

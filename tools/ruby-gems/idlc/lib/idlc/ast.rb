@@ -7577,11 +7577,11 @@ end,
     # @!macro type
     sig { override.params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
-      @memo.type ||= calc_type(symtab)
+      @memo.type ||= T.must(calc_type(symtab))
     end
 
     # @api private
-    sig { params(symtab: SymbolTable).void }
+    sig { params(symtab: SymbolTable).returns(T.nilable(Type)) }
     def calc_type(symtab)
       fd = field_def(symtab)
 

@@ -194,7 +194,7 @@ module Udb
               #{param.defined_by_condition.to_s_pretty}
 
               Description:
-                #{param.desc.gsub("\n", "\n    ")}
+                #{param.description.gsub("\n", "\n    ")}
 
               Value:
                 #{param.schema.to_pretty_s}

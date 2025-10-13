@@ -18,7 +18,7 @@ def presence2char(presence)
     "m"
   elsif presence == Udb::Presence.optional
     "o"
-  elsif presence == '-'
+  elsif presence == "-"
     "n"
   else
     raise ArgumentError, "Unknown presence of #{presence}"
@@ -35,21 +35,21 @@ def arch2ext_table(arch)
   ext_table = {
     # Array of hashes
     "columns" => [
-      {name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
+      { name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
-        labelField:"Extension Name",
+        labelField: "Extension Name",
         urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
         }
       },
-      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Implies\n(Exts)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Requires\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
-      {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      { name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true },
+      { name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true },
+      { name: "Implies\n(Exts)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Requires\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true },
+      { name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
-        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+        { name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true }
       end
     ].flatten,
 
@@ -62,9 +62,7 @@ def arch2ext_table(arch)
       ext.name,           # Name
       ext.long_name,      # Description
       ext.compact_priv_type,  # IC
-      ext.max_version.implications.map{|cond_ext_ver| cond_ext_ver.ext_ver.name}.uniq,  # Implies
-      ext.max_version.requirement_condition.empty? ? "" : ext.max_version.requirement_condition.to_logic_tree.to_s, # Requires
-      ext.conflicts_condition.empty? ? "" : ext.conflicts_condition.to_logic_tree.to_s, # Incompatible
+      ext.max_version.implications.map { |cond_ext_ver| cond_ext_ver.ext_ver.name }.uniq,  # Implies
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -96,16 +94,16 @@ def arch2inst_table(arch)
   inst_table = {
     # Array of hashes
     "columns" => [
-      {name: "Instruction Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
+      { name: "Instruction Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
-        labelField:"Instruction Name",
+        labelField: "Instruction Name",
         urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/insts/"
         }
       },
-      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Assembly", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      { name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true },
+      { name: "Assembly", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
-        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+        { name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true }
       end
     ].flatten,
 
@@ -122,7 +120,7 @@ def arch2inst_table(arch)
     row = [
       inst.name,
       inst.long_name,
-      inst.name + " " + inst.assembly.gsub('x', 'r')
+      inst.name + " " + inst.assembly.gsub("x", "r")
     ]
 
     sorted_profile_releases.each do |pr|
@@ -144,16 +142,16 @@ def arch2csr_table(arch)
   csr_table = {
     # Array of hashes
     "columns" => [
-      {name: "CSR Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
+      { name: "CSR Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
-        labelField:"CSR Name",
+        labelField: "CSR Name",
         urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/csrs/"
         }
       },
-      {name: "Address", formatter: "textarea", sorter: "number", headerFilter: true},
-      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      { name: "Address", formatter: "textarea", sorter: "number", headerFilter: true },
+      { name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
-        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+        { name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true }
       end
     ].flatten,
 
@@ -194,7 +192,7 @@ def gen_xlsx_table(table, workbook, worksheet)
   # Add and define a header format
   header_format = workbook.add_format
   header_format.set_bold
-  header_format.set_align('center')
+  header_format.set_align("center")
 
   # Add column names in 1st row (row 0).
   col_num = 0
@@ -292,19 +290,19 @@ def gen_js_table(table, div_name, output_pname)
     rows.each do |row|
       items = []
       columns.each_index do |i|
-          column = columns[i]
-          column_name = column[:name].gsub("\n", " ")
-          cell = row[i]
-          if cell.is_a?(String)
-            cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
-          elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
-            cell_fmt = "#{cell}"
-          elsif cell.is_a?(Array)
-            cell_fmt = '"'+ cell.join("\\n") + '"'
-          else
-            raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
-          end
-          items.append('"' + column_name + '":' + cell_fmt)
+        column = columns[i]
+        column_name = column[:name].gsub("\n", " ")
+        cell = row[i]
+        if cell.is_a?(String)
+          cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
+        elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
+          cell_fmt = "#{cell}"
+        elsif cell.is_a?(Array)
+          cell_fmt = '"' + cell.join("\\n") + '"'
+        else
+          raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
+        end
+        items.append('"' + column_name + '":' + cell_fmt)
       end
       fp.write "  {" + items.join(", ") + "},\n"
     end
@@ -412,11 +410,11 @@ def get_sorted_profile_releases(arch)
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)
 
   # Remove Mock profile release if present.
-  sorted_profile_releases.delete_if {|pr| pr.name == "Mock" }
+  sorted_profile_releases.delete_if { |pr| pr.name == "Mock" }
 
   # Move RVI20 to the beginning of the array if it exists.
-  if sorted_profile_releases.any? {|pr| pr.name == "RVI20" }
-    sorted_profile_releases.delete_if {|pr| pr.name == "RVI20" }
+  if sorted_profile_releases.any? { |pr| pr.name == "RVI20" }
+    sorted_profile_releases.delete_if { |pr| pr.name == "RVI20" }
     sorted_profile_releases.unshift(arch.profile_release("RVI20"))
   end
 

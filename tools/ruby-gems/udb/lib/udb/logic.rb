@@ -1023,7 +1023,7 @@ module Udb
           T.absurd(res)
         end
       when LogicNodeType::And
-        yes_cnt = 0
+        yes_cnt = T.let(0, Integer)
         node_children.each do |child|
           res1 = child.eval_cb(callback)
           return SatisfiedResult::No if res1 == SatisfiedResult::No
