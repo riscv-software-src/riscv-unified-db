@@ -197,6 +197,10 @@ module Udb
     sig { abstract.returns(String) }
     def to_s_pretty; end
 
+    # condition in Asciidoc
+    sig { abstract.returns(String) }
+    def to_asciidoc; end
+
     # assuming that the condition represents an extension dependency,
     # return the specified extensions along with the condition under
     # which they apply
@@ -233,6 +237,7 @@ module Udb
     def implied_extension_requirements; end
   end
 
+  # @api private
   module ConvertibleToLogicNode
     extend T::Sig
 
@@ -497,6 +502,11 @@ module Udb
       to_logic_tree(expand: false).to_s_pretty
     end
 
+    sig { override.returns(String) }
+    def to_asciidoc
+      to_logic_tree(expand: false).to_asciidoc(include_versions: false)
+    end
+
     sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_requirements
       # strategy:
@@ -725,6 +735,9 @@ module Udb
       "always"
     end
 
+    sig { override.returns(String) }
+    def to_asciidoc = "true"
+
     sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_requirements = []
   end
@@ -782,6 +795,9 @@ module Udb
     def to_s_pretty
       "never"
     end
+
+    sig { override.returns(String) }
+    def to_asciidoc = "false"
 
     sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_requirements = []

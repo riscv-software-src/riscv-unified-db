@@ -1200,6 +1200,69 @@ module Udb
       end
     end
 
+    sig { params(include_versions: T::Boolean).returns(String) }
+    def to_asciidoc(include_versions:)
+      case @type
+      when LogicNodeType::Term
+        term = T.cast(children.fetch(0), TermType)
+        if term.is_a?(ExtensionTerm)
+          if include_versions
+            "`#{term.name}`#{term.comparison}#{term.version.canonical}"
+          else
+            "`#{term.name}`"
+          end
+        elsif term.is_a?(ParameterTerm)
+          padoc =
+            term.index.nil? \
+              ? term.name
+              : "#{term.name}[#{term.index}]"
+          type = term.comparison_type
+          case type
+          when ParameterTerm::ParameterComparisonType::Equal
+            "`#{padoc}` == #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::NotEqual
+            "`#{padoc}` != #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::LessThan
+            "`#{padoc}` < #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::GreaterThan
+            "`#{padoc}` > #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::LessThanOrEqual
+            "`#{padoc}` <= #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
+            "`#{padoc}` >= #{term.comparison_value}"
+          when ParameterTerm::ParameterComparisonType::Includes
+            "#{term.comparison_value} in `#{padoc}`"
+          when ParameterTerm::ParameterComparisonType::OneOf
+            "`#{padoc}` in [#{@yaml["oneOf"].join(", ")}]"
+          else
+            T.absurd(type)
+          end
+        elsif term.is_a?(FreeTerm)
+          raise "Should not occur"
+        else
+          T.absurd(term)
+        end
+      when LogicNodeType::False
+        "false"
+      when LogicNodeType::True
+        "true"
+      when LogicNodeType::Not
+        "!#{node_children.fetch(0).to_asciidoc(include_versions:)}"
+      when LogicNodeType::And
+        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" && ")})"
+      when LogicNodeType::Or
+        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+      when LogicNodeType::If
+        "(#{node_children.fetch(0).to_asciidoc(include_versions:)} -> #{node_children.fetch(1).to_asciidoc(include_versions:)})"
+      when LogicNodeType::Xor
+        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" &#2295; ")})"
+      when LogicNodeType::None
+        "!(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+      else
+        T.absurd(@type)
+      end
+    end
+
     sig { params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch)
       case @type

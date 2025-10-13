@@ -62,7 +62,7 @@ class TestConditions < Minitest::Test
     assert cond.could_be_satisfied_by_cfg_arch?($mock_cfg_arch)
     refute_empty cond
 
-    tree = cond.to_logic_tree
+    tree = cond.to_logic_tree(expand: true)
     assert_equal 2, tree.terms.size # A has two version
     assert_equal [ExtensionTerm.new("A", "=", "1.0.0"), ExtensionTerm.new("A", "=", "2.0.0")], tree.terms
     cb = LogicNode.make_eval_cb do |term|
@@ -163,7 +163,7 @@ class TestConditions < Minitest::Test
     assert_equal 1, ext_vers.size
     assert_equal [ExtensionVersion.new("C", "1.0", $mock_cfg_arch)], ext_vers.map(&:ext_ver)
     assert_instance_of Condition, ext_vers.fetch(0).cond
-    assert_equal [ExtensionTerm.new("A", "=", "1.0"), ExtensionTerm.new("A", "=", "2.0")], ext_vers.fetch(0).cond.to_logic_tree.terms
+    assert_equal [ExtensionTerm.new("A", "=", "1.0"), ExtensionTerm.new("A", "=", "2.0")], ext_vers.fetch(0).cond.to_logic_tree(expand: true).terms
     assert ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?(ExtensionRequirement.new("A", ">= 1.0", arch: $mock_cfg_arch))
     refute ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?(ExtensionVersion.new("B", "2.1.0", $mock_cfg_arch).to_ext_req)
   end
@@ -182,7 +182,7 @@ class TestConditions < Minitest::Test
     assert cond.could_be_satisfied_by_cfg_arch?($mock_cfg_arch)
     refute_empty cond
 
-    tree = cond.to_logic_tree
+    tree = cond.to_logic_tree(expand: true)
     assert_equal 2, tree.terms.size
     def make_cb(ext_vers)
       LogicNode.make_eval_cb do |term|
@@ -231,7 +231,7 @@ class TestConditions < Minitest::Test
         raise "?"
       end
     end
-    assert_equal SatisfiedResult::No, cond.to_logic_tree.eval_cb(cb)
+    assert_equal SatisfiedResult::No, cond.to_logic_tree(expand: true).eval_cb(cb)
 
     # D with C and A should
     cb = LogicNode.make_eval_cb do |term|
@@ -250,7 +250,7 @@ class TestConditions < Minitest::Test
         raise "?"
       end
     end
-    assert_equal SatisfiedResult::Yes, cond.to_logic_tree.eval_cb(cb)
+    assert_equal SatisfiedResult::Yes, cond.to_logic_tree(expand: true).eval_cb(cb)
   end
 
   def test_single_param_req
