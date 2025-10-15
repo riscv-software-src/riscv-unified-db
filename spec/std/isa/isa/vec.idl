@@ -21,8 +21,9 @@ enum VectorLmulType {
 
 struct VectorState {
   Bits<7> sew;
+  Bits<3> log2_sew;
   VectorLmulType lmul_type;
-  Bits<2> log2_multiplier;
+  Bits<2> log2_lmul;
 }
 
 function vector_state {
@@ -33,16 +34,20 @@ function vector_state {
   body {
     VectorState state;
 
-    state.sew = 7'b1 << (3 + CSR[vtype].VSEW);
+    state.log2_sew = 3 + CSR[vtype].VSEW;
+    state.sew = 7'b1 << state.log2_sew;
+
     Bits<3> vlmul = CSR[vtype].VLMUL;
     state.lmul_type = CSR[vtype].VLMUL[2] == 1'b1 ? VectorLmulType::Divide : VectorLmulType::Multiply;
-    state.log2_multiplier = CSR[vtype].VLMUL[1:0];
+    state.log2_lmul = CSR[vtype].VLMUL[1:0];
     if (vlmul == 3'b101) {
-      state.log2_multiplier = 8;
+      state.log2_lmul = 3;
     } else if (vlmul == 3'b110) {
-      state.log2_multiplier = 4;
+      state.log2_lmul = 2;
     } else if (vlmul == 3'b111) {
-      state.log2_multiplier = 2;
+      state.log2_lmul = 1;
+    } else if (vlmul == 3'b100) {
+      unpredictable("VLMUL value 0b100 is reserved");
     }
 
     return state;

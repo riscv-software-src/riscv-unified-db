@@ -49,7 +49,7 @@ operation(): |
 
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_multiplier) >> (3 + state.sew);
+  XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
   XReg AVL = uimm;
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
   if (AVL < vlmax) {
