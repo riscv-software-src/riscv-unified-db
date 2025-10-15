@@ -12,8 +12,10 @@ description: |
   address formed by adding `xs1` to a signed offset.
   Zero extend the result.
 definedBy:
-  extension:
-    name: I
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 base: 64
 assembly: xd, imm(xs1)
 encoding:

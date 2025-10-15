@@ -51,9 +51,7 @@ versions:
     requirements:
       oneOf:
         - allOf:
-            - param:
-                name: MXLEN
-                equal: 32
+            - xlen: 32
             - extension:
                 allOf:
                   - name: Zca
@@ -68,9 +66,7 @@ versions:
                 extension:
                   name: F
         - allOf:
-            - param:
-                name: MXLEN
-                equal: 32
+            - xlen: 32
             - extension:
                 allOf:
                   - name: Zca
@@ -85,9 +81,7 @@ versions:
                     version: "= 1.0.0"
                   - name: F
         - allOf:
-            - param:
-                name: MXLEN
-                equal: 64
+            - xlen: 32
             - extension:
                 allOf:
                   - name: Zca
@@ -102,8 +96,4 @@ versions:
 requirements:
   not:
     extension:
-     anyOf:
-        - allOf:
-          - name: C
-          - name: D
-        - name: Zcd
+      name: Zcd

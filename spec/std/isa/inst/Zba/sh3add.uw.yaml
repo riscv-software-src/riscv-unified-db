@@ -12,8 +12,10 @@ description: |
   The second addend is the unsigned value formed by extracting the least-significant word of xs1
   and shifting it left by 3 places.
 definedBy:
-  extension:
-    name: Zba
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zba
 base: 64
 assembly: xd, xs1, xs2
 encoding:

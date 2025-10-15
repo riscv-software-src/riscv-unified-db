@@ -15,8 +15,10 @@ description: |
     * Signed compare the value of register _xs2_ to the loaded value, and select the maximum value
     * Write the maximum to the address in _xs1_
 definedBy:
-  extension:
-    name: Zaamo
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zaamo
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:

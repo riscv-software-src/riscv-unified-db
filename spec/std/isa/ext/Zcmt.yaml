@@ -51,11 +51,7 @@ requirements:
     -
       not:
         extension:
-          anyOf:
-            - name: Zcd
-            - allOf:
-              - name: C
-              - name: D
+          name: Zcd
 versions:
   - version: "1.0.0"
     state: ratified

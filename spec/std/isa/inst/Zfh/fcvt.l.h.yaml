@@ -13,8 +13,10 @@ description:
     text: |
       `fcvt.l.h` converts a half-precision floating-point number to a signed 64-bit integer.
 definedBy:
-  extension:
-    name: Zfh
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zfh
 assembly: xd, fs1, rm
 encoding:
   match: 110001000010-------------1010011

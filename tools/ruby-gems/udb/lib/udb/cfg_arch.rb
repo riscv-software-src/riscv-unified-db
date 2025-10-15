@@ -198,7 +198,6 @@ module Udb
         end
     end
 
-    # @api private
     sig { returns(Idl::IsaAst) }
     def global_ast
       @global_ast ||=
@@ -212,7 +211,6 @@ module Udb
           )
         end
     end
-    private :global_ast
 
     sig { returns(ConfigType) }
     def config_type = @config_type

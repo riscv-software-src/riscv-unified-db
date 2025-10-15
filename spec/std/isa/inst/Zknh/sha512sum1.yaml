@@ -10,8 +10,10 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  extension:
-    name: Zknh
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zknh
 base: 64
 assembly: xd, xs1
 encoding:

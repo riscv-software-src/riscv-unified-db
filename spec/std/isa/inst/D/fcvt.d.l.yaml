@@ -14,8 +14,10 @@ description:
       The `fcvt.d.l` instruction converts a 64-bit signed integer, in integer register `xs1` into a double-precision
       floating-point number in floating-point register `fd`.
 definedBy:
-  extension:
-    name: D
+  allOf:
+    - xlen: 64
+    - extension:
+        name: D
 assembly: fd, xs1, rm
 encoding:
   match: 110100100010-------------1010011

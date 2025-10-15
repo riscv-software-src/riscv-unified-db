@@ -49,7 +49,3 @@ requirements:
   idl(): |
     # if Zcd is implemented, then Zca and D must also be implemented
     -> implemented?(ExtensionName::Zca) && implemented?(ExtensionName::D);
-
-    # if either Zcf is also implemented or F is not, then C must be implemented
-    (implemented?(ExtensionName::Zcf) || !implemented?(ExtensionName::F))
-      -> implemented?(ExtensionName::C);

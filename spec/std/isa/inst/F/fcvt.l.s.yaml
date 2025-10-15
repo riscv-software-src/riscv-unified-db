@@ -11,8 +11,10 @@ description: |
   The `fcvt.l.s` instruction converts a floating-point number in floating-point register `fs1` to a signed
   64-bit integer, in integer register `xd`.
 definedBy:
-  extension:
-    name: F
+  allOf:
+    - xlen: 64
+    - extension:
+        name: F
 base: 64
 assembly: xd, fs1, rm
 encoding:

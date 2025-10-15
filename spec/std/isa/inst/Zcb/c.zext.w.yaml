@@ -12,10 +12,12 @@ description: |
   It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.
 
 definedBy:
-  extension:
-    allOf:
-      - name: Zcb
-      - name: Zbb
+  allOf:
+    - xlen: 64
+    - extension:
+        allOf:
+          - name: Zcb
+          - name: Zbb
 assembly: xd
 base: 64
 encoding:

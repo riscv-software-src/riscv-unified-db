@@ -107,16 +107,16 @@ module Udb
       @params
     end
 
-    # @param version_requirement [String] Version requirement
-    # @return [Array<ExtensionVersion>] Array of extensions implied by the largest version of this extension meeting version_requirement
-    def implies(version_requirement = nil)
-      if version_requirement.nil?
-        max_version.implications
-      else
-        mv = ExtensionRequirement.new(@name, version_requirement, arch: @cfg_arch).max_satisfying_ext_ver
-        mv.implications
-      end
-    end
+    # # @param version_requirement [String] Version requirement
+    # # @return [Array<ExtensionVersion>] Array of extensions implied by the largest version of this extension meeting version_requirement
+    # def implies(version_requirement = nil)
+    #   if version_requirement.nil?
+    #     max_version.implications
+    #   else
+    #     mv = ExtensionRequirement.new(@name, version_requirement, arch: @cfg_arch).max_satisfying_ext_ver
+    #     mv.implications
+    #   end
+    # end
 
     sig { returns(AbstractCondition) }
     def requirements_condition
@@ -245,6 +245,14 @@ module Udb
       end
     end
 
+    # @api private
+    class MemomizedState < T::Struct
+      prop :unconditional_expanded_ext_reqs, T.nilable(T::Array[ExtensionRequirement])
+      prop :unconditional_unexpanded_ext_reqs, T.nilable(T::Array[ExtensionRequirement])
+      prop :unconditional_expanded_ext_conflicts, T.nilable(T::Array[ExtensionRequirement])
+      prop :unconditional_unexpanded_ext_conflicts, T.nilable(T::Array[ExtensionRequirement])
+    end
+
     # @param name [#to_s] The extension name
     # @param version [String] The version specifier
     # @param arch [Architecture] The architecture definition
@@ -271,6 +279,8 @@ module Udb
       elsif @data.nil?
         Udb.logger.warn "Version #{version_str} of #{@name} extension is not defined"
       end
+
+      @memo = MemomizedState.new
     end
 
     # @api private
@@ -350,21 +360,6 @@ module Udb
     # @return [String] Canonical version string
     sig { returns(String) }
     def canonical_version = @version_spec.canonical
-
-    # @param other [ExtensionVersion] An extension name and version
-    # @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
-    sig { params(other: ExtensionVersion).returns(T::Boolean) }
-    def <=>(other)
-      if other.is_a?(ExtensionVersion)
-        if @ext.name == other.ext.name
-          @version_spec <=> other.version_spec
-        else
-          @ext.name <=> other.ext.name
-        end
-      else
-        nil
-      end
-    end
 
     sig { override.params(other: T.untyped).returns(T::Boolean) }
     def eql?(other)
@@ -492,29 +487,393 @@ module Udb
     #
     # This list is *not* transitive; if an implication I1 implies another extension I2,
     # only I1 shows up in the list
-    sig { returns(T::Array[ConditionalExtensionVersion]) }
-    def implications
-      @implications ||= requirements_condition.implied_extension_requirements.map do |cond_ext_req|
-        if cond_ext_req.ext_req.is_ext_ver?
-          satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@arch)
-          if satisfied == SatisfiedResult::Yes
-            ConditionalExtensionVersion.new(
-              ext_ver: cond_ext_req.ext_req.to_ext_ver,
-              cond: AlwaysTrueCondition.new
+    # sig { returns(T::Array[ConditionalExtensionVersion]) }
+    # def implications
+    #   puts "implications for #{self}"
+    #   @implications ||= combined_requirements_condition.implied_extension_requirements(expand: false).map do |cond_ext_req|
+    #     if cond_ext_req.ext_req.is_ext_ver?
+    #       satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@arch)
+    #       if satisfied == SatisfiedResult::Yes
+    #         ConditionalExtensionVersion.new(
+    #           ext_ver: cond_ext_req.ext_req.to_ext_ver,
+    #           cond: AlwaysTrueCondition.new
+    #         )
+    #       elsif satisfied == SatisfiedResult::Maybe
+    #         ConditionalExtensionVersion.new(
+    #           ext_ver: cond_ext_req.ext_req.to_ext_ver,
+    #           cond: cond_ext_req.cond
+    #         )
+    #       else
+    #         nil
+    #       end
+    #     else
+    #       nil
+    #     end
+    #   end.compact
+    # end
+
+    # return all ExtensionRequirements that this ExtensionVersion unconditionally depends on
+    # When expand is false, just return the list of ExtensionRequirements directly mentioned by the extension
+    # When expand is true, also include ExtensionRequirements that are required by those directly mentioned by the extension
+    #                      (i.e., collect the list from the transitive closure of requirements)
+    sig { params(expand: T::Boolean).returns(T::Array[ExtensionRequirement]) }
+    def unconditional_extension_requirements(expand:)
+      if expand && !@memo.unconditional_expanded_ext_reqs.nil?
+        @memo.unconditional_expanded_ext_reqs
+      elsif !expand && !@memo.unconditional_unexpanded_ext_reqs.nil?
+        @memo.unconditional_unexpanded_ext_reqs
+      else
+        list =
+          begin
+            req = combined_requirements_condition.to_logic_tree(expand:)
+            expand_req = combined_requirements_condition.to_logic_tree(expand: true)
+
+            # find all unconditional reqs -- that is,
+            # reqs that must always be satisfied for requirements to be met
+            unconditional_terms =
+              req.terms.select do |term|
+                next if term.is_a?(ParameterTerm) || term.is_a?(XlenTerm)
+                raise "?" if term.is_a?(FreeTerm)
+
+                next if term.name == name
+
+                # see if req is satisfiable when term is absent
+                cb = LogicNode.make_replace_cb do |node|
+                  if node.type == LogicNodeType::Term && node.node_children.fetch(0).is_a?(ExtensionTerm)
+                    node_term = T.cast(node.node_children.fetch(0), ExtensionTerm)
+                    if node_term.name == name
+                      LogicNode::True
+                    elsif node_term.name == term.name
+                      LogicNode::False
+                    else
+                      node
+                    end
+                  else
+                    node
+                  end
+                end
+                !expand_req.replace_terms(cb).satisfiable?
+              end
+            T.cast(unconditional_terms, T::Array[ExtensionTerm]).map { |t| t.to_ext_req(@arch) }
+          end
+        if expand
+          @memo.unconditional_expanded_ext_reqs = list
+          @memo.unconditional_expanded_ext_reqs.freeze
+        else
+          @memo.unconditional_unexpanded_ext_reqs = list
+          @memo.unconditional_unexpanded_ext_reqs.freeze
+        end
+      end
+    end
+
+    # return the exhaustive, transitive list of all known extension versions that unconditionally
+    # conflict with self
+    sig { returns(T::Array[ExtensionVersion]) }
+    def unconditional_extension_version_conflicts
+      @unconditional_extension_version_conflicts ||=
+        @arch.extension_versions.select do |ext_ver|
+          next if ext_ver.name == name
+
+          !Condition.conjunction([to_condition, ext_ver.to_condition], @arch).satisfiable?
+        end
+    end
+
+    # return all ExtensionRequirements that this ExtensionVersion unconditionally conflicts with
+    # When expand is false, just return the list of ExtensionRequirements directly mentioned by the extension
+    # When expand is true, also include ExtensionRequirements that are required by those directly mentioned by the extension
+    #                      (i.e., collect the list from the transitive closure of requirements)
+    sig { params(expand: T::Boolean).returns(T::Array[ExtensionRequirement]) }
+    def unconditional_extension_conflicts(expand:)
+      if expand && !@memo.unconditional_expanded_ext_conflicts.nil?
+        @memo.unconditional_expanded_ext_conflicts
+      elsif !expand && !@memo.unconditional_unexpanded_ext_conflicts.nil?
+        @memo.unconditional_unexpanded_ext_conflicts
+      else
+        list =
+          begin
+            req = combined_requirements_condition.to_logic_tree(expand:)
+            expand_req = combined_requirements_condition.to_logic_tree(expand: true)
+
+            # find all unconditional reqs -- that is,
+            # reqs that must always be satisfied for requirements to be met
+            unconditional_terms =
+              req.terms.select do |term|
+                next if term.is_a?(ParameterTerm) || term.is_a?(XlenTerm)
+                raise "?" if term.is_a?(FreeTerm)
+
+                next if term.name == name
+
+                # see if req is unsatisfiable when term is present
+                cb = LogicNode.make_replace_cb do |node|
+                  if node.type == LogicNodeType::Term && node.node_children.fetch(0).is_a?(ExtensionTerm)
+                    node_term = T.cast(node.node_children.fetch(0), ExtensionTerm)
+                    if node_term.name == name
+                      LogicNode::True
+                    elsif node_term.name == term.name
+                      LogicNode::True
+                    else
+                      node
+                    end
+                  else
+                    node
+                  end
+                end
+                !expand_req.replace_terms(cb).satisfiable?
+              end
+
+            T.cast(unconditional_terms, T::Array[ExtensionTerm]).map { |t| t.to_ext_req(@arch) }
+          end
+        if expand
+          @memo.unconditional_expanded_ext_conflicts = list
+          @memo.unconditional_expanded_ext_conflicts.freeze
+        else
+          @memo.unconditional_unexpanded_ext_conflicts = list
+          @memo.unconditional_unexpanded_ext_conflicts.freeze
+        end
+      end
+    end
+
+    sig { params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def conditional_extension_requirements(expand:)
+      req = combined_requirements_condition.to_logic_tree(expand:)
+
+      cb = LogicNode.make_replace_cb do |node|
+        next node unless node.type == LogicNodeType::Term
+
+        rterm = node.children.fetch(0)
+
+        next node unless rterm.is_a?(ExtensionTerm)
+
+          # remove self
+        next LogicNode::True if rterm.to_ext_req(@arch).satisfied_by?(self)
+
+          # remove terms unconditionally true or false
+        next LogicNode::True if unconditional_extension_requirements(expand: true).any? { |ext_req| ext_req.satisfied_by?(rterm.to_ext_req(@arch)) }
+        next LogicNode::False if unconditional_extension_conflicts(expand: true).any? { |ext_req| ext_req.satisfied_by?(rterm.to_ext_req(@arch)) }
+
+        node
+      end
+
+      remaining =
+        req.replace_terms(cb).minimize(LogicNode::CanonicalizationType::ProductOfSums)
+
+      list = T.let([], T::Array[ConditionalExtensionRequirement])
+
+      # for the remaining terms, find out which ones
+      remaining.terms.each do |term|
+        next unless term.is_a?(ExtensionTerm)
+
+        # find unconditional reqs of self && term
+        c = Condition.conjunction([term.to_condition(@arch), to_condition], @arch)
+        ctree = c.to_logic_tree(expand: true)
+        unconditional_terms = remaining.terms.select do |cterm|
+          next if cterm.is_a?(ParameterTerm) || cterm.is_a?(XlenTerm)
+          raise "?" if cterm.is_a?(FreeTerm)
+
+          next if cterm.name == name
+          next if cterm.name == term.name
+
+          cb = LogicNode.make_replace_cb do |node|
+            if node.type == LogicNodeType::Term && node.node_children.fetch(0).is_a?(ExtensionTerm)
+              node_term = T.cast(node.node_children.fetch(0), ExtensionTerm)
+              if node_term.name == name
+                LogicNode::True
+              elsif node_term.name == cterm.name
+                LogicNode::False
+              else
+                node
+              end
+            else
+              node
+            end
+          end
+          !ctree.replace_terms(cb).satisfiable?
+        end
+
+        next if unconditional_terms.empty?
+
+        if unconditional_terms.size == 1
+          cond = T.cast(unconditional_terms.fetch(0), ExtensionTerm).to_ext_req(@arch).to_condition
+          contradiction =
+            Condition.conjunction(
+              [
+                cond,
+                Condition.not(term.to_condition(@arch), @arch),
+                to_condition
+              ],
+              @arch
             )
-          elsif satisfied == SatisfiedResult::Maybe
-            ConditionalExtensionVersion.new(
-              ext_ver: cond_ext_req.ext_req.to_ext_ver,
-              cond: cond_ext_req.cond
-            )
-          else
-            nil
+          is_needed = !contradiction.satisfiable?
+          if is_needed
+            if Condition.conjunction([cond, Condition.not(term.to_condition(@arch), @arch)], @arch).satisfiable? # skip reqs that are implied
+              list << ConditionalExtensionRequirement.new(
+                ext_req: term.to_ext_req(@arch),
+                cond:
+              )
+            end
           end
         else
-          nil
+          conj = Condition.conjunction(unconditional_terms.map { |t| T.cast(t, ExtensionTerm).to_condition(@arch) }, @arch)
+          conj_tree = conj.to_logic_tree(expand: false)
+          formula = LogicNode.new(
+            LogicNodeType::And,
+            conj_tree.node_children.map do |node|
+              covered = conj_tree.node_children.any? do |other_node|
+                next false if node.equal?(other_node)
+
+                if Condition.conjunction([to_condition, Condition.new(other_node.to_h, @arch)], @arch).always_implies?(Condition.new(node.to_h, @arch))
+                  true
+                else
+                  false
+                end
+              end
+
+              if covered
+                LogicNode::True
+              else
+                node
+              end
+            end
+          )
+          # is this needed? if self can still be satisfied when condition is false but term is true,
+          # this term isn't actually a requirement (it's most likely related to a conflict)
+          contradiction =
+            Condition.conjunction(
+              [
+                conj,
+                Condition.not(term.to_condition(@arch), @arch),
+                to_condition
+              ],
+              @arch
+            )
+          is_needed = !contradiction.satisfiable?
+          cond = Condition.new(formula.reduce.to_h, @arch)
+          if is_needed # && Condition.conjunction([cond, term.to_condition(@arch), to_condition], @arch).satisfiable? # make sure it's a requirement
+            if Condition.conjunction([cond, Condition.not(term.to_condition(@arch), @arch)], @arch).satisfiable?
+              list << ConditionalExtensionRequirement.new(
+                ext_req: term.to_ext_req(@arch),
+                cond:
+              )
+            end
+          end
         end
-      end.compact
+      end
+
+      if expand
+        list.each do |cond_ext_req|
+          ext_ver = T.must(cond_ext_req.ext_req.satisfying_versions.max)
+          ext_ver.ext_requirements(expand:).each do |nested_cond_ext_req|
+            already_in_cond_list =
+              list.any? { |c| c.ext_req.satisfied_by?(nested_cond_ext_req.ext_req) } \
+                || list.any? { |c| c.cond.to_logic_tree(expand: false).terms.any? { |t| T.cast(t, ExtensionTerm).to_ext_req(@arch).satisfied_by?(nested_cond_ext_req.ext_req) } }
+            already_in_uncond_list =
+              unconditional_extension_requirements(expand:).any? { |ext_req| nested_cond_ext_req.ext_req.satisfied_by?(ext_req) }
+            next if already_in_uncond_list
+
+            if already_in_cond_list
+              # keep the one with the more expansive condition
+
+            else
+              if nested_cond_ext_req.cond.empty?
+                list << ConditionalExtensionRequirement.new(
+                  ext_req: nested_cond_ext_req.ext_req,
+                  cond: cond_ext_req.cond
+                )
+              else
+                list << ConditionalExtensionRequirement.new(
+                  ext_req: nested_cond_ext_req.ext_req,
+                  cond: Condition.conjunction([cond_ext_req.cond, nested_cond_ext_req.cond], @arch)
+                )
+              end
+            end
+          end
+        end
+      end
+
+      list
     end
+
+    sig { params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def ext_requirements(expand:)
+      # make a condition for the version, expand it, and then report what comes out, minus self
+      # @ext_requirements ||=
+      begin
+        unconditional_extension_requirements(expand:).map { |ext_req| ConditionalExtensionRequirement.new(ext_req:, cond: Condition::True) } \
+          + conditional_extension_requirements(expand:)
+      end
+    end
+
+    sig { params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def ext_conflicts(expand:)
+      # make a condition for the version, expand it, and then report what comes out, minus self
+      # @ext_requirements ||=
+      begin
+        unconditional_extension_conflicts(expand:).map { |ext_req| ConditionalExtensionRequirement.new(ext_req:, cond: Condition::True) } \
+          # + conditional_extension_conflicts(expand:)
+      end
+    end
+
+    # sig { returns(T::Array[ConditionalExtensionVersion]) }
+    # def conflicts
+    #   puts "conflicts for #{self}"
+
+    #   @conflicts ||=
+    #     begin
+    #       c = combined_requirements_condition.implied_extension_conflicts(expand: false).map do |cond_ext_req|
+    #         if cond_ext_req.ext_req.is_ext_ver?
+    #           satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@arch)
+    #           if satisfied == SatisfiedResult::Yes
+    #             ConditionalExtensionVersion.new(
+    #               ext_ver: cond_ext_req.ext_req.to_ext_ver,
+    #               cond: AlwaysTrueCondition.new
+    #             )
+    #           elsif satisfied == SatisfiedResult::Maybe
+    #             ConditionalExtensionVersion.new(
+    #               ext_ver: cond_ext_req.ext_req.to_ext_ver,
+    #               cond: cond_ext_req.cond
+    #             )
+    #           else
+    #             puts "Skipping #{cond_ext_req.ext_req}"
+    #             nil
+    #           end
+    #         else
+    #           puts "Skipping #{cond_ext_req.ext_req} because it isn't an extension version"
+    #           nil
+    #         end
+    #       end.compact
+    #       puts "c = #{c.map { |c| c.ext_ver.name }}" unless c.empty?
+    #       c
+    #     end
+    # end
+
+    # sig { returns(T::Array[ConditionalExtensionRequirement]) }
+    # def conflict_reqs
+    #   puts "conflicts for #{self}"
+
+    #   @conflict_reqs ||=
+    #     begin
+    #       c = combined_requirements_condition.implied_extension_conflicts(expand: false).map do |cond_ext_req|
+    #         satisfied = cond_ext_req.cond.satisfied_by_cfg_arch?(@arch)
+    #         if satisfied == SatisfiedResult::Yes
+    #           ConditionalExtensionRequirement.new(
+    #             ext_req: cond_ext_req.ext_req,
+    #             cond: AlwaysTrueCondition.new
+    #           )
+    #         elsif satisfied == SatisfiedResult::Maybe
+    #           ConditionalExtensionRequirement.new(
+    #             ext_req: cond_ext_req.ext_req,
+    #             cond: cond_ext_req.cond
+    #           )
+    #         else
+    #           puts "Skipping #{cond_ext_req.ext_req}"
+    #           nil
+    #         end
+
+    #       end.compact
+    #       puts "c = #{c.map { |c| c.ext_req.name }}" unless c.empty?
+    #       c
+    #     end
+    # end
 
     # @return [Array<ExtensionVersion>] List of extension versions that might imply this ExtensionVersion
     #
@@ -545,32 +904,30 @@ module Udb
     #
     # @example
     #   zba_ext_ver.implied_by_with_condition #=> [{ ext_ver: "B 1.0", cond: AlwaysTrueCondition}]
-    sig { returns(T::Array[ConditionalExtensionVersion]) }
-    def implied_by_with_condition
-      return @implied_by_with_condition unless @implied_by_with_condition.nil?
+    # sig { returns(T::Array[ConditionalExtensionVersion]) }
+    # def implied_by_with_condition
+    #   return @implied_by_with_condition unless @implied_by_with_condition.nil?
 
-      @implied_by_with_condition = []
-      @arch.extensions.each do |ext|
-        next if ext.name == name
+    #   @implied_by_with_condition = []
+    #   @arch.extensions.each do |ext|
+    #     next if ext.name == name
 
-        ext.versions.each do |ext_ver|
-          raise "????" if ext_ver.arch.nil?
-          ext_ver.implications.each do |implication|
-            if implication.ext_ver == self
-              @implied_by_with_condition << ConditionalExtensionVersion.new(ext_ver: ext_ver, cond: implication.cond)
-            end
-          end
-        end
-      end
-      @implied_by_with_condition
-    end
+    #     ext.versions.each do |ext_ver|
+    #       raise "????" if ext_ver.arch.nil?
+    #       ext_ver.implications.each do |implication|
+    #         if implication.ext_ver == self
+    #           @implied_by_with_condition << ConditionalExtensionVersion.new(ext_ver: ext_ver, cond: implication.cond)
+    #         end
+    #       end
+    #     end
+    #   end
+    #   @implied_by_with_condition
+    # end
 
     # sorts extension by name, then by version
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other)
-      unless other.is_a?(ExtensionVersion)
-        raise ArgumentError, "ExtensionVersions are only comparable to other extension versions"
-      end
+      return nil unless other.is_a?(ExtensionVersion)
 
       if other.name != @name
         @name <=> other.name

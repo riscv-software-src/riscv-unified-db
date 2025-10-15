@@ -22,8 +22,10 @@ description: |
   implemented by cpop on RV64.
   ----
 definedBy:
-  extension:
-    name: Zbb
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbb
 base: 64
 assembly: xd, xs1
 encoding:

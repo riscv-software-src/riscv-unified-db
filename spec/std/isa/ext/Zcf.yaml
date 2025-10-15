@@ -40,9 +40,7 @@ versions:
       - name: Jiawei
 requirements:
   idl(): |
+    -> xlen() == 32;
+
     # if Zcf is implemented, then Zca and F must also be implemented
     -> implemented?(ExtensionName::Zca) && implemented?(ExtensionName::F);
-
-    # if either Zcd is also implemented or D in not, then C must be implemented
-    (implemented?(ExtensionName::Zcd) || !implemented?(ExtensionName::D))
-      -> implemented?(ExtensionName::C);

@@ -18,10 +18,7 @@ versions:
     ratification_date: "2025-02"
 requirements:
   allOf:
-    -
-      param:
-        name: MXLEN
-        equal: 32
+    - xlen: 32
     -
       not:
         extension:

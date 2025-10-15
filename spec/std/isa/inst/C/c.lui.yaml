@@ -16,9 +16,7 @@ description: |
   The code points with imm=0 are reserved; the remaining code points with xd=x0 are HINTs; and the remaining code points with xd=x2 correspond to the C.ADDI16SP instruction
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, imm
 encoding:
   match: 011-----------01

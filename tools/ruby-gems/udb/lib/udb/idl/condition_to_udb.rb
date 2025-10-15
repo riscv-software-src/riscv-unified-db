@@ -178,6 +178,10 @@ module Idl
             "version" => args.fetch(1).text_value.gsub('"', "")
           }
         }
+      when "xlen"
+        {
+          "xlen" => args.fetch(0).value(symtab)
+        }
       else
         type_error "unsupported function in an IDL condition: #{name}"
       end
@@ -346,6 +350,30 @@ module Idl
           end
           value_else(value_result) do
             raise "Comparison value (#{lhs.text_value}) must be compile-time evaluatable in #{text_value}"
+          end
+        elsif lhs.is_a?(FunctionCallExpressionAst)
+          if lhs.name == "xlen"
+            if @op == "=="
+              return { "xlen" => rhs.value(symtab) }
+            elsif @op == "!="
+              return { "not": { "xlen" => rhs.value(symtab) } }
+            else
+              raise "'#{text_value}' can not be converted to UDB YAML"
+            end
+          else
+            raise "'#{text_value}' can not be converted to UDB YAML"
+          end
+        elsif rhs.is_a?(FunctionCallExpressionAst)
+          if rhs.name == "xlen"
+            if @op == "=="
+              return { "xlen" => lhs.value(symtab) }
+            elsif @op == "!="
+              return { "not": { "xlen" => lhs.value(symtab) } }
+            else
+              raise "'#{text_value}' can not be converted to UDB YAML"
+            end
+          else
+            raise "'#{text_value}' can not be converted to UDB YAML"
           end
         else
           raise "'#{text_value}' can not be converted to UDB YAML"

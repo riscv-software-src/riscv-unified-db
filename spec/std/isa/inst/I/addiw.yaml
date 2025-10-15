@@ -11,8 +11,10 @@ description:
   Add an immediate to the 32-bit value in xs1, and store the sign extended
   result in xd
 definedBy:
-  extension:
-    name: I
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 base: 64
 assembly: xd, xs1, imm
 encoding:

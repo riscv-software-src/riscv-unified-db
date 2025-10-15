@@ -12,8 +12,10 @@ description: |
   of a destination word. It is the inverse of the unzip instruction. This instruction is available only on
   RV32.
 definedBy:
-  extension:
-    name: Zbkb
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbkb
 assembly: xd, xs1
 encoding:
   match: 000010001111-----001-----0010011

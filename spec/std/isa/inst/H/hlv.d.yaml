@@ -10,8 +10,10 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  extension:
-    name: H
+  allOf:
+    - xlen: 64
+    - extension:
+        name: H
 assembly: xd, xs1
 encoding:
   match: 011011000000-----100-----1110011

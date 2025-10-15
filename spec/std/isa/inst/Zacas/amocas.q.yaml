@@ -43,8 +43,10 @@ description: |
   An AMOCAS.Q instruction always requires write permissions.
 
 definedBy:
-  extension:
-    name: Zacas
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zacas
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:

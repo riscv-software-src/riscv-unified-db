@@ -19,10 +19,12 @@ description: |
   must have their upper 32 bits clear. If the arguments are not known to be sign- or zero-extended,
   an alternative is to shift both arguments left by 32 bits, then use MULH[[S]U].
 definedBy:
-  extension:
-    anyOf:
-      - name: M
-      - name: Zmmul
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: M
+          - name: Zmmul
 base: 64
 assembly: xd, xs1, xs2
 encoding:

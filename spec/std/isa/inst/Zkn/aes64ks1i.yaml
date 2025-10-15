@@ -18,10 +18,12 @@ description:
     text: |
       `rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.
 definedBy:
-  extension:
-    anyOf:
-      - name: Zknd
-      - name: Zkne
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: Zknd
+          - name: Zkne
 base: 64
 assembly: xd, xs1, rnum
 encoding:

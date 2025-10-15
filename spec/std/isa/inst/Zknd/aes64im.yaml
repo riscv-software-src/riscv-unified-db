@@ -15,8 +15,10 @@ description:
       packed into a single 64-bit register. It is used to create the inverse cipher KeySchedule, according to
       the equivalent inverse cipher construction in (NIST, 2001) (Page 23, Section 5.3.5).
 definedBy:
-  extension:
-    name: Zknd
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zknd
 base: 64
 assembly: xd, xs1
 encoding:

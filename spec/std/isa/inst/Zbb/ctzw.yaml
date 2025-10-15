@@ -14,8 +14,10 @@ description: |
   least-significant word is 0, the output is 32, and if the least-significant bit
   of the input is a 1, the output is 0.
 definedBy:
-  extension:
-    name: Zbb
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbb
 base: 64
 assembly: xd, xs1
 encoding:

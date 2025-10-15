@@ -762,8 +762,22 @@
         },
         {
           "$ref": "#/$defs/param_condition"
+        },
+        {
+          "$ref": "#/$defs/xlen_condition"
         }
       ]
+    },
+
+    "xlen_condition": {
+      "type": "object",
+      "required": ["xlen"],
+      "properties": {
+        "xlen": {
+          "enum": [32, 64]
+        }
+      },
+      "additionalProperties": false
     },
 
     "condition": {

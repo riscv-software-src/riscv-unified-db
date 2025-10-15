@@ -131,13 +131,7 @@ module Udb
     # is is possible for this condition and other to be simultaneously true?
     sig { params(other: AbstractCondition).returns(T::Boolean) }
     def compatible?(other)
-      LogicNode.new(
-        LogicNodeType::And,
-        [
-          to_logic_tree(expand: true),
-          other.to_logic_tree(expand: true)
-        ]
-      ).satisfiable?
+      Condition.conjunction([self, other], @cfg_arch).satisfiable?
     end
 
     # @return if the condition is, possibly is, or is definately not satisfied by cfg_arch
@@ -167,6 +161,26 @@ module Udb
       to_logic_tree(expand: true).equivalent?(other.to_logic_tree(expand: true))
     end
 
+    sig { params(other_condition: AbstractCondition).returns(T::Boolean) }
+    def covered_by?(other_condition)
+      # cover means other_condition always implies self
+      # can test that by seeing if the contradiction is satisfiable, i.e.:
+      # if other_condition -> self , contradition would be other_condition & not self
+      contradiction = LogicNode.new(
+        LogicNodeType::And,
+        [
+          other_condition.to_logic_tree(expand: true),
+          LogicNode.new(LogicNodeType::Not, [to_logic_tree(expand: true)])
+        ]
+      )
+      !contradiction.satisfiable?
+    end
+
+    sig { params(other_condition: AbstractCondition).returns(T::Boolean) }
+    def always_implies?(other_condition)
+      other_condition.covered_by?(self)
+    end
+
     # true if the condition references a parameter at some point
     sig { abstract.returns(T::Boolean) }
     def has_param?; end
@@ -174,6 +188,9 @@ module Udb
     # true if the condition references an extension requirements at some point
     sig { abstract.returns(T::Boolean) }
     def has_extension_requirement?; end
+
+    sig { abstract.returns(AbstractCondition) }
+    def minimize; end
 
     # convert condition into UDB-compatible hash
     sig { abstract.returns(T.any(T::Hash[String, T.untyped], T::Boolean)) }
@@ -233,8 +250,12 @@ module Udb
     #
     # This list is *not* transitive; if an implication I1 implies another extension I2,
     # only I1 shows up in the list
-    sig { abstract.returns(T::Array[ConditionalExtensionRequirement]) }
-    def implied_extension_requirements; end
+    sig { abstract.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_requirements(expand: true); end
+
+    # inversion of implied_extension_requirements
+    sig { abstract.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_conflicts(expand: true); end
   end
 
   # @api private
@@ -323,16 +344,48 @@ module Udb
             expanded_ext_vers = T.let({}, T::Hash[ExtensionVersion, T.any(Symbol, LogicNode)])
             tree = to_logic_tree_internal(expand:, expanded_ext_vers:)
 
-            if expanded_ext_vers.empty?
-              tree
+            before_param_expansion =
+              if expanded_ext_vers.empty?
+                tree
+              else
+                implications = expanded_ext_vers.map { |ext_ver, logic_req| LogicNode.new(LogicNodeType::If, [ext_ver.to_condition.to_logic_tree(expand: false), T.cast(logic_req, LogicNode)]) }
+                LogicNode.new(LogicNodeType::And, [tree] + implications)
+              end
+
+            extra_param_implications = T.let([], T::Array[LogicNode])
+            before_param_expansion.terms.each do |term|
+              next unless term.is_a?(ParameterTerm)
+
+              same_param_terms = before_param_expansion.terms.select { |t| t.is_a?(ParameterTerm) && !t.equal?(term) && t.name == term.name }
+              same_param_terms.each do |other_term|
+                relation = term.relation_to(T.cast(other_term, ParameterTerm))
+                unless relation.nil?
+                  extra_param_implications << relation
+                end
+              end
+            end
+
+            before_xlen_expansion =
+              if extra_param_implications.empty?
+                before_param_expansion
+              else
+                LogicNode.new(LogicNodeType::And, [before_param_expansion] + extra_param_implications)
+              end
+
+            if before_xlen_expansion.terms.any? { |t| t.is_a?(XlenTerm) }
+              LogicNode.new(LogicNodeType::And, [before_xlen_expansion, LogicNode.new(LogicNodeType::Xor, [LogicNode::Xlen32, LogicNode::Xlen64])])
             else
-              implications = expanded_ext_vers.map { |ext_ver, logic_req| LogicNode.new(LogicNodeType::If, [ext_ver.to_condition.to_logic_tree(expand: false), T.cast(logic_req, LogicNode)]) }
-              LogicNode.new(LogicNodeType::And, [tree] + implications)
+              before_xlen_expansion
             end
           end
       else
         @logic_tree_unexpanded ||= to_logic_tree_helper(@yaml, expand:, expanded_ext_vers: {})
       end
+    end
+
+    sig { override.returns(AbstractCondition) }
+    def minimize
+      Condition.new(to_logic_tree(expand: true).minimize(LogicNode::CanonicalizationType::ProductOfSums).to_h, @cfg_arch)
     end
 
     # @api private
@@ -376,6 +429,15 @@ module Udb
         ExtensionCondition.new(yaml["extension"], @cfg_arch).to_logic_tree_internal(expand:, expanded_ext_vers:)
       elsif yaml.key?("param")
         ParamCondition.new(yaml["param"], @cfg_arch).to_logic_tree_internal(expand:, expanded_ext_vers:)
+      elsif yaml.key?("xlen")
+        case yaml.fetch("xlen")
+        when 32
+          LogicNode::Xlen32
+        when 64
+          LogicNode::Xlen64
+        else
+          raise "unexpected"
+        end
       elsif yaml.key?("idl()")
         IdlCondition.new(yaml, @cfg_arch, input_file: nil, input_line: nil).to_logic_tree_internal(expand:, expanded_ext_vers:)
       else
@@ -411,6 +473,16 @@ module Udb
           term.partial_eval(cfg_arch.config.param_values)
         elsif term.is_a?(FreeTerm)
           raise "unreachable"
+        elsif term.is_a?(XlenTerm)
+          if cfg_arch.possible_xlens.include?(term.xlen)
+            if cfg_arch.possible_xlens.size == 1
+              SatisfiedResult::Yes
+            else
+              SatisfiedResult::Maybe
+            end
+          else
+            SatisfiedResult::No
+          end
         else
           T.absurd(term)
         end
@@ -436,6 +508,16 @@ module Udb
             term.eval(cfg_arch)
           elsif term.is_a?(FreeTerm)
             raise "unreachable"
+          elsif term.is_a?(XlenTerm)
+            if cfg_arch.possible_xlens.include?(term.xlen)
+              if cfg_arch.possible_xlens.size == 1
+                SatisfiedResult::Yes
+              else
+                SatisfiedResult::Maybe
+              end
+            else
+              SatisfiedResult::No
+            end
           else
             T.absurd(term)
           end
@@ -459,6 +541,16 @@ module Udb
             term.eval(cfg_arch)
           elsif term.is_a?(FreeTerm)
             raise "unreachable"
+          elsif term.is_a?(XlenTerm)
+            if cfg_arch.possible_xlens.include?(term.xlen)
+              if cfg_arch.possible_xlens.size == 1
+                SatisfiedResult::Yes
+              else
+                SatisfiedResult::Maybe
+              end
+            else
+              SatisfiedResult::No
+            end
           else
             T.absurd(term)
           end
@@ -507,8 +599,8 @@ module Udb
       to_logic_tree(expand: false).to_asciidoc(include_versions: false)
     end
 
-    sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
-    def implied_extension_requirements
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_requirements(expand: true)
       # strategy:
       #   1. convert to product-of-sums.
       #   2. for each product, find the positive terms. These are the implications
@@ -516,9 +608,17 @@ module Udb
 
       @implications ||= begin
         reqs = T.let([], T::Array[ConditionalExtensionRequirement])
-        pos = to_logic_tree(expand: true).minimize(LogicNode::CanonicalizationType::ProductOfSums)
+        puts "tree = #{to_logic_tree(expand:)}"
+        pos = to_logic_tree(expand:).minimize(LogicNode::CanonicalizationType::ProductOfSums)
+        puts "pos = #{pos}"
+
         if pos.type == LogicNodeType::Term
-          reqs << ConditionalExtensionRequirement.new(ext_req: T.cast(pos.children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch), cond: Condition::True)
+          single_term = pos.children.fetch(0)
+          if single_term.is_a?(ExtensionTerm)
+            reqs << ConditionalExtensionRequirement.new(ext_req: single_term.to_ext_req(@cfg_arch), cond: Condition::True)
+          else
+            # this is a single parameter, do nothing
+          end
         elsif pos.type == LogicNodeType::Not
           # there are no positive terms, do nothing
         elsif pos.type == LogicNodeType::And
@@ -550,7 +650,7 @@ module Udb
               cond_terms +=
                 child.node_children.select do |and_child|
                   and_child.type == LogicNodeType::Term && and_child.children.fetch(0).is_a?(ParameterTerm)
-                end
+                end.map { |c| LogicNode.new(LogicNodeType::Not, [c]) }
               positive_terms.each do |pterm|
                 cond_node =
                   if cond_terms.empty?
@@ -558,7 +658,7 @@ module Udb
                   else
                     cond_terms.size == 1 \
                         ? cond_terms.fetch(0)
-                        : LogicNode.new(LogicNodeType::Or, cond_terms)
+                        : LogicNode.new(LogicNodeType::And, cond_terms)
                   end
 
                 reqs << \
@@ -572,6 +672,83 @@ module Udb
           end
         end
         reqs
+      end
+    end
+
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_conflicts(expand: true)
+      # strategy:
+      #   1. invert extension requiremnts (to get conflicts)
+      #   1. convert to product-of-sums.
+      #   2. for each product, find the positive terms. These are the conflicts
+      #   3. for each product, find the negative terms. These are the "conditions" when the positive terms apply
+
+      @conflicts ||= begin
+        conflicts = T.let([], T::Array[ConditionalExtensionRequirement])
+        pos = LogicNode.new(LogicNodeType::Not, [to_logic_tree(expand:)]).minimize(LogicNode::CanonicalizationType::ProductOfSums)
+        puts pos
+        if pos.type == LogicNodeType::Term
+          # there are no negative terms, do nothing
+        elsif pos.type == LogicNodeType::Not
+          single_term = pos.node_children.fetch(0).children.fetch(0)
+          if single_term.is_a?(ExtensionTerm)
+            conflicts << \
+              ConditionalExtensionRequirement.new(
+                ext_req: single_term.to_ext_req(@cfg_arch),
+                cond: Condition::True
+              )
+          else
+            # parameter, do nothing
+          end
+        elsif pos.type == LogicNodeType::And
+          pos.children.each do |child|
+            child = T.cast(child, LogicNode)
+            if child.type == LogicNodeType::Term
+              # not a negative term; do nothing
+            elsif child.type == LogicNodeType::Not
+              term = child.node_children.fetch(0).children.fetch(0)
+              if term.is_a?(ExtensionTerm)
+                conflicts << \
+                  ConditionalExtensionRequirement.new(
+                    ext_req: term.to_ext_req(@cfg_arch),
+                    cond: AlwaysTrueCondition.new
+                  )
+              else
+                puts "Not a term: #{term} #{term.class.name}"
+              end
+            elsif child.children.all? { |child| T.cast(child, LogicNode).type == LogicNodeType::Term }
+              # there is no negative term, so do nothing
+            else
+              raise "? #{child.type}" unless child.type == LogicNodeType::Or
+
+              negative_terms =
+                child.node_children.select do |and_child|
+                  and_child.type == LogicNodeType::Not && and_child.node_children.fetch(0).children.fetch(0).is_a?(ExtensionTerm)
+                end.map { |n| n.node_children.fetch(0) }
+              cond_terms =
+                child.node_children.select { |and_child| and_child.type == LogicNodeType::Term }
+              negative_terms.each do |nterm|
+                cond_node =
+                  if cond_terms.empty?
+                    LogicNode::True
+                  else
+                    cond_terms.size == 1 \
+                        ? cond_terms.fetch(0)
+                        : LogicNode.new(LogicNodeType::Or, cond_terms)
+                  end
+
+                conflicts << \
+                  ConditionalExtensionRequirement.new(
+                    ext_req: T.cast(nterm.children.fetch(0), ExtensionTerm).to_ext_req(@cfg_arch),
+                    cond: Condition.new(cond_node.to_h, @cfg_arch)
+                  )
+              end
+              conflicts
+            end
+          end
+        end
+        puts conflicts.map { |c| c.ext_req.name } unless conflicts.empty?
+        conflicts
       end
     end
 
@@ -721,6 +898,9 @@ module Udb
     sig { override.returns(T::Boolean) }
     def has_extension_requirement? = false
 
+    sig { override.returns(AbstractCondition) }
+    def minimize = self
+
     sig { override.returns(T::Boolean) }
     def has_param? = false
 
@@ -738,8 +918,11 @@ module Udb
     sig { override.returns(String) }
     def to_asciidoc = "true"
 
-    sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
-    def implied_extension_requirements = []
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_requirements(expand: true) = []
+
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_conflicts(expand: true) = []
   end
 
   class AlwaysFalseCondition < AbstractCondition
@@ -782,6 +965,9 @@ module Udb
     sig { override.returns(T::Boolean) }
     def has_extension_requirement? = false
 
+    sig { override.returns(AbstractCondition) }
+    def minimize = self
+
     sig { override.returns(T::Boolean) }
     def has_param? = false
 
@@ -799,8 +985,11 @@ module Udb
     sig { override.returns(String) }
     def to_asciidoc = "false"
 
-    sig { override.returns(T::Array[ConditionalExtensionRequirement]) }
-    def implied_extension_requirements = []
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_requirements(expand: true) = []
+
+    sig { override.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
+    def implied_extension_conflicts(expand: true) = []
   end
 
   class Condition

@@ -912,7 +912,7 @@ module Udb
             repl_format = format.dup
             dv_values.each { |dv_and_value| repl_format = dv_and_value[0].encoding_repl(repl_format, dv_and_value[1]) }
 
-            if Encoding.overlapping_format?(repl_format, other_format)
+            if repl_format == other_format || !Encoding.overlapping_format?(repl_format, other_format)
               same = false
               break
             end
@@ -1004,6 +1004,8 @@ module Udb
     def bad_encoding_conflict?(xlen, other_inst)
       return false if !defined_in_base?(xlen) || !other_inst.defined_in_base?(xlen)
       return false unless encoding(xlen).indistinguishable?(other_inst.encoding(xlen))
+
+      puts "XXXXXXXXXXXXXXXXXXXXXX   #{name} and #{other_inst.name} are indistinguishable"
 
       # ok, so they have the same encoding. can they be present at the same time?
       return false if !defined_by_condition.compatible?(other_inst.defined_by_condition)

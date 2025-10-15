@@ -13,8 +13,10 @@ description: |
   bit of the word (_i.e._, bit 31) is a 1, the output is 0.
 base: 64
 definedBy:
-  extension:
-    name: Zbb
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbb
 assembly: xd, xs1
 encoding:
   match: 011000000000-----001-----0011011

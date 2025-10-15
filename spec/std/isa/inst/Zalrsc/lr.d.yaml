@@ -46,8 +46,10 @@ description: |
   LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
   with both bits clear, but may result in lower performance.
 definedBy:
-  extension:
-    name: Zalrsc
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zalrsc
 base: 64
 assembly: xd, (xs1)
 encoding:

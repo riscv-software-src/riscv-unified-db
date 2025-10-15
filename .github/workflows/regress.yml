@@ -87,7 +87,6 @@ jobs:
           path: _cov/udb
           merge-multiple: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
       - name: Collate coverage
         run: ./do chore:udb:collate_cov[_cov/udb]
       - name: Upload udb coverage reports to Codecov

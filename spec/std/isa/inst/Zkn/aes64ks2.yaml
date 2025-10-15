@@ -14,10 +14,12 @@ description:
       This instruction implements the additional XOR'ing of key words as part of the AES block cipher
       Key Schedule.
 definedBy:
-  extension:
-    anyOf:
-      - name: Zknd
-      - name: Zkne
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: Zknd
+          - name: Zkne
 base: 64
 assembly: xd, xs1, xs2
 encoding:

@@ -10,8 +10,10 @@ long_name: Shift left logical word
 description: |
   Shift the 32-bit value in `xs1` left by the value in the lower 5 bits of `xs2`, and store the sign-extended result in `xd`.
 definedBy:
-  extension:
-    name: I
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 base: 64
 assembly: xd, xs1, xs2
 encoding:

@@ -35,6 +35,74 @@ module Udb
     end
   end
 
+  class XlenTerm
+    extend T::Sig
+    include Comparable
+
+    attr_reader :xlen
+
+    sig { params(xlen: Integer).void }
+    def initialize(xlen)
+      @xlen = xlen
+    end
+
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(Condition) }
+    def to_condition(cfg_arch)
+      Condition.new({ "xlen" => @xlen }, cfg_arch)
+    end
+
+    sig { override.returns(String) }
+    def to_s
+      "xlen=#{@xlen}"
+    end
+
+    sig { returns(String) }
+    def to_s_pretty = to_s
+
+    sig { returns(String) }
+    def to_asciidoc = "xlen() == #{@xlen}"
+
+    sig { returns(T::Hash[String, Integer]) }
+    def to_h
+      {
+        "xlen" => @xlen
+      }
+    end
+
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(String) }
+    def to_idl(cfg_arch)
+      "xlen() == #{@xlen}"
+    end
+
+    sig {
+      override
+      .params(other: T.untyped)
+      .returns(T.nilable(Integer))
+      .checked(:never)
+    }
+    def <=>(other)
+      return nil unless other.is_a?(XlenTerm)
+
+      @xlen <=> other.xlen
+    end
+
+    # hash and eql? must be implemented to use ExtensionTerm as a Hash key
+    sig { override.returns(Integer) }
+    def hash = to_s.hash
+
+    sig {
+      override
+      .params(other: T.untyped)
+      .returns(T::Boolean)
+      .checked(:never)
+    }
+    def eql?(other)
+      return false unless other.is_a?(XlenTerm)
+
+      (self <=> other) == 0
+    end
+  end
+
   # a terminal for an Extension with a version specifier (a-la an ExtensionRequirement)
   # we don't use ExtensionRequirement for terminals just to keep LogicNode independent of the rest of UDB
   class ExtensionTerm
@@ -86,6 +154,11 @@ module Udb
       raise "Not an extension version" unless @op == ComparisonOp::Equal
 
       ExtensionVersion.new(@name, @version.to_s, cfg_arch)
+    end
+
+    sig { params(cfg_arch: ConfiguredArchitecture).returns(Condition) }
+    def to_condition(cfg_arch)
+      Condition.new({ "extension" => { "name" => name, "version" => "#{@op.serialize} #{@version}" } }, cfg_arch)
     end
 
     sig { override.returns(String) }
@@ -367,6 +440,34 @@ module Udb
       end
     end
 
+    def to_asciidoc
+      padoc =
+        index.nil? \
+          ? name
+          : "#{name}[#{index}]"
+      type = comparison_type
+      case type
+      when ParameterTerm::ParameterComparisonType::Equal
+        "`#{padoc}` == #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::NotEqual
+        "`#{padoc}` != #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::LessThan
+        "`#{padoc}` < #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::GreaterThan
+        "`#{padoc}` > #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::LessThanOrEqual
+        "`#{padoc}` <= #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
+        "`#{padoc}` >= #{comparison_value}"
+      when ParameterTerm::ParameterComparisonType::Includes
+        "#{comparison_value} in `#{padoc}`"
+      when ParameterTerm::ParameterComparisonType::OneOf
+        "`#{padoc}` in [#{@yaml["oneOf"].join(", ")}]"
+      else
+        T.absurd(type)
+      end
+    end
+
     sig { returns(String) }
     def param_to_s
       if !index.nil?
@@ -433,6 +534,310 @@ module Udb
       end
     end
 
+    sig { returns(T::Boolean) }
+    def param_is_array?
+      @yaml.keys.any? { |k| ["index", "includes", "size"].include?(k) }
+    end
+
+    # if self and other_param had a well-defined logical relationship, return it
+    # otherwise, return nil
+    # *note*: this is only one half of the relationship. to get the whole picture, need to use
+    # self.relation_to(other_param) && other_param.relation_to(self)
+    sig { params(other_param: ParameterTerm).returns(T.nilable(LogicNode)) }
+    def relation_to(other_param)
+      return nil unless name == other_param.name
+
+      self_implies_other =
+        LogicNode.new(LogicNodeType::If, [LogicNode.new(LogicNodeType::Term, [self]), LogicNode.new(LogicNodeType::Term, [other_param])])
+
+      self_implies_not_other =
+        LogicNode.new(LogicNodeType::If, [LogicNode.new(LogicNodeType::Term, [self]), LogicNode.new(LogicNodeType::Not, [LogicNode.new(LogicNodeType::Term, [other_param])])])
+
+      if param_is_array?
+        if @yaml.key?("includes")
+          if other_param.to_h.key?("index") && other_param.to_h.key?("equals") && (other_param.to_h.fetch("equals") == @yaml.fetch("includes"))
+            self_implies_other
+          end
+        elsif @yaml.key?("size")
+          scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
+        elsif @yaml.key?("index") && other_param.to_h.key?("index")
+          scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
+        end
+      else
+        scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
+      end
+    end
+
+    # @api private
+    sig { params(other_param: ParameterTerm, self_implies_other: LogicNode, self_implies_not_other: LogicNode).returns(T.nilable(LogicNode)) }
+    def scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
+      op = comparison_type
+      other_op = other_param.comparison_type
+
+      case op
+      when ParameterComparisonType::Equal
+        case other_op
+        when ParameterComparisonType::Equal
+          if comparison_value != other_param.comparison_value
+            self_implies_not_other
+          else
+            self_implies_other
+          end
+        when ParameterComparisonType::NotEqual
+          if comparison_value != other_param.comparison_value
+            if comparison_value.is_a?(TrueClass) || comparison_value.is_a?(FalseClass)
+              self_implies_other
+            end
+          else
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          else
+            self_implies_not_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          else
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, Integer) > T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          else
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, Integer) >= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          else
+            self_implies_not_other
+          end
+        when ParameterComparisonType::OneOf
+          if T.cast(other_param.comparison_value, T::Array[T.any(String, Integer)]).include?(comparison_value)
+            self_implies_other
+          else
+            self_implies_not_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::NotEqual
+        case other_op
+        when ParameterComparisonType::Equal
+          if comparison_value != other_param.comparison_value
+            if comparison_value.is_a?(TrueClass) || comparison_value.is_a?(FalseClass)
+              self_implies_other
+            end
+          else
+            self_implies_other
+          end
+        when ParameterComparisonType::NotEqual
+          if comparison_value != other_param.comparison_value # otherwise, this would be self-comparison
+            if comparison_value.is_a?(TrueClass) || comparison_value.is_a?(FalseClass)
+              self_implies_not_other
+            end
+          else
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan,
+              ParameterComparisonType::LessThanOrEqual,
+              ParameterComparisonType::GreaterThan,
+              ParameterComparisonType::GreaterThanOrEqual,
+              ParameterComparisonType::OneOf
+          # nothing to say here.
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::LessThan
+        case other_op
+        when ParameterComparisonType::Equal
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::NotEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::OneOf
+          if T.cast(other_param.comparison_value, T::Array[Integer]).all? { |v| v >= T.cast(comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::LessThanOrEqual
+        case other_op
+        when ParameterComparisonType::Equal
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::NotEqual
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::OneOf
+          if T.cast(other_param.comparison_value, T::Array[Integer]).all? { |v| v > T.cast(comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::GreaterThan
+        case other_op
+        when ParameterComparisonType::Equal
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::NotEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, Integer) >= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, Integer) > T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::OneOf
+          if T.cast(other_param.comparison_value, T::Array[Integer]).all? { |v| v <= T.cast(comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::GreaterThanOrEqual
+        case other_op
+        when ParameterComparisonType::Equal
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::NotEqual
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, Integer) <= T.cast(other_param.comparison_value, Integer)
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, Integer) > T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, Integer) >= T.cast(other_param.comparison_value, Integer)
+            self_implies_other
+          end
+        when ParameterComparisonType::OneOf
+          if T.cast(other_param.comparison_value, T::Array[Integer]).all? { |v| v < T.cast(comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::OneOf
+        case other_op
+        when ParameterComparisonType::Equal
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::NotEqual
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+            self_implies_other
+          end
+        when ParameterComparisonType::LessThan
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v >= T.cast(other_param.comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::LessThanOrEqual
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v > T.cast(other_param.comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThan
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v <= T.cast(other_param.comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::GreaterThanOrEqual
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v < T.cast(other_param.comparison_value, Integer) }
+            self_implies_not_other
+          end
+        when ParameterComparisonType::OneOf
+          # self implies other if all in set set are also in other set
+          if T.cast(comparison_value, T::Array[Integer]).all? { |v| T.cast(other_param.comparison_value, T::Array[Integer]).include?(v) }
+            self_implies_other
+          end
+        when ParameterComparisonType::Includes
+          raise "impossible"
+        else
+          T.absurd(other_op)
+        end
+      when ParameterComparisonType::Includes
+        raise "impossible"
+      else
+        T.absurd(op)
+      end
+    end
+
     sig {
       override
       .params(other: T.untyped)
@@ -447,12 +852,33 @@ module Udb
         name <=> other_param.name
       elsif !index.nil? && !other_param.index.nil? && index != other_param.index
         T.must(index) <=> T.must(other_param.index)
+      elsif size != other.size
+        # one is a size operator and one isn't.
+        size.nil? ? 1 : -1
+      elsif @yaml.key?("includes") || other_param.to_h.key?("includes")
+        if @yaml.key?("includes") && other_param.to_h.key?("includes")
+          @yaml.fetch("includes") <=> other_param.to_h.key?("includes")
+        elsif @yaml.key?("includes") && !other_param.to_h.key?("includes")
+          1
+        elsif !@yaml.key?("includes") && other_param.to_h.key?("includes")
+          -1
+        end
+      elsif @yaml.key?("oneOf") || other_param.to_h.key?("oneOf")
+        if @yaml.key?("oneOf") && other_param.to_h.key?("oneOf")
+          @yaml.fetch("oneOf") <=> other_param.to_h.key?("oneOf")
+        elsif @yaml.key?("oneOf")
+          1
+        else
+          -1
+        end
       elsif comparison_type != other_param.comparison_type
         comparison_type <=> other_param.comparison_type
       elsif comparison_value != other_param.comparison_value
         cv = comparison_value
         if cv.is_a?(String)
           cv <=> T.cast(other_param.comparison_value, String)
+        elsif cv.is_a?(Array)
+          cv <=> T.cast(other_param.comparison_value, T::Array[T.any(String, T::Boolean, Integer)])
         else
           T.cast(comparison_value, Integer) <=> T.cast(other_param.comparison_value, Integer)
         end
@@ -553,7 +979,7 @@ module Udb
     end
   end
 
-  TermType = T.type_alias { T.any(ExtensionTerm, ParameterTerm, FreeTerm) }
+  TermType = T.type_alias { T.any(ExtensionTerm, ParameterTerm, XlenTerm, FreeTerm) }
 
   # Abstract syntax tree of the condition logic
   class LogicNode
@@ -668,6 +1094,9 @@ module Udb
     False.memo.literals = [].freeze
     False.freeze
 
+    Xlen32 = LogicNode.new(LogicNodeType::Term, [XlenTerm.new(32).freeze]).freeze
+    Xlen64 = LogicNode.new(LogicNodeType::Term, [XlenTerm.new(64).freeze]).freeze
+
     # If ext_req is false, can this logic tree be satisfied?
     sig { params(ext_req: ExtensionRequirement).returns(T::Boolean) }
     def satisfiability_depends_on_ext_req?(ext_req)
@@ -683,6 +1112,8 @@ module Udb
           SatisfiedResult::Maybe
         when FreeTerm
           SatisfiedResult::No
+        when XlenTerm
+          SatisfiedResult::Maybe
         else
           T.absurd(term)
         end
@@ -971,7 +1402,13 @@ module Udb
       if terms.size <= 4
         quine_mccluskey(result_type)
       else
-        espresso(result_type, true)
+        # special-case check for when the formula is large but obviously already minimized
+        # added this because espresso runtime for Shcounterenw requirements was painfully long
+        if result_type == CanonicalizationType::ProductOfSums && terms.size > 32 && nnf.nested_cnf? && terms.size == literals.size
+          equiv_cnf
+        else
+          espresso(result_type, true)
+        end
       end
     end
 
@@ -984,6 +1421,30 @@ module Udb
     sig { params(blk: EvalCallbackType).returns(EvalCallbackType) }
     def self.make_eval_cb(&blk)
       blk
+    end
+
+    ReplaceCallbackType = T.type_alias { T.proc.params(arg0: LogicNode).returns(LogicNode) }
+    sig { params(blk: ReplaceCallbackType).returns(ReplaceCallbackType) }
+    def self.make_replace_cb(&blk)
+      blk
+    end
+
+    sig { params(callback: ReplaceCallbackType).returns(LogicNode) }
+    def replace_terms(callback)
+      case @type
+      when LogicNodeType::True, LogicNodeType::False
+        self
+      when LogicNodeType::Term
+        callback.call(self)
+      when LogicNodeType::If, LogicNodeType::Not, LogicNodeType::And,
+           LogicNodeType::Or, LogicNodeType::None, LogicNodeType::Xor
+        LogicNode.new(
+          @type,
+          node_children.map { |c| c.replace_terms(callback) }
+        )
+      else
+        T.absurd(@type)
+      end
     end
 
     sig { params(callback: EvalCallbackType).returns(SatisfiedResult) }
@@ -1212,33 +1673,11 @@ module Udb
             "`#{term.name}`"
           end
         elsif term.is_a?(ParameterTerm)
-          padoc =
-            term.index.nil? \
-              ? term.name
-              : "#{term.name}[#{term.index}]"
-          type = term.comparison_type
-          case type
-          when ParameterTerm::ParameterComparisonType::Equal
-            "`#{padoc}` == #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::NotEqual
-            "`#{padoc}` != #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::LessThan
-            "`#{padoc}` < #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::GreaterThan
-            "`#{padoc}` > #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::LessThanOrEqual
-            "`#{padoc}` <= #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
-            "`#{padoc}` >= #{term.comparison_value}"
-          when ParameterTerm::ParameterComparisonType::Includes
-            "#{term.comparison_value} in `#{padoc}`"
-          when ParameterTerm::ParameterComparisonType::OneOf
-            "`#{padoc}` in [#{@yaml["oneOf"].join(", ")}]"
-          else
-            T.absurd(type)
-          end
+          term.to_asciidoc
         elsif term.is_a?(FreeTerm)
           raise "Should not occur"
+        elsif term.is_a?(XlenTerm)
+          term.to_asciidoc
         else
           T.absurd(term)
         end
@@ -1306,6 +1745,8 @@ module Udb
             { "param" => @children.fetch(0).to_h }
           when FreeTerm
             raise "unexpected"
+          when XlenTerm
+            @children.fetch(0).to_h
           else
             T.absurd(child)
           end
@@ -2273,6 +2714,20 @@ module Udb
       end
     end
     private :build_solver
+
+    sig { params(other: LogicNode).returns(T::Boolean) }
+    def always_implies?(other)
+      # can test that by seeing if the contradiction is satisfiable, i.e.:
+      # if self -> other , contradition would be self & not other
+      contradiction = LogicNode.new(
+        LogicNodeType::And,
+        [
+          self,
+          LogicNode.new(LogicNodeType::Not, [other])
+        ]
+      )
+      !contradiction.satisfiable?
+    end
 
     # @return true iff self is satisfiable (possible to be true for some combination of term values)
     sig { returns(T::Boolean) }

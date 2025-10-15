@@ -12,8 +12,10 @@ description: |
   positions in the destination word. It is the inverse of the zip instruction. This instruction is
   available only on RV32.
 definedBy:
-  extension:
-    name: Zbkb
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbkb
 assembly: xd, xs1
 encoding:
   match: 000010001111-----101-----0010011

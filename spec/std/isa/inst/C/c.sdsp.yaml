@@ -13,11 +13,13 @@ description: |
   to the stack pointer, x2.
   It expands to `sd` `xs2, offset(x2)`.
 definedBy:
-  extension:
-    anyOf:
-      - name: C
-      - name: Zca
-      - name: Zclsd
+  anyOf:
+    - allOf:
+        - xlen: 64
+        - extension:
+            name: Zca
+    - extension:
+        name: Zclsd
 assembly: xs2, imm(sp)
 encoding:
   RV32:

@@ -7,7 +7,11 @@
 require "sorbet-runtime"
 require "write_xlsx"
 
+require "sorbet-runtime"
+
 require "udb/architecture"
+
+extend T::Sig
 
 # @param presence [String] Can be nil
 # @return [String] m=mandatory, o=optional, n=not present
@@ -43,9 +47,10 @@ def arch2ext_table(arch)
       },
       { name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       { name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true },
-      { name: "Implies\n(Exts)", formatter: "textarea", sorter: "alphanum" },
-      { name: "Requires\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Requires\n(Exts)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Transitive Requires\n(Ext)", formatter: "textarea", sorter: "alphanum" },
       { name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
+      { name: "Transitive Incompatible\n(Ext Ver)", formatter: "textarea", sorter: "alphanum" },
       { name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true },
       { name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
@@ -58,11 +63,35 @@ def arch2ext_table(arch)
     }
 
   arch.extensions.sort_by!(&:name).each do |ext|
+    next if ext.name == "Shcounterenw"
+    next if ext.name == "Sscounterenw"
+    next if ext.name == "Sha"
     row = [
       ext.name,           # Name
       ext.long_name,      # Description
       ext.compact_priv_type,  # IC
-      ext.max_version.implications.map { |cond_ext_ver| cond_ext_ver.ext_ver.name }.uniq,  # Implies
+      ext.max_version.ext_requirements(expand: false).map do |cond_ext_req|
+        if cond_ext_req.cond.empty?
+          cond_ext_req.ext_req.name
+        else
+          "#{cond_ext_req.ext_req.name} if #{cond_ext_req.cond}"
+        end
+      end.uniq,  # Requires
+      ext.max_version.ext_requirements(expand: true).map do |cond_ext_req|
+        if cond_ext_req.cond.empty?
+          cond_ext_req.ext_req.name
+        else
+          "#{cond_ext_req.ext_req.name} if #{cond_ext_req.cond}"
+        end
+      end.uniq,  # Transitive Requires
+      ext.max_version.ext_conflicts(expand: false).map do |cond_ext_req|
+        if cond_ext_req.cond.empty?
+          cond_ext_req.ext_req.name
+        else
+          "#{cond_ext_req.ext_req.name} unless #{cond_ext_req.cond.to_asciidoc}"
+        end
+      end.uniq,  # Conlifct
+      ext.max_version.unconditional_extension_version_conflicts.map(&:to_s),  # Transitive Conlifct
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -415,7 +444,7 @@ def get_sorted_profile_releases(arch)
   # Move RVI20 to the beginning of the array if it exists.
   if sorted_profile_releases.any? { |pr| pr.name == "RVI20" }
     sorted_profile_releases.delete_if { |pr| pr.name == "RVI20" }
-    sorted_profile_releases.unshift(arch.profile_release("RVI20"))
+    sorted_profile_releases.unshift(T.must(arch.profile_release("RVI20")))
   end
 
   return sorted_profile_releases
