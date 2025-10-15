@@ -49,15 +49,15 @@ operation(): |
 
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_multiplier) >> (3 + state.sew);
-  XReg AVL = xs1;
-  XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
+  XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  XReg avl = X[xs1];
+  XReg ceil_avl_over_two = (avl + 1) / 2;
 
-  if (AVL < vlmax) {
-    CSR[vl].VALUE = AVL;
-  } else if (AVL < 2*vlmax) {
+  if (avl < vlmax) {
+    CSR[vl].VALUE = avl;
+  } else if (avl < 2*vlmax) {
     if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
+      CSR[vl].VALUE = ceil_avl_over_two;
     } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
       CSR[vl].VALUE = vlmax;
     } else {

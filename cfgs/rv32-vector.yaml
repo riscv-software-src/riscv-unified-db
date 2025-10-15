@@ -3,8 +3,8 @@
 $schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
 kind: architecture configuration
 type: fully configured
-name: rv32-riscv-tests
-description: A compliant full config for rv32 riscv-tests
+name: rv32-vector
+description: A compliant full config for rv32 riscv-tests with the V extension
 implemented_extensions:
   - [Sm, "1.11.0"]
   - [I, "2.1"]

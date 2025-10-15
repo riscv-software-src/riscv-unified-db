@@ -26,7 +26,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  XReg new_vtype = xs2;
+  XReg new_vtype = X[xs2];
   if ((new_vtype[xlen() - 1] == 1'b1) # software is setting the illegal bit
       || ((new_vtype & 8'd0) != 0)    # reserved bits
       || (new_vtype[5] == 1)          # reserved vsew encoding
@@ -49,14 +49,14 @@ operation(): |
 
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_multiplier) >> (3 + state.sew);
-  XReg AVL = xs1;
-  XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
-  if (AVL < vlmax) {
-    CSR[vl].VALUE = AVL;
-  } else if (AVL < 2*vlmax) {
+  XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  XReg avl = X[xs1];
+  XReg ceil_avl_over_two = (avl + 1) / 2;
+  if (avl < vlmax) {
+    CSR[vl].VALUE = avl;
+  } else if (avl < 2*vlmax) {
     if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-      CSR[vl].VALUE = CEIL_AVL_OVER_TWO;
+      CSR[vl].VALUE = ceil_avl_over_two;
     } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
       CSR[vl].VALUE = vlmax;
     } else {
