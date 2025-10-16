@@ -5,7 +5,7 @@
 # Generate
 
 require "sorbet-runtime"
-require "ttyp-progressbar"
+require "tty-progressbar"
 require "write_xlsx"
 
 require "sorbet-runtime"
