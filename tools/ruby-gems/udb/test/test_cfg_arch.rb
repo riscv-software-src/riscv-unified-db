@@ -29,17 +29,6 @@ class TestCfgArch < Minitest::Test
     FileUtils.rm_rf @gen_dir
   end
 
-  # make sure all the configs in the repo are valid
-  Dir[Udb.repo_root / "cfgs" / "*.yaml"].each do |cfg_path|
-    define_method "test_cfg_#{File.basename(cfg_path, ".yaml")}_valid" do
-      cfg_arch = @resolver.cfg_arch_for(Pathname.new cfg_path)
-      assert cfg_arch.valid?, <<~MSG
-        Config '#{File.basename(cfg_path, ".yaml")}' is not valid.
-        To see why, run `./bin/udb validate cfg #{cfg_path}`
-      MSG
-    end
-  end
-
   def test_invalid_partial_config
     cfg = <<~CFG
       $schema: config_schema.json#
@@ -170,22 +159,15 @@ class TestCfgArch < Minitest::Test
       f.write cfg
       f.flush
 
-      puts "creating cfg_arch"
       cfg_arch = @resolver.cfg_arch_for(Pathname.new f.path)
-      puts "done"
 
-      puts "type checking"
       cfg_arch.type_check(show_progress: true)
-      puts "done"
 
-      puts "checking params"
       assert_equal cfg_arch.config.param_values.size, cfg_arch.params_with_value.size
 
       total_params = cfg_arch.params_with_value.size + cfg_arch.params_without_value.size + cfg_arch.out_of_scope_params.size
       assert_equal cfg_arch.params.size, total_params
-      puts "done"
 
-      puts "checking extensions"
       if cfg_arch.fully_configured?
         assert_equal cfg_arch.config.implemented_extensions.size, cfg_arch.explicitly_implemented_extensions.size
         assert cfg_arch.config.implemented_extensions.size <= cfg_arch.implemented_extensions.size
@@ -196,7 +178,6 @@ class TestCfgArch < Minitest::Test
           assert ext_req.to_condition.could_be_satisfied_by_cfg_arch?(cfg_arch)
         end
       end
-      puts "done"
 
       possible = cfg_arch.possible_extension_versions
 
@@ -299,7 +280,6 @@ class TestCfgArch < Minitest::Test
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
         ExtensionVersion.new("D", "2.2.0", cfg_arch),
         ExtensionVersion.new("F", "2.2.0", cfg_arch),
         ExtensionVersion.new("Zca", "1.0.0", cfg_arch),

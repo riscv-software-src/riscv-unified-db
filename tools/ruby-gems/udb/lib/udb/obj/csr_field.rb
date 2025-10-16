@@ -48,7 +48,7 @@ module Udb
     def __source = @parent.__source
 
     # CSR field data starts at fields: NAME: with the YAML
-    sig { params(path: T::Array[String]).returns(Integer) }
+    sig { params(path: T::Array[T.any(String, Integer)]).returns(Integer) }
     def source_line(path)
       super(["fields", name].concat(path))
     end
@@ -432,9 +432,9 @@ module Udb
 
     sig { returns(String) }
     def reset_value_pretty
-      str = T.let(nil, T.nilable(String))
+      str = T.let(nil, T.nilable(Idl::ValueRbType))
       value_result = Idl::AstNode.value_try do
-        str = T.cast(reset_value, T.nilable(String))
+        str = reset_value
       end
       Idl::AstNode.value_else(value_result) do
         ast = T.must(reset_value_ast)
@@ -758,6 +758,8 @@ module Udb
             "CSR[mstatus].SXL == %%"
           when "VS"
             "CSR[hstatus].VSXL == %%"
+          when "U"
+            "CSR[mstatus].UXL == %%"
           else
             raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
           end
