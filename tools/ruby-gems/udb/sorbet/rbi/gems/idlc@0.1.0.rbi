@@ -945,7 +945,7 @@ class Idl::AstNode::LinesDescriptor < ::T::Struct
   const :lines_interval, T::Range[T.untyped]
 
   class << self
-    # source://sorbet-runtime/0.6.12638/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12645/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1052,7 +1052,7 @@ class Idl::BinaryExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#197
+  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#201
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -1960,7 +1960,7 @@ class Idl::CsrFieldReadExpressionAst < ::Idl::AstNode
   def initialize(input, interval, csr, field_name); end
 
   # source://idlc//lib/idlc/ast.rb#7585
-  sig { params(symtab: ::Idl::SymbolTable).void }
+  sig { params(symtab: ::Idl::SymbolTable).returns(T.nilable(::Idl::Type)) }
   def calc_type(symtab); end
 
   # source://idlc//lib/idlc/ast.rb#7629
@@ -2024,7 +2024,7 @@ class Idl::CsrFieldReadExpressionAst::MemoizedState < ::T::Struct
   prop :value, T.nilable(::Integer)
 
   class << self
-    # source://sorbet-runtime/0.6.12638/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12645/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -5003,7 +5003,10 @@ module Idl::RuntimeParam
   def schema_known?; end
 
   # source://idlc//lib/idlc/interfaces.rb#45
-  sig { abstract.returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[T::Boolean], T::Boolean)) }
+  sig do
+    abstract
+      .returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean))
+  end
   def value; end
 
   # source://idlc//lib/idlc/interfaces.rb#42
@@ -5012,7 +5015,7 @@ module Idl::RuntimeParam
 end
 
 # source://idlc//lib/idlc/interfaces.rb#20
-Idl::RuntimeParam::ValueType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[T::Boolean], T::Boolean) }
+Idl::RuntimeParam::ValueType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean) }
 
 # source://idlc//lib/idlc/ast.rb#609
 module Idl::Rvalue
@@ -5521,7 +5524,7 @@ class Idl::SymbolTable::BuiltinFunctionCallbacks < ::T::Struct
   prop :implemented_csr, T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
 
   class << self
-    # source://sorbet-runtime/0.6.12638/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12645/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -5540,7 +5543,7 @@ class Idl::SymbolTable::EnumDef < ::T::Struct
   def initialize(name:, element_values:, element_names:); end
 
   class << self
-    # source://sorbet-runtime/0.6.12638/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12645/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -5559,7 +5562,7 @@ class Idl::SymbolTable::MemoizedState < ::T::Struct
   prop :possible_xlens, T.nilable(T::Array[::Integer])
 
   class << self
-    # source://sorbet-runtime/0.6.12638/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12645/lib/types/struct.rb#13
     def inherited(s); end
   end
 end

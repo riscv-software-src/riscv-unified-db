@@ -6,9 +6,7 @@ type: partially configured
 name: rv32
 description: A generic RV32 system; only MXLEN is known
 params:
-  MXLEN: 31
-  NOT_A: false
-  CACHE_BLOCK_SIZE: 64
+  MXLEN: 32
 
 mandatory_extensions:
   - name: "I"

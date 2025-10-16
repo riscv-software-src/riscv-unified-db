@@ -474,14 +474,37 @@ module Udb
         elsif term.is_a?(FreeTerm)
           raise "unreachable"
         elsif term.is_a?(XlenTerm)
-          if cfg_arch.possible_xlens.include?(term.xlen)
-            if cfg_arch.possible_xlens.size == 1
+          # can't use cfg_arch.possible_xlens because of an initialization circular dependency in figuring out
+          # is S/U is implemented
+          if term.xlen == 32
+            if cfg_arch.mxlen.nil?
+              SatisfiedResult::Maybe
+            elsif cfg_arch.mxlen == 32
               SatisfiedResult::Yes
             else
+              # mxlen == 64. can some other mode be 32?
+              if cfg_arch.config.param_values.key?("SXLEN") && T.cast(cfg_arch.config.param_values.fetch("SXLEN"), T::Array[Integer]).include?(32)
+                SatisfiedResult::Yes
+              elsif cfg_arch.config.param_values.key?("UXLEN") && T.cast(cfg_arch.config.param_values.fetch("UXLEN"), T::Array[Integer]).include?(32)
+                SatisfiedResult::Yes
+              elsif cfg_arch.config.param_values.key?("VSXLEN") && T.cast(cfg_arch.config.param_values.fetch("VSXLEN"), T::Array[Integer]).include?(32)
+                SatisfiedResult::Yes
+              elsif cfg_arch.config.param_values.key?("VUXLEN") && T.cast(cfg_arch.config.param_values.fetch("VUXLEN"), T::Array[Integer]).include?(32)
+                SatisfiedResult::Yes
+              else
+                SatisfiedResult::No
+              end
+            end
+          elsif term.xlen == 64
+            if cfg_arch.mxlen.nil?
               SatisfiedResult::Maybe
+            elsif cfg_arch.mxlen == 32
+              SatisfiedResult::No
+            else
+              SatisfiedResult::Yes
             end
           else
-            SatisfiedResult::No
+            raise "term.zlen is not 32 or 64"
           end
         else
           T.absurd(term)

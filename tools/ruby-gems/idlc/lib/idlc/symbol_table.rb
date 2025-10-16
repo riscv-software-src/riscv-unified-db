@@ -23,7 +23,7 @@ module Idl
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
-      @type.qualify(:template_var)
+      @type.qualify(:template_var) unless template_index.nil?
       @type.freeze
       @value = value
       raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)

@@ -5555,7 +5555,9 @@ module Idl
             type_error "Bits width (#{bits_expression.value(symtab)}) must be positive"
           end
         end
-        type_error "Bits width (#{bits_expression.text_value}) must be const" unless bits_expression.type(symtab).const?
+        unless bits_expression.type(symtab).const?
+          type_error "Bits width (#{bits_expression.text_value}) must be const"
+        end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
         type_error "Unimplemented builtin type #{text_value}"

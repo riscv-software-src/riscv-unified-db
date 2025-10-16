@@ -5,6 +5,7 @@
 # Generate
 
 require "sorbet-runtime"
+require "ttyp-progressbar"
 require "write_xlsx"
 
 require "sorbet-runtime"
@@ -141,10 +142,10 @@ def arch2inst_table(arch)
     }
 
   insts = arch.instructions.sort_by!(&:name)
-  progressbar = ProgressBar.create(title: "Instruction Table", total: insts.size)
+  progressbar = TTY::ProgressBar.new("Instruction Table [:bar]", total: insts.size, output: $stdout)
 
   insts.each do |inst|
-    progressbar.increment
+    progressbar.advance
 
     row = [
       inst.name,
@@ -189,10 +190,10 @@ def arch2csr_table(arch)
     }
 
   csrs = arch.csrs.sort_by!(&:name)
-  progressbar = ProgressBar.create(title: "CSR Table", total: csrs.size)
+  progressbar = TTY::ProgressBar.new("CSR Table [:bar]", total: csrs.size, output: $stdout)
 
   csrs.each do |csr|
-    progressbar.increment
+    progressbar.advance
 
     raise "Indirect CSRs not yet supported for CSR #{csr.name}" if csr.address.nil?
 

@@ -71,7 +71,7 @@ module Udb
 
     sig { params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch)
-      "xlen() == #{@xlen}"
+      "(xlen() == #{@xlen})"
     end
 
     sig {

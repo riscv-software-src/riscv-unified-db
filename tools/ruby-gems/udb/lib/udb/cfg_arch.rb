@@ -10,7 +10,6 @@
 # or created at runtime for things like profiles and certificate models.
 
 require "concurrent"
-require "ruby-progressbar"
 require "tilt"
 require "tty-progressbar"
 require "yaml"
@@ -214,36 +213,6 @@ module Udb
 
     sig { returns(ConfigType) }
     def config_type = @config_type
-
-    # return the params as a hash of symbols for the SymbolTable
-    sig { returns(T::Hash[String, T.any(Idl::Var, Idl::Type)]) }
-    def param_syms
-      syms = {}
-
-      params_with_value.each do |param_with_value|
-        type = T.must(Idl::Type.from_json_schema(param_with_value.schema)).make_const
-        if type.kind == :array && type.width == :unknown
-          type = Idl::Type.new(:array, width: T.cast(param_with_value.value, T.untyped).length, sub_type: type.sub_type, qualifiers: [:const])
-        end
-
-        # could already be present...
-        existing_sym = syms[param_with_value.name]
-        if existing_sym.nil?
-          syms[param_with_value.name] = Idl::Var.new(param_with_value.name, type, param_with_value.value, param: true)
-        else
-          unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-            raise Idl::SymbolTable::DuplicateSymError, "Definition error: Param #{param_with_value.name} is defined by multiple extensions and is not the same definition in each"
-          end
-        end
-      end
-
-      # now add all parameters, even those not implemented
-      params_without_value.each do |param|
-        syms[param.name] = Idl::Var.new(param.name, param.idl_type.make_const, param: true)
-      end
-
-      syms
-    end
 
     # return type for #valid?
     class ValidationResult < T::Struct
@@ -496,9 +465,9 @@ module Udb
             end
           end
         if param.value_known?
-          Idl::Var.new(param.name, idl_type, param.value, param: true)
+          Idl::Var.new(param.name, idl_type.make_const, param.value, param: true)
         else
-          Idl::Var.new(param.name, idl_type, param: true)
+          Idl::Var.new(param.name, idl_type.make_const, param: true)
         end
       end
 
@@ -636,11 +605,11 @@ module Udb
 
       progressbar =
         if show_progress
-          ProgressBar.create(title: "CSRs", total: possible_csrs.size)
+          TTY::ProgressBar.new("type checking CSRs [:bar]", total: possible_csrs.size, output: $stdout)
         end
 
       possible_csrs.each do |csr|
-        progressbar.increment if show_progress
+        progressbar.advance if show_progress
         if csr.has_custom_sw_read?
           if (possible_xlens.include?(32) && csr.defined_in_base32?)
             csr.type_checked_sw_read_ast(32)
@@ -674,10 +643,10 @@ module Udb
       func_list = reachable_functions(show_progress:)
       progressbar =
         if show_progress
-          ProgressBar.create(title: "Functions", total: func_list.size)
+          TTY::ProgressBar.new("type checking functions [:bar]", total: func_list.size, output: $stdout)
         end
       func_list.each do |func|
-        progressbar.increment if show_progress
+        progressbar.advance if show_progress
         func.type_check(symtab)
       end
 
@@ -1043,7 +1012,7 @@ module Udb
         elsif @config.partially_configured?
           bar =
             if show_progress
-              TTY::ProgressBar.new("determining possible CSRs", total: csrs.size)
+              TTY::ProgressBar.new("determining possible CSRs [:bar]", total: csrs.size, output: $stdout)
             end
           csrs.select do |csr|
             bar.advance if show_progress

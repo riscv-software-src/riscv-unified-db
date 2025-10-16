@@ -19,7 +19,6 @@ gem "concurrent-ruby", require: "concurrent"
 gem "concurrent-ruby-ext"
 gem "json_schemer", "~> 1.0"
 gem "rake", "~> 13.0"
-gem "ruby-progressbar", "~> 1.13"
 gem "sorbet-runtime"
 gem "ttfunk", "1.7" # needed to avoid having asciidoctor-pdf dependencies pulling in a buggy version of ttunk (1.8)
 gem "webrick"

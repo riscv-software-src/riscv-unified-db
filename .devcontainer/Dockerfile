@@ -37,7 +37,8 @@ RUN \
     python3.12-venv \
     ruby \
     ruby-dev \
-    shellcheck
+    shellcheck \
+    zlib1g-dev
 
 # build/install eqntott
 RUN  <<CMDS
@@ -57,6 +58,19 @@ RUN <<CMDS
   make && make install
   cd ..
   rm -rf espresso-ab-1.0
+CMDS
+
+# build / install must
+RUN <<CMDS
+  git clone https://github.com/jar-ben/mustool.git
+  cd mustool
+  git checkout 17fa9f9542a9ce05328dfccd1cd410f05f741ab3
+  # mcsmus/mcsmus/control.cc is missing #include <cstdio>
+  sed -i -e 's/#include <signal.h>/#include <signal.h>\n#include <cstdio>/' mcsmus/mcsmus/control.cc
+  make
+  install must -m 0777 /usr/bin/must
+  cd ..
+  rm -rf mustool
 CMDS
 
 RUN apt-get clean autoclean

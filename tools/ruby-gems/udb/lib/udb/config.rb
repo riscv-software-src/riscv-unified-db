@@ -30,7 +30,7 @@ module Udb
     extend T::Helpers
     abstract!
 
-    ParamValueType = T.type_alias { T.any(Integer, String, T::Boolean) }
+    ParamValueType = T.type_alias { T.any(Integer, String, T::Boolean, T::Array[Integer], T::Array[String], T::Array[T::Boolean]) }
 
     ####################
     # ABSTRACT METHODS #

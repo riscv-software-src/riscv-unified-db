@@ -251,7 +251,7 @@ class Asciidoctor::AbstractNode
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#53
   def inline?; end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#563
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#555
   def is_uri?(str); end
 
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#349
@@ -260,13 +260,13 @@ class Asciidoctor::AbstractNode
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#23
   def node_name; end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#429
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#421
   def normalize_asset_path(asset_ref, asset_name = T.unsafe(nil), autocorrect = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#458
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#450
   def normalize_system_path(target, start = T.unsafe(nil), jail = T.unsafe(nil), opts = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#481
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#473
   def normalize_web_path(target, start = T.unsafe(nil), preserve_uri_target = T.unsafe(nil)); end
 
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#149
@@ -278,10 +278,10 @@ class Asciidoctor::AbstractNode
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#70
   def parent=(parent); end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#502
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#494
   def read_asset(path, opts = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#531
+  # source://asciidoctor//lib/asciidoctor/abstract_node.rb#523
   def read_contents(target, opts = T.unsafe(nil)); end
 
   # source://asciidoctor//lib/asciidoctor/abstract_node.rb#264
@@ -1791,107 +1791,113 @@ Asciidoctor::HYBRID_LAYOUT_BREAK_CHARS = T.let(T.unsafe(nil), Hash)
 # source://asciidoctor//lib/asciidoctor/rx.rb#627
 Asciidoctor::HardLineBreakRx = T.let(T.unsafe(nil), Regexp)
 
-# source://asciidoctor//lib/asciidoctor/helpers.rb#4
+# source://asciidoctor//lib/asciidoctor/helpers.rb#5
 module Asciidoctor::Helpers
   private
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#200
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#220
   def basename(filename, drop_ext = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#306
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#326
   def class_for_name(qualified_name); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#163
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#183
   def encode_spaces_in_uri(str); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#149
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#169
   def encode_uri_component(str); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#235
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#255
   def extname(path, fallback = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#213
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#233
   def extname?(path); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#269
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#289
   def int_to_roman(val); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#245
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#265
   def mkdir_p(dir); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#283
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#303
   def nextval(current); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#64
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#84
   def prepare_source_array(data, trim_end = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#96
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#116
   def prepare_source_string(data, trim_end = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#26
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#27
   def require_library(name, gem_name = T.unsafe(nil), on_failure = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#299
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#59
+  def require_open_uri(cache = T.unsafe(nil)); end
+
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#319
   def resolve_class(object); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#177
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#197
   def rootname(filename); end
 
-  # source://asciidoctor//lib/asciidoctor/helpers.rb#128
+  # source://asciidoctor//lib/asciidoctor/helpers.rb#148
   def uriish?(str); end
 
   class << self
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#200
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#220
     def basename(filename, drop_ext = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#306
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#326
     def class_for_name(qualified_name); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#163
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#183
     def encode_spaces_in_uri(str); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#149
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#169
     def encode_uri_component(str); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#235
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#255
     def extname(path, fallback = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#213
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#233
     def extname?(path); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#269
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#289
     def int_to_roman(val); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#245
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#265
     def mkdir_p(dir); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#283
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#303
     def nextval(current); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#64
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#84
     def prepare_source_array(data, trim_end = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#96
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#116
     def prepare_source_string(data, trim_end = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#26
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#27
     def require_library(name, gem_name = T.unsafe(nil), on_failure = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#299
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#59
+    def require_open_uri(cache = T.unsafe(nil)); end
+
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#319
     def resolve_class(object); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#177
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#197
     def rootname(filename); end
 
-    # source://asciidoctor//lib/asciidoctor/helpers.rb#128
+    # source://asciidoctor//lib/asciidoctor/helpers.rb#148
     def uriish?(str); end
   end
 end
 
-# source://asciidoctor//lib/asciidoctor/helpers.rb#148
+# source://asciidoctor//lib/asciidoctor/helpers.rb#168
 Asciidoctor::Helpers::CGI = CGI
 
-# source://asciidoctor//lib/asciidoctor/helpers.rb#258
+# source://asciidoctor//lib/asciidoctor/helpers.rb#278
 Asciidoctor::Helpers::ROMAN_NUMERALS = T.let(T.unsafe(nil), Hash)
 
 # source://asciidoctor//lib/asciidoctor.rb#346
@@ -2095,67 +2101,67 @@ Asciidoctor::ListRxMap = T.let(T.unsafe(nil), Hash)
 # source://asciidoctor//lib/asciidoctor/rx.rb#209
 Asciidoctor::LiteralParagraphRx = T.let(T.unsafe(nil), Regexp)
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#5
+# source://asciidoctor//lib/asciidoctor/logging.rb#10
 class Asciidoctor::Logger < ::Logger
-  # source://asciidoctor//lib/asciidoctor/logging.rb#8
-  def initialize(*args); end
+  # source://asciidoctor//lib/asciidoctor/logging.rb#13
+  def initialize(*args, **opts); end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#15
+  # source://asciidoctor//lib/asciidoctor/logging.rb#26
   def add(severity, message = T.unsafe(nil), progname = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#6
+  # source://asciidoctor//lib/asciidoctor/logging.rb#11
   def max_severity; end
 end
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#30
+# source://asciidoctor//lib/asciidoctor/logging.rb#41
 module Asciidoctor::Logger::AutoFormattingMessage
-  # source://asciidoctor//lib/asciidoctor/logging.rb#31
+  # source://asciidoctor//lib/asciidoctor/logging.rb#42
   def inspect; end
 end
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#22
+# source://asciidoctor//lib/asciidoctor/logging.rb#33
 class Asciidoctor::Logger::BasicFormatter < ::Logger::Formatter
-  # source://asciidoctor//lib/asciidoctor/logging.rb#25
+  # source://asciidoctor//lib/asciidoctor/logging.rb#36
   def call(severity, _, progname, msg); end
 end
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#23
+# source://asciidoctor//lib/asciidoctor/logging.rb#34
 Asciidoctor::Logger::BasicFormatter::SEVERITY_LABEL_SUBSTITUTES = T.let(T.unsafe(nil), Hash)
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#83
+# source://asciidoctor//lib/asciidoctor/logging.rb#94
 module Asciidoctor::LoggerManager
   class << self
-    # source://asciidoctor//lib/asciidoctor/logging.rb#89
+    # source://asciidoctor//lib/asciidoctor/logging.rb#100
     def logger(pipe = T.unsafe(nil)); end
 
-    # source://asciidoctor//lib/asciidoctor/logging.rb#95
+    # source://asciidoctor//lib/asciidoctor/logging.rb#106
     def logger=(new_logger); end
 
-    # source://asciidoctor//lib/asciidoctor/logging.rb#86
+    # source://asciidoctor//lib/asciidoctor/logging.rb#97
     def logger_class; end
 
-    # source://asciidoctor//lib/asciidoctor/logging.rb#86
+    # source://asciidoctor//lib/asciidoctor/logging.rb#97
     def logger_class=(_arg0); end
 
     private
 
-    # source://asciidoctor//lib/asciidoctor/logging.rb#101
+    # source://asciidoctor//lib/asciidoctor/logging.rb#112
     def memoize_logger; end
   end
 end
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#110
+# source://asciidoctor//lib/asciidoctor/logging.rb#121
 module Asciidoctor::Logging
-  # source://asciidoctor//lib/asciidoctor/logging.rb#121
+  # source://asciidoctor//lib/asciidoctor/logging.rb#132
   def logger; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#125
+  # source://asciidoctor//lib/asciidoctor/logging.rb#136
   def message_with_context(text, context = T.unsafe(nil)); end
 
   class << self
     private
 
-    # source://asciidoctor//lib/asciidoctor/logging.rb#116
+    # source://asciidoctor//lib/asciidoctor/logging.rb#127
     def included(into); end
   end
 end
@@ -2181,28 +2187,28 @@ Asciidoctor::ManpageTitleVolnumRx = T.let(T.unsafe(nil), Regexp)
 # source://asciidoctor//lib/asciidoctor/rx.rb#638
 Asciidoctor::MarkdownThematicBreakRx = T.let(T.unsafe(nil), Regexp)
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#37
+# source://asciidoctor//lib/asciidoctor/logging.rb#48
 class Asciidoctor::MemoryLogger < ::Logger
-  # source://asciidoctor//lib/asciidoctor/logging.rb#42
+  # source://asciidoctor//lib/asciidoctor/logging.rb#53
   def initialize; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#48
+  # source://asciidoctor//lib/asciidoctor/logging.rb#59
   def add(severity, message = T.unsafe(nil), progname = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#54
+  # source://asciidoctor//lib/asciidoctor/logging.rb#65
   def clear; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#58
+  # source://asciidoctor//lib/asciidoctor/logging.rb#69
   def empty?; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#62
+  # source://asciidoctor//lib/asciidoctor/logging.rb#73
   def max_severity; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#40
+  # source://asciidoctor//lib/asciidoctor/logging.rb#51
   def messages; end
 end
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#38
+# source://asciidoctor//lib/asciidoctor/logging.rb#49
 Asciidoctor::MemoryLogger::SEVERITY_SYMBOL_BY_VALUE = T.let(T.unsafe(nil), Hash)
 
 # source://asciidoctor//lib/asciidoctor.rb#315
@@ -2211,15 +2217,15 @@ Asciidoctor::NESTABLE_LIST_CONTEXTS = T.let(T.unsafe(nil), Array)
 # source://asciidoctor//lib/asciidoctor.rb#194
 Asciidoctor::NULL = T.let(T.unsafe(nil), String)
 
-# source://asciidoctor//lib/asciidoctor/logging.rb#67
+# source://asciidoctor//lib/asciidoctor/logging.rb#78
 class Asciidoctor::NullLogger < ::Logger
-  # source://asciidoctor//lib/asciidoctor/logging.rb#70
+  # source://asciidoctor//lib/asciidoctor/logging.rb#81
   def initialize; end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#75
+  # source://asciidoctor//lib/asciidoctor/logging.rb#86
   def add(severity, message = T.unsafe(nil), progname = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/logging.rb#68
+  # source://asciidoctor//lib/asciidoctor/logging.rb#79
   def max_severity; end
 end
 
@@ -2532,7 +2538,7 @@ class Asciidoctor::PreprocessorReader < ::Asciidoctor::Reader
   # source://asciidoctor//lib/asciidoctor/reader.rb#621
   def initialize(document, data = T.unsafe(nil), cursor = T.unsafe(nil), opts = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#784
+  # source://asciidoctor//lib/asciidoctor/reader.rb#789
   def create_include_cursor(file, path, lineno); end
 
   # source://asciidoctor//lib/asciidoctor/reader.rb#644
@@ -2541,19 +2547,19 @@ class Asciidoctor::PreprocessorReader < ::Asciidoctor::Reader
   # source://asciidoctor//lib/asciidoctor/reader.rb#644
   def eof?; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#755
+  # source://asciidoctor//lib/asciidoctor/reader.rb#760
   def exceeded_max_depth?; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#755
+  # source://asciidoctor//lib/asciidoctor/reader.rb#760
   def exceeds_max_depth?; end
 
   # source://asciidoctor//lib/asciidoctor/reader.rb#639
   def has_more_lines?; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#747
+  # source://asciidoctor//lib/asciidoctor/reader.rb#752
   def include_depth; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#772
+  # source://asciidoctor//lib/asciidoctor/reader.rb#777
   def include_processors?; end
 
   # source://asciidoctor//lib/asciidoctor/reader.rb#618
@@ -2562,42 +2568,42 @@ class Asciidoctor::PreprocessorReader < ::Asciidoctor::Reader
   # source://asciidoctor//lib/asciidoctor/reader.rb#656
   def peek_line(direct = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#681
+  # source://asciidoctor//lib/asciidoctor/reader.rb#686
   def push_include(data, file = T.unsafe(nil), path = T.unsafe(nil), lineno = T.unsafe(nil), attributes = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#763
+  # source://asciidoctor//lib/asciidoctor/reader.rb#768
   def shift; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#796
+  # source://asciidoctor//lib/asciidoctor/reader.rb#801
   def to_s; end
 
   private
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1279
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1287
   def pop_include; end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#802
+  # source://asciidoctor//lib/asciidoctor/reader.rb#807
   def prepare_lines(data, opts = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#904
-  def preprocess_conditional_directive(keyword, target, delimiter, text); end
+  # source://asciidoctor//lib/asciidoctor/reader.rb#909
+  def preprocess_conditional_directive(name, target, delimiter, text); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1021
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1035
   def preprocess_include_directive(target, attrlist); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#819
+  # source://asciidoctor//lib/asciidoctor/reader.rb#824
   def process_line(line); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1346
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1354
   def resolve_expr_val(val); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1243
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1257
   def resolve_include_path(target, attrlist, attributes); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1296
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1304
   def skip_front_matter!(data, increment_linenos = T.unsafe(nil)); end
 
-  # source://asciidoctor//lib/asciidoctor/reader.rb#1291
+  # source://asciidoctor//lib/asciidoctor/reader.rb#1299
   def split_delimited_value(val); end
 end
 

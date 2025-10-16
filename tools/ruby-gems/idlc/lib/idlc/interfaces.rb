@@ -18,7 +18,7 @@ module Idl
     include Kernel
 
     ValueType =
-      T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[T::Boolean]) }
+      T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[Integer], T::Array[T::Boolean], T::Array[String]) }
 
     sig { abstract.returns(String) }
     def name; end
