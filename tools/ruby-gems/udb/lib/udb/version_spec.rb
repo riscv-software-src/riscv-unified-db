@@ -238,54 +238,57 @@ module Udb
           T.absurd(version)
         end
 
-      case @op
-      when ">="
-        v_spec >= @version_spec
-      when ">"
-        v_spec > @version_spec
-      when "<="
-        v_spec <= @version_spec
-      when "<"
-        v_spec < @version_spec
-      when "="
-        v_spec == @version_spec
-      when "!="
-        v_spec != @version_spec
-      when "~>"
-        if ext.is_a?(Extension)
-          matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
-          raise "Can't find version?" if matching_ver.nil?
+      result =
+        case @op
+        when ">="
+          v_spec >= @version_spec
+        when ">"
+          v_spec > @version_spec
+        when "<="
+          v_spec <= @version_spec
+        when "<"
+          v_spec < @version_spec
+        when "="
+          v_spec == @version_spec
+        when "!="
+          v_spec != @version_spec
+        when "~>"
+          if ext.is_a?(Extension)
+            matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+            raise "Can't find version?" if matching_ver.nil?
 
-          matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
-        else
-          versions = ext.fetch("versions")
-          compatible_versions = []
-          versions.each do |vinfo|
-            vspec = VersionSpec.new(vinfo.fetch("version"))
-            compatible_versions << vspec if vspec >= v_spec
-            break if compatible_versions.size.positive? && vinfo.key?("breaking")
+            matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+          else
+            versions = ext.fetch("versions")
+            compatible_versions = []
+            versions.each do |vinfo|
+              vspec = VersionSpec.new(vinfo.fetch("version"))
+              compatible_versions << vspec if vspec >= v_spec
+              break if compatible_versions.size.positive? && vinfo.key?("breaking")
+            end
+
+            compatible_versions.include?(v_spec)
           end
+        when "!~>" # not a legal spec, but used for inversion
+          if ext.is_a?(Extension)
+            matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+            raise "Can't find version?" if matching_ver.nil?
 
-          compatible_versions.include?(v_spec)
-        end
-      when "!~>" # not a legal spec, but used for inversion
-        if ext.is_a?(Extension)
-          matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
-          raise "Can't find version?" if matching_ver.nil?
+            !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+          else
+            versions = ext.fetch("versions")
+            compatible_versions = []
+            versions.each do |vinfo|
+              vspec = VersionSpec.new(vinfo.fetch("version"))
+              compatible_versions << vspec if vspec >= v_spec
+              break if compatible_versions.size.positive? && vinfo.key?("breaking")
+            end
 
-          !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
-        else
-          versions = ext.fetch("versions")
-          compatible_versions = []
-          versions.each do |vinfo|
-            vspec = VersionSpec.new(vinfo.fetch("version"))
-            compatible_versions << vspec if vspec >= v_spec
-            break if compatible_versions.size.positive? && vinfo.key?("breaking")
+            !compatible_versions.include?(v_spec)
           end
-
-          !compatible_versions.include?(v_spec)
         end
-      end
+
+      T.must(result)
     end
   end
 

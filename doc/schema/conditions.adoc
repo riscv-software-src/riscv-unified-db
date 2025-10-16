@@ -43,29 +43,18 @@ definedBy: # definedBy: takes a condition
 [source,yaml]
 ----
 # C.yaml
-# the C extension always implies Zca and may imply Zcf and/or Zcd depending on whether or not
-# the F and/or D extensions are also implemented
 versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    # requirements: is a list of extension requirements, possibly with a condition under which it applies
     requirements:
-      allOf:
-        - name: Zca
-          version: = 1.0.0
-        - name: Zcf
-          version: = 1.0.0
-          when:  # when: takes a condition
-            extension:
-              name: F
-              version: ~> 2.2
-        - name: Zcd
-          version: = 1.0.0
-          when:  # when: takes a condition
-            extension:
-              name: D
-              version: ~> 2.2
+      idl(): |
+        -> implemented_version?(ExtensionName::Zca, "= 1.0.0") &&
+           (!implemented?(ExtensionName::F) || implemented_version?(ExtensionName::Zcf, "= 1.0.0")) &&
+           (!implemented?(ExtensionName::D) || implemented_version?(ExtensionName::Zcd, "= 1.0.0"));
+      reason: |
+        Zca is the non-FP subset of C. "C" + "F" implies Zcf. "C" + "D" implies Zcd.
+        C@2.0.0 requires Zca@1.0.0, Zcf@1.0.0, and/or Zcd@1.0.0
 ----
 
 

@@ -99,7 +99,7 @@ module Udb
     end
 
     # @return List of parameters added by this extension
-    sig { returns(T::Array[Idl::RuntimeParam]) }
+    sig { returns(T::Array[T.any(Parameter, ParameterWithValue)]) }
     def params
       return @params unless @params.nil?
 
@@ -415,7 +415,7 @@ module Udb
     end
 
     # @return The list of parameters for this extension version
-    sig { returns(T::Array[Idl::RuntimeParam]) }
+    sig { returns(T::Array[T.any(Parameter, ParameterWithValue)]) }
     def params
       @ext.params.select do |p|
         p.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req)
@@ -1082,7 +1082,7 @@ module Udb
       end
     end
 
-    sig { returns(T::Array[Idl::RuntimeParam]) }
+    sig { returns(T::Array[T.any(Parameter, ParameterWithValue)]) }
     def params
       @params ||= satisfying_versions.map(&:params).flatten.uniq
     end
