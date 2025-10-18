@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -16535,6 +16535,126 @@ Included in::
 | Extension | Version
 
 | *Zbkb* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_i]
+== prefetch.i
+
+Synopsis::
+Cache block prefetch for instruction fetch
+
+Assembly::
+prefetch.i imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x0,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.i instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in rs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by an instruction fetch in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_r]
+== prefetch.r
+
+Synopsis::
+Cache block prefetch for data read
+
+Assembly::
+prefetch.r imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x1,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.r instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in rs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by a data read (i.e. load) in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_w]
+== prefetch.w
+
+Synopsis::
+Cache block prefetch for data write
+
+Assembly::
+prefetch.w imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x3,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.w instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in rs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by a data write (i.e. store) in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
 
 |===
 
