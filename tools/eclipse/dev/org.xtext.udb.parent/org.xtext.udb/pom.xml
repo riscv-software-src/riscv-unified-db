@@ -28,7 +28,7 @@
 				<configuration>
 					<mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
 					<arguments>
-						<argument>/${project.basedir}/src/org/xtext/example/udb/GenerateUdb.mwe2</argument>
+						<argument>/${project.basedir}/src/org/xtext/udb/GenerateUdb.mwe2</argument>
 						<argument>-p</argument>
 						<argument>rootPath=/${project.basedir}/..</argument>
 					</arguments>
