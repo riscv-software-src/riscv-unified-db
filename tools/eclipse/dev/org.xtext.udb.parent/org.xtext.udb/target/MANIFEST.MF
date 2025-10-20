@@ -3,7 +3,7 @@ Automatic-Module-Name: org.xtext.udb
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202510192303
+Bundle-Version: 1.0.0.202510200330
 Bundle-SymbolicName: org.xtext.udb; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,org.eclipse.xtext.xbase,org.eclipse.eq

@@ -7,7 +7,7 @@
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
-			extensions="udb"
+			extensions="mydsl2"
 			id="org.xtext.udb.Udb"
 			name="Udb Editor">
 		</editor>
@@ -207,7 +207,7 @@
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type
 			base-type="org.eclipse.core.runtime.text"
-			file-extensions="udb"
+			file-extensions="mydsl2"
 			id="org.xtext.udb.Udb.contenttype"
 			name="Udb File"
 			priority="normal">
@@ -218,13 +218,13 @@
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
-			type="udb">
+			type="mydsl2">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
-			uriExtension="udb">
+			uriExtension="mydsl2">
 		</resourceServiceProvider>
 	</extension>
 	<!-- marker definitions for org.xtext.udb.Udb -->
@@ -261,7 +261,7 @@
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
-			fileExtensions="udb"/>
+			fileExtensions="mydsl2"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
@@ -404,7 +404,7 @@
 	<extension point="org.eclipse.compare.contentViewers">
 		<viewer id="org.xtext.udb.Udb.compare.contentViewers"
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="udb">
+			extensions="mydsl2">
 		</viewer>
 		<contentTypeBinding
 			contentTypeId="org.xtext.udb.Udb.contenttype"
@@ -413,7 +413,7 @@
 	<extension point="org.eclipse.compare.contentMergeViewers">
 		<viewer id="org.xtext.udb.Udb.compare.contentMergeViewers"
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="udb" label="Udb Compare">
+			extensions="mydsl2" label="Udb Compare">
 		</viewer>
 		<contentTypeBinding
 			contentTypeId="org.xtext.udb.Udb.contenttype"
@@ -422,12 +422,12 @@
 	<extension point="org.eclipse.ui.editors.documentProviders">
 		<provider id="org.xtext.udb.Udb.editors.documentProviders"
 			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
-			extensions="udb">
+			extensions="mydsl2">
 		</provider>
 	</extension>
 	<extension point="org.eclipse.team.core.fileTypes">
 		<fileTypes
-			extension="udb"
+			extension="mydsl2"
 			type="text">
 		</fileTypes>
 	</extension>

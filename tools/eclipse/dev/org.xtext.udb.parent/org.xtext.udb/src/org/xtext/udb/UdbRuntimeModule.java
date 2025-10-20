@@ -11,6 +11,6 @@ import org.eclipse.xtext.conversion.IValueConverterService;
 public class UdbRuntimeModule extends AbstractUdbRuntimeModule {
 	@Override
 	public Class<? extends IValueConverterService> bindIValueConverterService() {
-	    return org.xtext.udb.UDBValueConverter.class;
+	    return org.xtext.udb.UdbValueConverter.class;
 	}
 }

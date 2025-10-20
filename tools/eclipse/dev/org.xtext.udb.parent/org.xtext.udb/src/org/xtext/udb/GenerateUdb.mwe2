@@ -21,6 +21,9 @@ Workflow {
 				eclipsePluginTest = {
 					enabled = true
 				}
+				web = {
+					enabled = true
+				}
 				createEclipseMetaData = true
 			}
 			code = {
@@ -32,7 +35,7 @@ Workflow {
 		}
 		language = StandardLanguage {
 			name = "org.xtext.udb.Udb"
-			fileExtensions = "udb"
+			fileExtensions = "mydsl2"
 
 			serializer = {
 				generateStub = false

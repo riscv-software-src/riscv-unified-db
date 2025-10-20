@@ -24,6 +24,7 @@
 		<module>org.xtext.udb</module>
 		<module>org.xtext.udb.ide</module>
 		<module>org.xtext.udb.ui</module>
+		<module>org.xtext.udb.web</module>
 		<module>org.xtext.udb.target</module>
 		<module>org.xtext.udb.tests</module>
 		<module>org.xtext.udb.ui.tests</module>

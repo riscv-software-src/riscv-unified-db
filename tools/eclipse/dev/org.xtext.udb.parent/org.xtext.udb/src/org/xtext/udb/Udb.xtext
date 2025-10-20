@@ -25,4 +25,3 @@ terminal HEX_VALUE returns ecore::EInt:
 	('0'..'9' | 'A'..'F' | 'a'..'f')
 	(('0'..'9' | 'A'..'F' | 'a'..'f' | '_')*('0'..'9' | 'A'..'F' | 'a'..'f'))?
 ;
-

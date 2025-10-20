@@ -6,7 +6,7 @@ import org.eclipse.xtext.conversion.ValueConverter;
 import org.eclipse.xtext.conversion.ValueConverterException;
 import org.eclipse.xtext.nodemodel.INode;
 
-public class UDBValueConverter extends DefaultTerminalConverters {
+public class UdbValueConverter extends DefaultTerminalConverters {
 	
 	/**
 	 * INT converter for hex digits
