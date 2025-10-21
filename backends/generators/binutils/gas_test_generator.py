@@ -425,11 +425,7 @@ class AssemblyExampleGenerator:
                     all_extensions.add(item.lower())
                 elif isinstance(item, dict):
                     self._extract_extensions_from_complex(item, all_extensions)
-    
 
-    
-
-    
     def _get_operand_replacements(self, inst_name: str, assembly: str, variant_index: int) -> Dict[str, str]:
         """Generate operand replacements based on instruction requirements"""
         i = variant_index
@@ -1247,7 +1243,6 @@ class GasTestGenerator:
                 return ext
         
         return ext
-    
 
     def _build_march_string(self, base_arch: str, extension: str, extra_extensions: Set[str] | None = None) -> str:
         classification = self.example_generator.extension_classification
