@@ -21,7 +21,7 @@ import yaml
 import glob
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from generator import (parse_extension_requirements, load_csrs)
@@ -142,6 +142,53 @@ def sanitize_extension_name(name: str) -> str:
     return sanitized if sanitized else 'unknown'
 
 
+def _normalize_extension_token(token: str) -> List[str]:
+    token = (token or "").strip().lower()
+    if not token:
+        return []
+
+    if token.startswith("rv32") or token.startswith("rv64"):
+        token = token[4:]
+    elif token.startswith("rv"):
+        token = token[2:]
+
+    token = token.strip()
+    if not token:
+        return []
+
+    if token.startswith("z") or token.startswith("s") or token.startswith("x"):
+        return [token]
+
+    if len(token) > 1 and token.isalpha():
+        return list(token)
+
+    return [token]
+
+
+def extract_extension_names(defined_by) -> Set[str]:
+    extensions: Set[str] = set()
+
+    if isinstance(defined_by, str):
+        extensions.update(_normalize_extension_token(defined_by))
+    elif isinstance(defined_by, dict) and defined_by:
+        name = defined_by.get("name")
+        if name:
+            extensions.update(_normalize_extension_token(name))
+
+        for key in ("anyOf", "allOf", "oneOf"):
+            value = defined_by.get(key)
+            if isinstance(value, list):
+                for item in value:
+                    extensions.update(extract_extension_names(item))
+            elif value is not None:
+                extensions.update(extract_extension_names(value))
+
+    extensions.discard("i")
+    extensions.discard("")
+    extensions.discard("unknown")
+    return extensions
+
+
 # RISC-V ABI register definitions
 # TODO: Move to UDB specs
 RISCV_ABI_REGISTERS = {
@@ -173,8 +220,9 @@ class TestInstructionGroup:
     def __init__(self, extension: str):
         self.extension = extension
         self.instructions = []
-        self.error_cases = []
+        self.error_cases: Dict[str, dict] = {}
         self.arch_specific = {"rv32": [], "rv64": []}
+        self.required_extensions: Set[str] = set()
     
     def add_instruction(self, name: str, info: dict):
         """Add an instruction to this group."""
@@ -185,10 +233,47 @@ class TestInstructionGroup:
             self.arch_specific["rv32"].append((name, info))
         elif base == 64:
             self.arch_specific["rv64"].append((name, info))
-    
-    def add_error_case(self, instruction: str, invalid_assembly: str, error_msg: str):
-        """Add a negative test case."""
-        self.error_cases.append((instruction, invalid_assembly, error_msg))
+
+        defined_by = info.get('definedBy')
+        if defined_by is not None:
+            self.required_extensions.update(extract_extension_names(defined_by))
+        if self.extension:
+            ext_lower = self.extension.lower()
+            if ext_lower != 'unknown':
+                self.required_extensions.add(ext_lower)
+
+    def add_error_case(
+        self,
+        instruction: str,
+        invalid_assembly: str,
+        error_msg: str,
+        *,
+        reason: str | None = None,
+        assembly: str | None = None,
+        display_instruction: str | None = None,
+    ) -> None:
+
+        entry = self.error_cases.setdefault(
+            instruction,
+            {
+                "assembly": assembly,
+                "display_instruction": display_instruction or instruction,
+                "cases": [],
+            },
+        )
+
+        if assembly and not entry.get("assembly"):
+            entry["assembly"] = assembly
+        if display_instruction:
+            entry["display_instruction"] = display_instruction
+
+        entry["cases"].append(
+            {
+                "line": invalid_assembly,
+                "error_msg": error_msg,
+                "reason": reason,
+            }
+        )
 
 
 class AssemblyExampleGenerator:
@@ -796,28 +881,35 @@ class GasTestGenerator:
         # Generate assembly source file
         source_file = self.output_dir / f"{ext_name}.s"
         dump_file = self.output_dir / f"{ext_name}.d"
-        
+
+        instruction_examples: List[Tuple[str, str, str]] = []
+        for name, info in main_instructions:
+            assembly = info.get('assembly', '')
+            examples = self.example_generator.generate_examples(name, assembly)
+            primary_example = self._select_primary_example(examples)
+            if not primary_example:
+                continue
+            instruction_examples.append((name, assembly, primary_example))
+
         with open(source_file, 'w') as f:
             f.write("target:\n")
-            
-            for name, info in main_instructions:
-                assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                f.write(f"\t# {name} instruction\n")
-                
-                for example in examples:
-                    f.write(f"\t{example}\n")
-                
-                f.write("\n")
-        
+
+            for name, assembly, example in instruction_examples:
+                mnemonic, _ = self._split_example_line(example)
+                signature = assembly.strip() if assembly else "n/a"
+                f.write(
+                    f"\t# Auto-generated pass test for `{mnemonic}` (assembly: {signature})\n"
+                )
+                f.write("\t# This source should assemble successfully.\n")
+                f.write(f"\t{example}\n\n")
+
         base_arch = "rv32i"
-        march = self._build_march_string(base_arch, group.extension)
-        
+        march = self._build_march_string(base_arch, group.extension, group.required_extensions)
+
         with open(dump_file, 'w') as f:
             f.write(f"#as: -march={march}\n")
             f.write(f"#source: {source_file.name}\n")
-            f.write("#objdump: -d\n")
+            f.write("#objdump: -d -M no-aliases\n")
             f.write("\n")
             f.write(".*:[ \t]+file format .*\n")
             f.write("\n")
@@ -825,16 +917,12 @@ class GasTestGenerator:
             f.write("Disassembly of section .text:\n")
             f.write("\n")
             f.write("0+000 <target>:\n")
-            
+
             addr = 0
-            for name, info in main_instructions:
-                assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                for example in examples:
-                    pattern = self._create_disasm_pattern(addr, name, example)
-                    f.write(f"{pattern}\n")
-                    addr += 4  # Assume 4-byte instructions
+            for name, _, example in instruction_examples:
+                pattern = self._create_disasm_pattern(addr, name, example)
+                f.write(f"{pattern}\n")
+                addr += 4  # Assume 4-byte instructions
     
     def _generate_arch_specific_tests(self, group: TestInstructionGroup, arch: str) -> None:
         """Generate architecture-specific test files."""
@@ -847,25 +935,34 @@ class GasTestGenerator:
         if not arch_instructions:
             return
         
+        instruction_examples: List[Tuple[str, str, str]] = []
+        for name, info in arch_instructions:
+            assembly = info.get('assembly', '')
+            examples = self.example_generator.generate_examples(name, assembly)
+            primary_example = self._select_primary_example(examples)
+            if not primary_example:
+                continue
+            instruction_examples.append((name, assembly, primary_example))
+
         with open(source_file, 'w') as f:
             f.write("target:\n")
-            
-            for name, info in arch_instructions:
-                assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                f.write(f"\t# {name} instruction ({arch.upper()} only)\n")
-                for example in examples:
-                    f.write(f"\t{example}\n")
-                f.write("\n")
-        
+
+            for name, assembly, example in instruction_examples:
+                mnemonic, _ = self._split_example_line(example)
+                signature = assembly.strip() if assembly else "n/a"
+                f.write(
+                    f"\t# Auto-generated pass test for `{mnemonic}` (assembly: {signature})\n"
+                )
+                f.write(f"\t# This source should assemble successfully on {arch.upper()}.\n")
+                f.write(f"\t{example}\n\n")
+
         base_arch = f"{arch}i"
-        march = self._build_march_string(base_arch, group.extension)
-        
+        march = self._build_march_string(base_arch, group.extension, group.required_extensions)
+
         with open(dump_file, 'w') as f:
             f.write(f"#as: -march={march}\n")
             f.write(f"#source: {source_file.name}\n")
-            f.write("#objdump: -d\n")
+            f.write("#objdump: -d -M no-aliases\n")
             f.write("\n")
             f.write(".*:[ \t]+file format .*\n")
             f.write("\n")
@@ -873,16 +970,12 @@ class GasTestGenerator:
             f.write("Disassembly of section .text:\n")
             f.write("\n")
             f.write("0+000 <target>:\n")
-            
+
             addr = 0
-            for name, info in arch_instructions:
-                assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                for example in examples:
-                    pattern = self._create_disasm_pattern(addr, name, example)
-                    f.write(f"{pattern}\n")
-                    addr += 4
+            for name, _, example in instruction_examples:
+                pattern = self._create_disasm_pattern(addr, name, example)
+                f.write(f"{pattern}\n")
+                addr += 4
     
     def _generate_error_tests(self, group: TestInstructionGroup) -> None:
         """Generate negative test cases for error conditions."""
@@ -893,26 +986,49 @@ class GasTestGenerator:
         error_file = self.output_dir / f"{ext_name}-fail.l"
         
         self._generate_common_error_cases(group)
-        
+
         if not group.error_cases:
             logging.debug(f"No error cases generated for extension {group.extension}")
             return
-        
+
         with open(source_file, 'w') as f:
             f.write("target:\n")
-            for instruction, invalid_assembly, _ in group.error_cases:
-                f.write(f"\t{invalid_assembly}\n")
-        
+
+            for name, _ in group.instructions:
+                entry = group.error_cases.get(name)
+                if not entry or not entry.get("cases"):
+                    continue
+
+                mnemonic = entry.get("display_instruction", name)
+                signature = entry.get("assembly") or "n/a"
+                f.write(
+                    f"\t# Auto-generated FAIL tests for `{mnemonic}` (assembly: {signature})\n"
+                )
+                f.write(
+                    "\t# Each line below is intended to fail assembly for a distinct reason.\n"
+                )
+
+                for case in entry["cases"]:
+                    reason = case.get("reason") or "generated error case"
+                    f.write(f"\t# FAIL: {reason}\n")
+                    f.write(f"\t{case['line']}\n")
+
+                f.write("\n")
+
         with open(dump_file, 'w') as f:
-            march = self._build_march_string("rv32i", group.extension)
+            march = self._build_march_string("rv32i", group.extension, group.required_extensions)
             f.write(f"#as: -march={march}\n")
             f.write(f"#source: {source_file.name}\n")
             f.write(f"#error_output: {error_file.name}\n")
-        
+
         with open(error_file, 'w') as f:
             f.write(".*: Assembler messages:\n")
-            for _, invalid_assembly, error_msg in group.error_cases:
-                f.write(f".*: Error: {error_msg}\n")
+            for name, _ in group.instructions:
+                entry = group.error_cases.get(name)
+                if not entry:
+                    continue
+                for case in entry["cases"]:
+                    f.write(f".*: Error: {case['error_msg']}\n")
     
     def _generate_no_alias_tests(self, group: TestInstructionGroup) -> None:
         """Generate tests with no-aliases option for detailed disassembly."""
@@ -927,8 +1043,17 @@ class GasTestGenerator:
             if base is None:
                 main_instructions.append((name, info))
         
+        instruction_examples: List[Tuple[str, str]] = []
+        for name, info in main_instructions:
+            assembly = info.get('assembly', '')
+            examples = self.example_generator.generate_examples(name, assembly)
+            primary_example = self._select_primary_example(examples)
+            if not primary_example:
+                continue
+            instruction_examples.append((name, primary_example))
+
         with open(dump_file, 'w') as f:
-            march = self._build_march_string("rv32i", group.extension)
+            march = self._build_march_string("rv32i", group.extension, group.required_extensions)
             f.write(f"#as: -march={march}\n")
             f.write(f"#source: {source_file}\n")
             f.write("#objdump: -d -M no-aliases\n")
@@ -938,76 +1063,175 @@ class GasTestGenerator:
             f.write("Disassembly of section .text:\n")
             f.write("\n")
             f.write("0+000 <target>:\n")
-            
+
             addr = 0
-            for name, info in main_instructions:
-                assembly = info.get('assembly', '')
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                for example in examples:
-                    pattern = self._create_disasm_pattern(addr, name, example, no_aliases=True)
-                    f.write(f"{pattern}\n")
-                    addr += 4
+            for name, example in instruction_examples:
+                pattern = self._create_disasm_pattern(addr, name, example, no_aliases=True)
+                f.write(f"{pattern}\n")
+                addr += 4
     
+    def _format_error_operands(self, operands: str) -> str:
+        sanitized = re.sub(r"\s+", " ", operands.strip())
+        sanitized = re.sub(r"\s*,\s*", ",", sanitized)
+        return sanitized
+
     def _generate_common_error_cases(self, group: TestInstructionGroup) -> None:
-        """Generate common error cases for instructions that don't have explicit ones."""
-        instructions_with_errors = []
-        
-        for name, info in group.instructions[:5]:
+
+        group.error_cases = {}
+
+        for name, info in group.instructions:
             assembly = info.get('assembly', '')
-            
-            if assembly:
-                examples = self.example_generator.generate_examples(name, assembly)
-                
-                if examples:
-                    base_example = examples[0].strip()
-                    
-                    if '\t' in base_example:
-                        inst_name, operands = base_example.split('\t', 1)
-                        if operands:
+            examples = self.example_generator.generate_examples(name, assembly)
+            primary_example = self._select_primary_example(examples)
+            if not primary_example:
+                continue
 
-                            if any(reg in operands for reg in ['a0', 'a1', 't0', 't1', 'fa0', 'fs0']):
-                                replace_map = {
-                                    'fa0': 'f32',
-                                    'fs0': 'f33',
-                                    't0': 'x34',
-                                    't1': 'x35',
-                                    'a0': 'x32',
-                                    'a1': 'x33',
-                                }
-                                invalid_operands = operands
-                                for src, dest in replace_map.items():
-                                    invalid_operands = re.sub(rf'\b{src}\b', dest, invalid_operands)
-                                group.add_error_case(name, f"{inst_name}\t{invalid_operands}", f"illegal operands `{inst_name} {invalid_operands}'")
-                                instructions_with_errors.append(name)
-                            
-    
-                            if any(char.isdigit() for char in operands):
-                                invalid_operands = re.sub(r'\b\d+\b', '999999', operands)
-                                if invalid_operands != operands:
-                                    group.add_error_case(name, f"{inst_name}\t{invalid_operands}", f"illegal operands `{inst_name} {invalid_operands}'")
-                                    instructions_with_errors.append(name)
-                            
+            mnemonic, operands = self._split_example_line(primary_example)
+            assembly_tokens = [token.strip() for token in assembly.split(',')] if assembly else []
 
-                            if name.startswith('c.') and any(char.isdigit() for char in operands):
-                                zero_operands = re.sub(r'\b[1-9]\d*\b', '0', operands)
-                                if zero_operands != operands:
-                                    group.add_error_case(name, f"{inst_name}\t{zero_operands}", f"illegal operands `{inst_name} {zero_operands}'")
-                                    instructions_with_errors.append(name)
-                
-                if 'csr' in assembly.lower():
-                    examples = self.example_generator.generate_examples(name, assembly)
-                    if examples:
-                        base_example = examples[0].strip()
-                        if '\t' in base_example:
-                            inst_name, operands = base_example.split('\t', 1)
-                            invalid_operands = operands.replace('mstatus', 'nonexistent').replace('cycle', 'nonexistent')
-                            group.add_error_case(name, f"{inst_name}\t{invalid_operands}", "unknown CSR `nonexistent'")
-                            instructions_with_errors.append(name)
-        
-        if not instructions_with_errors and group.instructions:
-            name, info = group.instructions[0]
-            group.add_error_case(name, f"{name}\tx32, x0", f"illegal operands `{name} x32, x0'")
+            cases = self._create_standard_fail_cases(mnemonic, operands, assembly_tokens)
+            if not cases:
+                continue
+
+            for case in cases:
+                group.add_error_case(
+                    name,
+                    case["line"],
+                    case["error_msg"],
+                    reason=case["reason"],
+                    assembly=assembly,
+                    display_instruction=mnemonic,
+                )
+
+        if not group.error_cases and group.instructions:
+            fallback_name, info = group.instructions[0]
+            assembly = info.get('assembly', '')
+            mnemonic = fallback_name
+            operands = ["x32", "x0"]
+            line = self._format_instruction_line(mnemonic, operands)
+            formatted_operands = self._format_error_operands(", ".join(operands))
+            error_msg = f"illegal operands `{mnemonic} {formatted_operands}'"
+            group.add_error_case(
+                fallback_name,
+                line,
+                error_msg,
+                reason="generic invalid operand",
+                assembly=assembly,
+                display_instruction=mnemonic,
+            )
+
+    def _select_primary_example(self, examples: List[str]) -> str | None:
+        for example in examples:
+            if example and example.strip():
+                return example.strip()
+        return None
+
+    def _split_example_line(self, example: str) -> Tuple[str, List[str]]:
+        stripped = example.strip()
+        if '\t' in stripped:
+            mnemonic, operand_str = stripped.split('\t', 1)
+        elif ' ' in stripped:
+            mnemonic, operand_str = stripped.split(' ', 1)
+        else:
+            return stripped, []
+
+        operands = [op.strip() for op in operand_str.split(',') if op.strip()]
+        return mnemonic.strip(), operands
+
+    def _format_instruction_line(self, mnemonic: str, operands: List[str]) -> str:
+        if operands:
+            return f"{mnemonic} {', '.join(operands)}"
+        return mnemonic
+
+    def _operand_is_register(self, operand: str) -> bool:
+        op = operand.strip()
+        if not op:
+            return False
+        if op.startswith(('-', '0x', '0b', '0d')):
+            return False
+        if op[0].isdigit():
+            return False
+        if '(' in op or ')' in op:
+            return False
+        if op.startswith('%'):
+            return False
+        return bool(re.match(r"[A-Za-z_][A-Za-z0-9_'.]*$", op))
+
+    def _choose_extra_operand(self, exemplar: str, role: str) -> str:
+        if role and 'csr' in role.lower():
+            return 'nonexistent'
+        return "x0" if self._operand_is_register(exemplar) else "1"
+
+    def _make_wrong_operand(self, operand: str, role: str) -> str | None:
+        if role and 'csr' in role.lower():
+            return 'nonexistent'
+        if self._operand_is_register(operand):
+            return '1'
+        return 'x0'
+
+    def _create_standard_fail_cases(
+        self,
+        mnemonic: str,
+        operands: List[str],
+        assembly_tokens: List[str],
+    ) -> List[Dict[str, str]]:
+        cases: List[Dict[str, str]] = []
+        seen_lines: Set[str] = set()
+
+        def add_case(reason: str, new_operands: List[str], *, custom_error: str | None = None) -> None:
+            line = self._format_instruction_line(mnemonic, new_operands)
+            if line in seen_lines:
+                return
+            seen_lines.add(line)
+
+            if custom_error is not None:
+                error_msg = custom_error
+            else:
+                operands_str = ", ".join(new_operands)
+                if operands_str:
+                    formatted = self._format_error_operands(operands_str)
+                    error_msg = f"illegal operands `{mnemonic} {formatted}'"
+                else:
+                    error_msg = f"illegal operands `{mnemonic}'"
+
+            cases.append({
+                "reason": reason,
+                "line": line,
+                "error_msg": error_msg,
+            })
+
+        if operands:
+            few_operands = operands[:1] if len(operands) > 1 else []
+            add_case("wrong number of operands (too few)", few_operands)
+
+            last_role = assembly_tokens[-1] if assembly_tokens else ""
+            extra_operand = self._choose_extra_operand(operands[-1], last_role)
+            add_case("wrong number of operands (too many)", operands + [extra_operand])
+
+            for idx, operand in enumerate(operands):
+                role = assembly_tokens[idx] if idx < len(assembly_tokens) else ""
+                wrong_operand = self._make_wrong_operand(operand, role)
+                if not wrong_operand or wrong_operand == operand:
+                    continue
+
+                replaced = operands.copy()
+                replaced[idx] = wrong_operand
+
+                if role and 'csr' in role.lower():
+                    add_case(
+                        "unknown CSR operand",
+                        replaced,
+                        custom_error="unknown CSR `nonexistent'",
+                    )
+                else:
+                    add_case(
+                        f"wrong operand type at position {idx + 1}",
+                        replaced,
+                    )
+        else:
+            add_case("wrong number of operands (too many)", ["x0"])
+
+        return cases
     
     def _get_binutils_filename(self, extension: str) -> str:
         """Get binutils-style filename for extension."""
@@ -1025,42 +1249,33 @@ class GasTestGenerator:
         return ext
     
 
-    def _build_march_string(self, base_arch: str, extension: str) -> str:
-        ext = extension.lower()
-
+    def _build_march_string(self, base_arch: str, extension: str, extra_extensions: Set[str] | None = None) -> str:
         classification = self.example_generator.extension_classification
         standard_exts = classification['standard']
 
-        if '-' in ext:
-            ext_parts = ext.split('-')
-            
-            if all(part in standard_exts for part in ext_parts):
-                combined = ''.join(sorted(ext_parts))
-                return f"{base_arch}{combined}"
-            else:
-                std_parts = [p for p in ext_parts if p in standard_exts]
-                z_parts = [p for p in ext_parts if p in classification['z_extensions']]
-                s_parts = [p for p in ext_parts if p in classification['s_extensions']]
-                x_parts = [p for p in ext_parts if p in classification['x_extensions']]
-                multi_parts = [p for p in ext_parts if p in classification['multi_standard']]
-                other_parts = [p for p in ext_parts if p not in (standard_exts | classification['z_extensions'] | classification['s_extensions'] | classification['x_extensions'] | classification['multi_standard'])]
-                
-                if std_parts and (z_parts or s_parts or x_parts or multi_parts):
-                    std_combined = ''.join(sorted(std_parts))
-                    non_std_parts = sorted(z_parts + s_parts + x_parts + multi_parts + other_parts)
-                    if non_std_parts:
-                        non_std_combined = '_'.join(non_std_parts)
-                        return f"{base_arch}{std_combined}_{non_std_combined}"
-                    return f"{base_arch}{std_combined}"
-                else:
-                    return f"{base_arch}_{'_'.join(sorted(ext_parts))}"
+        extensions: Set[str] = set()
 
-        if ext in standard_exts:
-            return f"{base_arch}{ext}"
-        elif ext in (classification['z_extensions'] | classification['s_extensions'] | classification['x_extensions'] | classification['multi_standard']):
-            return f"{base_arch}_{ext}"
-        else:
-            return f"{base_arch}_{ext}"
+        for part in extension.lower().split('-'):
+            extensions.update(_normalize_extension_token(part))
+
+        if extra_extensions:
+            for extra in extra_extensions:
+                extensions.update(_normalize_extension_token(extra))
+
+        extensions = {ext for ext in extensions if ext and ext != 'i'}
+
+        standard_parts = sorted(ext for ext in extensions if ext in standard_exts and len(ext) == 1)
+        non_standard_parts = sorted(ext for ext in extensions if ext not in standard_exts or len(ext) > 1)
+
+        march = base_arch
+
+        if standard_parts:
+            march += ''.join(standard_parts)
+
+        if non_standard_parts:
+            march += '_' + '_'.join(non_standard_parts)
+
+        return march
     
     def _create_disasm_pattern(self, addr: int, name: str, example: str, no_aliases: bool = False) -> str:
         """Create a regex pattern for expected disassembly output."""
@@ -1082,7 +1297,17 @@ class GasTestGenerator:
         
         if operands:
             operands_clean = re.sub(r'\s+', ' ', operands.strip())
-            operands_pattern = re.escape(operands_clean)
+
+            def _escape_with_whitespace(token: str) -> str:
+                escaped = re.escape(token)
+                return escaped.replace(r'\ ', r'\\s+')
+
+            if ',' in operands_clean:
+                pieces = [_escape_with_whitespace(part.strip()) for part in operands_clean.split(',')]
+                operands_pattern = r'\s*,\s*'.join(pieces)
+            else:
+                operands_pattern = _escape_with_whitespace(operands_clean)
+
             pattern += f"[ \t]+{operands_pattern}"
         
         return pattern
