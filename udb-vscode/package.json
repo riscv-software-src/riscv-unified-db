@@ -17,7 +17,15 @@
         ],
         "extensions": [
           ".udb"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "udb",
+        "scopeName": "source.udb",
+        "path": "./syntaxes/udb.tmLanguage.json"
       }
     ],
     "configuration": {

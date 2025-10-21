@@ -1,0 +1,55 @@
+{
+  "name": "UDB",
+  "scopeName": "source.udb",
+  "patterns": [
+    { "include": "#keyword" },
+    { "include": "#string" },
+    { "include": "#hex" },
+    { "include": "#comment" },
+    { "include": "#ident" }
+  ],
+  "repository": {
+    "keyword": {
+      "patterns": [
+        { "name": "keyword.control.udb", "match": "\\bcsr\\b" }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.udb",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.udb", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "hex": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.udb",
+          "match": "\\b0[xX][0-9A-Fa-f](?:[0-9A-Fa-f_]*[0-9A-Fa-f])?\\b"
+        },
+        {
+          "name": "invalid.illegal.numeric.hex.udb",
+          "match": "\\b0[xX](?:_[0-9A-Fa-f_]|[0-9A-Fa-f_]*_)\\b"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        { "name": "comment.line.double-slash.udb", "match": "//.*$" }
+      ]
+    },
+    "ident": {
+      "patterns": [
+        {
+          "name": "entity.name.type.udb",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}
