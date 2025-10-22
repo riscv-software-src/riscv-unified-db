@@ -216,7 +216,12 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
 fi
 
 if [ ! -d ${ROOT}/node_modules ]; then
-    ${RUN} npm i
+    ${RUN} sh -c '
+      npm i
+      npm_res=$?
+      chown -R "$(whoami):$(whoami)" ./node_modules
+      exit $npm_res
+    '
 fi
 
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
