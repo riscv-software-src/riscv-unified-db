@@ -4,9 +4,11 @@ import sys
 import argparse
 import logging
 
-# Add parent directory to path to find generator.py
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+
 from generator import load_instructions, load_csrs, parse_match, signed
+from ...generators.schema_validator import validate_entry
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
@@ -38,6 +40,8 @@ func encode(a obj.As) *inst {
     instr_str = ""
     # Process instructions in sorted order (by name)
     for name, info in sorted(instr_dict.items(), key=lambda x: x[0].upper()):
+        # Validate instruction entry before using it
+        validate_entry(info, required_fields=["match"])
         match_str = info["match"]
         enc_match = parse_match(match_str)
         opcode = (enc_match >> 0) & ((1 << 7) - 1)
@@ -61,6 +65,8 @@ func encode(a obj.As) *inst {
     # Convert the dictionary to a list of tuples and sort by address
     csr_items = [(int(addr), name.upper()) for addr, name in csrs.items()]
     for addr, name in sorted(csr_items, key=lambda x: x[0]):
+        # Validate CSR entry before using it
+        validate_entry({"addr": addr, "name": name}, required_fields=["addr", "name"])
         csrs_map_str += f'{hex(addr)} : "{name}",\n'
     csrs_map_str += "}\n"
 
@@ -147,6 +153,10 @@ def main():
     instr_dict = load_instructions(
         args.inst_dir, enabled_extensions, include_all, args.arch
     )
+    # Validate all loaded instructions
+    for name, entry in instr_dict.items():
+        validate_entry(entry, required_fields=["match"])
+
     if not instr_dict:
         logging.error("No instructions found or all were filtered out.")
         logging.error(
@@ -157,6 +167,10 @@ def main():
 
     # Load CSRs filtered by extensions or all CSRs
     csrs = load_csrs(args.csr_dir, enabled_extensions, include_all, args.arch)
+    # Validate all loaded CSRs
+    for addr, name in csrs.items():
+        validate_entry({"addr": addr, "name": name}, required_fields=["addr", "name"])
+
     if not csrs:
         logging.warning("No CSRs found or all were filtered out.")
     else:
