@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        - HTTP_PROXY=${http_proxy}
+        - HTTPS_PROXY=${https_proxy}
+        - NO_PROXY=${no_proxy}
+    volumes:
+      - .:/workspace
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+    working_dir: /workspace
+    command: sleep infinity
