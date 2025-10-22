@@ -101,3 +101,47 @@ For convenience, running Rake inside the container is encapsulated in `do`. For 
 # generate an implementation-specific spec for the 'example_rv64_with_overlay' config
 ./do gen:resolved_arch CFG=example_rv64_with_overlay
 ----
+
+== Proxy Support
+
+The development environment now includes comprehensive proxy support for all package managers:
+
+* `apt` (system packages)
+* `pip` (Python packages)
+* `npm` (Node.js packages)
+* `bundler` (Ruby gems)
+
+To use the development environment with a proxy, you can either:
+
+1. Use the provided docker-compose configuration:
++
+[source,bash]
+----
+http_proxy=http://your.proxy:port https_proxy=http://your.proxy:port docker-compose up
+----
+
+2. Set proxy environment variables when using the devcontainer directly:
++
+[source,bash]
+----
+docker build -t riscv-unified-db .devcontainer/
+docker run -e http_proxy=http://your.proxy:port -e https_proxy=http://your.proxy:port riscv-unified-db
+----
+
+The proxy configuration is automatically applied to all supported package managers when the environment variables are present.
+
+== Testing
+
+Container tests are available in `tests/container_tests.sh` and can be run with:
+
+[source,bash]
+----
+./tests/container_tests.sh
+----
+
+These tests validate:
+* Container build process
+* Basic command functionality
+* Package installation in virtual environments
+* Non-root user configuration
+* Proxy configuration for all package managers
