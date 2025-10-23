@@ -8,7 +8,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "types": ["mocha", "node"],
+    "lib": ["ES2020", "DOM"]
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts"]
 }
+
+

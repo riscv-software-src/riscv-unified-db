@@ -1,13 +1,11 @@
 {
   "name": "udb-vscode",
   "version": "0.0.1",
+  "private": true,
   "engines": {
     "vscode": "^1.90.0"
   },
-  "activationEvents": [
-    "onStartupFinished",
-    "onLanguage:udb"
-  ],
+  "activationEvents": [],
   "contributes": {
     "languages": [
       {
@@ -17,7 +15,15 @@
         ],
         "extensions": [
           ".udb"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "udb",
+        "scopeName": "source.udb",
+        "path": "./syntaxes/udb.tmLanguage.json"
       }
     ],
     "configuration": {
@@ -35,13 +41,18 @@
   "main": "./out/extension.js",
   "scripts": {
     "compile": "tsc -p .",
+    "test": "npm run compile && node ./out/test/runTests.js",
     "watch": "tsc -w",
     "vscode:prepublish": "npm run compile"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.17",
     "@types/vscode": "^1.104.0",
     "@vscode/test-electron": "^2.5.2",
+    "glob": "^7.2.3",
+    "mocha": "^10.4.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {

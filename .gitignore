@@ -43,3 +43,7 @@ node_modules/
 !udb-vscode/.vscode/tasks.json
 udb-vscode/server/*
 !udb-vscode/server/udb-ls-all.jar
+.vscode-test/
+**/.vscode-test/
+
+**/node_modules/
