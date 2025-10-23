@@ -104,5 +104,5 @@ suite('UDB LS – smoke', () => {
     assert.ok(self, 'expected no definition or a self-location on the declaration token');
   });
   // Pending on purpose, enable when the grammar has references and rename updates them.
-  test.skip('rename (skip until rename/ref updates implemented)', () => {});
+  //test.skip('rename (skip until rename/ref updates implemented)', () => {});
 });
