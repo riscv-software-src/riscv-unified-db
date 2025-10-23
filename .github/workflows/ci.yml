@@ -69,7 +69,7 @@ jobs:
         run: npm run compile
 
       - name: Run VS Code tests
-        run: npm test
+        run: xvfb-run -a npm test
 
       - name: Archive VS Code test logs (always)
         if: always()
