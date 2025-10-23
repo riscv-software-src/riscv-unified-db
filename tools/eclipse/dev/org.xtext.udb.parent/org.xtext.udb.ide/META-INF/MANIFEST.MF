@@ -12,7 +12,6 @@ Require-Bundle: org.xtext.udb,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.aopalliance;bundle-version="1.0.0",
  org.bndtools.headless.build.plugin.gradle;bundle-version="7.1.0",
- org.gradle.toolingapi;bundle-version="8.9.0",
  io.github.classgraph.classgraph;bundle-version="4.8.179"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.xtext.example.udb.ide.contentassist.antlr,

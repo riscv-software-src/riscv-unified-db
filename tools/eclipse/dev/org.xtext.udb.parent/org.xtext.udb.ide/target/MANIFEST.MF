@@ -3,14 +3,14 @@ Automatic-Module-Name: org.xtext.udb.ide
 Bundle-ManifestVersion: 2
 Bundle-Name: org.xtext.udb.ide
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202510050647
+Bundle-Version: 1.0.0.202510230637
 Bundle-SymbolicName: org.xtext.udb.ide;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.xtext.udb,org.eclipse.xtext.ide,org.eclipse.xtext.xb
  ase.ide,org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",org.aopallianc
  e;bundle-version="1.0.0",org.bndtools.headless.build.plugin.gradle;bund
- le-version="7.1.0",org.gradle.toolingapi;bundle-version="8.9.0",io.gith
- ub.classgraph.classgraph;bundle-version="4.8.179"
+ le-version="7.1.0",io.github.classgraph.classgraph;bundle-version="4.8.
+ 179"
 Export-Package: org.xtext.example.udb.ide.contentassist.antlr,org.xtext.
  example.udb.ide.contentassist.antlr.internal
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"

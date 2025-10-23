@@ -25,6 +25,9 @@ jobs:
 
     
       - name: Build & test (whole reactor)
+        working-directory: tools/eclipse/dev/org.xtext.udb.parent
+        env:
+          MAVEN_OPTS: "-Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0"
         run: mvn -B -U -Dheadless=true verify
 
       - name: Archive surefire reports (always)

@@ -114,7 +114,6 @@
 					</executions>
 					<configuration>
 						<outputDirectory>${basedir}/xtend-gen</outputDirectory>
-						<testOutputDirectory>${basedir}/xtend-gen</testOutputDirectory>
 					</configuration>
 				</plugin>
 				<plugin>
