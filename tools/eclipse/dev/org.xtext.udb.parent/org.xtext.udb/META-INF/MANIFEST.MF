@@ -14,7 +14,6 @@ Require-Bundle: org.eclipse.xtext,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.aopalliance;bundle-version="1.0.0",
  org.bndtools.headless.build.plugin.gradle;bundle-version="7.1.0",
- org.gradle.toolingapi;bundle-version="8.9.0",
  io.github.classgraph.classgraph;bundle-version="4.8.179",
  org.eclipse.xtext.xbase.lib.source;bundle-version="2.39.0",
  org.eclipse.xtext.xbase.lib;bundle-version="2.39.0"
