@@ -15,16 +15,18 @@ jobs:
         working-directory: tools/eclipse/dev/org.xtext.udb.parent
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Temurin JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Generate Xtext sources
-        run: mvn -q org.eclipse.xtext:xtext-maven-plugin:generate
-      - name: Run tests (tests module + deps)
-        run: mvn -B -U -pl org.xtext.udb.tests -am -Dheadless=true test
+
+    
+      - name: Build & test (whole reactor)
+        run: mvn -B -U -Dheadless=true verify
+
       - name: Archive surefire reports (always)
         if: always()
         uses: actions/upload-artifact@v4
@@ -43,17 +45,29 @@ jobs:
         working-directory: udb-vscode
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: udb-vscode/package-lock.json
+
+    
+      - name: Setup Temurin JDK 21 (for LS)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: Install deps
         run: npm ci
+
       - name: Compile
         run: npm run compile
+
       - name: Run VS Code tests
         run: npm test
+
       - name: Archive VS Code test logs (always)
         if: always()
         uses: actions/upload-artifact@v4
