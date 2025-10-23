@@ -4,48 +4,48 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
-			extensions="mydsl2"
-			id="org.xtext.udb.Udb"
+			extensions="udb"
+			id="org.xtext.example.udb.Udb"
 			name="Udb Editor">
 		</editor>
 	</extension>
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
 			commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.udb.Udb.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
-			commandId="org.xtext.udb.Udb.validate">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+			commandId="org.xtext.example.udb.Udb.validate">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.udb.Udb.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<!-- copy qualified name -->
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName">
 			<activeWhen>
-				<reference definitionId="org.xtext.udb.Udb.Editor.opened" />
+				<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 			</activeWhen>
 		</handler>
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName">
 			<activeWhen>
 				<and>
-					<reference definitionId="org.xtext.udb.Udb.XtextEditor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.XtextEditor.opened" />
 					<iterate>
 						<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 					</iterate>
@@ -54,22 +54,22 @@
 		</handler>
 	</extension>
 	<extension point="org.eclipse.core.expressions.definitions">
-		<definition id="org.xtext.udb.Udb.Editor.opened">
+		<definition id="org.xtext.example.udb.Udb.Editor.opened">
 			<and>
 				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="org.xtext.udb.Udb"
+						value="org.xtext.example.udb.Udb"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
 		</definition>
-		<definition id="org.xtext.udb.Udb.XtextEditor.opened">
+		<definition id="org.xtext.example.udb.Udb.XtextEditor.opened">
 			<and>
 				<reference definitionId="isXtextEditorActive"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="org.xtext.udb.Udb"
+						value="org.xtext.example.udb.Udb"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
@@ -78,33 +78,33 @@
 	<extension
 			point="org.eclipse.ui.preferencePages">
 		<page
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="org.xtext.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.xtext.example.udb.Udb"
 			name="Udb">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
-			id="org.xtext.udb.Udb.coloring"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+			id="org.xtext.example.udb.Udb.coloring"
 			name="Syntax Coloring">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
-			id="org.xtext.udb.Udb.templates"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+			id="org.xtext.example.udb.Udb.templates"
 			name="Templates">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
 		<page
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="org.xtext.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.xtext.example.udb.Udb"
 			name="Udb">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -114,14 +114,14 @@
 	<extension
 		point="org.eclipse.ui.keywords">
 		<keyword
-			id="org.xtext.udb.ui.keyword_Udb"
+			id="org.xtext.example.udb.ui.keyword_Udb"
 			label="Udb"/>
 	</extension>
 	<extension
 		point="org.eclipse.ui.commands">
 		<command
 			description="Trigger expensive validation"
-			id="org.xtext.udb.Udb.validate"
+			id="org.xtext.example.udb.Udb.validate"
 			name="Validate">
 		</command>
 		<!-- copy qualified name -->
@@ -142,12 +142,12 @@
 		<menuContribution
 			locationURI="popup:#TextEditorContext?after=group.edit">
 			<command
-				commandId="org.xtext.udb.Udb.validate"
+				commandId="org.xtext.example.udb.Udb.validate"
 				style="push"
 				tooltip="Trigger expensive validation">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="org.xtext.udb.Udb.Editor.opened">
+						definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -157,7 +157,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.udb.Udb.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -165,7 +165,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.udb.Udb.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -174,7 +174,7 @@
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<and>
-						<reference definitionId="org.xtext.udb.Udb.XtextEditor.opened" />
+						<reference definitionId="org.xtext.example.udb.Udb.XtextEditor.opened" />
 						<iterate>
 							<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 						</iterate>
@@ -187,7 +187,7 @@
 		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
 			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.udb.Udb.Editor.opened">
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -195,11 +195,11 @@
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
 			commandId="org.eclipse.xtext.ui.editor.FindReferences">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.udb.Udb.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -207,8 +207,8 @@
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type
 			base-type="org.eclipse.core.runtime.text"
-			file-extensions="mydsl2"
-			id="org.xtext.udb.Udb.contenttype"
+			file-extensions="udb"
+			id="org.xtext.example.udb.Udb.contenttype"
 			name="Udb File"
 			priority="normal">
 		</content-type>
@@ -217,17 +217,17 @@
 	<extension
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
-			type="mydsl2">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			type="udb">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
-			uriExtension="mydsl2">
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+			uriExtension="udb">
 		</resourceServiceProvider>
 	</extension>
-	<!-- marker definitions for org.xtext.udb.Udb -->
+	<!-- marker definitions for org.xtext.example.udb.Udb -->
 	<extension
 			id="udb.check.fast"
 			name="Udb Problem"
@@ -251,34 +251,34 @@
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
-			id="org.xtext.udb.Udb.validator.preferencePage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
+			id="org.xtext.example.udb.Udb.validator.preferencePage"
 			name="Errors/Warnings">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
-			fileExtensions="mydsl2"/>
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="udb"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="org.xtext.udb.Udb.compiler.preferencePage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.xtext.example.udb.Udb.compiler.preferencePage"
 			name="Compiler">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="org.xtext.udb.Udb.compiler.propertyPage"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.xtext.example.udb.Udb.compiler.propertyPage"
 			name="Compiler">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -289,20 +289,20 @@
 		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
 			<command
 				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
-				id="org.xtext.udb.Udb.OpenGeneratedCode"
+				id="org.xtext.example.udb.Udb.OpenGeneratedCode"
 				style="push">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.udb.Udb.Editor.opened" />
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
 			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
 			<activeWhen>
-				<reference definitionId="org.xtext.udb.Udb.Editor.opened" />
+				<reference definitionId="org.xtext.example.udb.Udb.Editor.opened" />
 			</activeWhen>
 		</handler>
 	</extension>
@@ -310,11 +310,11 @@
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
 			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.udb.Udb.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -334,16 +334,16 @@
 				style="push"
 				tooltip="Open Quick Outline">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="org.xtext.udb.Udb.Editor.opened"/>
+					<reference definitionId="org.xtext.example.udb.Udb.Editor.opened"/>
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
-	<!-- quickfix marker resolution generator for org.xtext.udb.Udb -->
+	<!-- quickfix marker resolution generator for org.xtext.example.udb.Udb -->
 	<extension
 			point="org.eclipse.ui.ide.markerResolution">
 		<markerResolutionGenerator
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
 			markerType="org.xtext.udb.ui.udb.check.fast">
 			<attribute
 				name="FIXABLE_KEY"
@@ -351,7 +351,7 @@
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
 			markerType="org.xtext.udb.ui.udb.check.normal">
 			<attribute
 				name="FIXABLE_KEY"
@@ -359,7 +359,7 @@
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
 			markerType="org.xtext.udb.ui.udb.check.expensive">
 			<attribute
 				name="FIXABLE_KEY"
@@ -370,11 +370,11 @@
 	<!-- Rename Refactoring -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
 			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
 			<activeWhen>
 				<reference
-					definitionId="org.xtext.udb.Udb.Editor.opened">
+					definitionId="org.xtext.example.udb.Udb.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -386,7 +386,7 @@
 				style="push">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="org.xtext.udb.Udb.Editor.opened">
+						definitionId="org.xtext.example.udb.Udb.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -394,40 +394,40 @@
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="org.xtext.udb.Udb"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
-			id="org.xtext.udb.Udb.refactoring"
+			category="org.xtext.example.udb.Udb"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="org.xtext.example.udb.Udb.refactoring"
 			name="Refactoring">
-			<keywordReference id="org.xtext.udb.ui.keyword_Udb"/>
+			<keywordReference id="org.xtext.example.udb.ui.keyword_Udb"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.compare.contentViewers">
-		<viewer id="org.xtext.udb.Udb.compare.contentViewers"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="mydsl2">
+		<viewer id="org.xtext.example.udb.Udb.compare.contentViewers"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="udb">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="org.xtext.udb.Udb.contenttype"
-			contentViewerId="org.xtext.udb.Udb.compare.contentViewers" />
+			contentTypeId="org.xtext.example.udb.Udb.contenttype"
+			contentViewerId="org.xtext.example.udb.Udb.compare.contentViewers" />
 	</extension>
 	<extension point="org.eclipse.compare.contentMergeViewers">
-		<viewer id="org.xtext.udb.Udb.compare.contentMergeViewers"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="mydsl2" label="Udb Compare">
+		<viewer id="org.xtext.example.udb.Udb.compare.contentMergeViewers"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="udb" label="Udb Compare">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="org.xtext.udb.Udb.contenttype"
-			contentMergeViewerId="org.xtext.udb.Udb.compare.contentMergeViewers" />
+			contentTypeId="org.xtext.example.udb.Udb.contenttype"
+			contentMergeViewerId="org.xtext.example.udb.Udb.compare.contentMergeViewers" />
 	</extension>
 	<extension point="org.eclipse.ui.editors.documentProviders">
-		<provider id="org.xtext.udb.Udb.editors.documentProviders"
-			class="org.xtext.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
-			extensions="mydsl2">
+		<provider id="org.xtext.example.udb.Udb.editors.documentProviders"
+			class="org.xtext.example.udb.ui.UdbExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+			extensions="udb">
 		</provider>
 	</extension>
 	<extension point="org.eclipse.team.core.fileTypes">
 		<fileTypes
-			extension="mydsl2"
+			extension="udb"
 			type="text">
 		</fileTypes>
 	</extension>

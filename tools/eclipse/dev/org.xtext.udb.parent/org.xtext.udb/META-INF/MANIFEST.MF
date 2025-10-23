@@ -14,15 +14,15 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.emf.common,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Export-Package: org.xtext.udb,
- org.xtext.udb.serializer,
- org.xtext.udb.parser.antlr.internal,
- org.xtext.udb.udb,
- org.xtext.udb.generator,
- org.xtext.udb.udb.impl,
- org.xtext.udb.parser.antlr,
- org.xtext.udb.services,
- org.xtext.udb.validation,
- org.xtext.udb.udb.util,
- org.xtext.udb.scoping
+Export-Package: org.xtext.example.udb.parser.antlr,
+ org.xtext.example.udb.udb.impl,
+ org.xtext.example.udb.parser.antlr.internal,
+ org.xtext.example.udb.scoping,
+ org.xtext.example.udb.generator,
+ org.xtext.example.udb.services,
+ org.xtext.example.udb.udb,
+ org.xtext.example.udb.udb.util,
+ org.xtext.example.udb.validation,
+ org.xtext.example.udb.serializer,
+ org.xtext.example.udb
 Import-Package: org.apache.log4j
