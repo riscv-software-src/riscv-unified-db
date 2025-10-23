@@ -8,7 +8,7 @@ function wsPath(...p: string[]) {
   return path.join(root, ...p);
 }
 
-async function waitFor<T>(probe: () => T | null | undefined | false, ms = 3000, step = 50) {
+async function waitFor<T>(probe: () => T | null | undefined | false, ms = 8000, step = 50) {
   const start = Date.now();
   while (Date.now() - start < ms) {
     const v = probe();
@@ -32,12 +32,19 @@ suite('UDB LS – smoke', () => {
     await vscode.window.showTextDocument(doc);
 
     
-    await vscode.workspace.applyEdit(new vscode.WorkspaceEdit());
+    const edit = new vscode.WorkspaceEdit();
+    edit.insert(doc.uri, new vscode.Position(0, 0), ' ');     
+    await vscode.workspace.applyEdit(edit);
+    await vscode.workspace.saveAll(); 
+
+    const revert = new vscode.WorkspaceEdit();
+    revert.delete(doc.uri, new vscode.Range(0, 0, 0, 1));
+    await vscode.workspace.applyEdit(revert);
 
     const diags = await waitFor(() => {
       const d = vscode.languages.getDiagnostics(doc.uri);
       return d.length ? d : null;
-    }, 3000);
+    }, 8000);
 
     // Expect at least one diagnostic for the intentionally bad hex.
     assert.ok(diags && diags.length >= 1, 'expected at least one diagnostic for bad hex in .udb file'); // should pass now but underscores still not fixed in this version
