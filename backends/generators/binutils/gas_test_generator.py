@@ -240,7 +240,10 @@ class TestInstructionGroup:
         if self.extension:
             ext_lower = self.extension.lower()
             if ext_lower != 'unknown':
-                self.required_extensions.add(ext_lower)
+                # Split hyphenated extension group names into individual extensions
+                for part in ext_lower.split('-'):
+                    normalized = _normalize_extension_token(part)
+                    self.required_extensions.update(normalized)
 
     def add_error_case(
         self,
@@ -871,7 +874,7 @@ class GasTestGenerator:
         main_instructions = []
         for name, info in group.instructions:
             base = info.get('base')
-            if base is None:
+            if base is None or base == 32:
                 main_instructions.append((name, info))
         
         # Generate assembly source file
@@ -1248,6 +1251,15 @@ class GasTestGenerator:
         classification = self.example_generator.extension_classification
         standard_exts = classification['standard']
 
+        # Extensions that should not appear in march strings
+        # These work with any base ISA and don't need explicit march flags
+        excluded_march_extensions = {
+            's',       # Supervisor mode (sfence.vma, etc.) - part of base privileged spec
+            'sm',      # Supervisor mode (empty group, parent of Sm* extensions)
+            'sdext',   # Debug extension (dret) - doesn't need march flag
+            'xmock',   # Test/mock extension - not real
+        }
+
         extensions: Set[str] = set()
 
         for part in extension.lower().split('-'):
@@ -1257,7 +1269,9 @@ class GasTestGenerator:
             for extra in extra_extensions:
                 extensions.update(_normalize_extension_token(extra))
 
-        extensions = {ext for ext in extensions if ext and ext != 'i'}
+        # Filter out 'i' and excluded privileged extensions
+        extensions = {ext for ext in extensions 
+                     if ext and ext != 'i' and ext not in excluded_march_extensions}
 
         standard_parts = sorted(ext for ext in extensions if ext in standard_exts and len(ext) == 1)
         non_standard_parts = sorted(ext for ext in extensions if ext not in standard_exts or len(ext) > 1)
