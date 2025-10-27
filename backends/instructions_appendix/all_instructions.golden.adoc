@@ -16556,7 +16556,7 @@ Encoding::
 
 Description::
 A prefetch.i instruction indicates to hardware that the cache block whose
-effective address is the sum of the base address specified in rs1 and the
+effective address is the sum of the base address specified in xs1 and the
 sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
 is likely to be accessed by an instruction fetch in the near future.
 
@@ -16596,7 +16596,7 @@ Encoding::
 
 Description::
 A prefetch.r instruction indicates to hardware that the cache block whose
-effective address is the sum of the base address specified in rs1 and the
+effective address is the sum of the base address specified in xs1 and the
 sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
 is likely to be accessed by a data read (i.e. load) in the near future.
 
@@ -16636,7 +16636,7 @@ Encoding::
 
 Description::
 A prefetch.w instruction indicates to hardware that the cache block whose
-effective address is the sum of the base address specified in rs1 and the
+effective address is the sum of the base address specified in xs1 and the
 sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
 is likely to be accessed by a data write (i.e. store) in the near future.
 
