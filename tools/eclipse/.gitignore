@@ -22,5 +22,5 @@ generated/
 src-gen/
 
 # This isn't always generated, but needed for building
-xtend-gen/*
-!xtend-gen/.gitkeep
+**/xtend-gen/*
+!**/xtend-gen/.gitkeep
