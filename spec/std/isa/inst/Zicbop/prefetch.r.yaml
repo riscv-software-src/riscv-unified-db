@@ -9,7 +9,7 @@ name: prefetch.r
 long_name: Cache block prefetch for data read
 description: |
   A prefetch.r instruction indicates to hardware that the cache block whose
-  effective address is the sum of the base address specified in rs1 and the
+  effective address is the sum of the base address specified in xs1 and the
   sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
   is likely to be accessed by a data read (i.e. load) in the near future.
 definedBy: Zicbop
