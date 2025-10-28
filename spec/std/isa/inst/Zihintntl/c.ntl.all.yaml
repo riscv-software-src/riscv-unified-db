@@ -1,0 +1,26 @@
+# Copyright (c) Jordan Carlin
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: c.ntl.all
+long_name: Compressed non-temporal locality hint, all
+description: |
+  The NTL.ALL instruction indicates that the target instruction does not exhibit
+  temporal locality within the capacity of any level of cache in the memory
+  hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+definedBy:
+  allOf:
+    - Zca
+    - Zihintntl
+assembly: ""
+encoding:
+  match: "1001000000010110"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
