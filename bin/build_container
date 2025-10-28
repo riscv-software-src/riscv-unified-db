@@ -64,15 +64,11 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-
 # build the container image
 echo "Building container..."
-if [ ! -d "${ROOT}/.singularity" ]; then
-  mkdir -p ${ROOT}/.singularity
-fi
-if [ -e ${CONTAINER_PATH} ]; then
-  rm -f ${CONTAINER_PATH}
-fi
+# Create .singularity directory if it doesn't exist and ensure clean container path
+mkdir -p $(dirname ${CONTAINER_PATH})
+rm -f ${CONTAINER_PATH}
 
 $SUDO singularity build --force \
   $FAKEROOT \

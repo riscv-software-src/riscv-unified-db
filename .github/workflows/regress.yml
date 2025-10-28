@@ -140,12 +140,7 @@ jobs:
           rm -rf ext/llvm-project
           git submodule sync --recursive
           git submodule update --init --recursive --depth=1 ext/llvm-project
-      - name: Check for required directories and files
-        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
-        run: |
-          ls -l ext/llvm-project/llvm/include
-          ls -l ext/llvm-project/llvm/lib/Target/RISCV
-          ls -l ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td
+      # Dependencies are handled by setup script
       - name: Configure and build llvm-tblgen
         if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |

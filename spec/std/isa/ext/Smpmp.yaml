@@ -12,12 +12,14 @@ versions:
   - version: "1.11.0"
     state: ratified
     ratification_date: 2019-12
+    specification_source: "UDB"
     changes:
       - Made the unused `pmpaddr` and `pmpcfg` fields *WARL*, rather than *WIRI*.
       - Specified semantics for PMP regions coarser than four bytes.
   - version: "1.12.0"
     state: ratified
     ratification_date: 2021-12
+    specification_source: "UDB"
     changes:
       - PMP changes require an SFENCE.VMA on any hart that implements
         page-based virtual memory, even if VM is not currently enabled.
@@ -26,6 +28,7 @@ versions:
   - version: "1.13.0"
     state: frozen
     ratification_date: 2023-12
+    specification_source: "UDB"
 description: |
   To support secure processing and contain faults, it is desirable to limit the physical addresses
   accessible by software running on a hart. The optional PMP (Physical Memory Protection) unit
