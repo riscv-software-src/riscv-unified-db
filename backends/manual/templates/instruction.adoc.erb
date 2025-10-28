@@ -14,7 +14,7 @@ This instruction must have data-independent timing when extension `Zkt` is enabl
 
 == Assembly format
 
-`<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>`
+`<%= "#{inst.name} #{inst.assembly.gsub('x', 'r')}".strip %>`
 
 == Decode Variables
 

@@ -11,7 +11,7 @@ Synopsis::
 <%= inst.long_name %>
 
 Assembly::
-<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}").strip %>
 
 Encoding::
 <%- if inst.multi_encoding? -%>
