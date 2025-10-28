@@ -64,7 +64,7 @@
     },
     "register_file_name": {
       "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+      "pattern": "^[A-Za-z]$",
       "description": "Register file name"
     },
     "register_alias": {

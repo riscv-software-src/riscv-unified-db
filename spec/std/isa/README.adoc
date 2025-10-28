@@ -170,7 +170,7 @@ registers:
     roles: [callee_saved, frame_pointer]
 ----
 
-<1> Registers can have either a fixed architecture width or take their width from a parameter (e.g., MXLEN, VLEN).
+<1> The registers in a register file have identical fixed widths, either an explicit width or from a parameter (e.g. MXLEN or VLEN).
 <2> Each register has a unique name (e.g., x0, x1, x2, etc.). The register's index is inferred from its position in the array (starting from 0).
 <3> Registers can optionally have ABI mnemonics (e.g., ra, sp, fp, etc.).
 <4> Individual registers can define `sw_read()` and `sw_write()` for special behavior (e.g., x0 hardwired to zero).

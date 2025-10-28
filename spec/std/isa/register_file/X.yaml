@@ -1,7 +1,7 @@
 # Copyright (c) Animesh Agarwal
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/register_file_schema.json
+# yaml-language-server: $schema=../../../../schemas/register_file_schema.json
 
 $schema: register_file_schema.json#
 kind: register_file
@@ -9,9 +9,9 @@ name: X
 long_name: General Purpose Registers
 description: |
   The 'X' register file contains the general-purpose integer registers. Each register
-  is architecturally XLEN bits wide, unless XLEN<MXLEN. Register 'x0' is hardwired to
-  zero, while the remaining registers hold architecturally visible integer state used
-  by the calling convention and execution environment.
+  is MXLEN bits wide, unless XLEN<MXLEN. Register 'x0' is hardwired to zero, while
+  the remaining registers hold architecturally visible integer state used by the
+  calling convention and execution environment.
 definedBy: I
 register_class: general_purpose
 register_length: MXLEN
@@ -19,12 +19,11 @@ registers:
   - name: x0
     abi_mnemonics: [zero]
     roles: [zero]
+    writable: false
     description: |
       Register x0 is hardwired with all bits equal to 0.
     sw_read(): |
       return 0;
-    sw_write(value): |
-      # x0 ignores all writes
   - name: x1
     abi_mnemonics: [ra]
     caller_saved: true

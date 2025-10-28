@@ -63,6 +63,11 @@
             ]
           },
           "uniqueItems": true
+        },
+        "writable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the register is writable. If false, no sw_write() method is needed."
         }
       }
     },
