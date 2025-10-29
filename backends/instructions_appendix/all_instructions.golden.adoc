@@ -4853,6 +4853,138 @@ Included in::
 |===
 
 
+[#udb:doc:inst:c_ntl_all]
+== c.ntl.all
+
+Synopsis::
+Compressed non-temporal locality hint, all
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x9016,"type":2}]}
+....
+
+Description::
+The C.NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache in
+the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x5.
+
+
+Decode Variables::
+c.ntl.all has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_p1]
+== c.ntl.p1
+
+Synopsis::
+Compressed non-temporal locality hint, innermost private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x900a,"type":2}]}
+....
+
+Description::
+The C.NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. C.NTL.P1 is encoded as C.ADD x0, x2.
+
+
+Decode Variables::
+c.ntl.p1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_pall]
+== c.ntl.pall
+
+Synopsis::
+Compressed non-temporal locality hint, all private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x900e,"type":2}]}
+....
+
+Description::
+The C.NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x3.
+
+
+Decode Variables::
+c.ntl.pall has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_s1]
+== c.ntl.s1
+
+Synopsis::
+Compressed non-temporal locality hint, innermost shared
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x9012,"type":2}]}
+....
+
+Description::
+The C.NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. C.NTL.S1 is encoded as C.ADD x0, x4.
+
+
+Decode Variables::
+c.ntl.s1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
 [#udb:doc:inst:c_or]
 == c.or
 
@@ -16268,6 +16400,130 @@ Included in::
 | *M* | ~> 2.0.0
 
 | *Zmmul* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_all]
+== ntl.all
+
+Synopsis::
+Non-temporal locality hint, all
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x500033,"type":2}]}
+....
+
+Description::
+The NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache
+in the memory hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+
+
+Decode Variables::
+ntl.all has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_p1]
+== ntl.p1
+
+Synopsis::
+Non-temporal locality hint, innermost private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x200033,"type":2}]}
+....
+
+Description::
+The NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.
+
+
+Decode Variables::
+ntl.p1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_pall]
+== ntl.pall
+
+Synopsis::
+Non-temporal locality hint, all private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x300033,"type":2}]}
+....
+
+Description::
+The NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
+
+
+Decode Variables::
+ntl.pall has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_s1]
+== ntl.s1
+
+Synopsis::
+Non-temporal locality hint, innermost shared
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x400033,"type":2}]}
+....
+
+Description::
+The NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
+
+
+Decode Variables::
+ntl.s1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
 
 |===
 

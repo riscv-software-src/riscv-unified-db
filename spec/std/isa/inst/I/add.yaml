@@ -27,6 +27,11 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+hints:
+  - { $ref: inst/Zihintntl/ntl.p1.yaml# }
+  - { $ref: inst/Zihintntl/ntl.pall.yaml# }
+  - { $ref: inst/Zihintntl/ntl.s1.yaml# }
+  - { $ref: inst/Zihintntl/ntl.all.yaml# }
 operation(): X[xd] = X[xs1] + X[xs2];
 
 # SPDX-SnippetBegin
