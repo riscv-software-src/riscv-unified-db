@@ -23,12 +23,10 @@ in_scope_priv_modes:
 # History of this certificate.
 revision_history:
   - revision: "0.9.0"
-    date: "2025-02-06"
+    date: "2025-10-29"
     changes:
       - |
-        Provided to CSC Microcontroller WG for review given the following list of known issues:
-          ** abc
-          ** def
+        Made Zicntr from mandatory to optional since recent published ISA manuals have it as "recommended"
   - revision: "0.8.0"
     date: "2025-01-19"
     changes:
@@ -118,7 +116,7 @@ extensions:
     presence: mandatory
   Zicntr:
     version: "~> 2.0"
-    presence: mandatory
+    presence: optional
     param_constraints:
       TIME_CSR_IMPLEMENTED: {} # Unconstrained
   Sm:
