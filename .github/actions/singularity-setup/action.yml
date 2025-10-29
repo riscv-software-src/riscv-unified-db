@@ -19,10 +19,77 @@ runs:
             .home/.gems
             node_modules
           key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: false
       - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
         run: ./bin/build_container
         shell: bash
+      - if: ${{ steps.cache-bundle-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies when cache is missing
+        run: |
+          echo "Cache miss detected, ensuring dependencies are installed..."
+          # Create directories if they don't exist
+          mkdir -p .home/.gems
+          mkdir -p .home/.cache
+          echo "Dependencies will be installed by setup script"
+        shell: bash
+      # Include the Gemfile verification action
+      - uses: ./.github/actions/verify-gemfile
+      # Run setup script with enhanced error handling
       - name: Setup project
-        run: ./bin/setup
+        run: |
+          set -e
+          echo "Running setup script..."
+          
+          # Check for setup file
+          if [ ! -f ./bin/setup ]; then
+            echo "ERROR: bin/setup script not found"
+            ls -la ./bin/
+            exit 1
+          fi
+          
+          # Check setup script permissions
+          if [ ! -x ./bin/setup ]; then
+            echo "Adding execute permission to setup script"
+            chmod +x ./bin/setup
+          fi
+          
+          # Set environment variable to ensure we're using Singularity
+          export SINGULARITY=1
+          
+          # Run setup with full verbose output
+          ./bin/setup --preserve-config
+          
+          echo "Setup completed, verifying installation..."
+          
+          # Enhanced verification of gems
+          if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
+            echo "WARNING: Ruby gems directory still empty after setup"
+            # Try direct installation as fallback
+            if [ -f Gemfile ]; then
+              echo "Installing gems directly as fallback..."
+              mkdir -p .home/.gems .home/.cache
+              bundle config set --local path .home/.gems
+              bundle config set --local cache_path .home/.cache
+              bundle config set --local with development
+              bundle install --jobs 4 --retry 3
+              
+              # Double-check installation success
+              if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
+                echo "ERROR: Failed to install gems even with fallback method"
+                echo "Gemfile contents:"
+                cat Gemfile
+                echo "Bundle config:"
+                bundle config list
+                exit 1
+              fi
+            else
+              echo "ERROR: Gemfile not found for fallback installation"
+              ls -la
+              exit 1
+            fi
+          else
+            echo "Ruby gems directory exists and is not empty"
+            ls -la .home/.gems | head -10
+          fi
         shell: bash

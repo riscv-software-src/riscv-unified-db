@@ -1,0 +1,38 @@
+name: Verify Gemfile
+description: Verifies that Gemfile exists and gems are properly installed
+runs:
+  using: composite
+  steps:
+    - name: Verify Gemfile exists
+      run: |
+        if [ ! -f Gemfile ]; then
+          echo "ERROR: Gemfile not found, cannot proceed with setup"
+          ls -la
+          exit 1
+        else
+          echo "Gemfile found: $(cat Gemfile | wc -l) lines"
+        fi
+      shell: bash
+    - name: Ensure gem directories
+      run: |
+        mkdir -p .home/.gems
+        mkdir -p .home/.cache
+        chmod -R 755 .home
+      shell: bash
+    - name: Verify gem installation after setup
+      run: |
+        set -x
+        if [ ! -d ".home/.gems" ] || [ -z "$(ls -A .home/.gems 2>/dev/null)" ]; then
+          echo "WARNING: Ruby gems directory empty or missing after setup"
+          # Try direct installation as emergency fallback
+          bundle config set --local path .home/.gems
+          bundle config set --local cache_path .home/.cache
+          bundle config set --local with development
+          bundle install
+        else
+          echo "Ruby gems directory exists with contents:"
+          ls -la .home/.gems | head -10
+          echo "Running bundle check to verify gems..."
+          bundle check || bundle install
+        fi
+      shell: bash

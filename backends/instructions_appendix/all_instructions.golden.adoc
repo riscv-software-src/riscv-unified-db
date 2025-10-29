@@ -36844,6 +36844,660 @@ Included in::
 |===
 
 
+[#udb:doc:inst:vqdot_vv]
+
+== vqdot.vv
+
+
+
+Synopsis::
+Vector 8-bit Signed-Signed Dot Product (vector-vector)
+
+
+
+Assembly::
+vqdot.vv vd, vs2, vs1, vm
+
+
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2c,"type":2}]}
+....
+
+Description::
+Vector quad widening signed dot product instruction performing the dot product between two 4-element vectors of 8-bit signed integer elements and accumulating it into a 32-bit signed integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+```
+vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
+```
+
+
+
+Where vs2[i] and vs1[i] are 32-bit bundles containing four 8-bit signed integers each.
+
+
+
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdot_vx]
+
+== vqdot.vx
+
+
+
+Synopsis::
+Vector 8-bit Signed-Signed Dot Product (vector-scalar)
+
+
+
+Assembly::
+vqdot.vx vd, vs2, xs1, vm
+
+
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2c,"type":2}]}
+....
+
+
+
+Description::
+Vector quad widening signed dot product instruction performing the dot product between a 4-element vector of 8-bit signed integer elements and a scalar 4-element vector of 8-bit signed integer elements, accumulating the result into a 32-bit signed integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+
+```
+
+vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
+
+```
+
+
+
+Where vs2[i] is a 32-bit bundle containing four 8-bit signed integers and xs1 contains four 8-bit signed integers in its lower 32 bits.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|xs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdotsu_vv]
+
+== vqdotsu.vv
+
+
+
+Synopsis::
+Vector 8-bit Signed-Unsigned Dot Product (vector-vector)
+
+
+
+Assembly::
+vqdotsu.vv vd, vs2, vs1, vm
+
+
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2a,"type":2}]}
+
+....
+
+
+
+Description::
+Vector quad widening signed-unsigned dot product instruction performing the dot product between a 4-element vector of 8-bit signed integer elements (vs2) and a 4-element vector of 8-bit unsigned integer elements (vs1), accumulating the result into a 32-bit signed integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+```
+vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
+
+```
+
+
+
+Where vs2[i] is a 32-bit bundle containing four 8-bit signed integers and vs1[i] is a 32-bit bundle containing four 8-bit unsigned integers.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|vs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdotsu_vx]
+
+== vqdotsu.vx
+
+
+
+Synopsis::
+
+Vector 8-bit Signed-Unsigned Dot Product (vector-scalar)
+
+
+
+Assembly::
+
+vqdotsu.vx vd, vs2, xs1, vm
+
+
+
+Encoding::
+
+[wavedrom, ,svg,subs='attributes',width="100%"]
+
+....
+
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2e,"type":2}]}
+
+....
+
+
+
+Description::
+
+Vector quad widening signed-unsigned dot product instruction performing the dot product between a 4-element vector of 8-bit signed integer elements (vs2) and a scalar 4-element vector of 8-bit unsigned integer elements (xs1), accumulating the result into a 32-bit signed integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+
+```
+
+vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
+
+```
+
+
+
+Where vs2[i] is a 32-bit bundle containing four 8-bit signed integers and xs1 contains four 8-bit unsigned integers in its lower 32 bits.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|xs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdotu_vv]
+
+== vqdotu.vv
+
+
+
+Synopsis::
+
+Vector 8-bit Unsigned-Unsigned Dot Product (vector-vector)
+
+
+
+Assembly::
+
+vqdotu.vv vd, vs2, vs1, vm
+
+
+
+Encoding::
+
+[wavedrom, ,svg,subs='attributes',width="100%"]
+
+....
+
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x28,"type":2}]}
+
+....
+
+
+
+Description::
+
+Vector quad widening unsigned dot product instruction performing the dot product between two 4-element vectors of 8-bit unsigned integer elements and accumulating it into a 32-bit unsigned integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+
+```
+
+vd[i] = vs2[i][0] * vs1[i][0] + vs2[i][1] * vs1[i][1] + vs2[i][2] * vs1[i][2] + vs2[i][3] * vs1[i][3] + vd[i]
+
+```
+
+
+
+Where vs2[i] and vs1[i] are 32-bit bundles containing four 8-bit unsigned integers each.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|vs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdotu_vx]
+
+== vqdotu.vx
+
+
+
+Synopsis::
+
+Vector 8-bit Unsigned-Unsigned Dot Product (vector-scalar)
+
+
+
+Assembly::
+
+vqdotu.vx vd, vs2, xs1, vm
+
+
+
+Encoding::
+
+[wavedrom, ,svg,subs='attributes',width="100%"]
+
+....
+
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x28,"type":2}]}
+
+....
+
+
+
+Description::
+
+Vector quad widening unsigned dot product instruction performing the dot product between a 4-element vector of 8-bit unsigned integer elements and a scalar 4-element vector of 8-bit unsigned integer elements, accumulating the result into a 32-bit unsigned integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+
+```
+
+vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
+
+```
+
+
+
+Where vs2[i] is a 32-bit bundle containing four 8-bit unsigned integers and xs1 contains four 8-bit unsigned integers in its lower 32 bits.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|xs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
+[#udb:doc:inst:vqdotus_vx]
+
+== vqdotus.vx
+
+
+
+Synopsis::
+
+Vector 8-bit Unsigned-Signed Dot Product (vector-scalar)
+
+
+
+Assembly::
+
+vqdotus.vx vd, vs2, xs1, vm
+
+
+
+Encoding::
+
+[wavedrom, ,svg,subs='attributes',width="100%"]
+
+....
+
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x39,"type":2}]}
+
+....
+
+
+
+Description::
+
+Vector quad widening unsigned-signed dot product instruction performing the dot product between a 4-element vector of 8-bit unsigned integer elements (vs2) and a scalar 4-element vector of 8-bit signed integer elements (xs1), accumulating the result into a 32-bit signed integer accumulator.
+
+
+
+This instruction is only defined for SEW=32. It works on an element group with four 8-bit values stored together in a 32-bit bundle. For each input bundle for the dot product there is a corresponding (same index) SEW-wide element in the accumulator source (and destination).
+
+
+
+The "q" in the mnemonic indicates that the instruction is quad-widening. The number of body bundles is determined by `vl`. The operation can be masked, each mask bit determines whether the corresponding element result is active or not.
+
+
+
+The operation performed is:
+
+```
+
+vd[i] = vs2[i][0] * xs1[0] + vs2[i][1] * xs1[1] + vs2[i][2] * xs1[2] + vs2[i][3] * xs1[3] + vd[i]
+
+```
+
+
+
+Where vs2[i] is a 32-bit bundle containing four 8-bit unsigned integers and xs1 contains four 8-bit signed integers in its lower 32 bits.
+
+
+
+
+
+Decode Variables::
+
+[width="100%", cols="1,2", options="header"]
+
+|===
+
+|Variable Name |Location
+
+|vm |$encoding[25]
+
+|vs2 |$encoding[24:20]
+
+|xs1 |$encoding[19:15]
+
+|vd |$encoding[11:7]
+
+|===
+
+
+
+Included in::
+
+[options="autowrap,autowidth"]
+
+|===
+
+| Extension | Version
+
+
+
+| *Zvqdotq* | ~> 0.0.1
+
+
+
+|===
+
+
+
+
 [#udb:doc:inst:vredand_vs]
 == vredand.vs
 
