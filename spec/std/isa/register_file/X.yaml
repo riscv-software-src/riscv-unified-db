@@ -9,8 +9,8 @@ name: X
 long_name: General Purpose Registers
 description: |
   The 'X' register file contains the general-purpose integer registers. Each register
-  is MXLEN bits wide, but will appear to be XLEN bits wide if XLEN<MXLEN. Register 
-  'x0' is hardwired to zero, while the remaining registers hold architecturally 
+  is MXLEN bits wide, but will appear to be XLEN bits wide if XLEN<MXLEN. Register
+  'x0' is hardwired to zero, while the remaining registers hold architecturally
   visible integer state used by the calling convention and execution environment.
 definedBy: I
 register_class: general_purpose
