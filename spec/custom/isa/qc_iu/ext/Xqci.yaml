@@ -469,7 +469,7 @@ versions:
     version: ">= 1.0.0"
 description: |
   The Xqci extension includes a set of instructions that improve RISC-V code density and
-  performance in microontrollers. It fills several gaps:
+  performance in microcontrollers. It fills several gaps:
 
   Long immediates::
   --
