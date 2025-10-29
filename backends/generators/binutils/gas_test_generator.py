@@ -26,6 +26,22 @@ from typing import Dict, List, Tuple, Set
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from generator import (parse_extension_requirements, load_csrs)
 
+# Named constants for fallback 12-bit signed immediate range.
+# The 12-bit signed immediate range is from -2048 to 2047 (inclusive).
+DEFAULT_12BIT_SIGNED_IMM_MIN = -2048
+DEFAULT_12BIT_SIGNED_IMM_MAX = 2047
+
+# Named constants for fallback 12-bit unsigned immediate range.
+# The 12-bit unsigned immediate range is from 0 to 4095 (inclusive).
+DEFAULT_12BIT_UNSIGNED_IMM_MIN = 0
+DEFAULT_12BIT_UNSIGNED_IMM_MAX = 4095
+
+# Maximum number of CSR example names to keep for replacements
+MAX_CSR_EXAMPLES = 10
+
+# Maximum length for sanitized extension filenames
+MAX_EXTENSION_NAME_LENGTH = 20
+
 
 def calculate_location_width(location) -> int:
     """Calculate the total bit width from a location string or integer."""
@@ -101,14 +117,16 @@ def extract_instruction_constraints(name: str, data: dict) -> dict:
                     max_val = (1 << (width - 1)) - 1
                     min_val = -(1 << (width - 1))
                 else:
-                    max_val, min_val = 2047, -2048 
+                    max_val, min_val = DEFAULT_12BIT_SIGNED_IMM_MAX, DEFAULT_12BIT_SIGNED_IMM_MIN
             else:
                 # Unsigned immediate - use full width
                 if width > 0:
                     max_val = (1 << width) - 1
                     min_val = 0
                 else:
-                    max_val, min_val = 4095, 0
+                    # Fallback to 12-bit unsigned immediate range when width is unknown.
+                    # Use named constants to make intent explicit.
+                    max_val, min_val = DEFAULT_12BIT_UNSIGNED_IMM_MAX, DEFAULT_12BIT_UNSIGNED_IMM_MIN
             
             immediate_constraints[var_name] = {
                 'range': (min_val, max_val),
@@ -138,7 +156,7 @@ def sanitize_extension_name(name: str) -> str:
     """Sanitize extension name to be a valid filename."""
     sanitized = name.lower()
     sanitized = re.sub(r'[{}\[\]\'",\s:]+', '-', sanitized)
-    sanitized = sanitized.strip('-')[:20]
+    sanitized = sanitized.strip('-')[:MAX_EXTENSION_NAME_LENGTH]
     return sanitized if sanitized else 'unknown'
 
 
@@ -326,7 +344,7 @@ class AssemblyExampleGenerator:
         """Load CSR examples from the unified database."""
         try:
             csr_dict = load_csrs(self.csr_dir, enabled_extensions=[], include_all=True, target_arch="BOTH")
-            self.csr_examples = list(set(name.lower().replace('.rv32', '') for name in csr_dict.values()))[:10]
+            self.csr_examples = list(set(name.lower().replace('.rv32', '') for name in csr_dict.values()))[:MAX_CSR_EXAMPLES]
         except Exception as e:
             logging.warning(f"Failed to load CSRs from {self.csr_dir}: {e}. Using fallback CSR list.")
             self.csr_examples = ["mstatus", "mtvec", "mscratch", "cycle", "time"]
@@ -705,7 +723,7 @@ class AssemblyExampleGenerator:
  
     def _get_safe_immediate(self, name: str, constraints: dict) -> int:
         """Get a safe immediate value that satisfies instruction constraints."""
-        imm_range = constraints.get('imm_range', (-2048, 2047))
+        imm_range = constraints.get('imm_range', (DEFAULT_12BIT_SIGNED_IMM_MIN, DEFAULT_12BIT_SIGNED_IMM_MAX))
         imm_multiple = constraints.get('imm_multiple', 1)
         imm_not_zero = constraints.get('imm_not_zero', False)
         
@@ -921,7 +939,7 @@ class GasTestGenerator:
             for name, _, example in instruction_examples:
                 pattern = self._create_disasm_pattern(addr, name, example)
                 f.write(f"{pattern}\n")
-                addr += 4  # Assume 4-byte instructions
+                addr += self._get_instruction_size(name)
     
     def _generate_arch_specific_tests(self, group: TestInstructionGroup, arch: str) -> None:
         """Generate architecture-specific test files."""
@@ -974,7 +992,7 @@ class GasTestGenerator:
             for name, _, example in instruction_examples:
                 pattern = self._create_disasm_pattern(addr, name, example)
                 f.write(f"{pattern}\n")
-                addr += 4
+                addr += self._get_instruction_size(name)
     
     def _generate_error_tests(self, group: TestInstructionGroup) -> None:
         """Generate negative test cases for error conditions."""
@@ -1067,7 +1085,7 @@ class GasTestGenerator:
             for name, example in instruction_examples:
                 pattern = self._create_disasm_pattern(addr, name, example, no_aliases=True)
                 f.write(f"{pattern}\n")
-                addr += 4
+                addr += self._get_instruction_size(name)
     
     def _format_error_operands(self, operands: str) -> str:
         sanitized = re.sub(r"\s+", " ", operands.strip())
@@ -1231,6 +1249,16 @@ class GasTestGenerator:
             add_case("wrong number of operands (too many)", ["x0"])
 
         return cases
+    
+    def _get_instruction_size(self, name: str) -> int:
+        """
+        Determine instruction size in bytes.
+        Compressed instructions (C extension) are 2 bytes, standard instructions are 4 bytes.
+        """
+        # Compressed instructions start with 'c.'
+        if name.startswith('c.'):
+            return 2
+        return 4
     
     def _get_binutils_filename(self, extension: str) -> str:
         """Get binutils-style filename for extension."""
