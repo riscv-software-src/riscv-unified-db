@@ -29,6 +29,11 @@ access:
   u: always
   vs: always
   vu: always
+hints:
+  - { $ref: inst/Zihintntl/c.ntl.p1.yaml# }
+  - { $ref: inst/Zihintntl/c.ntl.pall.yaml# }
+  - { $ref: inst/Zihintntl/c.ntl.s1.yaml# }
+  - { $ref: inst/Zihintntl/c.ntl.all.yaml# }
 operation(): |
   XReg t0 = X[xd];
   XReg t1 = X[xs2];
