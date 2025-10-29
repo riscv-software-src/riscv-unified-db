@@ -4868,7 +4868,7 @@ Encoding::
 Description::
 The C.NTL.ALL instruction indicates that the immediately subsequent instruction
 does not exhibit temporal locality within the capacity of any level of cache in
-the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x0, x5.
+the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x5.
 
 
 Decode Variables::
@@ -4901,7 +4901,7 @@ Encoding::
 Description::
 The C.NTL.P1 instruction indicates that the immediately subsequent instruction
 does not exhibit temporal locality within the capacity of the innermost level
-of private cache in the memory hierarchy. C.NTL.P1 is encoded as C.ADD x0, x0, x2.
+of private cache in the memory hierarchy. C.NTL.P1 is encoded as C.ADD x0, x2.
 
 
 Decode Variables::
@@ -4934,7 +4934,7 @@ Encoding::
 Description::
 The C.NTL.PALL instruction indicates that the immediately subsequent instruction
 does not exhibit temporal locality within the capacity of any level of private
-cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x0, x3.
+cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x3.
 
 
 Decode Variables::
@@ -4967,7 +4967,7 @@ Encoding::
 Description::
 The C.NTL.S1 instruction indicates that the immediately subsequent instruction
 does not exhibit temporal locality within the capacity of the innermost level
-of shared cache in the memory hierarchy. C.NTL.S1 is encoded as C.ADD x0, x0, x4.
+of shared cache in the memory hierarchy. C.NTL.S1 is encoded as C.ADD x0, x4.
 
 
 Decode Variables::

@@ -10,7 +10,7 @@ long_name: Compressed non-temporal locality hint, all private
 description: |
   The C.NTL.PALL instruction indicates that the immediately subsequent instruction
   does not exhibit temporal locality within the capacity of any level of private
-  cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x0, x3.
+  cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x3.
 definedBy:
   allOf:
     - Zca
