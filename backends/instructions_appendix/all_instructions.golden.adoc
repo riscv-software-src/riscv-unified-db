@@ -4866,9 +4866,9 @@ Encoding::
 ....
 
 Description::
-The NTL.ALL instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of any level of cache in the memory
-hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+The C.NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache in
+the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x0, x5.
 
 
 Decode Variables::
@@ -4899,9 +4899,9 @@ Encoding::
 ....
 
 Description::
-The NTL.P1 instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of the innermost level of private cache
-in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.
+The C.NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. C.NTL.P1 is encoded as C.ADD x0, x0, x2.
 
 
 Decode Variables::
@@ -4932,9 +4932,9 @@ Encoding::
 ....
 
 Description::
-The NTL.PALL instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of any level of private cache in the memory
-hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
+The C.NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x0, x3.
 
 
 Decode Variables::
@@ -4965,9 +4965,9 @@ Encoding::
 ....
 
 Description::
-The NTL.S1 instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of the innermost level of shared cache
-in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
+The C.NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. C.NTL.S1 is encoded as C.ADD x0, x0, x4.
 
 
 Decode Variables::
@@ -16417,9 +16417,9 @@ Encoding::
 ....
 
 Description::
-The NTL.ALL instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of any level of cache in the memory
-hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+The NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache
+in the memory hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
 
 
 Decode Variables::
@@ -16448,9 +16448,9 @@ Encoding::
 ....
 
 Description::
-The NTL.P1 instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of the innermost level of private cache
-in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.
+The NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.
 
 
 Decode Variables::
@@ -16479,9 +16479,9 @@ Encoding::
 ....
 
 Description::
-The NTL.PALL instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of any level of private cache in the memory
-hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
+The NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
 
 
 Decode Variables::
@@ -16510,9 +16510,9 @@ Encoding::
 ....
 
 Description::
-The NTL.S1 instruction indicates that the target instruction does not exhibit
-temporal locality within the capacity of the innermost level of shared cache
-in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
+The NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
 
 
 Decode Variables::

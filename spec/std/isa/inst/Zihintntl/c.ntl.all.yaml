@@ -8,9 +8,9 @@ kind: instruction
 name: c.ntl.all
 long_name: Compressed non-temporal locality hint, all
 description: |
-  The NTL.ALL instruction indicates that the target instruction does not exhibit
-  temporal locality within the capacity of any level of cache in the memory
-  hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+  The C.NTL.ALL instruction indicates that the immediately subsequent instruction
+  does not exhibit temporal locality within the capacity of any level of cache in
+  the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x0, x5.
 definedBy:
   allOf:
     - Zca

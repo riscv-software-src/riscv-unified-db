@@ -8,9 +8,9 @@ kind: instruction
 name: ntl.pall
 long_name: Non-temporal locality hint, all private
 description: |
-  The NTL.PALL instruction indicates that the target instruction does not exhibit
-  temporal locality within the capacity of any level of private cache in the memory
-  hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
+  The NTL.PALL instruction indicates that the immediately subsequent instruction
+  does not exhibit temporal locality within the capacity of any level of private
+  cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
 definedBy: Zihintntl
 assembly: ""
 encoding:
