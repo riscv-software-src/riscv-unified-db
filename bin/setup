@@ -209,10 +209,6 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     fi
 fi
 
-if [ ! -d ${ROOT}/node_modules ]; then
-    ${RUN} npm i
-fi
-
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     BUNDLE="bundle"
     RUBY="bundle exec ruby"

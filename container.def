@@ -3,6 +3,8 @@ From: ubuntu:24.04
 
 %files
   requirements.txt /tmp/requirements.txt
+  package.json /opt/node/package.json
+  package-lock.json /opt/node/package-lock.json
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -49,11 +51,14 @@ From: ubuntu:24.04
   /opt/venv/bin/pip install -r /tmp/requirements.txt
   rm /tmp/requirements.txt
 
+  # Install npm packages globally in the container
+  cd /opt/node
+  /usr/bin/npm ci
+  rm /opt/node/package.json /opt/node/package-lock.json
+
   # cd $HOME
   # bundle install
 
-  # npm i wavedrom-cli
-  # npm i i -E  @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension asciidoctor-kroki
-
 %environment
-  export PATH="/opt/venv/bin:$PATH"
+  export PATH="/opt/venv/bin:/opt/node/node_modules/.bin:$PATH"
+  export NODE_PATH="/opt/node/node_modules"

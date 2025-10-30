@@ -49,4 +49,12 @@ RUN /usr/bin/python3 -m venv /opt/venv && \
     rm /tmp/requirements.txt
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Install npm packages globally in the container
+COPY package.json package-lock.json /opt/node/
+RUN cd /opt/node && \
+    /usr/bin/npm ci && \
+    rm /opt/node/package.json /opt/node/package-lock.json
+ENV NODE_PATH="/opt/node/node_modules"
+ENV PATH="/opt/node/node_modules/.bin:$PATH"
+
 WORKDIR /workspace
