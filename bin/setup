@@ -115,9 +115,13 @@ if [ -v GITHUB_ACTIONS ]; then
     sudo sysctl --system
 elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
     if ! ${CONTAINER_TYPE} images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
-        # TODO: pull the image if it can be found
-        echo "Building ${CONTAINER_TYPE} image..."
-        ${CONTAINER_TYPE} build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
+        echo "Image not found locally. Attempting to pull from registry..."
+        if ${CONTAINER_TYPE} pull docker.io/riscvintl/udb:${CONTAINER_TAG} 2>/dev/null; then
+            echo "Successfully pulled image from registry."
+        else
+            echo "Could not pull image from registry. Building locally..."
+            ${CONTAINER_TYPE} build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
+        fi
     fi
     if [ ${CONTAINER_TYPE} == "podman" ]; then
       # Podman requires extra flags to handle SELinux
@@ -126,9 +130,9 @@ elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; the
       SELINUX_LABEL=""
     fi
     if [ -t 1 -a -t 0 ]; then
-      CONTAINER_BASE="${CONTAINER_TYPE} run -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else
-      CONTAINER_BASE="${CONTAINER_TYPE} run -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
