@@ -36,7 +36,7 @@ if [ $NEED_SUDO -eq 0 ]; then
   FAKEROOT=--fakeroot
   echo "Using fakeroot"
 else
-  if [[ ! -z "$GITHUB_RUN_ID" || `groups` == *"sudo"* ]]; then
+  if [[ ! -z "$GITHUB_RUN_ID" || `groups` == *"sudo"* || `groups` == *"wheel"* ]]; then
     # user has sudo permission
     SUDO=sudo
     FAKEROOT=""
