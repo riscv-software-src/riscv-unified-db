@@ -1,10 +1,8 @@
 Bootstrap: docker
 From: ubuntu:24.04
 
-# %files
-
-#   Gemfile $HOME/
-#   package.json $HOME/
+%files
+  requirements.txt /tmp/requirements.txt
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -46,8 +44,16 @@ From: ubuntu:24.04
   apt-get autoremove -y
   rm -rf /var/lib/{apt, dpkg, cache, log}
 
+  # Create Python virtual environment and install packages
+  /usr/bin/python3 -m venv /opt/venv
+  /opt/venv/bin/pip install -r /tmp/requirements.txt
+  rm /tmp/requirements.txt
+
   # cd $HOME
   # bundle install
 
   # npm i wavedrom-cli
   # npm i i -E  @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension asciidoctor-kroki
+
+%environment
+  export PATH="/opt/venv/bin:$PATH"

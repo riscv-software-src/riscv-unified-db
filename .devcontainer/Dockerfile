@@ -42,4 +42,11 @@ RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
+# Create Python virtual environment and install packages
+COPY requirements.txt /tmp/requirements.txt
+RUN /usr/bin/python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+ENV PATH="/opt/venv/bin:$PATH"
+
 WORKDIR /workspace

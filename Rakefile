@@ -119,7 +119,7 @@ namespace :test do
   # "Run the cross-validation against LLVM"
   task :llvm do
       begin
-        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+        sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
       rescue => e
         raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
