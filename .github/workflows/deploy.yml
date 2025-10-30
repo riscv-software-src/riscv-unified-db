@@ -316,6 +316,38 @@ jobs:
         with:
           name: ac200-crd
           path: gen/proc_crd/pdf/AC200-CRD.pdf
+  build-rvi20-32-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVI20-32 CRD
+        run: ./do gen:proc_crd_pdf[RVI20-32]
+      - name: Upload RVI20-32 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvi20-32-crd
+          path: gen/proc_crd/pdf/RVI20-32-CRD.pdf
+  build-rvi20-64-crd:
+    if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate RVI20-64 CRD
+        run: ./do gen:proc_crd_pdf[RVI20-64]
+      - name: Upload RVI20-64 CRD
+        uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push') && (github.ref_name == 'main')
+        with:
+          name: rvi20-64-crd
+          path: gen/proc_crd/pdf/RVI20-64-CRD.pdf
   build-mc100-32-crd:
     if: (github.event_name == 'merge_queue') || (inputs.dry-run == false)
     runs-on: ubuntu-latest
