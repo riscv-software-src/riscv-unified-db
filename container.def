@@ -2,7 +2,7 @@ Bootstrap: docker
 From: ubuntu:24.04
 
 %files
-  requirements.txt /tmp/requirements.txt
+  requirements.txt /opt/requirements.txt
   package.json /opt/node/package.json
   package-lock.json /opt/node/package-lock.json
 
@@ -48,8 +48,8 @@ From: ubuntu:24.04
 
   # Create Python virtual environment and install packages
   /usr/bin/python3 -m venv /opt/venv
-  /opt/venv/bin/pip install -r /tmp/requirements.txt
-  rm /tmp/requirements.txt
+  /opt/venv/bin/pip install -r /opt/requirements.txt
+  rm /opt/requirements.txt
 
   # Install npm packages globally in the container
   cd /opt/node
