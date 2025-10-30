@@ -162,7 +162,7 @@ jobs:
           path: _site/pdfs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - name: Download RVI20-32
+      - name: Download MC100-32
         uses: actions/download-artifact@v5
         with:
           name: mc100-32-crd
