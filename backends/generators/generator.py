@@ -518,6 +518,76 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
     return csrs
 
 
+def load_exception_codes(
+    ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
+):
+    """Load exception codes from extension YAML files or pre-resolved JSON file."""
+    exception_codes = []
+    found_extensions = 0
+    found_files = 0
+
+    if enabled_extensions is None:
+        enabled_extensions = []
+    # If we have a resolved codes file, use it instead of processing YAML files
+    if resolved_codes_file and os.path.exists(resolved_codes_file):
+        try:
+            with open(resolved_codes_file, encoding="utf-8") as f:
+                resolved_codes = json.load(f)
+
+            for code in resolved_codes:
+                num = code.get("num")
+                name = code.get("name")
+                if num is not None and name is not None:
+                    sanitized_name = (
+                        name.lower()
+                        .replace(" ", "_")
+                        .replace("/", "_")
+                        .replace("-", "_")
+                    )
+                    exception_codes.append((num, sanitized_name))
+
+            logging.info(
+                f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}"
+            )
+
+            # Sort by exception code number and deduplicate
+            seen_nums = set()
+            unique_codes = []
+            for num, name in sorted(exception_codes, key=lambda x: x[0]):
+                if num not in seen_nums:
+                    seen_nums.add(num)
+                    unique_codes.append((num, name))
+
+            return unique_codes
+
+        except Exception as e:
+            logging.error(
+                f"Error loading resolved codes file {resolved_codes_file}: {e}"
+            )
+    # Logging an error and skipping the exception cause generation if no resolved codes file found
+    else:
+        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
+        return
+
+    if found_extensions > 0:
+        logging.info(
+            f"Found {found_extensions} extension definitions in {found_files} files"
+        )
+        logging.info(f"Added {len(exception_codes)} exception codes to the output")
+    else:
+        logging.warning(f"No extension definitions found in {ext_dir}")
+
+    # Sort by exception code number and deduplicate
+    seen_nums = set()
+    unique_codes = []
+    for num, name in sorted(exception_codes, key=lambda x: x[0]):
+        if num not in seen_nums:
+            seen_nums.add(num)
+            unique_codes.append((num, name))
+
+    return unique_codes
+
+
 def parse_match(match_str):
     """
     Convert the bit pattern string to an integer.
