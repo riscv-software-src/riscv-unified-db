@@ -1,6 +1,6 @@
 {
   "name": "RISC-V UnifiedDB Dev",
-  "build": { "dockerfile": "Dockerfile" },
+  "build": { "dockerfile": "Dockerfile", "context": ".." },
   "updateContentCommand": "${containerWorkspaceFolder}/.devcontainer/updateContentCommand.sh",
   "onCreateCommand": "${containerWorkspaceFolder}/.devcontainer/onCreateCommand.sh",
   "remoteEnv": {

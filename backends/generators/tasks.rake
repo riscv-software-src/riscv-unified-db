@@ -28,9 +28,9 @@ namespace :gen do
     inst_dir = cfg_arch.path / "inst"
     csr_dir = cfg_arch.path / "csr"
 
-    # Run the Go generator script using the same Python environment
+    # Run the Go generator script
     # Note: The script uses --output not --output-dir
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/Go/go_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.go"
+    sh "/opt/venv/bin/python3 #{$root}/backends/generators/Go/go_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.go"
   end
 
   desc <<~DESC
@@ -79,9 +79,9 @@ namespace :gen do
     resolved_codes_file.flush
 
     begin
-      # Run the C header generator script using the same Python environment
+      # Run the C header generator script
       # The script generates encoding.h for inclusion in C programs
-      sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --resolved-codes=#{resolved_codes_file.path} --output=#{output_dir}encoding.out.h --include-all"
+      sh "/opt/venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --resolved-codes=#{resolved_codes_file.path} --output=#{output_dir}encoding.out.h --include-all"
     ensure
       resolved_codes_file.close
       resolved_codes_file.unlink
