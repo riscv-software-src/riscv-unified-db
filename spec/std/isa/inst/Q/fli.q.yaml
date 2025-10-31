@@ -16,7 +16,10 @@ description:
       field, into floating-point register `rd`.
       `fli.q` is encoded like `fmv.w.x`, but with _fmt_ = Q.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: fd, xs1
 encoding:
   match: 111101100001-----000-----1010011

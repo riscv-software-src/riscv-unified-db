@@ -13,9 +13,10 @@ description: |
   Instruction encoded in CI instruction format.
 assembly: ""
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqciint
 access:
   s: never
   u: never

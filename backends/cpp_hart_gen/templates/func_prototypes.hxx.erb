@@ -5,27 +5,18 @@
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %>::global_name
 #define __UDB_MUTABLE_GLOBAL(global_name) global_name
 #define __UDB_STRUCT(struct_name) <%= name_of(:cfg, cfg_arch) %>_ ## struct_name ## _Struct
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
 
 <%# need to get symtab at function scope -%>
 <%- cfg_arch.reachable_functions.each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
 
-<%- if func.name == "ary_includes?" -%>
-template <unsigned ARY_SIZE, typename ElementType, typename ValueType>
-static constexpr bool ary_includes_Q_(const std::array<ElementType, ARY_SIZE>& ary, const ValueType& value);
-
-template <typename ElementType, typename ValueType>
-bool ary_includes_Q_(const std::vector<ElementType>& ary, const ValueType& value);
-
-<%- else -%>
 <%- qualifiers = func.constexpr?(cfg_arch.symtab) ? "static constexpr" : "" -%>
 //
 // <%= func.description.gsub("\n", "\n// ") %>
 <%= func.gen_cpp_prototype(symtab, 0, qualifiers:) %>
 
-<%- end -%>
 <%- symtab.release -%>
 <%- end -%>
 

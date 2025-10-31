@@ -32,7 +32,8 @@ versions:
   changes:
     - Add information about instruction formats of each instruction
     - Fix description and functionality of qc.shladd instruction
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.3.0"
   state: frozen
   ratification_date: null
@@ -46,14 +47,19 @@ versions:
   changes:
     - Fix description and functionality of qc.shladd instruction
     - Renaming instructions qc.muladdi to qc.muliadd and qc.c.muladdi to qc.c.muliadd
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciac extension includes three instructions to accelerate common
   address calculations.
-conflicts:
-  anyOf:
-    - allOf: [C, D]
-    - Zcd
+requirements:
+  not:
+    extension:
+      anyOf:
+        - allOf:
+          - name: C
+          - name: D
+        - name: Zcd
 doc_license:
   name: Creative Commons Attribution 4.0 International License
   url: https://creativecommons.org/licenses/by/4.0/

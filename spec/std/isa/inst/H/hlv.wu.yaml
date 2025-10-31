@@ -9,7 +9,11 @@ name: hlv.wu
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: H
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: H
 assembly: xd, xs1
 encoding:
   match: 011010000001-----100-----1110011

@@ -1,7 +1,7 @@
 # Copyright (c) Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -22,7 +22,9 @@ description:
       must be saved/restored on context switches.
 priv_mode: U
 length: XLEN
-definedBy: Zcmt
+definedBy:
+  extension:
+    name: Zcmt
 fields:
   BASE:
     location_rv64: 63-6
@@ -119,3 +121,5 @@ sw_read(): |
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
+
+  return $bits(CSR[jvt]);

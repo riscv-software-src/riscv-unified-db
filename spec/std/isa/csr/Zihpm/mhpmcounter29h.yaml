@@ -15,7 +15,9 @@ length: 32
 base: 32
 description: |
   Upper half of mhpmcounter29.
-definedBy: Smhpm
+definedBy:
+  extension:
+    name: Smhpm
 fields:
   COUNT:
     location: 31-0

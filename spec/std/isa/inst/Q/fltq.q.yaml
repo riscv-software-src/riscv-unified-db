@@ -18,7 +18,10 @@ description:
       operation exception flag to be set.
       This instruction is encoded like its `fle` counterpart, but with instruction bit 14 set to 1.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: fd, fs1, fs2
 encoding:
   match: 1010011----------101-----1010011

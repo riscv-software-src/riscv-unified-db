@@ -19,7 +19,8 @@ versions:
   - name: Derek Hower
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.2.0"
   state: frozen
   ratification_date: null
@@ -32,7 +33,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcili extension includes a two instructions that load large immediates than is available
   with the base RISC-V ISA.

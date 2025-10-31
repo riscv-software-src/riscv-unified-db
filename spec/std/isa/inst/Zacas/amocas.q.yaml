@@ -1,7 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
----
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
@@ -43,7 +42,11 @@ description: |
 
   An AMOCAS.Q instruction always requires write permissions.
 
-definedBy: Zacas
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zacas
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:

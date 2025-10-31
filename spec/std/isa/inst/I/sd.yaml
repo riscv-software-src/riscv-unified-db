@@ -14,7 +14,10 @@ description: |
   For RV32, store doubleword from even/odd register pair.
   <% end %>
 definedBy:
-  anyOf: [I, Zilsd]
+  extension:
+    anyOf:
+      - name: I
+      - name: Zilsd
 assembly: xs2, imm(xs1)
 encoding:
   RV32:

@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED
+description: |
+  Value written into htinst/mtinst when there is an instruction address misaligned exception.
+
+  Possible values:
+    * "always zero": Always write the value zero
+    * "custom": Write a custom value, which results in UNPREDICTABLE
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - always zero
+    - custom
+definedBy:
+  extension:
+    name: H

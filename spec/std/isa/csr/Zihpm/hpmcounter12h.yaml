@@ -30,7 +30,9 @@ description: |
   !===
 priv_mode: U
 length: 32
-definedBy: Sscofpmf
+definedBy:
+  extension:
+    name: Sscofpmf
 fields:
   COUNT:
     location: 31-0

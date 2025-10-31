@@ -44,7 +44,7 @@
   <% unless v.implications.empty? -%>
   Implies:::
     <%- v.implications.each do |i| -%>
-    <%-   next unless i.cond.satisfied_by? { |ext_req| portfolio_design.cfg_arch.possible_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver)}} -%>
+    <%-   next unless i.cond.satisfied_by_cfg_arch?(ext.cfg_arch) -%>
     * `<%= i.ext_ver.name %>` version <%= i.ext_ver.version_str %>
     <%- end -%>
   <% end -%>
@@ -111,7 +111,7 @@ This extension has the following parameters (AKA implementation options):
 <%= param.name %>::
 +
 --
-<%= param.desc %>
+<%= param.description %>
 --
 <% end # do param -%>
 

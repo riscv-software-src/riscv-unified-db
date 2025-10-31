@@ -15,6 +15,7 @@ base: 32
 description: |
   Alias of the upper 32 bits of `medeleg`.
 definedBy:
-  name: S
-  version: ">= 1.13"
+  extension:
+    name: S
+    version: ">= 1.13"
 fields: {}

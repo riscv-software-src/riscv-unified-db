@@ -8,10 +8,12 @@ kind: instruction
 name: ori
 long_name: Or immediate
 description: Or an immediate to the value in xs1, and store the result in xd
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------110-----0010011
+  match: "-----------------110-----0010011"
   variables:
     - name: imm
       location: 31-20
@@ -25,32 +27,12 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+hints:
+  - { $ref: inst/Zicbop/prefetch.r.yaml# }
+  - { $ref: inst/Zicbop/prefetch.w.yaml# }
+  - { $ref: inst/Zicbop/prefetch.i.yaml# }
 operation(): |
-  if (implemented?(ExtensionName::Zicbop)) {
-    if (xd == 0) {
-      if (imm[4:0] == 0) {
-        # prefetch.i instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_instruction(offset);
-      } else if (imm[4:0] == 1) {
-        # prefetch.r instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_read(offset);
-      } else if (imm[4:0] == 3) {
-        # prefetch.r instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_write(offset);
-      }
-    }
-  }
   X[xd] = X[xs1] | $signed(imm);
-pseudoinstructions:
-  - when: (xd == 0) && (imm[4:0] == 0)
-    to: prefetch.i offset
-  - when: (xd == 0) && (imm[4:0] == 1)
-    to: prefetch.r offset
-  - when: (xd == 0) && (imm[4:0] == 3)
-    to: prefetch.w offset
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

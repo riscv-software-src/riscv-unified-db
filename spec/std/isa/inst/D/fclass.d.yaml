@@ -7,7 +7,7 @@ $schema: inst_schema.json#
 kind: instruction
 name: fclass.d
 long_name: Floating-Point Classify Double-Precision
-description:
+description: |
   - id: inst-fclass.d-behaviour
     normative: false
     text: |
@@ -33,7 +33,9 @@ description:
       |8 |_fs1_ is a signaling NaN.
       |9 |_fs1_ is a quiet NaN.
       |===
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: xd, fs1
 encoding:
   match: 111000100000-----001-----1010011

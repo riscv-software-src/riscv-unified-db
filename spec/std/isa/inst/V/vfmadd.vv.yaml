@@ -9,7 +9,9 @@ name: vfmadd.vv
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs1, vs2, vm
 encoding:
   match: 101000-----------001-----1010111

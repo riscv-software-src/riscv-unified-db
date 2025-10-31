@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -82,6 +83,14 @@ module Idl
     def gen_option_adoc
       action.gen_option_adoc
     end
+  end
+
+  class TrueExpressionAst < AstNode
+    def gen_option_adoc = "true"
+  end
+
+  class FalseExpressionAst < AstNode
+    def gen_option_adoc = "false"
   end
 
   class IdAst < AstNode

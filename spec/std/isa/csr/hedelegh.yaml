@@ -16,5 +16,7 @@ description: |
   Controls exception delegation from HS-mode to VS-mode.
 
   Alias of upper bits of `hedeleg`[63:32].
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields: {}

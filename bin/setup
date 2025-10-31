@@ -45,6 +45,11 @@ fi
 #
 # A docker container. All commands on the host (using ./do or ./bin/*) are run in the context of a Docker image.
 #
+# = podman
+#
+# A docker container run using Podman. All commands on the host (using ./do or ./bin/*) are run in the context of a Docker image.
+# Podman provides a Docker-compatible CLI.
+#
 # = singularity
 #
 # An apptainer/singularity container. All commands on the host (using ./do or ./bin/*) are run in the context of an Apptainer/Singularity image.
@@ -60,30 +65,34 @@ fi
 #  1. devcontainer, if DEVCONTAINER_ENV is set in the environment
 #  2. the type stored in .container-type
 #  3. Docker, if DOCKER is set in the environment
-#  4. Singularity, if SINGULARITY is set in the environment
-#  5. The choice made by the user, which will be cached in .container-type
+#  4. Podman, if PODMAN is set in the environment
+#  5. Singularity, if SINGULARITY is set in the environment
+#  6. The choice made by the user, which will be cached in .container-type
 if [ -v DEVCONTAINER_ENV ]; then
 CONTAINER_TYPE=devcontainer
 elif [ -f ${ROOT}/.container-type ]; then
 CONTAINER_TYPE=`cat ${ROOT}/.container-type`
 elif [ -v DOCKER ]; then
 CONTAINER_TYPE=docker
+elif [ -v PODMAN ]; then
+CONTAINER_TYPE=podman
 elif [ -v SINGULARITY ]; then
 CONTAINER_TYPE=singularity
 else
-  echo -e "UDB tools run in a container. Both Docker and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Singularity\\n"
+  echo -e "UDB tools run in a container. Docker, Podman, and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Podman\\n3. Singularity\\n"
   while true; do
-    echo "Which would you like to use? (1/2) "
+    echo "Which would you like to use? (1/2/3) "
     read ans
     case $ans in
         [1]* ) CONTAINER_TYPE=docker; break;;
-        [2]* ) CONTAINER_TYPE=singularity; break;;
-        * ) echo -e "\\nPlease answer 1 or 2.";;
+        [2]* ) CONTAINER_TYPE=podman; break;;
+        [3]* ) CONTAINER_TYPE=singularity; break;;
+        * ) echo -e "\\nPlease answer 1, 2, or 3.";;
     esac
   done
 fi
 
-if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "singularity" -a "${CONTAINER_TYPE}" != "devcontainer" ]; then
+if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "podman" -a "${CONTAINER_TYPE}" != "singularity" -a "${CONTAINER_TYPE}" != "devcontainer" ]; then
   echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
 fi
 
@@ -104,16 +113,26 @@ if [ -v GITHUB_ACTIONS ]; then
     # see https://github.com/lima-vm/lima/issues/2319
     sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
     sudo sysctl --system
-elif [ "${CONTAINER_TYPE}" == "docker" ]; then
-    if ! docker images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
-        # TODO: pull the image if it can be found
-        echo "Building Docker image..."
-        docker build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
+elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+    if ! ${CONTAINER_TYPE} images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
+        echo "Image not found locally. Attempting to pull from registry..."
+        if ${CONTAINER_TYPE} pull docker.io/riscvintl/udb:${CONTAINER_TAG} 2>/dev/null; then
+            echo "Successfully pulled image from registry."
+        else
+            echo "Could not pull image from registry. Building locally..."
+            ${CONTAINER_TYPE} build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
+        fi
+    fi
+    if [ ${CONTAINER_TYPE} == "podman" ]; then
+      # Podman requires extra flags to handle SELinux
+      SELINUX_LABEL=":z"
+    else
+      SELINUX_LABEL=""
     fi
     if [ -t 1 -a -t 0 ]; then
-      DOCKER_BASE="docker run -it -v ${ROOT}:${ROOT} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else
-      DOCKER_BASE="docker run -v ${ROOT}:${ROOT} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
@@ -142,8 +161,8 @@ fi
 
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     RUN=""
-elif [ "${CONTAINER_TYPE}" == "docker" ]; then
-    RUN="${DOCKER_BASE}"
+elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+    RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     RUN="singularity run ${HOME_OPT} ${CONTAINER_PATH}"
 else
@@ -156,9 +175,6 @@ if [ ! -d $ROOT/.home ]; then
 fi
 
 if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
-    if [ -f $ROOT/.bundle/config ] && [ $PRESERVE_CONFIG -eq 0 ]; then
-        echo "Recreating bundle config..."
-    fi
     OLDDIR=$PWD
     cd $ROOT
     ${RUN} bundle config set --local path ${ROOT}/.home/.gems
@@ -178,16 +194,6 @@ if [ ! -f $ROOT/ext/rbi-central/README.md ]; then
     git submodule update --init ext/rbi-central
 fi
 
-if [ ! -d $ROOT/.home/.venv ]; then
-    ${RUN} /usr/bin/python3 -m venv ${ROOT}/.home/.venv
-fi
-
-source ${ROOT}/.home/.venv/bin/activate
-
-if [ ! -f ${ROOT}/.home/.venv/bin/pre-commit ]; then
-    ${RUN} ${ROOT}/.home/.venv/bin/pip install -r requirements.txt
-fi
-
 # if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
 #   git submodule update --init ext/riscv-opcodes
 # fi
@@ -200,10 +206,6 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     fi
 fi
 
-if [ ! -d ${ROOT}/node_modules ]; then
-    ${RUN} npm i
-fi
-
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     BUNDLE="bundle"
     RUBY="bundle exec ruby"
@@ -211,29 +213,29 @@ if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     NPM="npm"
     NPX="npx"
     NODE="node"
-    PYTHON="${ROOT}/.home/.venv/bin/python3"
-    PIP="${ROOT}/.home/.venv/bin/pip"
+    PYTHON="/opt/venv/bin/python3"
+    PIP="/opt/venv/bin/pip"
     BASH="bash"
     GPP="g++"
     GDB="gdb"
     CLANG_FORMAT="clang-format"
     CLANG_TIDY="clang-tidy"
     MAKE="make"
-elif [ "${CONTAINER_TYPE}" == "docker" ]; then
-    BUNDLE="${DOCKER_BASE} bundle"
-    RUBY="${DOCKER_BASE} bundle exec ruby"
-    RAKE="${DOCKER_BASE} bundle exec rake"
-    NPM="${DOCKER_BASE} npm"
-    NPX="${DOCKER_BASE} npx"
-    NODE="${DOCKER_BASE} node"
-    PYTHON="${DOCKER_BASE} ${ROOT}/.home/.venv/bin/python3"
-    PIP="${DOCKER_BASE} ${ROOT}/.home/.venv/bin/pip"
-    BASH="${DOCKER_BASE} bash"
-    GPP="${DOCKER_BASE} g++"
-    GDB="${DOCKER_BASE} gdb"
-    CLANG_FORMAT="${DOCKER_BASE} clang-format"
-    CLANG_TIDY="${DOCKER_BASE} clang-tidy"
-    MAKE="${DOCKER_BASE} make"
+elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+    BUNDLE="${CONTAINER_BASE} bundle"
+    RUBY="${CONTAINER_BASE} bundle exec ruby"
+    RAKE="${CONTAINER_BASE} bundle exec rake"
+    NPM="${CONTAINER_BASE} npm"
+    NPX="${CONTAINER_BASE} npx"
+    NODE="${CONTAINER_BASE} node"
+    PYTHON="${CONTAINER_BASE} /opt/venv/bin/python3"
+    PIP="${CONTAINER_BASE} /opt/venv/bin/pip"
+    BASH="${CONTAINER_BASE} bash"
+    GPP="${CONTAINER_BASE} g++"
+    GDB="${CONTAINER_BASE} gdb"
+    CLANG_FORMAT="${CONTAINER_BASE} clang-format"
+    CLANG_TIDY="${CONTAINER_BASE} clang-tidy"
+    MAKE="${CONTAINER_BASE} make"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
     RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
@@ -241,8 +243,8 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
     NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
     NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
-    PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/python3"
-    PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
+    PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/python3"
+    PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/pip"
     BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
     GPP="singularity run ${HOME_OPT} ${CONTAINER_PATH} g++"
     GDB="singularity run ${HOME_OPT} ${CONTAINER_PATH} gdb"

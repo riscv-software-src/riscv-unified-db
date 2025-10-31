@@ -13,9 +13,10 @@ description: |
   It expands to `addi rd', x2, nzuimm[9:2]`.
   C.ADDI4SPN is only valid when nzuimm &ne; 0; the code points with nzuimm=0 are reserved.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, sp, imm
 encoding:
   match: 000-----------00

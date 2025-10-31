@@ -13,11 +13,12 @@ description: |
   to the stack pointer, x2.
   It expands to `fsd` `fs2, offset(x2)`.
 definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - D
-    - Zcd
+  extension:
+    anyOf:
+      - allOf:
+          - name: C
+          - name: D
+      - name: Zcd
 assembly: fs2, imm(sp)
 encoding:
   match: 101-----------10

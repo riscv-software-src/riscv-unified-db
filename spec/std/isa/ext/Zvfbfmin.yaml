@@ -18,7 +18,9 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      anyOf:
-        - V
-        - Zve32f
+requirements:
+  # at least one of [V, Zve32f] must be implemented
+  extension:
+    oneOf:
+      - name: V
+      - name: Zve32f

@@ -28,16 +28,22 @@ PATH
       concurrent-ruby
       idlc
       json_schemer
+      numbers_and_words
+      pastel
+      ruby-minisat (>= 2.2.0.3)
       sorbet-runtime
       terminal-table
       thor
       tilt
+      tty-logger
+      tty-progressbar
       udb_helpers
 
 GEM
   remote: https://rubygems.org/
   specs:
     Ascii85 (2.0.1)
+    activesupport (8.0.3)
     activesupport (8.0.3)
       base64
       benchmark (>= 0.3)
@@ -54,7 +60,7 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     afm (1.0.0)
-    asciidoctor (2.0.23)
+    asciidoctor (2.0.24)
     asciidoctor-diagram (2.3.2)
       asciidoctor (>= 1.5.7, < 3.x)
       asciidoctor-diagram-ditaamini (~> 1.0)
@@ -63,9 +69,11 @@ GEM
     asciidoctor-diagram-batik (1.17)
     asciidoctor-diagram-ditaamini (1.0.3)
     asciidoctor-diagram-plantuml (1.2025.3)
+    asciidoctor-diagram-plantuml (1.2025.3)
       asciidoctor-diagram-batik (~> 1.17)
     asciidoctor-pdf (2.3.20)
       asciidoctor (~> 2.0)
+      concurrent-ruby (~> 1.3)
       concurrent-ruby (~> 1.3)
       matrix (~> 0.4)
       prawn (~> 2.4.0)
@@ -80,23 +88,25 @@ GEM
     backport (1.2.0)
     base64 (0.3.0)
     benchmark (0.4.1)
-    bigdecimal (3.2.3)
+    bigdecimal (3.3.1)
     commander (5.0.0)
       highline (~> 3.0.0)
     concurrent-ruby (1.3.5)
     concurrent-ruby-ext (1.3.5)
       concurrent-ruby (= 1.3.5)
     connection_pool (2.5.4)
+    connection_pool (2.5.4)
     css_parser (1.21.1)
       addressable
     date (3.4.1)
+    debug (1.11.0)
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
     docile (1.4.1)
     drb (2.2.3)
-    erb (5.0.2)
+    erb (5.1.1)
     erubi (1.13.1)
     hana (1.3.7)
     hashery (2.1.2)
@@ -104,12 +114,13 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.1)
+    io-console (0.8.1)
     irb (1.15.2)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jaro_winkler (1.6.1)
-    json (2.15.0)
+    json (2.15.1)
     json_schemer (1.0.3)
       hana (~> 1.3)
       regexp_parser (~> 2.0)
@@ -122,6 +133,8 @@ GEM
     lint_roller (1.1.0)
     logger (1.7.0)
     matrix (0.4.3)
+    minitest (5.26.0)
+    matrix (0.4.3)
     minitest (5.25.5)
     netrc (0.11.0)
     nkf (0.2.0)
@@ -131,19 +144,25 @@ GEM
       racc (~> 1.4)
     observer (0.1.2)
     ostruct (0.6.3)
+    ostruct (0.6.3)
     parallel (1.27.0)
+    parser (3.3.9.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     pdf-core (0.9.0)
     pdf-reader (2.15.0)
+    pdf-reader (2.15.0)
       Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (>= 0.2.1, < 2)
       afm (>= 0.2.1, < 2)
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
     polyglot (0.3.5)
-    pp (0.6.2)
+    pp (0.6.3)
       prettyprint
     prawn (2.4.0)
       pdf-core (~> 0.9.0)
@@ -161,25 +180,27 @@ GEM
       pdf-reader (~> 2.0)
       prawn (~> 2.2)
     prettyprint (0.2.0)
-    prism (1.5.1)
+    prism (1.5.2)
     psych (5.2.6)
       date
       stringio
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.2.1)
+    rack (3.2.3)
     rainbow (3.1.1)
     rake (13.3.0)
-    rbi (0.3.6)
+    rbi (0.3.7)
       prism (~> 1.0)
       rbs (>= 3.4.4)
+    rbs (3.9.5)
     rbs (3.9.5)
       logger
     rdbg (0.1.0)
       debug (>= 1.2.2)
-    rdoc (6.14.2)
+    rdoc (6.15.0)
       erb
       psych (>= 4.0.0)
+      tsort
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -196,8 +217,10 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
       rubocop-ast (>= 1.47.1, < 2.0)
+      rubocop-ast (>= 1.47.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.47.1)
     rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
@@ -219,9 +242,10 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.44.0, < 2.0)
-    rubocop-sorbet (0.10.5)
+    rubocop-sorbet (0.11.0)
       lint_roller
       rubocop (>= 1.75.2)
+    ruby-minisat (2.2.0.3)
     ruby-prof (1.7.2)
       base64
     ruby-progressbar (1.13.0)
@@ -259,14 +283,13 @@ GEM
       yard (~> 0.9, >= 0.9.24)
       yard-activesupport-concern (~> 0.0)
       yard-solargraph (~> 0.1)
-    sorbet (0.6.12606)
-      sorbet-static (= 0.6.12606)
-    sorbet-runtime (0.6.12606)
-    sorbet-static (0.6.12606-aarch64-linux)
-    sorbet-static (0.6.12606-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12606)
-      sorbet (= 0.6.12606)
-      sorbet-runtime (= 0.6.12606)
+    sorbet (0.6.12645)
+      sorbet-static (= 0.6.12645)
+    sorbet-runtime (0.6.12645)
+    sorbet-static (0.6.12645-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12645)
+      sorbet (= 0.6.12645)
+      sorbet-runtime (= 0.6.12645)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -291,13 +314,22 @@ GEM
     tilt (2.6.1)
     treetop (1.6.12)
       polyglot (~> 0.3)
+    tsort (0.2.0)
     ttfunk (1.7.0)
+    tty-color (0.6.0)
+    tty-cursor (0.5.0)
+    tty-logger (0.6.0)
+      pastel (~> 0.8)
+    tty-progressbar (0.14.0)
+      tty-cursor (~> 0.5.0)
+      tty-screen (~> 0.6.4)
+    tty-screen (0.6.5)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.0.3)
+    uri (1.0.4)
     webrick (1.9.1)
     write_xlsx (1.12.2)
       nkf
@@ -312,7 +344,6 @@ GEM
       yard
 
 PLATFORMS
-  aarch64-linux-gnu
   x86_64-linux-gnu
 
 DEPENDENCIES
@@ -335,7 +366,6 @@ DEPENDENCIES
   rubocop-performance
   rubocop-sorbet
   ruby-prof
-  ruby-progressbar (~> 1.13)
   simplecov
   simplecov-cobertura
   solargraph

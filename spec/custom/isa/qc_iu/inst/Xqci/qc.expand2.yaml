@@ -12,9 +12,10 @@ description: |
   Write result to `rd`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcibm
 base: 32
 encoding:
   match: 000001000000-----011-----0001011

@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -19,9 +19,10 @@ description: |
   cause any of the side effects that might occur on a CSR write.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicsr
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcicsr
 assembly: xd, xs1, xs2
 base: 32
 encoding:

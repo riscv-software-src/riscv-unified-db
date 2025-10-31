@@ -9,7 +9,9 @@ name: amoand.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zabha
+definedBy:
+  extension:
+    name: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
   match: 01100------------001-----0101111

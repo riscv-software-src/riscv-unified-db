@@ -12,7 +12,11 @@ description: |
   and store the sign-extended result in xd.
 
   If the value in xs2 is zero, xd gets the sign-extended value in xs1.
-definedBy: M
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: M
 base: 64
 assembly: xd, xs1, xs2
 encoding:

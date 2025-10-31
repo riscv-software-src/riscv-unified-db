@@ -15,7 +15,12 @@ description:
       register. Integer registers `xs1` and `xs2` supply bits 31:0 and 63:32, respectively; the result is written to
       floating-point register `fd`.
 definedBy:
-  allOf: [D, Zfa]
+  allOf:
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: D
+          - name: Zfa
 assembly: fd, xs1, xs2
 encoding:
   match: 1011001----------000-----1010011

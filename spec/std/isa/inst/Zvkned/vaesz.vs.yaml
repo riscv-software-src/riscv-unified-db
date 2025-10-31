@@ -9,7 +9,9 @@ name: vaesz.vs
 long_name: Vector AES round zero
 description: |
   No description available.
-definedBy: Zvkned
+definedBy:
+  extension:
+    name: Zvkned
 assembly: vd, vs2
 encoding:
   match: 1010011-----00111010-----1110111

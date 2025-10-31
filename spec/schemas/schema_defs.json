@@ -221,22 +221,34 @@
     },
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
-      "oneOf": [
-        { "$ref": "#/$defs/extension_name" },
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "$ref": "#/$defs/extension_name"
-            },
-            "version": {
-              "$ref": "#/$defs/version_requirements"
-            }
-          },
-          "required": ["name"],
-          "additionalProperties": false
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/extension_name"
+        },
+        "version": {
+          "$ref": "#/$defs/version_requirements"
         }
-      ]
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "param_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z_0-9]*$"
+    },
+    "param_requirement": {
+      "type": "object",
+      "required": ["name", "schema"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/param_name"
+        },
+        "schema": {
+          "$ref": "json-schema-draft-07.json#"
+        }
+      },
+      "additionalProperties": false
     },
     "requires_entry": {
       "oneOf": [
@@ -454,6 +466,414 @@
             "$ref": "#/$defs/ref_url"
           }
         }
+      ]
+    },
+    "extension_condition": {
+      "description": "A logic condition specifying certain extension version requirements",
+      "type": "object",
+      "required": ["extension"],
+      "properties": {
+        "extension": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/extension_requirement"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 2
+                },
+                "anyOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 2
+                },
+                "oneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 2
+                },
+                "noneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                  },
+                  "minItems": 2
+                },
+                "not": {
+                  "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                }
+              },
+              "minProperties": 1,
+              "maxProperties": 1
+            },
+            {
+              "type": "object",
+              "required": ["if", "then"],
+              "properties": {
+                "if": {
+                  "$ref": "schema_defs.json#/$defs/condition"
+                },
+                "then": {
+                  "$ref": "schema_defs.json#/$defs/extension_condition/properties/extension"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "param_condition": {
+      "type": "object",
+      "required": ["param"],
+      "properties": {
+        "param": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "$ref": "#/$defs/param_name"
+                },
+                "range": {
+                  "$ref": "#/$defs/field_location"
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "size": {
+                  "type": "boolean"
+                },
+                "equal": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "oneOf": {
+                  "type": "array",
+                  "minItems": 2,
+                  "oneOf": [
+                    {
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  ]
+                },
+                "not_equal": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "greater_than": {
+                  "type": "integer"
+                },
+                "less_than": {
+                  "type": "integer"
+                },
+                "greater_than_or_equal": {
+                  "type": "integer"
+                },
+                "less_than_or_equal": {
+                  "type": "integer"
+                },
+                "includes": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "reason": {
+                  "description": "Why the param condition exists",
+                  "type": "string"
+                }
+              },
+              "$comment": "Mandating 2-3 properties, depending on if reason is given",
+              "minProperties": 2,
+              "maxProperties": 3
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
+                  },
+                  "minItems": 2
+                },
+                "anyOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
+                  },
+                  "minItems": 2
+                },
+                "oneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
+                  },
+                  "minItems": 2
+                },
+                "noneOf": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
+                  },
+                  "minItems": 2
+                },
+                "not": {
+                  "$ref": "schema_defs.json#/$defs/param_condition/properties/param"
+                }
+              },
+              "minProperties": 1,
+              "maxProperties": 1
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "idl": {
+      "description": "IDL code",
+      "type": "string"
+    },
+
+    "idl_condition": {
+      "description": "A condition expressed with IDL",
+      "type": "object",
+      "required": ["idl()"],
+      "properties": {
+        "idl()": {
+          "description": "IDL function containing one or more implications (e.g., A -> B).",
+          "$ref": "#/$defs/idl"
+        },
+        "reason": {
+          "description": "Why the constraint exists",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "yaml_condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/yaml_condition"
+              },
+              "minItems": 2
+            },
+            "anyOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/yaml_condition"
+              },
+              "minItems": 2
+            },
+            "oneOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/yaml_condition"
+              },
+              "minItems": 2
+            },
+            "noneOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/yaml_condition"
+              },
+              "minItems": 2
+            },
+            "not": {
+              "$ref": "#/$defs/yaml_condition"
+            }
+          },
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/extension_condition"
+        },
+        {
+          "$ref": "#/$defs/param_condition"
+        },
+        {
+          "$ref": "#/$defs/xlen_condition"
+        }
+      ]
+    },
+
+    "xlen_condition": {
+      "type": "object",
+      "required": ["xlen"],
+      "properties": {
+        "xlen": {
+          "enum": [32, 64]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "condition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/yaml_condition"
+        },
+        {
+          "$ref": "#/$defs/idl_condition"
+        }
+      ]
+    },
+
+    "extension_requirement_list_item": {
+      "description": "A list of extension requirements, possibly with a condition",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/extension_requirement"
+        },
+        {
+          "description": "A conditional extension requirement",
+          "type": "object",
+          "properties": {
+            "name": {
+              "$ref": "#/$defs/extension_name"
+            },
+            "version": {
+              "$ref": "#/$defs/version_requirements"
+            },
+            "when": {
+              "$comment": "Using 'when' instead of 'if' to distinguish it from 'if' in a condition",
+              "$ref": "#/$defs/condition"
+            }
+          },
+          "required": ["name", "when"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "extension_requirement_list": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/extension_requirement_list_item"
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/extension_requirement_list_item"
+        }
+      ]
+    },
+
+    "uint32": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "uint64": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "32bit_unsigned_pow2": {
+      "description": "An unsigned power of 2 that fits in 32 bits",
+      "type": "integer",
+      "enum": [
+        1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095, 8192, 16384,
+        32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304,
+        8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912,
+        1073741824, 2147483648
+      ]
+    },
+    "64bit_unsigned_pow2": {
+      "description": "An unsigned power of 2 that fits in 64 bits",
+      "type": "integer",
+      "enum": [
+        1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095, 8192, 16384,
+        32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304,
+        8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912,
+        1073741824, 2147483648, 4294967296, 8589934592, 17179869184,
+        34359738368, 68719476736, 137438953472, 274877906944, 549755813888,
+        1099511627776, 2199023255552, 4398046511104, 8796093022208,
+        17592186044416, 35184372088832, 70368744177664, 140737488355328,
+        281474976710656, 562949953421312, 1125899906842624, 2251799813685248,
+        4503599627370496, 9007199254740992, 18014398509481984,
+        36028797018963968, 72057594037927936, 144115188075855872,
+        288230376151711744, 576460752303423488, 1152921504606846976,
+        2305843009213693952, 4611686018427387904, 9223372036854775808
       ]
     }
   }

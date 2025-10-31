@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED
+long_name: |
+  Whether or not `mtval` is written with the virtual address of a misaligned load
+definedBy:
+  extension:
+    name: Sm
+description: |
+  Options:
+
+    * true:  `mtval` is written with the virtual address of a trapping misaligned load.
+    * false: `mtval` is written with 0 when a misaligned load traps.
+
+schema:
+  type: boolean

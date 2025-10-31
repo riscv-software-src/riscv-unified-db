@@ -5,6 +5,7 @@
 # frozen_string_literal: true
 
 require "bundler"
+require "concurrent/hash"
 require "sorbet-runtime"
 
 require_relative "cfg_arch"
@@ -68,14 +69,15 @@ module Udb
 
     # return type of #cfg_info
     class ConfigInfo < T::Struct
-      const :name, String
-      const :path, Pathname
+      prop :name, String
+      prop :path, Pathname
       prop :overlay_path, T.nilable(Pathname)
       const :unresolved_yaml, T::Hash[String, T.untyped]
       prop :resolved_yaml, T.nilable(T::Hash[String, T.untyped])
       const :spec_path, Pathname
       const :merged_spec_path, Pathname
       const :resolved_spec_path, Pathname
+      const :resolver, Resolver
     end
 
     # path to find database schema files
@@ -130,7 +132,8 @@ module Udb
         gen_path_override: T.nilable(Pathname),
         std_path_override: T.nilable(Pathname),
         custom_path_override: T.nilable(Pathname),
-        python_path_override: T.nilable(Pathname)
+        python_path_override: T.nilable(Pathname),
+        quiet: T::Boolean
       ).void
     }
     def initialize(
@@ -140,7 +143,8 @@ module Udb
       gen_path_override: nil,
       std_path_override: nil,
       custom_path_override: nil,
-      python_path_override: nil
+      python_path_override: nil,
+      quiet: false
     )
       @repo_root = repo_root
       @schemas_path = schemas_path_override || (@repo_root / "spec" / "schemas")
@@ -148,10 +152,12 @@ module Udb
       @gen_path = gen_path_override || (@repo_root / "gen")
       @std_path = std_path_override || (@repo_root / "spec" / "std" / "isa")
       @custom_path = custom_path_override || (@repo_root / "spec" / "custom" / "isa")
-      @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
+      @python_path = python_path_override || Pathname.new("/opt") / "venv" / "bin" / "python3"
+      @quiet = quiet
+      @mutex = Thread::Mutex.new
 
       # cache of config names
-      @cfg_info = T.let({}, T::Hash[T.any(String, Pathname), ConfigInfo])
+      @cfg_info = T.let(Concurrent::Hash.new, T::Hash[T.any(String, Pathname), ConfigInfo])
 
       FileUtils.mkdir_p @gen_path
     end
@@ -169,82 +175,94 @@ module Udb
     # run command in the shell. raise if exit is not zero
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
-      puts cmd.join(" ")
-      T.unsafe(self).send(:system, *cmd)
-      raise unless $?.success?
+      puts cmd.join(" ") unless @quiet
+      if @quiet
+        T.unsafe(self).send(:system, *cmd, out: "/dev/null", err: "/dev/null")
+      else
+        T.unsafe(self).send(:system, *cmd)
+      end
+      raise "data resolution error while executing '#{cmd.join(' ')}'" unless $?.success?
     end
 
     # resolve config file and write it to gen_path
     # returns the config data
     sig { params(config_path: Pathname).returns(T::Hash[String, T.untyped]) }
     def resolve_config(config_path)
-      config_info = cfg_info(config_path)
-      return T.must(config_info.resolved_yaml) unless config_info.resolved_yaml.nil?
+      @mutex.synchronize do
+        config_info = cfg_info(config_path)
+        return T.must(config_info.resolved_yaml) unless config_info.resolved_yaml.nil?
 
-      resolved_config_yaml = T.let({}, T.nilable(T::Hash[String, T.untyped]))
-      # write the config with arch_overlay expanded
-      if any_newer?(gen_path / "cfgs" / "#{config_info.name}.yaml", [config_path])
-        # is there anything to do here? validate?
+        resolved_config_yaml = T.let({}, T.nilable(T::Hash[String, T.untyped]))
+        # write the config with arch_overlay expanded
+        if any_newer?(gen_path / "cfgs" / "#{config_info.name}.yaml", [config_path])
+          # is there anything to do here? validate?
 
-        resolved_config_yaml = config_info.unresolved_yaml.dup
-        resolved_config_yaml["$source"] = config_path.realpath.to_s
+          resolved_config_yaml = config_info.unresolved_yaml.dup
+          resolved_config_yaml["$source"] = config_path.realpath.to_s
 
-        FileUtils.mkdir_p gen_path / "cfgs"
-        File.write(gen_path / "cfgs" / "#{config_info.name}.yaml", YAML.dump(resolved_config_yaml))
-      else
-        resolved_config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_info.name}.yaml")
+          FileUtils.mkdir_p gen_path / "cfgs"
+          File.write(gen_path / "cfgs" / "#{config_info.name}.yaml", YAML.dump(resolved_config_yaml))
+        else
+          resolved_config_yaml = YAML.load_file(gen_path / "cfgs" / "#{config_info.name}.yaml")
+        end
+
+        config_info.resolved_yaml = resolved_config_yaml
       end
-
-      config_info.resolved_yaml = resolved_config_yaml
     end
 
     sig { params(config_yaml: T::Hash[String, T.untyped]).void }
     def merge_arch(config_yaml)
-      config_name = config_yaml["name"]
+      @mutex.synchronize do
+        config_name = config_yaml["name"]
 
-      deps = Dir[std_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
-      deps += Dir[custom_path / config_yaml["arch_overlay"] / "**" / "*.yaml"].map { |p| Pathname.new(p) } unless config_yaml["arch_overlay"].nil?
+        deps = Dir[std_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
+        deps += Dir[custom_path / config_yaml["arch_overlay"] / "**" / "*.yaml"].map { |p| Pathname.new(p) } unless config_yaml["arch_overlay"].nil?
 
-      overlay_path =
-        if config_yaml["arch_overlay"].nil?
-          nil
-        else
-          if config_yaml.fetch("arch_overlay")[0] == "/"
-            Pathname.new(config_yaml.fetch("arch_overlay"))
+        overlay_path =
+          if config_yaml["arch_overlay"].nil?
+            nil
           else
-            custom_path / config_yaml.fetch("arch_overlay")
+            if config_yaml.fetch("arch_overlay")[0] == "/"
+              Pathname.new(config_yaml.fetch("arch_overlay"))
+            else
+              custom_path / config_yaml.fetch("arch_overlay")
+            end
           end
-        end
-      raise "custom directory '#{overlay_path}' does not exist" if !overlay_path.nil? && !overlay_path.directory?
+        raise "custom directory '#{overlay_path}' does not exist" if !overlay_path.nil? && !overlay_path.directory?
 
-      if any_newer?(merged_spec_path(config_name) / ".stamp", deps)
-        run [
-          python_path.to_s,
-          "#{Udb.gem_path}/python/yaml_resolver.py",
-          "merge",
-          std_path.to_s,
-          overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
-          merged_spec_path(config_name).to_s
-        ]
-        FileUtils.touch(merged_spec_path(config_name) / ".stamp")
+        if any_newer?(merged_spec_path(config_name) / ".stamp", deps)
+          run [
+            python_path.to_s,
+            "#{Udb.gem_path}/python/yaml_resolver.py",
+            "merge",
+            std_path.to_s,
+            overlay_path.nil? ? "/does/not/exist" : overlay_path.to_s,
+            merged_spec_path(config_name).to_s
+          ]
+          FileUtils.touch(merged_spec_path(config_name) / ".stamp")
+        end
       end
     end
 
     sig { params(config_yaml: T::Hash[String, T.untyped]).void }
     def resolve_arch(config_yaml)
       merge_arch(config_yaml)
-      config_name = config_yaml["name"]
+      @mutex.synchronize do
+        config_name = config_yaml["name"]
 
-      deps = Dir[merged_spec_path(config_name) / "**" / "*.yaml"].map { |p| Pathname.new(p) }
-      if any_newer?(resolved_spec_path(config_name) / ".stamp", deps)
-        run [
-          python_path.to_s,
-          "#{Udb.gem_path}/python/yaml_resolver.py",
-          "resolve",
-          merged_spec_path(config_name).to_s,
-          resolved_spec_path(config_name).to_s
-        ]
-        FileUtils.touch(resolved_spec_path(config_name) / ".stamp")
+        deps = Dir[merged_spec_path(config_name) / "**" / "*.yaml"].map { |p| Pathname.new(p) }
+        if any_newer?(resolved_spec_path(config_name) / ".stamp", deps)
+          run [
+            python_path.to_s,
+            "#{Udb.gem_path}/python/yaml_resolver.py",
+            "resolve",
+            merged_spec_path(config_name).to_s,
+            resolved_spec_path(config_name).to_s
+          ]
+          FileUtils.touch(resolved_spec_path(config_name) / ".stamp")
+        end
+
+        FileUtils.cp_r(std_path / "isa", gen_path / "resolved_spec" / config_yaml["name"])
       end
     end
 
@@ -253,42 +271,52 @@ module Udb
       return @cfg_info.fetch(config_path_or_name) if config_path_or_name.is_a?(String) && @cfg_info.key?(config_path_or_name)
       return @cfg_info.fetch(config_path_or_name.realpath) if config_path_or_name.is_a?(Pathname) && @cfg_info.key?(config_path_or_name.realpath)
 
-      config_path =
-        case config_path_or_name
-        when Pathname
-          raise "Path does not exist: #{config_path_or_name}" unless config_path_or_name.file?
+      @mutex.synchronize do
+        return @cfg_info.fetch(config_path_or_name) if config_path_or_name.is_a?(String) && @cfg_info.key?(config_path_or_name)
+        return @cfg_info.fetch(config_path_or_name.realpath) if config_path_or_name.is_a?(Pathname) && @cfg_info.key?(config_path_or_name.realpath)
 
-          config_path_or_name.realpath
-        when String
-          (@repo_root / "cfgs" / "#{config_path_or_name}.yaml").realpath
-        else
-          T.absurd(config_path_or_name)
+        config_path =
+          case config_path_or_name
+          when Pathname
+            raise "Path does not exist: #{config_path_or_name}" unless config_path_or_name.file?
+
+            config_path_or_name.realpath
+          when String
+            (@cfgs_path / "#{config_path_or_name}.yaml").realpath
+          else
+            T.absurd(config_path_or_name)
+          end
+
+        config_yaml = YAML.safe_load_file(config_path)
+        if config_yaml.nil?
+          puts File.read(config_path)
+          raise "Could not load config at #{config_path}"
         end
 
-      config_yaml = YAML.safe_load_file(config_path)
+        overlay_path =
+          if config_yaml["arch_overlay"].nil?
+            nil
+          elsif Pathname.new(config_yaml["arch_overlay"]).exist?
+            Pathname.new(config_yaml["arch_overlay"])
+          elsif (@custom_path / config_yaml["arch_overlay"]).exist?
+            @custom_path / config_yaml["arch_overlay"]
+          else
+            raise "Cannot resolve path to overlay (#{config_yaml["arch_overlay"]})"
+          end
 
-      overlay_path =
-        if config_yaml["arch_overlay"].nil?
-          nil
-        elsif Pathname.new(config_yaml["arch_overlay"]).exist?
-          Pathname.new(config_yaml["arch_overlay"])
-        elsif (@custom_path / config_yaml["arch_overlay"]).exist?
-          @custom_path / config_yaml["arch_overlay"]
-        else
-          raise "Cannot resolve path to overlay (#{config_yaml["arch_overlay"]})"
-        end
-
-      info = ConfigInfo.new(
-        name: config_yaml["name"],
-        path: config_path,
-        overlay_path:,
-        unresolved_yaml: config_yaml,
-        spec_path: std_path,
-        merged_spec_path: @gen_path / "spec" / config_yaml["name"],
-        resolved_spec_path: @gen_path / "resolved_spec" / config_yaml["name"]
-      )
-      @cfg_info[config_path] = info
-      @cfg_info[info.name] = info
+        info = ConfigInfo.new(
+          name: config_yaml["name"],
+          path: config_path,
+          overlay_path:,
+          unresolved_yaml: config_yaml,
+          spec_path: std_path,
+          merged_spec_path: @gen_path / "spec" / config_yaml["name"],
+          resolved_spec_path: @gen_path / "resolved_spec" / config_yaml["name"],
+          resolver: self
+        )
+        @cfg_info[config_path] = info
+        @cfg_info[info.name] = info
+      end
     end
 
     # resolve the specification for a config, and return a ConfiguredArchitecture
@@ -296,16 +324,20 @@ module Udb
     def cfg_arch_for(config_path_or_name)
       config_info = cfg_info(config_path_or_name)
 
-      @cfg_archs ||= {}
+      @cfg_archs ||= Concurrent::Hash.new
       return @cfg_archs[config_info.path] if @cfg_archs.key?(config_info.path)
 
       resolve_config(config_info.path)
       resolve_arch(config_info.unresolved_yaml)
 
-      @cfg_archs[config_info.path] = Udb::ConfiguredArchitecture.new(
-        config_info.name,
-        Udb::AbstractConfig.create(gen_path / "cfgs" / "#{config_info.name}.yaml", config_info)
-      )
+      @mutex.synchronize do
+        return @cfg_archs[config_info.path] if @cfg_archs.key?(config_info.path)
+
+        @cfg_archs[config_info.path] = Udb::ConfiguredArchitecture.new(
+          config_info.name,
+          Udb::AbstractConfig.create(gen_path / "cfgs" / "#{config_info.name}.yaml", config_info)
+        )
+      end
     end
   end
 end

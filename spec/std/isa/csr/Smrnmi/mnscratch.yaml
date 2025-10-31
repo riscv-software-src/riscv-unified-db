@@ -14,7 +14,9 @@ length: MXLEN
 description:
   Scratch register for software use in NMI / double trap. Bits are not
   interpreted by hardware.
-definedBy: Smrnmi
+definedBy:
+  extension:
+    name: Smrnmi
 fields:
   SCRATCH:
     location_rv32: 31-0

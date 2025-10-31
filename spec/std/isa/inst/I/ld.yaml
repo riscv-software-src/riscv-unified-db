@@ -10,6 +10,7 @@ long_name: Load doubleword
 description: |
   For RV64, load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
+
   <% if ext?(:Zilsd) %>
   For RV32, Loads a 64-bit value into registers xd and xd+1.
   The effective address is obtained by adding
@@ -17,7 +18,10 @@ description: |
   <% end %>
 
 definedBy:
-  anyOf: [I, Zilsd]
+  extension:
+    anyOf:
+      - name: I
+      - name: Zilsd
 assembly: xd, imm(xs1)
 encoding:
   RV32:
