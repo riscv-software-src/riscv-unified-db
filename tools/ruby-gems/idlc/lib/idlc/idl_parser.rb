@@ -11429,7 +11429,7 @@ module Idl
                 r0 = r50
               else
                 i64, s64 = index, []
-                r65 = _nt_var_write
+                r65 = _nt_ary_eligible_expression
                 s64 << r65
                 if r65
                   s66, i66 = [], index
@@ -11586,7 +11586,7 @@ module Idl
                   r0 = r64
                 else
                   i87, s87 = index, []
-                  r88 = _nt_var_write
+                  r88 = _nt_ary_eligible_expression
                   s87 << r88
                   if r88
                     s89, i89 = [], index

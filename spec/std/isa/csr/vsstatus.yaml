@@ -58,7 +58,7 @@ fields:
     type(): |
       return ($array_size(VUXLEN) > 1) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
-      return ($array_size(VUXLEN) > 1) ? UNDEFINED_LEGAL : VUXLEN;
+      return ($array_size(VUXLEN) > 1) ? UNDEFINED_LEGAL : VUXLEN[0];
   MXR:
     alias: mstatus.MXR
     location: 19

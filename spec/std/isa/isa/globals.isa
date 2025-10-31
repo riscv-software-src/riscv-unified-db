@@ -2073,7 +2073,7 @@ function stage1_page_walk {
       if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
         pbmte = implemented?(ExtensionName::Svpbmt) && CSR[henvcfg].PBMTE == 1;
       } else {
-        pbmte = implemented(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
+        pbmte = implemented?(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
       }
     }
 

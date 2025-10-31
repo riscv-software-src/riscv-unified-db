@@ -161,11 +161,12 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression = nil
       value_result = value_try do
-        # see if msb, lsb is compile-time-known
-        _ = msb.value(symtab)
-        _ = lsb.value(symtab)
-        expression = "bit_insert<#{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
+        # see if msb and lsb are compile-time-known
+        msb_val = msb.value(symtab)
+        lsb_val = lsb.value(symtab)
+        expression = "#{variable.gen_cpp(symtab, 0, indent_spaces:)} = bit_insert<#{msb_val}, #{lsb_val}, #{variable.type(symtab).width}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
+
       value_else(value_result) do
         expression = "bit_insert(#{variable.gen_cpp(symtab)}, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end

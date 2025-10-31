@@ -2579,7 +2579,7 @@ module Idl
         if symtab.mxlen == 64 && symtab.multi_xlen?
           Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
         else
-          Type.new(:bits, width: field(symtab).location(symtab.mxlen).size)
+          Type.new(:bits, width: field(symtab).location(symtab.mxlen.nil? ? 64 : symtab.mxlen).size)
         end
       elsif field(symtab).base64_only?
         Type.new(:bits, width: field(symtab).location(64).size)
