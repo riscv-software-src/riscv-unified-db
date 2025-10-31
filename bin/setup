@@ -209,55 +209,21 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     fi
 fi
 
-if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
-    BUNDLE="bundle"
-    RUBY="bundle exec ruby"
-    RAKE="bundle exec rake"
-    NPM="npm"
-    NPX="npx"
-    NODE="node"
-    PYTHON="/opt/venv/bin/python3"
-    PIP="/opt/venv/bin/pip"
-    BASH="bash"
-    GPP="g++"
-    GDB="gdb"
-    CLANG_FORMAT="clang-format"
-    CLANG_TIDY="clang-tidy"
-    MAKE="make"
-elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
-    BUNDLE="${CONTAINER_BASE} bundle"
-    RUBY="${CONTAINER_BASE} bundle exec ruby"
-    RAKE="${CONTAINER_BASE} bundle exec rake"
-    NPM="${CONTAINER_BASE} npm"
-    NPX="${CONTAINER_BASE} npx"
-    NODE="${CONTAINER_BASE} node"
-    PYTHON="${CONTAINER_BASE} /opt/venv/bin/python3"
-    PIP="${CONTAINER_BASE} /opt/venv/bin/pip"
-    BASH="${CONTAINER_BASE} bash"
-    GPP="${CONTAINER_BASE} g++"
-    GDB="${CONTAINER_BASE} gdb"
-    CLANG_FORMAT="${CONTAINER_BASE} clang-format"
-    CLANG_TIDY="${CONTAINER_BASE} clang-tidy"
-    MAKE="${CONTAINER_BASE} make"
-elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
-    RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
-    RAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec rake"
-    NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
-    NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
-    NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
-    PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/python3"
-    PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/pip"
-    BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
-    GPP="singularity run ${HOME_OPT} ${CONTAINER_PATH} g++"
-    GDB="singularity run ${HOME_OPT} ${CONTAINER_PATH} gdb"
-    CLANG_FORMAT="singularity run ${HOME_OPT} ${CONTAINER_PATH} clang-format"
-    CLANG_TIDY="singularity run ${HOME_OPT} ${CONTAINER_PATH} clang-tidy"
-    MAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} make"
-else
-    echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
-    exit 1
-fi
+# Set executables
+BUNDLE="${RUN} bundle"
+RUBY="${RUN} bundle exec ruby"
+RAKE="${RUN} bundle exec rake"
+NPM="${RUN} npm"
+NPX="${RUN} npx"
+NODE="${RUN} node"
+PYTHON="${RUN} /opt/venv/bin/python3"
+PIP="${RUN} /opt/venv/bin/pip"
+BASH="${RUN} bash"
+GPP="${RUN} g++"
+GDB="${RUN} gdb"
+CLANG_FORMAT="${RUN} clang-format"
+CLANG_TIDY="${RUN} clang-tidy"
+MAKE="${RUN} make"
 
 git config --local commit.template ${ROOT}/.gitmessage
 
