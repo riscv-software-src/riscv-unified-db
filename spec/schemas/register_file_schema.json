@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "title": "Register File Schema",
+  "description": "Schema for describing a register file",
+
+  "$defs": {
+    "register_entry": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "schema_defs.json#/$defs/register_name"
+        },
+        "abi_mnemonics": {
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/register_alias"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "ABI mnemonic names for the register"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text"
+        },
+        "when": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "sw_read()": {
+          "type": "string",
+          "description": "Function that returns the value of the register when read by software. Use this to define special behavior for registers (e.g., x0 always reads as zero)."
+        },
+        "sw_write(value)": {
+          "type": "string",
+          "description": "Function implementing custom write behavior for the register. Given a 'value', return either the value to be written or a modified value. Use this to define special behavior for registers (e.g., x0 ignores writes)."
+        },
+        "caller_saved": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the register is caller-saved"
+        },
+        "callee_saved": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the register is callee-saved"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "zero",
+              "return_address",
+              "stack_pointer",
+              "global_pointer",
+              "thread_pointer",
+              "frame_pointer",
+              "return_value",
+              "argument",
+              "temporary"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "writable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the register is writable. If false, no sw_write() method is needed."
+        }
+      }
+    },
+    "register_file": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "description",
+        "register_length",
+        "registers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "register_file_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "register_file"
+        },
+        "name": {
+          "$ref": "schema_defs.json#/$defs/register_file_name"
+        },
+        "long_name": {
+          "type": "string"
+        },
+        "description": {
+          "$ref": "schema_defs.json#/$defs/spec_text"
+        },
+        "definedBy": {
+          "$ref": "schema_defs.json#/$defs/requires_entry"
+        },
+        "register_class": {
+          "type": "string",
+          "enum": ["general_purpose", "floating_point", "vector"]
+        },
+        "register_length": {
+          "$ref": "schema_defs.json#/$defs/bit_length_value"
+        },
+        "registers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/register_entry"
+          }
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      }
+    }
+  }
+}
