@@ -14,10 +14,12 @@ description: |
 
   NOTE: `sltiu xd, xs1, 1` sets `xd` to 1 if `xs1` equals zero, otherwise sets `xd` to 0
   (assembler pseudoinstruction `SEQZ xd, rs`).
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------011-----0010011
+  match: "-----------------011-----0010011"
   variables:
     - name: imm
       location: 31-20

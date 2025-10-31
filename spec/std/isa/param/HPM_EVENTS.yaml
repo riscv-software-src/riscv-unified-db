@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HPM_EVENTS
+description: "List of defined event numbers that can be written into hpmeventN
+
+  "
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: integer
+    minimum: 0
+    maximum: 288230376151711743
+definedBy:
+  extension:
+    name: Smhpm

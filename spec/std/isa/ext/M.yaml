@@ -24,9 +24,3 @@ description: |
   divide operations are either infrequent or better handled in attached
   accelerators.
   ====
-params:
-  MUTABLE_MISA_M:
-    description: |
-      Indicates whether or not the `M` extension can be disabled with the `misa.M` bit.
-    schema:
-      type: boolean

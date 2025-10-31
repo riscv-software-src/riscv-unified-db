@@ -17,9 +17,10 @@ description: |
   cause any of the side effects that might occur on a CSR read.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicsr
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcicsr
 assembly: " xd, imm, xs2"
 base: 32
 encoding:

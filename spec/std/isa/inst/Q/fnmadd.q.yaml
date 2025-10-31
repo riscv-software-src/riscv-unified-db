@@ -14,10 +14,12 @@ description:
       The `fnmadd.q` instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the
       value in `fs3`, and writes the final result to `fd`.
       `fnmadd.q` computes `-(fs1 * fs2) + fs3`.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
-  match: -----11------------------1001111
+  match: "-----11------------------1001111"
   variables:
     - name: fs3
       location: 31-27

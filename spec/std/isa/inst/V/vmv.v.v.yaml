@@ -9,7 +9,9 @@ name: vmv.v.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs1
 encoding:
   match: 010111100000-----000-----1010111

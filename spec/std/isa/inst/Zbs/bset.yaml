@@ -10,7 +10,9 @@ long_name: Single-Bit set (Register)
 description: |
   Returns xs1 with a single bit set at the index specified in xs2.
   The index is read from the lower log2(XLEN) bits of xs2.
-definedBy: Zbs
+definedBy:
+  extension:
+    name: Zbs
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------001-----0110011

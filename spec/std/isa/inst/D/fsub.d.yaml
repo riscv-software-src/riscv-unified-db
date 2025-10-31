@@ -13,7 +13,9 @@ description:
     text: |
       The `fsub.d` instruction is analogous to `fsub.s` and performs double-precision floating-point subtraction between
       `fs1` and `fs2` and writes the final result to `fd`.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000101------------------1010011

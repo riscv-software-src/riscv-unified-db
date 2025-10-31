@@ -9,7 +9,9 @@ name: vfmerge.vfm
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, fs1, v0
 encoding:
   match: 0101110----------101-----1010111

@@ -18,9 +18,10 @@ description: |
   with a hypervisor that does not swap `scontext`.
 
 definedBy:
-  allOf:
-    - Sdtrig
-    - S
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: S
 fields:
   DATA:
     location: 31-0
@@ -48,3 +49,4 @@ sw_read(): |
   if (implemented?(ExtensionName::Smstateen) && ((CSR[mstateen0].CONTEXT != 0) || (CSR[hstateen0].CONTEXT != 0))) {
     unimplemented_csr($encoding);
   }
+  return $bits(CSR[scontext]);

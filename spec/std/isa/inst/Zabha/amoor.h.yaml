@@ -9,7 +9,9 @@ name: amoor.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zabha
+definedBy:
+  extension:
+    name: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
   match: 01000------------001-----0101111

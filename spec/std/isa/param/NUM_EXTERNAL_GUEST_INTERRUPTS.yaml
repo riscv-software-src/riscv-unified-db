@@ -1,0 +1,34 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: NUM_EXTERNAL_GUEST_INTERRUPTS
+description: |
+  Number of supported virtualized guest interrupts
+
+  Corresponds to the `GEILEN` parameter in the RVI specs
+long_name: TODO
+schema:
+  oneOf:
+    - when:
+        param:
+          name: MXLEN
+          equal: 32
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 31
+    - when:
+        param:
+          name: MXLEN
+          equal: 64
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 63
+definedBy:
+  extension:
+    name: H

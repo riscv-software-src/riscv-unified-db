@@ -14,7 +14,9 @@ description:
       The `fsgnjx.q` instruction produces a result that takes all bits except the sign bit from `fs1`.
       The result's sign bit is the XOR of sign bits of `fs1` and `fs2`, and the result is written to the destination register `fd`.
       `fsgnjx.q` does not set floating-point exception flags, nor do they canonicalize _NaN_s.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, fs2
 encoding:
   match: 0010011----------010-----1010011

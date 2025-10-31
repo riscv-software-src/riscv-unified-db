@@ -1,0 +1,14 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/exception_code_schema.json
+
+$schema: exception_code_schema.json#
+kind: exception_code
+name: SoftwareCheck
+num: 18
+display_name: Software check
+definedBy:
+  extension:
+    name: Sm
+    version: ">= 1.13.0"

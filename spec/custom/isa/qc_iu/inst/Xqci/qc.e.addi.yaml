@@ -12,9 +12,10 @@ description: |
   and store the result in `rd`.
   Instruction encoded in QC.EI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilia
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcilia
 base: 32
 encoding:
   match: ----------------10---------------011-----0011111

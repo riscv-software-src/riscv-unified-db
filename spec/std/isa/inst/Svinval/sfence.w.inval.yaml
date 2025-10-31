@@ -7,7 +7,9 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sfence.w.inval
 long_name: Order writes before sfence
-definedBy: Svinval
+definedBy:
+  extension:
+    name: Svinval
 encoding:
   match: "00011000000000000000000001110011"
 description: |

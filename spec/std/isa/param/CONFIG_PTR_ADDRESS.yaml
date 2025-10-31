@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: CONFIG_PTR_ADDRESS
+long_name: |
+  Physical address in `mconfigptr`
+definedBy:
+  extension:
+    name: Sm
+    version: ">= 1.12.0"
+description: |
+  The value returned from `mconfigptr`
+
+schema:
+  oneOf:
+    - when:
+        param:
+          name: MXLEN
+          equal: 32
+      schema:
+        $ref: schema_defs.json#/$defs/uint32
+    - when:
+        param:
+          name: MXLEN
+          equal: 64
+      schema:
+        $ref: schema_defs.json#/$defs/uint64
+
+requirements:
+  idl(): |
+    (MXLEN == 32) -> (CONFIG_PTR_ADDRESS[2:0] == 0);
+    (MXLEN == 64) -> (CONFIG_PTR_ADDRESS[3:0] == 0);
+  reason: |
+    The pointer alignment in bits must be no smaller than MXLEN:
+    i.e., if MXLEN is 8 x n, then mconfigptr[(log2(n)-1:0] must be zero.

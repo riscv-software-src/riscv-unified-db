@@ -18,7 +18,10 @@ description:
       Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
       This instruction is encoded like its `fminm.q` counterpart, but with instruction bit 14 set to 1.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: fd, fs1, fs2
 encoding:
   match: 0010111----------010-----1010011

@@ -14,7 +14,11 @@ description: |
     * Write the loaded value into _xd_
     * Add the value of register _xs2_ to the loaded value
     * Write the sum to the address in _xs1_
-definedBy: Zaamo
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zaamo
 base: 64
 assembly: xd, xs2, (xs1)
 encoding:

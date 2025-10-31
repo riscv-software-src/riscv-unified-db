@@ -11,9 +11,10 @@ description: |
   Set interrupt, interrupt number is in `rs1`.
   Instruction encoded in CI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqciint
 assembly: " xs1"
 base: 32
 encoding:

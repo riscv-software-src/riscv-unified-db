@@ -1,0 +1,11 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# c: constraint body, which should cause a type error
+
+tests:
+  - c: |
+      true -> 1;
+  - c: |
+      1 -> false;

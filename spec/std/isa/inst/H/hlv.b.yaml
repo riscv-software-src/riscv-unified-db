@@ -9,7 +9,9 @@ name: hlv.b
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 assembly: xd, xs1
 encoding:
   match: 011000000000-----100-----1110011

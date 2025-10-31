@@ -10,9 +10,10 @@ long_name: Non-operation
 description: |
   C.NOP expands into `addi x0, x0, 0`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: ""
 encoding:
   match: "0000000000000001"

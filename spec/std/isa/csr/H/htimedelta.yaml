@@ -20,7 +20,9 @@ description: |
 address: 0x605
 writable: true
 priv_mode: S
-definedBy: H
+definedBy:
+  extension:
+    name: H
 length: 64
 fields:
   DELTA:

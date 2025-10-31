@@ -12,9 +12,10 @@ description: |
   The number of writes is in `rs2` bits [4:0] (0..31).
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilsm
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcilsm
 base: 32
 encoding:
   match: 10---------------111-----0101011

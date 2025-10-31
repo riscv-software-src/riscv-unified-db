@@ -9,7 +9,9 @@ name: vfncvt.f.f.w
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, vm
 encoding:
   match: 010010------10100001-----1010111

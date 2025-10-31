@@ -9,7 +9,9 @@ name: vnsrl.wi
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, imm, vm
 encoding:
   match: 101100-----------011-----1010111

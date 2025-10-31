@@ -19,7 +19,9 @@ description:
       The operation is performed according to the IEEE 754-2008 standard for quad-precision floating-point arithmetic.
 
       The instruction sets the floating-point exception flags according to the result of the operation.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0001111------------------1010011

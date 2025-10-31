@@ -158,7 +158,9 @@ description: |
   in the `sip` register and is maskable using the `sie` register.
   Otherwise, the corresponding bits in `sip` and `sie` are read-only zero.
 length: MXLEN
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   SSIP:
     location: 1
@@ -185,7 +187,9 @@ fields:
       <%- end -%>
     type: RW
     reset_value: 0
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Smaia
   VSSIP:
     location: 2
@@ -212,7 +216,9 @@ fields:
       * `vsip.SSIP` when `hideleg.VSSI` is set
     type: RW
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     affectedBy: Smaia
   MSIP:
     location: 3
@@ -257,7 +263,9 @@ fields:
 
     type: RW
     reset_value: 0
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Sstc
   VSTIP:
     location: 6
@@ -292,7 +300,9 @@ fields:
       * `hvip.VSTIP` <% if ext?(:Sstc) %>when `menvcfg.STCE` is clear<% end %> (though `hvip.VSTIP` is writable)
     type: RO-H
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     affectedBy: Sstc
   MTIP:
     location: 7
@@ -325,7 +335,9 @@ fields:
 
       * `sip.SEIP` when `mideleg.SEI` is set (though `sip.SEIP` is read-only)
     type: RW-H
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     affectedBy: Smaia
     reset_value: 0
   VSEIP:
@@ -353,7 +365,9 @@ fields:
       * `vsip.SEIP` when `hideleg.VSEI` is set
     type: RO-H
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
     affectedBy: Smaia
   MEIP:
     location: 11
@@ -380,7 +394,9 @@ fields:
       * `hip.SGEIP`
     type: RO-H
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   LCOFIP:
     location: 13
     alias:
@@ -406,7 +422,9 @@ fields:
       <%- end -%>
     type: RW-H
     reset_value: 0
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
 sw_read(): |
   # OR in the hidden smode external interrupt
   return

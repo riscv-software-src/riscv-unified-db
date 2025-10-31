@@ -12,9 +12,10 @@ description: |
   move `simm2` to `rd` otherwise.
   Instruction encoded in R4 instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcics
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcics
 base: 32
 encoding:
   match: -----01----------010-----1011011

@@ -35,10 +35,12 @@ description: |
   provide mechanisms for efficient multiprocessor instruction-stream
   synchronization.
   ====
-definedBy: Zifencei
+definedBy:
+  extension:
+    name: Zifencei
 assembly: ""
 encoding:
-  match: -----------------001-----0001111
+  match: "-----------------001-----0001111"
   variables:
     - name: imm
       location: 31-20

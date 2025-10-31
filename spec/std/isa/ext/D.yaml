@@ -14,9 +14,10 @@ versions:
     ratification_date: 2019-12
     changes:
       - Define NaN-boxing scheme, changed definition of FMAX and FMIN
-    implies:
-      name: F
-      version: "2.2.0"
+    requirements:
+      extension:
+        name: F
+        version: = 2.2.0
 description: |
   The `D` extension adds
   double-precision floating-point computational instructions compliant
@@ -106,9 +107,3 @@ description: |
   normalization except for skipping over leading-1 bits instead of
   skipping over leading-0 bits, allowing the datapath muxing to be shared.
   ====
-params:
-  MUTABLE_MISA_D:
-    description: |
-      Indicates whether or not the `D` extension can be disabled with the `misa.D` bit.
-    schema:
-      type: boolean

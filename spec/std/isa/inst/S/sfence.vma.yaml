@@ -7,7 +7,9 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sfence.vma
 long_name: Supervisor memory-management fence
-definedBy: S
+definedBy:
+  extension:
+    name: S
 description: |
   The supervisor memory-management fence instruction `SFENCE.VMA` is used to
   synchronize updates to in-memory memory-management data structures with

@@ -4,7 +4,7 @@
 
 # frozen_string_literal: true
 
-require "minitest/autorun"
+require_relative "test_helper"
 require "udb/cli"
 
 class TestCli < Minitest::Test

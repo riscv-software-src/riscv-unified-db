@@ -9,7 +9,9 @@ name: vredmin.vs
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 000101-----------010-----1010111

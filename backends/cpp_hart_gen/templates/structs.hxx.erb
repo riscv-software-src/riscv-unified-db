@@ -10,8 +10,8 @@
 namespace udb {
 
 #define __UDB_STRUCT(name) <%= name_of(:cfg, cfg_arch) %>_ ## name ## _Struct
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
-#define __UDB_RUNTIME_PARAM(param_name) hart->params().param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
+#define __UDB_RUNTIME_PARAM(param_name) hart->params().param_name.value()
 #define __UDB_HART hart
 
   <%- cfg_arch.global_ast.structs.each do |struct| -%>

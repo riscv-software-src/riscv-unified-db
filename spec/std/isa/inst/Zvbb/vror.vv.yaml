@@ -9,7 +9,9 @@ name: vror.vv
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvbb
+definedBy:
+  extension:
+    name: Zvbb
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 010100-----------000-----1010111

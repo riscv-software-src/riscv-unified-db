@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MISALIGNED_SPLIT_STRATEGY
+long_name: |
+  The *order* the implementation appears
+  to process a non-atomic misaligned load/store, which determines how/which
+  exceptions will be reported.
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+    - param:
+        name: MISALIGNED_LDST
+        equal: true
+        reason: Granule size is only relevant when misaligned load/stores might execute without an exception.
+description: |
+  Options:
+
+    * sequential_bytes: The load/store appears to be broken into byte-sized accesses that processed sequentially from smallest address to largest address
+    * custom: Something else. Will result in a call to unpredictable() in the execution
+
+schema:
+  type: string
+  enum: [sequential_bytes, custom]

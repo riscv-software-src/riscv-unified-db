@@ -13,7 +13,10 @@ description:
     text: |
       `fcvt.h.d` converts a Double-precision Floating-point number to a Half-precision floating-point number.
 definedBy:
-  allOf: [D, Zfh]
+  extension:
+    allOf:
+      - name: D
+      - name: Zfh
 assembly: fd, fs1, rm
 encoding:
   match: 010001000001-------------1010011

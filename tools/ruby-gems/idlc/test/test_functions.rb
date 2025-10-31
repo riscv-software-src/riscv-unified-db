@@ -1,11 +1,12 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
 
-require 'idlc'
-require 'idlc/passes/reachable_exceptions'
-require_relative 'test_helper'
+require "idlc"
+require "idlc/passes/reachable_exceptions"
+require_relative "test_helper"
 require "minitest/autorun"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
@@ -146,7 +147,7 @@ class TestVariables < Minitest::Test
     @cfg_arch.global_ast = ast
     ast.freeze_tree(@symtab)
 
-    test_ast = ast.functions.select { |f| f.name == "test" }[0]
+    test_ast = ast.functions.find { |f| f.name == "test" }
     pruned_test_ast = test_ast.body.prune(@symtab.deep_clone)
     assert_equal (1 << 1), pruned_test_ast.reachable_exceptions(@symtab.deep_clone)
   end

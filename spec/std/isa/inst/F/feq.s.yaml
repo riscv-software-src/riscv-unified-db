@@ -11,7 +11,10 @@ description: |
   The `feq.s` instruction writes 1 to `xd` if `fs1` and `fs2` are equal, and 0 otherwise.
   If either operand is NaN, the result is 0 (not equal). If either operand is a signaling NaN,
   the invalid flag is set. Positive zero is considered equal to negative zero.
-definedBy: F
+
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------010-----1010011

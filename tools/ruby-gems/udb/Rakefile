@@ -28,6 +28,7 @@ namespace :chore do
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
@@ -38,6 +39,19 @@ namespace :chore do
     task :lsp do
       Dir.chdir(RUBY_UDB_ROOT) do
         sh "bundle exec srb tc --lsp --disable-watchman"
+      end
+    end
+
+    task :collate_cov, [:cov_dir] do |t, args|
+      require "simplecov"
+      require "simplecov-cobertura"
+
+      SimpleCov.collate Dir["#{args[:cov_dir]}/*.resultset.json"] do
+        coverage_dir (UDB_ROOT / "coverage").to_s
+        formatter SimpleCov::Formatter::MultiFormatter.new([
+          SimpleCov::Formatter::CoberturaFormatter,
+          SimpleCov::Formatter::HTMLFormatter,
+        ])
       end
     end
   end

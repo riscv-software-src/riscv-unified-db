@@ -18,7 +18,10 @@ description:
       exception flag to be set; no other exception flags are set. `fround.d` is encoded like `fcvt.d.s`, but with
       `xs2` set to 4.
 definedBy:
-  allOf: [D, Zfa]
+  extension:
+    allOf:
+      - name: D
+      - name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010000100100-------------1010011

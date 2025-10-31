@@ -1,0 +1,99 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MTVAL_WIDTH
+long_name: |
+  Width of the `mtval` CSR
+definedBy:
+  extension:
+    name: Sm
+description: |
+  The number of implemented bits in the `mtval` CSR.
+  This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+  assist software in handling the trap (e.g., address associated with exception).
+
+  Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
+
+schema:
+  oneOf:
+    - when:
+        param:
+          name: MXLEN
+          equal: 32
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 32
+    - when:
+        param:
+          name: MXLEN
+          equal: 64
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 64
+
+requirements:
+  idl(): |
+    # in RV32, MTVAL must be able to hold a physical address if M-mode takes an exception
+    # that reports an address
+    # Since phyiscal address width can be larger than 32 with Sv32, need to downsize MTVAL in that case
+    (
+      MXLEN == 32 &&
+      PHYS_ADDR_WIDTH > 32 &&
+        (
+          implemented?(ExtensionName::Sdext) ||
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+        )
+    ) -> (MTVAL_WIDTH == 32);
+
+    (
+      (
+        MXLEN == 64 ||
+        (
+          MXLEN == 32 &&
+          PHYS_ADDR_WIDTH <= 32
+        )
+      ) &&
+        (
+          implemented?(ExtensionName::Sdext) ||
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+        )
+    ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
+
+    (
+      implemented?(ExtensionName::S) &&
+      (
+        implemented?(ExtensionName::Sdext) ||
+        REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+        REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+        REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+        REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+        REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+      )
+    ) -> (MTVAL_WIDTH >= max_va_size());
+
+    REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION -> (MTVAL_WIDTH >= INSTR_ENC_SIZE);
+  reason: |
+    `mtval` must be able to hold physical and/or virtual addresses

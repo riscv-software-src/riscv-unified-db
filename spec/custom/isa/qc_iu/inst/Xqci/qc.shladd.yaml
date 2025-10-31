@@ -11,10 +11,11 @@ description: |
   Left shift _rs1_ by _shamt_ and add the value in _rs2_.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">= 0.2"
-    - Xqciac
+  extension:
+    anyOf:
+      - name: Xqci
+        version: ">= 0.2"
+      - name: Xqciac
 base: 32
 encoding:
   match: 01---------------011-----0001011

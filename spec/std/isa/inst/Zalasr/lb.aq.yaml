@@ -9,7 +9,9 @@ name: lb.aq
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zalasr
+definedBy:
+  extension:
+    name: Zalasr
 assembly: xd, (xs1)
 encoding:
   match: 001101000000-----000-----0101111

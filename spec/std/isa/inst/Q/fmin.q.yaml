@@ -16,7 +16,9 @@ description:
       If both inputs are _NaN_s, the result is the canonical _NaN_.
       If only one operand is a _NaN_, the result is the non-_NaN_ operand.
       Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, fs2
 encoding:
   match: 0010111----------000-----1010011

@@ -16,8 +16,14 @@ description: |
   C.LDSP is only valid when xd ≠ x0; code points with xd=x0 are reserved.
 definedBy:
   anyOf:
-    - C
-    - Zca
+    - allOf:
+        - xlen: 32
+        - extension:
+            name: Zclsd
+    - allOf:
+        - xlen: 64
+        - extension:
+            name: Zca
 assembly: xd, imm(sp)
 encoding:
   RV32:

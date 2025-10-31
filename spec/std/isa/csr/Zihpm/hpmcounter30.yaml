@@ -59,7 +59,9 @@ description: |
   <%- end -%>
 priv_mode: U
 length: 64
-definedBy: Zihpm
+definedBy:
+  extension:
+    name: Zihpm
 fields:
   COUNT:
     location: 63-0

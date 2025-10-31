@@ -33,7 +33,9 @@ description: |
   <%- end -%>
 
   CBO operations never raise a misaligned address fault.
-definedBy: Zicboz
+definedBy:
+  extension:
+    name: Zicboz
 assembly: (xs1)
 encoding:
   match: 000000000100-----010000000001111

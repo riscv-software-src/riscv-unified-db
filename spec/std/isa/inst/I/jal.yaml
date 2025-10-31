@@ -10,10 +10,12 @@ long_name: Jump and link
 description: |
   Jump to a PC-relative offset and store the return
   address in xd.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm
 encoding:
-  match: -------------------------1101111
+  match: "-------------------------1101111"
   variables:
     - name: imm
       location: 31|19-12|20|30-21

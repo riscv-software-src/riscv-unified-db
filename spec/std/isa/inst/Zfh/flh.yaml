@@ -15,10 +15,14 @@ description: |
   `flh` is only guaranteed to execute atomically if the effective address is naturally aligned.
 
 definedBy:
-  anyOf: [Zfh, Zfhmin, Zhinx]
+  extension:
+    anyOf:
+      - name: Zfh
+      - name: Zfhmin
+      - name: Zhinx
 assembly: fd, imm(xs1)
 encoding:
-  match: -----------------001-----0000111
+  match: "-----------------001-----0000111"
   variables:
     - name: imm
       location: 31-20

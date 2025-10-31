@@ -20,7 +20,8 @@ namespace :chore do
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(IDLC_ROOT) do
-        sh "bundle update --gemfile #{IDLC_ROOT}/Gemfile"
+        sh "bundle install --gemfile #{IDLC_ROOT}/Gemfile"
+        sh "bundle update --gemfile #{IDLC_ROOT}/Gemfile --all"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca gems --all"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca dsl"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca annotations"
@@ -35,6 +36,12 @@ namespace :test do
     task :sorbet  do
       Dir.chdir(IDLC_ROOT) do
         sh "bundle exec srb tc"
+      end
+    end
+
+    task :sorbet_coverage do
+      Dir.chdir(IDLC_ROOT) do
+        sh "bundle exec spoom srb coverage"
       end
     end
 

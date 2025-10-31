@@ -7,11 +7,15 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: addi
 long_name: Add immediate
-description: Adds an immediate value to the value in xs1, and store the result in xd
-definedBy: I
+description:
+  Adds an immediate value to the value in xs1, and store the result in
+  xd
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------000-----0010011
+  match: "-----------------000-----0010011"
   variables:
     - name: imm
       location: 31-20
