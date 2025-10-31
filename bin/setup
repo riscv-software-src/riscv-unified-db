@@ -197,16 +197,6 @@ if [ ! -f $ROOT/ext/rbi-central/README.md ]; then
     git submodule update --init ext/rbi-central
 fi
 
-if [ ! -d $ROOT/.home/.venv ]; then
-    ${RUN} /usr/bin/python3 -m venv ${ROOT}/.home/.venv
-fi
-
-source ${ROOT}/.home/.venv/bin/activate
-
-if [ ! -f ${ROOT}/.home/.venv/bin/pre-commit ]; then
-    ${RUN} ${ROOT}/.home/.venv/bin/pip install -r requirements.txt
-fi
-
 # if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
 #   git submodule update --init ext/riscv-opcodes
 # fi
@@ -219,10 +209,6 @@ if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     fi
 fi
 
-if [ ! -d ${ROOT}/node_modules ]; then
-    ${RUN} npm i
-fi
-
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     BUNDLE="bundle"
     RUBY="bundle exec ruby"
@@ -230,8 +216,8 @@ if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     NPM="npm"
     NPX="npx"
     NODE="node"
-    PYTHON="${ROOT}/.home/.venv/bin/python3"
-    PIP="${ROOT}/.home/.venv/bin/pip"
+    PYTHON="/opt/venv/bin/python3"
+    PIP="/opt/venv/bin/pip"
     BASH="bash"
     GPP="g++"
     GDB="gdb"
@@ -245,8 +231,8 @@ elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; the
     NPM="${CONTAINER_BASE} npm"
     NPX="${CONTAINER_BASE} npx"
     NODE="${CONTAINER_BASE} node"
-    PYTHON="${CONTAINER_BASE} ${ROOT}/.home/.venv/bin/python3"
-    PIP="${CONTAINER_BASE} ${ROOT}/.home/.venv/bin/pip"
+    PYTHON="${CONTAINER_BASE} /opt/venv/bin/python3"
+    PIP="${CONTAINER_BASE} /opt/venv/bin/pip"
     BASH="${CONTAINER_BASE} bash"
     GPP="${CONTAINER_BASE} g++"
     GDB="${CONTAINER_BASE} gdb"
@@ -260,8 +246,8 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
     NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
     NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
-    PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/python3"
-    PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
+    PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/python3"
+    PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} /opt/venv/bin/pip"
     BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
     GPP="singularity run ${HOME_OPT} ${CONTAINER_PATH} g++"
     GDB="singularity run ${HOME_OPT} ${CONTAINER_PATH} gdb"
