@@ -3,8 +3,4 @@
 ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
 source $ROOT/setup
 
-if [ ! -v VIRTUAL_ENV ]; then
-  source ${ROOT}/.home/.venv/bin/activate
-fi
-
 $PIP "$@"
