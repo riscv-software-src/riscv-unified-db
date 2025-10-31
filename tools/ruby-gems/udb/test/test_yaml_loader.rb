@@ -26,7 +26,7 @@ class TestYamlLoader < Minitest::Test
 
       stdout, stderr, status =
         Dir.chdir(Udb.repo_root) do
-          Open3.capture3("/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
+          Open3.capture3("/opt/venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}")
         end
       # puts stdout
       # puts stderr
@@ -53,7 +53,7 @@ class TestYamlLoader < Minitest::Test
         File.write(test_dir / "test#{i + 1}.yaml", yaml)
       end
 
-      system "/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
+      system "/opt/venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}"
 
       if $CHILD_STATUS == 0
         YAML.load_file(resolved_dir / "test" / "test1.yaml")
