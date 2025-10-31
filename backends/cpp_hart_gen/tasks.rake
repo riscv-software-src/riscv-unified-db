@@ -342,7 +342,7 @@ namespace :build do
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
-      sh "make -j #{$jobs}"
+      sh "make -j #{$jobs} iss"
     end
   end
 
