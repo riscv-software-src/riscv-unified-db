@@ -152,7 +152,7 @@ module Udb
       @gen_path = gen_path_override || (@repo_root / "gen")
       @std_path = std_path_override || (@repo_root / "spec" / "std" / "isa")
       @custom_path = custom_path_override || (@repo_root / "spec" / "custom" / "isa")
-      @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
+      @python_path = python_path_override || Pathname.new("/opt") / "venv" / "bin" / "python3"
       @quiet = quiet
       @mutex = Thread::Mutex.new
 

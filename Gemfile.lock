@@ -351,7 +351,6 @@ DEPENDENCIES
   rubocop-performance
   rubocop-sorbet
   ruby-prof
-  ruby-progressbar (~> 1.13)
   simplecov
   simplecov-cobertura
   solargraph

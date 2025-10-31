@@ -1,10 +1,9 @@
 Bootstrap: docker
 From: ubuntu:24.04
 
-# %files
-
-#   Gemfile $HOME/
-#   package.json $HOME/
+%files
+  requirements.txt /opt/requirements.txt
+  package.json /opt/node/package.json
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -70,7 +69,17 @@ From: ubuntu:24.04
   cd ..
   rm -rf mustool
 
-# cleanup
+  # Create Python virtual environment and install packages
+  /usr/bin/python3 -m venv /opt/venv
+  /opt/venv/bin/pip install -r /opt/requirements.txt
+  rm /opt/requirements.txt
+
+  # Install npm packages globally in the container
+  cd /opt/node
+  /usr/bin/npm i
+  rm /opt/node/package.json /opt/node/package-lock.json
+
+  # cleanup
   apt-get clean autoclean
   apt-get autoremove -y
   rm -rf /var/lib/{apt, dpkg, cache, log}
@@ -78,5 +87,6 @@ From: ubuntu:24.04
   # cd $HOME
   # bundle install
 
-  # npm i wavedrom-cli
-  # npm i i -E  @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension asciidoctor-kroki
+%environment
+  export PATH="/opt/venv/bin:/opt/node/node_modules/.bin:$PATH"
+  export NODE_PATH="/opt/node/node_modules"

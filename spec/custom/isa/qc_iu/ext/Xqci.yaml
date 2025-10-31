@@ -481,7 +481,7 @@ versions:
         - { name: Xqcisync, version: "= 0.3.0" }
 description: |
   The Xqci extension includes a set of instructions that improve RISC-V code density and
-  performance in microontrollers. It fills several gaps:
+  performance in microcontrollers. It fills several gaps:
 
   Long immediates::
   --
