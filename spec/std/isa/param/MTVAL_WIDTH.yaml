@@ -39,16 +39,44 @@ schema:
 
 requirements:
   idl(): |
+    # in RV32, MTVAL must be able to hold a physical address if M-mode takes an exception
+    # that reports an address
+    # Since phyiscal address width can be larger than 32 with Sv32, need to downsize MTVAL in that case
     (
-      implemented?(ExtensionName::Sdext) ||
-      REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
-      REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
-      REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
-      REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
-      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
-      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
-      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
-      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+      MXLEN == 32 &&
+      PHYS_ADDR_WIDTH > 32 &&
+        (
+          implemented?(ExtensionName::Sdext) ||
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+        )
+    ) -> (MTVAL_WIDTH == 32);
+
+    (
+      (
+        MXLEN == 64 ||
+        (
+          MXLEN == 32 &&
+          PHYS_ADDR_WIDTH <= 32
+        )
+      ) &&
+        (
+          implemented?(ExtensionName::Sdext) ||
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+        )
     ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
 
     (

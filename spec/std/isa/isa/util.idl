@@ -33,7 +33,12 @@ function has_virt_mem? {
 function max_va_size {
   returns Bits<8>
   description {
-    Returns the largest possible Virtual Address width in any supported translation mode
+    Returns the largest possible Virtual Address width in any supported translation mode.
+
+    The max VA is determined by physical address size when in M mode or S-mode with Bare translation.
+    Otherwise, max VA is the size of a virtual address in the largest supported Sv* mode.
+
+    Return the largest that applies.
   }
   body {
     Bits<8> translated_va_size = 0;
@@ -47,10 +52,15 @@ function max_va_size {
       translated_va_size = 32;
     }
 
-    if ((!implemented?(ExtensionName::S) || SATP_MODE_BARE) &&
-        (PHYS_ADDR_WIDTH > translated_va_size)) {
-      return PHYS_ADDR_WIDTH;
+    if (PHYS_ADDR_WIDTH > translated_va_size) {
+      # max va is determined by physical address
+      if (PHYS_ADDR_WIDTH > MXLEN) {
+        return MXLEN;
+      } else {
+        return PHYS_ADDR_WIDTH;
+      }
     } else {
+      # max va is determined by translated virtual address
       return translated_va_size;
     }
   }

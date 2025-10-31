@@ -121,3 +121,5 @@ sw_read(): |
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
+
+  return $bits(CSR[jvt]);

@@ -29,9 +29,7 @@ requirements:
     }
     for (U32 i = 3; i < 32; i++) {
       !implemented?(ExtensionName::Zihpm) -> !SCOUNTENABLE_EN[i];
-    }
-    for (U32 i = 3; i < 32; i++) {
-      !HPM_COUNTER_EN[i] -> !SCOUNTENABLE_EN[i];
+      (implemented?(ExtensionName::Smhpm) && !HPM_COUNTER_EN[i]) -> !SCOUNTENABLE_EN[i];
     }
   reason: |
     Counters 0-2 are defined by Zicntr

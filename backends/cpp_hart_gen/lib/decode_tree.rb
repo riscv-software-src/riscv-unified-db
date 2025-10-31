@@ -216,7 +216,7 @@ class DecodeGen
   def extract_dv(dv, encoding_var_name)
     idx = 0
     efs = []
-    dv.encoding_fields.reverse.each do |ef|
+    dv.encoding_fields.reverse_each do |ef|
       bits = "#{encoding_var_name}.extract<#{ef.range.last}, #{ef.range.first}>()"
       efs <<
         if idx.zero?
@@ -298,18 +298,52 @@ class DecodeGen
           end
 
           if child.type == DecodeTreeNode::ENDPOINT_TYPE && needs_to_check_implemented?(child.insts[0])
-            conds << child.insts[0].defined_by_condition.to_cxx do |ext_name, ext_version_req|
-              if ext_version_req.nil?
-                "implemented_Q_(ExtensionName::#{ext_name})"
-              else
-                "implemented_version_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\"sv)"
+            conds << child.insts[0].defined_by_condition.to_cxx do |term|
+              if term.is_a?(Udb::ExtensionTerm)
+                if term.matches_any_version?
+                  "implemented_Q_(ExtensionName::#{term.name})"
+                else
+                  "implemented_version_Q_(ExtensionName::#{term.name}, \"#{term.comparison.serialize}#{term.version}\"sv)"
+                end
+              elsif term.is_a?(Udb::XlenTerm)
+                "(xlen() == #{term.xlen}_b)"
+              elsif term.is_a?(Udb::ParamterTerm)
+                var =
+                  if cfg_arch.params_with_value.key?(term.name)
+                    "m_params.#{term.name}_VALUE"
+                  else
+                    "m_params.#{term.name}"
+                  end
+                comparison_type = term.comparison_type
+                case comparison_type
+                when Udb::ParamterTerm::ParameterComparisonType::Equal
+                  "(#{var} == #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::NotEqual
+                  "(#{var} != #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::LessThan
+                  "(#{var} < #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::GreaterThan
+                  "(#{var} > #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::LessThanOrEqual
+                  "(#{var} <= #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::GreaterThanOrEqual
+                  "(#{var} >= #{term.comparison_value})"
+                when Udb::ParamterTerm::ParameterComparisonType::Includes
+                  "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
+                when Udb::ParamterTerm::ParameterComparisonType::OneOf
+                  vals = term.comparison_value
+                  tests = vals.map { |v| "(#{var} == #{v})" }.join(" || ")
+                  "(#{tests})"
+                else
+                  T.absurd(comparison_type)
+                end
               end
             end
           end
           if !conds.empty?
-            code += "#{' '*indent}#{els}if ((#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
+            code += "#{' ' * indent}#{els}if ((#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
           else
-            code += "#{' '*indent}#{els}if (#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) {\n"
+            code += "#{' ' * indent}#{els}if (#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) {\n"
           end
           code += decode_c(encoding_var_name, xlen, inst_list, child, indent + 2)
           code += "#{' ' * indent}}\n"

@@ -45,9 +45,7 @@ description: |
 
 definedBy:
   extension:
-    anyOf:
-      - name: Sm
-      - name: Smhpm
+    name: Sm
 fields:
   CY:
     location: 0

@@ -143,6 +143,11 @@ module Udb
       @version = ver.is_a?(String) ? VersionSpec.new(ver) : ver
     end
 
+    sig { returns(T::Boolean) }
+    def matches_any_version?
+      @op == ComparisonOp::Equal && @version == VersionSpec.new("0")
+    end
+
     sig { params(cfg_arch: ConfiguredArchitecture).returns(ExtensionRequirement) }
     def to_ext_req(cfg_arch)
       ExtensionRequirement.new(@name, "#{@op.serialize} #{@version}", arch: cfg_arch)
@@ -305,6 +310,9 @@ module Udb
     sig { returns(T.nilable(T::Boolean)) }
     def size = @yaml["size"]
 
+    sig { returns(T::Boolean) }
+    def array_comparison? = @yaml.key?("index") || @yaml.key?("size") || @yaml.key?("includes")
+
     sig { returns(ValueType) }
     def comparison_value
       @yaml.fetch(comparison_type.serialize)
@@ -366,7 +374,7 @@ module Udb
       return SatisfiedResult::Maybe if val.nil?
 
       if val.is_a?(Array)
-        raise "Missing index, includes, or size key in #{@yaml}" unless @yaml.key?("index") || @yaml.key?("includes") || @yaml.key?("size")
+        raise "Missing index, includes, or size key in #{@yaml}" unless array_comparison?
 
         if @yaml.key?("index")
           raise "Index out of range" if T.cast(@yaml.fetch("index"), Integer) >= T.cast(val, Array).size
@@ -420,9 +428,17 @@ module Udb
       t = comparison_type
       case t
       when ParameterComparisonType::Equal
-        "(#{param_to_s}==#{comparison_value})"
+        if comparison_value.is_a?(String)
+          "(#{param_to_s}==\"#{comparison_value}\")"
+        else
+          "(#{param_to_s}==#{comparison_value})"
+        end
       when ParameterComparisonType::NotEqual
-        "(#{param_to_s}!=#{comparison_value})"
+        if comparison_value.is_a?(String)
+          "(#{param_to_s}!=\"#{comparison_value}\")"
+        else
+          "(#{param_to_s}!=#{comparison_value})"
+        end
       when ParameterComparisonType::LessThan
         "(#{param_to_s}<#{comparison_value})"
       when ParameterComparisonType::GreaterThan
@@ -556,6 +572,12 @@ module Udb
       if param_is_array?
         if @yaml.key?("includes")
           if other_param.to_h.key?("index") && other_param.to_h.key?("equals") && (other_param.to_h.fetch("equals") == @yaml.fetch("includes"))
+            self_implies_other
+          elsif other_param.to_h.key?("size") && other_param.to_h.key?("equals") && (other_param.to_h.fetch("equals") == 0)
+            self_implies_not_other
+          elsif other_param.to_h.key?("size") && other_param.to_h.key?("not_equal") && (other_param.to_h.fetch("not_equal") == 0)
+            self_implies_other
+          elsif other_param.to_h.key?("size") && other_param.to_h.key?("greater_than") && (other_param.to_h.fetch("greater_than") == 0)
             self_implies_other
           end
         elsif @yaml.key?("size")
@@ -756,7 +778,11 @@ module Udb
             self_implies_not_other
           end
         when ParameterComparisonType::Includes
-          raise "impossible"
+          # if self is a size operation and size is 0, we can know that other_param does not include
+          # otherwise, we know nothing
+          if @yaml.key?("size") && size == 0
+            self_implies_not_other
+          end
         else
           T.absurd(other_op)
         end
@@ -857,7 +883,7 @@ module Udb
         size.nil? ? 1 : -1
       elsif @yaml.key?("includes") || other_param.to_h.key?("includes")
         if @yaml.key?("includes") && other_param.to_h.key?("includes")
-          @yaml.fetch("includes") <=> other_param.to_h.key?("includes")
+          @yaml.fetch("includes") <=> other_param.to_h.fetch("includes")
         elsif @yaml.key?("includes") && !other_param.to_h.key?("includes")
           1
         elsif !@yaml.key?("includes") && other_param.to_h.key?("includes")
@@ -865,7 +891,7 @@ module Udb
         end
       elsif @yaml.key?("oneOf") || other_param.to_h.key?("oneOf")
         if @yaml.key?("oneOf") && other_param.to_h.key?("oneOf")
-          @yaml.fetch("oneOf") <=> other_param.to_h.key?("oneOf")
+          @yaml.fetch("oneOf") <=> other_param.to_h.fetch("oneOf")
         elsif @yaml.key?("oneOf")
           1
         else
@@ -1720,7 +1746,7 @@ module Udb
       when LogicNodeType::Xor, LogicNodeType::None
         nnf.to_idl(cfg_arch)
       when LogicNodeType::If
-        "(#{node_children.fetch(0).to_idl(cfg_arch)}) -> (#{node_children.fetch(1).to_idl(cfg_arch)})"
+        "(!(#{node_children.fetch(0).to_idl(cfg_arch)}) || (#{node_children.fetch(1).to_idl(cfg_arch)}))"
       else
         T.absurd(@type)
       end
@@ -2738,7 +2764,6 @@ module Udb
 
           if nterms < 4 && literals.size <= 32
             # just brute force it
-
             term_idx = T.let({}, T::Hash[TermType, Integer])
             terms.each_with_index do |term, idx|
               term_idx[term] = idx

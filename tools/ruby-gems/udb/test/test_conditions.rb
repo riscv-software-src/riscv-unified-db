@@ -364,6 +364,44 @@ class TestConditions < Minitest::Test
       end
     end
 
+    # test all param defined_by
+    $db_cfg_arch.params.each do |param|
+      define_method("test_param_#{param.name.gsub(".", "_")}_defined_by") do
+        assert param.defined_by_condition.satisfiable?
+        assert param.defined_by_condition.could_be_satisfied_by_cfg_arch?($db_cfg_arch)
+
+        h = param.defined_by_condition.to_h
+        idl = param.defined_by_condition.to_idl($db_cfg_arch)
+
+        idl_cond = IdlCondition.new({ "idl()" => idl }, $db_cfg_arch, input_file: nil, input_line: nil)
+        assert idl_cond.equivalent?(param.defined_by_condition)
+        h_cond = Condition.new(h, $db_cfg_arch)
+        assert h_cond.equivalent?(param.defined_by_condition)
+
+        assert idl_cond.equivalent?(h_cond), "#{idl_cond.to_s_pretty} is not equivalent to #{h_cond.to_s_pretty}"
+      end
+    end
+
+    # test all param requirements
+    $db_cfg_arch.params.each do |param|
+      define_method("test_param_#{param.name.gsub(".", "_")}_requirements") do
+        assert param.requirements_condition.satisfiable?
+        assert param.requirements_condition.could_be_satisfied_by_cfg_arch?($db_cfg_arch)
+
+        h = param.requirements_condition.to_h
+        idl = param.requirements_condition.to_idl($db_cfg_arch)
+
+        idl_cond = IdlCondition.new({ "idl()" => idl }, $db_cfg_arch, input_file: nil, input_line: nil)
+        assert idl_cond.equivalent?(param.requirements_condition), "Condition coversion to IDL is not logically equivalent: \n\nOriginal:\n#{param.requirements_condition}\n\nConversion:\n#{idl}"
+        h_cond = Condition.new(h, $db_cfg_arch)
+        assert h_cond.satisfiable?
+        assert h_cond.equivalent?(param.requirements_condition), "Condition coversion to YAML is not logically equivalent: \n\nOriginal:\n#{param.requirements_condition}\n\nConversion:\n#{h}"
+
+        assert idl_cond.equivalent?(h_cond), "#{idl_cond.to_s_pretty} is not equivalent to #{h_cond.to_s_pretty}"
+      end
+    end
+
+
     # test all csr definedBy: and csr field definedBy:
     $db_cfg_arch.csrs.each do |csr|
       define_method("test_csr_#{csr.name.gsub(".", "_")}_defined_by") do

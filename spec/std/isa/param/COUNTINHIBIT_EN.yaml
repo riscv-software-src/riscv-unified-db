@@ -29,4 +29,4 @@ schema:
   minItems: 32
 definedBy:
   extension:
-    name: Smhpm
+    name: Sm

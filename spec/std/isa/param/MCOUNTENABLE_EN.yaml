@@ -24,4 +24,9 @@ schema:
   minItems: 32
 definedBy:
   extension:
-    name: Smhpm
+    name: U
+requirements:
+  idl(): |
+    for (U32 i=3; i < 32; i++) {
+      MCOUNTENABLE_EN[i] -> !implemented?(ExtensionName::Smhpm) || HPM_COUNTER_EN[i];
+    }

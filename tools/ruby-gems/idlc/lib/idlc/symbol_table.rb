@@ -159,6 +159,7 @@ module Idl
 
     class MemoizedState < T::Struct
       prop :possible_xlens, T.nilable(T::Array[Integer])
+      prop :params_hash, T.nilable(T::Hash[String, RuntimeParam])
     end
 
     sig { returns(T::Array[Integer]) }
@@ -217,7 +218,7 @@ module Idl
 
     sig { returns(T::Hash[String, RuntimeParam]) }
     def params_hash
-      @params_hash ||= @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
+      @memo.params_hash ||= @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
     end
 
     sig {

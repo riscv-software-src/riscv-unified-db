@@ -79,9 +79,12 @@ module Udb
     #           (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
     sig { returns(T::Boolean) }
     def multi_xlen?
-      return true if @mxlen.nil?
+      @memo.multi_xlen ||=
+        begin
+          return true if @mxlen.nil?
 
-      ["S", "U", "VS", "VU"].any? { |mode| multi_xlen_in_mode?(mode) }
+          ["S", "U", "VS", "VU"].any? { |mode| multi_xlen_in_mode?(mode) }
+        end
     end
 
     # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
@@ -98,78 +101,81 @@ module Udb
     #           (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
     sig { params(mode: String).returns(T::Boolean) }
     def multi_xlen_in_mode?(mode)
-      return false if mxlen == 32
+      @memo.multi_xlen_in_mode[mode] ||=
+        begin
+          return false if mxlen == 32
 
-      case mode
-      when "M"
-        mxlen.nil?
-      when "S"
-        return true if unconfigured?
+          case mode
+          when "M"
+            mxlen.nil?
+          when "S"
+            return true if unconfigured?
 
-        if fully_configured?
-          ext?(:S) && (param_values["SXLEN"].size > 1)
-        elsif partially_configured?
-          return false if prohibited_ext?(:S)
+            if fully_configured?
+              ext?(:S) && (param_values["SXLEN"].size > 1)
+            elsif partially_configured?
+              return false if prohibited_ext?(:S)
 
-          return true unless ext?(:S) # if S is not known to be implemented, we can't say anything about it
+              return true unless ext?(:S) # if S is not known to be implemented, we can't say anything about it
 
-          return true unless param_values.key?("SXLEN")
+              return true unless param_values.key?("SXLEN")
 
-          param_values["SXLEN"].size > 1
-        else
-          raise "Unexpected configuration state"
+              param_values["SXLEN"].size > 1
+            else
+              raise "Unexpected configuration state"
+            end
+          when "U"
+            return false if prohibited_ext?(:U)
+
+            return true if unconfigured?
+
+            if fully_configured?
+              ext?(:U) && (param_values["UXLEN"].size > 1)
+            elsif partially_configured?
+              return true unless ext?(:U) # if U is not known to be implemented, we can't say anything about it
+
+              return true unless param_values.key?("UXLEN")
+
+              param_values["UXLEN"].size > 1
+            else
+              raise "Unexpected configuration state"
+            end
+          when "VS"
+            return false if prohibited_ext?(:H)
+
+            return true if unconfigured?
+
+            if fully_configured?
+              ext?(:H) && (param_values["VSXLEN"].size > 1)
+            elsif partially_configured?
+              return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
+
+              return true unless param_values.key?("VSXLEN")
+
+              param_values["VSXLEN"].size > 1
+            else
+              raise "Unexpected configuration state"
+            end
+          when "VU"
+            return false if prohibited_ext?(:H)
+
+            return true if unconfigured?
+
+            if fully_configured?
+              ext?(:H) && (param_values["VUXLEN"].size > 1)
+            elsif partially_configured?
+              return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
+
+              return true unless param_values.key?("VUXLEN")
+
+              param_values["VUXLEN"].size > 1
+            else
+              raise "Unexpected configuration state"
+            end
+          else
+            raise ArgumentError, "Bad mode"
+          end
         end
-      when "U"
-        return false if prohibited_ext?(:U)
-
-        return true if unconfigured?
-
-        if fully_configured?
-          ext?(:U) && (param_values["UXLEN"].size > 1)
-        elsif partially_configured?
-          return true unless ext?(:U) # if U is not known to be implemented, we can't say anything about it
-
-          return true unless param_values.key?("UXLEN")
-
-          param_values["UXLEN"].size > 1
-        else
-          raise "Unexpected configuration state"
-        end
-      when "VS"
-        return false if prohibited_ext?(:H)
-
-        return true if unconfigured?
-
-        if fully_configured?
-          ext?(:H) && (param_values["VSXLEN"].size > 1)
-        elsif partially_configured?
-          return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
-
-          return true unless param_values.key?("VSXLEN")
-
-          param_values["VSXLEN"].size > 1
-        else
-          raise "Unexpected configuration state"
-        end
-      when "VU"
-        return false if prohibited_ext?(:H)
-
-        return true if unconfigured?
-
-        if fully_configured?
-          ext?(:H) && (param_values["VUXLEN"].size > 1)
-        elsif partially_configured?
-          return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
-
-          return true unless param_values.key?("VUXLEN")
-
-          param_values["VUXLEN"].size > 1
-        else
-          raise "Unexpected configuration state"
-        end
-      else
-        raise ArgumentError, "Bad mode"
-      end
     end
 
     # @return [Array<Integer>] List of possible XLENs in any mode for this config
@@ -180,6 +186,13 @@ module Udb
     # hash for Hash lookup
     sig { override.returns(Integer) }
     def hash = @name_sym.hash
+
+    sig { override.params(other: T.anything).returns(T::Boolean) }
+    def eql?(other)
+      return false unless other.is_a?(ConfiguredArchitecture)
+
+      @name.eql?(other.name)
+    end
 
     # @return Symbol table with global scope included
     sig { returns(Idl::SymbolTable) }
@@ -263,7 +276,7 @@ module Udb
           reasons << "Parameter is not defined by this config: '#{param_name}'. Needs: #{p.defined_by_condition}"
         end
         unless p.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition}"
+          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition}        #{p.requirements_condition.to_logic_tree(expand: true)}"
         end
       end
 
@@ -484,6 +497,16 @@ module Udb
     end
     private :create_symtab
 
+    class MemoizedState < T::Struct
+      prop :multi_xlen_in_mode, T::Hash[String, T::Boolean]
+      prop :multi_xlen, T.nilable(T::Boolean)
+      prop :params_with_value, T.nilable(T::Array[ParameterWithValue])
+      prop :params_without_value, T.nilable(T::Array[Parameter])
+      prop :out_of_scope_params, T.nilable(T::Array[Parameter])
+      prop :implemented_extension_versions, T.nilable(T::Array[ExtensionVersion])
+      prop :implemented_extension_version_hash, T.nilable(T::Hash[String, ExtensionVersion])
+    end
+
     # Initialize a new configured architecture definition
     #
     # @param name [:to_s]      The name associated with this ConfiguredArchitecture
@@ -496,6 +519,8 @@ module Udb
 
       @name = name.to_s.freeze
       @name_sym = @name.to_sym.freeze
+
+      @memo = MemoizedState.new(multi_xlen_in_mode: {})
 
       @config = config
       @config_type = T.let(@config.type, ConfigType)
@@ -656,7 +681,7 @@ module Udb
     # @return List of all parameters with one known value in the config
     sig { returns(T::Array[ParameterWithValue]) }
     def params_with_value
-      @params_with_value ||=
+      @memo.params_with_value ||=
         @config.param_values.map do |param_name, param_value|
           p = param(param_name)
           if p.nil?
@@ -670,7 +695,7 @@ module Udb
     # List of all available parameters without one known value in the config
     sig { returns(T::Array[Parameter]) }
     def params_without_value
-      @params_without_value ||=
+      @memo.params_without_value ||=
         params.select do |p|
           !@config.param_values.key?(p.name) \
             && p.defined_by_condition.could_be_satisfied_by_cfg_arch?(self)
@@ -680,30 +705,31 @@ module Udb
     # Returns list of parameters that out of scope for the config
     sig { returns(T::Array[Parameter]) }
     def out_of_scope_params
-      return @out_of_scope_params unless @out_of_scope_params.nil?
+      @memo.out_of_scope_params ||=
+        begin
+          out_of_scope_params = []
+          params.each do |param|
+            next if params_with_value.any? { |p| p.name == param.name }
+            next if params_without_value.any? { |p| p.name == param.name }
 
-      @out_of_scope_params = []
-      params.each do |param|
-        next if params_with_value.any? { |p| p.name == param.name }
-        next if params_without_value.any? { |p| p.name == param.name }
-
-        @out_of_scope_params << param
-      end
-      @out_of_scope_params
+            out_of_scope_params << param
+          end
+          out_of_scope_params
+        end
     end
 
     # @return List of extension versions explicitly marked as implemented in the config.
     sig { returns(T::Array[ExtensionVersion]) }
     def implemented_extension_versions
-      return @explicitly_implemented_extension_versions if defined?(@explicitly_implemented_extension_versions)
+      @memo.implemented_extension_versions ||=
+        begin
+          unless fully_configured?
+            raise ArgumentError, "implemented_extension_versions only valid for fully configured systems"
+          end
 
-      unless fully_configured?
-        raise ArgumentError, "implemented_extension_versions only valid for fully configured systems"
-      end
-
-      @explicitly_implemented_extension_versions ||=
-        T.cast(@config, FullConfig).implemented_extensions.map do |e|
-          ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: false)
+          T.cast(@config, FullConfig).implemented_extensions.map do |e|
+            ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: false)
+          end
         end
     end
 
@@ -740,12 +766,10 @@ module Udb
 
     sig { params(ext_name: String).returns(T.nilable(ExtensionVersion)) }
     def implemented_extension_version(ext_name)
-      @implemented_extension_version_hash ||=
-        implemented_extension_versions.map do |ext_ver|
-          [ext_ver.name, ext_ver]
-        end.to_h
+      @memo.implemented_extension_version_hash ||=
+        implemented_extension_versions.to_h { |ext_ver| [ext_ver.name, ext_ver] }
 
-      @implemented_extension_version_hash[ext_name]
+      @memo.implemented_extension_version_hash[ext_name]
     end
 
     # @return List of all mandatory extension requirements (not transitive)

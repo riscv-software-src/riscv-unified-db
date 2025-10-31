@@ -22,7 +22,7 @@ implemented_extensions:
   - [Sv32, "1.11.0"]
 
 params:
-  MXLEN: 64
+  MXLEN: 32
   MARCHID_IMPLEMENTED: true
   ARCH_ID_VALUE: 1
   MIMPID_IMPLEMENTED: true
@@ -50,7 +50,7 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 34
+  MTVAL_WIDTH: 32
   PMA_GRANULARITY: 12
   PHYS_ADDR_WIDTH: 34
   MISA_CSR_IMPLEMENTED: true
@@ -81,6 +81,76 @@ params:
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
   STVAL_WIDTH: 32
+  COUNTINHIBIT_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   SCOUNTENABLE_EN:
     [
       false,
@@ -131,3 +201,8 @@ params:
   UXLEN: [32]
   MSTATEEN_ENVCFG_TYPE: rw
   # HSTATEEN_ENVCFG_TYPE: rw
+  # MSTATEEN_AIA_TYPE: rw
+  # MSTATEEN_CONTEXT_TYPE: rw
+  # MSTATEEN_CSRIND_TYPE: rw
+  # MSTATEEN_IMSIC_TYPE: rw
+  # MSTATEEN_JVT_TYPE: rw

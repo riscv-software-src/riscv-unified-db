@@ -39,11 +39,7 @@ module Idl
   end
   class FunctionCallExpressionAst < AstNode
     def constexpr?(symtab)
-      if name == "implemented?"
-        true
-      else
-        false # conservative, can do better...
-      end
+      false # conservative, can do better...
     end
   end
   class CsrFieldReadExpressionAst < AstNode

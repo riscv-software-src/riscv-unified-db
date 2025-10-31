@@ -247,4 +247,11 @@ consteval unsigned __concat_width_static()
     return __concat<concat_return_t<BitsTypes...>>(bits...);
   }
 
+
+  template <typename ArrayType, typename ElementType>
+  bool _array_includes(const ArrayType& ary, const ElementType& element)
+  {
+    return std::any_of(ary.begin(), ary.end(), [element](const ArrayType::value_type& ary_element) { return element == ary_element; });
+  }
+
 }  // namespace udb

@@ -1812,8 +1812,8 @@ function gstage_page_walk {
             ExceptionCode::StoreAmoGuestPageFault );
 
     Boolean mxr = for_final_vs_pte && (CSR[mstatus].MXR == 1);
-    Boolean pbmte = CSR[menvcfg].PBMTE == 1;
-    Boolean adue = CSR[menvcfg].ADUE == 1;
+    Boolean pbmte = implemented?(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
+    Boolean adue = implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 1;
 
     # set up the value that will be written into mtinst/htinst, if required
     Bits<32> tinst = tinst_value_for_guest_page_fault(op, encoding, for_final_vs_pte);
@@ -2059,9 +2059,9 @@ function stage1_page_walk {
     # access/dirty bit hardware update enable?
     Boolean adue;
     if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
-      adue = CSR[henvcfg].ADUE == 1;
+      adue = implemented?(ExtensionName::Svadu) && CSR[henvcfg].ADUE == 1;
     } else {
-      adue = CSR[menvcfg].ADUE == 1;
+      adue = implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 1;
     }
 
     # Page-based memory type enable?
@@ -2071,9 +2071,9 @@ function stage1_page_walk {
       pbmte = false;
     } else {
       if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
-        pbmte = CSR[henvcfg].PBMTE == 1;
+        pbmte = implemented?(ExtensionName::Svpbmt) && CSR[henvcfg].PBMTE == 1;
       } else {
-        pbmte = CSR[menvcfg].PBMTE == 1;
+        pbmte = implemented(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
       }
     }
 

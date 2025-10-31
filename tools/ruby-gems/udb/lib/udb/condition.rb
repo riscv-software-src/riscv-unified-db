@@ -16,6 +16,8 @@ module Udb
 
   class DatabaseObject; end
   class TopLevelDatabaseObject < DatabaseObject; end
+  class Architecture; end
+  class ConfiguredArchitecture < Architecture; end
   class Extension < TopLevelDatabaseObject; end
   class ExtensionVersion; end
   class ExtensionRequirement; end
@@ -317,6 +319,10 @@ module Udb
       end
     end
 
+    class MemoizedState < T::Struct
+      prop :satisfied_by_cfg_arch, T::Hash[ConfiguredArchitecture, SatisfiedResult]
+    end
+
     sig {
       params(
         yaml: T.any(T::Hash[String, T.untyped], T::Boolean),
@@ -331,6 +337,7 @@ module Udb
       @cfg_arch = cfg_arch
       @input_file = input_file
       @input_line = input_line
+      @memo = MemoizedState.new(satisfied_by_cfg_arch: {})
     end
 
     sig { override.returns(T::Boolean) }
@@ -519,71 +526,76 @@ module Udb
 
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(cfg_arch)
-      if cfg_arch.fully_configured?
-        implemented_ext_cb = make_cb_proc do |term|
-          if term.is_a?(ExtensionTerm)
-            ext_ver = cfg_arch.implemented_extension_version(term.name)
-            next SatisfiedResult::No if ext_ver.nil?
-            term.to_ext_req(cfg_arch).satisfied_by?(ext_ver) \
-              ? SatisfiedResult::Yes
-              : SatisfiedResult::No
-          elsif term.is_a?(ParameterTerm)
-            term.eval(cfg_arch)
-          elsif term.is_a?(FreeTerm)
-            raise "unreachable"
-          elsif term.is_a?(XlenTerm)
-            if cfg_arch.possible_xlens.include?(term.xlen)
-              if cfg_arch.possible_xlens.size == 1
-                SatisfiedResult::Yes
+      @memo.satisfied_by_cfg_arch[cfg_arch] ||=
+        if cfg_arch.fully_configured?
+          implemented_ext_cb = make_cb_proc do |term|
+            if term.is_a?(ExtensionTerm)
+              ext_ver = cfg_arch.implemented_extension_version(term.name)
+              next SatisfiedResult::No if ext_ver.nil?
+              term.to_ext_req(cfg_arch).satisfied_by?(ext_ver) \
+                ? SatisfiedResult::Yes
+                : SatisfiedResult::No
+            elsif term.is_a?(ParameterTerm)
+              if cfg_arch.param_values.key?(term.name)
+                term.eval(cfg_arch)
               else
-                SatisfiedResult::Maybe
+                SatisfiedResult::No
+              end
+            elsif term.is_a?(FreeTerm)
+              raise "unreachable"
+            elsif term.is_a?(XlenTerm)
+              if cfg_arch.possible_xlens.include?(term.xlen)
+                if cfg_arch.possible_xlens.size == 1
+                  SatisfiedResult::Yes
+                else
+                  SatisfiedResult::Maybe
+                end
+              else
+                SatisfiedResult::No
               end
             else
-              SatisfiedResult::No
+              T.absurd(term)
             end
-          else
-            T.absurd(term)
           end
-        end
-        if to_logic_tree(expand: true).eval_cb(implemented_ext_cb) == SatisfiedResult::Yes
-          SatisfiedResult::Yes
-        else
-          SatisfiedResult::No
-        end
-      elsif cfg_arch.partially_configured?
-        cb = make_cb_proc do |term|
-          if term.is_a?(ExtensionTerm)
-            if cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cfg_ext_req.satisfied_by?(term.to_ext_req(cfg_arch)) }
-              SatisfiedResult::Yes
-            elsif cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| term.to_ext_req(cfg_arch).satisfied_by?(cfg_ext_ver) }
-              SatisfiedResult::Maybe
-            else
-              SatisfiedResult::No
-            end
-          elsif term.is_a?(ParameterTerm)
-            term.eval(cfg_arch)
-          elsif term.is_a?(FreeTerm)
-            raise "unreachable"
-          elsif term.is_a?(XlenTerm)
-            if cfg_arch.possible_xlens.include?(term.xlen)
-              if cfg_arch.possible_xlens.size == 1
+          if to_logic_tree(expand: true).eval_cb(implemented_ext_cb) == SatisfiedResult::Yes
+            SatisfiedResult::Yes
+          else
+            SatisfiedResult::No
+          end
+        elsif cfg_arch.partially_configured?
+          cb = make_cb_proc do |term|
+            if term.is_a?(ExtensionTerm)
+              if cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cfg_ext_req.satisfied_by?(term.to_ext_req(cfg_arch)) }
                 SatisfiedResult::Yes
-              else
+              elsif cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| term.to_ext_req(cfg_arch).satisfied_by?(cfg_ext_ver) }
                 SatisfiedResult::Maybe
+              else
+                SatisfiedResult::No
+              end
+            elsif term.is_a?(ParameterTerm)
+              term.eval(cfg_arch)
+            elsif term.is_a?(FreeTerm)
+              raise "unreachable"
+            elsif term.is_a?(XlenTerm)
+              if cfg_arch.possible_xlens.include?(term.xlen)
+                if cfg_arch.possible_xlens.size == 1
+                  SatisfiedResult::Yes
+                else
+                  SatisfiedResult::Maybe
+                end
+              else
+                SatisfiedResult::No
               end
             else
-              SatisfiedResult::No
+              T.absurd(term)
             end
-          else
-            T.absurd(term)
           end
-        end
 
-        to_logic_tree(expand: true).eval_cb(cb)
-      else
-        # unconfig. Can't really say anthing
-        SatisfiedResult::Maybe
-      end
+          to_logic_tree(expand: true).eval_cb(cb)
+        else
+          # unconfig. Can't really say anthing
+          SatisfiedResult::Maybe
+        end
     end
 
     sig { override.params(ext_req: ExtensionRequirement).returns(T::Boolean) }

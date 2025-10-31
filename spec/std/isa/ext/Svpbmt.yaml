@@ -14,3 +14,15 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+requirements:
+  extension:
+    allOf:
+      # Svpbmt was defined with Sm 1.13
+      # it needs at least Sm 1.11 for menvcfg defintion
+      - name: Sm
+        version: ">= 1.13"
+      # Svpbmt is not defined for Sv32
+      - anyOf:
+          - name: Sv39
+          - name: Sv48
+          - name: Sv57

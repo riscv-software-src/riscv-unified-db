@@ -114,6 +114,16 @@ module Udb
     include CertifiableObject
     include Helpers::WavedromUtil
 
+    class MemoizedState < T::Struct
+      prop :reachable_functions, T.nilable(T::Hash[Integer, Idl::FunctionBodyAst])
+    end
+
+    sig { override.params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
+    def initialize(data, data_path, arch)
+      super(data, data_path, arch)
+      @memo = MemoizedState.new
+    end
+
     sig { returns(T::Boolean) }
     def has_type? = @data.key?("format")
 
@@ -434,19 +444,20 @@ module Udb
     # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
     # @param effective_xlen [Integer] The effective XLEN to evaluate against
     # @return [Array<Idl::FunctionBodyAst>] List of all functions that can be reached from operation()
+    sig { params(effective_xlen: Integer).returns(T::Array[Idl::FunctionBodyAst]) }
     def reachable_functions(effective_xlen)
       if @data["operation()"].nil?
         []
       else
-        # RubyProf.start
-        ast = type_checked_operation_ast(effective_xlen)
-        symtab = fill_symtab(effective_xlen, ast)
-        fns = ast.reachable_functions(symtab)
-        # result = RubyProf.stop
-        # RubyProf::FlatPrinter.new(result).print($stdout)
-        # exit
-        symtab.release
-        fns
+        @memo.reachable_functions ||= T.let({}, T::Hash[Integer, Idl::FunctionBodyAst])
+        @memo.reachable_functions[effective_xlen] ||=
+          begin
+            ast = operation_ast
+            symtab = fill_symtab(effective_xlen, ast)
+            fns = ast.reachable_functions(symtab)
+            symtab.release
+            fns
+          end
       end
     end
 

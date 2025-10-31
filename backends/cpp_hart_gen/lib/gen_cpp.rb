@@ -149,10 +149,10 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2) = ";"
   end
 
-  class AryIncludesAst < AstNode
+  class ArrayIncludesAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{ary.gen_cpp(symtab, 0, indent_spaces:)}.size()"
+      "#{' ' * indent}_array_includes(#{ary.gen_cpp(symtab, 0, indent_spaces:)}, #{expr.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -1013,7 +1013,13 @@ module Idl
   class ArraySizeAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size()"
+      value_try do
+        sz = expression.value(symtab).size
+        return "#{sz}_b"
+      end
+
+      # size isn't known at compile time.
+      "#{' ' * indent}_Bits<sizeof(std::size_t)*8, false>((#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size())"
     end
   end
 

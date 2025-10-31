@@ -164,9 +164,18 @@ namespace :test do
   task :inst_encodings do
     print "Checking for conflicts in instruction encodings.."
 
+    failed = T.let(false, T::Boolean)
+
     cfg_arch = $resolver.cfg_arch_for("_")
     insts = cfg_arch.instructions
-    failed = T.let(false, T::Boolean)
+    inst_names = T.let(Set.new, T::Set[String])
+    insts.each do |i|
+      if inst_names.include?(i.name)
+        warn "Duplicate instruction name: #{i.name}"
+        failed = true
+      end
+      inst_names.add(i.name)
+    end
     insts.each_with_index do |inst, idx|
       [32, 64].each do |xlen|
         next unless inst.defined_in_base?(xlen)

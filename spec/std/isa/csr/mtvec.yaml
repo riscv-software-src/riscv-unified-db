@@ -37,6 +37,8 @@ fields:
             return CSR[mtvec].BASE;
           } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
             return UNDEFINED_LEGAL_DETERMINISTIC;
+          } else {
+            unreachable();
           }
         }
       } else if (csr_value.MODE == 1) {
@@ -47,6 +49,8 @@ fields:
             return CSR[mtvec].BASE;
           } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
             return UNDEFINED_LEGAL_DETERMINISTIC;
+          } else {
+            unreachable();
           }
         }
       } else {
@@ -54,6 +58,8 @@ fields:
           return CSR[mtvec].BASE;
         } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
           return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else {
+          unreachable();
         }
       }
     reset_value: 0
