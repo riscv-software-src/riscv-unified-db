@@ -6,10 +6,8 @@
 $schema: param_schema.json#
 kind: parameter
 name: ELEN
-description:
-  "The maximum size in bits of a vector element that any operation can produce or consume.
-
-  "
+description: |
+  The maximum size in bits of a vector element that any operation can produce or consume.
 long_name: TODO
 schema:
   type: integer

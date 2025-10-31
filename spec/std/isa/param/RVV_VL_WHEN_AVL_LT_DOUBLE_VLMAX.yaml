@@ -6,10 +6,8 @@
 $schema: param_schema.json#
 kind: parameter
 name: RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX
-description:
-  "The value assigned to VL when AVL < 2*VLMAX.
-
-  "
+description: |
+  The value assigned to VL when AVL < 2*VLMAX.
 long_name: TODO
 schema:
   type: string

@@ -6,12 +6,10 @@
 $schema: param_schema.json#
 kind: parameter
 name: FOLLOW_VTYPE_RESET_RECOMMENDATION
-description:
-  "It is recommended that at reset, vtype.vill is set, the remaining bits in vtype are zero, and vl is set to zero.
-  If this parameter is set to true, this recommendation is followed. If it is false, at reset the respective fields 
-  will be \"UNDEFINED_LEGAL\".
-
-  "
+description: |
+  It is recommended that at reset, vtype.vill is set, the remaining bits in vtype are zero, and vl is set to zero.
+  If this parameter is set to true, this recommendation is followed. If it is false, at reset the respective fields
+  will be UNDEFINED_LEGAL.
 long_name: TODO
 schema:
   type: boolean

@@ -6,10 +6,8 @@
 $schema: param_schema.json#
 kind: parameter
 name: VLEN
-description:
-  "The number of bits in a single vector register.
-
-  "
+description: |
+  The number of bits in a single vector register.
 long_name: TODO
 schema:
   type: integer
