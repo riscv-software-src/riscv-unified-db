@@ -19,7 +19,7 @@ Synopsis::
 
 Mnemonic::
 ----
-<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>
+<%= "#{inst.name} #{inst.assembly.gsub('x', 'r')}".strip %>
 ----
 
 Encoding::
