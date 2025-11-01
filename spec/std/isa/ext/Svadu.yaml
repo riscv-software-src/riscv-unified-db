@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Svadu
 long_name: Hardware Updating of PTE A/D Bits
-type: unprivileged
+type: privileged
 description: |
   The Svadu extension adds support and CSR controls for hardware updating of PTE
   A/D bits. The A and D bits are managed by these extensions as follows:

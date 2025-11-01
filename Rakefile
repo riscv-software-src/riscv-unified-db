@@ -119,7 +119,7 @@ namespace :test do
   # "Run the cross-validation against LLVM"
   task :llvm do
       begin
-        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+        sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
       rescue => e
         raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
@@ -546,6 +546,8 @@ task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
 task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
+task "RVI20-32-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-32-CRD.pdf"
+task "RVI20-64-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-64-CRD.pdf"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
 task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"

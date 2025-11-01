@@ -64,9 +64,9 @@ namespace :gen do
     inst_dir = cfg_arch.path / "inst"
     csr_dir = cfg_arch.path / "csr"
 
-    # Run the Go generator script using the same Python environment
+    # Run the Go generator script
     # Note: The script uses --output not --output-dir
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/Go/go_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.go"
+    sh "/opt/venv/bin/python3 #{$root}/backends/generators/Go/go_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.go"
   end
 
   desc <<~DESC

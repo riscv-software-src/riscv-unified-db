@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /opt/node/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -4849,6 +4849,138 @@ Included in::
 | *Zcb* | ~> 1.0.0
 
 | *Zce* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_all]
+== c.ntl.all
+
+Synopsis::
+Compressed non-temporal locality hint, all
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x9016,"type":2}]}
+....
+
+Description::
+The C.NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache in
+the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x5.
+
+
+Decode Variables::
+c.ntl.all has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_p1]
+== c.ntl.p1
+
+Synopsis::
+Compressed non-temporal locality hint, innermost private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x900a,"type":2}]}
+....
+
+Description::
+The C.NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. C.NTL.P1 is encoded as C.ADD x0, x2.
+
+
+Decode Variables::
+c.ntl.p1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_pall]
+== c.ntl.pall
+
+Synopsis::
+Compressed non-temporal locality hint, all private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x900e,"type":2}]}
+....
+
+Description::
+The C.NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. C.NTL.PALL is encoded as C.ADD x0, x3.
+
+
+Decode Variables::
+c.ntl.pall has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:c_ntl_s1]
+== c.ntl.s1
+
+Synopsis::
+Compressed non-temporal locality hint, innermost shared
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x9012,"type":2}]}
+....
+
+Description::
+The C.NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. C.NTL.S1 is encoded as C.ADD x0, x4.
+
+
+Decode Variables::
+c.ntl.s1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zca* | ~> 1.0.0
+
+| *Zihintntl* | ~> 1.0.0
 
 |===
 
@@ -16272,6 +16404,130 @@ Included in::
 |===
 
 
+[#udb:doc:inst:ntl_all]
+== ntl.all
+
+Synopsis::
+Non-temporal locality hint, all
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x500033,"type":2}]}
+....
+
+Description::
+The NTL.ALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of cache
+in the memory hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
+
+
+Decode Variables::
+ntl.all has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_p1]
+== ntl.p1
+
+Synopsis::
+Non-temporal locality hint, innermost private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x200033,"type":2}]}
+....
+
+Description::
+The NTL.P1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of private cache in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.
+
+
+Decode Variables::
+ntl.p1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_pall]
+== ntl.pall
+
+Synopsis::
+Non-temporal locality hint, all private
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x300033,"type":2}]}
+....
+
+Description::
+The NTL.PALL instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of any level of private
+cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
+
+
+Decode Variables::
+ntl.pall has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:ntl_s1]
+== ntl.s1
+
+Synopsis::
+Non-temporal locality hint, innermost shared
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":32,"name": 0x400033,"type":2}]}
+....
+
+Description::
+The NTL.S1 instruction indicates that the immediately subsequent instruction
+does not exhibit temporal locality within the capacity of the innermost level
+of shared cache in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
+
+
+Decode Variables::
+ntl.s1 has no decode variables.
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zihintntl* | ~> 1.0.0
+
+|===
+
+
 [#udb:doc:inst:or]
 == or
 
@@ -16535,6 +16791,126 @@ Included in::
 | Extension | Version
 
 | *Zbkb* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_i]
+== prefetch.i
+
+Synopsis::
+Cache block prefetch for instruction fetch
+
+Assembly::
+prefetch.i imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x0,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.i instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in xs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by an instruction fetch in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_r]
+== prefetch.r
+
+Synopsis::
+Cache block prefetch for data read
+
+Assembly::
+prefetch.r imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x1,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.r instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in xs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by a data read (i.e. load) in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:prefetch_w]
+== prefetch.w
+
+Synopsis::
+Cache block prefetch for data write
+
+Assembly::
+prefetch.w imm(xs1)
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":15,"name": 0x6013,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": 0x3,"type":2},{"bits":7,"name": "imm","type":4}]}
+....
+
+Description::
+A prefetch.w instruction indicates to hardware that the cache block whose
+effective address is the sum of the base address specified in xs1 and the
+sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000,
+is likely to be accessed by a data write (i.e. store) in the near future.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |$encoding[31:25]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zicbop* | ~> 1.0.0
 
 |===
 
