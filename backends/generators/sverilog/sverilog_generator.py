@@ -12,6 +12,58 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from generator import load_instructions, load_csrs, load_exception_codes
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Generate SystemVerilog package from RISC-V instruction definitions"
+    )
+    parser.add_argument(
+        "--inst-dir",
+        default="../../../gen/resolved_spec/_/inst/",
+        help="Directory containing instruction YAML files",
+    )
+    parser.add_argument(
+        "--csr-dir",
+        default="../../../gen/resolved_spec/_/csr/",
+        help="Directory containing CSR YAML files",
+    )
+    parser.add_argument(
+        "--ext-dir",
+        default="../../../arch/ext/",
+        help="Directory containing extension YAML files",
+    )
+    parser.add_argument(
+        "--output",
+        default="riscv_decode_package.svh",
+        help="Output SystemVerilog file name",
+    )
+    parser.add_argument(
+        "--include-all",
+        action="store_true",
+        help="Include all instructions and CSRs regardless of extensions",
+    )
+    parser.add_argument(
+        "--debug", "-v", action="store_true", help="Enable debug logging"
+    )
+    parser.add_argument(
+        "--extensions",
+        "-e",
+        nargs="+",
+        default=[],
+        help="Comma-separated list of enabled extensions.",
+    )
+    parser.add_argument(
+        "--arch",
+        default="BOTH",
+        choices=["RV32", "RV64", "BOTH"],
+        help="Target architecture (RV32, RV64, or BOTH). Default is RV64.",
+    )
+    parser.add_argument(
+        "--resolved-codes",
+        help="JSON file containing pre-resolved exception codes",
+    )
+    return parser.parse_args()
+
+
 def format_instruction_name(name):
     """Format instruction name for SystemVerilog (uppercase with underscores)."""
     # Replace dots with underscores and convert to uppercase
@@ -105,63 +157,11 @@ def generate_sverilog(instructions, csrs, causes, output_file):
         f.write("\nendpackage\n")
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Generate SystemVerilog package from RISC-V instruction definitions"
-    )
-    parser.add_argument(
-        "--inst-dir",
-        default="../../../gen/resolved_spec/_/inst/",
-        help="Directory containing instruction YAML files",
-    )
-    parser.add_argument(
-        "--csr-dir",
-        default="../../../gen/resolved_spec/_/csr/",
-        help="Directory containing CSR YAML files",
-    )
-    parser.add_argument(
-        "--ext-dir",
-        default="../../../arch/ext/",
-        help="Directory containing extension YAML files",
-    )
-    parser.add_argument(
-        "--output",
-        default="riscv_decode_package.svh",
-        help="Output SystemVerilog file name",
-    )
-    parser.add_argument(
-        "--include-all",
-        action="store_true",
-        help="Include all instructions and CSRs regardless of extensions",
-    )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose logging"
-    )
-    parser.add_argument(
-        "--extensions",
-        "-e",
-        nargs="+",
-        default=[],
-        help="Comma-separated list of enabled extensions.",
-    )
-    parser.add_argument(
-        "--arch",
-        default="BOTH",
-        choices=["RV32", "RV64", "BOTH"],
-        help="Target architecture (RV32, RV64, or BOTH). Default is RV64.",
-    )
-    parser.add_argument(
-        "--resolved-codes",
-        help="JSON file containing pre-resolved exception codes",
-    )
-    return parser.parse_args()
-
-
 def main():
     args = parse_args()
 
     # Set up logging
-    log_level = logging.DEBUG if args.verbose else logging.INFO
+    log_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(level=log_level, format="%(levelname)s:: %(message)s")
 
     # Parse extensions
