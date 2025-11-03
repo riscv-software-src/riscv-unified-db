@@ -17,6 +17,7 @@ description: |
   [NOTE]
   The minimum reservation set size is effectively determined by the size of atomic accesses in
   the A extension.
+conflicts: Za128rs
 versions:
   - version: "1.0.0"
     state: ratified
