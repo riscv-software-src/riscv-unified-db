@@ -18,4 +18,9 @@ fi
 source $ROOT/bin/setup
 
 # really long way of invoking rake, but renamed to 'do'
-$BUNDLE exec --gemfile $ROOT/Gemfile ruby -r rake -e "Rake.application.init('do');Rake.application.load_rakefile;Rake.application.top_level" -- "$@"
+EXEC=( exec --gemfile "$ROOT/Gemfile" ruby -r rake -e '"Rake.application.init('"'do'"');Rake.application.load_rakefile;Rake.application.top_level"' -- "$@" )
+if [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+  ${BASH} -c "$(printf "%s && " "${CONTAINER_SETUP_CMD[@]:-true}") bundle ${EXEC[*]}"
+else
+  $BUNDLE "${EXEC[@]}"
+fi
