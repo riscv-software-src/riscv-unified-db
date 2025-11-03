@@ -471,6 +471,11 @@ module Udb
       end
     end
 
+    sig { returns(T::Array[ConditionalExtensionRequirement]) }
+    def defining_extension_requirements
+      combined_requirements_condition.implied_extension_requirements
+    end
+
     # return all ExtensionRequirements that this ExtensionVersion unconditionally depends on
     # When expand is false, just return the list of ExtensionRequirements directly mentioned by the extension
     # When expand is true, also include ExtensionRequirements that are required by those directly mentioned by the extension

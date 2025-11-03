@@ -643,9 +643,7 @@ module Udb
 
       @implications ||= begin
         reqs = T.let([], T::Array[ConditionalExtensionRequirement])
-        puts "tree = #{to_logic_tree(expand:)}"
         pos = to_logic_tree(expand:).minimize(LogicNode::CanonicalizationType::ProductOfSums)
-        puts "pos = #{pos}"
 
         if pos.type == LogicNodeType::Term
           single_term = pos.children.fetch(0)
