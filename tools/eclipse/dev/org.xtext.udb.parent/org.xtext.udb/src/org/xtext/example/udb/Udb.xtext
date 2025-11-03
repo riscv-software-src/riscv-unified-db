@@ -5,9 +5,8 @@ generate udb "http://www.xtext.org/example/udb/Udb"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 Model:
-	csrs += Csr*
-	csrName += Name
 	kind += Kind
+	csrName += Name
 	longname += LongName
 	address += Address
 	writable += Writable
@@ -18,89 +17,70 @@ Model:
 	fields += Fields
 ;
 
-/* Taken from Ajit */
-Csr:
-	'csr' name=ID
-		description=STRING
-		address=Hex
-		reset_value=STRING
-		';'
-;
 
-Kind:
-	'kind'
-	':'
-	kind=KIND_TYPE
-	';'
-;
+Kind: 'kind' ':' kind=KIND_TYPE ';';
+Name: 'name' ':' name=ID';';
+LongName: 'long_name' ':' long_name+=ID*';';
+Address: 'address' ':' address=Hex';'; /* need to make this only accept 3 digit hex */
+Writable: 'writable' ':' writable=BOOLEAN';';
+PrivMode:'priv_mode' ':' priv_mode=PRIV_TYPE';';
+Length: 'length' ':' length=STRING ';'; /* need to change string into an enum (?) */
+Description: 'description' ':' description=STRING ';';
+
+/* will need to change this to include valid extensions */
+DefinedBy:'definedBy' ':'extension_name=ID ';';
 
 KIND_TYPE:
-	type=('csr'|'extension')
-;
-
-Name:
-	'name' ':'
-	name=ID
-	';'
-;
-
-LongName:
-	'long_name' ':'
-	name=ID
-	';'
-;
-
-Address:
-	'address' ':'
-	value=Hex /* need to make this only accept 3 digit hex */
-	';'
-;
-
-Writable:
-	'writable' ':'
-	writable=('T'|'F')
-	';'
-;
-
-PrivMode:
-	'priv_mode' ':'
-	priv_mode=PRIV_TYPE
-	';'
+	type=('csr'|'extension') /* this will need to be an enum */
 ;
 
 PRIV_TYPE:
-	priv_type=('U'|'S'|'M')
-;
-
-Length:
-	'length' ':'
-	length=STRING /* placeholder, will have to change to an enum (?) */
-	';'
-;
-
-Description:
-	'desc' ':'
-	description=STRING
-	';'
-;
-
-DefinedBy:
-	'definedBy' ':'
-	extension_name=ID
-	';'
+	priv_type=('U'|'S'|'M') /* may need to turn into an enum */
 ;
 
 Fields:
 	{Fields} 'fields' '{'
-    fields+=FIELD_DEF*
+    fields+=FIELD_DEF+
   '}'
 ;
 
 FIELD_DEF:
-	name=ID '{'
-	/* field values */
+	name=FIELD_TYPE '{'
+		field_location += Location
+		field_description += Description
+		field_type += Type
+		field_alias += Alias
+		field_sw_write += SWWrite
+		field_reset_value += ResetValue
 	'}'
 	
+;
+
+FIELD_TYPE: 
+	('VXRM' | 'VXSAT') /* should be an enum */
+;
+
+Location: GeneralLocation | SpecificLocation;
+Type: "type" ":" type=STRING ';';
+Alias: "alias" ":" alias=STRING ';'; /* not sure what this is supposed to be */
+SWWrite: "sw_write(csr_value)" ":" STRING ';'; /* this should be IDL */
+ResetValue: "reset_value" ":" STRING ';'; /* should be an enum */
+
+GeneralLocation: 
+	"location" ":" location=STRING ';'
+;
+
+SpecificLocation:
+	location32 += LocationRV32
+	location64 += LocationRV64
+;
+
+LocationRV32: 
+	"location_rv32" ":" location32=STRING ";"
+;
+
+LocationRV64:
+	"location_rv64" ":" location64=STRING ";"
 ;
 
 Hex:
@@ -113,3 +93,5 @@ terminal HEX_VALUE returns ecore::EInt:
 	('0'..'9' | 'A'..'F' | 'a'..'f')
 	(('0'..'9' | 'A'..'F' | 'a'..'f' | '_')*('0'..'9' | 'A'..'F' | 'a'..'f'))?
 ;
+
+terminal BOOLEAN returns ecore::EBoolean: 'true' | 'false';
