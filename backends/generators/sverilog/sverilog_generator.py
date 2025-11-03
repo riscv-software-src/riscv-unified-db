@@ -42,7 +42,7 @@ def parse_args():
         help="Include all instructions and CSRs regardless of extensions",
     )
     parser.add_argument(
-        "--debug", "-v", action="store_true", help="Enable debug logging"
+        "--debug", "-d", action="store_true", help="Enable debug logging"
     )
     parser.add_argument(
         "--extensions",
