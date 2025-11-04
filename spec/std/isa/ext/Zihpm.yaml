@@ -7,7 +7,16 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zihpm
 long_name: Programmable hardware performance counters
-description: Programmable hardware performance counters
+description: 
+  The Zihpm extension defines the unprivileged user-mode CSRs hpmcounter3-hpmcounter31 
+  that provide read-only access to the corresponding machine-mode performance counters 
+  mhpmcounter3-mhpmcounter31.
+
+  When XLEN=32, the upper 32 bits of these performance counters are accessible via 
+  additional CSRs hpmcounter3h-hpmcounter31h.
+
+  The actual performance counter implementation, configuration, and behavior is 
+  defined by the Smhpm extension.
 type: unprivileged
 versions:
   - version: "2.0.0"
