@@ -11,9 +11,10 @@ description: |
   Shift the value in xd left by shamt, and store the result back in xd.
   C.SLLI expands into `slli xd, xd, shamt`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, shamt
 encoding:
   RV32:

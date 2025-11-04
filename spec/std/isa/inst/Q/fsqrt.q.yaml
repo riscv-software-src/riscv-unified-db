@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       The `fsqrt.q` instruction computes the square root of the value in `fs1` and writes the result to `fd`.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, rm
 encoding:
   match: 010111100000-------------1010011

@@ -9,7 +9,9 @@ name: vmsgt.vi
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, imm, vm
 encoding:
   match: 011111-----------011-----1010111

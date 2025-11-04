@@ -461,3 +461,8 @@ class ActiveSupport::ErrorReporter
   sig { params(error: T.any(Exception, String), severity: T.nilable(Symbol), context: T::Hash[Symbol, T.untyped], source: T.nilable(String)).void }
   def unexpected(error, severity: T.unsafe(nil), context: T.unsafe(nil), source: T.unsafe(nil)); end
 end
+
+module ActiveSupport::Testing::Assertions
+  sig { type_parameters(:Block).params(block: T.proc.returns(T.type_parameter(:Block))).returns(T.type_parameter(:Block)) }
+  def assert_nothing_raised(&block); end
+end

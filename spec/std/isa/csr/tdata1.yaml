@@ -20,7 +20,9 @@ description: |
   If this trigger supports multiple types, then the hardware should disable it
   by changing type to 15.
 
-definedBy: Sdtrig
+definedBy:
+  extension:
+    name: Sdtrig
 fields:
   TYPE:
     location_rv32: 31-28

@@ -11,9 +11,10 @@ description: |
   Branches to `PC` + `offset` if the unsigned value in `rs1` is less than the unsigned immediate `imm`.
   Instruction encoded in QC.EB instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibi
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcibi
 base: 32
 encoding:
   match: -----------------------11110-----100-----0011111

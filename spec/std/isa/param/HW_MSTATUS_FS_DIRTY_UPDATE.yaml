@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HW_MSTATUS_FS_DIRTY_UPDATE
+description: |
+  Indicates whether or not hardware will write to `mstatus.FS`
+
+  Values are:
+  [separator="!"]
+  !===
+  h! never  ! Hardware never writes `mstatus.FS`
+  h! precise  ! Hardware writes `mstatus.FS` to the Dirty (3) state precisely when F registers are modified
+  h! imprecise ! Hardware writes `mstatus.FS` imprecisely. This will result in a call to unpredictable() on any attempt to read `mstatus` or write FP state.
+  !===
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - never
+    - precise
+    - imprecise
+definedBy:
+  extension:
+    name: F

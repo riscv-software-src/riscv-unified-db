@@ -12,7 +12,9 @@ description: |
   encoding to the lower 32 bits of integer register `xd`. The bits are not modified in the transfer, and in particular, the
   payloads of non-canonical NaNs are preserved. For RV64, the higher 32 bits of the destination register are filled with copies
   of the floating-point number's sign bit.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1
 encoding:
   match: 111000000000-----000-----1010011

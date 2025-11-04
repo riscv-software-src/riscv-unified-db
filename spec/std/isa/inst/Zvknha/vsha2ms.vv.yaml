@@ -9,7 +9,9 @@ name: vsha2ms.vv
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvknha
+definedBy:
+  extension:
+    name: Zvknha
 assembly: vd, vs2, vs1
 encoding:
   match: 1011011----------010-----1110111

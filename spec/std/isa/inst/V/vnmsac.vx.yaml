@@ -9,7 +9,9 @@ name: vnmsac.vx
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, xs1, vs2, vm
 encoding:
   match: 101111-----------110-----1010111

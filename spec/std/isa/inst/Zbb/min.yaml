@@ -9,7 +9,9 @@ name: min
 long_name: Minimum
 description: |
   Returns the smaller of two signed integers.
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------100-----0110011

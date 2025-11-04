@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT
+description: |
+  Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+  Possible values:
+    * "always zero": Always write the value zero
+    * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+    * "custom": Write a custom value, which results in UNPREDICTABLE
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - always zero
+    - always transformed standard instruction
+    - custom
+definedBy:
+  extension:
+    name: H

@@ -9,7 +9,11 @@ name: aes32esi
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zkne
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zkne
 base: 32
 assembly: xd, xs1, xs2, bs
 encoding:

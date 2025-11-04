@@ -12,8 +12,8 @@ namespace udb {
 <%- csrs.each do |csr| -%>
 <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
 
-#define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
+#define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name.value()
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
 #define __UDB_FUNC_CALL m_hart->
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %><SocType>::
 #define __UDB_CSR_BY_NAME(csr_name) m_hart->m_csrs.csr_name
@@ -82,8 +82,8 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset(
 #undef __UDB_STRUCT
 #undef __UDB_HART
 
-#define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
+#define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name.value()
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
 #define __UDB_CSR_BY_ADDR(addr) m_parent->csr(addr)
 #define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
 #define __UDB_CSR_FIELD_READ(field_name) m_##field_name

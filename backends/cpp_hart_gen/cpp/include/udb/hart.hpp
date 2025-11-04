@@ -12,6 +12,7 @@
 
 #include "udb/bits.hpp"
 #include "udb/csr.hpp"
+#include "udb/db_data.hxx"
 #include "udb/enum.hxx"
 #include "udb/soc_model.hpp"
 #include "udb/stop_reason.h"
@@ -45,9 +46,10 @@ namespace udb {
   template <SocModel SocType>
   class HartBase {
    public:
-    HartBase(unsigned hart_id, SocType& soc, const nlohmann::json& cfg)
+    HartBase(unsigned hart_id, SocType& soc, const Config& cfg)
         : m_hart_id(hart_id),
           m_soc(soc),
+          m_cfg(cfg),
           m_tracer(nullptr),
           m_current_priv_mode(PrivilegeMode::M),
           m_exit_requested(false),
@@ -331,6 +333,11 @@ namespace udb {
       throw UnpredictableBehaviorException();
     }
 
+    [[noreturn]] void unreachable() {
+      fmt::print(stderr, "FATAL: Executing unreachable IDL line\n");
+      std::abort();
+    }
+
     Bits<64> hartid() const { return Bits<64>{m_hart_id}; }
 
     virtual int run_one() = 0;
@@ -355,6 +362,7 @@ namespace udb {
    protected:
     const unsigned m_hart_id;
     SocType& m_soc;
+    const Config m_cfg;
     AbstractTracer* m_tracer;
     PrivilegeMode m_current_priv_mode;
 

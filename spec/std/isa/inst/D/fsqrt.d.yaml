@@ -14,7 +14,9 @@ description:
       The `fsqrt.d` instruction computes the square root of `fs1` and result is written in `fd`. It is defined
       analogously to its single-precision counterpart, but operates on double-precision operands and produces
       double-precision results.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, fs1, rm
 encoding:
   match: 010110100000-------------1010011

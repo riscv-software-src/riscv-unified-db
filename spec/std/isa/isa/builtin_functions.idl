@@ -110,6 +110,14 @@ builtin function unpredictable {
   }
 }
 
+builtin function unreachable {
+  description {
+    Indicate that the IDL line should be unreachable.
+
+    If this function is called, it represents a bug in the IDL code.
+  }
+}
+
 builtin function read_hpm_counter {
   returns Bits<64>
   arguments Bits<5> n

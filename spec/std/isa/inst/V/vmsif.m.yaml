@@ -9,7 +9,9 @@ name: vmsif.m
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, vm
 encoding:
   match: 010100------00011010-----1010111

@@ -10,7 +10,9 @@ address: 0x156
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Sscsrind
+definedBy:
+  extension:
+    name: Sscsrind
 description:
   - id: csr-sireg5-behavior-implemented
     normative: true
@@ -61,7 +63,9 @@ fields:
     description:
       - id: csr-sireg5-value-desc
         normative: true
-        text: The data read from or written to the register selected by the current `siselect` value.
+        text:
+          The data read from or written to the register selected by the current
+          `siselect` value.
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
       Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 5);

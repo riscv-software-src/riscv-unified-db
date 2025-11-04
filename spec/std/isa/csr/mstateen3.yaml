@@ -67,7 +67,9 @@ description:
       the same bit is read-only one in the matching `mstateen` CSR. Bit 63 of each `mstateen` CSR may be read-only zero only if
       the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
 
-definedBy: Smstateen
+definedBy:
+  extension:
+    name: Smstateen
 fields:
   SE0:
     long_name: hstateen3, hstateen3h, and sstateen3 access control

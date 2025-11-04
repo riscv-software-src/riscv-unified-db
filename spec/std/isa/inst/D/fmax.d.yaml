@@ -15,7 +15,9 @@ description:
       the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is
       the canonical NaN. If only one operand is a NaN, the result is the non-NaN operand. Signaling NaN inputs
       set the invalid operation exception flag, even when the result is not NaN.
-definedBy: D
+definedBy:
+  extension:
+    name: D
 assembly: fd, fs1, fs2
 encoding:
   match: 0010101----------001-----1010011

@@ -9,7 +9,9 @@ name: vmadc.vx
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, xs1
 encoding:
   match: 0100011----------100-----1010111

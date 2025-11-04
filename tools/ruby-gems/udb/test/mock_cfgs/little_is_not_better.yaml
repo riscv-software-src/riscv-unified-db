@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: little_is_not_better
+description: |
+  Bigger is better
+mandatory_extensions:
+  - name: A
+params:
+  MXLEN: 32
+  LITTLE_IS_BETTER: false

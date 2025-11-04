@@ -13,7 +13,10 @@ description:
     text: |
       `fcvt.q.h` converts a half-precision floating-point number to a quad-precision floating-point number.
 definedBy:
-  allOf: [Q, Zfh]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfh
 assembly: fd, fs1, rm
 encoding:
   match: 010001100010-------------1010011

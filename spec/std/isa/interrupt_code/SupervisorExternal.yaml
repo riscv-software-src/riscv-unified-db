@@ -1,0 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/interrupt_code_schema.json
+
+$schema: interrupt_code_schema.json#
+kind: interrupt_code
+name: SupervisorExternal
+num: 9
+display_name: Supervisor external
+definedBy:
+  extension:
+    name: Sm

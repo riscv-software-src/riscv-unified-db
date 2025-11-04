@@ -7,7 +7,9 @@ $schema: "csr_schema.json#"
 kind: csr
 name: mcycle
 long_name: Machine Cycle Counter
-definedBy: Zicntr
+definedBy:
+  extension:
+    name: Zicntr
 address: 0xB00
 writable: true
 description: |

@@ -18,7 +18,9 @@ description: |
   * it must be a multiple of 16 (bytes):
   ** for RV32 the allowed values are: 16, 32, 48, 64, 80, 96, 112
   ** for RV64 the allowed values are: 16, 32, 48, 64, 80, 96, 112, 128, 144, 160
-definedBy: Xqccmp
+definedBy:
+  extension:
+    name: Xqccmp
 assembly: reg_list, -stack_adj
 encoding:
   match: 10111000------10

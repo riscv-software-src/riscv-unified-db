@@ -31,14 +31,19 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcicm extension includes thirteen conditional move instructions.
 
-conflicts:
-  anyOf:
-    - allOf: [C, D]
-    - Zcd
+requirements:
+  not:
+    extension:
+      anyOf:
+        - allOf:
+          - name: C
+          - name: D
+        - name: Zcd
 doc_license:
   name: Creative Commons Attribution 4.0 International License
   url: https://creativecommons.org/licenses/by/4.0/

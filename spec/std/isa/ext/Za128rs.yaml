@@ -21,10 +21,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    param_constraints:
-      LRSC_RESERVATION_STRATEGY:
-        schema:
-          oneOf:
-            - const: reserve exactly enough to cover the access
-            - const: reserve naturally-aligned 64-byte region
-            - const: reserve naturally-aligned 128-byte region
+requirements:
+  param:
+    name: LRSC_RESERVATION_STRATEGY
+    oneOf:
+        - reserve exactly enough to cover the access
+        - reserve naturally-aligned 64-byte region
+        - reserve naturally-aligned 128-byte region

@@ -19,7 +19,9 @@ description: |
   the proposed _IEEE 754-201x_ `minimumNumber` and `maximumNumber` operations, rather than the _IEEE 754-2008_
   _minNum_ and _maxNum_ operations. These operations differ in their handling of signaling NaNs.
   ====
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2
 encoding:
   match: 0010100----------000-----1010011

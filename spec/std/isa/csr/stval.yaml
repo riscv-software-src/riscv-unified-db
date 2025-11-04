@@ -12,7 +12,9 @@ writable: true
 description: Holds trap-specific information
 priv_mode: S
 length: 64
-definedBy: S
+definedBy:
+  extension:
+    name: S
 fields:
   VALUE:
     location: 63-0

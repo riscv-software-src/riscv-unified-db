@@ -12,9 +12,10 @@ description: |
   Simulation environment is expected to complete its execution and return to the system with exit code provided in `rs1`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisim
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcisim
 assembly: " xs1"
 base: 32
 encoding:

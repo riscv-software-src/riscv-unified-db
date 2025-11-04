@@ -12,9 +12,10 @@ description: |
   The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
   C.OR expands into `or xd, xd, xs2`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, xs2
 encoding:
   match: 100011---10---01

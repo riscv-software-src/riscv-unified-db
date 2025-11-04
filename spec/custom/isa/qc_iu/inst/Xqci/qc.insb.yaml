@@ -13,9 +13,10 @@ description: |
   and the offset of the subset is determined by `shamt`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcibm
 base: 32
 encoding:
   match: 01---------------001-----0001011

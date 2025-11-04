@@ -10,7 +10,9 @@ address: 0x350
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-miselect-purpose
     normative: true

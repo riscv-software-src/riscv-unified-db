@@ -9,7 +9,9 @@ name: amomax.b
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zabha
+definedBy:
+  extension:
+    name: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
   match: 10100------------000-----0101111

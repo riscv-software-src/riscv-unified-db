@@ -11,9 +11,10 @@ description: |
   Move `simm` to `rd` if the unsigned value in `rs1` is less than unsigned value `rs2`.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicli
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcicli
 base: 32
 encoding:
   match: -----01----------110-----1011011

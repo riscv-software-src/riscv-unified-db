@@ -29,11 +29,13 @@ description: |
   most-significant nibble down) with subfields aligned on nibble
   boundaries to ease human readability.
   ====
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   Implementation:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RO
     description: Vendor-specific implementation ID.
-    reset_value(): return IMP_ID;
+    reset_value(): return IMP_ID_VALUE;
