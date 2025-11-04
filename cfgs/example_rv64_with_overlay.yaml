@@ -8,8 +8,15 @@ description: An example fully-specified RV64 system
 arch_overlay: example
 implemented_extensions:
   - [A, "2.1.0"]
+  - [Zaamo, "1.0.0"]
+  - [Zalrsc, "1.0.0"]
   - [B, "1.0.0"]
+  - [Zba, "1.0.0"]
+  - [Zbb, "1.0.0"]
+  - [Zbs, "1.0.0"]
   - [C, "2.0.0"]
+  - [Zca, "1.0.0"]
+  - [Zcd, "1.0.0"]
   - [D, "2.2.0"]
   - [F, "2.2.0"]
   - [I, "2.1.0"]
@@ -27,6 +34,8 @@ implemented_extensions:
   - [Smaia, "1.0.0"]
   - [Smcdeleg, "1.0.0"]
   - [Smcntrpmf, "1.0.0"]
+  - [Smstateen, "1.0.0"]
+  - [Ssstateen, "1.0.0"]
   - [Sscofpmf, "1.0.0"]
   - [Ssaia, "1.0.0"]
   - [Ssccfg, "1.0.0"]
@@ -39,11 +48,12 @@ implemented_extensions:
 params:
   MXLEN: 64
 
-  # name of the configuration
-  NAME: example_rv64_with_overlay
+  MARCHID_IMPLEMENTED: true
 
   # vendor-specific architecture ID in marchid
   ARCH_ID_VALUE: 0x1000000000000000
+
+  MIMPID_IMPLEMENTED: true
 
   # vendor-specific implementation ID in mimpid
   IMP_ID_VALUE: 0x0
@@ -511,11 +521,9 @@ params:
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
 
   GSTAGE_MODE_BARE: true
-  SV32_VSMODE_TRANSLATION: false
   SV39_VSMODE_TRANSLATION: true
   SV48_VSMODE_TRANSLATION: true
   SV57_VSMODE_TRANSLATION: true
-  SV32X4_TRANSLATION: false
   SV39X4_TRANSLATION: true
   SV48X4_TRANSLATION: true
   SV57X4_TRANSLATION: false
@@ -523,10 +531,12 @@ params:
   STVEC_MODE_DIRECT: true
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
+  VSSTAGE_MODE_BARE: true
   REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
   REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
   REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
   REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always transformed standard instruction"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
@@ -544,12 +554,13 @@ params:
   TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
   TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
   MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: read-write
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_TVM_IMPLEMENTED: true
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
-  MSTATUS_VS_WRITABLE: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: true
@@ -565,3 +576,7 @@ params:
   MSTATEEN_ENVCFG_TYPE: rw
   HSTATEEN_ENVCFG_TYPE: rw
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MSTATEEN_AIA_TYPE: rw
+  MSTATEEN_IMSIC_TYPE: rw
+  HSTATEEN_AIA_TYPE: rw
+  HSTATEEN_IMSIC_TYPE: rw

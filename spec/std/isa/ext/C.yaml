@@ -21,7 +21,7 @@ versions:
     requirements:
       idl(): |
         -> implemented_version?(ExtensionName::Zca, "= 1.0.0") &&
-           (!implemented?(ExtensionName::F) || implemented_version?(ExtensionName::Zcf, "= 1.0.0")) &&
+           (!implemented?(ExtensionName::F) || MXLEN != 32 || implemented_version?(ExtensionName::Zcf, "= 1.0.0")) &&
            (!implemented?(ExtensionName::D) || implemented_version?(ExtensionName::Zcd, "= 1.0.0"));
       reason: |
         Zca is the non-FP subset of C. "C" + "F" implies Zcf. "C" + "D" implies Zcd.

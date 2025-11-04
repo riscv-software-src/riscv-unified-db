@@ -16,6 +16,4 @@ schema:
   type: boolean
 definedBy:
   extension:
-    oneOf:
-      - name: A
-      - name: Zaamo
+    name: Zaamo

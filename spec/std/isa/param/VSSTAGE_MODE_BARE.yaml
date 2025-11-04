@@ -13,11 +13,11 @@ schema:
 requirements:
   idl(): |
     # if guest is 32 bit, then one of Bare or SV32_VSMODE_TRANSLATION must be supported
-    $array_includes(VSXLEN, 32) && !SV32_VSMODE_TRANSLATION
+    $array_includes?(VSXLEN, 32) && !SV32_VSMODE_TRANSLATION
       -> VSSTAGE_MODE_BARE;
 
     # if guest is 64 bit, then one of Bare, Sv39, Sv48, or Sv57 must be supported
-    $array_includes(VSXLEN, 64) && !SV39_VSMODE_TRANSLATION && !SV48_VSMODE_TRANSLATION && !SV57_VSMODE_TRANSLATION
+    $array_includes?(VSXLEN, 64) && !SV39_VSMODE_TRANSLATION && !SV48_VSMODE_TRANSLATION && !SV57_VSMODE_TRANSLATION
       -> VSSTAGE_MODE_BARE;
 definedBy:
   extension:

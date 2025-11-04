@@ -273,10 +273,10 @@ module Udb
           reasons << "Parameter value violates the schema: '#{param_name}' = '#{param_value}'"
         end
         unless p.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Parameter is not defined by this config: '#{param_name}'. Needs: #{p.defined_by_condition}"
+          reasons << "Parameter is not defined by this config: '#{param_name}'. Needs: #{p.defined_by_condition.to_s_with_value(self, expand: true)}"
         end
         unless p.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition}        #{p.requirements_condition.to_logic_tree(expand: true)}"
+          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition.to_s_with_value(self, expand: true)}"
         end
       end
 
@@ -686,6 +686,7 @@ module Udb
           p = param(param_name)
           if p.nil?
             Udb.logger.warn "#{param_name} is not a parameter"
+            nil
           else
             ParameterWithValue.new(p, param_value)
           end

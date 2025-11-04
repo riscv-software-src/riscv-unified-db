@@ -582,7 +582,7 @@ module Udb
           end
         elsif @yaml.key?("size")
           scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
-        elsif @yaml.key?("index") && other_param.to_h.key?("index")
+        elsif @yaml.key?("index") && other_param.to_h.key?("index") && @yaml.fetch("index") == other_param.to_h.fetch("index")
           scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
         end
       else
@@ -1682,6 +1682,43 @@ module Udb
         "#{LOGIC_SYMBOLS[format][:NOT]}(#{node_children.map { |c| c.to_s(format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
       elsif @type == LogicNodeType::If
         "(#{node_children.fetch(0).to_s(format:)} #{LOGIC_SYMBOLS[format][:IMPLIES]} #{node_children.fetch(1).to_s(format:)})"
+      else
+        T.absurd(@type)
+      end
+    end
+
+    sig { params(callback: EvalCallbackType, format: LogicSymbolFormat).returns(String) }
+    def to_s_with_value(callback, format: LogicSymbolFormat::Predicate)
+      if @type == LogicNodeType::True
+        LOGIC_SYMBOLS[format][:TRUE]
+      elsif @type == LogicNodeType::False
+        LOGIC_SYMBOLS[format][:FALSE]
+      elsif @type == LogicNodeType::Term
+        v = callback.call(T.cast(@children.fetch(0), TermType))
+        str =
+          case v
+          when SatisfiedResult::Yes
+            "{true}"
+          when SatisfiedResult::No
+            "{false}"
+          when SatisfiedResult::Maybe
+            "{unknown}"
+          else
+            T.absurd(v)
+          end
+        "`#{@children.fetch(0)}`#{str}"
+      elsif @type == LogicNodeType::Not
+        "#{LOGIC_SYMBOLS[format][:NOT]}#{node_children.fetch(0).to_s_with_value(callback, format:)}"
+      elsif @type == LogicNodeType::And
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:AND]} ")})"
+      elsif @type == LogicNodeType::Or
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
+      elsif @type == LogicNodeType::Xor
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:XOR]} ")})"
+      elsif @type == LogicNodeType::None
+        "#{LOGIC_SYMBOLS[format][:NOT]}(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
+      elsif @type == LogicNodeType::If
+        "(#{node_children.fetch(0).to_s_with_value(callback, format:)} #{LOGIC_SYMBOLS[format][:IMPLIES]} #{node_children.fetch(1).to_s_with_value(callback, format:)})"
       else
         T.absurd(@type)
       end

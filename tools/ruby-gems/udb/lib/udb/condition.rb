@@ -216,6 +216,10 @@ module Udb
     sig { abstract.returns(String) }
     def to_s_pretty; end
 
+    # print, with actualy values of terms
+    sig { abstract.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(String) }
+    def to_s_with_value(cfg_arch, expand:); end
+
     # condition in Asciidoc
     sig { abstract.returns(String) }
     def to_asciidoc; end
@@ -629,6 +633,58 @@ module Udb
       to_logic_tree(expand: false).to_s_pretty
     end
 
+    sig { override.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(String) }
+    def to_s_with_value(cfg_arch, expand: false)
+      cb = LogicNode.make_eval_cb do |term|
+        case term
+        when ExtensionTerm
+          if cfg_arch.fully_configured?
+            ext_ver = cfg_arch.implemented_extension_version(term.name)
+            if ext_ver.nil? || !term.to_ext_req(cfg_arch).satisfied_by?(ext_ver)
+              SatisfiedResult::No
+            else
+              SatisfiedResult::Yes
+            end
+          elsif cfg_arch.partially_configured?
+            if cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cfg_ext_req.satisfied_by?(term.to_ext_req(cfg_arch)) }
+              SatisfiedResult::Yes
+            elsif cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| term.to_ext_req(cfg_arch).satisfied_by?(cfg_ext_ver) }
+              SatisfiedResult::Maybe
+            else
+              SatisfiedResult::No
+            end
+          else
+            SatisfiedResult::Maybe
+          end
+        when ParameterTerm
+          if cfg_arch.fully_configured?
+            if cfg_arch.param_values.key?(term.name)
+              term.eval(cfg_arch)
+            else
+              SatisfiedResult::No
+            end
+          elsif cfg_arch.partially_configured?
+            term.eval(cfg_arch)
+          else
+            SatisfiedResult::Maybe
+          end
+        when XlenTerm
+          if cfg_arch.possible_xlens.include?(term.xlen)
+            if cfg_arch.possible_xlens.size == 1
+              SatisfiedResult::Yes
+            else
+              SatisfiedResult::Maybe
+            end
+          else
+            SatisfiedResult::No
+          end
+        else
+          raise "unexpected term type #{term.class.name}"
+        end
+      end
+      to_logic_tree(expand:).to_s_with_value(cb, format: LogicNode::LogicSymbolFormat::C)
+    end
+
     sig { override.returns(String) }
     def to_asciidoc
       to_logic_tree(expand: false).to_asciidoc(include_versions: false)
@@ -948,6 +1004,9 @@ module Udb
       "always"
     end
 
+    sig { override.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(String) }
+    def to_s_with_value(cfg_arch, expand: false) = "true"
+
     sig { override.returns(String) }
     def to_asciidoc = "true"
 
@@ -1014,6 +1073,9 @@ module Udb
     def to_s_pretty
       "never"
     end
+
+    sig { override.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(String) }
+    def to_s_with_value(cfg_arch, expand: false) = "false"
 
     sig { override.returns(String) }
     def to_asciidoc = "false"
