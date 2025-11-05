@@ -3,48 +3,30 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import argparse
-import json
-import yaml
-from pathlib import Path
-
-profiles = []
-
-parser = argparse.ArgumentParser(description="List extensions associated with profiles")
-parser.add_argument("-p", "--profiles")
-parser.add_argument("paths", nargs="*", default=".")
-params = parser.parse_args()
-
-profiles_filter = []
-if params.profiles is not None:
-    for profile in params.profiles.split(","):
-        profiles_filter.append(profile)
-
-
-def store_yaml(path):
-    with open(path) as f:
-        y = yaml.safe_load(f)
-        if "kind" in y:
-            if y["kind"] == "profile":
-                if len(profiles_filter) == 0 or y["name"] in profiles_filter:
-                    y["file"] = path
-                    profiles.append(y)
-
-
-def find_and_load_yaml(path):
-    p = Path(path)
-    if p.is_dir():
-        for dirent in p.iterdir():
-            find_and_load_yaml(dirent)
-    else:
-        if str(path).endswith(".yaml"):
-            store_yaml(path)
+import UDB
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="List extensions associated with profiles"
+    )
+    parser.add_argument("-p", "--profiles")
+    parser.add_argument("paths", nargs="*", default=".")
+    params = parser.parse_args()
+
+    profiles_filter = []
+    if params.profiles is not None:
+        for profile in params.profiles.split(","):
+            profiles_filter.append(profile)
+
+    profiles = []
     for path in params.paths:
-        find_and_load_yaml(path)
+        profiles += UDB.find_and_load_yaml(path, ["profile"])
+
     for profile in sorted(profiles, key=lambda x: x["name"]):
-        if "extensions" in profile:
+        if (
+            len(profiles_filter) == 0 or profile["name"] in profiles_filter
+        ) and "extensions" in profile:
             print(f"{profile['name']}:")
             if "$child_of" in profile["extensions"]:
                 del profile["extensions"]["$child_of"]
