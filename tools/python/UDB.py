@@ -6,7 +6,10 @@ import yaml
 from pathlib import Path
 
 
-def store_yaml(path, kinds=[]):
+def store_yaml(path, kinds=None):
+    if kinds is None:
+        kinds = []
+
     database = []
     with open(path) as f:
         y = yaml.safe_load(f)
