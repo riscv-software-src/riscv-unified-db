@@ -25,7 +25,8 @@ access:
   vu: always
 operation(): |
   # Ensure JVT readable
-  XReg jvt = csr_sw_read(0x017);
+  Csr csr_handle = direct_csr_lookup(0x017);
+  XReg jvt = csr_sw_read(csr_handle);
 
   if (CSR[jvt].MODE != 0) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
