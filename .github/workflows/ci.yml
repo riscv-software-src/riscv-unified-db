@@ -63,7 +63,7 @@ jobs:
           java-version: '21'
 
       - name: Install deps
-        run: npm ci
+        run: npm install
 
       - name: Compile
         run: npm run compile
