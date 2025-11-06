@@ -1,0 +1,165 @@
+# Copyright (c) Animesh Agarwal
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/register_file_schema.json
+
+$schema: register_file_schema.json#
+kind: register_file
+name: F
+long_name: Floating-Point Registers
+description: |
+  The 'F' register file contains the 32 floating-point registers used by
+  RISC-V floating-point extensions. Each register stores FLEN bits of state and
+  participates in the standard calling convention defined by the RISC-V ABI spec.
+definedBy: F
+register_class: floating_point
+register_length: FLEN
+registers:
+  - name: f0
+    abi_mnemonics: [ft0]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f1
+    abi_mnemonics: [ft1]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f2
+    abi_mnemonics: [ft2]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f3
+    abi_mnemonics: [ft3]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f4
+    abi_mnemonics: [ft4]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f5
+    abi_mnemonics: [ft5]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f6
+    abi_mnemonics: [ft6]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f7
+    abi_mnemonics: [ft7]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f8
+    abi_mnemonics: [fs0]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f9
+    abi_mnemonics: [fs1]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f10
+    abi_mnemonics: [fa0]
+    caller_saved: true
+    roles: [argument, return_value]
+    description: Floating-point argument / return value register 0.
+  - name: f11
+    abi_mnemonics: [fa1]
+    caller_saved: true
+    roles: [argument, return_value]
+    description: Floating-point argument / return value register 1.
+  - name: f12
+    abi_mnemonics: [fa2]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 2.
+  - name: f13
+    abi_mnemonics: [fa3]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 3.
+  - name: f14
+    abi_mnemonics: [fa4]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 4.
+  - name: f15
+    abi_mnemonics: [fa5]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 5.
+  - name: f16
+    abi_mnemonics: [fa6]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 6.
+  - name: f17
+    abi_mnemonics: [fa7]
+    caller_saved: true
+    roles: [argument]
+    description: Floating-point argument register 7.
+  - name: f18
+    abi_mnemonics: [fs2]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f19
+    abi_mnemonics: [fs3]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f20
+    abi_mnemonics: [fs4]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f21
+    abi_mnemonics: [fs5]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f22
+    abi_mnemonics: [fs6]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f23
+    abi_mnemonics: [fs7]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f24
+    abi_mnemonics: [fs8]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f25
+    abi_mnemonics: [fs9]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f26
+    abi_mnemonics: [fs10]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f27
+    abi_mnemonics: [fs11]
+    callee_saved: true
+    description: Callee-saved floating-point register.
+  - name: f28
+    abi_mnemonics: [ft8]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f29
+    abi_mnemonics: [ft9]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f30
+    abi_mnemonics: [ft10]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
+  - name: f31
+    abi_mnemonics: [ft11]
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved temporary register.
