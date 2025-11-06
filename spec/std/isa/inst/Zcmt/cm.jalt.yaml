@@ -1,0 +1,67 @@
+# Copyright (c) Ventana Micro Systems
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: cm.jalt
+long_name: Jump Via Table with Optional Link
+description: |
+  Read an address from the Jump Vector Table and jump to it, linking to `ra`.
+definedBy: Zcmt
+assembly: index
+encoding:
+  match: 101000--------10
+  variables:
+    - name: index
+      location: 9-2
+      # prettier-ignore
+      not: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 ]
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  # Ensure JVT readable
+  XReg jvt = csr_sw_read(0x017);
+
+  if (CSR[jvt].MODE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  # Skip over _this_ 16-bit instruction
+  XReg return_addr = $pc + 2;
+  X[1] = return_addr;
+
+  XReg jump_table_base = { CSR[jvt].BASE, 6'b000000 };
+  XReg virtual_address = jump_table_base + index * (xlen() / 8);
+  XReg addr;
+
+  # TODO
+  # For a table jump instruction, the table entry that the instruction selects
+  # is considered an extension of the instruction itself. Hence, the execution
+  # of a table jump instruction involves two instruction fetches, the first to
+  # read the instruction (cm.jt/cm.jalt) and the second to read from the jump
+  # vector table (JVT). Both instruction fetches are implicit reads, and both
+  # require execute permission; read permission is irrelevant. It is
+  # recommended that the second fetch be ignored for hardware triggers and breakpoints.
+  #
+  # If an exception occurs on either instruction fetch, xEPC is set to the PC
+  # of the table jump instruction, xCAUSE is set as expected for the type of
+  # fault and xTVAL (if not set to zero) contains the fetch address which
+  # caused the fault.
+
+  if (xlen() == 32) {
+    addr = read_memory<32>(virtual_address, $encoding);
+  } else {
+    addr = read_memory<64>(virtual_address, $encoding);
+  }
+
+  # Ensure low-order bit is clear
+  addr = addr & $signed(2'b10);
+
+  jump(addr);
+
+sail(): |
