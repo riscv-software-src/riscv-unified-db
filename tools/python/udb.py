@@ -17,15 +17,11 @@ def find_and_load_yaml(path, kinds=None):
     """
 
     p = Path(path)
-    if p.is_dir():
-        for dirent in p.iterdir():
-            find_and_load_yaml(dirent, kinds)
-    else:
-        if str(path).endswith(".yaml"):
-            with open(path, encoding="utf-8") as f:
-                y = yaml.safe_load(f)
-                if "kind" in y:
-                    if len(kinds) == 0 or y["kind"] in kinds:
-                        y["file"] = path
-                        database.append(y)
+    for path in p.rglob("*.yaml"):
+        with open(path, encoding="utf-8") as f:
+            y = yaml.safe_load(f)
+            if "kind" in y:
+                if len(kinds) == 0 or y["kind"] in kinds:
+                    y["file"] = path
+                    database.append(y)
     return database
