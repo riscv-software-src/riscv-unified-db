@@ -3,25 +3,25 @@
 
 namespace :chore do
 
-  desc "Update golden profile-extensions output"
+  desc "Update golden profile_extensions output"
   task :update_golden_profile_extensions do
     Rake::Task["gen:resolved_arch"].invoke
-    sh "#{$root}/tools/python/profile-extensions.py #{$root}/gen/resolved_spec/_ > #{$root}/tools/python/profile-extensions.golden"
+    sh "#{$root}/tools/python/profile_extensions.py #{$root}/gen/resolved_spec/_ > #{$root}/tools/python/profile_extensions.golden"
   end
 
 end
 
 namespace :test do
 
-  desc "Test that generated profile-extensions matched golden version"
+  desc "Test that generated profile_extensions matched golden version"
   task :profile_extensions do
     Rake::Task["gen:resolved_arch"].invoke
 
-    $logger.info "Testing profile-extensions"
-    sh "#{$root}/tools/python/profile-extensions.py #{$root}/gen/resolved_spec/_ > test-profile-extensions.txt"
-    sh "diff -u #{$root}/tools/python/profile-extensions.golden test-profile-extensions.txt" do |ok, res|
+    $logger.info "Testing profile_extensions"
+    sh "#{$root}/tools/python/profile_extensions.py #{$root}/gen/resolved_spec/_ > test-profile_extensions.txt"
+    sh "diff -u #{$root}/tools/python/profile_extensions.golden test-profile_extensions.txt" do |ok, res|
 
-      rm "test-profile-extensions.txt", :force => true, :verbose => false
+      rm "test-profile_extensions.txt", :force => true, :verbose => false
       if ok
         puts "PASSED"
       else
@@ -31,7 +31,7 @@ namespace :test do
 
           If this is expected, run:
           ./do chore:update_golden_profile_extensions
-          git add tools/python/profile-extensions.golden
+          git add tools/python/profile_extensions.golden
 
           And commit.
         MSG

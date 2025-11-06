@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 # Copyright (c) Ventana Micro Systems
 # SPDX-License-Identifier: BSD-3-Clause-Clear
+"""List RISC-V extensions associated with given (or all defined) profile(s).
+
+It is generally expected to be used with a "resolved architectural specification".
+So, for example:
+```
+$ ./profile_extensions [--profiles P1[,P2]] $UDB_ROOT/gen/resolved_spec/_
+```
+"""
 
 import argparse
-import UDB
+import udb
 
 
 def main():
+    """List extensions associated with profiles."""
+
     parser = argparse.ArgumentParser(
         description="List extensions associated with profiles"
     )
@@ -21,7 +31,7 @@ def main():
 
     profiles = []
     for path in params.paths:
-        profiles += UDB.find_and_load_yaml(path, ["profile"])
+        profiles += udb.find_and_load_yaml(path, ["profile"])
 
     for profile in sorted(profiles, key=lambda x: x["name"]):
         if (
@@ -32,16 +42,20 @@ def main():
                 del profile["extensions"]["$child_of"]
             if "$parent_of" in profile["extensions"]:
                 del profile["extensions"]["$parent_of"]
+
+            # convert extensions from dict to array to facilitate sorting by closure
+            extensions = []
+            for extension in profile["extensions"]:
+                profile["extensions"][extension]["name"] = extension
+                extensions.append(profile["extensions"][extension])
+
             for extension in sorted(
-                profile["extensions"],
-                key=lambda x: f"{profile['extensions'][x]['presence']},{x}",
+                extensions, key=lambda x: f"{x['presence']},{x['name']}"
             ):
                 version = "any"
-                if "version" in profile["extensions"][extension]:
-                    version = profile["extensions"][extension]["version"]
-                print(
-                    f"-  {extension} {version} {profile['extensions'][extension]['presence']}"
-                )
+                if "version" in extension:
+                    version = extension["version"]
+                print(f"- {extension['name']} {version} {extension['presence']}")
 
 
 if __name__ == "__main__":
