@@ -23,7 +23,7 @@ access:
   vu: always
 operation(): |
   # Ensure JVT readable
-  Csr csr_handle = direct_csr_lookup(0x017);
+  Csr csr_handle = direct_csr_lookup(CSR[jvt].address());
   XReg jvt = csr_sw_read(csr_handle);
 
   if (CSR[jvt].MODE != 0) {
@@ -33,25 +33,22 @@ operation(): |
   XReg jump_table_base = { CSR[jvt].BASE, 6'b000000 };
   XReg virtual_address = jump_table_base + index `* (xlen() / 8);
   XReg addr;
+  TranslationResult result;
 
-  # TODO
-  # For a table jump instruction, the table entry that the instruction selects
-  # is considered an extension of the instruction itself. Hence, the execution
-  # of a table jump instruction involves two instruction fetches, the first to
-  # read the instruction (cm.jt/cm.jalt) and the second to read from the jump
-  # vector table (JVT). Both instruction fetches are implicit reads, and both
-  # require execute permission; read permission is irrelevant. It is
-  # recommended that the second fetch be ignored for hardware triggers and breakpoints.
-  #
-  # If an exception occurs on either instruction fetch, xEPC is set to the PC
-  # of the table jump instruction, xCAUSE is set as expected for the type of
-  # fault and xTVAL (if not set to zero) contains the fetch address which
-  # caused the fault.
+  # TODO: Correct this check when we figure out what MISA can do
+  if (CSR[misa].S == 1) {
+    result = translate(virtual_address, MemoryOperation::Fetch, mode(), $encoding);
+  } else {
+    result.paddr = virtual_address;
+  }
+
+  # may raise an exception
+  access_check(result.paddr, xlen(), $pc, MemoryOperation::Fetch, ExceptionCode::InstructionAccessFault, mode());
 
   if (xlen() == 32) {
-    addr = read_memory<32>(virtual_address, $encoding);
+    addr = read_physical_memory<32>(result.paddr);
   } else {
-    addr = read_memory<64>(virtual_address, $encoding);
+    addr = read_physical_memory<64>(result.paddr);
   }
 
   # Ensure low-order bit is clear
