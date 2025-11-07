@@ -562,58 +562,10 @@ def load_exception_codes(
             logging.error(
                 f"Error loading resolved codes file {resolved_codes_file}: {e}"
             )
-            # Fall back to processing YAML files
-
-    for dirpath, _, filenames in os.walk(ext_dir):
-        for fname in filenames:
-            if not fname.endswith(".yaml"):
-                continue
-
-            found_files += 1
-            path = os.path.join(dirpath, fname)
-
-            try:
-                with open(path, encoding="utf-8") as f:
-                    data = yaml.safe_load(f)
-
-                if not isinstance(data, dict) or data.get("kind") != "extension":
-                    continue
-
-                found_extensions += 1
-                ext_name = data.get("name", "unnamed")
-
-                # Skip extension filtering if include_all is True
-                if not include_all:
-                    # Filter by extension requirements
-                    definedBy = data.get("definedBy")
-                    if definedBy:
-                        meets_req = parse_extension_requirements(definedBy)
-                        if not meets_req(enabled_extensions):
-                            continue
-
-                    # Check if excluded
-                    excludedBy = data.get("excludedBy")
-                    if excludedBy:
-                        exclusion_check = parse_extension_requirements(excludedBy)
-                        if exclusion_check(enabled_extensions):
-                            continue
-
-                # Get exception codes
-                for code in data.get("exception_codes", []):
-                    num = code.get("num")
-                    name = code.get("name")
-
-                    if num is not None and name is not None:
-                        sanitized_name = (
-                            name.lower()
-                            .replace(" ", "_")
-                            .replace("/", "_")
-                            .replace("-", "_")
-                        )
-                        exception_codes.append((num, sanitized_name))
-
-            except Exception as e:
-                logging.error(f"Error processing file {path}: {e}")
+    # Logging an error and skipping the exception cause generation if no resolved codes file found
+    else:
+        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
+        return
 
     if found_extensions > 0:
         logging.info(
