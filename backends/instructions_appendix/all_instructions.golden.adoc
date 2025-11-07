@@ -3744,6 +3744,9 @@ Included in::
 Synopsis::
 Breakpoint exception
 
+Assembly::
+c.ebreak
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -4678,6 +4681,9 @@ Included in::
 Synopsis::
 Compressed May-Be-Operation
 
+Assembly::
+c.mop.n
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -4789,6 +4795,9 @@ Included in::
 Synopsis::
 Non-operation
 
+Assembly::
+c.nop
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -4859,6 +4868,9 @@ Included in::
 Synopsis::
 Compressed non-temporal locality hint, all
 
+Assembly::
+c.ntl.all
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -4891,6 +4903,9 @@ Included in::
 
 Synopsis::
 Compressed non-temporal locality hint, innermost private
+
+Assembly::
+c.ntl.p1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -4925,6 +4940,9 @@ Included in::
 Synopsis::
 Compressed non-temporal locality hint, all private
 
+Assembly::
+c.ntl.pall
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -4957,6 +4975,9 @@ Included in::
 
 Synopsis::
 Compressed non-temporal locality hint, innermost shared
+
+Assembly::
+c.ntl.s1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7278,6 +7299,9 @@ Included in::
 Synopsis::
 No synopsis available
 
+Assembly::
+dret
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -7306,6 +7330,9 @@ Included in::
 
 Synopsis::
 Breakpoint exception
+
+Assembly::
+ebreak
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7346,6 +7373,9 @@ Included in::
 
 Synopsis::
 Environment call
+
+Assembly::
+ecall
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -9992,6 +10022,9 @@ Included in::
 Synopsis::
 Instruction fence
 
+Assembly::
+fence.i
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -10052,6 +10085,9 @@ Included in::
 
 Synopsis::
 Memory ordering fence, total store ordering
+
+Assembly::
+fence.tso
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -15977,6 +16013,9 @@ Included in::
 Synopsis::
 Machine mode resume from the RNMI or Double Trap handler
 
+Assembly::
+mnret
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -16131,6 +16170,9 @@ Included in::
 
 Synopsis::
 Machine-mode Return from Trap
+
+Assembly::
+mret
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -16410,6 +16452,9 @@ Included in::
 Synopsis::
 Non-temporal locality hint, all
 
+Assembly::
+ntl.all
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -16440,6 +16485,9 @@ Included in::
 
 Synopsis::
 Non-temporal locality hint, innermost private
+
+Assembly::
+ntl.p1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -16472,6 +16520,9 @@ Included in::
 Synopsis::
 Non-temporal locality hint, all private
 
+Assembly::
+ntl.pall
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -16502,6 +16553,9 @@ Included in::
 
 Synopsis::
 Non-temporal locality hint, innermost shared
+
+Assembly::
+ntl.s1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -17767,6 +17821,9 @@ Included in::
 Synopsis::
 No synopsis available
 
+Assembly::
+sctrclr
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -17974,6 +18031,9 @@ Included in::
 
 Synopsis::
 Order implicit page table reads after invalidation
+
+Assembly::
+sfence.inval.ir
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -18242,6 +18302,9 @@ Included in::
 
 Synopsis::
 Order writes before sfence
+
+Assembly::
+sfence.w.inval
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -19853,6 +19916,9 @@ Included in::
 
 Synopsis::
 Supervisor Mode Return from Trap
+
+Assembly::
+sret
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -46468,6 +46534,9 @@ Included in::
 Synopsis::
 Wait for interrupt
 
+Assembly::
+wfi
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -46535,6 +46604,9 @@ Included in::
 Synopsis::
 Wait-on-Reservation-Set-with-No-Timeout
 
+Assembly::
+wrs.nto
+
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -46593,6 +46665,9 @@ Included in::
 
 Synopsis::
 Wait-on-Reservation-Set-with-Short-Timeout
+
+Assembly::
+wrs.sto
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
