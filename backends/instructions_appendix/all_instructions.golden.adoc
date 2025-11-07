@@ -17765,7 +17765,7 @@ Included in::
 == sctrclr
 
 Synopsis::
-No synopsis available
+Supervisor Control Transfer Record (CTR) clear
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -17774,7 +17774,27 @@ Encoding::
 ....
 
 Description::
-No description available.
+When xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=1, the SCTRCLR instruction performs the following operations:
+
+* Zeroes all CTR Entry Registers, for all DEPTH values
+* Reset to Zero the optional CTR cycle counter where implemented
+** `ctrdata.CC` and `ctrdata.CCV` bit fields.
+
+Any read of `ctrsource`, `ctrtarget`, or `ctrdata` that follows SCTRCLR, such that it precedes the next
+qualified control transfer, will return the value 0.
+
+Further, the first recorded transfer following SCTRCLR will have `ctrdata.CCV`=0.
+
+SCTRCLR execution causes an `IllegalInstruction` exception if:
+
+* xref:exts:Smctr.adoc#udb:doc:ext:Smctr[Smctr] is not implemented
+* The instruction is executed in S/VS/VU-mode and xref:exts:Ssctr.adoc#udb:doc:ext:Ssctr[Ssctr] is not implemented, or xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=0
+* The instruction is executed in U-mode
+
+SCTRCLR execution  causes a `VirtualInstruciton` exception if xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=1 and:
+
+* The instruction is executed in VS-mode and xref:csrs:hstateen0.adoc#udb:doc:csr_field:hstateen0:CTR[hstateen0.CTR]=0
+* The instruction is executed in VU-mode
 
 
 Decode Variables::
@@ -17785,7 +17805,9 @@ Included in::
 |===
 | Extension | Version
 
-| *Smdbltrp* | ~> 1.0.0
+| *Smctr* | ~> 1.0.0
+
+| *Ssctr* | ~> 1.0.0
 
 |===
 
