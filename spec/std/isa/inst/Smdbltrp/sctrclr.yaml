@@ -9,7 +9,8 @@ name: sctrclr
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Smdbltrp
+definedBy:
+  anyOf: [Smctr, Ssctr]
 assembly: ""
 encoding:
   match: "00010000010000000000000001110011"
