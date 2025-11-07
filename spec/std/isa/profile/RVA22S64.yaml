@@ -21,7 +21,6 @@ extensions:
     - "profile/RVA20S64.yaml#/extensions"
     - "profile/RVA22U64.yaml#/extensions"
   $remove:
-    - Za128rs
     - Zfh
     - V
     - Zkn

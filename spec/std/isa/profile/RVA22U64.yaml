@@ -18,7 +18,6 @@ introduction: |
   terms of the amount of software that targets this profile.
 extensions:
   $inherits: "profile/RVA20U64.yaml#/extensions"
-  $remove: Za128rs
   Za64rs:
     presence: mandatory
     version: "~>1.0"
