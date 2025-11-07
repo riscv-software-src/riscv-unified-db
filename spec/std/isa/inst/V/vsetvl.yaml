@@ -8,7 +8,9 @@ kind: instruction
 name: vsetvl
 long_name: Vector Set Vector Type and Vector Length
 description: Set the vtype and vl CSRs, and write the new value of vl into rd.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: xd, xs1, xs2
 encoding:
   match: 1000000----------111-----1010111

@@ -12,7 +12,9 @@ writable: false
 priv_mode: U
 length: MXLEN
 description: Provides the default type used to interpret the contents of the vector register file.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 fields:
   VILL:
     location_rv32: 31

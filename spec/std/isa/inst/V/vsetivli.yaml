@@ -8,7 +8,9 @@ kind: instruction
 name: vsetivli
 long_name: Vector Set Vector Type Immediate and Vector Length Immediate
 description: Set the vtype and vl CSRs, and write the new value of vl into rd.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: xd, uimm, vtypei
 encoding:
   match: 11---------------111-----1010111

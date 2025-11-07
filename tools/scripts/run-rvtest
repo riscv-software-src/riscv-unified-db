@@ -1,0 +1,42 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+if [ -n "$1" ]; then
+	ARCH_TYPE=$1
+	shift
+fi
+
+if [ -n "$1" ]; then
+	BUILD_TYPE=$1
+	shift
+fi
+
+if [ -n "$1" ]; then
+	config=$1
+	shift
+fi
+
+if [ -n "$1" ]; then
+	test_prefix=$1
+	shift
+fi
+
+if [ -n "$1" ]; then
+	tests=$@
+fi
+
+echo ARCH_TYPE: $ARCH_TYPE
+echo BUILD_TYPE: $BUILD_TYPE
+echo config: $config
+echo test_prefix: $test_prefix
+echo tests: $tests
+
+for rvtest in $tests
+do
+    echo $rvtest
+    ./gen/cpp_hart_gen/${ARCH_TYPE}_${BUILD_TYPE}/build/iss \
+		-m ${ARCH_TYPE} \
+		-c ./cfgs/${config}.yaml \
+		./ext/riscv-tests/isa/${test_prefix}-$rvtest
+done
