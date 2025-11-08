@@ -21,6 +21,9 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+    implies:
+      - name: Za128rs
+        version: "1.0.0"
     param_constraints:
       LRSC_RESERVATION_STRATEGY:
         schema:
