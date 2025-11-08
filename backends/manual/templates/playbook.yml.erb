@@ -28,9 +28,9 @@ ui:
     snapshot: true
   supplemental_files:
   - path: css/vendor/tabs.css
-    contents: <%= $root %>/node_modules/@asciidoctor/tabs/dist/css/tabs.css
+    contents: /opt/node/node_modules/@asciidoctor/tabs/dist/css/tabs.css
   - path: js/vendor/tabs.js
-    contents: <%= $root %>/node_modules/@asciidoctor/tabs/dist/js/tabs.js
+    contents: /opt/node/node_modules/@asciidoctor/tabs/dist/js/tabs.js
   - path: partials/footer-scripts.hbs
     contents: |
       <script id="site-script" src="{{{uiRootPath}}}/js/site.js" data-ui-root-path="{{{uiRootPath}}}"></script>

@@ -3,6 +3,7 @@ import os
 import yaml
 import logging
 import pprint
+import json
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
@@ -15,6 +16,105 @@ def check_requirement(req, exts):
         # If it has a name field, just match the extension name and ignore version
         return req["name"] in exts
     return False
+
+
+def build_match_from_format(format_field):
+    """
+    Build a match string from the format field in the new schema.
+    """
+    if not format_field or "opcodes" not in format_field:
+        return None
+
+    # Determine instruction width by finding maximum bit position
+    valid_locations = []
+
+    opcodes = format_field["opcodes"]
+    # Check opcodes
+    for field_data in opcodes.values():
+        if isinstance(field_data, dict) and "location" in field_data:
+            if isinstance(field_data["location"], str):
+                try:
+                    location = field_data["location"]
+                    split_location = location.split("|")
+                    high = max(
+                        (
+                            int(location.split("-")[0])
+                            if "-" in location
+                            else int(location)
+                        )
+                        for location in split_location
+                    )
+                    valid_locations.append(high)
+                except (ValueError, IndexError):
+                    raise ValueError(
+                        f"Invalid location format: {field_data['location']}"
+                    )
+            elif isinstance(field_data["location"], int):
+                try:
+                    valid_locations.append(field_data["location"])
+                except (ValueError, IndexError):
+                    raise ValueError(
+                        f"Invalid location format: {field_data['location']}"
+                    )
+            else:
+                raise ValueError(f"Unknown location format: {field_data['location']}")
+
+    if "variables" in format_field:
+        variables = format_field["variables"]
+        # Check variables
+        for var_data in variables.values():
+            if isinstance(var_data, dict) and "location" in var_data:
+                if isinstance(var_data["location"], str):
+                    try:
+                        location = var_data["location"]
+                        if "-" in location:
+                            high = int(location.split("-")[0])
+                        else:
+                            high = int(location)
+                        valid_locations.append(high)
+                    except (ValueError, IndexError):
+                        raise ValueError(
+                            f"Invalid location format: {var_data['location']}"
+                        )
+                elif isinstance(var_data["location"], int):
+                    try:
+                        valid_locations.append(var_data["location"])
+                    except (ValueError, IndexError):
+                        raise ValueError(
+                            f"Invalid location format: {var_data['location']}"
+                        )
+                else:
+                    raise ValueError(f"Invalid location format: {var_data['location']}")
+
+    if not valid_locations:
+        raise ValueError("No valid bit locations found in format field")
+
+    max_bit = max(valid_locations)
+
+    # Set instruction width based on maximum bit position
+    width = max_bit + 1
+    match_bits = ["-"] * width
+
+    # Populate match string with opcode bits
+    for field_data in opcodes.values():
+        if isinstance(field_data, dict):
+            try:
+                location = field_data["location"]
+                if isinstance(location, str) and "-" in location:
+                    high, low = map(int, location.split("-"))
+                else:
+                    high = low = int(location)
+
+                if high < low or high >= width:
+                    logging.warning(f"Invalid bit range: {location}")
+                    continue  # Skip invalid bit ranges
+
+                binary_value = format(field_data["value"], f"0{high - low + 1}b")
+                match_bits[width - high - 1 : width - low] = binary_value
+            except (ValueError, IndexError):
+                raise ValueError(f"Error processing opcode field: {field_data}")
+
+    return "".join(match_bits)
 
 
 def parse_extension_requirements(extensions_spec):
@@ -177,11 +277,27 @@ def load_instructions(
 
             encoding = data.get("encoding", {})
             if not encoding:
-                logging.error(
-                    f"Missing 'encoding' field in instruction {name} in {path}"
-                )
-                encoding_filtered += 1
-                continue
+                # Check if this instruction uses the new schema with a 'format' field
+                format_field = data.get("format")
+                if not format_field:
+                    logging.error(
+                        f"Missing 'encoding' field in instruction {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
+
+                # Try to build a match string from the format field
+                match_string = build_match_from_format(format_field)
+                if not match_string:
+                    logging.error(
+                        f"Could not build encoding from format field in instruction {name} in {path}"
+                    )
+                    encoding_filtered += 1
+                    continue
+
+                # Create a synthetic encoding compatible with existing logic
+                encoding = {"match": match_string, "variables": []}
+                logging.debug(f"Built encoding from format field for {name}")
 
             # Check if the instruction specifies a base architecture constraint
             base = data.get("base")
@@ -211,14 +327,15 @@ def load_instructions(
 
                         # Process RV64 encoding
                         rv64_match = rv64_encoding.get("match")
+                        rv32_match = rv32_encoding.get("match")
+
                         if rv64_match:
                             instr_dict[name] = {
                                 "match": rv64_match
                             }  # RV64 gets the default name
 
-                        # Process RV32 encoding with a _rv32 suffix
-                        rv32_match = rv32_encoding.get("match")
-                        if rv32_match:
+                        if rv32_match and rv32_match != rv64_match:
+                            # Process RV32 encoding with a _rv32 suffix
                             instr_dict[f"{name}_rv32"] = {"match": rv32_match}
 
                         continue  # Skip the rest of the loop as we've already added the encodings
@@ -376,11 +493,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                 else:
                     addr_int = int(addr_to_use, 0)
 
-                # For BOTH architecture, add suffix to RV32-specific CSRs
-                if target_arch == "BOTH" and base == 32:
-                    csrs[addr_int] = f"{name.upper()}.RV32"
-                else:
-                    csrs[addr_int] = name.upper()
+                csrs[addr_int] = name.upper()
             except Exception as e:
                 logging.error(f"Error parsing address {addr_to_use} in {path}: {e}")
                 address_errors += 1
@@ -401,6 +514,76 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
         logging.warning(f"No CSR definitions found in {csr_root}")
 
     return csrs
+
+
+def load_exception_codes(
+    ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
+):
+    """Load exception codes from extension YAML files or pre-resolved JSON file."""
+    exception_codes = []
+    found_extensions = 0
+    found_files = 0
+
+    if enabled_extensions is None:
+        enabled_extensions = []
+    # If we have a resolved codes file, use it instead of processing YAML files
+    if resolved_codes_file and os.path.exists(resolved_codes_file):
+        try:
+            with open(resolved_codes_file, encoding="utf-8") as f:
+                resolved_codes = json.load(f)
+
+            for code in resolved_codes:
+                num = code.get("num")
+                name = code.get("name")
+                if num is not None and name is not None:
+                    sanitized_name = (
+                        name.lower()
+                        .replace(" ", "_")
+                        .replace("/", "_")
+                        .replace("-", "_")
+                    )
+                    exception_codes.append((num, sanitized_name))
+
+            logging.info(
+                f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}"
+            )
+
+            # Sort by exception code number and deduplicate
+            seen_nums = set()
+            unique_codes = []
+            for num, name in sorted(exception_codes, key=lambda x: x[0]):
+                if num not in seen_nums:
+                    seen_nums.add(num)
+                    unique_codes.append((num, name))
+
+            return unique_codes
+
+        except Exception as e:
+            logging.error(
+                f"Error loading resolved codes file {resolved_codes_file}: {e}"
+            )
+    # Logging an error and skipping the exception cause generation if no resolved codes file found
+    else:
+        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
+        return
+
+    if found_extensions > 0:
+        logging.info(
+            f"Found {found_extensions} extension definitions in {found_files} files"
+        )
+        logging.info(f"Added {len(exception_codes)} exception codes to the output")
+    else:
+        logging.warning(f"No extension definitions found in {ext_dir}")
+
+    # Sort by exception code number and deduplicate
+    seen_nums = set()
+    unique_codes = []
+    for num, name in sorted(exception_codes, key=lambda x: x[0]):
+        if num not in seen_nums:
+            seen_nums.add(num)
+            unique_codes.append((num, name))
+
+    return unique_codes
 
 
 def parse_match(match_str):

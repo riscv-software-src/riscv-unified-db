@@ -434,10 +434,10 @@ namespace :gen do
     playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
-    $logger.info "Running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+    $logger.info "Running Antora for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
 
     sh [
-      "npm exec -- antora",
+      "/opt/node/node_modules/.bin/antora",
       "--stacktrace",
       "generate",
       "--cache-dir=#{$root}/.home/.antora",
@@ -447,7 +447,7 @@ namespace :gen do
       playbook_path.to_s
     ].join(" ")
 
-    $logger.info "Done running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+    $logger.info "Done running Antora for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
   end
 end
 

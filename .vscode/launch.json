@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/gen/cpp_hart_gen/rv32_Debug/build/iss",
-      "args": ["-m", "rv32", "-c", "${workspaceFolder}/cfgs/mc100-32-riscv-tests.yaml", "${workspaceFolder}/ext/riscv-tests/isa/rv32ui-p-addi"],
+      "args": ["-m", "rv32", "-c", "${workspaceFolder}/cfgs/rv32-riscv-tests.yaml", "${workspaceFolder}/ext/riscv-tests/isa/rv32ui-p-addi"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],

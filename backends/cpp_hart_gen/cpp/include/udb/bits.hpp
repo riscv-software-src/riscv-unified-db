@@ -2801,12 +2801,14 @@ namespace udb {
       template <unsigned, bool> class MsbType, unsigned MsbN,
       template <unsigned, bool> class LsbType, unsigned LsbN
     >
-    constexpr _PossiblyUnknownBits<N, false> extract(const MsbType<MsbN, false>& msb, const LsbType<LsbN, false>& lsb) const {
+    constexpr _PossiblyUnknownRuntimeBits<constmax_v<MsbN, LsbN>, false> extract(const MsbType<MsbN, false>& msb, const LsbType<LsbN, false>& lsb) const {
       udb_assert(msb >= lsb, "Negative range is not allowed");
       udb_assert(lsb.get() <= width(), "Extract out of range");
 
-      _Bits<N, false> mask = (_Bits<N, false>{1} << (msb - lsb)) - _Bits<N, false>{1};
-      return _PossiblyUnknownBits<N, false>{m_val.extract(msb, lsb), m_unknown_mask.extract(msb, lsb)};
+      return _PossiblyUnknownRuntimeBits<constmax_v<MsbN, LsbN>, false>(
+        WidthArg(msb.get() - lsb.get() + 1),
+        ValueArg(_PossiblyUnknownBits<constmax_v<MsbN, LsbN>, false>(m_val.extract(msb, lsb), m_unknown_mask.extract(msb, lsb)))
+      );
     }
 
     template <unsigned Pos>
@@ -3018,8 +3020,8 @@ namespace udb {
 
     constexpr explicit _PossiblyUnknownRuntimeBits(unsigned width) : m_width(width) {}
     constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width) : m_width(width.width) {}
-    constexpr explicit _PossiblyUnknownRuntimeBits(const ValueArg<StorageType> val, const WidthArg& width)  : m_val(val.value), m_width(width.width) {}
-    constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width, const ValueArg<StorageType> val)  : m_val(val.value), m_width(width.width) {}
+    constexpr explicit _PossiblyUnknownRuntimeBits(const ValueArg<_PossiblyUnknownBits<MaxN, Signed>> val, const WidthArg& width)  : m_val(val.value), m_width(width.width) {}
+    constexpr explicit _PossiblyUnknownRuntimeBits(const WidthArg& width, const ValueArg<_PossiblyUnknownBits<MaxN, Signed>> val)  : m_val(val.value), m_width(width.width) {}
 
     // template <std::integral T>
     // constexpr _PossiblyUnknownRuntimeBits(const T &initial_value, unsigned width)

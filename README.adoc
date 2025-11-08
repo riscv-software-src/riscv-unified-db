@@ -60,7 +60,7 @@ Additionally, developers will be interested in the following:
 
 === Prerequisites
 
-UnifiedDB tools are set up to run in a container. Both Docker (any version) and Singularity/Apptainer (`Singularity CE >= 3.3` or `Apptainer >= 1.0`) are supported.
+UnifiedDB tools are set up to run in a container. Docker (any version), Podman (any version), and Singularity/Apptainer (`Singularity CE >= 3.3` or `Apptainer >= 1.0`) are supported.
 
 === Devcontainer
 

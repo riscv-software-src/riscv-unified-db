@@ -397,17 +397,32 @@ namespace :test do
 
   task riscv_tests: ["build_riscv_tests", "build:cpp_hart"] do
     configs_name, build_name = configs_build_name
-    tests = ["simple", "add", "addi", "and",
-    "andi", "auipc", "beq", "bge", "bgeu", "blt",
-    "bltu", "bne", "fence_i", "jal", "jalr",
-     "lb", "lbu", "lh", "lhu", "lw", "ld_st",
-     "lui", "ma_data", "or", "ori", "sb", "sh",
-     "sw", "st_ld", "sll", "slli", "slt", "slti",
-     "sltiu", "sltu", "sra", "srai", "srl",
-     "srli", "sub", "xor", "xori"]
+    rv32uiTests = ["simple", "add", "addi", "and",
+      "andi", "auipc", "beq", "bge", "bgeu", "blt",
+      "bltu", "bne", "fence_i", "jal", "jalr",
+      "lb", "lbu", "lh", "lhu", "lw", "ld_st",
+      "lui", "ma_data", "or", "ori", "sb", "sh",
+      "sw", "st_ld", "sll", "slli", "slt", "slti",
+      "sltiu", "sltu", "sra", "srai", "srl",
+      "srli", "sub", "xor", "xori"]
 
-     tests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/mc100-32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
+    rv32uiTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
+    end
+
+    rv32umTests = [ "div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu" ]
+    rv32umTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
+    end
+
+    rv32ucTests = [ "rvc" ]
+    rv32ucTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
+    end
+
+    rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
+    rv32siTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
     end
   end
 end

@@ -25,32 +25,12 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+hints:
+  - { $ref: inst/Zicbop/prefetch.r.yaml# }
+  - { $ref: inst/Zicbop/prefetch.w.yaml# }
+  - { $ref: inst/Zicbop/prefetch.i.yaml# }
 operation(): |
-  if (implemented?(ExtensionName::Zicbop)) {
-    if (xd == 0) {
-      if (imm[4:0] == 0) {
-        # prefetch.i instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_instruction(offset);
-      } else if (imm[4:0] == 1) {
-        # prefetch.r instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_read(offset);
-      } else if (imm[4:0] == 3) {
-        # prefetch.r instruction
-        Bits<12> offset = {imm[11:5], xd};
-        prefetch_write(offset);
-      }
-    }
-  }
   X[xd] = X[xs1] | $signed(imm);
-pseudoinstructions:
-  - when: (xd == 0) && (imm[4:0] == 0)
-    to: prefetch.i offset
-  - when: (xd == 0) && (imm[4:0] == 1)
-    to: prefetch.r offset
-  - when: (xd == 0) && (imm[4:0] == 3)
-    to: prefetch.w offset
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

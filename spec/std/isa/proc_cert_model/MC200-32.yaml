@@ -46,6 +46,8 @@ debug_manual_revision: "0.13.2"
 # TODO: No ratified CLIC yet. It will be multiple extensions.
 
 extensions:
+  Zicntr:
+    presence: mandatory
   M:
     presence: mandatory
   B:

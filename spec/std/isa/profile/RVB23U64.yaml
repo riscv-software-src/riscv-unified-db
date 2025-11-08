@@ -21,7 +21,6 @@ extensions:
   # imported from RVA22U64
   #########################################################################
   $inherits: "profile/RVA22U64.yaml#/extensions"
-  $remove: Za128rs
 
   #########################################################################
   # MANDATORY extensions in RVB23 (and RVA23)
@@ -61,11 +60,6 @@ extensions:
     version: "~>1.0"
     note: |
       Wait-on-reservation-set (WRS) instructions
-  Za64rs:
-    presence: mandatory
-    version: "~>1.0"
-    note: |
-      Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes
 
   #########################################################################
   # OPTIONAL LOCALIZED extensions

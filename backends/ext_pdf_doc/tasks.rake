@@ -34,7 +34,7 @@ rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |t
     "-a pdf-theme=#{ENV['THEME']}",
     "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
     "-a imagesdir=#{$root}/ext/docs-resources/images",
-    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
+    "-a wavedrom=/opt/node/node_modules/.bin/wavedrom-cli",
     "-r asciidoctor-diagram",
     "-r idl_highlighter",
     "-o #{t.name}",
@@ -63,7 +63,7 @@ rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/html/.*_extension\.html} => proc { 
     "-v",
     "-a toc",
     "-r asciidoctor-diagram",
-    "-a wavedrom=#{$root}/node_modules/.bin/wavedrom-cli",
+    "-a wavedrom=/opt/node/node_modules/.bin/wavedrom-cli",
     "-o #{t.name}",
     adoc_file
   ].join(" ")

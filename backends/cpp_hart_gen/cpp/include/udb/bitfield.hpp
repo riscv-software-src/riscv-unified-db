@@ -167,7 +167,7 @@ namespace udb {
   template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
     requires ((N >= Size) && (BitsClass<N, Signed>::IsABits))
   BitfieldMember<ParentSize, Start, Size>::template operator BitsClass<N, Signed>() const {
-    return BitsClass<N, Signed> {static_cast<BitsType<ParentSize>>(m_parent) >> Bits<Size>(Start) & MaximumValue};
+    return BitsClass<N, Signed> {(static_cast<BitsType<ParentSize>>(m_parent) >> Bits<ParentSize>(Start)) & MaximumValue};
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
@@ -185,7 +185,7 @@ namespace udb {
       &BitfieldMember<ParentSize, Start, Size>::template operator=(
           const BitfieldMember<ParentSize, Start, Size> &other) {
     m_parent = (static_cast<BitsType<ParentSize>>(m_parent) & ~Mask) |
-               ((static_cast<BitsType<Size>>(other).template widening_sll<Size>()) & Mask);
+               ((static_cast<BitsType<Size>>(other).template widening_sll<Start>()) & Mask);
     return *this;
   }
 
