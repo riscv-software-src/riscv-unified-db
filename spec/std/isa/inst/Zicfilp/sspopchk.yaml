@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: sspopchk
+long_name: Shadow Stack Pop and Check
+description: |
+  Pop a value from the shadow stack and check it.
+definedBy: Zicfilp
+assembly: xs1
+encoding:
+  match: "110011011100-----100000001110011"
+  variables:
+    - name: xs1
+      location: 19-15
+      # prettier-ignore
+      not: [ 1, 5 ]
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |
+  # Pop value from shadow stack and check against register xs1
