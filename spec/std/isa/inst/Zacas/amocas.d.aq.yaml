@@ -7,19 +7,20 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amocas.h.rl
-long_name: Atomic compare-and-swap halfword (release)
+name: amocas.d.aq
+long_name: Atomic compare-and-swap doubleword (acquire)
 description: |
-  Atomically with release ordering:
+  Atomically with acquire ordering:
 
-    * Load the halfword at address _xs1_
-    * Write the sign-extended value into _xd_
-    * Compare the loaded value with the least-significant halfword of register _xs2_
-    * If equal, write the least-significant halfword of register _xs2+1_ to the address in _xs1_
-definedBy: Zabha
+    * Load the doubleword at address _xs1_
+    * Write the loaded value into _xd_
+    * Compare the loaded value with the value of register _xs2_
+    * If equal, write the value of register _xs2+1_ to the address in _xs1_
+definedBy: Zacas
+base: 64
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 0010101----------001-----0101111
+  match: 0010110----------011-----0101111
   variables:
     - name: xs2
       location: 24-20
@@ -33,21 +34,21 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (!implemented?(ExtensionName::Zabha)) {
+  if (!implemented?(ExtensionName::Zacas)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[xs1];
-  X[xd] = amocas16(virtual_address, X[xs2][15:0], X[xd][15:0], 1'b0, 1'b1, $encoding);
+  memory_model_acquire();
 
-  memory_model_release();
+  XReg virtual_address = X[xs1];
+  X[xd] = amocas64(virtual_address, X[xs2], X[xd], 1'b1, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    if extension("Zabha") then {
+    if extension("Zacas") then {
       /* Get the address, X(rs1) (no offset).
        * Some extensions perform additional checks on address validity.
        */
