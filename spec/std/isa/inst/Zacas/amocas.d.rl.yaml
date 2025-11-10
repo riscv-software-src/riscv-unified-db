@@ -39,7 +39,8 @@ operation(): |
   }
 
   XReg virtual_address = X[xs1];
-  X[xd] = amocas64(virtual_address, X[xs2], X[xd], 1'b0, 1'b1, $encoding);
+  # TODO
+  # X[xd] = amocas64(virtual_address, X[xs2], X[xd], 1'b0, 1'b1, $encoding);
 
   memory_model_release();
 
