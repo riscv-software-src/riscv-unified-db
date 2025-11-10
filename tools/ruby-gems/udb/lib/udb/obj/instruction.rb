@@ -418,20 +418,23 @@ class Instruction < TopLevelDatabaseObject
     symtab
   end
 
-  # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
+   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
   def pruned_operation_ast(effective_xlen)
-    defer :pruned_operation_ast do
-      return nil unless @data.key?("operation()")
+    @pruned_operation_ast ||= {}
+    @pruned_operation_ast[effective_xlen] ||=
+      begin
+        if @data.key?("operation()")
 
-      type_checked_ast = type_checked_operation_ast(effective_xlen)
-      symtab = fill_symtab(effective_xlen, type_checked_ast)
-      pruned_ast = type_checked_ast.prune(symtab)
-      pruned_ast.freeze_tree(symtab)
+          type_checked_ast = type_checked_operation_ast(effective_xlen)
+          symtab = fill_symtab(effective_xlen, type_checked_ast)
+          pruned_ast = type_checked_ast.prune(symtab)
+          pruned_ast.freeze_tree(symtab)
 
-      symtab.release
-      pruned_ast
-    end
+          symtab.release
+          pruned_ast
+        end
+      end
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
