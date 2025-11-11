@@ -234,6 +234,17 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest
+  regress-profile-extensions:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Check profile_extensions
+        run: ./do test:profile_extensions
   call-deploy:
     uses: ./.github/workflows/deploy.yml
     with:

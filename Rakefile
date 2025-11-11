@@ -49,6 +49,11 @@ Dir.glob("#{$root}/tools/ruby-gems/*/Rakefile") do |rakefile|
   load rakefile
 end
 
+# Load and execute tools Rakefiles
+Dir.glob("#{$root}/tools/*/tasks.rake") do |rakefile|
+  load rakefile
+end
+
 directory "#{$root}/.stamps"
 
 file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
