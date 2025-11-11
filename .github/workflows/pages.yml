@@ -151,14 +151,14 @@ jobs:
       - name: Download RVI20-32-CRD
         uses: actions/download-artifact@v5
         with:
-          name: RVI20-32-crd
+          name: rvi20-32-crd
           path: _site/pdfs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
       - name: Download RVI20-64-CRD
         uses: actions/download-artifact@v5
         with:
-          name: RVI20-64-crd
+          name: rvi20-64-crd
           path: _site/pdfs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
