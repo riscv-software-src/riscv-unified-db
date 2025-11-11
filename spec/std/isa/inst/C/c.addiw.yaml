@@ -36,4 +36,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[xd] = sext((X[xd] + imm), 32);
+  X[xd] = sext((X[xd] + sext(imm, 6)), 32);
