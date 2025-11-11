@@ -213,6 +213,17 @@ namespace udb {
     const std::string name() const override { return "<%= csr.name %>"; }
     PrivilegeMode mode() const override { return PrivilegeMode::<%= csr.priv_mode %>; }
     bool writable() const override { return <%= csr.writable %>; }
+    ValueType _reset_value() const {
+      if (defined()) {
+        return 0_b
+        <%- fields_for_xlen.each do |field| -%>
+        | (m_<%= field.name %>.reset_value() << _Bits<64, false>(m_<%= field.name %>.location().lsb))
+        <%- end -%>
+        ;
+      } else {
+        "x"_xb;
+      }
+    }
 
     bool defined() override {
       return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_req|

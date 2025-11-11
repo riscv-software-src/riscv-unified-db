@@ -7450,6 +7450,8 @@ end,
       elsif ["implemented_without?"].include?(function_name)
         type_error "Expecting one argument" unless args.size == 1
         type_error "Expecting an ExtensionName" unless args[0].type(symtab).kind == :enum_ref && args[0].class_name == "ExtensionName"
+      elsif function_name == "reset_value"
+        type_error "unexpected argument(s)" unless args.empty?
       else
         type_error "'#{function_name}' is not a supported CSR function call"
       end
@@ -7458,7 +7460,7 @@ end,
     def type(symtab)
 
       case function_name
-      when "sw_read"
+      when "sw_read", "reset_value"
         if csr_known?(symtab)
           l = symtab.csr(csr.csr_name).length
           Type.new(:bits, width: (l.nil? ? :unknown : l))
@@ -7506,6 +7508,14 @@ end,
         ext_name = extension_name_enum_type.element_names[idx]
 
         cd.implemented_without?(ext_name)
+      when "reset_value"
+        value_error "CSR not knowable" unless csr_known?(symtab)
+        cd = csr_def(symtab)
+        v = cd.reset_value
+        if v == "UNDEFINED_LEGAL"
+          value_error "undefined reset value"
+        end
+        v
       else
         internal_error "TODO: #{function_name}"
       end

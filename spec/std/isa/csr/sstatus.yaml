@@ -28,7 +28,7 @@ fields:
       Alias of `mstatus.SD`.
 
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value(): return CSR[mstatus].reset_value();
     affectedBy: [F, D, V]
   UXL:
     location: 33-32
