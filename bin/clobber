@@ -8,5 +8,4 @@ rm -rf                 \
   ${ROOT}/.bundle      \
   ${ROOT}/.singularity \
   ${ROOT}/gen          \
-  ${ROOT}/node_modules \
   ${ROOT}/sorbet
