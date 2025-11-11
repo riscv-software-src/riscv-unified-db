@@ -694,6 +694,10 @@ namespace udb {
       }
     }
 
+    constexpr std::conditional_t<Signed, SignedStorageType, const StorageType &> get_ignore_unknown() const {
+      return m_val;
+    }
+
     constexpr const _Bits& to_defined() const { return *this; }
 
     // cast to other Bits types
@@ -3467,7 +3471,7 @@ struct fmt::formatter<BitsClass<N, Signed>>
     : formatter<typename BitsClass<N, Signed>::StorageType> {
   template <typename CONTEXT_TYPE>
   auto format(BitsClass<N, Signed> value, CONTEXT_TYPE &ctx) const {
-    return fmt::formatter<typename BitsClass<N, Signed>::StorageType>::format(value.get(), ctx);
+    return fmt::formatter<typename BitsClass<N, Signed>::StorageType>::format(value.get_ignore_unknown(), ctx);
   }
 };
 

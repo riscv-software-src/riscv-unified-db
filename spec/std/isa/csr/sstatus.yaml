@@ -33,7 +33,7 @@ fields:
   UXL:
     location: 33-32
     base: 64
-    alias: mstatus.MXR
+    alias: mstatus.UXL
     description: |
       *U-mode XLEN*
 
