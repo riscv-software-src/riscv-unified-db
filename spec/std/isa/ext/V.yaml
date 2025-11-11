@@ -15,6 +15,126 @@ versions:
 description: |
   TODO
 params:
+  ELEN:
+    description: |
+      The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ {ge} 8, which
+      must be a power of 2.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+  VLEN:
+    description: 
+      The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+  VILL_IMPLICIT_ENCODING:
+    description: |
+      A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits for `vlmul[2:0]`.  The illegal value represented by `vill` can be internally encoded using the illegal 64-bit combination in `vsew[1:0]` without requiring an additional storage
+      bit to hold `vill`.:
+    schema:
+      type: boolean
+  MUTABLE_MISA_V:
+    description: Implementations may have a writable `misa.V` field.
+    schema:
+      type: boolean
+  HW_MSTATUS_VS_DIRTY_UPDATE:
+    description: |
+      Implementations may also change `mstatus.VS` or `vsstatus.VS` from Initial or
+      Clean to Dirty at any time, even when there is no change in vector state.
+    schema:
+      type: string
+      enum: ["never", "precise", "imprecise", "custom"]
+  MSTATUS_VS_EXISTS:
+    description: |
+      Analogous to the way in which the floating-point unit is handled, the `mstatus.VS` field may exist even if `misa.V` is clear.
+    schema:
+      type: boolean
+  RESERVED_VILL_SET:
+    description: |
+      When _rs1_=`x0` and _rd_=`x0`, the instructions operate as if the current vector length in `vl` is used as the AVL...
+      Use of the instructions with a new SEW/LMUL ratio that would result in a change of VLMAX is reserved. 
+      Use of the instructions is also reserved if `vill` was 1 beforehand. Implementations may set `vill` in either case.
+    schema:
+      type: string
+      enum: ["never", "on_vlmax_change", "on_vill_set", "always", "custom"]
+  VECTOR_FF_PAST_TRAP:
+    description: 
+      Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming 
+      of the vector length (but not past the original vector length).  The values of these spurious updates do not have to correspond 
+      to the values in memory at the addressed memory locations.  Non-idempotent memory locations can only be accessed when it is known 
+      the corresponding element load operation will not be restarted due to a trap or vector-length trimming.
+    schema:
+      type: string
+      enum: ["update_none", "custom"]
+  VECTOR_FF_SEG_PARTIAL_ACCESS:
+    description: |
+      For fault-only-first segment loads, if an exception is detected partway
+      through accessing the zeroth segment, the trap is taken.
+      If an exception is detected partway through accessing a subsequent segment,
+      `vl` is reduced to the index of that segment.
+      In both cases, it is implementation-defined whether a subset of the segment is
+      loaded.
+    schema:
+      type: string
+      enum: ["no_subsegment_loaded", "custom"]
+  VECTOR_LS_MISSALIGNED_EXCEPTION:
+    description: |
+      If an element accessed by a vector memory instruction is not naturally
+      aligned to the size of the element, either the element is transferred
+      successfully or an address-misaligned exception is raised on that
+      element.
+    schema:
+      type: string
+      enum: ["element_loaded_no_exception", "address-misaligned_exception"]
+  VECTOR_LS_OVERWRITE_PAST_TRAP:
+    description: |
+      Load instructions may overwrite active destination vector register
+      group elements past the element index at which the trap is reported.
+    schema:
+      type: string
+      enum: ["preserve_inactive", "custom"]
+  VECTOR_LS_SEG_FF_OVERLOAD:
+    description: |
+      These instructions may overwrite destination vector register group
+      elements past the point at which a trap is reported or past the point
+      at which vector length is trimmed.
+    schema:
+      type: string
+      enum: ["no_overwrite", "custom"]
+  VECTOR_LS_SEG_PARTIAL_ACCESS:
+    description: |
+      If a trap occurs during
+      access to a segment, it is implementation-defined whether a subset
+      of the faulting segment's accesses are performed before the trap is taken.
+    schema:
+      type: string
+      enum: ["no_partial", "custom"]
+  LEGAL_VSTART:
+    description: |
+      Implementations are permitted to raise illegal-instruction exceptions when
+      attempting to execute a vector instruction with a value of `vstart` that the
+      implementation can never produce when executing that same instruction with
+      the same `vtype` setting.
+    schema:
+      type: string
+      enum: ["1_stride", "2_stride", "4_stride", "custom"]
+  VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION:
+    description: |
+      Implementations are allowed to raise a misaligned address exception on
+      whole register loads and stores if the base address is not naturally
+      aligned to the larger of the size of the encoded EEW in bytes (EEW/8)
+      or the implementation's smallest supported SEW size in bytes
+      (SEW~MIN~/8).
+    schema:
+      type: string
+      enum: ["misaligned_exception", "permitted"]
+  VSSTATUS_VS_EXISTS:
+    description: |
+      For implementations with a writable `misa.V` field,
+      the `vsstatus.VS` field may exist even if `misa.V` is clear.
+    schema:
+      type: boolean
   MUTABLE_MISA_V:
     description: |
       Indicates whether or not the `V` extension can be disabled with the `misa.V` bit.
