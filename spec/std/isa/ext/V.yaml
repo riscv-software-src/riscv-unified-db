@@ -23,11 +23,45 @@ params:
       type: integer
       enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
   VLEN:
-    description: 
+    description: |
       The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
     schema:
       type: integer
       enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+  SEWmin:
+    description: |
+      Implementations must provide fractional LMUL settings that allow the
+      narrowest supported type to occupy a fraction of a vector register
+      corresponding to the ratio of the narrowest supported type's width to
+      that of the largest supported type's width.  In general, the
+      requirement is to support LMUL {ge} SEW~MIN~/ELEN, where SEW~MIN~ is
+      the narrowest supported SEW value and ELEN is the widest supported SEW
+      value.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64]
+  VECTOR_AGNOSTIC_BEHAVIOR:
+    description:
+      When a set is marked agnostic, the corresponding set of destination
+      elements in any vector destination operand can either retain the value
+      they previously held, or are overwritten with 1s.
+    schema:
+      type: string
+      enum: ["never_overwritten", "custom"]
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED:
+    description:
+      For a given supported fractional LMUL setting, implementations must support
+      SEW settings between SEW~MIN~ and LMUL * ELEN, inclusive.
+    schema:
+      type: string
+      enum: ["no_unrequied_supported", "custom"]
+  VILL_SET_ON_RESERVED_VTYPE:
+    description:
+      The use of `vtype` encodings with LMUL < SEW~MIN~/ELEN is
+      __reserved__, but implementations can set `vill` if they do not
+      support these configurations.
+    schema:
+      type: boolean
   VILL_IMPLICIT_ENCODING:
     description: |
       A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits for `vlmul[2:0]`.  The illegal value represented by `vill` can be internally encoded using the illegal 64-bit combination in `vsew[1:0]` without requiring an additional storage
@@ -58,6 +92,13 @@ params:
     schema:
       type: string
       enum: ["never", "on_vlmax_change", "on_vill_set", "always", "custom"]
+  VECTOR_LS_INDEX_MAX_EEW:
+    description:
+      A profile may place an upper limit on the maximum supported index
+      EEW (e.g., only up to XLEN) smaller than ELEN.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64]
   VECTOR_FF_PAST_TRAP:
     description: 
       Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming 
@@ -133,6 +174,51 @@ params:
     description: |
       For implementations with a writable `misa.V` field,
       the `vsstatus.VS` field may exist even if `misa.V` is clear.
+    schema:
+      type: boolean
+  VECTOR_FF_NO_EXCEPTION_TRIM:
+    description: |
+      Even when an exception is not raised, implementations are permitted to process
+      fewer than `vl` elements and reduce `vl` accordingly, but if `vstart`=0 and
+      `vl`>0, then at least one element must be processed.
+    schema:
+      type: string
+      enum: ["no_trim", "custom"]
+  vfredosum_nan
+  VFREDOSUM_NAN:
+    description: |
+      As a consequence of this definition, implementations need not propagate
+      NaN payloads through the reduction tree when no elements are active. In
+      particular, if no elements are active and the scalar input is NaN,
+      implementations are permitted to canonicalize the NaN and, if the NaN is
+      signaling, set the invalid exception flag.  Implementations are alternatively
+      permitted to pass through the original NaN and set no exception flags, as with
+      `vfredosum`.
+    schema:
+      type: string
+      enum: ["no_change", "custom"]
+  VSLIDE_OPTIMIZED_VALUES:
+    description: |
+      Implementations
+      may optimize certain OFFSET values for `vslideup` and `vslidedown`.
+      In particular, power-of-2 offsets may operate substantially faster
+      than other offsets.
+    schema:
+      type: string
+      enum: ["custom"]
+  IMPRECISE_VECTOR_TRAP_SETTABLE:
+    description: |
+      Some profiles may choose to provide a privileged mode bit to select between precise and imprecise vector traps.
+    schema:
+      type: boolean
+  FUSED_VSET_MICRO-OP:
+    description:
+      The primary motivation for the `vtype` CSR is to allow the
+      vector instruction set to fit into a 32-bit instruction encoding
+      space.  A separate `vset{i}vl{i}` instruction can be used to set `vl`
+      and/or `vtype` fields before execution of a vector instruction, and
+      implementations may choose to fuse these two instructions into a single
+      internal vector microop.
     schema:
       type: boolean
   MUTABLE_MISA_V:
