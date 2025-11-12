@@ -185,7 +185,7 @@ params:
       type: string
       enum: ["no_trim", "custom"]
   vfredosum_nan
-  VFREDOSUM_NAN:
+  VFREDUSUM_NAN:
     description: |
       As a consequence of this definition, implementations need not propagate
       NaN payloads through the reduction tree when no elements are active. In
