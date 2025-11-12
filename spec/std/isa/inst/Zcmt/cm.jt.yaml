@@ -23,8 +23,7 @@ access:
   vu: always
 operation(): |
   # Ensure JVT readable
-  #Csr csr_handle = direct_csr_lookup(CSR[jvt].address());
-  #XReg jvt = csr_sw_read(csr_handle);
+  check_zcmt_enabled($encoding);
 
   if (CSR[jvt].MODE != 0) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
