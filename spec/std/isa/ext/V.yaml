@@ -54,7 +54,7 @@ params:
       SEW settings between SEW~MIN~ and LMUL * ELEN, inclusive.
     schema:
       type: string
-      enum: ["no_unrequied_supported", "custom"]
+      enum: ["no_unrequired_supported", "custom"]
   VILL_SET_ON_RESERVED_VTYPE:
     description:
       The use of `vtype` encodings with LMUL < SEW~MIN~/ELEN is
