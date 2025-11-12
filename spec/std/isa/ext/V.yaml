@@ -15,6 +15,12 @@ versions:
 description: |
   TODO
 params:
+  VLEN:
+    description: |
+      The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
   ELEN:
     description: |
       The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ {ge} 8, which
@@ -22,12 +28,8 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
-  VLEN:
-    description: |
-      The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
-    schema:
-      type: integer
-      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+    extra_validation: |
+      assert ELEN <= VLEN
   SEW_MIN:
     description: |
       Implementations must provide fractional LMUL settings that allow the
@@ -40,6 +42,8 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64]
+    extra_validation: |
+      assert SEW_MIN <= ELEN
   VECTOR_AGNOSTIC_BEHAVIOR:
     description:
       When a set is marked agnostic, the corresponding set of destination
@@ -62,24 +66,6 @@ params:
       support these configurations.
     schema:
       type: boolean
-  VILL_IMPLICIT_ENCODING:
-    description: |
-      A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits for `vlmul[2:0]`.  The illegal value represented by `vill` can be internally encoded using the illegal 64-bit combination in `vsew[1:0]` without requiring an additional storage.
-      bit to hold `vill`.:
-    schema:
-      type: boolean
-  HW_MSTATUS_VS_DIRTY_UPDATE:
-    description: |
-      Implementations may also change `mstatus.VS` or `vsstatus.VS` from Initial or
-      Clean to Dirty at any time, even when there is no change in vector state.
-    schema:
-      type: string
-      enum: ["never", "precise", "imprecise", "custom"]
-  MSTATUS_VS_EXISTS:
-    description: |
-      Analogous to the way in which the floating-point unit is handled, the `mstatus.VS` field may exist even if `misa.V` is clear.
-    schema:
-      type: boolean
   RESERVED_VILL_SET:
     description: |
       When _rs1_=`x0` and _rd_=`x0`, the instructions operate as if the current vector length in `vl` is used as the AVL...
@@ -95,6 +81,8 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64]
+    extra_validation: |
+      assert VECTOR_LS_INDEX_MAX_EEW <= ELEN
   VECTOR_FF_UPDATE_PAST_TRIM:
     description: 
       Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming 
@@ -117,20 +105,19 @@ params:
       enum: ["no_subsegment_loaded", "custom"]
   VECTOR_LS_MISSALIGNED_EXCEPTION:
     description: |
-      If an element accessed by a vector memory instruction is not naturally
-      aligned to the size of the element, either the element is transferred
-      successfully or an address-misaligned exception is raised on that
-      element.
+      If an element accessed by a vector memory instruction is not naturally aligned to the size of the element, 
+      either the element is transferred successfully or an address misaligned exception is raised on that element.
+
+      Support for misaligned vector memory accesses is independent of an implementation’s support for misaligned scalar memory accesses.
     schema:
-      type: string
-      enum: ["element_loaded_no_exception", "address-misaligned_exception"]
+      type: boolean
   VECTOR_LS_OVERWRITE_PAST_TRAP:
     description: |
       Load instructions may overwrite active destination vector register
       group elements past the element index at which the trap is reported.
     schema:
       type: string
-      enum: ["preserve_inactive", "custom"]
+      enum: ["preserve_active", "custom"]
   VECTOR_LS_SEG_FF_OVERLOAD:
     description: |
       These instructions may overwrite destination vector register group
@@ -164,8 +151,7 @@ params:
       or the implementation's smallest supported SEW size in bytes
       (SEW~MIN~/8).
     schema:
-      type: string
-      enum: ["misaligned_exception", "permitted"]
+      type: boolean
   VSSTATUS_VS_EXISTS:
     description: |
       For implementations with a writable `misa.V` field,
@@ -180,7 +166,6 @@ params:
     schema:
       type: string
       enum: ["no_trim", "custom"]
-  vfredosum_nan
   VFREDUSUM_NAN:
     description: |
       As a consequence of this definition, implementations need not propagate
@@ -193,15 +178,11 @@ params:
     schema:
       type: string
       enum: ["no_change", "custom"]
-  VSLIDE_OPTIMIZED_VALUES:
+  IMPRECISE_VECTOR_TRAP_SETTABLE:
     description: |
-      Implementations
-      may optimize certain OFFSET values for `vslideup` and `vslidedown`.
-      In particular, power-of-2 offsets may operate substantially faster
-      than other offsets.
+      Some profiles may choose to provide a privileged mode bit to select between precise and imprecise vector traps.
     schema:
-      type: string
-      enum: ["custom"]
+      type: boolean
   MUTABLE_MISA_V:
     description: |
       Indicates whether or not the `V` extension can be disabled with the `misa.V` bit.
