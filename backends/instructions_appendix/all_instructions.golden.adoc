@@ -11513,6 +11513,78 @@ Included in::
 |===
 
 
+[#udb:doc:inst:cm_jalt]
+== cm.jalt
+
+Synopsis::
+Jump Via Table with Optional Link
+
+Assembly::
+cm.jalt index
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":8,"name": "index != {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":6,"name": 0x28,"type":2}]}
+....
+
+Description::
+Read an address from the Jump Vector Table and jump to it, linking to `ra`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|index |$encoding[9:2]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zcmt* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:cm_jt]
+== cm.jt
+
+Synopsis::
+Jump Via Table
+
+Assembly::
+cm.jt index
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "index","type":4},{"bits":9,"name": 0x140,"type":2}]}
+....
+
+Description::
+Read an address from the Jump Vector Table and jump to it.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|index |$encoding[6:2]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zcmt* | ~> 1.0.0
+
+|===
+
+
 [#udb:doc:inst:cm_mva01s]
 == cm.mva01s
 
