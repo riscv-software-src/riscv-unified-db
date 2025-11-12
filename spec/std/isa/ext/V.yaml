@@ -68,10 +68,6 @@ params:
       bit to hold `vill`.:
     schema:
       type: boolean
-  MUTABLE_MISA_V:
-    description: Implementations may have a writable `misa.V` field.
-    schema:
-      type: boolean
   HW_MSTATUS_VS_DIRTY_UPDATE:
     description: |
       Implementations may also change `mstatus.VS` or `vsstatus.VS` from Initial or
