@@ -104,7 +104,7 @@ params:
     schema:
       type: string
       enum: ["update_none", "custom"]
-  VECTOR_FF_SEG_PARTIAL_ACCESS:
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD:
     description: |
       For fault-only-first segment loads, if an exception is detected partway
       through accessing the zeroth segment, the trap is taken.
