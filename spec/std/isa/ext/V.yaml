@@ -183,6 +183,7 @@ params:
   vfredosum_nan
   VFREDUSUM_NAN:
     description: |
+      The reduction tree structure must be deterministic for a given value in vtype and vl.
       As a consequence of this definition, implementations need not propagate
       NaN payloads through the reduction tree when no elements are active. In
       particular, if no elements are active and the scalar input is NaN,
