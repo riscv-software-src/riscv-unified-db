@@ -23,6 +23,29 @@ extensions:
   $inherits:
     - "profile/RVA22S64.yaml#/extensions"
     - "profile/RVB23U64.yaml#/extensions"
+  $remove:
+    - V
+    - Zvfhmin
+    - Zvbb
+    - Zvkt
+    - Supm
+    - Zvkng
+    - Zvksg
+    - Zvkg
+    - Zvknc
+    - Zvksc
+    - Zabha
+    - Zacas
+    - Ziccamoc
+    - Zvbc
+    - Zama16b
+    - Zbc
+    - Zicfilp
+    - Zicfiss
+    - Zvfh
+    - Zfbfmin
+    - Zvfbfmin
+    - Zvfbfwma
 
   #########################################################################
   # MANDATORY extensions in RVB23 (and RVA23)
