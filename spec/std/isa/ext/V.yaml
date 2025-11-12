@@ -202,11 +202,6 @@ params:
     schema:
       type: string
       enum: ["custom"]
-  IMPRECISE_VECTOR_TRAP_SETTABLE:
-    description: |
-      Some profiles may choose to provide a privileged mode bit to select between precise and imprecise vector traps.
-    schema:
-      type: boolean
   FUSED_VSET_MICRO-OP:
     description:
       The primary motivation for the `vtype` CSR is to allow the
