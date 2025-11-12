@@ -92,7 +92,7 @@ params:
     schema:
       type: string
       enum: ["update_none", "custom"]
-  VECTOR_FF_SEG_PARTIAL_ACCESS:
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD:
     description: |
       For fault-only-first segment loads, if an exception is detected partway
       through accessing the zeroth segment, the trap is taken.
@@ -111,7 +111,7 @@ params:
       Support for misaligned vector memory accesses is independent of an implementation’s support for misaligned scalar memory accesses.
     schema:
       type: boolean
-  VECTOR_LS_OVERWRITE_PAST_TRAP:
+  VECTOR_LOAD_PAST_TRAP:
     description: |
       Load instructions may overwrite active destination vector register
       group elements past the element index at which the trap is reported.
@@ -168,6 +168,7 @@ params:
       enum: ["no_trim", "custom"]
   VFREDUSUM_NAN:
     description: |
+      The reduction tree structure must be deterministic for a given value in vtype and vl.
       As a consequence of this definition, implementations need not propagate
       NaN payloads through the reduction tree when no elements are active. In
       particular, if no elements are active and the scalar input is NaN,
