@@ -70,6 +70,7 @@ RVA22S64:
 - Svpbmt ~> 1.0 mandatory
 - U ~> 2.0 mandatory
 - Za128rs = 1.0 mandatory
+- Za64rs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
 - Zbb ~> 1.0 mandatory
 - Zbs ~> 1.0 mandatory
@@ -94,11 +95,7 @@ RVA22S64:
 - Sv48 ~> 1.12 optional
 - Sv57 ~> 1.12 optional
 - Svnapot ~> 1.0 optional
-- V ~> 1.0 optional
-- Zfh ~> 1.0 optional
-- Zkn ~> 1.0 optional
 - Zkr ~> 1.0 optional
-- Zks ~> 1.0 optional
 RVA22U64:
 - A = 2.1 mandatory
 - C = 2.0 mandatory
@@ -108,6 +105,7 @@ RVA22U64:
 - M = 2.0 mandatory
 - U ~> 2.0 mandatory
 - Za128rs = 1.0 mandatory
+- Za64rs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
 - Zbb ~> 1.0 mandatory
 - Zbs ~> 1.0 mandatory
@@ -185,11 +183,6 @@ RVA23M64:
 - Zvbb ~>1.0 mandatory
 - Zvfhmin ~>1.0 mandatory
 - Zvkt ~>1.0 mandatory
-- Zabha ~>1.0 {'optional': 'development'}
-- Zacas ~>1.0 {'optional': 'development'}
-- Zama16b ~>1.0 {'optional': 'development'}
-- Ziccamoc ~>1.0 {'optional': 'development'}
-- Zvbc ~>1.0 {'optional': 'development'}
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
@@ -197,22 +190,10 @@ RVA23M64:
 - Sv57 ~>1.13 {'optional': 'expansion'}
 - Svadu ~>1.0 {'optional': 'expansion'}
 - Svvptc ~>1.0 {'optional': 'expansion'}
-- Zbc ~>1.0 {'optional': 'expansion'}
-- Zfbfmin ~>1.0 {'optional': 'expansion'}
 - Zfh ~>1.0 {'optional': 'expansion'}
-- Zicfilp ~>1.0 {'optional': 'expansion'}
-- Zicfiss ~>1.0 {'optional': 'expansion'}
 - Zkr ~>1.0 {'optional': 'expansion'}
-- Zvfbfmin ~>1.0 {'optional': 'expansion'}
-- Zvfbfwma ~>1.0 {'optional': 'expansion'}
-- Zvfh ~>1.0 {'optional': 'expansion'}
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
-- Zvkg ~>1.0 {'optional': 'localized'}
-- Zvknc ~>1.0 {'optional': 'localized'}
-- Zvkng ~>1.0 {'optional': 'localized'}
-- Zvksc ~>1.0 {'optional': 'localized'}
-- Zvksg ~>1.0 {'optional': 'localized'}
 RVA23S64:
 - A = 2.1 mandatory
 - C = 2.0 mandatory
@@ -268,11 +249,6 @@ RVA23S64:
 - Zvbb ~>1.0 mandatory
 - Zvfhmin ~>1.0 mandatory
 - Zvkt ~>1.0 mandatory
-- Zabha ~>1.0 {'optional': 'development'}
-- Zacas ~>1.0 {'optional': 'development'}
-- Zama16b ~>1.0 {'optional': 'development'}
-- Ziccamoc ~>1.0 {'optional': 'development'}
-- Zvbc ~>1.0 {'optional': 'development'}
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
@@ -280,22 +256,7 @@ RVA23S64:
 - Sv57 ~>1.13 {'optional': 'expansion'}
 - Svadu ~>1.0 {'optional': 'expansion'}
 - Svvptc ~>1.0 {'optional': 'expansion'}
-- Zbc ~>1.0 {'optional': 'expansion'}
-- Zfbfmin ~>1.0 {'optional': 'expansion'}
-- Zfh ~>1.0 {'optional': 'expansion'}
-- Zicfilp ~>1.0 {'optional': 'expansion'}
-- Zicfiss ~>1.0 {'optional': 'expansion'}
 - Zkr ~>1.0 {'optional': 'expansion'}
-- Zvfbfmin ~>1.0 {'optional': 'expansion'}
-- Zvfbfwma ~>1.0 {'optional': 'expansion'}
-- Zvfh ~>1.0 {'optional': 'expansion'}
-- Zkn ~>1.0 {'optional': 'localized'}
-- Zks ~>1.0 {'optional': 'localized'}
-- Zvkg ~>1.0 {'optional': 'localized'}
-- Zvknc ~>1.0 {'optional': 'localized'}
-- Zvkng ~>1.0 {'optional': 'localized'}
-- Zvksc ~>1.0 {'optional': 'localized'}
-- Zvksg ~>1.0 {'optional': 'localized'}
 RVA23U64:
 - A = 2.1 mandatory
 - C = 2.0 mandatory
@@ -306,6 +267,7 @@ RVA23U64:
 - Supm ~>1.0 mandatory
 - U ~> 2.0 mandatory
 - V ~> 1.0 mandatory
+- Za128rs = 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -398,42 +360,20 @@ RVB23M64:
 - Zihpm = 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
-- Zabha ~>1.0 {'optional': 'development'}
-- Zacas ~>1.0 {'optional': 'development'}
-- Zama16b ~>1.0 {'optional': 'development'}
-- Ziccamoc ~>1.0 {'optional': 'development'}
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sha ~>1.0 {'optional': 'expansion'}
 - Ssnpm ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
-- Supm ~>1.0 {'optional': 'expansion'}
 - Sv48 ~>1.13 {'optional': 'expansion'}
 - Sv57 ~>1.13 {'optional': 'expansion'}
 - Svadu ~>1.0 {'optional': 'expansion'}
 - Svvptc ~>1.0 {'optional': 'expansion'}
-- V ~> 1.0 {'optional': 'expansion'}
-- Zbc ~>1.0 {'optional': 'expansion'}
-- Zfbfmin ~>1.0 {'optional': 'expansion'}
 - Zfh ~>1.0 {'optional': 'expansion'}
 - Zfhmin ~> 1.0 {'optional': 'expansion'}
-- Zicfilp ~>1.0 {'optional': 'expansion'}
-- Zicfiss ~>1.0 {'optional': 'expansion'}
 - Zkr ~>1.0 {'optional': 'expansion'}
-- Zvbb ~>1.0 {'optional': 'expansion'}
-- Zvbc ~>1.0 {'optional': 'expansion'}
-- Zvfbfmin ~>1.0 {'optional': 'expansion'}
-- Zvfbfwma ~>1.0 {'optional': 'expansion'}
-- Zvfh ~>1.0 {'optional': 'expansion'}
-- Zvfhmin ~>1.0 {'optional': 'expansion'}
-- Zvkt ~>1.0 {'optional': 'expansion'}
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
-- Zvkg ~>1.0 {'optional': 'localized'}
-- Zvknc ~>1.0 {'optional': 'localized'}
-- Zvkng ~>1.0 {'optional': 'localized'}
-- Zvksc ~>1.0 {'optional': 'localized'}
-- Zvksg ~>1.0 {'optional': 'localized'}
 RVB23S64:
 - A = 2.1 mandatory
 - C = 2.0 mandatory
@@ -481,42 +421,20 @@ RVB23S64:
 - Zihpm = 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
-- Zabha ~>1.0 {'optional': 'development'}
-- Zacas ~>1.0 {'optional': 'development'}
-- Zama16b ~>1.0 {'optional': 'development'}
-- Ziccamoc ~>1.0 {'optional': 'development'}
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sha ~>1.0 {'optional': 'expansion'}
 - Ssnpm ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
-- Supm ~>1.0 {'optional': 'expansion'}
 - Sv48 ~>1.13 {'optional': 'expansion'}
 - Sv57 ~>1.13 {'optional': 'expansion'}
 - Svadu ~>1.0 {'optional': 'expansion'}
 - Svvptc ~>1.0 {'optional': 'expansion'}
-- V ~> 1.0 {'optional': 'expansion'}
-- Zbc ~>1.0 {'optional': 'expansion'}
-- Zfbfmin ~>1.0 {'optional': 'expansion'}
 - Zfh ~>1.0 {'optional': 'expansion'}
 - Zfhmin ~> 1.0 {'optional': 'expansion'}
-- Zicfilp ~>1.0 {'optional': 'expansion'}
-- Zicfiss ~>1.0 {'optional': 'expansion'}
 - Zkr ~>1.0 {'optional': 'expansion'}
-- Zvbb ~>1.0 {'optional': 'expansion'}
-- Zvbc ~>1.0 {'optional': 'expansion'}
-- Zvfbfmin ~>1.0 {'optional': 'expansion'}
-- Zvfbfwma ~>1.0 {'optional': 'expansion'}
-- Zvfh ~>1.0 {'optional': 'expansion'}
-- Zvfhmin ~>1.0 {'optional': 'expansion'}
-- Zvkt ~>1.0 {'optional': 'expansion'}
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
-- Zvkg ~>1.0 {'optional': 'localized'}
-- Zvknc ~>1.0 {'optional': 'localized'}
-- Zvkng ~>1.0 {'optional': 'localized'}
-- Zvksc ~>1.0 {'optional': 'localized'}
-- Zvksg ~>1.0 {'optional': 'localized'}
 RVB23U64:
 - A = 2.1 mandatory
 - C = 2.0 mandatory
@@ -525,6 +443,7 @@ RVB23U64:
 - I ~> 2.1 mandatory
 - M = 2.0 mandatory
 - U ~> 2.0 mandatory
+- Za128rs = 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
