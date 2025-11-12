@@ -124,7 +124,7 @@ params:
     schema:
       type: string
       enum: ["element_loaded_no_exception", "address-misaligned_exception"]
-  VECTOR_LS_OVERWRITE_PAST_TRAP:
+  VECTOR_LOAD_PAST_TRAP:
     description: |
       Load instructions may overwrite active destination vector register
       group elements past the element index at which the trap is reported.
