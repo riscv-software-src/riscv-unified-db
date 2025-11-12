@@ -202,16 +202,6 @@ params:
     schema:
       type: string
       enum: ["custom"]
-  FUSED_VSET_MICRO-OP:
-    description:
-      The primary motivation for the `vtype` CSR is to allow the
-      vector instruction set to fit into a 32-bit instruction encoding
-      space.  A separate `vset{i}vl{i}` instruction can be used to set `vl`
-      and/or `vtype` fields before execution of a vector instruction, and
-      implementations may choose to fuse these two instructions into a single
-      internal vector microop.
-    schema:
-      type: boolean
   MUTABLE_MISA_V:
     description: |
       Indicates whether or not the `V` extension can be disabled with the `misa.V` bit.
