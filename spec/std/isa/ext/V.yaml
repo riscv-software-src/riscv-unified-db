@@ -95,7 +95,7 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64]
-  VECTOR_FF_PAST_TRAP:
+  VECTOR_FF_UPDATE_PAST_TRIM:
     description: 
       Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming 
       of the vector length (but not past the original vector length).  The values of these spurious updates do not have to correspond 
