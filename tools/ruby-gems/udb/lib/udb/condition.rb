@@ -258,6 +258,21 @@ module Udb
     # inversion of implied_extension_requirements
     sig { abstract.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_conflicts(expand: true); end
+
+    # return list of all parameters in the condition
+    #
+    # if expand is true, expand the condition to include transitive requirements
+    sig { params(expand: T::Boolean).returns(T::Array[Parameter]) }
+    def param_terms(expand:)
+      if expand
+        @expanded_param_terms ||=
+          to_logic_tree(expand:).terms.grep(ParameterTerm).map { |term| @cfg_arch.param(term.name) }
+      else
+        @unexpanded_param_terms ||=
+          to_logic_tree(expand:).terms.grep(ParameterTerm).map { |term| @cfg_arch.param(term.name) }
+      end
+    end
+
   end
 
   # @api private

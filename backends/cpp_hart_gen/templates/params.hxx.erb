@@ -1,3 +1,7 @@
+<%-
+  require 'tsort'
+-%>
+
 #pragma once
 
 #include <filesystem>
@@ -37,18 +41,31 @@ namespace udb {
     // read parameters out of a YAML (or JSON) config file
     <%= name_of(:params, cfg_arch) %>(const Config& cfg)
     {
-      <%- cfg_arch.params.each do |param| -%>
-      <%- if cfg_arch.param_values.key?(param.name) -%>
+      <%# params need to be topologically sorted to avoid inialization problems -%>
+      <%- class ParamSorter < Hash
+            include TSort
+            def initialize(params)
+              params.each { |p| store(p.name, p) }
+            end
+            alias tsort_each_node each_key
+            def tsort_each_child(param_name, &blk)
+              fetch(param_name).defined_by_condition.param_terms(expand: true).map(&:name).each(&blk)
+            end
+          end
+      -%>
+      <%- sorted_params = ParamSorter.new(cfg_arch.params).tsort -%>
+      <%- sorted_params.each do |param_name| -%>
+      <%- if cfg_arch.param_values.key?(param_name) -%>
       udb_assert(
-        (std::any_cast<<%= param.idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param.name %>")) == <%= param.name %>.value()),
-        fmt::format("Paramter '<%= param.name %>' has built-in value '<%= cfg_arch.param_values.fetch(param.name) %>', but was given a run-time value of '{}'", std::any_cast<<%= param.idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param.name %>")))
+        (std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")) == <%= param_name %>.value()),
+        fmt::format("Parameter '<%= param_name %>' has built-in value '<%= cfg_arch.param_values.fetch(param_name) %>', but was given a run-time value of '{}'", std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")))
       );
       <%- else -%>
-      if (<%= param.name %>.defined(cfg) == Yes) {
-        udb_assert(cfg.has_param_value("<%= param.name %>"), "Required parameter value for '<%= param.name %>' is missing");
-        <%= param.name %>.set_value(std::any_cast<<%= param.idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param.name %>")));
+      if (<%= param_name %>.defined(cfg) == Yes) {
+        udb_assert(cfg.has_param_value("<%= param_name %>"), "Required parameter value for '<%= param_name %>' is missing");
+        <%= param_name %>.set_value(std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")));
       } else {
-        udb_assert(!cfg.has_param_value("<%= param.name %>"), "'<%= param.name %>' is given a value in the config, but should not be defined");
+        udb_assert(!cfg.has_param_value("<%= param_name %>"), "'<%= param_name %>' is given a value in the config, but should not be defined");
       }
       <%- end -%>
       <%- end -%>
