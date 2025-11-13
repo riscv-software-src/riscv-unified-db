@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zca
-long_name: C instructions excluding floating-point
+long_name: C instructions excluding floating-point loads/stores
 description: |
   The Zca extension is added as way to refer to instructions in the `C` extension that do not
   include the floating-point loads and stores.

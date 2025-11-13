@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Svvptc
-long_name: Guarantees visibility of PTE transitions from invalid to valid
+long_name: Guarantee visibility of PTE transitions from invalid to valid
 description: |
   When the Svvptc extension is implemented, explicit stores by a hart that update
   the Valid bit of leaf and/or non-leaf PTEs from 0 to 1 and are visible to a hart

@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zcmt
-long_name: 16-bit Table Jump
+long_name: Table Jump
 description: |
   Zcmt adds the table jump instructions and also adds the jvt CSR. The jvt CSR requires a
   state enable if Smstateen is implemented. See <<csrs-jvt>> for details.

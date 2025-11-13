@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: B
 type: unprivileged
-long_name: Bitmanipulation instructions
+long_name: Bit Manipulation
 company:
   name: RISC-V International
   url: https://riscv.org

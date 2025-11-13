@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Sscsrind
 type: privileged
-long_name: Supervisor Indirect CSR Access (Sscsrind)
+long_name: Supervisor-mode Indirect CSR Access
 description: |
   Smcsrind/Sscsrind is an ISA extension that extends the indirect CSR access mechanism originally defined as
   part of the Smaia/Ssaia extensions, in order to make it available for use by other extensions without creating
