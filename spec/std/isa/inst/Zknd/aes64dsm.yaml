@@ -7,12 +7,9 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: aes64dsm
 long_name: AES decrypt middle round
-description:
-  - id: inst-aes64dsm-behavior
-    normative: true
-    text: |
-      Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
-      round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
+description: |
+  Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+  round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
 definedBy: Zknd
 base: 64
 assembly: xd, xs1, xs2

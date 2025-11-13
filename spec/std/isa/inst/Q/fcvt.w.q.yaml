@@ -7,11 +7,8 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.w.q
 long_name: Floating-point Convert Quad-precision to Word
-description:
-  - id: inst-fcvt.w.q-behaviour
-    normative: false
-    text: |
-      `fcvt.w.q` converts a quad-precision floating-point number to a 32-bit signed integer.
+description: |
+  `fcvt.w.q` converts a quad-precision floating-point number to a 32-bit signed integer.
 definedBy: Q
 assembly: xd, fs1, rm
 encoding:
