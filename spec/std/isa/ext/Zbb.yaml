@@ -6,9 +6,9 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zbb
-long_name: Basic bit manipulation
+long_name: Basic bit-manipulation
 description: |
-  Basic bit manipulation
+  Basic bit-manipulation
 type: unprivileged
 company:
   name: RISC-V International

@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zalasr
-long_name: Atomic, Load-Acquire Store-Release
+long_name: Atomic Load-Acquire and Store-Release
 description: |
   load-acquire and store-release instructions.
 type: unprivileged

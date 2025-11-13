@@ -6,8 +6,8 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zihpm
-long_name: Programmable hardware performance counters
-description: Programmable hardware performance counters
+long_name: Hardware Performance Counters
+description: Hardware performance counters
 type: unprivileged
 versions:
   - version: "2.0.0"

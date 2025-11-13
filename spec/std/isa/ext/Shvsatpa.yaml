@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shvsatpa
-long_name: vstap translation mode requirements
+long_name: Virtual Supervisor Address Translation and Protection supports all modes supported by Supervisor Address Translation and Protection
 description: |
   All translation modes supported in the `satp` CSR must be supported in the `vsatp` CSR.
 
