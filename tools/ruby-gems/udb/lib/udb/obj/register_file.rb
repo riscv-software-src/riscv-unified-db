@@ -66,10 +66,20 @@ class RegisterFile < TopLevelDatabaseObject
     def callee_saved = @data["callee_saved"]
 
     sig { returns(T.nilable(String)) }
-    def sw_read = @data["sw_read()"]
+    def arch_read
+      @data["arch_read()"] || @data["sw_read()"]
+    end
 
     sig { returns(T.nilable(String)) }
-    def sw_write = @data["sw_write(value)"]
+    def arch_write
+      @data["arch_write(value)"] || @data["sw_write(value)"]
+    end
+
+    sig { returns(T.nilable(String)) }
+    def sw_read = arch_read
+
+    sig { returns(T.nilable(String)) }
+    def sw_write = arch_write
 
     sig { returns(T.nilable(ExtensionRequirementExpression)) }
     def defined_by_condition

@@ -158,9 +158,9 @@ registers:
   - name: x0    # <2>
     abi_mnemonics: [zero] # <3>
     roles: [zero]
-    sw_read(): | # <4>
+    arch_read(): | # <4>
       return 0;
-    sw_write(value): |
+    arch_write(value): |
       # x0 ignores all writes
   - name: x1
     abi_mnemonics: [ra]
@@ -173,7 +173,7 @@ registers:
 <1> The registers in a register file have identical fixed widths, either an explicit width or from a parameter (e.g. MXLEN or VLEN).
 <2> Each register has a unique name (e.g., x0, x1, x2, etc.). The register's index is inferred from its position in the array (starting from 0).
 <3> Registers can optionally have ABI mnemonics (e.g., ra, sp, fp, etc.).
-<4> Individual registers can define `sw_read()` and `sw_write()` for special behavior (e.g., x0 hardwired to zero).
+<4> Individual registers can define `arch_read()` and `arch_write()` for architecturally mandated behavior (e.g., x0 hardwired to zero).
 <5> A register can have multiple ABI mnemonics (e.g., x8 is known as both s0 and fp).
 
 [source,yaml]

@@ -28,13 +28,13 @@
         "when": {
           "$ref": "schema_defs.json#/$defs/requires_entry"
         },
-        "sw_read()": {
+        "arch_read()": {
           "type": "string",
-          "description": "Function that returns the value of the register when read by software. Use this to define special behavior for registers (e.g., x0 always reads as zero)."
+          "description": "Function describing the architecturally defined read behavior. Use this for architecturally mandated effects (e.g., x0 always reads as zero)."
         },
-        "sw_write(value)": {
+        "arch_write(value)": {
           "type": "string",
-          "description": "Function implementing custom write behavior for the register. Given a 'value', return either the value to be written or a modified value. Use this to define special behavior for registers (e.g., x0 ignores writes)."
+          "description": "Function describing the architecturally defined write behavior. Given a 'value', return the architecturally required result (e.g., x0 ignores writes and always yields zero)."
         },
         "caller_saved": {
           "type": "boolean",
@@ -63,11 +63,6 @@
             ]
           },
           "uniqueItems": true
-        },
-        "writable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether the register is writable. If false, no sw_write() method is needed."
         }
       }
     },
@@ -85,13 +80,11 @@
       "additionalProperties": false,
       "properties": {
         "$schema": {
-          "type": "string",
           "format": "uri-reference",
           "const": "register_file_schema.json#",
           "description": "Path to schema, relative to <UDB ROOT>/schemas"
         },
         "kind": {
-          "type": "string",
           "const": "register_file"
         },
         "name": {

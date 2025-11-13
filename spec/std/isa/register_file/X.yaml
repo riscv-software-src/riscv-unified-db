@@ -19,10 +19,11 @@ registers:
   - name: x0
     abi_mnemonics: [zero]
     roles: [zero]
-    writable: false
     description: |
       Register x0 is hardwired with all bits equal to 0.
-    sw_read(): |
+    arch_read(): |
+      return 0;
+    arch_write(value): |
       return 0;
   - name: x1
     abi_mnemonics: [ra]
