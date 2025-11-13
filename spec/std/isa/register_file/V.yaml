@@ -1,0 +1,146 @@
+# Copyright (c) Animesh Agarwal
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/register_file_schema.json
+
+$schema: register_file_schema.json#
+kind: register_file
+name: V
+long_name: Vector Registers
+description: |
+  The 'V' register file contains the 32 vector registers defined by the RISC-V
+  Vector Extension (RVV). Each register holds VLEN bits of data. Under the
+  current ABI spec all vector registers are caller-saved temporaries and do not
+  participate in argument passing or return values.
+definedBy: V
+register_class: vector
+register_length: VLEN
+registers:
+  - name: v0
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v1
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v2
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v3
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v4
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v5
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v6
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v7
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v8
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v9
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v10
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v11
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v12
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v13
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v14
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v15
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v16
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v17
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v18
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v19
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v20
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v21
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v22
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v23
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v24
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v25
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v26
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v27
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v28
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v29
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v30
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
+  - name: v31
+    caller_saved: true
+    roles: [temporary]
+    description: Caller-saved vector temporary register.
