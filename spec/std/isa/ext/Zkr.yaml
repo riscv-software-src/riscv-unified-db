@@ -1,4 +1,4 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) Anirudh Narang
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/ext_schema.json
@@ -7,11 +7,29 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zkr
 long_name: Entropy Source
-description: |
-  Defines the `seed` CSR.
-  This CSR provides up to 16 physical entropy bits that can be used to seed cryptographic random bit generators.
 type: unprivileged
+
+description: |
+  The Zkr extension defines the `seed` CSR, which provides physical entropy directly to software.
+  This register is useful for cryptographic applications and random number generation.
+  It is a read-only WARL register visible to unprivileged software. It may have side effects on reads.
+
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+
+params:
+  ZKR_SEED_WIDTH:
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 16
+    description: |
+      Defines the number of valid entropy bits returned in the `seed` CSR. Must be ≤ 16.
+
+  ZKR_READ_SIDE_EFFECTS:
+    schema:
+      type: boolean
+    description: |
+      If true, reading the `seed` CSR consumes entropy and may affect future read values (e.g., advancing a ring buffer).
