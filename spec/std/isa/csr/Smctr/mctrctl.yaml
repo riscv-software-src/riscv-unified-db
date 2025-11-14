@@ -1,0 +1,159 @@
+# Copyright (c) Muhammad Abdullah — 10xEngineers
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: mctrctl
+long_name: Machine Control Transfer Records Control Register
+address: 0x34E
+writable: true
+priv_mode: M
+length: 64
+definedBy: Smctr
+description: |
+  The `mctrctl` register enables and configures the Control Transfer Records capability in M mode.
+fields:
+  U:
+    location: 0
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enable transfer recording in the User mode.
+  S:
+    location: 1
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enable transfer recording in the Supervisor mode.
+  M:
+    location: 2
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enable transfer recording in the Machine mode.
+  RASEMU:
+    location: 7
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it enables RAS (Return Address Stack) Emulation Mode.
+  STE:
+    location: 8
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enables recording of traps to S-mode when S=0.
+  MTE:
+    location: 9
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enables recording of traps to M-mode when M=0.
+  BPFRZ:
+    location: 11
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Set `sctrstatus.FROZEN` on a breakpoint exception that traps to M or S mode.
+  LCOFIFRZ:
+    location: 12
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Set `sctrstatus.FROZEN` on local-counter-overflow interrupt (LCOFI) that traps
+      to M or S mode.
+    definedBy: Sscofpmf
+  EXCINH:
+    location: 33
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of exceptions.
+  INTRINH:
+    location: 34
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of interrupts.
+  TRETINH:
+    location: 35
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of trap returns.
+  NTBREN:
+    location: 36
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it enables recording of not-taken branches.
+  TKBRINH:
+    location: 37
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of taken branches.
+  INDCALLINH:
+    location: 40
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of indirect calls.
+  DIRCALLINH:
+    location: 41
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of direct calls.
+  INDJMPINH:
+    location: 42
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of indirect jumps (without linkage).
+  DIRJMPINH:
+    location: 43
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of direct jumps (without linkage).
+  CORSWAPINH:
+    location: 44
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of co-routine swaps.
+  RETINH:
+    location: 45
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of function returns.
+  INDLJMPINH:
+    location: 46
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of other indirect jumps (with linkage).
+  DIRLJMPINH:
+    location: 47
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of other direct jumps (with linkage).
+  CUSTOM:
+    location: 63-60
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      WARL bits designated for custom use. The value 0 must correspond to standard behavior.
+sw_read(): |
+  Bits<12> mctrctl_addr = 0x34E;
+  Bits<64> mctrctl_mask = 0x787F9F80000FC7;
+  Csr csr_handle = direct_csr_lookup(mctrctl_addr);
+  if (!csr_handle.valid) {
+    unimplemented_csr($encoding);
+  }
+  return (CSR[mctrctl] & mctrctl_mask);
