@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Svade
 long_name: Exception on PTE A/D Bits
-type: unprivileged
+type: privileged
 description: |
   The Svade extension indicates that hardware does *not* update the A/D bits of a page table
   during a page walk. Rather, encountering a PTE with the A bit clear or the D bit clear when

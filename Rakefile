@@ -5,6 +5,9 @@ require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
 extend T::Sig
 
+require 'pathname'
+require 'erb'
+
 Encoding.default_external = "UTF-8"
 
 $jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
@@ -43,6 +46,11 @@ end
 
 # load and execute Rakefile for each gem
 Dir.glob("#{$root}/tools/ruby-gems/*/Rakefile") do |rakefile|
+  load rakefile
+end
+
+# Load and execute tools Rakefiles
+Dir.glob("#{$root}/tools/*/tasks.rake") do |rakefile|
   load rakefile
 end
 
@@ -119,7 +127,7 @@ namespace :test do
   # "Run the cross-validation against LLVM"
   task :llvm do
       begin
-        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+        sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
       rescue => e
         raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
@@ -360,6 +368,55 @@ file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+# Define all acquire/release combinations
+aq_rl_variants = [
+  { suffix: "", aq: false, rl: false },           # base instruction
+  { suffix: ".aq", aq: true, rl: false },         # acquire only
+  { suffix: ".rl", aq: false, rl: true },         # release only
+  { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+]
+
+# AMO instruction generation from layouts
+%w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+  ["b", "h", "w", "d"].each do |size|
+    # Determine target extension directory based on size
+    extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+
+    aq_rl_variants.each do |variant|
+      file "#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{variant[:suffix]}.yaml" => [
+        "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
+        __FILE__
+      ] do |t|
+        aq = variant[:aq]
+        rl = variant[:rl]
+        erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}.SIZE.AQRL.layout"), trim_mode: "-")
+        erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
+        File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+      end
+    end
+  end
+end
+
+# AMOCAS instruction generation from Zabha layout (supports both Zabha and Zacas)
+# Zabha variants (b, h) -> generated in Zabha directory
+["b", "h", "w", "d", "q" ].each do |size|
+  # Determine target extension directory based on size
+  extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
+
+  aq_rl_variants.each do |variant|
+    file "#{$resolver.std_path}/inst/#{extension_dir}/amocas.#{size}#{variant[:suffix]}.yaml" => [
+      "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout",
+      __FILE__
+    ] do |t|
+      aq = variant[:aq]
+      rl = variant[:rl]
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zacas/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+    end
+  end
+end
+
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
@@ -385,6 +442,26 @@ namespace :gen do
 
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+    end
+
+    # Generate AMO instruction files
+    %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+      ["b", "h", "w", "d"].each do |size|
+        extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+        ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+          Rake::Task["#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{suffix}.yaml"].invoke
+        end
+      end
+    end
+
+    # Generate AMOCAS instruction files
+    ["b", "h", "w", "d", "q"].each do |size|
+      ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+        # Determine target extension directory based on size
+        extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
+
+        Rake::Task["#{$resolver.std_path}/inst/#{extension_dir}/amocas.#{size}#{suffix}.yaml"].invoke
+      end
     end
   end
 end
@@ -546,6 +623,8 @@ task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
 task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
+task "RVI20-32-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-32-CRD.pdf"
+task "RVI20-64-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-64-CRD.pdf"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
 task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"

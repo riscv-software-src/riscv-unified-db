@@ -4,9 +4,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: mret
-long_name: Machine Exception Return
+long_name: Machine-mode Return from Trap
 description: |
-  Returns from an exception in M-mode.
+  Return from machine mode after handling a trap.
 assembly: ""
 definedBy: Sm
 access:
