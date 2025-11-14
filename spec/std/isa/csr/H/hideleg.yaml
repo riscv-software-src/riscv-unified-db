@@ -1,0 +1,67 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hideleg
+long_name: Hypervisor Interrupt Delegation Register
+description: |
+  Register hideleg is an HSXLEN-bit read/write register. By default, all traps at any privilege level are handled in M-mode, though M-mode usually uses the medeleg and mideleg CSRs to delegate some traps to HS-mode.
+  The hedeleg and hideleg CSRs allow these traps to be further delegated to a VS-mode guest; their layout is the same as medeleg and mideleg.
+  An interrupt that has been delegated to HS-mode (using mideleg) is further delegated to VS-mode if the corresponding hideleg bit is set.
+  Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard S-level interrupts) are read-only zeros.
+address: 0x603
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  SSI:
+    location: 1
+    type: RO
+    reset_value: 0
+    long_name: Supervisor Software Interrupt
+    description: Supervisor Software Interrupt
+
+  VSSI:
+    location: 2
+    type: RW
+    reset_value: 0
+    long_name: Virtual Supervisor Software Interrupt
+    description: Virtual Supervisor Software Interrupt
+
+  STI:
+    location: 5
+    type: RO
+    reset_value: 0
+    long_name: Supervisor Timer Interrupt
+    description: Supervisor Timer Interrupt
+
+  VSTI:
+    location: 6
+    type: RW
+    reset_value: 0
+    long_name: Virtual Supervisor Timer Interrupt
+    description: Virtual Supervisor Timer Interrupt
+
+  SEI:
+    location: 9
+    type: RO
+    reset_value: 0
+    long_name: Supervisor External Interrupt
+    description: Supervisor External Interrupt
+
+  VSEI:
+    location: 10
+    type: RW
+    reset_value: 0
+    long_name: Virtual Supervisor External Interrupt
+    description: Virtual Supervisor External Interrupt
+
+  SGEI:
+    location: 12
+    type: RW
+    reset_value: 0
+    long_name: Supervisor Guest External Interrupt
+    description: Supervisor Guest External Interrupt
