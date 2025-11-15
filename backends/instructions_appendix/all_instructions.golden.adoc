@@ -11513,6 +11513,78 @@ Included in::
 |===
 
 
+[#udb:doc:inst:cm_jalt]
+== cm.jalt
+
+Synopsis::
+Jump Via Table with Optional Link
+
+Assembly::
+cm.jalt index
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":8,"name": "index != {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":6,"name": 0x28,"type":2}]}
+....
+
+Description::
+Read an address from the Jump Vector Table and jump to it, linking to `ra`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|index |$encoding[9:2]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zcmt* | ~> 1.0.0
+
+|===
+
+
+[#udb:doc:inst:cm_jt]
+== cm.jt
+
+Synopsis::
+Jump Via Table
+
+Assembly::
+cm.jt index
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "index","type":4},{"bits":9,"name": 0x140,"type":2}]}
+....
+
+Description::
+Read an address from the Jump Vector Table and jump to it.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|index |$encoding[6:2]
+|===
+
+Included in::
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+| *Zcmt* | ~> 1.0.0
+
+|===
+
+
 [#udb:doc:inst:cm_mva01s]
 == cm.mva01s
 
@@ -23001,7 +23073,7 @@ Included in::
 == sctrclr
 
 Synopsis::
-No synopsis available
+Supervisor Control Transfer Record (CTR) clear
 
 Assembly::
 sctrclr
@@ -23013,7 +23085,27 @@ Encoding::
 ....
 
 Description::
-No description available.
+When xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=1, the SCTRCLR instruction performs the following operations:
+
+* Zeroes all CTR Entry Registers, for all DEPTH values
+* Reset to Zero the optional CTR cycle counter where implemented
+** `ctrdata.CC` and `ctrdata.CCV` bit fields.
+
+Any read of `ctrsource`, `ctrtarget`, or `ctrdata` that follows SCTRCLR, such that it precedes the next
+qualified control transfer, will return the value 0.
+
+Further, the first recorded transfer following SCTRCLR will have `ctrdata.CCV`=0.
+
+SCTRCLR execution causes an `IllegalInstruction` exception if:
+
+* xref:exts:Smctr.adoc#udb:doc:ext:Smctr[Smctr] is not implemented
+* The instruction is executed in S/VS/VU-mode and xref:exts:Ssctr.adoc#udb:doc:ext:Ssctr[Ssctr] is not implemented, or xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=0
+* The instruction is executed in U-mode
+
+SCTRCLR execution  causes a `VirtualInstruciton` exception if xref:csrs:mstateen0.adoc#udb:doc:csr_field:mstateen0:CTR[mstateen0.CTR]=1 and:
+
+* The instruction is executed in VS-mode and xref:csrs:hstateen0.adoc#udb:doc:csr_field:hstateen0:CTR[hstateen0.CTR]=0
+* The instruction is executed in VU-mode
 
 
 Decode Variables::
@@ -23024,7 +23116,9 @@ Included in::
 |===
 | Extension | Version
 
-| *Smdbltrp* | ~> 1.0.0
+| *Smctr* | ~> 1.0.0
+
+| *Ssctr* | ~> 1.0.0
 
 |===
 
