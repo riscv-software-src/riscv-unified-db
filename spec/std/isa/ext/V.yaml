@@ -116,8 +116,7 @@ params:
       Load instructions may overwrite active destination vector register
       group elements past the element index at which the trap is reported.
     schema:
-      type: string
-      enum: ["preserve_active", "custom"]
+      type: boolean
   VECTOR_LS_SEG_FF_OVERLOAD:
     description: |
       These instructions may overwrite destination vector register group
@@ -132,8 +131,7 @@ params:
       access to a segment, it is implementation-defined whether a subset
       of the faulting segment's accesses are performed before the trap is taken.
     schema:
-      type: string
-      enum: ["no_partial", "custom"]
+      type: boolean
   LEGAL_VSTART:
     description: |
       Implementations are permitted to raise illegal-instruction exceptions when
@@ -164,8 +162,7 @@ params:
       fewer than `vl` elements and reduce `vl` accordingly, but if `vstart`=0 and
       `vl`>0, then at least one element must be processed.
     schema:
-      type: string
-      enum: ["no_trim", "custom"]
+      type: boolean
   VFREDUSUM_NAN:
     description: |
       The reduction tree structure must be deterministic for a given value in vtype and vl.
