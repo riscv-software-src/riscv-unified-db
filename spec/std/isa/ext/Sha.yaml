@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Sha
 type: privileged
-long_name: The augmented hypervisor extension
+long_name: Augmented hypervisor
 description: |
   *Sha* comprises the following extensions:
 

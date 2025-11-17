@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Za128rs
-long_name: Reservation set requirement for RVA profiles
+long_name: Reservation set size of at most 128 bytes
 type: unprivileged
 description: |
   Reservation sets must be contiguous, naturally aligned, and at most 128 bytes in size.

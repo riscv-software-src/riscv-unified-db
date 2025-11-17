@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zihintntl
-long_name: NTL Non-Temporal Locality Hint Instructions
+long_name: Non-Temporal Locality Hints
 description: |
     The NTL instructions are HINTs that indicate that the explicit memory
     accesses of the immediately subsequent instruction (henceforth "target

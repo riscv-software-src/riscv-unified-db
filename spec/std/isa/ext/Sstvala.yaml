@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sstvala
-long_name: "`stval` requirements for RVA profiles"
+long_name: "Supervisor Trap Value provides all needed values"
 description: |
   `stval` must be written with the faulting virtual address for load, store,
   and instruction page-fault, access-fault, and misaligned exceptions,
