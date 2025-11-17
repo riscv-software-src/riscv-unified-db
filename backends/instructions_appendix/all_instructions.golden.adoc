@@ -20487,7 +20487,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -20632,7 +20632,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -20709,7 +20709,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -21053,7 +21053,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -22791,7 +22791,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -23218,7 +23218,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -23675,7 +23675,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 
@@ -25814,7 +25814,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zalasr* | ~> 0.3.5
+| *Zalasr* | ~> 1.0.0
 
 |===
 

@@ -11,6 +11,6 @@ description: |
   load-acquire and store-release instructions.
 type: unprivileged
 versions:
-  - version: "0.3.5"
-    state: development
-    ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2025-10
