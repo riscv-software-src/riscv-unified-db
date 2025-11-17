@@ -100,7 +100,7 @@ SatisfiedResult <%= name_of(:param, cfg_arch, param) %>::defined(const Config& c
         "cfg.ext_req_is_met(ExtensionName::#{term.name}, VersionRequirement(\"#{term.comparison.serialize}#{term.version}\"))"
       elsif term.is_a?(Udb::ParameterTerm)
         cxx_val =
-          "std::any_cast<#{cfg_arch.param(term.name).idl_type.to_cxx_no_qualifiers}>(cfg.param_value(\"#{term.name}\"))"
+          "std::any_cast<const #{cfg_arch.param(term.name).idl_type.to_cxx_no_qualifiers}&>(cfg.param_value(\"#{term.name}\"))"
         res =
           if term.array_comparison?
             if term.size

@@ -143,7 +143,7 @@ namespace udb {
     const ExtensionVersion& implemented_ext(const ExtensionName& name) const { return m_implemented_exts_hash.at(name); }
 
     bool has_param_value(const std::string& name) const { return m_param_values.contains(name); }
-    std::any param_value(const std::string& name) const { return m_param_values.at(name); }
+    const std::any& param_value(const std::string& name) const { return m_param_values.at(name); }
 
 
     private:
