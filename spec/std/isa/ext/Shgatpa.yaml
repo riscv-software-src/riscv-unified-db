@@ -18,7 +18,7 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
     param_constraints:
       SV32X4_TRANSLATION:
         extra_validation: |
