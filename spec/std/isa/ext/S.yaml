@@ -17,7 +17,7 @@ versions:
   ratification_date: 2021-12
 - version: "1.13.0"
   state: ratified
-  ratification_date: null
+  ratification_date: 2024-10
 requirements:
   extension:
     name: U
