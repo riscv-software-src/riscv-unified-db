@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zimop
-long_name: May-be Operations
+long_name: May-Be-Operations
 description: |
   The "Zimop" extension introduces the concept of
   instructions that _may be operations_ (MOPs).  MOPs are initially defined to

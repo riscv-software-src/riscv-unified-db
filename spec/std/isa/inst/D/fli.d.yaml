@@ -7,12 +7,9 @@ $schema: inst_schema.json#
 kind: instruction
 name: fli.d
 long_name: Floating-Point Load Immediate Double-Precision
-description:
-  - id: inst-fli.d-behaviour
-    normative: false
-    text: |
-      The `fli.d` instruction instruction loads one of 32 double-precision floating-point constants, encoded in the `xs1`
-      field, into floating-point register `fd`. `fli.d` is encoded like `fli.s`, but with `fmt` set to D.
+description: |
+  The `fli.d` instruction instruction loads one of 32 double-precision floating-point constants, encoded in the `xs1`
+  field, into floating-point register `fd`. `fli.d` is encoded like `fli.s`, but with `fmt` set to D.
 definedBy:
   extension:
     allOf:

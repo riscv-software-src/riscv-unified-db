@@ -7,17 +7,14 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.l
 long_name: Floating-Point Convert Long to Double-Precision
-description:
-  - id: inst-fcvt.d.l-behaviour
-    normative: false
-    text: |
-      The `fcvt.d.l` instruction converts a 64-bit signed integer, in integer register `xs1` into a double-precision
-      floating-point number in floating-point register `fd`.
 definedBy:
   allOf:
     - xlen: 64
     - extension:
         name: D
+description: |
+  The `fcvt.d.l` instruction converts a 64-bit signed integer, in integer register `xs1` into a double-precision
+  floating-point number in floating-point register `fd`.
 assembly: fd, xs1, rm
 encoding:
   match: 110100100010-------------1010011

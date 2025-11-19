@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shgatpa
-long_name: hgatp profile requirements
+long_name: SvNNx4 mode supported for all modes supported by Supervisor Address Translation and Protection, as well as Bare
 description: |
   For each supported virtual memory scheme SvNN supported in
   `satp`, the corresponding hgatp SvNNx4 mode must be supported.  The

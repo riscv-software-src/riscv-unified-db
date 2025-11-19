@@ -7,17 +7,14 @@ $schema: inst_schema.json#
 kind: instruction
 name: fld
 long_name: Floating-Point Load Double-Precision
-description:
-  - id: inst-fld-behaviour
-    normative: false
-    text: |
-      The `fld` instruction loads a double-precision floating-point value from memory into floating-point
-      register `fd`. It is guaranteed to execute atomically if the effective address is naturally aligned
-      and XLEN≥64. It doesn't modify the bits being transferred; in particular, the payloads of non-canonical
-      NaNs are preserved.
 definedBy:
   extension:
     name: D
+description: |
+  The `fld` instruction loads a double-precision floating-point value from memory into floating-point
+  register `fd`. It is guaranteed to execute atomically if the effective address is naturally aligned
+  and XLEN≥64. It doesn't modify the bits being transferred; in particular, the payloads of non-canonical
+  NaNs are preserved.
 assembly: fd, imm(xs1)
 encoding:
   match: "-----------------011-----0000111"

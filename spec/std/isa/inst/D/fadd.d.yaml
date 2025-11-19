@@ -7,15 +7,12 @@ $schema: inst_schema.json#
 kind: instruction
 name: fadd.d
 long_name: Floating-Point Add Double-Precision
-description:
-  - id: inst-fadd.d-behaviour
-    normative: false
-    text: |
-      The `fadd.d` instruction is analogous to `fadd.s` and performs double-precision floating-point addition between
-      `fs1` and `fs2` and writes the final result to `fd`.
 definedBy:
   extension:
     name: D
+description: |
+  The `fadd.d` instruction is analogous to `fadd.s` and performs double-precision floating-point addition of
+  `fs1` and `fs2` and writes the final result to `fd`.
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000001------------------1010011

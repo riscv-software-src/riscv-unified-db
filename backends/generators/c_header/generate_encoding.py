@@ -8,7 +8,6 @@ import sys
 import logging
 import argparse
 import yaml
-import json
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,6 +17,7 @@ sys.path.append(parent_dir)
 from generator import (
     load_instructions,
     load_csrs,
+    load_exception_codes,
     parse_match,
     parse_extension_requirements,
 )
@@ -28,125 +28,6 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 def calculate_mask(match_str):
     """Convert the bit pattern string to a mask (1 for fixed bits, 0 for variable bits)."""
     return int("".join("0" if c == "-" else "1" for c in match_str), 2)
-
-
-def load_exception_codes(
-    ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
-):
-    """Load exception codes from extension YAML files or pre-resolved JSON file."""
-    exception_codes = []
-    found_extensions = 0
-    found_files = 0
-
-    if enabled_extensions is None:
-        enabled_extensions = []
-
-    # If we have a resolved codes file, use it instead of processing YAML files
-    if resolved_codes_file and os.path.exists(resolved_codes_file):
-        try:
-            with open(resolved_codes_file, encoding="utf-8") as f:
-                resolved_codes = json.load(f)
-
-            for code in resolved_codes:
-                num = code.get("num")
-                name = code.get("name")
-                if num is not None and name is not None:
-                    sanitized_name = (
-                        name.lower()
-                        .replace(" ", "_")
-                        .replace("/", "_")
-                        .replace("-", "_")
-                    )
-                    exception_codes.append((num, sanitized_name))
-
-            logging.info(
-                f"Loaded {len(exception_codes)} pre-resolved exception codes from {resolved_codes_file}"
-            )
-
-            # Sort by exception code number and deduplicate
-            seen_nums = set()
-            unique_codes = []
-            for num, name in sorted(exception_codes, key=lambda x: x[0]):
-                if num not in seen_nums:
-                    seen_nums.add(num)
-                    unique_codes.append((num, name))
-
-            return unique_codes
-
-        except Exception as e:
-            logging.error(
-                f"Error loading resolved codes file {resolved_codes_file}: {e}"
-            )
-            # Fall back to processing YAML files
-
-    for dirpath, _, filenames in os.walk(ext_dir):
-        for fname in filenames:
-            if not fname.endswith(".yaml"):
-                continue
-
-            found_files += 1
-            path = os.path.join(dirpath, fname)
-
-            try:
-                with open(path, encoding="utf-8") as f:
-                    data = yaml.safe_load(f)
-
-                if not isinstance(data, dict) or data.get("kind") != "extension":
-                    continue
-
-                found_extensions += 1
-                ext_name = data.get("name", "unnamed")
-
-                # Skip extension filtering if include_all is True
-                if not include_all:
-                    # Filter by extension requirements
-                    definedBy = data.get("definedBy")
-                    if definedBy:
-                        meets_req = parse_extension_requirements(definedBy)
-                        if not meets_req(enabled_extensions):
-                            continue
-
-                    # Check if excluded
-                    excludedBy = data.get("excludedBy")
-                    if excludedBy:
-                        exclusion_check = parse_extension_requirements(excludedBy)
-                        if exclusion_check(enabled_extensions):
-                            continue
-
-                # Get exception codes
-                for code in data.get("exception_codes", []):
-                    num = code.get("num")
-                    name = code.get("name")
-
-                    if num is not None and name is not None:
-                        sanitized_name = (
-                            name.lower()
-                            .replace(" ", "_")
-                            .replace("/", "_")
-                            .replace("-", "_")
-                        )
-                        exception_codes.append((num, sanitized_name))
-
-            except Exception as e:
-                logging.error(f"Error processing file {path}: {e}")
-
-    if found_extensions > 0:
-        logging.info(
-            f"Found {found_extensions} extension definitions in {found_files} files"
-        )
-        logging.info(f"Added {len(exception_codes)} exception codes to the output")
-    else:
-        logging.warning(f"No extension definitions found in {ext_dir}")
-
-    # Sort by exception code number and deduplicate
-    seen_nums = set()
-    unique_codes = []
-    for num, name in sorted(exception_codes, key=lambda x: x[0]):
-        if num not in seen_nums:
-            seen_nums.add(num)
-            unique_codes.append((num, name))
-
-    return unique_codes
 
 
 def extract_instruction_fields(instructions):

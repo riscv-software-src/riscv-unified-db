@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicfilp
-long_name: Landing Pads
+long_name: Landing Pad
 description: |
   TODO
 type: unprivileged

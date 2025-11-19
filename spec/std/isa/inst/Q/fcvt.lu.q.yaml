@@ -7,16 +7,13 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.lu.q
 long_name: Floating-Point Convert Quad-Precision to Unsigned Long
-description:
-  - id: inst-fcvt.lu.q-behaviour
-    normative: false
-    text: |
-      `fcvt.lu.q` converts a quad-precision floating-point number to an unsigned 64-bit integer.
 definedBy:
   allOf:
     - xlen: 64
     - extension:
         name: Q
+description: |
+  `fcvt.lu.q` converts a quad-precision floating-point number to an unsigned 64-bit integer.
 base: 64
 assembly: xd, fs1, rm
 encoding:

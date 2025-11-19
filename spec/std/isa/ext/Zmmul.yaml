@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zmmul
-long_name: Integer multiplication instructions
+long_name: Integer multiplication
 description: |
   The `Zmmul` extension implements the multiplication subset of the `M` extension.
   It adds `MUL`, `MULH`, `MULHU`, `MULHSU`, and (for RV64 only) `MULW`.

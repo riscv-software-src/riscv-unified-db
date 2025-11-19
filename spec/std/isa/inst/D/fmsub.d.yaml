@@ -7,15 +7,11 @@ $schema: inst_schema.json#
 kind: instruction
 name: fmsub.d
 long_name: Floating-Point Multiply-Subtract Double-Precision
-description:
-  - id: inst-fmsub.d-behaviour
-    normative: false
-    text: |
-      The `fmsub.d` instruction multiplies the values in `fs1` and `fs2`, subtracts the value in `fs3`, and writes the final result to `fd`.
-
 definedBy:
   extension:
     name: D
+description: |
+  The `fmsub.d` instruction multiplies the values in `fs1` and `fs2`, subtracts the value in `fs3`, and writes the final result to `fd`.
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
   match: "-----01------------------1000111"

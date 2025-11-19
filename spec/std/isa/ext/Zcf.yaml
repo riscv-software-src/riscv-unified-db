@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zcf
-long_name: Compressed instructions for single precision floating point
+long_name: Compressed single-precision floating-point loads/stores
 description: |
   Zcf is the existing set of compressed single precision floating point loads and stores (RV32 only):
   `c.flw`, `c.flwsp`, `c.fsw`, `c.fswsp`.

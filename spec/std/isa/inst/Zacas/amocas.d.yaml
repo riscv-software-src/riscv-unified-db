@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zacas/amocas.SIZE.AQRL.layout# Copyright (c) Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -6,85 +8,127 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amocas.d
-long_name: Atomic Compare-and-Swap Doubleword
+long_name: Atomic compare-and-swap doubleword
 description: |
-  For RV32, AMOCAS.D atomically loads 64-bits of a data value from address in
-  xs1, compares the loaded value to a 64-bit value held in a register pair
-  consisting of xd and xd+1, and if the comparison is bitwise equal, then
-  stores the 64-bit value held in the register pair xs2 and xs2+1 to the
-  original address in xs1. The value loaded from memory is placed into the
-  register pair xd and xd+1. The instruction requires the first register in
-  the pair to be even numbered; encodings with odd-numbered registers
-  specified in xs2 and xd are reserved. When the first register of a source
-  register pair is x0, then both halves of the pair read as zero. When the
-  first register of a destination register pair is x0, then the entire
-  register result is discarded and neither destination register is written.
+  Atomically:
 
-  For RV64, AMOCAS.D atomically loads 64-bits of a data value from address in
-  xs1, compares the loaded value to a 64-bit value held in xd, and if the
-  comparison is bitwise equal, then stores the 64-bit value held in xs2 to the
-  original address in xs1. The value loaded from memory is placed into
-  register xd.
-
-  Just as for AMOs in the A extension, AMOCAS.D requires that the address held
-  in xs1 be naturally aligned to the size of the operand (i.e., eight-byte
-  aligned for doublewords). And the same exception options apply if the
-  address is not naturally aligned.
-
-  Just as for AMOs in the A extension, the AMOCAS.D optionally provides release
-  consistency semantics, using the aq and rl bits, to help implement
-  multiprocessor synchronization. The memory operation performed by an
-  AMOCAS.D, when successful, has acquire semantics if aq bit is 1 and has
-  release semantics if rl bit is 1. The memory operation performed by an
-  AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
-  does not have release semantics, regardless of rl.
-
-  A FENCE instruction may be used to order the memory read access and, if
-  produced, the memory write access by an AMOCAS.D instruction.
-
-  [Note] An unsuccessful AMOCAS.D may either not perform a memory write or may
-  write back the old value loaded from memory. The memory write, if produced,
-  does not have release semantics, regardless of rl.
-
-  An AMOCAS.D instruction always requires write permissions.
-
+    * Load the doubleword at address _xs1_
+    * Write the loaded value into _xd_
+    * Compare the loaded value with the value of register _xs2_
+    * If equal, write the value of register _xs2+1_ to the address in _xs1_
 definedBy:
-  extension:
-    name: Zacas
+  allOf:
+    - extension:
+        name: Zacas
+    - xlen: 64
+base: 64
 assembly: xd, xs2, (xs1)
 encoding:
-  RV32:
-    match: 00101------------011-----0101111
-    variables:
-      - name: aq
-        location: 26-26
-      - name: rl
-        location: 25-25
-      - name: xs2
-        location: 24-20
-        not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
-      - name: xs1
-        location: 19-15
-      - name: xd
-        location: 11-7
-        not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
-  RV64:
-    match: 00101------------011-----0101111
-    variables:
-      - name: aq
-        location: 26-26
-      - name: rl
-        location: 25-25
-      - name: xs2
-        location: 24-20
-      - name: xs1
-        location: 19-15
-      - name: xd
-        location: 11-7
+  match: 0010100----------011-----0101111
+  variables:
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
 access:
   s: always
   u: always
   vs: always
   vu: always
-data_independent_timing: false
 operation(): |
+  if (!implemented?(ExtensionName::Zacas)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg virtual_address = X[xs1];
+  # TODO
+  # X[xd] = amocas64(virtual_address, X[xs2], X[xd], 1'b0, 1'b0, $encoding);
+
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
+sail(): |
+  {
+    if extension("Zacas") then {
+      /* Get the address, X(rs1) (no offset).
+       * Some extensions perform additional checks on address validity.
+       */
+      match ext_data_get_addr(rs1, zeros(), ReadWrite(Data, Data), width) {
+        Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
+        Ext_DataAddr_OK(vaddr) => {
+          match translateAddr(vaddr, ReadWrite(Data, Data)) {
+            TR_Failure(e, _) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+            TR_Address(addr, _) => {
+              let eares : MemoryOpResult(unit) = match (width, sizeof(xlen)) {
+                (BYTE, _)    => mem_write_ea(addr, 1, aq & rl, rl, true),
+                (HALF, _)    => mem_write_ea(addr, 2, aq & rl, rl, true),
+                (WORD, _)    => mem_write_ea(addr, 4, aq & rl, rl, true),
+                (DOUBLE, 64) => mem_write_ea(addr, 8, aq & rl, rl, true),
+                _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+              };
+              let rs2_val : xlenbits = match width {
+                BYTE   => sign_extend(X(rs2)[7..0]),
+                HALF   => sign_extend(X(rs2)[15..0]),
+                WORD   => sign_extend(X(rs2)[31..0]),
+                DOUBLE => X(rs2)
+              };
+              let rd_val : xlenbits = match width {
+                BYTE   => sign_extend(X(rd)[7..0]),
+                HALF   => sign_extend(X(rd)[15..0]),
+                WORD   => sign_extend(X(rd)[31..0]),
+                DOUBLE => X(rd)
+              };
+              match (eares) {
+                MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+                MemValue(_) => {
+                  let mval : MemoryOpResult(xlenbits) = match (width, sizeof(xlen)) {
+                    (BYTE, _)    => extend_value(false, mem_read(ReadWrite(Data, Data), addr, 1, aq, aq & rl, true)),
+                    (HALF, _)    => extend_value(false, mem_read(ReadWrite(Data, Data), addr, 2, aq, aq & rl, true)),
+                    (WORD, _)    => extend_value(false, mem_read(ReadWrite(Data, Data), addr, 4, aq, aq & rl, true)),
+                    (DOUBLE, 64) => extend_value(false, mem_read(ReadWrite(Data, Data), addr, 8, aq, aq & rl, true)),
+                    _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+                  };
+                  match (mval) {
+                    MemException(e)  => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+                    MemValue(loaded) => {
+                      let success : bool = (loaded == rs2_val);
+                      let result : xlenbits = if success then rd_val else loaded;
+                      let rval : xlenbits = match width {
+                        BYTE   => sign_extend(loaded[7..0]),
+                        HALF   => sign_extend(loaded[15..0]),
+                        WORD   => sign_extend(loaded[31..0]),
+                        DOUBLE => loaded
+                      };
+                      let wval : MemoryOpResult(bool) = if success then {
+                        match (width, sizeof(xlen)) {
+                          (BYTE, _)    => mem_write_value(addr, 1, result[7..0],  aq & rl, rl, true),
+                          (HALF, _)    => mem_write_value(addr, 2, result[15..0], aq & rl, rl, true),
+                          (WORD, _)    => mem_write_value(addr, 4, result[31..0], aq & rl, rl, true),
+                          (DOUBLE, 64) => mem_write_value(addr, 8, result,        aq & rl, rl, true),
+                          _            => internal_error(__FILE__, __LINE__, "Unexpected AMOCAS width")
+                        }
+                      } else {
+                        MemValue(true)  /* No write on compare failure */
+                      };
+                      match (wval) {
+                        MemValue(true)  => { X(rd) = rval; RETIRE_SUCCESS },
+                        MemValue(false) => { internal_error(__FILE__, __LINE__, "AMOCAS got false from mem_write_value") },
+                        MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      handle_illegal();
+      RETIRE_FAIL
+    }
+  }
+
+# SPDX-SnippetEnd

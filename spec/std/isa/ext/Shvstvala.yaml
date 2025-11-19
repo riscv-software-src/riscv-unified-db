@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shvstvala
-long_name: vstval profile requirements
+long_name: Virtual Supervisor Trap Value provides all needed values
 description: |
   vstval must be written with the faulting virtual address
   for load, store, and instruction page-fault, access-fault, and

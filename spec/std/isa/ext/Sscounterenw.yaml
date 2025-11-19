@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sscounterenw
-long_name: Supervisor counter enable
+long_name: Support writeable enables for any supported counter
 description: |
   For any hpmcounter that is not read-only zero, the corresponding bit in `scounteren` must be writable.
 

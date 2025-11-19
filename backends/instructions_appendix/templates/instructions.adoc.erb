@@ -10,11 +10,9 @@
 Synopsis::
 <%= inst.long_name %>
 
-<%- if inst.assembly.to_s.strip != "" -%>
 Assembly::
-<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+<%= inst.fix_entities("#{inst.name.downcase}#{inst.assembly.to_s.strip == '' ? '' : ' ' + inst.assembly}") %>
 
-<%- end -%>
 Encoding::
 <%- if inst.multi_encoding? -%>
 [NOTE]
