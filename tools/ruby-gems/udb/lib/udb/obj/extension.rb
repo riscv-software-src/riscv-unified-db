@@ -1415,7 +1415,7 @@ module Udb
           else
             # exaclty one of the requirements must be met
             # also add an implication for each version so they don't mix/match
-            Condition.one_of(version_reqs.values, @arch) & Condition.conjunction(version_reqs.map { |ext_ver, req| ext_ver.to_condition.implies(req) }, @arch)
+            Condition.disjunction(version_reqs.values, @arch) & Condition.conjunction(version_reqs.map { |ext_ver, req| ext_ver.to_condition.implies(req) }, @arch)
           end
         end
     end

@@ -489,11 +489,11 @@ module Udb
               [
                 LogicNode.new(
                   LogicNodeType::None,
-                  ext_terms.map { |t| LogicNode.new(LogicNodeType::Term, [t]) }
+                  mentioned_versions.map { |t| LogicNode.new(LogicNodeType::Term, [t]) }
                 ),
                 LogicNode.new(
                   LogicNodeType::Xor,
-                  ext_terms.map { |t| LogicNode.new(LogicNodeType::Term, [t]) }
+                  mentioned_versions.map { |t| LogicNode.new(LogicNodeType::Term, [t]) }
                 )
               ]
             )
