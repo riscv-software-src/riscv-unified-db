@@ -51,7 +51,7 @@ def arch2ext_table(arch)
       { name: "Requires\n(Exts)", formatter: "textarea", sorter: "alphanum" },
       { name: "Transitive Requires\n(Ext)", formatter: "textarea", sorter: "alphanum" },
       { name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
-      { name: "Transitive Incompatible\n(Ext Ver)", formatter: "textarea", sorter: "alphanum" },
+      # { name: "Transitive Incompatible\n(Ext Ver)", formatter: "textarea", sorter: "alphanum" },
       { name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true },
       { name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
@@ -85,14 +85,15 @@ def arch2ext_table(arch)
           "#{cond_ext_req.ext_req.name} if #{cond_ext_req.cond}"
         end
       end.uniq,  # Transitive Requires
-      ext.max_version.ext_conflicts(expand: false).map do |cond_ext_req|
-        if cond_ext_req.cond.empty?
-          cond_ext_req.ext_req.name
-        else
-          "#{cond_ext_req.ext_req.name} unless #{cond_ext_req.cond.to_asciidoc}"
-        end
-      end.uniq,  # Conlifct
-      ext.max_version.unconditional_extension_version_conflicts.map(&:to_s),  # Transitive Conlifct
+      ext.conflicting_extensions.map(&:name),
+      # ext.max_version.ext_conflicts(expand: false).map do |cond_ext_req|
+      #   if cond_ext_req.cond.empty?
+      #     cond_ext_req.ext_req.name
+      #   else
+      #     "#{cond_ext_req.ext_req.name} unless #{cond_ext_req.cond.to_asciidoc}"
+      #   end
+      # end.uniq,  # Conlifct
+      # ext.max_version.unconditional_extension_version_conflicts.map(&:to_s),  # Transitive Conlifct
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -142,7 +143,7 @@ def arch2inst_table(arch)
     }
 
   insts = arch.instructions.sort_by!(&:name)
-  progressbar = TTY::ProgressBar.new("Instruction Table [:bar]", total: insts.size, output: $stdout)
+  progressbar = TTY::ProgressBar.new("Instruction Table [:bar] :current/:total", total: insts.size, output: $stdout)
 
   insts.each do |inst|
     progressbar.advance
@@ -307,96 +308,93 @@ end
 #
 # @param table [Hash<String,Array<String>] Table data
 # @param div_name [String] Name of div element in HTML
-# @param output_pname [String] Full absolute pathname to output file
-def gen_js_table(table, div_name, output_pname)
+def gen_js_table(table, div_name)
   columns = table["columns"]
   rows = table["rows"]
 
-  File.open(output_pname, "w") do |fp|
-    fp.write "// Define data array\n"
-    fp.write "\n"
-    fp.write "var tabledata = [\n"
+  fp = StringIO.new
+  fp.write "// Define data array\n"
+  fp.write "\n"
+  fp.write "var tabledata = [\n"
 
-    rows.each do |row|
-      items = []
-      columns.each_index do |i|
-        column = columns[i]
-        column_name = column[:name].gsub("\n", " ")
-        cell = row[i]
-        if cell.is_a?(String)
-          cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
-        elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
-          cell_fmt = "#{cell}"
-        elsif cell.is_a?(Array)
-          cell_fmt = '"' + cell.join("\\n") + '"'
-        else
-          raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
-        end
-        items.append('"' + column_name + '":' + cell_fmt)
-      end
-      fp.write "  {" + items.join(", ") + "},\n"
-    end
-
-    fp.write "];\n"
-    fp.write "\n"
-    fp.write "// Initialize table\n"
-    fp.write "var table = new Tabulator(\"##{div_name}\", {\n"
-    fp.write "  height: window.innerHeight-25, // Set height to window less 25 pixels for horz scrollbar\n"
-    fp.write "  data: tabledata, // Assign data to table\n"
-    fp.write "  columns:[\n"
-    columns.each do |column|
+  rows.each do |row|
+    items = []
+    columns.each_index do |i|
+      column = columns[i]
       column_name = column[:name].gsub("\n", " ")
-      sorter = column[:sorter]
-      formatter = column[:formatter]
-      fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
-
-      if column[:headerFilter] == true
-        fp.write ", headerFilter: true"
+      cell = row[i]
+      if cell.is_a?(String)
+        cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
+      elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
+        cell_fmt = "#{cell}"
+      elsif cell.is_a?(Array)
+        cell_fmt = '"' + cell.join("\\n") + '"'
+      else
+        raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
       end
-      if column[:headerVertical] == true
-        fp.write ", headerVertical: true"
-      end
-      if column[:frozen] == true
-        fp.write ", frozen: true"
-      end
-
-      if formatter == "link"
-        formatterParams = column[:formatterParams]
-        urlPrefix = formatterParams[:urlPrefix]
-        fp.write ", formatterParams:{\n"
-        fp.write "      labelField:\"#{column_name}\",\n"
-        fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
-        fp.write "      }\n"
-      # elsif formatter == "array"
-      end
-      fp.write "    },\n"
+      items.append('"' + column_name + '":' + cell_fmt)
     end
-    fp.write "  ]\n"
-    fp.write "});\n"
-    fp.write "\n"
-
-    fp.write "// Load data in chunks after table is built\n"
-    fp.write "table.on(\"tableBuilt\", function() {\n"
-    fp.write "    loadDataInChunks(tabledata);\n"
-    fp.write "});\n"
-    fp.write "\n"
+    fp.write "  {" + items.join(", ") + "},\n"
   end
+
+  fp.write "];\n"
+  fp.write "\n"
+  fp.write "// Initialize table\n"
+  fp.write "var table = new Tabulator(\"##{div_name}\", {\n"
+  fp.write "  height: window.innerHeight-25, // Set height to window less 25 pixels for horz scrollbar\n"
+  fp.write "  data: tabledata, // Assign data to table\n"
+  fp.write "  columns:[\n"
+  columns.each do |column|
+    column_name = column[:name].gsub("\n", " ")
+    sorter = column[:sorter]
+    formatter = column[:formatter]
+    fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
+
+    if column[:headerFilter] == true
+      fp.write ", headerFilter: true"
+    end
+    if column[:headerVertical] == true
+      fp.write ", headerVertical: true"
+    end
+    if column[:frozen] == true
+      fp.write ", frozen: true"
+    end
+
+    if formatter == "link"
+      formatterParams = column[:formatterParams]
+      urlPrefix = formatterParams[:urlPrefix]
+      fp.write ", formatterParams:{\n"
+      fp.write "      labelField:\"#{column_name}\",\n"
+      fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
+      fp.write "      }\n"
+    # elsif formatter == "array"
+    end
+    fp.write "    },\n"
+  end
+  fp.write "  ]\n"
+  fp.write "});\n"
+  fp.write "\n"
+
+  fp.write "// Load data in chunks after table is built\n"
+  fp.write "table.on(\"tableBuilt\", function() {\n"
+  fp.write "    loadDataInChunks(tabledata);\n"
+  fp.write "});\n"
+  fp.write "\n"
+  fp.rewind
+  fp.read
 end
 
 # Create ISA Explorer extension table as JavaScript file.
 #
 # @param arch [Udb::Architecture] The entire RISC-V architecture
-# @param output_pname [String] Full absolute pathname to output file
-def gen_js_ext_table(arch, output_pname)
+def gen_js_ext_table(arch)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
-  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to ext_table data structure
   $logger.info "Creating extension table data structure"
   ext_table = arch2ext_table(arch)
 
-  $logger.info "Converting extension table to #{output_pname}"
-  gen_js_table(ext_table, "ext_table", output_pname)
+  gen_js_table(ext_table, "ext_table")
 end
 
 # Create ISA Explorer instruction table as JavaScript file.
@@ -412,7 +410,7 @@ def gen_js_inst_table(arch, output_pname)
   inst_table = arch2inst_table(arch)
 
   $logger.info "Converting instruction table to #{output_pname}"
-  gen_js_table(inst_table, "inst_table", output_pname)
+  File.write output_pname, gen_js_table(inst_table, "inst_table")
 end
 
 # Create ISA Explorer CSR table as JavaScript file.
@@ -428,7 +426,7 @@ def gen_js_csr_table(arch, output_pname)
   csr_table = arch2csr_table(arch)
 
   $logger.info "Converting CSR table to #{output_pname}"
-  gen_js_table(csr_table, "csr_table", output_pname)
+  File.write output_pname, gen_js_table(csr_table, "csr_table")
 end
 
 # param [Udb::Architecture] arch

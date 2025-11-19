@@ -12,9 +12,7 @@ description: |
   Instruction encoded in I instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicli
+    name: Xqcicli
 base: 32
 encoding:
   match: -----11----------001-----1011011

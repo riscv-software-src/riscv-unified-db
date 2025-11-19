@@ -1,9 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 #
 # Contains Rake rules to generate ISA explorer.
 
 require "udb/cfg_arch"
 
+require "erb"
 require "pathname"
 require_relative "isa_explorer"
 
@@ -12,7 +14,7 @@ BACKEND_NAME = "isa_explorer"
 BACKEND_DIR = "#{$root}/backends/#{BACKEND_NAME}"
 
 # Static source files
-SRC_EXT_HTML_PNAME = "#{BACKEND_DIR}/ext_table.html"
+SRC_EXT_HTML_PNAME = "#{BACKEND_DIR}/ext_table.html.erb"
 SRC_INST_HTML_PNAME = "#{BACKEND_DIR}/inst_table.html"
 SRC_CSR_HTML_PNAME = "#{BACKEND_DIR}/csr_table.html"
 SRC_LOAD_TABLE_JS_PNAME = "#{BACKEND_DIR}/load_table.js"
@@ -82,14 +84,14 @@ file "#{GEN_XLSX}" => [
     __FILE__,
     src_pnames
 ].flatten do |t|
-    arch = $resolver.cfg_arch_for("_")
+  arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_xlsx(arch, t.name)
+  gen_xlsx(arch, t.name)
 
-    puts "Success: Generated #{t.name}"
+  puts "Success: Generated #{t.name}"
 end
 
 file "#{GEN_HTML_EXT_TABLE}" => [
@@ -98,23 +100,25 @@ file "#{GEN_HTML_EXT_TABLE}" => [
   SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
     # Delete target file if already present.
-    if File.exist?(t.name)
-      begin
-        File.delete(t.name)
-      rescue StandardError => e
-        raise "Can't delete '#{t.name}': #{e.message}"
-      end
+  if File.exist?(t.name)
+    begin
+      File.delete(t.name)
+    rescue StandardError => e
+      raise "Can't delete '#{t.name}': #{e.message}"
     end
+  end
 
-    # Just copy static HTML file.
-    FileUtils.copy_file(SRC_EXT_HTML_PNAME, t.name)
+  arch = $resolver.cfg_arch_for("_")
 
-    # Copy static JS file for table loading
-    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
-    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
+  js_table = gen_js_ext_table(arch)
+
+  erb = ERB.new(File.read(SRC_EXT_HTML_PNAME), trim_mode: "-")
+  erb.filename = SRC_EXT_HTML_PNAME
+
+  File.write t.name, erb.result(binding)
 end
 
 file "#{GEN_HTML_INST_TABLE}" => [
@@ -123,23 +127,23 @@ file "#{GEN_HTML_INST_TABLE}" => [
   SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
     # Delete target file if already present.
-    if File.exist?(t.name)
-      begin
-        File.delete(t.name)
-      rescue StandardError => e
-        raise "Can't delete '#{t.name}': #{e.message}"
-      end
+  if File.exist?(t.name)
+    begin
+      File.delete(t.name)
+    rescue StandardError => e
+      raise "Can't delete '#{t.name}': #{e.message}"
     end
+  end
 
     # Just copy static HTML file.
-    FileUtils.copy_file(SRC_INST_HTML_PNAME, t.name)
+  FileUtils.copy_file(SRC_INST_HTML_PNAME, t.name)
 
     # Copy static JS file for table loading
-    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
-    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
+  js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
+  FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
 end
 
 file "#{GEN_HTML_CSR_TABLE}" => [
@@ -148,23 +152,23 @@ file "#{GEN_HTML_CSR_TABLE}" => [
   SRC_LOAD_TABLE_JS_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
     # Delete target file if already present.
-    if File.exist?(t.name)
-      begin
-        File.delete(t.name)
-      rescue StandardError => e
-        raise "Can't delete '#{t.name}': #{e.message}"
-      end
+  if File.exist?(t.name)
+    begin
+      File.delete(t.name)
+    rescue StandardError => e
+      raise "Can't delete '#{t.name}': #{e.message}"
     end
+  end
 
     # Just copy static HTML file.
-    FileUtils.copy_file(SRC_CSR_HTML_PNAME, t.name)
+  FileUtils.copy_file(SRC_CSR_HTML_PNAME, t.name)
 
     # Copy static JS file for table loading
-    js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
-    FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
+  js_target = File.join(File.dirname(t.name), File.basename(SRC_LOAD_TABLE_JS_PNAME))
+  FileUtils.copy_file(SRC_LOAD_TABLE_JS_PNAME, js_target)
 end
 
 file "#{GEN_JS_EXT_TABLE}" => [
@@ -172,14 +176,14 @@ file "#{GEN_JS_EXT_TABLE}" => [
     src_pnames,
     SRC_EXT_HTML_PNAME
 ].flatten do |t|
-    arch = $resolver.cfg_arch_for("_")
+  arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_js_ext_table(arch, t.name)
+  File.write t.name, gen_js_ext_table(arch)
 
-    puts "Success: Generated #{t.name}"
+  puts "Success: Generated #{t.name}"
 end
 
 file "#{GEN_JS_INST_TABLE}" => [
@@ -187,14 +191,14 @@ file "#{GEN_JS_INST_TABLE}" => [
     src_pnames,
     SRC_INST_HTML_PNAME
 ].flatten do |t|
-    arch = $resolver.cfg_arch_for("_")
+  arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_js_inst_table(arch, t.name)
+  gen_js_inst_table(arch, t.name)
 
-    puts "Success: Generated #{t.name}"
+  puts "Success: Generated #{t.name}"
 end
 
 file "#{GEN_JS_CSR_TABLE}" => [
@@ -202,12 +206,12 @@ file "#{GEN_JS_CSR_TABLE}" => [
     src_pnames,
     SRC_CSR_HTML_PNAME
 ].flatten do |t|
-    arch = $resolver.cfg_arch_for("_")
+  arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
-    FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_js_csr_table(arch, t.name)
+  gen_js_csr_table(arch, t.name)
 
-    puts "Success: Generated #{t.name}"
+  puts "Success: Generated #{t.name}"
 end

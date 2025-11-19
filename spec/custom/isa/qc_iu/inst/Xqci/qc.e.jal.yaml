@@ -13,9 +13,7 @@ description: |
   address in x1.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilb
+    name: Xqcilb
 assembly: " imm"
 base: 32
 encoding:

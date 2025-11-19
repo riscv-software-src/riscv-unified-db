@@ -312,8 +312,8 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Run cpp unit tests
-        run: ./do gen:ext_pdf EXT=Xqci CFG=qc_iu.yaml VERSION=latest
+      - name: Generate Xqci pdf documentation
+        run: ./bin/ruby tools/scripts/gen_xqci.rb
   call-deploy:
     uses: ./.github/workflows/deploy.yml
     with:

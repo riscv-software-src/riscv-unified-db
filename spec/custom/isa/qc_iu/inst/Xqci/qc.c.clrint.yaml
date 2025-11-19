@@ -12,9 +12,7 @@ description: |
   Instruction encoded in CI instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 assembly: " xs1"
 base: 32
 encoding:

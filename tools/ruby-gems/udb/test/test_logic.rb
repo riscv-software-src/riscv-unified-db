@@ -127,9 +127,9 @@ class TestLogic < Minitest::Test
   def test_ext_ver_convert
     term = ExtensionTerm.new("A", "=", "1.0.0")
 
-    assert_equal ExtensionVersion.new("A", "1.0.0", cfg_arch), term.to_ext_ver(cfg_arch)
+    assert_equal cfg_arch.extension_version("A", "1.0.0"), term.to_ext_ver(cfg_arch)
     assert_equal ["name", "version"], term.to_h.keys
-    assert_equal ExtensionVersion.new("A", "1.0.0", cfg_arch), ExtensionVersion.new(term.to_h["name"], term.to_h["version"].gsub("= ", ""), cfg_arch)
+    assert_equal cfg_arch.extension_version("A", "1.0.0"), cfg_arch.extension_version(term.to_h["name"], term.to_h["version"].gsub("= ", ""))
   end
 
   sig { void }
@@ -586,7 +586,7 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb))
     assert_equal(SatisfiedResult::Yes, n.eval_cb(proc { |term| SatisfiedResult::No }))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("A", "1.0.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -594,7 +594,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::No, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("C", "1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -602,7 +602,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::No, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -610,7 +610,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("A", "1.0.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -619,7 +619,7 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
       if term.is_a?(ExtensionTerm)
-        if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("C", "1.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+        if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0")
           SatisfiedResult::Yes
         else
           SatisfiedResult::No

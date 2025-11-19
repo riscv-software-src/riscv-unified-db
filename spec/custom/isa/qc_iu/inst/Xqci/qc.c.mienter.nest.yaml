@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
 $schema: inst_schema.json#
 kind: instruction
 name: qc.c.mienter.nest
@@ -13,9 +15,7 @@ description: |
 assembly: ""
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 access:
   s: never
   u: never

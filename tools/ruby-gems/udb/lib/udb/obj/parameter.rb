@@ -39,7 +39,7 @@ module Udb
       @requirements_condition ||=
         begin
           if @data["requirements"].nil?
-            Condition::True
+            AlwaysTrueCondition.new(@cfg_arch)
           else
             Condition.new(
               @data.fetch("requirements"),
@@ -80,7 +80,7 @@ module Udb
           @schemas << ConditionalSchema.new(schema: Schema.new(cond_schema.fetch("schema")), cond: Condition.new(cond_schema.fetch("when"), @cfg_arch))
         end
       else
-        @schemas << ConditionalSchema.new(schema: Schema.new(data["schema"]), cond: AlwaysTrueCondition.new)
+        @schemas << ConditionalSchema.new(schema: Schema.new(data["schema"]), cond: AlwaysTrueCondition.new(cfg_arch))
       end
     end
 

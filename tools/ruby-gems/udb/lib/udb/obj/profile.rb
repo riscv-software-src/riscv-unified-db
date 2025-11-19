@@ -150,6 +150,10 @@ module Udb
     # @return [Array<Extension>] List of all mandatory or optional extensions referenced by this profile release.
     def in_scope_extensions = portfolio_grp.in_scope_extensions
 
+    def all_in_scope_params
+      [Portfolio::InScopeParameter.new(@cfg_arch.param("MXLEN"), { "const" => @data["base"] }, "")]
+    end
+
     # @return [String] Given an extension +ext_name+, return the presence as a string.
     #                  Returns the greatest presence string across all profiles in the release.
     #                  If the extension name isn't found in the release, return "-".
@@ -190,6 +194,10 @@ module Udb
     # @return [32, 64] The base XLEN for the profile
     def base
       @data["base"]
+    end
+
+    def all_in_scope_params
+      [Portfolio::InScopeParameter.new(@cfg_arch.param("MXLEN"), { "const" => @data["base"] }, "")]
     end
 
     # Too complicated to put in profile ERB template.

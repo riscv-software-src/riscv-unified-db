@@ -13,11 +13,8 @@ priv_mode: M
 base: 32
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-        version: ">=0.7"
-      - name: Xqciint
-        version: ">=0.4"
+    name: Xqciint
+    version: ">=0.4"
 writable: true
 description: |
   Level bits for IRQs 120-127

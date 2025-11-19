@@ -12,9 +12,7 @@ description: |
   Instruction encoded in BI instruction format
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcibi
+    name: Xqcibi
 base: 32
 encoding:
   match: -----------------000-----1111011

@@ -14,9 +14,7 @@ description: |
   Instruction encoded in I instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcibm
+    name: Xqcibm
 base: 32
 encoding:
   match: 11---------------010-----0001011

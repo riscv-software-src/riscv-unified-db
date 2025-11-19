@@ -106,7 +106,7 @@ module Udb
           return false if mxlen == 32
 
           case mode
-          when "M"
+          when "M", "D"
             mxlen.nil?
           when "S"
             return true if unconfigured?
@@ -173,7 +173,7 @@ module Udb
               raise "Unexpected configuration state"
             end
           else
-            raise ArgumentError, "Bad mode"
+            raise ArgumentError, "Bad mode: #{mode}"
           end
         end
     end
@@ -187,11 +187,11 @@ module Udb
     sig { override.returns(Integer) }
     def hash = @name_sym.hash
 
-    sig { override.params(other: T.anything).returns(T::Boolean) }
+    sig { override.params(other: BasicObject).returns(T::Boolean) }
     def eql?(other)
-      return false unless other.is_a?(ConfiguredArchitecture)
+      return false unless other.__send__(:is_a?, ConfiguredArchitecture)
 
-      @name.eql?(other.name)
+      @name.eql?(other.__send__(:name))
     end
 
     # @return Symbol table with global scope included
@@ -257,8 +257,8 @@ module Udb
           next
         end
 
-        unless ext_ver.combined_requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Extension requirement is unmet: #{ext_ver}. Needs: #{ext_ver.combined_requirements_condition}"
+        unless ext_ver.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
+          reasons << "Extension requirement is unmet: #{ext_ver}. Needs: #{ext_ver.requirements_condition}"
         end
       end
 
@@ -373,6 +373,8 @@ module Udb
                 true
               elsif prohibited_ext?(ext_name)
                 false
+              else
+                nil
               end
             end
           end
@@ -387,6 +389,8 @@ module Udb
                 true
               elsif prohibited_ext?(ext_name)
                 false
+              else
+                nil
               end
             end
           end
@@ -505,6 +509,8 @@ module Udb
       prop :out_of_scope_params, T.nilable(T::Array[Parameter])
       prop :implemented_extension_versions, T.nilable(T::Array[ExtensionVersion])
       prop :implemented_extension_version_hash, T.nilable(T::Hash[String, ExtensionVersion])
+      prop :extension_requirements_hash, T::Hash[String, ExtensionRequirement]
+      prop :extension_versions_hash, T::Hash[String, ExtensionVersion]
     end
 
     # Initialize a new configured architecture definition
@@ -520,7 +526,11 @@ module Udb
       @name = name.to_s.freeze
       @name_sym = @name.to_sym.freeze
 
-      @memo = MemoizedState.new(multi_xlen_in_mode: {})
+      @memo = MemoizedState.new(
+        multi_xlen_in_mode: {},
+        extension_requirements_hash: {},
+        extension_versions_hash: {}
+      )
 
       @config = config
       @config_type = T.let(@config.type, ConfigType)
@@ -729,7 +739,7 @@ module Udb
           end
 
           T.cast(@config, FullConfig).implemented_extensions.map do |e|
-            ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: false)
+            extension_version(e.fetch("name"), e.fetch("version"))
           end
         end
     end
@@ -740,6 +750,37 @@ module Udb
     # @deprecated in favor of implemented_extension_versions
     def transitive_implemented_extension_versions = implemented_extension_versions
 
+    sig { params(name: String, requirements: T.any(String, T::Array[String])).returns(ExtensionRequirement) }
+    def extension_requirement(name, requirements)
+      key =
+        if requirements.is_a?(Array)
+          [name, *requirements].hash
+        else
+          [name, requirements].hash
+        end
+
+      cached_ext_req = @memo.extension_requirements_hash[key]
+      if cached_ext_req.nil?
+        ext_req = ExtensionRequirement.send(:new, name, requirements, arch: self)
+        @memo.extension_requirements_hash[key] = ext_req
+      else
+        cached_ext_req
+      end
+    end
+
+    sig { params(name: String, version: T.any(String, VersionSpec)).returns(ExtensionVersion) }
+    def extension_version(name, version)
+      version_spec = version.is_a?(VersionSpec) ? version : VersionSpec.new(version)
+      key = [name, version_spec].hash
+
+      cached_ext_ver = @memo.extension_versions_hash[key]
+      if cached_ext_ver.nil?
+        ext_req = ExtensionVersion.send(:new, name, version_spec, self, fail_if_version_does_not_exist: true)
+        @memo.extension_versions_hash[key] = ext_req
+      else
+        cached_ext_ver
+      end
+    end
 
     # given the current (invalid) config, try to come up with a list of extension versions that,
     # if added, might make the config valid
@@ -784,13 +825,9 @@ module Udb
             ename = T.cast(e["name"], String)
 
             if e["version"].nil?
-              ExtensionRequirement.new(ename, ">= 0", presence: Presence.new("mandatory"), arch: self)
+              extension_requirement(ename, ">= 0")
             else
-              if e["version"].is_a?(Array)
-                ExtensionRequirement.new(ename, T.cast(e.fetch("version"), T::Array[String]), presence: Presence.new("mandatory"), arch: self)
-              else
-                ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
-              end
+              extension_requirement(ename, e.fetch("version"))
             end
           end
         end
@@ -851,7 +888,7 @@ module Udb
             # collect all the explictly prohibited extensions
             prohibited_ext_reqs =
               T.cast(@config, PartialConfig).prohibited_extensions.map do |ext_req_yaml|
-                ExtensionRequirement.create(ext_req_yaml, self)
+                ExtensionRequirement.create_from_yaml(ext_req_yaml, self)
               end
             prohibition_condition =
               Condition.conjunction(prohibited_ext_reqs.map(&:to_condition), self)
@@ -859,7 +896,7 @@ module Udb
             # collect all mandatory
             mandatory_ext_reqs =
               T.cast(@config, PartialConfig).mandatory_extensions.map do |ext_req_yaml|
-                ExtensionRequirement.create(ext_req_yaml, self)
+                ExtensionRequirement.create_from_yaml(ext_req_yaml, self)
               end
             mandatory_condition =
               Condition.conjunction(mandatory_ext_reqs.map(&:to_condition), self)
@@ -869,15 +906,7 @@ module Udb
               extensions.map(&:versions).flatten.select do |ext_ver|
                 # select all versions that can be satisfied simultaneous with
                 # the mandatory and !prohibition conditions
-                condition =
-                  Condition.conjunction(
-                    [
-                      ext_ver.to_condition,
-                      mandatory_condition,
-                      Condition.not(prohibition_condition, self)
-                    ],
-                    self
-                  )
+                condition = ext_ver.to_condition & mandatory_condition & -prohibition_condition
 
                 # can't just call condition.could_be_satisfied_by_cfg_arch? here because
                 # that implementation calls possible_extension_versions (this function),
@@ -892,7 +921,7 @@ module Udb
               # we want to return the list of extension versions implied by mandatory,
               # minus any that are explictly prohibited
               mandatory_extension_reqs.map(&:satisfying_versions).flatten.select do |ext_ver|
-                condition = Condition.conjunction([Condition.not(prohibition_condition, self), ext_ver.to_condition], self)
+                condition = -prohibition_condition & ext_ver.to_condition
 
                 # see comment above for why we don't call could_be_satisfied_by_cfg_arch?
                 condition.partially_evaluate_for_params(self, expand: true).satisfiable?
@@ -953,7 +982,7 @@ module Udb
             if ext_version_requirements.empty?
               e.name == ext_name.to_s
             else
-              requirement = ExtensionRequirement.new(ext_name.to_s, ext_version_requirements, arch: self)
+              requirement = extension_requirement(ext_name.to_s, ext_version_requirements)
               requirement.satisfied_by?(e)
             end
           end
@@ -962,7 +991,7 @@ module Udb
             if ext_version_requirements.empty?
               e.name == ext_name.to_s
             else
-              requirement = ExtensionRequirement.new(ext_name.to_s, ext_version_requirements, arch: self)
+              requirement = extension_requirement(ext_name.to_s, ext_version_requirements)
               e.satisfying_versions.all? do |ext_ver|
                 requirement.satisfied_by?(ext_ver)
               end
@@ -991,9 +1020,19 @@ module Udb
     end
 
     # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
-    sig { returns(T::Array[Idl::FunctionBodyAst]) }
+    sig { returns(T::Array[Idl::FunctionDefAst]) }
     def functions
       @functions ||= global_ast.functions
+    end
+
+    sig { returns(T::Hash[String, Idl::FunctionDefAst]) }
+    def function_hash
+      @function_hash ||= functions.map { |f| [f.name, f] }.to_h
+    end
+
+    sig { params(name: String).returns(T.nilable(Idl::FunctionDefAst)) }
+    def function(name)
+      function_hash[name]
     end
 
     # @return [Idl::FetchAst] Fetch block
@@ -1134,7 +1173,7 @@ module Udb
               (inst.reachable_functions(32) +
                inst.reachable_functions(64))
             else
-              inst.reachable_functions(mxlen)
+              inst.reachable_functions(possible_xlens.fetch(0))
             end
           else
             inst.reachable_functions(inst.base)
@@ -1188,7 +1227,7 @@ module Udb
               (inst.reachable_functions(32) +
               inst.reachable_functions(64))
             else
-              inst.reachable_functions(mxlen)
+              inst.reachable_functions(possible_xlens.fetch(0))
             end
           else
             inst.reachable_functions(inst.base)

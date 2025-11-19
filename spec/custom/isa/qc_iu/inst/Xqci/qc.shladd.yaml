@@ -14,7 +14,7 @@ definedBy:
   extension:
     anyOf:
       - name: Xqci
-        version: ">= 0.2"
+        version: "<= 0.2"
       - name: Xqciac
 base: 32
 encoding:

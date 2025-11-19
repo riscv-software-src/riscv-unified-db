@@ -15,9 +15,7 @@ description: |
   Instruction encoded in I instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcisync
+    name: Xqcisync
 assembly: " imm"
 base: 32
 encoding:

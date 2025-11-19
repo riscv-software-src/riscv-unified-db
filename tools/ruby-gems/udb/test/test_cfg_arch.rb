@@ -215,83 +215,83 @@ class TestCfgArch < Minitest::Test
 
     cfg_arch = @resolver.cfg_arch_for("rv64")
 
-    assert_equal ExtensionVersion.new("C", "2.0.0", cfg_arch), ExtensionVersion.new("C", "2.0.0", cfg_arch)
-    assert ExtensionVersion.new("C", "2.0.0", cfg_arch).eql?(ExtensionVersion.new("C", "2.0.0", cfg_arch))
-    assert_equal ExtensionVersion.new("C", "2.0.0", cfg_arch).hash, ExtensionVersion.new("C", "2.0.0", cfg_arch).hash
+    assert_equal cfg_arch.extension_version("C", "2.0.0", cfg_arch), cfg_arch.extension_version("C", "2.0.0")
+    assert cfg_arch.extension_version("C", "2.0.0", cfg_arch).eql?(cfg_arch.extension_version("C", "2.0.0"))
+    assert_equal cfg_arch.extension_version("C", "2.0.0", cfg_arch).hash, cfg_arch.extension_version("C", "2.0.0").hash
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0")
         ]
       ).sort
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
     ].uniq
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch),
-          ExtensionVersion.new("F", "2.2.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0"),
+          cfg_arch.extension_version("F", "2.2.0")
         ]
       ).sort
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("D", "2.2.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcd", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("D", "2.2.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcd", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch),
-          ExtensionVersion.new("D", "2.2.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0"),
+          cfg_arch.extension_version("D", "2.2.0")
         ]
       ).sort
 
     assert_equal \
       [
-        ExtensionVersion.new("D", "2.2.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcd", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("D", "2.2.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcd", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-          ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-          ExtensionVersion.new("Zcd", "1.0.0", cfg_arch)
+          cfg_arch.extension_version("Zca", "1.0.0"),
+          cfg_arch.extension_version("Zcf", "1.0.0"),
+          cfg_arch.extension_version("Zcd", "1.0.0")
         ]
       ).sort
   end

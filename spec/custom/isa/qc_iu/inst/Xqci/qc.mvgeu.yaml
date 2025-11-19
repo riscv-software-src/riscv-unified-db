@@ -12,9 +12,7 @@ description: |
   Instruction encoded in R4 instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicm
+    name: Xqcicm
 base: 32
 encoding:
   match: -----00----------111-----1011011

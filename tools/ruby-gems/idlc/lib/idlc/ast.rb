@@ -3435,7 +3435,8 @@ module Idl
         if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
-          Type.new(:bits, width: etype.csr.length)
+          effective_xlen = symtab.get("__effective_xlen")
+          Type.new(:bits, width: etype.csr.length(effective_xlen.nil? ? nil : effective_xlen.value))
         end
       else
         type_error "$bits cast is only defined for CSRs and Enum references"
@@ -6427,6 +6428,16 @@ end,
     include Declaration
 
     attr_reader :return_type_nodes
+
+    def <=>(other)
+      return nil unless other.is_a?(FunctionDefAst)
+
+      @name <=> other.name
+    end
+
+    def eql?(other)
+      name.eql?(other.name)
+    end
 
     # @param input [String] The source code
     # @param interval [Range] The range in the source code for this function definition

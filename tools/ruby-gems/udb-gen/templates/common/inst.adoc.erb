@@ -1,0 +1,132 @@
+<%#
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+%>
+
+<%
+  write_flag = ENV["PSEUDO"]
+  include_idl = include_sail = true
+  if write_flag
+    case write_flag.downcase.strip
+    when "idl"
+      include_sail = false
+    when "sail"
+      include_idl = false
+    end
+  end
+%>
+
+<%= anchor_for(inst) %>
+= <%= inst.name %>
+
+Synopsis::
+<%= inst.long_name %>
+
+Mnemonic::
+----
+<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>
+----
+
+Encoding::
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64
+
+RV32::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(32) %>
+....
+
+RV64::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(64) %>
+....
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(inst.base.nil? ? 64 : inst.base) %>
+....
+<%- end -%>
+
+Description::
+<%= inst.fix_entities(inst.description) %>
+
+
+Decode Variables::
+
+<%- if inst.multi_encoding? ? (inst.decode_variables(32).empty? && inst.decode_variables(64).empty?) : inst.decode_variables(inst.base.nil? ? 64 : inst.base).empty? -%>
+
+<%= inst.name %> has no decode variables.
+
+<%- else -%>
+<%- if inst.multi_encoding? -%>
+RV32::
++
+[source,idl]
+----
+<%- inst.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+
+RV64::
++
+[source,idl]
+----
+<%- inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- else -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%- inst.decode_variables(inst.base.nil? ? 64 : inst.base).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- end # if multi_encoding? -%>
+<%- end # if no decode variables-%>
+
+<% unless inst.data["operation()"].nil? %>
+  <% if include_idl %>
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+<%= inst.fix_entities(inst.operation_ast.gen_adoc) %>
+----
+  <% end %>
+<% end %>
+
+<% unless inst.data["sail()"].nil? %>
+  <% if include_sail %>
+Sail::
+[source,sail]
+----
+<%= inst.fix_entities(inst.data["sail()"]) %>
+----
+  <% end %>
+<% end %>
+
+Included in::
+--
+`<%= inst.name %>` is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+<%- ext_reqs.each do |ext_req| -%>
+<%-   if ext_req.all_instructions_that_must_be_implemented.include?(inst) -%>
+<%# for display purposes, figure out what the maximal requirement is %>
+<%-     vers = ext_req.satisfying_versions.select { |v| (-inst.defined_by_condition & v.to_condition).unsatisfiable? } -%>
+<%#     vers = ext_req.extension.versions.select { |ext_ver| ext_ver.all_instructions_that_must_be_implemented.include?(inst) } -%>
+<%-     max_ext_req = Udb::ExtensionRequirement.create_from_ext_vers(vers) -%>
+| *<%= max_ext_req.name %>*
+| <%= inst.fix_entities(max_ext_req.requirement_specs_to_s_pretty) %>
+<%-   end -%>
+
+<%- end -%>
+|===
+
+--

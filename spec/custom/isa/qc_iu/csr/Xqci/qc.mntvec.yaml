@@ -15,9 +15,7 @@ writable: true
 description: Controls where NMI jump.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 fields:
   BASE:
     location: 31-2

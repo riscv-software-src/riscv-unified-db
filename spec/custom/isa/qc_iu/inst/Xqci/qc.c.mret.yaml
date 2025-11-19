@@ -13,9 +13,7 @@ description: |
 assembly: ""
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 access:
   s: never
   u: never

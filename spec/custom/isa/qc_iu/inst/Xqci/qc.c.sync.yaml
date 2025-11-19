@@ -17,9 +17,7 @@ description: |
   Instruction encoded in CB instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcisync
+    name: Xqcisync
 assembly: " slist"
 base: 32
 encoding:

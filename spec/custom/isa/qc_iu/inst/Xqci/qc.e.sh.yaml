@@ -13,9 +13,7 @@ description: |
   Instruction encoded in QC.ES instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilo
+    name: Xqcilo
 assembly: " xs2, imm(xs1)"
 base: 32
 encoding:

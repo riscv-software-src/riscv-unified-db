@@ -62,8 +62,7 @@ namespace :chore do
     sh "bundle update --gemfile Gemfile --all"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
-
-    sh "bundle update"
+    Rake::Task["chore:udb_gen:update_deps"].invoke
   end
 
   desc "Update golden instruction appendix"
@@ -140,10 +139,9 @@ namespace :test do
 
   desc "Type-check the Ruby library"
   task :sorbet do
-    $logger.info "Type checking idlc gem"
     Rake::Task["test:idlc:sorbet"].invoke
-    $logger.info "Type checking udb gem"
     Rake::Task["test:udb:sorbet"].invoke
+    Rake::Task["test:udb_gen:sorbet"].invoke
     # sh "srb tc @.sorbet-config"
   end
 end
@@ -395,6 +393,35 @@ namespace :gen do
 
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
+    end
+  end
+
+  desc "DEPRECATED -- Run `./bin/udb-gen ext-doc --help` instead"
+  task :ext_pdf do
+    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/udb-gen ext-doc `"
+    exit(1)
+  end
+
+  desc "Generate config files for profiles"
+  task :cfg do
+    cfg_arch = $resolver.cfg_arch_for("_")
+    FileUtils.mkdir_p $resolver.cfgs_path / "profile"
+    cfg_arch.profiles.each do |profile|
+      path = $resolver.cfgs_path / "profile" / "#{profile.name}.yaml"
+      FileUtils.rm_f path
+      File.write(
+        path,
+        <<~YAML.strip.concat("\n")
+          # SPDX-License-Identifier: CC0-1.0
+
+          # AUTO-GENERATED FILE. DO NOT EDIT
+          # To regenerate, run `./do gen:cfg` in the UDB root directory
+          # The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+          #{YAML.dump(profile.to_config)}
+        YAML
+      )
+      File.chmod(0444, path)
     end
   end
 end

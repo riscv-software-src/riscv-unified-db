@@ -115,13 +115,19 @@ module Udb
     include Helpers::WavedromUtil
 
     class MemoizedState < T::Struct
-      prop :reachable_functions, T.nilable(T::Hash[Integer, Idl::FunctionBodyAst])
+      prop :reachable_functions, T.nilable(T::Hash[Integer, Idl::FunctionDefAst])
     end
 
     sig { override.params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
     def initialize(data, data_path, arch)
       super(data, data_path, arch)
       @memo = MemoizedState.new
+    end
+
+    def eql?(other)
+      return nil unless other.is_a?(Instruction)
+
+      @name.eql?(other.name)
     end
 
     sig { returns(T::Boolean) }
@@ -361,13 +367,12 @@ module Udb
         raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
       end
     end
-    alias eql? ==
 
     def <=>(other)
       if other.is_a?(Instruction)
         name <=> other.name
       else
-        raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
+        nil
       end
     end
 
@@ -428,28 +433,31 @@ module Udb
     # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
     # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
     def pruned_operation_ast(effective_xlen)
-      defer :pruned_operation_ast do
-        return nil unless @data.key?("operation()")
+      @pruned_operation_ast ||= {}
+      @pruned_operation_ast[effective_xlen] ||=
+        begin
+          if @data.key?("operation()")
 
-        type_checked_ast = type_checked_operation_ast(effective_xlen)
-        symtab = fill_symtab(effective_xlen, type_checked_ast)
-        pruned_ast = type_checked_ast.prune(symtab)
-        pruned_ast.freeze_tree(symtab)
+            type_checked_ast = type_checked_operation_ast(effective_xlen)
+            symtab = fill_symtab(effective_xlen, type_checked_ast)
+            pruned_ast = type_checked_ast.prune(symtab)
+            pruned_ast.freeze_tree(symtab)
 
-        symtab.release
-        pruned_ast
-      end
+            symtab.release
+            pruned_ast
+          end
+        end
     end
 
     # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
     # @param effective_xlen [Integer] The effective XLEN to evaluate against
     # @return [Array<Idl::FunctionBodyAst>] List of all functions that can be reached from operation()
-    sig { params(effective_xlen: Integer).returns(T::Array[Idl::FunctionBodyAst]) }
+    sig { params(effective_xlen: Integer).returns(T::Array[Idl::FunctionDefAst]) }
     def reachable_functions(effective_xlen)
       if @data["operation()"].nil?
         []
       else
-        @memo.reachable_functions ||= T.let({}, T::Hash[Integer, Idl::FunctionBodyAst])
+        @memo.reachable_functions ||= T.let({}, T::Hash[Integer, Idl::FunctionDefAst])
         @memo.reachable_functions[effective_xlen] ||=
           begin
             ast = operation_ast
@@ -530,7 +538,6 @@ module Udb
           else
             effective_xlen = cfg_arch.mxlen
             pruned_ast = pruned_operation_ast(effective_xlen)
-            puts " #{name}..."
             symtab = fill_symtab(effective_xlen, pruned_ast)
             e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
               etype.element_name(code)
@@ -1181,9 +1188,76 @@ module Udb
       end
     end
 
-    sig { returns(T::Array[ConditionalExtensionRequirement]) }
-    def defining_extension_requirements
-      defined_by_condition.implied_extension_requirements
+    # returns list of extension requirements that *must* be met for this instruction to be defined
+    #
+    # if expand is true, expand the definedBy condition to also include transitive requirements
+    #
+    # @api private
+    sig { params(expand: T::Boolean).returns(T::Array[ExtensionRequirement]) }
+    def unconditional_extension_requirements(expand: false)
+      ext_reqs = defined_by_condition.ext_req_terms(expand:)
+      required_ext_reqs = ext_reqs.select do |ext_req|
+        if defined_by_condition.mentions?(ext_req.extension)
+          c = Condition.conjunction([defined_by_condition, Condition.not(ext_req.to_condition, cfg_arch)], cfg_arch)
+          !c.satisfiable?
+        end
+      end
+
+      required_ext_reqs.map(&:satisfying_versions).flatten.uniq.group_by { |ext_ver| ext_ver.name }.map do |ext_name, vers|
+        ExtensionRequirement.create_from_ext_vers(vers)
+      end
+    end
+
+    # returns list of extension requirements that *cannot* be met for this instruction to be defined
+    #
+    # if expand is true, expand the definedBy condition to also include transitive requirements
+    sig { params(expand: T::Boolean).returns(T::Array[ExtensionRequirement]) }
+    def unconditional_extension_conflicts(expand: false)
+      ext_reqs = defined_by_condition.ext_req_terms(expand:)
+      required_ext_reqs = ext_reqs.select do |ext_req|
+        if defined_by_condition.mentions?(ext_req.extension)
+          c = Condition.conjunction([defined_by_condition, ext_req.to_condition], cfg_arch)
+          !c.satisfiable?
+        end
+      end
+
+      required_ext_reqs.map(&:satisfying_versions).flatten.uniq.group_by { |ext_ver| ext_ver.name }.map do |ext_name, vers|
+        ExtensionRequirement.create_from_ext_vers(vers)
+      end
+    end
+
+    # definedBy requirements that are left if you take out all the unconditional extension requirements
+    sig { params(expand: T::Boolean).returns(T::Array[Condition]) }
+    def other_requirements(expand: false)
+      # remove all the unconditional extension requirements
+      cb = LogicNode.make_replace_cb do |node|
+        next node unless node.type == LogicNodeType::Term
+        rterm = node.children.fetch(0)
+        next node unless rterm.is_a?(ExtensionTerm)
+
+        # remove terms unconditionally true or false
+        next LogicNode::True if unconditional_extension_requirements(expand: true).any? { |ext_req| ext_req.satisfied_by?(rterm.to_ext_req(@arch)) }
+        # next LogicNode::False if unconditional_extension_conflicts(expand: true).any? { |ext_req| ext_req.satisfied_by?(rterm.to_ext_req(@arch)) }
+
+        node
+      end
+
+      # remaining_requirements is the remainder of definedBy that is left if you remove unconditional
+      # requirements
+      remaining_requirements =
+        defined_by_condition.to_logic_tree(expand:).replace_terms(cb).minimize(LogicNode::CanonicalizationType::SumOfProducts)
+
+      t = remaining_requirements.type
+      case t
+      when LogicNodeType::Or
+        remaining_requirements.node_children.map { |child| LogicCondition.new(child, cfg_arch) }
+      when LogicNodeType::And
+        [LogicCondition.new(remaining_requirements.node_children.fetch(0), cfg_arch)]
+      when LogicNodeType::Term
+        [LogicCondition.new(remaining_requirements, cfg_arch)]
+      else
+        raise "unexpected: #{t}"
+      end
     end
 
     # return a list of profiles that mandate that this instruction be implemented

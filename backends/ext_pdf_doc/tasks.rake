@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "pathname"
@@ -116,64 +117,64 @@ rule %r{#{$resolver.gen_path}/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { 
 end
 
 namespace :gen do
-  desc <<~DESC
-    Generate PDF documentation for :extension
+  # desc <<~DESC
+  #   Generate PDF documentation for :extension
 
-    If the extension is custom (from an arch_overlay), also give the config name
+  #   If the extension is custom (from an arch_overlay), also give the config name
 
-    Options:
+  #   Options:
 
-     * EXT     - The extension name
-     * CFG     - Path to cfg with arch overlay, if needed. Can be either the name of a .yaml file in cfgs,
-                 a relative path from CWD, or an absolute path.
-     * VERSION - A list of versions to include. May also be "all" or "latest".
-     * THEME   - path to an AsciidocPDF theme file. If not set, will use default RVI theme.
+  #    * EXT     - The extension name
+  #    * CFG     - Path to cfg with arch overlay, if needed. Can be either the name of a .yaml file in cfgs,
+  #                a relative path from CWD, or an absolute path.
+  #    * VERSION - A list of versions to include. May also be "all" or "latest".
+  #    * THEME   - path to an AsciidocPDF theme file. If not set, will use default RVI theme.
 
-    Examples:
+  #   Examples:
 
-     ./do gen:ext_pdf EXT=Xqci CFG=qc_iu VERSION=latest THEME=my_theme.yaml
-     ./do gen:ext_pdf EXT=B VERSION=all
-     ./do gen:ext_pdf EXT=B VERSION=1.0.0
-     ./do gen:ext_pdf EXT=B VERSION=1.0.0,1.1.0
+  #    ./do gen:ext_pdf EXT=Xqci CFG=qc_iu VERSION=latest THEME=my_theme.yaml
+  #    ./do gen:ext_pdf EXT=B VERSION=all
+  #    ./do gen:ext_pdf EXT=B VERSION=1.0.0
+  #    ./do gen:ext_pdf EXT=B VERSION=1.0.0,1.1.0
 
-  DESC
-  task :ext_pdf do
-    raise ArgumentError, "Missing required argument EXT" if ENV["EXT"].nil?
+  # DESC
+  # task :ext_pdf do
+  #   raise ArgumentError, "Missing required argument EXT" if ENV["EXT"].nil?
 
-    extension = ENV["EXT"]
-    cfg = ENV["CFG"]
-    version = ENV["VERSION"]
-    ENV["THEME"] =
-      if ENV["THEME"].nil?
-        "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"
-      else
-        Pathname.new(ENV["THEME"]).realpath.to_s
-      end
+  #   extension = ENV["EXT"]
+  #   cfg = ENV["CFG"]
+  #   version = ENV["VERSION"]
+  #   ENV["THEME"] =
+  #     if ENV["THEME"].nil?
+  #       "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"
+  #     else
+  #       Pathname.new(ENV["THEME"]).realpath.to_s
+  #     end
 
-    cfg =
-      if cfg.nil?
-        "#{$resolver.cfgs_path}/_.yaml"
-      elsif File.exist?("#{$resolver.cfgs_path}/#{cfg}.yaml")
-        "#{$resolver.cfgs_path}/#{cfg}.yaml"
-      elsif File.exist?("#{$resolver.cfgs_path}/#{cfg}")
-        "#{$resolver.cfgs_path}/#{cfg}"
-      elsif File.exist?(cfg)
-        File.realpath(cfg)
-      else
-        raise "Cannot find config '#{config}'"
-      end
+  #   cfg =
+  #     if cfg.nil?
+  #       "#{$resolver.cfgs_path}/_.yaml"
+  #     elsif File.exist?("#{$resolver.cfgs_path}/#{cfg}.yaml")
+  #       "#{$resolver.cfgs_path}/#{cfg}.yaml"
+  #     elsif File.exist?("#{$resolver.cfgs_path}/#{cfg}")
+  #       "#{$resolver.cfgs_path}/#{cfg}"
+  #     elsif File.exist?(cfg)
+  #       File.realpath(cfg)
+  #     else
+  #       raise "Cannot find config '#{config}'"
+  #     end
 
-    config_name = File.basename(cfg, ".yaml")
+  #   config_name = File.basename(cfg, ".yaml")
 
-    versions = version.split(",")
-    raise ArgumentError, "Nothing else should be specified with 'all'" if versions.include?("all") && versions.size > 1
+  #   versions = version.split(",")
+  #   raise ArgumentError, "Nothing else should be specified with 'all'" if versions.include?("all") && versions.size > 1
 
-    unless File.exist?($resolver.gen_path / "ext_pdf_doc" / File.basename(cfg))
-      FileUtils.mkdir_p($resolver.gen_path / "ext_pdf_doc")
-      FileUtils.ln_s(cfg, $resolver.gen_path / "ext_pdf_doc" / File.basename(cfg))
-    end
-    Rake::Task[$resolver.gen_path / "ext_pdf_doc" / config_name / "pdf" / "#{extension}_extension.pdf"].invoke
-  end
+  #   unless File.exist?($resolver.gen_path / "ext_pdf_doc" / File.basename(cfg))
+  #     FileUtils.mkdir_p($resolver.gen_path / "ext_pdf_doc")
+  #     FileUtils.ln_s(cfg, $resolver.gen_path / "ext_pdf_doc" / File.basename(cfg))
+  #   end
+  #   Rake::Task[$resolver.gen_path / "ext_pdf_doc" / config_name / "pdf" / "#{extension}_extension.pdf"].invoke
+  # end
 
   desc <<~DESC
     Generate HTML documentation for :extension that is defined or overlaid in :cfg

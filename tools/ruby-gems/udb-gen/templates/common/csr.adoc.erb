@@ -1,0 +1,135 @@
+<%#
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+%>
+<%= anchor_for(csr) %>
+= <%= csr.name %>
+
+*<%= csr.long_name %>*
+
+<%= csr.description %>
+
+== Attributes
+[%autowidth,separator="^"]
+|===
+h^ Requirement a^ <%= csr.defined_by_condition.to_asciidoc %>
+h^ Defining extensions
+a^
+
+!===
+<%- csr.defining_extension_requirements.each do |ext_req| %>
+h! <%= ext_req.name %> ! <%= ext_req.extension.long_name %>
+<%- end -%>
+!===
+
+h^ CSR Address    ^ <%= "0x#{csr.address.to_s(16)}" %>
+<%- if csr.priv_mode == 'VS' -%>
+h^ Virtual CSR Address    ^ <%= "0x#{csr.virtual_address.to_s(16)}" %>
+<%- end -%>
+h^ Length         ^ <%= csr.length_pretty %>
+h^ Privilege Mode ^ <%= csr.priv_mode %>
+|===
+
+== Format
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } -%>
+<%# CSR has a known static length, so there is only one format to display -%>
+.<%= csr.name %> format
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
+....
+<%- else -%>
+<%# CSR has a dynamic length, or a field has a dynamic location,
+    so there is more than one format to display -%>
+This CSR format changes dynamically.
+
+.<%= csr.name %> Format when <%= csr.length_cond32 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32) %>
+....
+
+.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
+....
+<%- end -%>
+
+== Field Summary
+
+[%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+|===
+@Name @ Location @ Type @ Reset Value
+
+<%- csr.fields.each do |field| -%>
+@ <%= link_to(field) %>
+@ <%= field.location_pretty %>
+@ <%= field.type_pretty %>
+@ <%= field.reset_value_pretty %>
+
+<%- end -%>
+|===
+
+
+<%- unless params[:exclude_csr_field_descriptions] -%>
+== Fields
+
+<%-   if csr.fields.empty? -%>
+This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
+<%-   else -%>
+
+<%-     csr.fields.each do |field| -%>
+<%= anchor_for(field) %>
+=== `<%= field.name %>`
+
+[example]
+--
+Location::
+<%= field.location_pretty %>
+
+Description::
+<%= field.description %>
+
+Type::
+<%= field.type_pretty %>
+
+Reset value::
+<%= field.reset_value_pretty %>
+
+--
+
+<%-     end -%>
+<%-   end -%>
+<%- end -%>
+
+<%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
+== Software write
+
+This CSR may store a value that is different from what software attempts to write.
+
+When a software write occurs (_e.g._, through `csrrw`), the following determines the
+written value:
+
+[source,idl]
+----
+<%- csr.fields.each do |field| -%>
+<%- if field.has_custom_sw_write? -%>
+<%= field.name %> = <%= field.data["sw_write(csr_value)"] %>
+<%- else -%>
+<%= field.name %> = csr_value.<%= field.name %>
+<%- end -%>
+<%- end -%>
+----
+<%- end -%>
+
+<%- if csr.has_custom_sw_read? -%>
+== Software read
+
+This CSR may return a value that is different from what is stored in hardware.
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
+----
+<%- end -%>

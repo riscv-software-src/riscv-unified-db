@@ -14,9 +14,7 @@ description: |
   Instruction encoded in R instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcisls
+    name: Xqcisls
 assembly: " xd, xs1, xs2, shamt"
 base: 32
 encoding:

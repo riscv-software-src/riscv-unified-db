@@ -60,7 +60,7 @@ module Udb
     def to_s_pretty = to_s
 
     sig { returns(String) }
-    def to_asciidoc = "xlen() == #{@xlen}"
+    def to_asciidoc = "xlen+++()+++ == #{@xlen}"
 
     sig { returns(T::Hash[String, Integer]) }
     def to_h
@@ -116,7 +116,7 @@ module Udb
         GreaterThan = new(">")
         LessThanOrEqual = new("<=")
         LessThan = new("<")
-        Comparable = new("~>")
+        Compatible = new("~>")
       end
     end
 
@@ -150,7 +150,7 @@ module Udb
 
     sig { params(cfg_arch: ConfiguredArchitecture).returns(ExtensionRequirement) }
     def to_ext_req(cfg_arch)
-      ExtensionRequirement.new(@name, "#{@op.serialize} #{@version}", arch: cfg_arch)
+      cfg_arch.extension_requirement(@name, "#{@op.serialize} #{@version}")
     end
 
 
@@ -158,7 +158,7 @@ module Udb
     def to_ext_ver(cfg_arch)
       raise "Not an extension version" unless @op == ComparisonOp::Equal
 
-      ExtensionVersion.new(@name, @version.to_s, cfg_arch)
+      cfg_arch.extension_version(@name, @version.to_s)
     end
 
     sig { params(cfg_arch: ConfiguredArchitecture).returns(Condition) }
@@ -196,7 +196,7 @@ module Udb
     # return the minimum version possible that would satisfy this term
     def min_possible_version
       case @op
-      when ComparisonOp::Equal, ComparisonOp::GreaterThanOrEqual, ComparisonOp::Comparable
+      when ComparisonOp::Equal, ComparisonOp::GreaterThanOrEqual, ComparisonOp::Compatible
         @version
       when ComparisonOp::GreaterThan
         @version.increment_patch
@@ -211,7 +211,7 @@ module Udb
     sig { returns(VersionSpec) }
     def max_possible_version
       case @op
-      when ComparisonOp::Equal, ComparisonOp::LessThanOrEqual, ComparisonOp::Comparable
+      when ComparisonOp::Equal, ComparisonOp::LessThanOrEqual, ComparisonOp::Compatible
         @version
       when ComparisonOp::LessThan
         if @version.zero?
@@ -316,6 +316,48 @@ module Udb
     sig { returns(ValueType) }
     def comparison_value
       @yaml.fetch(comparison_type.serialize)
+    end
+
+    # return a negated version of self, or nil if no simple negation exists
+    sig { returns(T.nilable(ParameterTerm)) }
+    def negate
+      if @yaml.key?("equal")
+        new_yaml = @yaml.dup
+        new_yaml["not_equal"] = @yaml["equal"]
+        new_yaml.delete("equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("not_equal")
+        new_yaml = @yaml.dup
+        new_yaml["equal"] = @yaml["not_equal"]
+        new_yaml.delete("not_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("less_than")
+        new_yaml = @yaml.dup
+        new_yaml["greater_than_or_equal"] = @yaml["less_than"]
+        new_yaml.delete("less_than")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("greater_than")
+        new_yaml = @yaml.dup
+        new_yaml["less_than_or_equal"] = @yaml["greater_than"]
+        new_yaml.delete("greater_than")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("less_than_or_equal")
+        new_yaml = @yaml.dup
+        new_yaml["greater_than"] = @yaml["less_than_or_equal"]
+        new_yaml.delete("less_than_or_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("greater_than_or_equal")
+        new_yaml = @yaml.dup
+        new_yaml["less_than"] = @yaml["greater_than_or_equal"]
+        new_yaml.delete("greater_than_or_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("includes")
+        nil
+      elsif @yaml.key?("oneOf")
+        nil
+      else
+        raise "No comparison found in [#{@yaml.keys}]"
+      end
     end
 
     sig { returns(ParameterComparisonType) }
@@ -1011,6 +1053,42 @@ module Udb
   class LogicNode
     extend T::Sig
 
+    # statistics counters
+    def self.reset_stats
+      @num_brute_force_sat_solves = 0
+      @time_brute_force_sat_solves = 0
+      @num_minisat_sat_solves = 0
+      @time_minisat_sat_solves = 0
+      @num_minisat_cache_hits = 0
+    end
+
+    reset_stats
+
+    def self.num_brute_force_sat_solves
+      @num_brute_force_sat_solves
+    end
+
+    def self.inc_brute_force_sat_solves
+      @num_brute_force_sat_solves += 1
+    end
+
+    def self.num_minisat_sat_solves
+      @num_minisat_sat_solves
+    end
+
+    def self.inc_minisat_sat_solves
+      @num_minisat_sat_solves += 1
+    end
+
+    def self.num_minisat_cache_hits
+      @num_minisat_cache_hits
+    end
+
+    def self.inc_minisat_cache_hits
+      @num_minisat_cache_hits += 1
+    end
+
+
     ChildType = T.type_alias { T.any(LogicNode, TermType) }
 
     sig { returns(LogicNodeType) }
@@ -1311,6 +1389,13 @@ module Udb
     def quine_mccluskey(result_type)
       # map terms to indicies for later
       nterms = terms.size
+      if nterms.zero?
+        # trival case; this is either true or false
+        assert_cb = LogicNode.make_eval_cb do |term|
+          raise "unreachable"
+        end
+        return eval_cb(assert_cb) == SatisfiedResult::Yes ? LogicNode::True : LogicNode::False
+      end
       term_idx = T.let({}, T::Hash[TermType, Integer])
       terms.each_with_index do |term, idx|
         term_idx[term] = idx
@@ -1662,6 +1747,31 @@ module Udb
       end
     end
 
+    sig { override.returns(Integer) }
+    def hash
+      if @type == LogicNodeType::True
+        true.hash
+      elsif @type == LogicNodeType::False
+        false.hash
+      elsif @type == LogicNodeType::Term
+        @children[0].to_s.hash
+      elsif @type == LogicNodeType::Not
+        [:not, node_children.fetch(0).hash].hash
+      elsif @type == LogicNodeType::And
+        [:and, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::Or
+        [:or, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::Xor
+        [:xor, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::None
+        [:none, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::If
+        [:if, node_children.map(&:hash)].hash
+      else
+        T.absurd(@type)
+      end
+    end
+
     sig { params(format: LogicSymbolFormat).returns(String) }
     def to_s(format: LogicSymbolFormat::Predicate)
       if @type == LogicNodeType::True
@@ -1749,17 +1859,26 @@ module Udb
       when LogicNodeType::True
         "true"
       when LogicNodeType::Not
+        if node_children.fetch(0).type == LogicNodeType::Term
+          term = node_children.fetch(0).children.fetch(0)
+          if term.is_a?(ParameterTerm)
+            negation = term.negate
+            unless negation.nil?
+              return negation.to_asciidoc
+            end
+          end
+        end
         "!#{node_children.fetch(0).to_asciidoc(include_versions:)}"
       when LogicNodeType::And
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" && ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" && ")})"
       when LogicNodeType::Or
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" pass:[||] ")})"
       when LogicNodeType::If
-        "(#{node_children.fetch(0).to_asciidoc(include_versions:)} -> #{node_children.fetch(1).to_asciidoc(include_versions:)})"
+        "++(++#{node_children.fetch(0).to_asciidoc(include_versions:)} -> #{node_children.fetch(1).to_asciidoc(include_versions:)})"
       when LogicNodeType::Xor
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" &#2295; ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" &#2295; ")})"
       when LogicNodeType::None
-        "!(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+        "!++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" pass:[||] ")})"
       else
         T.absurd(@type)
       end
@@ -2799,8 +2918,9 @@ module Udb
         begin
           nterms = terms.size
 
-          if nterms < 4 && literals.size <= 32
+          if nterms < 8 && literals.size <= 32
             # just brute force it
+            LogicNode.inc_brute_force_sat_solves
             term_idx = T.let({}, T::Hash[TermType, Integer])
             terms.each_with_index do |term, idx|
               term_idx[term] = idx
@@ -2825,10 +2945,17 @@ module Udb
 
           else
             # use SAT solver
+            LogicNode.inc_minisat_sat_solves
 
+            @@cache ||= {}
+            cache_key = hash
+            if @@cache.key?(cache_key)
+              LogicNode.inc_minisat_cache_hits
+              return @@cache[cache_key]
+            end
 
             c = self.cnf? ? self : equisat_cnf
-            raise "cnf error" unless c.cnf?
+            # raise "cnf error" unless c.cnf?
 
             if c.type == LogicNodeType::True
               return true
@@ -2851,10 +2978,14 @@ module Udb
             build_solver(solver, flatten_cnf(c), term_map, nil)
 
             solver.solve
-            solver.satisfied?
+            @@cache[cache_key] = solver.satisfied?
           end
         end
     end
+
+    # @return true iff self is unsatisfiable (not possible to be true for any combination of term values)
+    sig { returns(T::Boolean) }
+    def unsatisfiable? = !satisfiable?
 
     sig { params(other: LogicNode).returns(T::Boolean) }
     def equisatisfiable?(other)

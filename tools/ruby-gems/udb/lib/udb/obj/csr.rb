@@ -4,6 +4,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "idlc/ast"
 require "idlc/interfaces"
 
 require_relative "database_obj"
@@ -17,6 +18,17 @@ module Udb
     include CertifiableObject
 
     include Idl::Csr
+
+    class MemoizedState < T::Struct
+      prop :reachable_functions, T::Hash[T.any(Symbol, Integer), T::Array[Idl::FunctionDefAst]]
+    end
+
+    sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
+    def initialize(data, data_path, arch)
+      super(data, data_path, arch)
+
+      @memo = MemoizedState.new(reachable_functions: {})
+    end
 
     sig { override.returns(String) }
     attr_reader :name
@@ -71,6 +83,7 @@ module Udb
 
       fields.reduce(0) { |val, f| val | (T.cast(f.reset_value, Integer) << f.location.begin) }
     end
+    alias reset_value value
 
     def writable
       @data["writable"]
@@ -102,9 +115,10 @@ module Udb
 
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
     # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
+    sig { params(effective_xlen: T.nilable(Integer)).returns(T::Array[Idl::FunctionDefAst]) }
     def reachable_functions(effective_xlen = nil)
-      raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
-      return @reachable_functions unless @reachable_functions.nil?
+      cache_key = effective_xlen.nil? ? :nil : effective_xlen
+      return @memo.reachable_functions[cache_key] unless @memo.reachable_functions[cache_key].nil?
 
       fns = []
 
@@ -136,7 +150,7 @@ module Udb
         end
       end
 
-      @reachable_functions = fns.uniq
+      @memo.reachable_functions[cache_key] = fns.uniq
     end
 
     # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
@@ -396,6 +410,34 @@ module Udb
       Asciidoctor.convert description
     end
 
+    # return list of extension requirements that must be implemented for this Csr to be defined
+    #
+    # will not include any extension requirements that are conditionally required
+    # e.g., definedBy = Zblah if XLEN == 32; defining_extension_requirements will not include Zblah
+    sig { returns(T::Array[ExtensionRequirement]) }
+    def defining_extension_requirements
+      @defining_extension_requirements ||=
+        begin
+          pb =
+            Udb.create_progressbar(
+              "Determining defining extensions for CSR #{name} [:bar] :current/:total",
+              total: @cfg_arch.csrs.size,
+              clear: true
+            )
+          @cfg_arch.extensions.map do |ext|
+            pb.advance
+            vers = ext.versions.select do |ext_ver|
+              if defined_by_condition.mentions?(ext_ver)
+                (-defined_by_condition & ext_ver.to_condition).unsatisfiable?
+              end
+            end
+            unless vers.empty?
+              ExtensionRequirement.create_from_ext_vers(vers)
+            end
+          end.compact
+        end
+    end
+
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
     # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
     #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
@@ -474,8 +516,8 @@ module Udb
     end
 
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
+    sig { params(effective_xlen: T.nilable(Integer)).returns(Idl::FunctionBodyAst) }
     def type_checked_sw_read_ast(effective_xlen)
-      raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
       @type_checked_sw_read_asts ||= {}
       ast = @type_checked_sw_read_asts[effective_xlen.nil? ? :none : effective_xlen]
       return ast unless ast.nil?
@@ -541,6 +583,12 @@ module Udb
       symtab = @cfg_arch.symtab.global_clone
       symtab.push(ast)
       # all CSR instructions are 32-bit
+      if effective_xlen
+        symtab.add(
+          "__effective_xlen",
+          Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 6), effective_xlen)
+        )
+      end
       symtab.add(
         "__instruction_encoding_size",
         Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)

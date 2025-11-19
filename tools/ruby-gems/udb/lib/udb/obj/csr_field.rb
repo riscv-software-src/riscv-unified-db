@@ -36,12 +36,17 @@ module Udb
     sig { returns(T.nilable(Integer)) }
     def base = @data["base"]
 
+    class MemoizedState < T::Struct
+      prop :reachable_functions, T::Hash[T.any(Symbol, Integer), T::Array[Idl::FunctionDefAst]]
+    end
+
     # @param parent_csr [Csr] The Csr that defined this field
     # @param field_data [Hash<String,Object>] Field data from the arch spec
     sig { params(parent_csr: Csr, field_name: String, field_data: T::Hash[String, T.untyped]).void }
     def initialize(parent_csr, field_name, field_data)
       super(field_data, parent_csr.data_path, parent_csr.arch, DatabaseObject::Kind::CsrField, name: field_name)
       @parent = parent_csr
+      @memo = MemoizedState.new(reachable_functions: {})
     end
 
     # CSR fields are defined in their parent CSR YAML file
@@ -294,7 +299,8 @@ module Udb
     # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
     sig { params(effective_xlen: T.nilable(Integer)).returns(T::Array[Idl::FunctionDefAst]) }
     def reachable_functions(effective_xlen)
-      return @reachable_functions unless @reachable_functions.nil?
+      cache_key = effective_xlen.nil? ? :nil : effective_xlen
+      return @memo.reachable_functions[cache_key] unless @memo.reachable_functions[cache_key].nil?
 
       fns = []
       if has_custom_sw_write?
@@ -322,7 +328,7 @@ module Udb
         end
       end
 
-      @reachable_functions = fns.uniq
+      @memo.reachable_functions[cache_key] = fns.uniq
     end
 
     # @return [Csr] Parent CSR for this field

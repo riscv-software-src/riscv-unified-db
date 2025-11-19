@@ -14,6 +14,17 @@ PATH
       treetop (= 1.6.12)
 
 PATH
+  remote: tools/ruby-gems/udb-gen
+  specs:
+    udb-gen (0.1.0)
+      sorbet-runtime (= 0.6.12690)
+      tty-exit
+      tty-option
+      tty-progressbar
+      tty-table
+      udb
+
+PATH
   remote: tools/ruby-gems/udb_helpers
   specs:
     udb_helpers (0.1.0)
@@ -31,7 +42,7 @@ PATH
       numbers_and_words
       pastel
       ruby-minisat (>= 2.2.0.3)
-      sorbet-runtime
+      sorbet-runtime (= 0.6.12690)
       terminal-table
       thor
       tilt
@@ -43,14 +54,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     Ascii85 (2.0.1)
-    activesupport (8.0.3)
+    activesupport (8.1.1)
       base64
-      benchmark (>= 0.3)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.3.1)
       connection_pool (>= 2.2.5)
       drb
       i18n (>= 1.6, < 2)
+      json
       logger (>= 1.4.2)
       minitest (>= 5.1)
       securerandom (>= 0.3)
@@ -59,7 +70,7 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     afm (1.0.0)
-    asciidoctor (2.0.24)
+    asciidoctor (2.0.26)
     asciidoctor-diagram (2.3.2)
       asciidoctor (>= 1.5.7, < 3.x)
       asciidoctor-diagram-ditaamini (~> 1.0)
@@ -69,7 +80,7 @@ GEM
     asciidoctor-diagram-ditaamini (1.0.3)
     asciidoctor-diagram-plantuml (1.2025.3)
       asciidoctor-diagram-batik (~> 1.17)
-    asciidoctor-pdf (2.3.21)
+    asciidoctor-pdf (2.3.23)
       asciidoctor (~> 2.0)
       concurrent-ruby (~> 1.3)
       matrix (~> 0.4)
@@ -82,9 +93,8 @@ GEM
       ttfunk (~> 1.7.0)
     ast (2.4.3)
     awesome_print (1.9.2)
-    backport (1.2.0)
     base64 (0.3.0)
-    benchmark (0.4.1)
+    benchmark (0.5.0)
     bigdecimal (3.3.1)
     commander (5.0.0)
       highline (~> 3.0.0)
@@ -94,14 +104,13 @@ GEM
     connection_pool (2.5.4)
     css_parser (1.21.1)
       addressable
-    date (3.4.1)
+    date (3.5.0)
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
-    diff-lcs (1.6.2)
     docile (1.4.1)
     drb (2.2.3)
-    erb (5.1.1)
+    erb (5.1.3)
     erubi (1.13.1)
     hana (1.3.7)
     hashery (2.1.2)
@@ -109,20 +118,15 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.1)
-    irb (1.15.2)
+    irb (1.15.3)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    jaro_winkler (1.6.1)
-    json (2.15.1)
+    json (2.15.2)
     json_schemer (1.0.3)
       hana (~> 1.3)
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
-    kramdown (2.5.1)
-      rexml (>= 3.3.9)
-    kramdown-parser-gfm (1.1.0)
-      kramdown (~> 2.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -130,14 +134,10 @@ GEM
     minitest (5.26.0)
     netrc (0.11.0)
     nkf (0.2.0)
-    nokogiri (1.18.10-x86_64-linux-gnu)
-      racc (~> 1.4)
     numbers_and_words (1.0.2)
       i18n (<= 2)
-    observer (0.1.2)
-    ostruct (0.6.3)
     parallel (1.27.0)
-    parser (3.3.9.0)
+    parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
     pastel (0.8.0)
@@ -168,34 +168,34 @@ GEM
       pdf-reader (~> 2.0)
       prawn (~> 2.2)
     prettyprint (0.2.0)
-    prism (1.5.2)
+    prism (1.6.0)
     psych (5.2.6)
       date
       stringio
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.2.3)
+    rack (3.2.4)
     rainbow (3.1.1)
-    rake (13.3.0)
+    rake (13.3.1)
     rbi (0.3.7)
       prism (~> 1.0)
       rbs (>= 3.4.4)
-    rbs (3.9.5)
+    rbs (4.0.0.dev.4)
       logger
+      prism (>= 1.3.0)
     rdbg (0.1.0)
       debug (>= 1.2.2)
-    rdoc (6.15.0)
+    rdoc (6.15.1)
       erb
       psych (>= 4.0.0)
       tsort
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
-    reverse_markdown (3.0.0)
-      nokogiri
+    require-hooks (0.2.2)
     rexml (3.4.4)
     rouge (4.6.1)
-    rubocop (1.81.1)
+    rubocop (1.81.7)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -217,10 +217,10 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-performance (1.26.0)
+    rubocop-performance (1.26.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
+      rubocop-ast (>= 1.47.1, < 2.0)
     rubocop-rails (2.33.4)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
@@ -235,7 +235,7 @@ GEM
       base64
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
-    rubyzip (2.4.1)
+    rubyzip (3.2.2)
     securerandom (0.4.1)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -247,50 +247,36 @@ GEM
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
     simpleidn (0.2.3)
-    solargraph (0.57.0)
-      backport (~> 1.2)
-      benchmark (~> 0.4)
-      bundler (~> 2.0)
-      diff-lcs (~> 1.4)
-      jaro_winkler (~> 1.6, >= 1.6.1)
-      kramdown (~> 2.3)
-      kramdown-parser-gfm (~> 1.1)
-      logger (~> 1.6)
-      observer (~> 0.1)
-      ostruct (~> 0.6)
-      parser (~> 3.0)
-      prism (~> 1.4)
-      rbs (>= 3.6.1, <= 4.0.0.dev.4)
-      reverse_markdown (~> 3.0)
-      rubocop (~> 1.76)
-      thor (~> 1.0)
-      tilt (~> 2.0)
-      yard (~> 0.9, >= 0.9.24)
-      yard-activesupport-concern (~> 0.0)
-      yard-solargraph (~> 0.1)
-    sorbet (0.6.12645)
-      sorbet-static (= 0.6.12645)
-    sorbet-runtime (0.6.12645)
-    sorbet-static (0.6.12645-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12645)
-      sorbet (= 0.6.12645)
-      sorbet-runtime (= 0.6.12645)
-    spoom (1.6.3)
+    sorbet (0.6.12690)
+      sorbet-static (= 0.6.12690)
+    sorbet-runtime (0.6.12690)
+    sorbet-static (0.6.12690-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12690)
+      sorbet (= 0.6.12690)
+      sorbet-runtime (= 0.6.12690)
+    spoom (1.7.9)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
       rbi (>= 0.3.3)
+      rbs (>= 4.0.0.dev.4)
       rexml (>= 3.2.6)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
     stringio (3.1.7)
-    tapioca (0.16.11)
+    strings (0.2.1)
+      strings-ansi (~> 0.2)
+      unicode-display_width (>= 1.5, < 3.0)
+      unicode_utils (~> 1.4)
+    strings-ansi (0.2.0)
+    tapioca (0.17.9)
       benchmark
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
-      rbi (~> 0.2)
+      rbi (>= 0.3.7)
+      require-hooks (>= 0.2.2)
       sorbet-static-and-runtime (>= 0.5.11087)
-      spoom (>= 1.2.0)
+      spoom (>= 1.7.9)
       thor (>= 1.2.0)
       yard-sorbet
     terminal-table (4.0.0)
@@ -302,28 +288,31 @@ GEM
     tsort (0.2.0)
     ttfunk (1.7.0)
     tty-color (0.6.0)
-    tty-cursor (0.5.0)
+    tty-cursor (0.7.1)
+    tty-exit (0.1.0)
     tty-logger (0.6.0)
       pastel (~> 0.8)
-    tty-progressbar (0.14.0)
-      tty-cursor (~> 0.5.0)
-      tty-screen (~> 0.6.4)
-    tty-screen (0.6.5)
+    tty-option (0.3.0)
+    tty-progressbar (0.18.3)
+      strings-ansi (~> 0.2)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      unicode-display_width (>= 1.6, < 3.0)
+    tty-screen (0.8.2)
+    tty-table (0.12.0)
+      pastel (~> 0.8)
+      strings (~> 0.2.0)
+      tty-screen (~> 0.8)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (3.2.0)
-      unicode-emoji (~> 4.1)
-    unicode-emoji (4.1.0)
-    uri (1.0.4)
+    unicode-display_width (2.6.0)
+    unicode_utils (1.4.0)
+    uri (1.1.1)
     webrick (1.9.1)
-    write_xlsx (1.12.2)
+    write_xlsx (1.12.3)
       nkf
-      rubyzip (~> 2.4.0)
+      rubyzip (>= 2.4.0, < 4.0)
     yard (0.9.37)
-    yard-activesupport-concern (0.0.1)
-      yard (>= 0.8)
-    yard-solargraph (0.1.0)
-      yard (~> 0.9)
     yard-sorbet (0.9.0)
       sorbet-runtime
       yard
@@ -332,6 +321,7 @@ PLATFORMS
   x86_64-linux-gnu
 
 DEPENDENCIES
+  activesupport
   asciidoctor-diagram (~> 2.2)
   asciidoctor-pdf
   awesome_print
@@ -353,13 +343,13 @@ DEPENDENCIES
   ruby-prof
   simplecov
   simplecov-cobertura
-  solargraph
   sorbet
   sorbet-runtime
   spoom
   tapioca
   ttfunk (= 1.7)
   udb!
+  udb-gen!
   udb_helpers!
   webrick
   write_xlsx

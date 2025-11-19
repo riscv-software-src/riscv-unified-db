@@ -161,13 +161,13 @@ module Udb
       end
     end
 
-    EqnParser = Treetop.load_from_string(EQN_GRAMMAR)
+    EqnParser = T.let(Treetop.load_from_string(EQN_GRAMMAR), T.anything)
 
     extend T::Sig
     sig { params(eqn: String).void }
     def initialize(eqn)
       @eqn = eqn
-      @parser = EqnParser.new
+      @parser = T.unsafe(EqnParser.new)
     end
 
     sig { params(term_map: T::Hash[String, TermType]).returns(LogicNode) }

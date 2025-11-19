@@ -13,9 +13,7 @@ description: |
   Instruction encoded in QC.EI instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilia
+    name: Xqcilia
 base: 32
 encoding:
   match: ----------------00---------------011-----0011111

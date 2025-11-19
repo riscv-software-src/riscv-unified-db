@@ -20,9 +20,7 @@ description: |
   Instruction encoded in R instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicsr
+    name: Xqcicsr
 assembly: xd, xs1, xs2
 base: 32
 encoding:

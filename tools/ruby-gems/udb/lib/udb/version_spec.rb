@@ -133,7 +133,9 @@ module Udb
 
     sig { returns(VersionSpec) }
     def increment_patch
-      dup.instance_variable_set(:@patch, @patch + 1)
+      copy = dup
+      copy.instance_variable_set(:@patch, @patch + 1)
+      copy
     end
 
     sig { returns(VersionSpec) }
@@ -166,7 +168,7 @@ module Udb
 #   RequirementSpec.new(">= 0.5").satisfied_by?(VersionSpec.new("0.4"), nil) #=> false
 #
 # @example Compatible requirement
-#   s_ext = Extension.new(...) # S extension, which is breaking between 1.11 -> 1.12
+#   s_ext = cfg_arch.extension(...) # S extension, which is breaking between 1.11 -> 1.12
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.10"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.11"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.12"), s_ext) #=> false
@@ -257,7 +259,7 @@ module Udb
             matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
             raise "Can't find version?" if matching_ver.nil?
 
-            matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+            matching_ver.compatible?(ext.arch.extension_version(ext.name, v_spec.to_s))
           else
             versions = ext.fetch("versions")
             compatible_versions = []
@@ -274,7 +276,7 @@ module Udb
             matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
             raise "Can't find version?" if matching_ver.nil?
 
-            !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+            !matching_ver.compatible?(ext.arch.extension_version(ext.name, v_spec.to_s))
           else
             versions = ext.fetch("versions")
             compatible_versions = []

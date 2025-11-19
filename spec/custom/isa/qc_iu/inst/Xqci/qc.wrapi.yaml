@@ -15,9 +15,7 @@ description: |
   The `imm` is an unsigned immediate.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcia
+    name: Xqcia
 base: 32
 encoding:
   match: 0----------------000-----0001011

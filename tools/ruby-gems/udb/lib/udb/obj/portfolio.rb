@@ -20,6 +20,33 @@ require_relative "../schema"
 
 module Udb
 
+  class PortfolioExtensionRequirement
+    extend T::Sig
+    extend Forwardable
+
+    def_delegators :@ext_req,
+      :name, :satisfying_versions, :extension, :to_s, :to_s_pretty, :requirement_specs
+
+    attr_reader :note, :req_id, :presence
+
+    sig {
+      params(
+        name: String,
+        requirements: T.any(String, T::Array[String]),
+        arch: ConfiguredArchitecture,
+        note: T.nilable(String),
+        req_id: T.nilable(String),
+        presence: T.nilable(Presence)
+      ).void
+    }
+    def initialize(name, requirements, arch:, note:, req_id:, presence:)
+      @ext_req = arch.extension_requirement(name, requirements)
+      @note = note
+      @req_id = req_id
+      @presence = presence
+    end
+  end
+
 ##################
 # PortfolioClass #
 ##################
@@ -417,50 +444,57 @@ module Udb
         end
     end
 
+    sig { returns(T::Hash[String, T.untyped]) }
+    def to_config
+      {
+        "$schema" => "config_schema.json#",
+        "kind" => "architecture configuration",
+        "type" => "partially configured",
+        "name" => name,
+        "description" => description,
+        "params" => all_in_scope_params.map do |p|
+          if p.single_value?
+            [p.name, p.value]
+          else
+            nil
+          end
+        end.compact.to_h,
+        "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
+          {
+            "name" => ext_req.name,
+            "version" => \
+              if ext_req.requirement_specs.size == 1
+                ext_req.requirement_specs.fetch(0).to_s
+              else
+                ext_req.requirement_specs.map(&:to_s)
+              end
+          }
+        end,
+        "non_mandatory_extensions" => optional_ext_reqs.map do |ext_req|
+          {
+            "name" => ext_req.name,
+            "version" => \
+              if ext_req.requirement_specs.size == 1
+                ext_req.requirement_specs.fetch(0).to_s
+              else
+                ext_req.requirement_specs.map(&:to_s)
+              end
+          }
+        end,
+        "additional_extensions" => true
+      }
+    end
+
     # returns a config arch that treats the Portfolio like a partial config
     sig { returns(ConfiguredArchitecture) }
     def to_cfg_arch
       @cfg_arch ||= begin
-        config = PartialConfig.new(
-          {
-            "$schema" => "config_schema.json#",
-            "kind" => "architecture configuration",
-            "type" => "partially configured",
-            "name" => name,
-            "description" => description,
-            "params" => all_in_scope_params.map do |p|
-              if p.single_value?
-                [p.name, p.value]
-              else
-                nil
-              end
-            end.compact.to_h,
-            "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
-              {
-                "name" => ext_req.name,
-                "version" => \
-                  if ext_req.requirement_specs.size == 1
-                    ext_req.requirement_specs.fetch(0).to_s
-                  else
-                    ext_req.requirement_specs.map(&:to_s)
-                  end
-              }
-            end,
-            "non_mandatory_extensions" => optional_ext_reqs.map do |ext_req|
-              {
-                "name" => ext_req.name,
-                "version" => \
-                  if ext_req.requirement_specs.size == 1
-                    ext_req.requirement_specs.fetch(0).to_s
-                  else
-                    ext_req.requirement_specs.map(&:to_s)
-                  end
-              }
-            end,
-            "additional_extensions" => true
-          }
-        )
-        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+        Tempfile.create do |f|
+          f.write YAML.dump(to_config)
+          f.fsync
+
+          @cfg_arch.config.info.resolver.cfg_arch_for(Pathname.new f.path)
+        end
       end
     end
 
@@ -468,7 +502,7 @@ module Udb
     sig { returns(ConfiguredArchitecture) }
     def to_cfg_arch_for_optional
       @cfg_arch_for_optional ||= begin
-        config = PartialConfig.new(
+        contents =
           {
             "$schema" => "config_schema.json#",
             "kind" => "architecture configuration",
@@ -495,8 +529,12 @@ module Udb
             end,
             "additional_extensions" => true
           }
-        )
-        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+        Tempfile.create do |f|
+          f.write YAML.dump(contents)
+          f.fsync
+
+          @cfg_arch.config.info.resolver.cfg_arch_for(Pathname.new f.path)
+        end
       end
     end
 
@@ -602,6 +640,12 @@ module Udb
     # @return [Array<ExtensionRequirements>] Sorted list of extensions with their portfolio information.
     # If desired_presence is provided, only returns extensions with that presence.
     # If desired_presence is a String, only the presence portion of an Presence is compared.
+    sig {
+      params(
+        desired_presence: T.any(String, T::Hash[String, T.untyped], Presence)
+      )
+      .returns(T::Array[PortfolioExtensionRequirement])
+    }
     def in_scope_ext_reqs(desired_presence = nil)
       in_scope_ext_reqs = []
 
@@ -609,14 +653,14 @@ module Udb
       desired_presence_converted =
         if desired_presence.nil?
           nil
-else
-  if desired_presence.is_a?(String)
-    desired_presence
-else
-  desired_presence.is_a?(Presence) ? desired_presence :
-                                               Presence.new(desired_presence)
-end
-end
+        else
+          if desired_presence.is_a?(String)
+            desired_presence
+          else
+            desired_presence.is_a?(Presence) ? desired_presence :
+                                                        Presence.new(desired_presence)
+          end
+        end
 
       missing_ext = false
 
@@ -646,11 +690,11 @@ end
           if match
             in_scope_ext_reqs <<
               if ext_data.key?("version")
-                ExtensionRequirement.new(
+                PortfolioExtensionRequirement.new(
                   ext_name, ext_data["version"], arch: @arch,
                   presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
               else
-                ExtensionRequirement.new(
+                PortfolioExtensionRequirement.new(
                   ext_name, [], arch: @arch,
                   presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
               end

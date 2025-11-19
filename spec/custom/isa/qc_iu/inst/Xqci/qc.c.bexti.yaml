@@ -13,9 +13,7 @@ description: |
   Instruction encoded in CB instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcibm
+    name: Xqcibm
 assembly: " xd, shamt"
 base: 32
 encoding:

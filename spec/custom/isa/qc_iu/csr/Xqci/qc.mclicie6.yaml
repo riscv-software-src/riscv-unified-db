@@ -13,9 +13,7 @@ base: 32
 priv_mode: M
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 writable: true
 description: |
   Enable bits for IRQs 192-223

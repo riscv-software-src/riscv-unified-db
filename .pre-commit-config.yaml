@@ -19,7 +19,7 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        exclude: \.((golden\.adoc)|svg)$
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg$)
       - id: trailing-whitespace
         stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]
@@ -40,7 +40,7 @@ repos:
       - id: prettier
         stages: [pre-commit]
         files: \.(json|toml|yml|yaml)$
-        exclude: schemas/json-schema-draft-07.json
+        exclude: schemas/json-schema-draft-07.json|cfgs/profile/.*
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0

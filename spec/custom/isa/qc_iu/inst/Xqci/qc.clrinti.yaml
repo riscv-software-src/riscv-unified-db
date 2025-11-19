@@ -12,9 +12,7 @@ description: |
   Instruction encoded in R instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+    name: Xqciint
 assembly: " imm"
 base: 32
 encoding:

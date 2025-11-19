@@ -13,9 +13,7 @@ description: |
   Instruction encoded in R4 instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcics
+    name: Xqcics
 base: 32
 encoding:
   match: -----10----------011-----1011011

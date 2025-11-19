@@ -68,7 +68,7 @@ class TestConditions < Minitest::Test
     cb = LogicNode.make_eval_cb do |term|
       case term
       when ExtensionTerm
-        [ExtensionVersion.new("A", "1.0", $mock_cfg_arch)].any? do |ext_ver|
+        [$mock_cfg_arch.extension_version("A", "1.0")].any? do |ext_ver|
           term.to_ext_req($mock_cfg_arch).satisfied_by?(ext_ver)
         end ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterTerm
@@ -79,7 +79,7 @@ class TestConditions < Minitest::Test
     cb = LogicNode.make_eval_cb do |term|
       case term
       when ExtensionTerm
-        [ExtensionVersion.new("B", "2.1.0", $mock_cfg_arch)].any? do |ext_ver|
+        [$mock_cfg_arch.extension_version("B", "2.1.0")].any? do |ext_ver|
           term.to_ext_req($mock_cfg_arch).satisfied_by?(ext_ver)
         end ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterTerm
@@ -103,7 +103,7 @@ class TestConditions < Minitest::Test
     ext_vers = reqs.implied_extension_versions
 
     assert_equal 1, ext_vers.size
-    assert_equal ExtensionVersion.new("A", "1.0", $mock_cfg_arch), ext_vers.fetch(0).ext_ver
+    assert_equal ext_vers.fetch(0.extension_version("A", "1.0", $mock_cfg_arch)).ext_ver
     assert_instance_of AlwaysTrueCondition, ext_vers.fetch(0).cond
   end
 
@@ -122,7 +122,7 @@ class TestConditions < Minitest::Test
     ext_vers = reqs.implied_extension_versions
 
     assert_equal 2, ext_vers.size
-    assert_equal [ExtensionVersion.new("A", "1.0", $mock_cfg_arch), ExtensionVersion.new("C", "1.0", $mock_cfg_arch)], ext_vers.map(&:ext_ver)
+    assert_equal [$mock_cfg_arch.extension_version("A", "1.0"), $mock_cfg_arch.extension_version("C", "1.0")], ext_vers.map(&:ext_ver)
     assert_instance_of AlwaysTrueCondition, ext_vers.fetch(0).cond
   end
 
@@ -141,7 +141,7 @@ class TestConditions < Minitest::Test
     ext_vers = reqs.implied_extension_versions
 
     assert_equal 1, ext_vers.size
-    assert_equal [ExtensionVersion.new("A", "1.0", $mock_cfg_arch)], ext_vers.map(&:ext_ver)
+    assert_equal [$mock_cfg_arch.extension_version("A", "1.0")], ext_vers.map(&:ext_ver)
     assert_instance_of AlwaysTrueCondition, ext_vers.fetch(0).cond
   end
 
@@ -161,11 +161,11 @@ class TestConditions < Minitest::Test
     ext_vers = reqs.implied_extension_versions
 
     assert_equal 1, ext_vers.size
-    assert_equal [ExtensionVersion.new("C", "1.0", $mock_cfg_arch)], ext_vers.map(&:ext_ver)
+    assert_equal [$mock_cfg_arch.extension_version("C", "1.0")], ext_vers.map(&:ext_ver)
     assert_instance_of Condition, ext_vers.fetch(0).cond
     assert_equal [ExtensionTerm.new("A", "=", "1.0"), ExtensionTerm.new("A", "=", "2.0")], ext_vers.fetch(0).cond.to_logic_tree(expand: true).terms
-    assert ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?(ExtensionRequirement.new("A", ">= 1.0", arch: $mock_cfg_arch))
-    refute ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?(ExtensionVersion.new("B", "2.1.0", $mock_cfg_arch).to_ext_req)
+    assert ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?($mock_cfg_arch.extension_requirement("A", ">= 1.0"))
+    refute ext_vers.fetch(0).cond.satisfiability_depends_on_ext_req?($mock_cfg_arch).to_ext_req.extension_version("B", "2.1.0")
   end
 
   def test_single_extension_req_with_implication
@@ -194,9 +194,9 @@ class TestConditions < Minitest::Test
         end
       end
     end
-    assert_equal SatisfiedResult::No, tree.eval_cb(make_cb([ExtensionVersion.new("A", "1.0", $mock_cfg_arch)]))
-    assert_equal SatisfiedResult::No, tree.eval_cb(make_cb([ExtensionVersion.new("B", "2.1.0", $mock_cfg_arch)]))
-    assert_equal SatisfiedResult::Yes, tree.eval_cb(make_cb([ExtensionVersion.new("A", "1.0", $mock_cfg_arch), ExtensionVersion.new("B", "2.1.0", $mock_cfg_arch)]))
+    assert_equal SatisfiedResult::No, tree.eval_cb(make_cb([$mock_cfg_arch.extension_version("A", "1.0")]))
+    assert_equal SatisfiedResult::No, tree.eval_cb(make_cb([$mock_cfg_arch.extension_version("B", "2.1.0")]))
+    assert_equal SatisfiedResult::Yes, tree.eval_cb(make_cb([$mock_cfg_arch.extension_version("A", "1.0"), $mock_cfg_arch.extension_version("B", "2.1.0")]))
   end
 
   def test_single_extension_req_with_conditional_implication
@@ -214,7 +214,7 @@ class TestConditions < Minitest::Test
     refute_empty cond
 
     # D alone should satisfy
-    assert cond.satisfiability_depends_on_ext_req?(ExtensionRequirement.new("D", ">= 0", arch: $mock_cfg_arch))
+    assert cond.satisfiability_depends_on_ext_req?($mock_cfg_arch.extension_requirement("D", ">= 0"))
 
     # D with C but not A should not satisfy
     cb = LogicNode.make_eval_cb do |term|

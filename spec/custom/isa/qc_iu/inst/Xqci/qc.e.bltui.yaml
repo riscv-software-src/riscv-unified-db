@@ -12,9 +12,7 @@ description: |
   Instruction encoded in QC.EB instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcibi
+    name: Xqcibi
 base: 32
 encoding:
   match: -----------------------11110-----100-----0011111

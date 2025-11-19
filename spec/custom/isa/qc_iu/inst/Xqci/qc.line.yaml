@@ -12,9 +12,7 @@ description: |
   Instruction encoded in R instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicli
+    name: Xqcicli
 base: 32
 encoding:
   match: -----01----------001-----1011011

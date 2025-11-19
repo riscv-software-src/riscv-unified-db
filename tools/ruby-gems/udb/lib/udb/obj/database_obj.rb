@@ -148,7 +148,7 @@ module Udb
           if @data.key?("definedBy")
             Condition.new(@data["definedBy"], @cfg_arch)
           else
-            AlwaysTrueCondition.new
+            AlwaysTrueCondition.new(@cfg_arch)
           end
         end
     end
@@ -469,6 +469,9 @@ module Udb
     # @return [String] Company website
     sig { returns(String) }
     def url = T.must(@data["url"])
+
+    sig { override.returns(String) }
+    def to_s = name
   end
 
 # License information

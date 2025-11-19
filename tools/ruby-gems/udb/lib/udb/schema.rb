@@ -105,7 +105,7 @@ module Udb
         elsif schema_hash["$ref"].split("/").last == "uint64"
           "64-bit integer"
         else
-          raise "unhandled type ref: #{hsh["$ref"]}"
+          raise "unhandled type ref: #{schema_hash["$ref"]}"
         end
       elsif schema_hash.key?("not")
         if schema_hash["not"].key?("const")

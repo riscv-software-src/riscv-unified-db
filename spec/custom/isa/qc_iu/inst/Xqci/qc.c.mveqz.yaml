@@ -12,9 +12,7 @@ description: |
   Instruction encoded in CL instruction format.
 definedBy:
   extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicm
+    name: Xqcicm
 base: 32
 encoding:
   match: 101011---00---10
