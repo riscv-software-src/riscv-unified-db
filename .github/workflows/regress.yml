@@ -175,17 +175,14 @@ jobs:
   regress-gen-ext-pdf:
     runs-on: ubuntu-latest
     env:
-      EXT: B
-      VERSION: latest
       SINGULARITY: 1
-      PSEUDO: both
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Generate extension PDF
-        run: ./do gen:ext_pdf
+      - name: Generate Xqci extension PDF
+        run: ./bin/ruby tools/scripts/gen_xqci.rb
   regress-gen-certificate:
     runs-on: ubuntu-latest
     env:

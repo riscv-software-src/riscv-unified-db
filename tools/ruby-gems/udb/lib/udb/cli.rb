@@ -98,7 +98,12 @@ module Udb
             gen_path_override: Pathname.new(options[:gen]),
             custom_path_override: Pathname.new(options[:custom])
           )
-        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        begin
+          cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        rescue InvalidConfigError
+          say "Config is #{pastel.red.bold("invalid")}"
+          exit 1
+        end
         result = cfg_arch.valid?
 
         if result.valid
@@ -282,25 +287,25 @@ module Udb
           if options[:extensions]
             cfg_arch.possible_extensions.select { |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
           else
-            cfg_arch.possible_extensions.map(&:params).flatten.uniq(&:name).sort
+            cfg_arch.params_with_value + cfg_arch.params_without_value
           end
         if options[:output_format] == "ascii"
           table = ::Terminal::Table.new(
             headings: ["Name", "Defined By", "description"],
-            rows: params.map { |p| [p.name, p.defined_by_condition.implied_extension_requirements.map(&:ext_req).map(&:name).join(", "), p.description] },
+            rows: params.map { |p| [p.name, p.defined_by_condition.to_s, p.description] },
           )
           table.style = { all_separators: true }
           out.puts table
         elsif options[:output_format] == "yaml"
           yaml = []
           params.each do |p|
-            yaml << { "name" => p.name, "exts" => p.defined_by_condition.implied_extension_requirements.map(&:ext_req).map(&:name), "description" => p.description }
+            yaml << { "name" => p.name, "exts" => p.defined_by_condition.to_s, "description" => p.description }
           end
           out.puts YAML.dump(yaml)
         elsif options[:output_format] == "json"
           yaml = []
           params.each do |p|
-            yaml << { "name" => p.name, "exts" => p.defined_by_condition.implied_extension_requirements.map(&:ext_req).map(&:name), "description" => p.description }
+            yaml << { "name" => p.name, "exts" => p.defined_by_condition.to_s, "description" => p.description }
           end
           out.puts JSON.dump(yaml)
         end

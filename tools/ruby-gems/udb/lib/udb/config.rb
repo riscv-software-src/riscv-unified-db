@@ -201,6 +201,9 @@ module Udb
     def unconfigured? = true
   end
 
+  class InvalidConfigError < StandardError
+  end
+
 ##############################################################################################################
 # This class represents a configuration that is "partially-configured" (e.g., portfolio or configurable IP). #
 # It only lists mandatory & prohibited extensions and fully-constrained parameters (single value).
@@ -218,7 +221,8 @@ module Udb
 
       @mxlen = @data.dig("params", "MXLEN")
       if @mxlen.nil?
-        raise "Must set MXLEN for a configured config"
+        Udb.logger.error "Must set MXLEN for a configured config"
+        raise InvalidConfigError
       end
 
       @mxlen.freeze
@@ -291,7 +295,10 @@ module Udb
       @param_values = @data["params"]
 
       @mxlen = @data.dig("params", "MXLEN").freeze
-      raise "Must set MXLEN for a configured config" if @mxlen.nil?
+      if @mxlen.nil?
+        Udb.logger.error "Must set MXLEN for a configured config"
+        raise InvalidConfigError
+      end
     end
 
     ###############################

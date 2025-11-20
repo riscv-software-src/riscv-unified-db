@@ -658,7 +658,8 @@ module Udb
         end
     end
 
-    # @return the list of instructions that must be implemented when self is implemented, ignoring extension dependencies
+    # @return the list of instructions that must be implemented when self is implemented,
+    # excluding instructions required by a dependence
     sig { returns(T::Array[Instruction]) }
     def directly_defined_instructions
       @instructions ||=
