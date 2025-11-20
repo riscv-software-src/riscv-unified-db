@@ -10,12 +10,14 @@ import os
 import sys
 import argparse
 import logging
-import yaml
-import glob
 
 # Add parent directory to path to find generator.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generator import parse_match, parse_extension_requirements
+from generator import (
+    parse_match,
+    parse_extension_requirements,
+    load_full_instructions,
+)
 from naming_config import USER_DEFINED_INSN_NAMES, USER_DEFINED_OPERAND_PREFERENCES, is_user_defined_class
 import re
 
@@ -218,43 +220,6 @@ class OperandMapper:
             else:
                 return f"NON_DEFINED_{operand}_{location}"
         return f"NON_DEFINED_{operand}"
-
-
-def load_full_instructions(inst_dir, enabled_extensions, include_all, target_arch):
-    instructions = {}
-    if enabled_extensions is None:
-        enabled_extensions = []
-    yaml_files = glob.glob(os.path.join(inst_dir, "**/*.yaml"), recursive=True)
-    logging.info(f"Found {len(yaml_files)} instruction files in {inst_dir}")
-    for yaml_file in yaml_files:
-        try:
-            with open(yaml_file, 'r', encoding='utf-8') as f:
-                data = yaml.safe_load(f)
-            if not isinstance(data, dict) or data.get('kind') != 'instruction':
-                continue
-            name = data.get('name')
-            if not name:
-                continue
-            defined_by = data.get('definedBy')
-            if not include_all and defined_by:
-                try:
-                    meets_req = parse_extension_requirements(defined_by)
-                    if not meets_req(enabled_extensions):
-                        logging.debug(f"Skipping {name} - extension requirements not met")
-                        continue
-                except Exception as e:
-                    logging.debug(f"Error parsing extension requirements for {name}: {e}")
-                    continue
-            encoding = data.get('encoding', {})
-            if target_arch in ['RV32', 'RV64'] and target_arch in encoding:
-                arch_encoding = encoding[target_arch]
-                data['encoding'] = arch_encoding
-            instructions[name] = data
-        except Exception as e:
-            logging.error(f"Error loading {yaml_file}: {e}")
-            continue
-    logging.info(f"Loaded {len(instructions)} instructions after filtering")
-    return instructions
 
 
 def generate_binutils_opcodes(instr_dict, output_file="riscv-opc.c", extension_mapper=None, binutils_path=None):
