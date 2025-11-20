@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import glob
 import yaml
 import logging
 import pprint
@@ -279,6 +280,79 @@ def load_instructions(
         logging.warning(f"No instruction definitions found in {root_dir}")
 
     return instr_dict
+
+
+def load_full_instructions(inst_dir, enabled_extensions, include_all=False, target_arch="RV64"):
+    """Load full instruction metadata, optionally filtering by extensions and architecture.
+
+    Parameters
+    ----------
+    inst_dir : str
+        Root directory containing instruction YAML files.
+    enabled_extensions : list[str]
+        Extensions that should be considered enabled when filtering instructions.
+    include_all : bool, optional
+        When True, skip extension filtering entirely.
+    target_arch : str, optional
+        Target architecture selector: "RV32", "RV64", or "BOTH". When a YAML file
+        provides per-architecture encodings, the matching entry is selected.
+
+    Returns
+    -------
+    dict[str, dict]
+        Mapping from instruction name to the loaded YAML data (with a resolved
+        ``encoding`` section for the requested architecture).
+    """
+
+    instructions = {}
+    ext_filter = [] if enabled_extensions is None else enabled_extensions
+
+    yaml_files = glob.glob(os.path.join(inst_dir, "**/*.yaml"), recursive=True)
+    logging.info("Found %d instruction files in %s", len(yaml_files), inst_dir)
+
+    for yaml_file in yaml_files:
+        try:
+            with open(yaml_file, "r", encoding="utf-8") as fh:
+                data = yaml.safe_load(fh)
+
+            if not isinstance(data, dict) or data.get("kind") != "instruction":
+                continue
+
+            name = data.get("name")
+            if not name:
+                continue
+
+            defined_by = data.get("definedBy")
+            if not include_all and defined_by:
+                try:
+                    meets_req = parse_extension_requirements(defined_by)
+                    if not meets_req(ext_filter):
+                        logging.debug(
+                            "Skipping %s - extension requirements not met", name
+                        )
+                        continue
+                except Exception as exc:  # pragma: no cover - logging path only
+                    logging.debug(
+                        "Error parsing extension requirements for %s: %s",
+                        name,
+                        exc,
+                    )
+                    continue
+
+            encoding = data.get("encoding", {})
+            if target_arch in ("RV32", "RV64") and isinstance(encoding, dict):
+                arch_encoding = encoding.get(target_arch)
+                if arch_encoding:
+                    data["encoding"] = arch_encoding
+
+            instructions[name] = data
+
+        except Exception as exc:  # pragma: no cover - logging path only
+            logging.error("Error loading %s: %s", yaml_file, exc)
+            continue
+
+    logging.info("Loaded %d instructions after filtering", len(instructions))
+    return instructions
 
 
 def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64"):
