@@ -101,13 +101,13 @@ module Udb
       @data["extensions"].each do |ext_hsh|
         ext_obj = cfg_arch.extension(ext_hsh["name"])
         if ext_obj.nil?
-          warn "Extension '#{ext_hsh['name']}' is not in the database"
+          Udb.logger.warn "Extension '#{ext_hsh['name']}' is not in the database"
           next
         end
 
         ext_ver = cfg_arch.extension_version(ext_hsh["name"], ext_hsh["version"])
         unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
-          warn "Extension '#{ext_hsh['name']}', version '#{ext_hsh['version']}' is not defined in the database"
+          Udb.logger.warn "Extension '#{ext_hsh['name']}', version '#{ext_hsh['version']}' is not defined in the database"
           next
         end
 

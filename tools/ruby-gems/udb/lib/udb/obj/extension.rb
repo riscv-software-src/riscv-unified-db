@@ -132,6 +132,33 @@ module Udb
         end
     end
 
+    class ConditionallyApplicableParameter < T::Struct
+      prop :cond, AbstractCondition
+      prop :param, Parameter
+    end
+
+    sig { returns(T::Array[ConditionallyApplicableParameter]) }
+    def conditional_params
+      @cond_params ||=
+        begin
+          pb =
+            Udb.create_progressbar(
+              "Finding conditional params for #{name} [:bar] :current/:total",
+              total: cfg_arch.params.size,
+              clear: true
+            )
+          cfg_arch.params.filter_map do |p|
+            pb.advance
+            next if params.include?(p)
+            next unless p.defined_by_condition.mentions?(self)
+            next unless (p.defined_by_condition & self.to_condition).satisfiable?
+
+            cond = p.defined_by_condition.partial_eval(ext_reqs: [self.to_ext_req]).minimize(expand: false)
+            ConditionallyApplicableParameter.new(cond:, param: p)
+          end
+        end
+    end
+
     # @return List of parameters that must be defined if this extension is defined due to one of the extension's requirements
     #          excluding those required because of a requirement of extension    def implied_params
     sig { returns(T::Array[Parameter]) }
@@ -1620,12 +1647,12 @@ module Udb
     sig { returns(ExtensionVersion) }
     def min_satisfying_ext_ver
       if satisfying_versions.empty?
-        warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
+        Udb.logger.error "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
         if @ext.versions.empty?
-          warn "  none"
+          Udb.logger.error "  none"
         else
           @ext.versions.each do |ext_ver|
-            warn "  #{ext_ver}"
+            Udb.logger.error "  #{ext_ver}"
           end
         end
 
@@ -1640,12 +1667,12 @@ module Udb
     sig { returns(ExtensionVersion) }
     def max_satisfying_ext_ver
       if satisfying_versions.empty?
-        warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
+        Udb.logger.error "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
         if @ext.versions.empty?
-          warn "  none"
+          Udb.logger.error "  none"
         else
           @ext.versions.each do |ext_ver|
-            warn "  #{ext_ver}"
+            Udb.logger.error "  #{ext_ver}"
           end
         end
 

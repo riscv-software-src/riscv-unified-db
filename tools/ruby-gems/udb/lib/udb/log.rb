@@ -44,8 +44,8 @@ module Udb
     end
   end
 
-  # default log level is warn
-  @log_level = ENV.key?("LOG") ? LogLevel.deserialize(ENV["LOG"]) : LogLevel::Warn
+  # default log level is info
+  @log_level = ENV.key?("LOG") ? LogLevel.deserialize(ENV["LOG"]) : LogLevel::Info
 
   sig { returns(LogLevel) }
   def self.log_level

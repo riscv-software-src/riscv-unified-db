@@ -542,9 +542,6 @@
                 "name": {
                   "$ref": "#/$defs/param_name"
                 },
-                "range": {
-                  "$ref": "#/$defs/field_location"
-                },
                 "index": {
                   "type": "integer"
                 },

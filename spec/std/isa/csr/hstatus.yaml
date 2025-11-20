@@ -35,11 +35,11 @@ fields:
           ! 0     ! 32
           ! 1     ! 64
           !===
-        when(): return VSXLEN == 3264;
+        when(): return $array_size(VSXLEN) > 1;
 
       - text: |
           Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.
-        when(): return VSXLEN == 32;
+        when(): return $array_includes?(VSXLEN, 32);
 
       - text: |
           Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.

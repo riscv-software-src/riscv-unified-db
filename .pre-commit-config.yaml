@@ -19,7 +19,8 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg$)
+        # exclude read-only files, and those sensitive to any change
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml$)
       - id: trailing-whitespace
         stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]

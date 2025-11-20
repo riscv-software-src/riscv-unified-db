@@ -5,8 +5,8 @@ require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
 extend T::Sig
 
-require 'pathname'
-require 'erb'
+require "pathname"
+require "erb"
 
 Encoding.default_external = "UTF-8"
 
@@ -255,7 +255,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
 end
 
 (3..31).each do |hpm_num|
@@ -395,11 +395,13 @@ aq_rl_variants = [
         "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
         __FILE__
       ] do |t|
+        FileUtils.rm_f(t.name)
         aq = variant[:aq]
         rl = variant[:rl]
         erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}.SIZE.AQRL.layout"), trim_mode: "-")
         erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
         File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+        File.chmod(0444, t.name)
       end
     end
   end
@@ -407,7 +409,7 @@ end
 
 # AMOCAS instruction generation from Zabha layout (supports both Zabha and Zacas)
 # Zabha variants (b, h) -> generated in Zabha directory
-["b", "h", "w", "d", "q" ].each do |size|
+["b", "h", "w", "d", "q"].each do |size|
   # Determine target extension directory based on size
   extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
 
@@ -416,11 +418,13 @@ end
       "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout",
       __FILE__
     ] do |t|
+      FileUtils.rm_f(t.name)
       aq = variant[:aq]
       rl = variant[:rl]
       erb = ERB.new(File.read($resolver.std_path / "inst/Zacas/amocas.SIZE.AQRL.layout"), trim_mode: "-")
       erb.filename = "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout"
       File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+      File.chmod(0444, t.name)
     end
   end
 end

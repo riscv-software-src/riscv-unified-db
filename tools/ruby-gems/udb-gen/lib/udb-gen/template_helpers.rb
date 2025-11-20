@@ -89,7 +89,7 @@ module UdbGen
           if ext
             link_to(cfg_arch.extension(name), link_text)
           else
-            warn "Attempted link to undefined extension: #{name}"
+            Udb.logger.warn "Attempted link to undefined extension: #{name}"
             match
           end
         when "ext_param"
@@ -97,7 +97,7 @@ module UdbGen
           if param
             link_to(param, link_text)
           else
-            warn "Attempted link to undefined parameter: #{name}"
+            Udb.logger.warn "Attempted link to undefined parameter: #{name}"
             match
           end
         when "inst"
@@ -105,7 +105,7 @@ module UdbGen
           if inst
             link_to(inst, link_text)
           else
-            warn "Attempted link to undefined instruction: #{name}"
+            Udb.logger.warn "Attempted link to undefined instruction: #{name}"
             match
           end
         when "csr"
@@ -113,7 +113,7 @@ module UdbGen
           if csr
             link_to(cfg_arch.csr(name), link_text)
           else
-            warn "Attempted link to undefined CSR: #{name}"
+            Udb.logger.warn "Attempted link to undefined CSR: #{name}"
             match
           end
         when "csr_field"
@@ -124,11 +124,11 @@ module UdbGen
             if csr_field
               link_to(csr_field, link_text)
             else
-              warn "Attempted link to undefined CSR field: #{name}"
+              Udb.logger.warn "Attempted link to undefined CSR field: #{name}"
               match
             end
           else
-            warn "Attempted link to undefined CSR: #{csr_name}"
+            Udb.logger.warn "Attempted link to undefined CSR: #{csr_name}"
             match
           end
         when "func"
@@ -136,7 +136,7 @@ module UdbGen
           if func
             link_to(func, link_text)
           else
-            warn "Attempted link to undefined function: #{name}"
+            Udb.logger.warn "Attempted link to undefined function: #{name}"
             match
           end
         else

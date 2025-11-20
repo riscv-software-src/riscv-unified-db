@@ -185,6 +185,9 @@ module Udb
     sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(_cfg_arch); end
 
+    sig { abstract.params(ext_reqs: T::Array[ExtensionRequirement], expand: T::Boolean).returns(AbstractCondition) }
+    def partial_eval(ext_reqs: [], expand: true); end
+
     # partially evaluate by replacing any known parameter terms with true/false, and returning
     # a new condition
     sig { abstract.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(AbstractCondition) }
@@ -243,8 +246,8 @@ module Udb
     sig { abstract.returns(T::Boolean) }
     def has_extension_requirement?; end
 
-    sig { abstract.returns(AbstractCondition) }
-    def minimize; end
+    sig { abstract.params(expand: T::Boolean).returns(AbstractCondition) }
+    def minimize(expand: true); end
 
     # convert condition into UDB-compatible hash
     sig { abstract.returns(T.any(T::Hash[String, T.untyped], T::Boolean)) }
@@ -261,8 +264,8 @@ module Udb
     def to_idl(cfg_arch); end
 
     # condition as an equation
-    sig { abstract.returns(String) }
-    def to_s; end
+    sig { abstract.params(expand: T::Boolean).returns(String) }
+    def to_s(expand: false); end
 
     # condition in prose
     sig { abstract.returns(String) }
@@ -619,9 +622,9 @@ module Udb
       end
     end
 
-    sig { override.returns(AbstractCondition) }
-    def minimize
-      Condition.new(to_logic_tree(expand: true).minimize(LogicNode::CanonicalizationType::ProductOfSums).to_h, @cfg_arch)
+    sig { override.params(expand: T::Boolean).returns(AbstractCondition) }
+    def minimize(expand: true)
+      Condition.new(to_logic_tree(expand:).minimize(LogicNode::CanonicalizationType::ProductOfSums).to_h, @cfg_arch)
     end
 
     # @api private
@@ -810,7 +813,7 @@ module Udb
               T.absurd(term)
             end
           end
-          if to_logic_tree(expand: true).eval_cb(implemented_ext_cb) == SatisfiedResult::Yes
+          if to_logic_tree(expand: false).eval_cb(implemented_ext_cb) == SatisfiedResult::Yes
             SatisfiedResult::Yes
           else
             SatisfiedResult::No
@@ -844,7 +847,7 @@ module Udb
             end
           end
 
-          to_logic_tree(expand: true).eval_cb(cb)
+          to_logic_tree(expand: false).eval_cb(cb)
         else
           # unconfig. Can't really say anthing
           SatisfiedResult::Maybe
@@ -876,6 +879,22 @@ module Udb
       end
     end
 
+    sig { override.params(ext_reqs: T::Array[ExtensionRequirement], expand: T::Boolean).returns(AbstractCondition) }
+    def partial_eval(ext_reqs: [], expand: true)
+      cb = LogicNode.make_replace_cb do |node|
+        if node.type == LogicNodeType::Term
+          term = node.children.fetch(0)
+          if term.is_a?(ExtensionTerm)
+            if ext_reqs.any? { |ext_req| term.to_ext_req(@cfg_arch).satisfied_by?(ext_req) }
+              next LogicNode::True
+            end
+          end
+        end
+        node
+      end
+      LogicCondition.new(to_logic_tree(expand:).replace_terms(cb), @cfg_arch)
+    end
+
     sig { override.returns(T.any(T::Hash[String, T.untyped], T::Boolean)) }
     def to_h
       T.cast(to_logic_tree(expand: false).to_h, T::Hash[String, T.untyped])
@@ -891,9 +910,9 @@ module Udb
       end
     end
 
-    sig { override.returns(String) }
-    def to_s
-      to_logic_tree(expand: false).to_s(format: LogicNode::LogicSymbolFormat::C)
+    sig { override.params(expand: T::Boolean).returns(String) }
+    def to_s(expand: false)
+      to_logic_tree(expand:).to_s(format: LogicNode::LogicSymbolFormat::C)
     end
 
     # return the condition in a nice, human-readable form
@@ -1288,6 +1307,9 @@ module Udb
     sig { override.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(AbstractCondition) }
     def partially_evaluate_for_params(cfg_arch, expand: false) = self
 
+    sig { override.params(ext_reqs: T::Array[ExtensionRequirement], expand: T::Boolean).returns(AbstractCondition) }
+    def partial_eval(ext_reqs: [], expand: true) = self
+
     sig { override.params(ext_req: ExtensionRequirement, include_requirements: T::Boolean).returns(T::Boolean) }
     def satisfied_by_ext_req?(ext_req, include_requirements: false) = false
 
@@ -1297,8 +1319,8 @@ module Udb
     sig { override.returns(T::Boolean) }
     def has_extension_requirement? = false
 
-    sig { override.returns(AbstractCondition) }
-    def minimize = self
+    sig { override.params(expand: T::Boolean).returns(AbstractCondition) }
+    def minimize(expand: true) = self
 
     sig { override.returns(T::Boolean) }
     def has_param? = false
@@ -1306,8 +1328,8 @@ module Udb
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch) = "-> true;"
 
-    sig { override.returns(String) }
-    def to_s = "true"
+    sig { override.params(expand: T::Boolean).returns(String) }
+    def to_s(expand: false) = "true"
 
     sig { override.returns(String) }
     def to_s_pretty
@@ -1380,6 +1402,9 @@ module Udb
     sig { override.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(AbstractCondition) }
     def partially_evaluate_for_params(cfg_arch, expand:) = self
 
+    sig { override.params(ext_reqs: T::Array[ExtensionRequirement], expand: T::Boolean).returns(AbstractCondition) }
+    def partial_eval(ext_reqs: [], expand: true) = self
+
     sig { override.params(ext_req: ExtensionRequirement, include_requirements: T::Boolean).returns(T::Boolean) }
     def satisfied_by_ext_req?(ext_req, include_requirements: false) = false
 
@@ -1389,8 +1414,8 @@ module Udb
     sig { override.returns(T::Boolean) }
     def has_extension_requirement? = false
 
-    sig { override.returns(AbstractCondition) }
-    def minimize = self
+    sig { override.params(expand: T::Boolean).returns(AbstractCondition) }
+    def minimize(expand: true) = self
 
     sig { override.returns(T::Boolean) }
     def has_param? = false
@@ -1398,8 +1423,8 @@ module Udb
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch) = "-> false;"
 
-    sig { override.returns(String) }
-    def to_s = "false"
+    sig { override.params(expand: T::Boolean).returns(String) }
+    def to_s(expand: false) = "false"
 
     sig { override.returns(String) }
     def to_s_pretty

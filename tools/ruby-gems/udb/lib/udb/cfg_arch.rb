@@ -1372,7 +1372,7 @@ module Udb
       begin
         Tilt["erb"].new(t.path, trim: "-").render(erb_env)
       rescue
-        warn "While rendering ERB template: #{what}"
+        Udb.logger.error "While rendering ERB template: #{what}"
         raise
       ensure
         t.close
@@ -1404,7 +1404,7 @@ module Udb
             spec_obj = Udb::NonIsaSpecification.new(spec_name, spec_data)
             @possible_non_isa_specs << spec_obj
           rescue => e
-            warn "Failed to load non-ISA spec #{spec_file}: #{e.message}"
+            Udb.logger.warn "Failed to load non-ISA spec #{spec_file}: #{e.message}"
           end
         end
       end

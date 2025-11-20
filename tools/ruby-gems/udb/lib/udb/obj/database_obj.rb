@@ -432,7 +432,7 @@ module Udb
 
         raise SchemaValidationError.new(@data_path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
       else
-        warn "No $schema for #{@data_path}"
+        Udb.logger.warn "No $schema for #{@data_path}"
       end
     end
 

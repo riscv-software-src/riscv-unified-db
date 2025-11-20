@@ -80,28 +80,13 @@ Decode Variables::
 
 Included in::
 
-<%- if inst.defining_extension_requirements.any? { |cond_ext_req| cond_ext_req.cond.satisfied_by_cfg_arch?(cfg_arch) != Udb::SatisfiedResult::Yes } -%>
-
-|===
-| Extension | Version | When
-
-<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
-| *<%= cond_ext_req.ext_req.to_s_pretty %>*
-| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
-| <%= cond_ext_req.cond.to_asciidoc %>
-<%-   end -%>
-|===
-
-<%- else -%>
-
 |===
 | Extension | Version
 
-<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
-| *<%= cond_ext_req.ext_req.to_s_pretty %>*
-| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
+<%-   inst.unconditional_extension_requirements.each do |ext_req| -%>
+| *<%= ext_req.to_s_pretty %>*
+| <%= inst.fix_entities(ext_req.to_s_pretty) %>
 <%-   end -%>
 |===
 
-<%- end -%>
 <%- end -%>

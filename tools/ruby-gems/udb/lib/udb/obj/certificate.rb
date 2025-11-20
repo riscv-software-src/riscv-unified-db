@@ -177,7 +177,11 @@ module Udb
 
         ext_data["param_constraints"]&.each do |param_name, param_data|
           param = ext.params.find { |p| p.name == param_name }
-          raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
+          if param.nil?
+            cond_param = ext.conditional_params.find { |p| p.param.name == param_name }
+            raise "There is no param '#{param_name}' in extension '#{ext_name}" if cond_param.nil?
+            param = cond_param.param
+          end
 
           next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
 
@@ -247,27 +251,11 @@ module Udb
     def all_in_scope_exts_with_param(param)
       raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
-      exts = []
-
       # Iterate through all the extensions in the architecture database that define this parameter.
-      param.exts.each do |ext|
-        found = false
-
-        in_scope_extensions.each do |potential_ext|
-          if ext.name == potential_ext.name
-            found = true
-            next
-          end
-        end
-
-        if found
-          # Only add extensions that exist in this certificate model.
-          exts << ext
-        end
-      end
-
-      # Return intersection of extension names
-      exts.sort_by!(&:name)
+      in_scope_extensions.select do |potential_ext|
+        param.requirements_condition.mentions?(potential_ext) &&
+          (param.requirements_condition & potential_ext.to_condition)
+      end.sort_by!(&:name)
     end
 
     # @param param [Parameter]
@@ -276,27 +264,7 @@ module Udb
     def all_in_scope_exts_without_param(param)
       raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
-      exts = []   # Local variable, no caching
-
-      # Iterate through all the extensions in the architecture database that define this parameter.
-      param.exts.each do |ext|
-        found = false
-
-        in_scope_extensions.each do |potential_ext|
-          if ext.name == potential_ext.name
-            found = true
-            next
-          end
-        end
-
-        if found
-            # Only add extensions that are in-scope (i.e., exist in this certificate model).
-          exts << ext
-        end
-      end
-
-      # Return intersection of extension names
-      exts.sort_by!(&:name)
+      all_in_scope_exts_with_param(param)
     end
   end
 
