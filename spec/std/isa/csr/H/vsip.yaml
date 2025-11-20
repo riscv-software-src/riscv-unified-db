@@ -1,0 +1,67 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vsip
+address: 0x244
+virtual_address: 0x144
+long_name: Virtual Supervisor Interrupt Pending
+description: |
+  The `vsip` register is a VSXLEN-bit read/write register that is VS-mode’s version of the `sip` CSR.
+  When V=1, instructions that normally access `sip` instead access `vsip`. It holds the pending
+  interrupt status for supervisor-level traps in a virtualized environment.
+
+  However, interrupts directed to HS-level continue to be indicated in the HS-level `sip` register,
+  not in `vsip`, when V=1.
+
+  The standard portion (bits 15:0) includes individual interrupt-pending bits.
+priv_mode: VS
+definedBy: H
+length: VSXLEN
+fields:
+  SSIP:
+    location: 1
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hip.VSSIP[0]
+    description: |
+      *Supervisor Software Interrupt Pending*
+
+      Indicates a pending software interrupt at the supervisor level.
+      Read-only zero when `hideleg[2] == 0`, else aliased to `hip.VSSIP[0]`.
+
+  STIP:
+    location: 5
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hip.VSTIP[0]
+    description: |
+      *Supervisor Timer Interrupt Pending*
+
+      Indicates a pending timer interrupt at the supervisor level.
+      Read-only zero when `hideleg[6] == 0`, else aliased to `hip.VSTIP[0]`.
+
+  SEIP:
+    location: 9
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hip.VSEIP[0]
+    description: |
+      *Supervisor External Interrupt Pending*
+
+      Indicates a pending external interrupt at the supervisor level.
+      Read-only zero when `hideleg[10] == 0`, else aliased to `hip.VSEIP[0]`.
+
+  LCOFIP:
+    location: 13
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: sip.LCOFIP[0]
+    description: |
+      *Local Counter Overflow Interrupt Pending*
+
+      Indicates an overflow of a local counter.
+      Read-only zero when `hideleg[13] == 0`, else aliased to `sip.LCOFIP[0]`.

@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vstimecmp
+long_name: Virtual Supervisor Timer Register
+virtual_address: 0x24D
+address: 0x24D
+priv_mode: VS
+definedBy: H
+length: SXLEN
+
+description:
+  - id: csr-vstimecmp-purpose
+    normative: true
+    text: |
+      The vstimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and RV64 systems.
+      In RV32 only, accesses to the vstimecmp CSR access the low 32 bits, while accesses to the vstimecmph CSR
+      access the high 32 bits of vstimecmp.
+
+  - id: csr-vstimecmp-csr-numbers
+    normative: true
+    text: |
+      The proposed CSR numbers for vstimecmp / vstimecmph are 0x24D / 0x25D (within the Virtual Supervisor
+      Registers block of CSRs, and mirroring the CSR numbers for stimecmp/stimecmph).
+
+  - id: csr-vstimecmp-interrupt
+    normative: true
+    text: |
+      A virtual supervisor timer interrupt becomes pending, as reflected in the VSTIP bit in the hip register,
+      whenever (time + htimedelta), truncated to 64 bits, contains a value greater than or equal to vstimecmp,
+      treating the values as unsigned integers.
+      If the result of this comparison changes, it is guaranteed to be reflected in VSTIP eventually, but not necessarily immediately.
+      The interrupt remains posted until vstimecmp becomes greater than (time + htimedelta), typically as a result of writing vstimecmp.
+      The interrupt will be taken based on the standard interrupt enable and delegation rules while V=1.
+
+  - id: csr-vstimecmp-compat
+    normative: false
+    text: |
+      In systems in which a supervisor execution environment (SEE) implemented by an
+      HS-mode hypervisor provides timer facilities via an SBI function call, this SBI call will
+      continue to support requests to schedule a timer interrupt. The SEE will simply make
+      use of vstimecmp, changing its value as appropriate. This ensures compatibility with
+      existing guest VS-mode software that uses this SEE facility, while new VS-mode
+      software takes advantage of vstimecmp directly.
+
+fields:
+  VSTIMECMP:
+    long_name: Virtual supervisor timer compare value
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      The value in vstimecmp is compared with (time + htimedelta), truncated to 64 bits,
+      to determine whether a virtual supervisor timer interrupt should be posted in VSTIP.
