@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: partially configured
-name: demo_rv32
+name: prm_demo_rv32
 description: |
   A demo RISC-V RV32 processor configuration for demonstrating
   the Programmer's Reference Manual generation capabilities.
