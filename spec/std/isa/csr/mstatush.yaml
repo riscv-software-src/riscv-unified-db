@@ -16,8 +16,9 @@ description:
   The mstatus register tracks and controls the hart's current operating
   state.
 definedBy:
-  name: Sm
-  version: ">= 1.12"
+  extension:
+    name: Sm
+    version: ">= 1.12"
 fields:
   MDT:
     location: 10
@@ -28,7 +29,9 @@ fields:
       When returning via an MRET instruction, the bit is written to 0.
       On reset in set to 1, and software should write it to 0 when boot sequence is done.
       When mstatush.MDT=1, direct write by CSR instruction cannot set mstatus.MIE to 1.
-    definedBy: Smdbltrp
+    definedBy:
+      extension:
+        name: Smdbltrp
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   MPV:
@@ -41,7 +44,9 @@ fields:
       Can also be written by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   GVA:
     location: 6
     description: |
@@ -51,7 +56,9 @@ fields:
       When a trap is taken and a guest virtual address is written into mtval, GVA is cleared.
     type: RW-H
     reset_value: 0
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   MBE:
     location: 5
     description: |
@@ -61,7 +68,9 @@ fields:
     alias: mstatus.MBE
   SBE:
     location: 4
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     description: |
       see `mstatus.SBE`
     type(): 'return (S_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'

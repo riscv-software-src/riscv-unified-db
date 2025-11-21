@@ -20,7 +20,9 @@ description: |
   supported by any of the trigger types supported by this trigger.
   If XLEN is less than DXLEN, writes to this register are sign-extended.
 
-definedBy: Sdtrig
+definedBy:
+  extension:
+    name: Sdtrig
 fields:
   DATA:
     location_rv32: 31-0

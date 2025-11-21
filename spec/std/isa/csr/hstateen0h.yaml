@@ -23,10 +23,11 @@ description: |
   `hstateen1h`, `hstateen2h`, and `hstateen3h`.
 
 definedBy:
-  allOf:
-    - H
-    - Smstateen
-    - Ssstateen
+  extension:
+    allOf:
+      - name: H
+      - name: Smstateen
+      - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen0 access control
@@ -46,8 +47,9 @@ fields:
     long_name: senvcfg access control
     location: 30
     definedBy:
-      name: S
-      version: ">= 1.11"
+      extension:
+        name: S
+        version: ">= 1.11"
     alias: hstateen0.ENVCFG
     sw_write(csr_value): |
       if (CSR[mstateen0].ENVCFG == 1'b0){
@@ -62,7 +64,9 @@ fields:
   CSRIND:
     long_name: siselect and sireg* access control
     location: 28
-    definedBy: Sscsrind
+    definedBy:
+      extension:
+        name: Sscsrind
     alias: hstateen0.CSRIND
     sw_write(csr_value): |
       if (CSR[mstateen0].CSRIND == 1'b0){
@@ -79,7 +83,9 @@ fields:
   AIA:
     long_name: Ssaia state access control
     location: 27
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: hstateen0.AIA
     sw_write(csr_value): |
       if (CSR[mstateen0].AIA == 1'b0){
@@ -96,7 +102,9 @@ fields:
   IMSIC:
     long_name: IMSIC state access control
     location: 26
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: hstateen0.IMSIC
     sw_write(csr_value): |
       if (CSR[mstateen0].IMSIC == 1'b0){
@@ -115,7 +123,9 @@ fields:
   CONTEXT:
     long_name: scontext access control
     location: 25
-    definedBy: Sdtrig
+    definedBy:
+      extension:
+        name: Sdtrig
     alias: hstateen0.CONTEXT
     sw_write(csr_value): |
       if (CSR[mstateen0].CONTEXT == 1'b0){

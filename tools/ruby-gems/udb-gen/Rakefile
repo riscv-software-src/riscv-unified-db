@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# typed: true
+# frozen_string_literal: true
+
+UDB_GEN_ROOT = Pathname.new Kernel.__dir__
+$root ||= UDB_GEN_ROOT
+
+file "#{UDB_GEN_ROOT}/Gemfile.lock" do
+  Dir.chdir(UDB_GEN_ROOT) do
+    sh "bundle install --gemfile Gemfile"
+  end
+end
+
+# initialize sorbet
+namespace :chore do
+  namespace :udb_gen do
+    task :tapioca do
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      sh "bundle exec --gemfile #{UDB_GEN_ROOT}/Gemfile tapioca gems --all"
+      sh "bundle exec --gemfile #{UDB_GEN_ROOT}/Gemfile tapioca dsl"
+      sh "bundle exec --gemfile #{UDB_GEN_ROOT}/Gemfile tapioca annotations"
+    end
+
+    task :update_deps do
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      Dir.chdir(UDB_GEN_ROOT) do
+        sh "bundle install --gemfile #{UDB_GEN_ROOT}/Gemfile"
+        sh "bundle update --gemfile #{UDB_GEN_ROOT}/Gemfile"
+        Rake::Task["chore:udb_gen:tapioca"].invoke
+      end
+    end
+  end
+end
+
+namespace :test do
+  namespace :udb_gen do
+    task :sorbet do
+      Dir.chdir(UDB_GEN_ROOT) do
+        Udb.logger.info "Type checking udb-gen gem"
+        sh "bundle exec srb tc"
+      end
+    end
+  end
+end

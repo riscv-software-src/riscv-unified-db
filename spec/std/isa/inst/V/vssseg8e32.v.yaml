@@ -9,7 +9,9 @@ name: vssseg8e32.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vs3, (xs1), xs2, vm
 encoding:
   match: 111010-----------110-----0100111

@@ -12,10 +12,12 @@ description: |
   to a signed offset then clearing the least
   significant bit, and store the return address
   in xd.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm(xs1)
 encoding:
-  match: -----------------000-----1100111
+  match: "-----------------000-----1100111"
   variables:
     - name: imm
       location: 31-20

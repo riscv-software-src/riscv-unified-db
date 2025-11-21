@@ -1,0 +1,44 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# c: constraint body
+# r: result -- true if pass, false if not
+
+tests:
+  - c: |
+      true -> true;
+    r: true
+  - c: |
+      true -> false;
+    r: false
+  - c: |
+      false -> true;
+    r: true
+  - c: |
+      false -> false;
+    r: true
+  - c: |
+      (false && true) -> false;
+    r: true
+  - c: |
+      (false || true) -> false;
+    r: false
+  - c: |
+      true -> (false && true);
+    r: false
+  - c: |
+      true -> (false || true);
+    r: true
+  - c: |
+      TRUE_PARAM -> TRUE_PARAM;
+    p:
+      TRUE_PARAM: true
+    r: true
+  - c: |
+      for (U32 i = 0; i < 8; i++) {
+        TRUE_ARRAY[i] -> TRUE_ARRAY[i];
+      }
+    p:
+      TRUE_ARRAY: [true, true, true, true, true, true, true, true]
+    r: true

@@ -8,10 +8,12 @@ kind: instruction
 name: lui
 long_name: Load upper immediate
 description: Load the zero-extended imm into xd.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm
 encoding:
-  match: -------------------------0110111
+  match: "-------------------------0110111"
   variables:
     - name: imm
       location: 31-12

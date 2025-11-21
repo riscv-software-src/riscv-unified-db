@@ -15,11 +15,9 @@ writable: true
 description: |
   Machine Mode Control Register.
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">=0.7"
-    - name: Xqciint
-      version: ">=0.4"
+  extension:
+    name: Xqciint
+    version: ">=0.4"
 fields:
   WP_EXEC:
     type: RW

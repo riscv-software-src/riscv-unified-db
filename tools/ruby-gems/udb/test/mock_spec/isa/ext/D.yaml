@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: D
+type: unprivileged
+long_name: Mock extension D
+versions:
+  - version: "1.0"
+    state: ratified
+    ratification_date: 2019-06
+  - version: "2.0"
+    state: ratified
+    ratification_date: 2019-06
+    changes:
+      - Change 1
+requirements:
+  oneOf:
+    - extension:
+        allOf:
+          - name: A
+          - name: C
+    - not:
+        extension:
+          name: C
+
+
+description: |
+  Something descriptive

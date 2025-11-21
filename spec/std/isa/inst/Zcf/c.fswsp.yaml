@@ -13,11 +13,10 @@ description: |
   to the stack pointer, x2.
   It expands to `fsw` `fs2, offset(x2)`.
 definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - F
-    - Zcf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zcf
 assembly: fs2, imm(sp)
 base: 32
 encoding:

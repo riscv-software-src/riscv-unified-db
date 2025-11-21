@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: DCSR_STEPIE_TYPE
+description: |
+  Implementation of dcsr.STEPIE is optional.
+  It may be tied to either 0 or 1.
+
+  Behavior of the dcsr.STEPIE bit:
+    * 'read-only-0': tied to 0
+    * 'read-only-1': tied to 1
+    * 'rw': read-write
+long_name: TODO
+schema:
+  type: string
+  enum: [read-only-0, read-only-1, rw]
+definedBy:
+  extension:
+    name: Sdtrig

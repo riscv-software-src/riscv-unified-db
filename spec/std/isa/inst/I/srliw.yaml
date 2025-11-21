@@ -7,8 +7,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: srliw
 long_name: Shift right logical immediate word
-description: Shift the 32-bit value in xs1 right by shamt, and store the sign-extended result in xd
-definedBy: I
+description:
+  Shift the 32-bit value in xs1 right by shamt, and store the sign-extended
+  result in xd
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 base: 64
 assembly: xd, xs1, shamt
 encoding:

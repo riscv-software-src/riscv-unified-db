@@ -15,7 +15,10 @@ description: |
   operation exception flag to be set.
   This instruction is encoded like its `flt` counterpart, but with instruction bit 14 set to 1.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: xd, fs1, fs2
 encoding:
   match: 1010011----------100-----1010011

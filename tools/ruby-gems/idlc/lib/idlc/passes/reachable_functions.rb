@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -7,7 +8,7 @@
 
 module Idl
   class AstNode
-    # @return [Array<FunctionBodyAst>] List of all functions that can be reached (via function calls) from this node
+    # @return [Array<FunctionDefAst>] List of all functions that can be reached (via function calls) from this node
     def reachable_functions(symtab, cache = {})
       children.reduce([]) do |list, e|
         fns = e.reachable_functions(symtab, cache)
@@ -20,7 +21,13 @@ module Idl
     def reachable_functions(symtab, cache = {})
       func_def_type = func_type(symtab)
 
-      tvals = template_values(symtab)
+      tvals = nil
+      value_result = value_try do
+        tvals = template_values(symtab)
+      end
+      value_else(value_result) do
+        raise "In #{input_file}:#{input_line}\n  Cannot find reachable functions for #{text_value} because template values are not known"
+      end
 
       body_symtab = func_def_type.apply_template_values(tvals, self)
 

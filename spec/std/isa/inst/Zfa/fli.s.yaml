@@ -9,7 +9,9 @@ name: fli.s
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfa
+definedBy:
+  extension:
+    name: Zfa
 assembly: fd, xs1
 encoding:
   match: 111100000001-----000-----1010011

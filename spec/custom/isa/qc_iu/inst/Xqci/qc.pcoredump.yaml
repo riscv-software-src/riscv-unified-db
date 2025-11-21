@@ -14,9 +14,8 @@ description: |
   The core dump format and content are defined by simulation environment.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisim
+  extension:
+    name: Xqcisim
 assembly: ""
 base: 32
 encoding:

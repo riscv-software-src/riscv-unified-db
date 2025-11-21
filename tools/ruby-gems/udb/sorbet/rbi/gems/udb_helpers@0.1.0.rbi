@@ -20,18 +20,18 @@ module Udb::Helpers
   end
 end
 
-# source://udb_helpers//lib/udb_helpers/backend_helpers.rb#318
+# source://udb_helpers//lib/udb_helpers/backend_helpers.rb#324
 module Udb::Helpers::AntoraUtils
   class << self
-    # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#340
+    # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#346
     def resolve_links(path_or_str); end
   end
 end
 
-# source://udb_helpers//lib/udb_helpers/backend_helpers.rb#249
+# source://udb_helpers//lib/udb_helpers/backend_helpers.rb#255
 module Udb::Helpers::AsciidocUtils
   class << self
-    # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#261
+    # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#267
     def resolve_links(path_or_str); end
   end
 end
@@ -39,6 +39,9 @@ end
 # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#93
 module Udb::Helpers::TemplateHelpers
   include ::Udb::Helpers::WavedromUtil
+
+  # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#233
+  def anchor_for_non_isa_spec(name); end
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#226
   def anchor_for_udb_doc_cov_pt(org, id); end
@@ -61,7 +64,7 @@ module Udb::Helpers::TemplateHelpers
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#199
   def anchor_for_udb_doc_inst(name); end
 
-  # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#234
+  # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#240
   def anchor_inside_idl_inst_code(inst_name, id); end
 
   # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#174
@@ -93,7 +96,7 @@ module Udb::Helpers::TemplateHelpers
 
   private
 
-  # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#240
+  # source://udb_helpers//lib/udb_helpers/backend_helpers.rb#246
   def check_no_periods(s); end
 end
 

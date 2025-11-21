@@ -20,7 +20,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-06
-    requires:
-      allOf:
-        - name: F
-        - name: Zfh
+requirements:
+  extension:
+    allOf:
+      - name: F
+      - name: Zfh

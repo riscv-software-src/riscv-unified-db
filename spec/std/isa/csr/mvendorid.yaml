@@ -23,4 +23,6 @@ fields:
     location: 6-0
     type: RO
     reset_value(): return VENDOR_ID_OFFSET;
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm

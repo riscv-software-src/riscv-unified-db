@@ -37,7 +37,9 @@ description: |
   that aliases bits 63:32 of `hedeleg`.
   Register `hedelegh` does not exist when XLEN=64.
 
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   IAM:
     location: 0

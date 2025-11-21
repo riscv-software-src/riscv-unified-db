@@ -1,0 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/interrupt_code_schema.json
+
+$schema: exception_code_schema.json#
+kind: exception_code
+name: Exception1
+num: 1
+display_name: An exception
+definedBy:
+  extension:
+    name: A

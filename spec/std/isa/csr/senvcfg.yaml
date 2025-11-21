@@ -14,10 +14,11 @@ description: |
 priv_mode: S
 length: 64
 definedBy:
-  allOf:
-    - name: S
-      version: ">=1.12"
-    - name: U
+  extension:
+    allOf:
+      - name: S
+        version: ">=1.12"
+      - name: U
 fields:
   CBZE:
     location: 7
@@ -44,7 +45,9 @@ fields:
 
       See `cbo.zero` for a summary of the effect.
 
-    definedBy: Zicboz
+    definedBy:
+      extension:
+        name: Zicboz
     type: RW
     reset_value: UNDEFINED_LEGAL
   CBCFE:
@@ -75,7 +78,9 @@ fields:
 
       See `cbo.clean` and/or `cbo.flush` for a summary of the effect.
 
-    definedBy: Zicbom
+    definedBy:
+      extension:
+        name: Zicbom
     type: RW
     reset_value: UNDEFINED_LEGAL
   CBIE:
@@ -108,7 +113,9 @@ fields:
         * `11`: The instruction is executed and performs an invalidate operation
 
       See `cbo.inval` for more details.
-    definedBy: Zicbom
+    definedBy:
+      extension:
+        name: Zicbom
     type: RW-R
     sw_write(csr_value): |
       if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {

@@ -47,7 +47,9 @@ description: |
   | 1 | VS-mode
   |===
 
-definedBy: S
+definedBy:
+  extension:
+    name: S
 assembly: ""
 encoding:
   match: "00010000001000000000000001110011"

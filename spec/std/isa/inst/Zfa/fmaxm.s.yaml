@@ -9,7 +9,9 @@ name: fmaxm.s
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfa
+definedBy:
+  extension:
+    name: Zfa
 assembly: fd, fs1, fs2
 encoding:
   match: 0010100----------011-----1010011

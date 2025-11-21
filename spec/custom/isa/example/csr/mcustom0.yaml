@@ -10,7 +10,9 @@ long_name: Custom CSR 0
 address: 0xfc0
 length: 64
 priv_mode: M
-definedBy: Xcustom
+definedBy:
+  extension:
+    name: Xcustom
 writable: true
 description: An example custom CSR
 fields: {}

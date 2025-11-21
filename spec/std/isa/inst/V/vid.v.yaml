@@ -9,7 +9,9 @@ name: vid.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vm
 encoding:
   match: 010100-0000010001010-----1010111

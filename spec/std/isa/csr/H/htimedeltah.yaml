@@ -13,7 +13,9 @@ description: |
 address: 0x615
 writable: true
 priv_mode: S
-definedBy: H
+definedBy:
+  extension:
+    name: H
 length: 32
 base: 32
 fields:

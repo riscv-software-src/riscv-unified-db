@@ -9,7 +9,9 @@ name: vlm.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, (xs1)
 encoding:
   match: 000000101011-----000-----0000111

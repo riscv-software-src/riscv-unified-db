@@ -9,7 +9,9 @@ name: vgmul.vv
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvkg
+definedBy:
+  extension:
+    name: Zvkg
 assembly: vd, vs2
 encoding:
   match: 1010001-----10001010-----1110111

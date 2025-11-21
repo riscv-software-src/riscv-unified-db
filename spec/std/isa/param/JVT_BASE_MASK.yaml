@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: JVT_BASE_MASK
+long_name: Mask representing the implemented bits of jvt.BASE
+definedBy:
+  allOf:
+    - extension:
+        name: Zcmt
+    - param:
+        name: JVT_BASE_TYPE
+        equal: mask
+description: |
+  Mask representing the implemented bits of jvt.BASE.
+  Includes the implicitly-zero bits of jvt.BASE, so JVT_BASE_MASK[5:0] must always be 0.
+schema:
+  type: integer
+  minimum: 64
+  maximum: 0x7ffffffffffffff # 58 bits
+requirements:
+  idl(): |
+    MXLEN == 32 -> JVT_BASE_MASK < 0xffff_ffc0;
+  reason: |
+    Includes the implicitly-zero bits of jvt.BASE, so JVT_BASE_MASK[5:0] must always be 0.

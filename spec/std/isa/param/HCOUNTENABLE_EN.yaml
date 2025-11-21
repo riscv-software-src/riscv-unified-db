@@ -1,0 +1,27 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HCOUNTENABLE_EN
+description: |
+  Indicates which counters can delegated via `hcounteren`
+
+  An unimplemented counter cannot be specified, i.e., if
+  HPM_COUNTER_EN[3] is false, it would be illegal to set
+  HCOUNTENABLE_EN[3] to true.
+
+  HCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+  HCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 32
+  minItems: 32
+definedBy:
+  extension:
+    name: H

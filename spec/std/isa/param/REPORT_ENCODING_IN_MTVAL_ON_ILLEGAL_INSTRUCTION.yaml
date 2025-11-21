@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+long_name: |
+  Whether or not `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception
+definedBy:
+  extension:
+    name: Sm
+description: |
+  Options:
+
+    * true:  `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception
+    * false: `mtval` is written with 0 when an instruction causes an IllegalInstruction exception.
+
+schema:
+  type: boolean

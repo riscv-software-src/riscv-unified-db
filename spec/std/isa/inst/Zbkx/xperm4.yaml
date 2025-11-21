@@ -11,7 +11,9 @@ description: |
   The xperm4 instruction operates on nibbles. The xs1 register contains a vector of XLEN/4 4-bit
   elements. The xs2 register contains a vector of XLEN/4 4-bit indexes. The result is each element in
   xs2 replaced by the indexed element in xs1, or zero if the index into xs2 is out of bounds.
-definedBy: Zbkx
+definedBy:
+  extension:
+    name: Zbkx
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------010-----0110011

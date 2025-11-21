@@ -8,7 +8,9 @@ kind: instruction
 name: sub
 long_name: Subtract
 description: Subtract the value in xs2 from xs1, and store the result in xd
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------000-----0110011

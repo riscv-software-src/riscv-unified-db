@@ -5,8 +5,8 @@ require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
 extend T::Sig
 
-require 'pathname'
-require 'erb'
+require "pathname"
+require "erb"
 
 Encoding.default_external = "UTF-8"
 
@@ -67,10 +67,10 @@ namespace :chore do
   task :update_deps do
     # these should run in order,
     # so don't change this to use task prereqs, which might run in any order
+    sh "bundle update --gemfile Gemfile --all"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
-
-    sh "bundle update"
+    Rake::Task["chore:udb_gen:update_deps"].invoke
   end
 
   desc "Update golden instruction appendix"
@@ -119,17 +119,17 @@ end
 
 sig { params(test_files: T::Array[String]).returns(String) }
 def make_test_cmd(test_files)
-  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map{ |f| "require \"#{f}\""}.join("; ")}' --"
+  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map { |f| "require \"#{f}\"" }.join("; ")}' --"
 end
 
 namespace :test do
 
   # "Run the cross-validation against LLVM"
   task :llvm do
-      begin
-        sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
-      rescue => e
-        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    begin
+      sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+    rescue => e
+      raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
   end
   # "Run the IDL compiler test suite"
@@ -147,10 +147,9 @@ namespace :test do
 
   desc "Type-check the Ruby library"
   task :sorbet do
-    $logger.info "Type checking idlc gem"
     Rake::Task["test:idlc:sorbet"].invoke
-    $logger.info "Type checking udb gem"
     Rake::Task["test:udb:sorbet"].invoke
+    Rake::Task["test:udb_gen:sorbet"].invoke
     # sh "srb tc @.sorbet-config"
   end
 end
@@ -171,9 +170,18 @@ namespace :test do
   task :inst_encodings do
     print "Checking for conflicts in instruction encodings.."
 
+    failed = T.let(false, T::Boolean)
+
     cfg_arch = $resolver.cfg_arch_for("_")
     insts = cfg_arch.instructions
-    failed = T.let(false, T::Boolean)
+    inst_names = T.let(Set.new, T::Set[String])
+    insts.each do |i|
+      if inst_names.include?(i.name)
+        warn "Duplicate instruction name: #{i.name}"
+        failed = true
+      end
+      inst_names.add(i.name)
+    end
     insts.each_with_index do |inst, idx|
       [32, 64].each do |xlen|
         next unless inst.defined_in_base?(xlen)
@@ -247,7 +255,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
 end
 
 (3..31).each do |hpm_num|
@@ -387,11 +395,13 @@ aq_rl_variants = [
         "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
         __FILE__
       ] do |t|
+        FileUtils.rm_f(t.name)
         aq = variant[:aq]
         rl = variant[:rl]
         erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}.SIZE.AQRL.layout"), trim_mode: "-")
         erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
         File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+        File.chmod(0444, t.name)
       end
     end
   end
@@ -399,7 +409,7 @@ end
 
 # AMOCAS instruction generation from Zabha layout (supports both Zabha and Zacas)
 # Zabha variants (b, h) -> generated in Zabha directory
-["b", "h", "w", "d", "q" ].each do |size|
+["b", "h", "w", "d", "q"].each do |size|
   # Determine target extension directory based on size
   extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
 
@@ -408,11 +418,13 @@ end
       "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout",
       __FILE__
     ] do |t|
+      FileUtils.rm_f(t.name)
       aq = variant[:aq]
       rl = variant[:rl]
       erb = ERB.new(File.read($resolver.std_path / "inst/Zacas/amocas.SIZE.AQRL.layout"), trim_mode: "-")
       erb.filename = "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout"
       File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+      File.chmod(0444, t.name)
     end
   end
 end
@@ -464,12 +476,41 @@ namespace :gen do
       end
     end
   end
+
+  desc "DEPRECATED -- Run `./bin/udb-gen ext-doc --help` instead"
+  task :ext_pdf do
+    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/udb-gen ext-doc `"
+    exit(1)
+  end
+
+  desc "Generate config files for profiles"
+  task :cfg do
+    cfg_arch = $resolver.cfg_arch_for("_")
+    FileUtils.mkdir_p $resolver.cfgs_path / "profile"
+    cfg_arch.profiles.each do |profile|
+      path = $resolver.cfgs_path / "profile" / "#{profile.name}.yaml"
+      FileUtils.rm_f path
+      File.write(
+        path,
+        <<~YAML.strip.concat("\n")
+          # SPDX-License-Identifier: CC0-1.0
+
+          # AUTO-GENERATED FILE. DO NOT EDIT
+          # To regenerate, run `./do gen:cfg` in the UDB root directory
+          # The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+          #{YAML.dump(profile.to_config)}
+        YAML
+      )
+      File.chmod(0444, path)
+    end
+  end
 end
 
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    Rake::Task["test:udb:unit"].invoke
+    # Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC

@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SV39X4_TRANSLATION
+description: Whether or not Sv39x4 translation mode is supported.
+long_name: TODO
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    !$array_includes?(SXLEN, 64) -> !SV39X4_VSMODE_TRANSLATION;
+  reason: Sv39x4 is only valid if S-mode can get into RV64 mode
+definedBy:
+  allOf:
+    - extension:
+        name: H
+    - param:
+        name: SXLEN
+        includes: 64

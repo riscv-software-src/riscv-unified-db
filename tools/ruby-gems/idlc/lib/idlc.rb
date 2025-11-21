@@ -5,6 +5,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "sorbet-runtime"
 require "treetop"
 
 require_relative "idlc/syntax_node"
@@ -34,12 +35,22 @@ module Treetop
   end
 end
 
+# rebuild the idl parser if the grammar has changed
+tt_path = Pathname.new(__dir__) / "idlc" / "idl.treetop"
+rb_path = Pathname.new(__dir__) / "idlc" / "idl_parser.rb"
+needs_grammar_recompile = !rb_path.exist? || (rb_path.mtime < tt_path.mtime)
+if needs_grammar_recompile
+  tt_compiler = Treetop::Compiler::GrammarCompiler.new
+  tt_compiler.compile(tt_path, rb_path)
+
+  # make sure there is a single newline at the end
+  compiler_src = File.read rb_path
+  File.write rb_path, "#{compiler_src.strip}\n"
+end
+
 require_relative "idlc/ast"
 require_relative "idlc/symbol_table"
-
-# pre-declare so sorbet is happy with this dynamically-generated class
-class IdlParser < Treetop::Runtime::CompiledParser; end
-Treetop.load((Pathname.new(__FILE__).dirname / "idlc" / "idl").to_s)
+require_relative "idlc/idl_parser"
 
 module Idl
   # the Idl compiler
@@ -172,11 +183,19 @@ module Idl
 
       m = @parser.parse(body, root: :function_body)
       if m.nil?
-        raise SyntaxError, <<~MSG
-          While parsing #{name} at #{input_file}:#{input_line + @parser.failure_line}
+        unless input_file.nil? || input_line.nil?
+          raise SyntaxError, <<~MSG
+            While parsing #{name} at #{input_file}:#{input_line + @parser.failure_line}
 
-          #{@parser.failure_reason}
-        MSG
+            #{@parser.failure_reason}
+          MSG
+        else
+          raise SyntaxError, <<~MSG
+            While parsing #{name}
+
+            #{@parser.failure_reason}
+          MSG
+        end
       end
 
       # fix up left recursion
@@ -326,6 +345,43 @@ module Idl
         warn T.must(e.backtrace).join("\n")
         exit 1
       end
+
+      ast
+    end
+
+    sig { params(body: String, symtab: SymbolTable, pass_error: T::Boolean).returns(ConstraintBodyAst) }
+    def compile_constraint(body, symtab, pass_error: false)
+      m = @parser.parse(body, root: :constraint_body)
+      if m.nil?
+        raise SyntaxError, <<~MSG
+          While parsing #{body}:#{@parser.failure_line}:#{@parser.failure_column}
+
+          #{@parser.failure_reason}
+        MSG
+      end
+
+      # fix up left recursion
+      ast = m.to_ast
+      ast.set_input_file("[CONSTRAINT]", 0)
+      ast.freeze_tree(symtab)
+
+      # begin
+      #   ast.type_check(symtab)
+      # rescue AstNode::TypeError => e
+      #   raise e if pass_error
+
+      #   warn "Compiling #{body}"
+      #   warn e.what
+      #   warn T.must(e.backtrace).join("\n")
+      #   exit 1
+      # rescue AstNode::InternalError => e
+      #   raise e if pass_error
+
+      #   warn "Compiling #{body}"
+      #   warn e.what
+      #   warn T.must(e.backtrace).join("\n")
+      #   exit 1
+      # end
 
       ast
     end

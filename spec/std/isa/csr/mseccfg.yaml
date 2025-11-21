@@ -13,6 +13,7 @@ priv_mode: M
 length: 64
 description: Machine Security Configuration
 definedBy:
-  name: Sm
-  version: ">= 1.12"
+  extension:
+    name: Sm
+    version: ">= 1.12"
 fields: {}

@@ -14,7 +14,10 @@ description: |
   `feq.q` performs a quiet comparison:
   it only sets the invalid operation exception flag if either input is a signaling _NaN_.
   The result is 0 if either operand is _NaN_.
-definedBy: Q
+
+definedBy:
+  extension:
+    name: Q
 assembly: xd, fs1, fs2
 encoding:
   match: 1010011----------010-----1010011

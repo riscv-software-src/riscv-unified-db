@@ -2,8 +2,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -51,6 +51,6 @@ module Idl
     extend T::Helpers
 
     sig { overridable.returns(Idl::AstNode) }
-    def to_ast = raise "Must override"
+    def to_ast = raise "Must override to_ast for #{self.class.name}"
   end
 end

@@ -11,9 +11,8 @@ description: |
   Add signed values `rs1` and `rs2`, saturate the signed result, and write to `rd`.
   Instruction encoded in R instruction format
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcia
+  extension:
+    name: Xqcia
 base: 32
 encoding:
   match: 0001110----------011-----0001011

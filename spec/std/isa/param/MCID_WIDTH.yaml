@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MCID_WIDTH
+description: |
+  Number of bits used for the Monitoring Counter ID field (MCID).
+  Default is 12.
+long_name: TODO
+schema:
+  type: integer
+  minimum: 1
+  maximum: 12
+definedBy:
+  extension:
+    name: Ssqosid

@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/H/hcounteren.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/H/hcounteren.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -17,7 +19,9 @@ description: |
   to VS/VU-mode
 
   See `cycle` for a table describing how exceptions occur.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   CY:
     location: 0
@@ -44,7 +48,9 @@ fields:
       ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
       ! 1 ! 1 ! 1 ! allowed              ! allowed
       !===
-    definedBy: Zicntr
+    definedBy:
+      extension:
+        name: Zicntr
     type(): |
       if (HCOUNTENABLE_EN[0]) {
         return CsrFieldType::RW;
@@ -82,7 +88,9 @@ fields:
       ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
       ! 1 ! 1 ! 1 ! allowed              ! allowed
       !===
-    definedBy: Zicntr
+    definedBy:
+      extension:
+        name: Zicntr
     type(): |
       if (HCOUNTENABLE_EN[1]) {
         return CsrFieldType::RW;

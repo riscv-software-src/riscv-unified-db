@@ -9,7 +9,9 @@ name: vaesef.vs
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvkned
+definedBy:
+  extension:
+    name: Zvkned
 assembly: vd, vs2
 encoding:
   match: 1010011-----00011010-----1110111
