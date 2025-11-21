@@ -241,6 +241,27 @@ namespace :test do
 
     puts "All IDL passed type checking"
   end
+
+  desc "Validate all config files in cfgs/"
+  task :cfgs do
+    puts "Validating all config files..."
+    cfg_files = Dir["#{$root}/cfgs/*.yaml"]
+    failed_cfgs = []
+
+    cfg_files.each do |cfg_file|
+      cfg_name = File.basename(cfg_file, ".yaml")
+      puts "Validating #{cfg_name}..."
+      unless system("#{$root}/bin/udb validate cfg #{cfg_file}")
+        failed_cfgs << cfg_name
+      end
+    end
+
+    if failed_cfgs.empty?
+      puts "All config files are valid"
+    else
+      raise "Config validation failed for: #{failed_cfgs.join(', ')}"
+    end
+  end
 end
 
 def insert_warning(str, from)
