@@ -2177,6 +2177,8 @@ function stage1_page_walk {
 
       if (pte_flags.R == 1 || pte_flags.X == 1) {
         # found a leaf PTE
+        Bits<PA_SIZE> paddr_base = pte[PA_SIZE-3:i*VPN_SIZE + 10] `<< (i*VPN_SIZE + 12);
+        Bits<PA_SIZE> offset = vaddr[i*VPN_SIZE + 11:0];
 
         # see if there is permission to perform the access
         if (op == MemoryOperation::Read || op == MemoryOperation::ReadModifyWrite) {
@@ -2269,9 +2271,9 @@ function stage1_page_walk {
               i = i + 1;
             } else {
               # successful translation and update
-              TranslationResult pte_phys =
-                translate_gstage(
-                  {pte[PA_SIZE-3:i*VPN_SIZE + 10], vaddr[i*VPN_SIZE + 11:0]},
+
+              TranslationResult pte_phys = translate_gstage(
+                  paddr_base + offset,
                   vaddr,
                   op,
                   effective_mode,
@@ -2291,7 +2293,7 @@ function stage1_page_walk {
         # translation succeeded
         TranslationResult pte_phys =
           translate_gstage(
-            {pte[PA_SIZE-3:i*VPN_SIZE + 10], vaddr[i*VPN_SIZE + 11:0]},
+            paddr_base + offset,
             vaddr,
             op,
             effective_mode,
@@ -2327,7 +2329,7 @@ function stage1_page_walk {
         }
 
         # fall through to next level
-        ppn = pte[PA_SIZE-3:10] << 12;
+        ppn = pte[PA_SIZE-3:10];
       }
     }
   }
