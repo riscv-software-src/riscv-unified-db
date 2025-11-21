@@ -448,19 +448,21 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
 
-    n = LogicNode.new(
-      LogicNodeType::And,
-      [
-        LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("A", "=", "1.0.0")]),
-        LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("B", "=", "1.0.0")]) # which isn't defined
-      ]
-    )
-    assert_equal(SatisfiedResult::No, n.eval_cb(cb))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
-    assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
+    # as of PR #891, we can no longer instatiate ExtensionVersions that are not defined
+    # thus, removing this whole sequence
+    # n = LogicNode.new(
+    #   LogicNodeType::And,
+    #   [
+    #     LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("A", "=", "1.0.0")]),
+    #     LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("B", "=", "1.0.0")]) # which isn't defined
+    #   ]
+    # )
+    # assert_equal(SatisfiedResult::No, n.eval_cb(cb))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    # assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
+    # assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
 
 
     n = LogicNode.new(
@@ -610,7 +612,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0")
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0") || term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -619,7 +621,7 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
       if term.is_a?(ExtensionTerm)
-        if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0")
+        if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0") || term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
           SatisfiedResult::Yes
         else
           SatisfiedResult::No

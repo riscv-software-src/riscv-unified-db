@@ -1926,7 +1926,7 @@ module Udb
           when ParameterTerm
             { "param" => @children.fetch(0).to_h }
           when FreeTerm
-            raise "unexpected"
+            { "free" => child.id } # only needed for #hash
           when XlenTerm
             @children.fetch(0).to_h
           else

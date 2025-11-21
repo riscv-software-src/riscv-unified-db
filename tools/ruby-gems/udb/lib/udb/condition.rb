@@ -89,7 +89,9 @@ module Udb
     end
   end
 
-  # return type for satisfied_by functions
+  # return type for any function where the result is either yes, no, or maybe (unknown)
+  # this arises from logic/condition tests because we may only have partial information
+  # to work with, i.e., when the configuration under test is a partial config
   class SatisfiedResult < T::Enum
     enums do
       Yes = new
@@ -101,7 +103,16 @@ module Udb
   SatisfiedResult::No.freeze
   SatisfiedResult::Maybe.freeze
 
-  # a condition
+  # Base class to represent any condition in the UDB data, and to connect/test them
+  #
+  # Conditions constructed from UDB data need context to be evaluated; for example,
+  # a condition that requires extension A to be implemented implies that Zaamo and Zalrsc
+  # must also be implemented.
+  #
+  # We add this implied information in a step called _expand_. Many methods of AbstractCondition
+  # take an optional `expand:` argument that, when true, expands the condition before operating on it.
+  #
+  #
   class AbstractCondition
     extend T::Sig
     extend T::Helpers
@@ -238,14 +249,17 @@ module Udb
       other_condition.covered_by?(self)
     end
 
-    # true if the condition references a parameter at some point
+    # true if the condition references any parameter
     sig { abstract.returns(T::Boolean) }
     def has_param?; end
 
-    # true if the condition references an extension requirements at some point
+    # true if the condition references any extension
     sig { abstract.returns(T::Boolean) }
     def has_extension_requirement?; end
 
+    # minimizes the condition. see LogicNode#minimize
+    # when expand is false, minimize the condition without expanding first
+    # when expand is true, expand the condition and then minimize
     sig { abstract.params(expand: T::Boolean).returns(AbstractCondition) }
     def minimize(expand: true); end
 
@@ -263,7 +277,8 @@ module Udb
     sig { abstract.params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch); end
 
-    # condition as an equation
+    # string representation
+    # when expand is true, return the full expanded condition
     sig { abstract.params(expand: T::Boolean).returns(String) }
     def to_s(expand: false); end
 
@@ -271,11 +286,12 @@ module Udb
     sig { abstract.returns(String) }
     def to_s_pretty; end
 
-    # print, with actualy values of terms
+    # string representation, annotated with actual values of terms where known
+    # useful for debugging
     sig { abstract.params(cfg_arch: ConfiguredArchitecture, expand: T::Boolean).returns(String) }
     def to_s_with_value(cfg_arch, expand:); end
 
-    # condition in Asciidoc
+    # string representation of condition in Asciidoc
     sig { abstract.returns(String) }
     def to_asciidoc; end
 
@@ -318,12 +334,16 @@ module Udb
     sig { abstract.params(expand: T::Boolean).returns(T::Array[ConditionalExtensionRequirement]) }
     def implied_extension_conflicts(expand: true); end
 
+    # logical conjunction
     sig { abstract.params(other: AbstractCondition).returns(AbstractCondition) }
     def &(other); end
 
+    # logical disjunction
     sig { abstract.params(other: AbstractCondition).returns(AbstractCondition) }
     def |(other); end
 
+    # logical negation
+    #
     # we use - instead of ! for negation to avoid ambiguous situations like:
     #
     #  !condition.satisfiable?
@@ -331,6 +351,11 @@ module Udb
     sig { abstract.returns(AbstractCondition) }
     def -@; end
 
+    # logical implication
+    #
+    # a.implies(b) means:
+    #
+    #  if a; then b
     sig { params(other: AbstractCondition).returns(AbstractCondition) }
     def implies(other)
       -self | other

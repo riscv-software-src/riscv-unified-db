@@ -258,7 +258,7 @@ module Udb
         end
 
         unless ext_ver.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Extension requirement is unmet: #{ext_ver}. Needs: #{ext_ver.requirements_condition}"
+          reasons << "Extension requirement is unmet: #{ext_ver}. Needs: #{ext_ver.requirements_condition.minimize(expand: true).to_s_with_value(self, expand: false)}"
         end
       end
 
@@ -273,10 +273,16 @@ module Udb
           reasons << "Parameter value violates the schema: '#{param_name}' = '#{param_value}'"
         end
         unless p.defined_by_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Parameter is not defined by this config: '#{param_name}'. Needs: #{p.defined_by_condition.to_s_with_value(self, expand: true)}"
+          reasons << [
+            "Parameter is not defined by this config: '#{param_name}'.",
+            "Needs: #{p.defined_by_condition.minimize(expand: true).to_s_with_value(self, expand: false)}"
+          ].join("\n")
         end
         unless p.requirements_condition.satisfied_by_cfg_arch?(self) == SatisfiedResult::Yes
-          reasons << "Parameter requirements not met: '#{param_name}'. Needs: #{p.requirements_condition.to_s_with_value(self, expand: true)}"
+          reasons << [
+            "Parameter requirements not met: '#{param_name}'.",
+            "Needs: #{p.requirements_condition.minimize(expand: true).to_s_with_value(self, expand: false)}"
+          ].join("\n")
         end
       end
 

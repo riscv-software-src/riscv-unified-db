@@ -112,7 +112,7 @@ module Udb
           say "Config #{pastel.bold(cfg_arch.name)} is #{pastel.red.bold("invalid")}"
           say ""
           result.reasons.each do |r|
-            say "  * #{pastel.yellow.bold(r)}"
+            say "  * #{pastel.yellow.bold(r.gsub("\n", "\n    "))}"
           end
           exit 1
         end
