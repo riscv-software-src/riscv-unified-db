@@ -17,7 +17,6 @@ implemented_extensions:
   - [Smpmp, "1.11.0"]
   - [U, "1.0.0"]
   - [Zifencei, "2.0.0"]
-  - [Sv32, "1.11.0"]
   - [Sv39, "1.11.0"]
 
 params:
