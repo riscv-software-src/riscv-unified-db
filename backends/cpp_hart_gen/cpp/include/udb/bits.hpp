@@ -60,6 +60,13 @@ static_assert(sizeof(1ull) == 8);
 #error "Compiler does not support __int128"
 #endif
 
+#ifndef IGNOREUNDEFINED
+#define UNDEFINED_VALUE_ERROR(s)  throw UndefinedValueError(s)
+#else
+#define UNDEFINED_VALUE_ERROR(s)
+#endif
+
+
 namespace udb {
 
   // helper to find the max of N unsigned values at compile time
@@ -2412,7 +2419,7 @@ namespace udb {
     constexpr operator BitsType<M, _Signed>() const {
       if constexpr (!BitsType<M, _Signed>::PossiblyUnknown) {
         if (m_unknown_mask != 0) {
-          throw UndefinedValueError("Cannot convert value with unknowns to Bits type");
+          UNDEFINED_VALUE_ERROR("Cannot convert value with unknowns to Bits type");
         }
       }
       return BitsType<M, _Signed>{*this};
@@ -2420,19 +2427,17 @@ namespace udb {
 
     template <typename T = std::conditional_t<Signed, SignedStorageType, StorageType>>
     constexpr T get() const {
-      if (m_unknown_mask == 0_b) {
-        return m_val.get();
-      } else {
-        throw UndefinedValueError("Cannot convert value with unknowns to a native C++ type");
+      if (m_unknown_mask != 0_b) {
+        UNDEFINED_VALUE_ERROR("Cannot convert value with unknowns to a native C++ type");
       }
+      return m_val.get();
     }
 
     constexpr _Bits<N, Signed> to_defined() const {
-      if (m_unknown_mask == 0_b) {
-        return m_val;
-      } else {
-        throw UndefinedValueError("Cannot convert value with unknowns to a defined type");
+      if (m_unknown_mask != 0_b) {
+        UNDEFINED_VALUE_ERROR("Cannot convert value with unknowns to a defined type");
       }
+      return m_val;
     }
 
 
@@ -2484,7 +2489,7 @@ namespace udb {
   constexpr bool operator op(const BitsType<M, _Signed> &rhs) const {                   \
     if (m_unknown_mask != 0_b ||                                                  \
         (BitsType<M, _Signed>::PossiblyUnknown && (rhs.unknown_mask() != 0_b))) { \
-      throw UndefinedValueError("Cannot compare unknown value");                  \
+      UNDEFINED_VALUE_ERROR("Cannot compare unknown value");                  \
     }                                                                             \
     return get() op rhs.to_defined().get();                                       \
   }
@@ -2630,7 +2635,7 @@ namespace udb {
     constexpr _PossiblyUnknownBits operator<<(const BitsType<M, false> &shamt) const {
       if constexpr (BitsType<M, false>::PossiblyUnknown) {
         if (shamt.unknown_mask() != 0_b) {
-          throw UndefinedValueError("Cannot shift an unknown amount");
+          UNDEFINED_VALUE_ERROR("Cannot shift an unknown amount");
         }
       }
       if (shamt.get() >= N) {
@@ -2645,7 +2650,7 @@ namespace udb {
     constexpr _PossiblyUnknownBits operator>>(const BitsClass<M, false> &shamt) const {
       if constexpr (BitsClass<M, false>::PossiblyUnknown) {
         if (shamt.unknown_mask() != 0_b) {
-          throw UndefinedValueError("Cannot shift an unknown amount");
+          UNDEFINED_VALUE_ERROR("Cannot shift an unknown amount");
         }
       }
       if (shamt.get() >= N) {
@@ -2660,7 +2665,7 @@ namespace udb {
     constexpr _PossiblyUnknownBits sra(const BitsClass<M, false> &shamt) const {
       if constexpr (BitsClass<M, false>::PossiblyUnknown) {
         if (shamt.unknown_mask() != 0_b) {
-          throw UndefinedValueError("Cannot shift an unknown amount");
+          UNDEFINED_VALUE_ERROR("Cannot shift an unknown amount");
         }
       }
       if (shamt.get() >= N) {
@@ -2719,7 +2724,7 @@ namespace udb {
       _Bits<constmax_v<N, RhsN> + 1, Signed> lhs{*this};
 
       if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Addition is not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Addition is not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
@@ -2742,7 +2747,7 @@ namespace udb {
       _Bits<constmax_v<N, RhsN> + 1, Signed> lhs{*this};
 
       if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Addition is not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Addition is not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
@@ -2771,7 +2776,7 @@ namespace udb {
       _Bits<addsat_v<N, RhsN>, Signed> lhs{*this};
 
       if (m_unknown_mask != 0_b || _rhs.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Addition is not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Addition is not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<RhsN, RhsSigned>::RuntimeWidth) {
@@ -3175,7 +3180,7 @@ namespace udb {
           m_val, result_width};
 
       if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Multiplication not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Multiplication not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<addsat_v<MaxN, RhsN>, RhsSigned>::RuntimeWidth) {
@@ -3198,7 +3203,7 @@ namespace udb {
           m_val, result_width};
 
       if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Addition not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Addition not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {
@@ -3221,7 +3226,7 @@ namespace udb {
           m_val, result_width};
 
       if (unknown_mask() != 0_b || other.unknown_mask() != 0_b) {
-        throw UndefinedValueError("Subtraction not defined on undefined values");
+        UNDEFINED_VALUE_ERROR("Subtraction not defined on undefined values");
       }
 
       if constexpr (RhsBitsType<constmax_v<MaxN, RhsN> + 1, RhsSigned>::RuntimeWidth) {

@@ -118,6 +118,9 @@ add_library(hart
 #  ../gen/iss/oryon/src/decode.cxx
 )
 target_include_directories(hart PUBLIC ${CMAKE_SOURCE_DIR}/include)
+if(IGNOREUNDEFINED STREQUAL "YES")
+target_compile_definitions(hart PUBLIC IGNOREUNDEFINED)
+endif()
 target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator fmt::fmt ctre::ctre -lgmp -lgmpxx)
 
 # add_library(hart_c ${CMAKE_SOURCE_DIR}/src/libhart_c.cpp)
@@ -135,6 +138,9 @@ add_executable(iss
   ${CMAKE_SOURCE_DIR}/src/iss.cpp
   ${CMAKE_SOURCE_DIR}/src/elf_reader.cpp
 )
+if(IGNOREUNDEFINED STREQUAL "YES")
+target_compile_definitions(iss PUBLIC IGNOREUNDEFINED)
+endif()
 target_link_libraries(iss PRIVATE hart elf CLI11::CLI11)
 
 
