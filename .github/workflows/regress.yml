@@ -222,7 +222,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run RV32 riscv-tests
-        run: ./do test:riscv_tests CONFIG=rv32 IGNOREUDEFINED=YES JOBS=4
+        run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4
   regress-riscv-tests-64:
     runs-on: ubuntu-latest
     env:
@@ -233,7 +233,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run RV64 riscv-tests
-        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUDEFINED=YES JOBS=4
+        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4
   regress-xqci-doc:
     runs-on: ubuntu-latest
     env:
