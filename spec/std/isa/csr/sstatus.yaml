@@ -40,7 +40,7 @@ fields:
       Alias of `mstatus.UXL`.
 
     type: RO
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 2
   MXR:
     alias: mstatus.MXR
     location: 19
