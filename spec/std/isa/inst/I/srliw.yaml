@@ -30,7 +30,7 @@ operation(): |
   # shamt is between 0-31
   XReg operand = X[xs1][31:0];
 
-  X[xd] = sext(operand >> shamt, 31);
+  X[xd] = sext(operand >> shamt, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

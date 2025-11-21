@@ -28,7 +28,7 @@ access:
 data_independent_timing: true
 operation(): |
   # shamt is between 0-32
-  X[xd] = sext(X[xs1] << shamt, 31);
+  X[xd] = sext(X[xs1] << shamt, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
