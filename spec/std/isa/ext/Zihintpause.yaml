@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zihintpause
-long_name: PAUSE instruction
+long_name: Pause Hint
 description: |
   The PAUSE instruction is a HINT that indicates the current hart's rate
   of instruction retirement should be temporarily reduced or paused. The
@@ -73,4 +73,4 @@ type: unprivileged
 versions:
   - version: "2.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2021-02

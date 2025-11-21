@@ -6,8 +6,8 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicbop
-long_name: Cache block prefetch
-description: Cache block prefetch instruction
+long_name: Cache-block prefetch
+description: Cache-block prefetch instructions
 type: unprivileged
 versions:
   - version: "1.0.0"
