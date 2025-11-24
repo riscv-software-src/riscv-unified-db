@@ -2103,8 +2103,8 @@ function stage1_page_walk {
       raise (page_fault_code, mode(), vaddr);
     }
 
-    for (U32 i = (LEVELS - 1); i >= 0; i--) {
-      U32 vpn = (vaddr >> (12 + VPN_SIZE*i)) & ((1 `<< VPN_SIZE) - 1);
+    for (U32 I = (LEVELS - 1); I >= 0; I--) {
+      U32 vpn = (vaddr >> (12 + VPN_SIZE*I)) & ((1 `<< VPN_SIZE) - 1);
 
       Bits<PA_SIZE> pte_gpaddr = (ppn << 12) + (vpn * (PTESIZE/8));
 
@@ -2177,8 +2177,8 @@ function stage1_page_walk {
 
       if (pte_flags.R == 1 || pte_flags.X == 1) {
         # found a leaf PTE
-        Bits<PA_SIZE> paddr_base = pte[PA_SIZE-3:i*VPN_SIZE + 10] `<< (i*VPN_SIZE + 12);
-        Bits<PA_SIZE> offset = vaddr[i*VPN_SIZE + 11:0];
+        Bits<PA_SIZE> paddr_base = pte[PA_SIZE-3:I*VPN_SIZE + 10] `<< (I*VPN_SIZE + 12);
+        Bits<PA_SIZE> offset = vaddr[I*VPN_SIZE + 11:0];
 
         # see if there is permission to perform the access
         if (op == MemoryOperation::Read || op == MemoryOperation::ReadModifyWrite) {
@@ -2215,7 +2215,7 @@ function stage1_page_walk {
         }
 
         # ensure remaining PPN bits are zero, otherwise there is a misaligned super page
-        raise (page_fault_code, mode(), vaddr) if ((i > 0) && (pte[i*VPN_SIZE + 10:10] != 0));
+        raise (page_fault_code, mode(), vaddr) if ((I > 0) && (pte[I*VPN_SIZE + 10:10] != 0));
 
         # check access and dirty bits
         if ((pte_flags.A == 0)         # access is clear
@@ -2268,7 +2268,7 @@ function stage1_page_walk {
             if (!success) {
               # the PTE changed between the read during the walk and the attempted atomic update
               # roll back, and try this level again
-              i = i + 1;
+              I = I + 1;
             } else {
               # successful translation and update
 
@@ -2308,7 +2308,7 @@ function stage1_page_walk {
       } else {
         # found a pointer to the next level
 
-        if (i == 0) {
+        if (I == 0) {
           # a pointer can't exist on the last level
           raise (page_fault_code, mode(), vaddr);
         }
@@ -2399,16 +2399,16 @@ function translate {
 
     if (translation_mode == SatpMode::Bare) {
       result.paddr = vaddr;
-    } else if (translation_mode == SatpMode::Sv32) {
+    } else if (xlen() == 32 && translation_mode == SatpMode::Sv32) {
       # Sv32 page table walk
       result = stage1_page_walk<32, 34, 32, 2>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv39) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv39) {
       # Sv39 page table walk
       result = stage1_page_walk<39, 56, 64, 3>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv48) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv48) {
       # Sv48 page table walk
       result = stage1_page_walk<48, 56, 64, 4>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv57) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv57) {
       # Sv57 page table walk
       result = stage1_page_walk<57, 56, 64, 5>(vaddr, op, effective_mode, encoding);
     } else {
