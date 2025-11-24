@@ -12,7 +12,7 @@ schema:
   type: boolean
 requirements:
   idl(): |
-    !$array_includes?(SXLEN, 64) -> !SV39X4_VSMODE_TRANSLATION;
+    !$array_includes?(SXLEN, 64) -> !SV39X4_TRANSLATION;
   reason: Sv39x4 is only valid if S-mode can get into RV64 mode
 definedBy:
   allOf:

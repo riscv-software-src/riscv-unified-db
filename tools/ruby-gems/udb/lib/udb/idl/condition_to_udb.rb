@@ -245,7 +245,7 @@ module Idl
           value_result = value_try do
             return {
               "param" => {
-                "name" => lhs.name,
+                "name" => lhs.var.name,
                 OP_TO_KEY.fetch(@op) => rhs.value(symtab),
                 "index" => T.must(index_value)
               }

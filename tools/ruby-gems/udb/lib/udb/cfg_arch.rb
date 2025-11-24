@@ -218,9 +218,20 @@ module Udb
           overlay_path = @config.info.overlay_path
           custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
           idl_path = File.exist?(custom_globals_path) ? custom_globals_path : @config.info.spec_path / "isa" / "globals.isa"
-          @idl_compiler.compile_file(
+          Udb.logger.info "Compiling global IDL"
+          pb =
+            Udb.create_progressbar(
+              "Compiling IDL for #{name} [:bar]",
+              clear: true,
+              frequency: 2
+            )
+          @idl_compiler.pb = pb
+          ast = @idl_compiler.compile_file(
             idl_path
           )
+          pb.finish
+          @idl_compiler.unset_pb
+          ast
         end
     end
 
@@ -445,15 +456,23 @@ module Udb
     # @api private
     sig { returns(Idl::SymbolTable) }
     def create_symtab
+      Udb.logger.info "Creating symbol table"
+      pb =
+        Udb.create_progressbar(
+          "Finding params for #{name} [:bar]",
+          clear: true
+        )
       all_params = # including both those will value/without value, and those in scope/out of scope
         @config.param_values.map do |pname, pvalue|
+          pb.advance
           p = param(pname)
           unless p.nil?
             ParameterWithValue.new(p, pvalue)
           end
         end.compact \
-        + params.reject { |p| @config.param_values.key?(p.name) }
+        + params.reject { |p| pb.advance; @config.param_values.key?(p.name) }
       final_param_vars = all_params.map do |param|
+        pb.advance
         idl_type =
           if param.schema_known?
             param.idl_type
@@ -493,6 +512,7 @@ module Udb
           Idl::Var.new(param.name, idl_type.make_const, param: true)
         end
       end
+      pb.finish
 
       Idl::SymbolTable.new(
         mxlen:,

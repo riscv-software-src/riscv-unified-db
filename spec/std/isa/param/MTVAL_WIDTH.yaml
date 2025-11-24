@@ -48,7 +48,7 @@ requirements:
         (
           implemented?(ExtensionName::Sdext) ||
           REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
-          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
           REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
           REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
           REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
@@ -58,41 +58,42 @@ requirements:
         )
     ) -> (MTVAL_WIDTH == 32);
 
-    (
-      (
-        MXLEN == 64 ||
-        (
-          MXLEN == 32 &&
-          PHYS_ADDR_WIDTH <= 32
-        )
-      ) &&
-        (
-          implemented?(ExtensionName::Sdext) ||
-          REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
-          REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
-          REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
-          REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
-          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
-          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
-          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
-          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
-        )
-    ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
+    # TODO: uncomment when we have support for parameter comparison to other parameters
+    # (
+    #   (
+    #     MXLEN == 64 ||
+    #     (
+    #       MXLEN == 32 &&
+    #       PHYS_ADDR_WIDTH <= 32
+    #     )
+    #   ) &&
+    #     (
+    #       implemented?(ExtensionName::Sdext) ||
+    #       REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+    #       REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+    #       REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+    #       REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+    #       REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+    #       REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+    #       REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+    #       REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+    #     )
+    # ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
 
-    (
-      implemented?(ExtensionName::S) &&
-      (
-        implemented?(ExtensionName::Sdext) ||
-        REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
-        REPORT_VA_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
-        REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
-        REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
-        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
-        REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
-        REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
-        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
-      )
-    ) -> (MTVAL_WIDTH >= max_va_size());
+    # (
+    #   implemented?(ExtensionName::S) &&
+    #   (
+    #     implemented?(ExtensionName::Sdext) ||
+    #     REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+    #     REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+    #     REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+    #     REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+    #     REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+    #     REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+    #     REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+    #     REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+    #   )
+    # ) -> (MTVAL_WIDTH >= max_va_size());
 
     REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION -> (MTVAL_WIDTH >= INSTR_ENC_SIZE);
   reason: |

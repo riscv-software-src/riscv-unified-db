@@ -97,8 +97,6 @@ module Udb
       .checked(:never)
     }
     def eql?(other)
-      return false unless other.is_a?(XlenTerm)
-
       (self <=> other) == 0
     end
   end
@@ -110,6 +108,14 @@ module Udb
     include Comparable
 
     class ComparisonOp < T::Enum
+      include Comparable
+
+      def eql?(other)
+        (self <=> other) == 0
+      end
+
+      def hash = serialize.hash
+
       enums do
         Equal = new("=")
         GreaterThanOrEqual = new(">=")
@@ -266,8 +272,6 @@ module Udb
       .checked(:never)
     }
     def eql?(other)
-      return false unless other.is_a?(ExtensionTerm)
-
       (self <=> other) == 0
     end
 
@@ -462,7 +466,22 @@ module Udb
 
     sig { returns(T::Hash[String, T.untyped]) }
     def to_h
-      @yaml
+      if @yaml.key?("oneOf")
+        excl_terms = @yaml["oneOf"].size.times.map do |i|
+          els = [
+            { "param" => { "name" => @yaml["name"], "equal" => @yaml.fetch("oneOf").fetch(i) } }
+          ]
+          els += @yaml.fetch("oneOf").size.times.select { |j| j != i }.map do |j|
+            { "param" => { "name" => @yaml["name"], "not_equal" => @yaml.fetch("oneOf").fetch(j) } }
+          end
+          { "allOf" => els }
+        end
+        {
+          "anyOf" => excl_terms
+        }
+      else
+        @yaml
+      end
     end
 
     sig { params(cfg_arch: T.nilable(ConfiguredArchitecture)).returns(String) }
@@ -492,7 +511,17 @@ module Udb
       when ParameterComparisonType::Includes
         "$array_includes?(#{param_to_s}, #{comparison_value})"
       when ParameterComparisonType::OneOf
-        "(#{T.cast(comparison_value, T::Array[T.any(Integer, String)]).map { |v| "#{param_to_s}==#{v}" }.join("||")})"
+        # construct XOR out of AND and OR
+        # e.g.,
+        # a XOR B XOR C = (a AND !b AND !c) OR (!a AND b AND !c) OR (!a AND !b AND c)
+        terms =
+          T.cast(comparison_value, T::Array[T.any(Integer, String)]).map do |v|
+            v.is_a?(String) ? "(#{param_to_s}==\"#{v}\")" : "(#{param_to_s}==#{v})"
+          end
+        excl_terms = terms.size.times.map do |i|
+          "(#{terms[i]} && #{terms.size.times.select { |j| j != i }.map { |j| "!#{terms[j]}" }.join(" && ")})"
+        end
+        "(#{excl_terms.join(" || ")})"
       else
         T.absurd(t)
       end
@@ -532,6 +561,9 @@ module Udb
         "#{name}[#{index}]"
       elsif !size.nil?
         "$array_size(#{name})"
+      elsif @yaml.key?("range")
+        msb, lsb = @yaml.fetch("range").split("-").map(&:to_i)
+        "#{name}[#{msb}:#{lsb}]"
       else
         name
       end
@@ -649,11 +681,9 @@ module Udb
           end
         when ParameterComparisonType::NotEqual
           if comparison_value != other_param.comparison_value
-            if comparison_value.is_a?(TrueClass) || comparison_value.is_a?(FalseClass)
-              self_implies_other
-            end
-          else
             self_implies_other
+          else
+            self_implies_not_other
           end
         when ParameterComparisonType::LessThan
           if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
@@ -686,7 +716,12 @@ module Udb
             self_implies_not_other
           end
         when ParameterComparisonType::Includes
-          raise "impossible"
+          # self must be a size comparison
+          raise "impossible: comparing #{self} to #{other_param}" unless @yaml.key?("size")
+          # if size is 0, we know it doesn't include something
+          if comparison_value == 0
+            self_implies_not_other
+          end
         else
           T.absurd(other_op)
         end
@@ -698,7 +733,7 @@ module Udb
               self_implies_other
             end
           else
-            self_implies_other
+            self_implies_not_other
           end
         when ParameterComparisonType::NotEqual
           if comparison_value != other_param.comparison_value # otherwise, this would be self-comparison
@@ -866,11 +901,11 @@ module Udb
       when ParameterComparisonType::OneOf
         case other_op
         when ParameterComparisonType::Equal
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| v != other_param.comparison_value }
             self_implies_not_other
           end
         when ParameterComparisonType::NotEqual
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| v != other_param.comparison_value }
             self_implies_other
           end
         when ParameterComparisonType::LessThan
@@ -891,11 +926,11 @@ module Udb
           end
         when ParameterComparisonType::OneOf
           # self implies other if all in set set are also in other set
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| T.cast(other_param.comparison_value, T::Array[Integer]).include?(v) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| T.cast(other_param.comparison_value, T::Array[T.any(Integer, String)]).include?(v) }
             self_implies_other
           end
         when ParameterComparisonType::Includes
-          raise "impossible"
+          raise "impossible: comparing #{self} to #{other_param}"
         else
           T.absurd(other_op)
         end
@@ -939,6 +974,14 @@ module Udb
         else
           -1
         end
+      elsif @yaml.key?("range") || other_param.to_h.key?("range")
+        if @yaml["range"] == other_param.to_h["range"]
+          comparison_value <=> T.cast(other_param.comparison_value, Integer)
+        elsif @yaml.key?("range")
+          1
+        else
+          -1
+        end
       elsif comparison_type != other_param.comparison_type
         comparison_type <=> other_param.comparison_type
       elsif comparison_value != other_param.comparison_value
@@ -962,7 +1005,7 @@ module Udb
       .returns(Integer)
       .checked(:never)
     }
-    def hash = @yaml.hash
+    def hash = @yaml.reject { |k, _| k == "reason" }.hash
 
     sig {
       override
@@ -1228,7 +1271,12 @@ module Udb
     # @return The unique terms (leafs) of this tree
     sig { returns(T::Array[TermType]) }
     def terms
-      @memo.terms ||= literals.uniq
+      @memo.terms ||=
+        begin
+          t = literals.uniq
+          raise "Problem with parameter hashing\n#{@memo.terms.map(&:to_s).uniq}\n#{@memo.terms.map(&:to_s)}" unless @memo.terms.map(&:to_s).uniq == @memo.terms.map(&:to_s)
+          t
+        end
     end
 
     # @return The unique terms (leafs) of this tree, exculding antecendents of an IF
@@ -1248,11 +1296,11 @@ module Udb
     sig { returns(T::Array[TermType]) }
     def literals
       @memo.literals ||=
-        if @type == LogicNodeType::Term
-          [@children.fetch(0)]
-        else
-          node_children.map { |child| child.literals }.flatten
-        end
+      if @type == LogicNodeType::Term
+        [@children.fetch(0)]
+      else
+        node_children.map { |child| child.literals }.flatten
+      end
     end
 
 
@@ -1598,9 +1646,13 @@ module Udb
         yes_cnt = T.let(0, Integer)
         node_children.each do |child|
           res1 = child.eval_cb(callback)
-          return SatisfiedResult::No if res1 == SatisfiedResult::No
+          if res1 == SatisfiedResult::No
+            return SatisfiedResult::No
+          end
 
-          yes_cnt += 1 if res1 == SatisfiedResult::Yes
+          if res1 == SatisfiedResult::Yes
+            yes_cnt += 1
+          end
         end
         if yes_cnt == node_children.size
           SatisfiedResult::Yes
@@ -1641,7 +1693,9 @@ module Udb
 
           has_maybe ||= (res1 == SatisfiedResult::Maybe)
           yes_cnt += 1 if res1 == SatisfiedResult::Yes
-          return SatisfiedResult::No if yes_cnt > 1
+          if yes_cnt > 1
+            return SatisfiedResult::No
+          end
         end
         if yes_cnt == 1 && !has_maybe
           SatisfiedResult::Yes
@@ -2918,7 +2972,7 @@ module Udb
         begin
           nterms = terms.size
 
-          if nterms < 8 && literals.size <= 32
+          if nterms < 8 && literals.size <= 128
             # just brute force it
             LogicNode.inc_brute_force_sat_solves
             term_idx = T.let({}, T::Hash[TermType, Integer])
@@ -3034,7 +3088,7 @@ module Udb
           )
         ]
       )
-      !contradiction.satisfiable?
+      contradiction.unsatisfiable?
     end
 
     sig {
@@ -3248,7 +3302,7 @@ module Udb
           p cnf 1 1
           1 0
         DIMACS
-      elsif @type == LogicNodeType::Not
+      elsif @type == LogicNodeType::Not && node_children.fetch(0).type == LogicNodeType::Term
         <<~DIMACS
           p cnf 1 1
           -1 0

@@ -54,7 +54,12 @@ module Udb
     def initialize(idl, input_file:, input_line:, cfg_arch:, reason: nil)
       @cfg_arch = cfg_arch
       symtab = cfg_arch.symtab.global_clone
-      @ast = @cfg_arch.idl_compiler.compile_constraint(idl, symtab)
+      begin
+        @ast = @cfg_arch.idl_compiler.compile_constraint(idl, symtab)
+      rescue SyntaxError
+        Udb.logger.error "Could not compile IDL constraint: \n#{idl}"
+        raise
+      end
       symtab.release
       @reason = reason
     end
@@ -226,7 +231,8 @@ module Udb
     #  (a || a) is equivalent to (a)
     sig { params(other: AbstractCondition).returns(T::Boolean) }
     def equivalent?(other)
-      to_logic_tree(expand: true).equivalent?(other.to_logic_tree(expand: true))
+      contradition = -(self.implies(other) & other.implies(self))
+      contradition.unsatisfiable?
     end
 
     sig { params(other_condition: AbstractCondition).returns(T::Boolean) }
@@ -532,12 +538,22 @@ module Udb
     sig { params(term: ParameterTerm, expansion_clauses: T::Array[LogicNode], touched_terms: T::Set[TermType]).void }
     def expand_parameter_term_requirements(term, expansion_clauses, touched_terms)
       unless touched_terms.include?(term)
+        # param expansion only depends on the parameter, not the comparison
+        # return if touched_terms.any? { |t| t.is_a?(ParameterTerm) && t.name == term.name }
+
         touched_terms.add(term)
 
-        # param expansion only depends on the parameter, not the comparison
-        return if touched_terms.any? { |t| t.is_a?(ParameterTerm) && t.name == term.name }
-
-        param = T.must(@cfg_arch.param(term.name))
+        p = @cfg_arch.param(term.name)
+        if p.nil?
+          Udb.logger.error "While expanding:"
+          Udb.logger.error
+          Udb.logger.error
+          Udb.logger.error to_logic_tree(expand: false)
+          Udb.logger.error
+          Udb.logger.error
+          Udb.logger.error "Parameter #{term.name} is not defined"
+        end
+        param = T.must(p)
         unless param.requirements_condition.empty?
           clause =
             LogicNode.new(
@@ -636,10 +652,7 @@ module Udb
               else
                 LogicNode.new(LogicNodeType::And, [starting_tree] + expansion_clauses)
               end
-            # puts starting_tree
-            # puts
-            # puts expanded_tree
-            # puts "_________________________________________________________________"
+
             expanded_tree
           end
       else
@@ -677,7 +690,10 @@ module Udb
       elsif yaml.key?("anyOf")
         LogicNode.new(LogicNodeType::Or, yaml["anyOf"].map { |node| to_logic_tree_helper(node) })
       elsif yaml.key?("noneOf")
-        LogicNode.new(LogicNodeType::None, yaml["noneOf"].map { |node| to_logic_tree_helper(node) })
+        LogicNode.new(
+          LogicNodeType::Not,
+          [LogicNode.new(LogicNodeType::Or, yaml["noneOf"].map { |node| to_logic_tree_helper(node) })]
+        )
       elsif yaml.key?("oneOf")
         LogicNode.new(LogicNodeType::Xor, yaml["oneOf"].map { |node| to_logic_tree_helper(node) })
       elsif yaml.key?("not")
@@ -922,17 +938,13 @@ module Udb
 
     sig { override.returns(T.any(T::Hash[String, T.untyped], T::Boolean)) }
     def to_h
-      T.cast(to_logic_tree(expand: false).to_h, T::Hash[String, T.untyped])
+      to_logic_tree(expand: false).to_h
     end
 
     sig { override.params(cfg_arch: ConfiguredArchitecture).returns(String) }
     def to_idl(cfg_arch)
       idl = to_logic_tree(expand: false).to_idl(cfg_arch)
-      if to_logic_tree(expand: false).type == LogicNodeType::If
-        idl
-      else
-        "-> #{idl};"
-      end
+      "-> #{idl};"
     end
 
     sig { override.params(expand: T::Boolean).returns(String) }
@@ -1527,7 +1539,8 @@ module Udb
             to_param_logic_tree_helper(yaml.fetch("then"))
           ]
         )
-
+      elsif yaml.key?("param")
+        to_param_logic_tree_helper(yaml.fetch("param"))
       else
         raise "unexpected key #{yaml.keys}"
       end

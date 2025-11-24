@@ -78,6 +78,11 @@ module Udb
     def advance
       # do nothing
     end
+
+    sig { void }
+    def finish
+      # do nothing
+    end
   end
 
   class DummyMultiProgressBar

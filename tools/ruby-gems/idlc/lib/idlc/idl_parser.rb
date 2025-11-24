@@ -2610,11 +2610,11 @@ module Idl
                             if r111
                               s112, i112 = [], index
                               loop do
-                                if has_terminal?(@regexps[gr = '\A[0-9a-fA-F]'] ||= Regexp.new(gr), :regexp, index)
+                                if has_terminal?(@regexps[gr = '\A[0-9a-fA-F_]'] ||= Regexp.new(gr), :regexp, index)
                                   r113 = true
                                   @index += 1
                                 else
-                                  terminal_parse_failure('[0-9a-fA-F]')
+                                  terminal_parse_failure('[0-9a-fA-F_]')
                                   r113 = nil
                                 end
                                 if r113
@@ -2806,11 +2806,11 @@ module Idl
                                     if r131
                                       s132, i132 = [], index
                                       loop do
-                                        if has_terminal?(@regexps[gr = '\A[0-9a-fA-F]'] ||= Regexp.new(gr), :regexp, index)
+                                        if has_terminal?(@regexps[gr = '\A[0-9a-fA-F_]'] ||= Regexp.new(gr), :regexp, index)
                                           r133 = true
                                           @index += 1
                                         else
-                                          terminal_parse_failure('[0-9a-fA-F]')
+                                          terminal_parse_failure('[0-9a-fA-F_]')
                                           r133 = nil
                                         end
                                         if r133
@@ -8009,6 +8009,17 @@ module Idl
 
   module ImplicationExpression0
     def antecedent
+      elements[2]
+    end
+
+    def consequent
+      elements[6]
+    end
+
+  end
+
+  module ImplicationExpression1
+    def antecedent
       elements[0]
     end
 
@@ -8028,15 +8039,17 @@ module Idl
       return cached
     end
 
-    i0, s0 = index, []
-    r2 = _nt_p9_binary_expression
-    if r2
-      r1 = r2
+    i0 = index
+    i1, s1 = index, []
+    if (match_len = has_terminal?('(', false, index))
+      r2 = true
+      @index += match_len
     else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
+      terminal_parse_failure('\'(\'')
+      r2 = nil
     end
-    s0 << r1
-    if r1
+    s1 << r2
+    if r2
       s3, i3 = [], index
       loop do
         r4 = _nt_space
@@ -8047,41 +8060,158 @@ module Idl
         end
       end
       r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-      s0 << r3
+      s1 << r3
       if r3
-        if (match_len = has_terminal?('->', false, index))
-          r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-          @index += match_len
+        r6 = _nt_p9_binary_expression
+        if r6
+          r5 = r6
         else
-          terminal_parse_failure('\'->\'')
-          r5 = nil
+          r5 = instantiate_node(SyntaxNode,input, index...index)
         end
-        s0 << r5
+        s1 << r5
         if r5
-          s6, i6 = [], index
+          s7, i7 = [], index
           loop do
-            r7 = _nt_space
-            if r7
-              s6 << r7
+            r8 = _nt_space
+            if r8
+              s7 << r8
             else
               break
             end
           end
-          r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
-          s0 << r6
-          if r6
-            r8 = _nt_p9_binary_expression
-            s0 << r8
+          r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+          s1 << r7
+          if r7
+            if (match_len = has_terminal?('->', false, index))
+              r9 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+              @index += match_len
+            else
+              terminal_parse_failure('\'->\'')
+              r9 = nil
+            end
+            s1 << r9
+            if r9
+              s10, i10 = [], index
+              loop do
+                r11 = _nt_space
+                if r11
+                  s10 << r11
+                else
+                  break
+                end
+              end
+              r10 = instantiate_node(SyntaxNode,input, i10...index, s10)
+              s1 << r10
+              if r10
+                r12 = _nt_p9_binary_expression
+                s1 << r12
+                if r12
+                  s13, i13 = [], index
+                  loop do
+                    r14 = _nt_space
+                    if r14
+                      s13 << r14
+                    else
+                      break
+                    end
+                  end
+                  r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+                  s1 << r13
+                  if r13
+                    if (match_len = has_terminal?(')', false, index))
+                      r16 = true
+                      @index += match_len
+                    else
+                      terminal_parse_failure('\')\'')
+                      r16 = nil
+                    end
+                    if r16
+                      r15 = r16
+                    else
+                      r15 = instantiate_node(SyntaxNode,input, index...index)
+                    end
+                    s1 << r15
+                  end
+                end
+              end
+            end
           end
         end
       end
     end
-    if s0.last
-      r0 = instantiate_node(Idl::ImplicationExpressionSyntaxNode,input, i0...index, s0)
-      r0.extend(ImplicationExpression0)
+    if s1.last
+      r1 = instantiate_node(Idl::ImplicationExpressionSyntaxNode,input, i1...index, s1)
+      r1.extend(ImplicationExpression0)
     else
-      @index = i0
-      r0 = nil
+      @index = i1
+      r1 = nil
+    end
+    if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+      r0 = r1
+    else
+      i17, s17 = index, []
+      r19 = _nt_p9_binary_expression
+      if r19
+        r18 = r19
+      else
+        r18 = instantiate_node(SyntaxNode,input, index...index)
+      end
+      s17 << r18
+      if r18
+        s20, i20 = [], index
+        loop do
+          r21 = _nt_space
+          if r21
+            s20 << r21
+          else
+            break
+          end
+        end
+        r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
+        s17 << r20
+        if r20
+          if (match_len = has_terminal?('->', false, index))
+            r22 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+            @index += match_len
+          else
+            terminal_parse_failure('\'->\'')
+            r22 = nil
+          end
+          s17 << r22
+          if r22
+            s23, i23 = [], index
+            loop do
+              r24 = _nt_space
+              if r24
+                s23 << r24
+              else
+                break
+              end
+            end
+            r23 = instantiate_node(SyntaxNode,input, i23...index, s23)
+            s17 << r23
+            if r23
+              r25 = _nt_p9_binary_expression
+              s17 << r25
+            end
+          end
+        end
+      end
+      if s17.last
+        r17 = instantiate_node(Idl::ImplicationExpressionSyntaxNode,input, i17...index, s17)
+        r17.extend(ImplicationExpression1)
+      else
+        @index = i17
+        r17 = nil
+      end
+      if r17
+        r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
+        r0 = r17
+      else
+        @index = i0
+        r0 = nil
+      end
     end
 
     node_cache[:implication_expression][start_index] = r0

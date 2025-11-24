@@ -246,7 +246,6 @@ class TestConditions < Minitest::Test
         raise "?"
       end
     end
-    puts cond.to_logic_tree(expand: true)
     assert_equal SatisfiedResult::Yes, cond.to_logic_tree(expand: true).eval_cb(cb)
   end
 
@@ -371,7 +370,15 @@ class TestConditions < Minitest::Test
         idl = param.defined_by_condition.to_idl($db_cfg_arch)
 
         idl_cond = IdlCondition.new({ "idl()" => idl }, $db_cfg_arch, input_file: nil, input_line: nil)
-        assert idl_cond.equivalent?(param.defined_by_condition)
+        assert(
+          idl_cond.equivalent?(param.defined_by_condition),
+          [
+            "The following are not equivalent, but should be:",
+            YAML.dump(h),
+            idl,
+            param.defined_by_condition.to_s
+          ].join("\n\n")
+        )
         h_cond = Condition.new(h, $db_cfg_arch)
         assert h_cond.equivalent?(param.defined_by_condition)
 
@@ -463,8 +470,18 @@ class TestConditions < Minitest::Test
 
           h = ext_ver.requirements_condition.to_h
           idl = ext_ver.requirements_condition.to_idl($db_cfg_arch)
-
+          # puts idl
+          # puts ext_ver.requirements_condition
           idl_cond = IdlCondition.new({ "idl()" => idl }, $db_cfg_arch, input_file: nil, input_line: nil)
+          # puts idl_cond
+          # puts ext_ver.requirements_condition.to_logic_tree(expand: true)
+          # puts
+          # puts
+          # puts ext_ver.requirements_condition.to_logic_tree(expand: true)
+          # puts idl_cond.to_logic_tree(expand: true)
+
+          assert ext_ver.requirements_condition.equivalent?(ext_ver.requirements_condition)
+          # puts "YES"
           assert idl_cond.equivalent?(ext_ver.requirements_condition)
           h_cond = Condition.new(h, $db_cfg_arch)
           assert h_cond.equivalent?(ext_ver.requirements_condition)

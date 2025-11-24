@@ -82,13 +82,13 @@ grammar Idl
     '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
     '0' [0-7] [0-7_]* 's' <Idl::IntLiteralSyntaxNode> /
     [1-9] [0-9]* 's' <Idl::IntLiteralSyntaxNode> /
-    '0x' [0-9a-fA-F] [0-9a-fA-F]* 's' <Idl::IntLiteralSyntaxNode> /
+    '0x' [0-9a-fA-F] [0-9a-fA-F_]* 's' <Idl::IntLiteralSyntaxNode> /
 
     # c++ style: unsigned
     '0b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
     '0' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
     [1-9] [0-9]* <Idl::IntLiteralSyntaxNode> /
-    '0x' [0-9a-fA-F] [0-9a-fA-F]* <Idl::IntLiteralSyntaxNode> /
+    '0x' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
 
     # special case: just a single 0
     '0' 's'? <Idl::IntLiteralSyntaxNode>
@@ -406,6 +406,8 @@ grammar Idl
   end
 
   rule implication_expression
+    '(' space* antecedent:p9_binary_expression? space* '->' space* consequent:p9_binary_expression space* ')'? <Idl::ImplicationExpressionSyntaxNode>
+    /
     antecedent:p9_binary_expression? space* '->' space* consequent:p9_binary_expression <Idl::ImplicationExpressionSyntaxNode>
   end
 
