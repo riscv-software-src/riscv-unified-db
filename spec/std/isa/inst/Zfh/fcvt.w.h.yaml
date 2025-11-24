@@ -7,11 +7,8 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.w.h
 long_name: Floating-point Convert Half-precision to Word
-description:
-  - id: inst-fcvt.w.h-behaviour
-    normative: false
-    text: |
-      `fcvt.w.h` converts a half-precision floating-point number to a signed 32-bit integer.
+description: |
+  `fcvt.w.h` converts a half-precision floating-point number to a signed 32-bit integer.
 definedBy: Zfh
 assembly: xd, fs1, rm
 encoding:
