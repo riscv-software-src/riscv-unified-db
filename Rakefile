@@ -59,6 +59,7 @@ namespace :chore do
   task :update_deps do
     # these should run in order,
     # so don't change this to use task prereqs, which might run in any order
+    sh "bundle update --gemfile Gemfile --all"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
 
@@ -111,17 +112,17 @@ end
 
 sig { params(test_files: T::Array[String]).returns(String) }
 def make_test_cmd(test_files)
-  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map{ |f| "require \"#{f}\""}.join("; ")}' --"
+  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map { |f| "require \"#{f}\"" }.join("; ")}' --"
 end
 
 namespace :test do
 
   # "Run the cross-validation against LLVM"
   task :llvm do
-      begin
-        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
-      rescue => e
-        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    begin
+      sh "/opt/venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+    rescue => e
+      raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
   end
   # "Run the IDL compiler test suite"
@@ -163,9 +164,18 @@ namespace :test do
   task :inst_encodings do
     print "Checking for conflicts in instruction encodings.."
 
+    failed = T.let(false, T::Boolean)
+
     cfg_arch = $resolver.cfg_arch_for("_")
     insts = cfg_arch.instructions
-    failed = T.let(false, T::Boolean)
+    inst_names = T.let(Set.new, T::Set[String])
+    insts.each do |i|
+      if inst_names.include?(i.name)
+        warn "Duplicate instruction name: #{i.name}"
+        failed = true
+      end
+      inst_names.add(i.name)
+    end
     insts.each_with_index do |inst, idx|
       [32, 64].each do |xlen|
         next unless inst.defined_in_base?(xlen)
@@ -392,7 +402,7 @@ end
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    Rake::Task["test:udb:unit"].invoke
+    # Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC

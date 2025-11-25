@@ -11,7 +11,9 @@ virtual_address: 0x256
 writable: true
 priv_mode: VS
 length: VSXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-vsireg5-purpose
     normative: true

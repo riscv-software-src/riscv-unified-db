@@ -1,11 +1,13 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
 
+require_relative "test_helper"
+
 require "English"
 require "fileutils"
-require "minitest/autorun"
 require "open3"
 require "tmpdir"
 require "yaml"
@@ -26,7 +28,7 @@ class TestYamlLoader < Minitest::Test
 
       stdout, stderr, status =
         Dir.chdir(Udb.repo_root) do
-          Open3.capture3("/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
+          Open3.capture3("/opt/venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}")
         end
       # puts stdout
       # puts stderr
@@ -53,7 +55,7 @@ class TestYamlLoader < Minitest::Test
         File.write(test_dir / "test#{i + 1}.yaml", yaml)
       end
 
-      system "/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
+      system "/opt/venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}"
 
       if $CHILD_STATUS == 0
         YAML.load_file(resolved_dir / "test" / "test1.yaml")
@@ -286,7 +288,7 @@ class TestYamlLoader < Minitest::Test
     refute_nil(doc)
     assert_equal("test/test2.yaml#", doc["$child_of"])
     assert_equal("Should take precedence", doc["target1"])
-    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" }}, doc["target2"])
+    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" } }, doc["target2"])
   end
 
   def test_multi_inherits_in_the_same_document

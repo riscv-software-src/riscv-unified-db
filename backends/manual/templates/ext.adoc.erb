@@ -36,7 +36,7 @@
 
 <%= ext.description %>
 
-<%- insts = ext.instructions.select { |inst| ext.versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) } } -%>
+<%- insts = ext.instructions -%>
 <%- unless insts.empty? -%>
 == Instructions
 

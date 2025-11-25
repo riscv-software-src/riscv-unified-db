@@ -24,7 +24,9 @@ description: |
   is non-zero. Since triggers can be used both by Debug Mode and M-mode, the external debugger must
   restore this register if it modifies it.
 
-definedBy: Sdtrig
+definedBy:
+  extension:
+    name: Sdtrig
 fields:
   INDEX:
     location_rv32: 31-0

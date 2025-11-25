@@ -16,9 +16,10 @@ description: |
   Values of bitmask encoding supported:  0,1,2,4,8,16,15,31
   Instruction encoded in CB instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisync
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcisync
 assembly: " slist"
 base: 32
 encoding:

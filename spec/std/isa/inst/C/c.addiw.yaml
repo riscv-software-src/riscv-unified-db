@@ -13,9 +13,12 @@ description: |
   The immediate can be zero for C.ADDIW, where this corresponds to `sext.w xd`.
   C.ADDIW is only valid when xd &ne; x0; the code points with xd=x0 are reserved.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: C
+          - name: Zca
 base: 64
 assembly: xd, imm
 encoding:

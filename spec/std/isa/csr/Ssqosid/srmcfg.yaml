@@ -10,7 +10,9 @@ address: 0x181
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Ssqosid
+definedBy:
+  extension:
+    name: Ssqosid
 description:
   - id: csr-srmcfg-purpose
     normative: true

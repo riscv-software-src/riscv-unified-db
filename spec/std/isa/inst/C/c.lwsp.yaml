@@ -14,9 +14,10 @@ description: |
   It expands to `lw` `xd, offset(x2)`.
   C.LWSP is only valid when xd &ne; x0. The code points with xd=x0 are reserved.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xd, imm(sp)
 encoding:
   match: 010-----------10

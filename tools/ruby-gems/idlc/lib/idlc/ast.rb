@@ -188,6 +188,7 @@ module Idl
 
       yield
     end
+
     sig { params(value_result: T.untyped, block: T.proc.returns(T.untyped)).returns(T.untyped) }
     def value_else(value_result, &block) = self.class.value_else(value_result, &block)
 
@@ -751,6 +752,62 @@ module Idl
     def type_check(symtab); end
   end
 
+  class TrueExpressionSyntaxNode < SyntaxNode
+    def to_ast = TrueExpressionAst.new(input, interval)
+  end
+
+  class TrueExpressionAst < AstNode
+    include Rvalue
+
+    sig { params(input: String, interval: T::Range[Integer]).void }
+    def initialize(input, interval)
+      super(input, interval, [])
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab); end
+
+    sig { override.params(symtab: SymbolTable).returns(Type) }
+    def type(symtab) = BoolType
+
+    sig { override.params(symtab: SymbolTable).returns(TrueClass) }
+    def value(symtab) = true
+
+    sig { override.returns(String) }
+    def to_idl = "true"
+  end
+
+  class FalseExpressionSyntaxNode < SyntaxNode
+    def to_ast = FalseExpressionAst.new(input, interval)
+  end
+
+  class FalseExpressionAst < AstNode
+    include Rvalue
+
+    sig { params(input: String, interval: T::Range[Integer]).void }
+    def initialize(input, interval)
+      super(input, interval, [])
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab); end
+
+    sig { override.params(symtab: SymbolTable).returns(Type) }
+    def type(symtab) = BoolType
+
+    sig { override.params(symtab: SymbolTable).returns(FalseClass) }
+    def value(symtab) = false
+
+    sig { override.returns(String) }
+    def to_idl = "false"
+  end
+
   class IdSyntaxNode < SyntaxNode
     def to_ast = IdAst.new(input, interval)
   end
@@ -1059,6 +1116,56 @@ module Idl
     end
   end
 
+  class ArrayIncludesSyntaxNode < SyntaxNode
+    def to_ast
+      ArrayIncludesAst.new(input, interval, send(:ary).to_ast, send(:value).to_ast)
+    end
+  end
+
+  class ArrayIncludesAst < AstNode
+    include Rvalue
+
+    sig { returns(RvalueAst) }
+    def ary = T.cast(children[0], RvalueAst)
+
+    sig { returns(RvalueAst) }
+    def expr = T.cast(children[1], RvalueAst)
+
+    sig { params(input: String, interval: T::Range[Integer], ary: RvalueAst, value: RvalueAst).void }
+    def initialize(input, interval, ary, value)
+      super(input, interval, [ary, value])
+    end
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      ary.type_check(symtab)
+      ary_type = ary.type(symtab)
+      type_error "First argument of $array_includes? must be an array. Found #{ary_type}" unless ary_type.kind == :array
+
+      expr.type_check(symtab)
+      value_type = expr.type(symtab)
+      unless value_type.comparable_to?(ary_type.sub_type)
+        type_error "Second argument of $array_includes? must be comparable to the array element type. Found #{ary_type.sub_type} and #{value_type}"
+      end
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(Type) }
+    def type(symtab)
+      BoolType
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def value(symtab)
+      T.cast(ary.value(symtab), T::Array[T.untyped]).include?(expr.value(symtab))
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
+    sig { override.returns(String) }
+    def to_idl = "$array_size(#{ary.to_idl}, #{expr.to_idl})"
+  end
+
   class ArraySizeSyntaxNode < SyntaxNode
     def to_ast
       ArraySizeAst.new(input, interval, send(:expression).to_ast)
@@ -1066,6 +1173,8 @@ module Idl
   end
 
   class ArraySizeAst < AstNode
+    include Rvalue
+
     # @return [AstNode] Array expression
     def expression = children[0]
 
@@ -1093,8 +1202,11 @@ module Idl
       end
     end
 
+    sig { override.params(symtab: SymbolTable).returns(Integer) }
     def value(symtab)
-      expression.type(symtab).width
+      w = expression.type(symtab).width
+      value_error "Width of the array is unknown" if w == :unknown
+      T.cast(w, Integer)
     end
 
     sig { override.returns(String) }
@@ -1237,6 +1349,8 @@ module Idl
   #
   #  $enum_to_a(PrivilegeMode) #=> [3, 1, 1, 0, 5, 4]
   class EnumArrayCastAst < AstNode
+    include Rvalue
+
     def enum_class = children[0]
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
@@ -1863,14 +1977,16 @@ module Idl
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab)
-      if var.name == "X"
+      v = var
+      if v.is_a?(IdAst) && v.name == "X"
         false
       else
-        var.const_eval?(symtab) && msb.const_eval?(symtab).const_eval? && lsb.const_eval?(symtab)
+        v.const_eval?(symtab) && msb.const_eval?(symtab).const_eval? && lsb.const_eval?(symtab)
       end
     end
 
-    def var = @children[0]
+    sig { returns(RvalueAst) }
+    def var = T.cast(@children[0], RvalueAst)
     def msb = @children[1]
     def lsb = @children[2]
 
@@ -1922,7 +2038,7 @@ module Idl
     # @!macro value
     def value(symtab)
       mask = (1 << (msb.value(symtab) - lsb.value(symtab) + 1)) - 1
-      (var.value(symtab) >> lsb.value(symtab)) & mask
+      (T.cast(var.value(symtab), Integer) >> lsb.value(symtab)) & mask
     end
 
     # @!macro to_idl
@@ -2463,7 +2579,7 @@ module Idl
         if symtab.mxlen == 64 && symtab.multi_xlen?
           Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
         else
-          Type.new(:bits, width: field(symtab).location(symtab.mxlen).size)
+          Type.new(:bits, width: field(symtab).location(symtab.mxlen.nil? ? 64 : symtab.mxlen).size)
         end
       elsif field(symtab).base64_only?
         Type.new(:bits, width: field(symtab).location(64).size)
@@ -3041,6 +3157,147 @@ module Idl
     end
   end
 
+  class ImplicationExpressionSyntaxNode < SyntaxNode
+    sig { override.returns(ImplicationExpressionAst) }
+    def to_ast
+      antecedent = send(:antecedent)
+      ImplicationExpressionAst.new(
+        input, interval,
+        antecedent.empty? ? TrueExpressionAst.new(input, interval.first...interval.first) : antecedent.to_ast, send(:consequent).to_ast
+      )
+    end
+  end
+
+  class ImplicationExpressionAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        antecedent: RvalueAst,
+        consequent: RvalueAst
+      ).void
+    }
+    def initialize(input, interval, antecedent, consequent)
+      super(input, interval, [antecedent, consequent])
+    end
+
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      antecedent.const_eval?(symtab) && consequent.const_eval?(symtab)
+    end
+
+    sig { returns(RvalueAst) }
+    def antecedent = T.cast(@children.fetch(0), RvalueAst)
+
+    sig { returns(RvalueAst) }
+    def consequent = T.cast(@children.fetch(1), RvalueAst)
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      antecedent.type_error "Antecedent must a boolean" unless antecedent.type(symtab).kind == :boolean
+      consequent.type_error "Consequent must a boolean" unless consequent.type(symtab).kind == :boolean
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      return true if antecedent.value(symtab) == false
+      T.cast(consequent.value(symtab), T::Boolean)
+    end
+
+    sig { override.returns(String) }
+    def to_idl = "#{antecedent.to_idl} -> #{consequent.to_idl}"
+
+  end
+
+  class ImplicationStatementSyntaxNode < SyntaxNode
+    sig { override.returns(ImplicationStatementAst) }
+    def to_ast
+      ImplicationStatementAst.new(input, interval, send(:implication_expression).to_ast)
+    end
+  end
+
+  class ImplicationStatementAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        implication_expression: ImplicationExpressionAst
+      ).void
+    }
+    def initialize(input, interval, implication_expression)
+      super(input, interval, [implication_expression])
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = expression.const_eval?(symtab)
+
+    sig { returns(ImplicationExpressionAst) }
+    def expression = T.cast(@children.fetch(0), ImplicationExpressionAst)
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      expression.type_check(symtab)
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      expression.satisfied?(symtab)
+    end
+
+    sig { override.returns(String) }
+    def to_idl = "#{expression.to_idl};"
+  end
+
+  class ConstraintBodySyntaxNode < SyntaxNode
+    sig { override.returns(ConstraintBodyAst) }
+    def to_ast
+      stmts = []
+      send(:b).elements.each do |e|
+        stmts << e.i.to_ast
+      end
+      ConstraintBodyAst.new(input, interval, stmts)
+    end
+  end
+
+  class ConstraintBodyAst < AstNode
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        stmts: T::Array[T.any(ImplicationStatementAst, ForLoopAst)]
+      ).void
+    }
+    def initialize(input, interval, stmts)
+      super(input, interval, stmts)
+    end
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = stmts.all? { |stmt| stmt.const_eval?(symtab) }
+
+    sig { returns(T::Array[T.any(ImplicationStatementAst, ForLoopAst)]) }
+    def stmts = T.cast(@children, T::Array[T.any(ImplicationStatementAst, ForLoopAst)])
+
+    sig { override.params(symtab: SymbolTable).void }
+    def type_check(symtab)
+      stmts.each do |stmt|
+        stmt.type_check(symtab)
+      end
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      stmts.all? do |stmt|
+        stmt.satisfied?(symtab)
+      end
+    end
+
+    sig { override.returns(String) }
+    def to_idl
+      stmts.map { |stmt| stmt.to_idl }.join("\n")
+    end
+  end
+
   class WidthRevealSyntaxNode < SyntaxNode
     def to_ast
       WidthRevealAst.new(input, interval, send(:expression).to_ast)
@@ -3275,21 +3532,49 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      lhs_type = lhs.type(symtab)
-      short_circuit = T.let(false, T::Boolean)
 
-      value_result = value_try do
-        lhs_value = lhs.value(symtab)
-        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
-          short_circuit = true
+      if op == "||" || op == "&&"
+        # see if we can short circuit
+        lhs_value = T.let(nil, T.untyped)
+        value_try do
+          lhs_value = lhs.value(symtab)
+        end
+        rhs_value = T.let(nil, T.untyped)
+        value_try do
+          rhs_value = rhs.value(symtab)
+        end
+
+        if (lhs_value == true || lhs_value == false) && (rhs_value == true || rhs_value == false)
+          # both are known and boolean. nothing more to check
+          return ConstBoolType
+        elsif lhs_value == false && op == "||"
+          rhs_type = rhs.type(symtab)
+          return rhs_type.const? ? ConstBoolType : BoolType
+        elsif lhs_value == true && op == "||"
+          return ConstBoolType
+        elsif lhs_value == true && op == "&&"
+          rhs_type = rhs.type(symtab)
+          return rhs_type.const? ? ConstBoolType : BoolType
+        elsif lhs_value == false && op == "&&"
+          return ConstBoolType
+        elsif rhs_value == false && op == "||"
+          lhs_type = lhs.type(symtab)
+          return lhs_type.const? ? ConstBoolType : BoolType
+        elsif rhs_value == true && op == "||"
+          return ConstBoolType
+        elsif rhs_value == true && op == "&&"
+          lhs_type = lhs.type(symtab)
+          return lhs_type.const? ? ConstBoolType : BoolType
+        elsif rhs_value == false && op == "&&"
+          return ConstBoolType
         end
       end
-      value_else(value_result) { short_circuit = false }
 
-      rhs_type = rhs.type(symtab) unless short_circuit
+      lhs_type = lhs.type(symtab)
+      rhs_type = rhs.type(symtab)
 
       qualifiers = []
-      qualifiers << :const if lhs_type.const? && (short_circuit || rhs_type.const?)
+      qualifiers << :const if lhs_type.const? && rhs_type.const?
 
       if LOGICAL_OPS.include?(op)
         if qualifiers.include?(:const)
@@ -3336,7 +3621,7 @@ module Idl
         end
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
-        qualifiers << :known if lhs_type.known? && (short_circuit || rhs_type.known?)
+        qualifiers << :known if lhs_type.known? && rhs_type.known?
         if [lhs_type.width, rhs_type.width].include?(:unknown)
           Type.new(:bits, width: :unknown, qualifiers:)
         else
@@ -3349,18 +3634,41 @@ module Idl
     def type_check(symtab)
       internal_error "No type_check function #{lhs.inspect}" unless lhs.respond_to?(:type_check)
 
-      lhs.type_check(symtab)
-      short_circuit = T.let(false, T::Boolean)
-      value_result = value_try do
-        lhs_value = lhs.value(symtab)
-        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
-          short_circuit = true
+      lhs_short_circuit = T.let(false, T::Boolean)
+      rhs_short_circuit = T.let(false, T::Boolean)
+      if op == "||" || op == "&&"
+        # see if we can short circuit
+        lhs_value = T.let(nil, T.untyped)
+        value_try do
+          lhs_value = lhs.value(symtab)
+        end
+        rhs_value = T.let(nil, T.untyped)
+        value_try do
+          rhs_value = rhs.value(symtab)
+        end
+
+        if (lhs_value == true || lhs_value == false) && (rhs_value == true || rhs_value == false)
+          # both are known and boolean. nothing more to check
+          return
+        elsif lhs_value == false && op == "||"
+          rhs.type_check(symtab)
+        elsif lhs_value == true && op == "||"
+          rhs_short_circuit = true
+        elsif lhs_value == true && op == "&&"
+          rhs.type_check(symtab)
+        elsif lhs_value == false && op == "&&"
+          rhs_short_circuit = true
+        elsif rhs_value == false && op == "||"
+          lhs.type_check(symtab)
+        elsif rhs_value == true && op == "||"
+          lhs_short_circuit = true
+        elsif rhs_value == true && op == "&&"
+          lhs.type_check(symtab)
+        elsif rhs_value == false && op == "&&"
+          lhs_short_circuit = true
         end
       end
-      value_else(value_result) do
-        short_circuit = false
-      end
-      rhs.type_check(symtab) unless short_circuit
+
 
       if ["<=", ">=", "<", ">", "!=", "=="].include?(op)
         rhs_type = rhs.type(symtab)
@@ -3371,12 +3679,14 @@ module Idl
         end
 
       elsif ["&&", "||"].include?(op)
-        lhs_type = lhs.type(symtab)
-        unless lhs_type.convertable_to?(:boolean)
-          type_error "left-hand side of #{op} needs to be boolean (is #{lhs_type}) (#{text_value})"
+        unless lhs_short_circuit
+          lhs_type = lhs.type(symtab)
+          unless lhs_type.convertable_to?(:boolean)
+            type_error "left-hand side of #{op} needs to be boolean (is #{lhs_type}) (#{text_value})"
+          end
         end
 
-        unless short_circuit
+        unless rhs_short_circuit
           rhs_type = rhs.type(symtab)
           unless rhs_type.convertable_to?(:boolean)
             type_error "right-hand side of #{op} needs to be boolean (is #{rhs_type}) (#{text_value})"
@@ -4449,7 +4759,7 @@ module Idl
 
       @enum_def_type = global_symtab.get(@enum_class_name)
 
-      unless @enum_def_type.kind == :enum
+      if @enum_def_type.nil? || @enum_def_type.kind != :enum
         type_error "#{@enum_class_name} is not a defined Enum"
       end
 
@@ -5245,7 +5555,9 @@ module Idl
             type_error "Bits width (#{bits_expression.value(symtab)}) must be positive"
           end
         end
-        type_error "Bits width (#{bits_expression.text_value}) must be const" unless bits_expression.type(symtab).const?
+        unless bits_expression.type(symtab).const?
+          type_error "Bits width (#{bits_expression.text_value}) must be const"
+        end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
         type_error "Unimplemented builtin type #{text_value}"
@@ -5325,7 +5637,7 @@ module Idl
   #
   # @example
   #   ">= 1.0"
-  #   "by_byte"
+  #   "sequential_bytes"
   class StringLiteralAst < AstNode
     include Rvalue
 
@@ -5797,13 +6109,13 @@ module Idl
       func_def_type = func_type(symtab)
       type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
       if func_def_type.generated?
-        value_error "builtin functions not provided" if @builtin_funcs.nil?
+        value_error "builtin functions not provided" if symtab.builtin_funcs.nil?
 
         if name == "implemented?"
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
 
-          v = @builtin_funcs.implemented?.call(extname_ref.member_name)
+          v = symtab.builtin_funcs.implemented.call(extname_ref.member_name)
           if v.nil?
             value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -5815,7 +6127,7 @@ module Idl
 
           ver_req = arg_nodes[1].text_value[1..-2]
 
-          v = @builtin_funcs.implemented_version?.call(extname_ref.member_name, ver_req)
+          v = symtab.builtin_funcs.implemented_version.call(extname_ref.member_name, ver_req)
           if v.nil?
             value_error "implemented_version? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -5823,7 +6135,7 @@ module Idl
 
         elsif name == "implemented_csr?"
           csr_addr = arg_nodes[0].value(symtab)
-          v = @builtin_funcs.implemented_csr?.call(csr_addr)
+          v = symtab.builtin_funcs.implemented_csr.call(csr_addr)
           if v.nil?
             value_error "implemented_csr? is only known when evaluating in the context of a fully-configured arch def"
           end
@@ -5864,7 +6176,8 @@ module Idl
 
       func_def_type.return_value(template_values, arg_nodes, symtab, self)
     end
-    alias execute value
+
+    def execute(symtab) = value(symtab)
 
     def name
       @name
@@ -6010,7 +6323,8 @@ module Idl
 
       value_error "No function body statement returned a value"
     end
-    alias execute return_value
+
+    def execute(symtab) = return_value(symtab)
 
     sig { override.params(symtab: SymbolTable).void }
     def execute_unknown(symtab)
@@ -6547,8 +6861,9 @@ end,
     sig { returns(ExecutableAst) }
     def update = T.cast(@children.fetch(2), ExecutableAst)
 
-    sig { returns(T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)]) }
-    def stmts = T.cast(@children[3..], T::Array[T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst)])
+    StmtType = T.type_alias { T.any(StatementAst, ReturnStatementAst, IfAst, ForLoopAst, ImplicationStatementAst) }
+    sig { returns(T::Array[StmtType]) }
+    def stmts = T.cast(@children[3..], T::Array[StmtType])
 
     def initialize(input, interval, init, condition, update, stmts)
       super(input, interval, [init, condition, update] + stmts)
@@ -6564,6 +6879,23 @@ end,
       stmts.each { |stmt| stmt.type_check(symtab) }
 
       symtab.pop
+    end
+
+    sig { params(symtab: SymbolTable).returns(T::Boolean) }
+    def satisfied?(symtab)
+      symtab.push(self)
+      begin
+        init.execute(symtab)
+        while condition.value(symtab)
+          stmts.each do |s|
+            return false unless T.cast(s, ImplicationStatementAst).satisfied?(symtab)
+          end
+          update.execute(symtab)
+        end
+        return true
+      ensure
+        symtab.pop
+      end
     end
 
     # @!macro return_value
@@ -6582,7 +6914,9 @@ end,
                   return v
                 end
               else
-                s.execute(symtab)
+                unless s.is_a?(ImplicationStatementAst)
+                  s.execute(symtab)
+                end
               end
             end
             update.execute(symtab)
@@ -6631,7 +6965,9 @@ end,
                     values += s.return_values(symtab)
                   end
                 else
-                  s.execute(symtab)
+                  unless s.is_a?(ImplicationStatementAst)
+                    s.execute(symtab)
+                  end
                 end
               end
               update.execute(symtab)
@@ -6647,7 +6983,7 @@ end,
     end
 
     # @!macro execute
-    alias execute return_value
+    def execute(symtab) = return_value(symtab)
 
     sig { override.params(symtab: SymbolTable).void }
     def execute_unknown(symtab)
@@ -6658,7 +6994,7 @@ end,
           init.execute_unknown(symtab)
 
           stmts.each do |s|
-            unless s.is_a?(ReturnStatementAst)
+            unless s.is_a?(ReturnStatementAst) || s.is_a?(ImplicationStatementAst)
               s.execute_unknown(symtab)
             end
           end
@@ -7177,57 +7513,61 @@ end,
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
+    class MemoizedState < T::Struct
+      prop :csr, T.nilable(Csr)
+      prop :type, T.nilable(Type)
+      prop :value_calculated, T::Boolean
+      prop :value, T.nilable(Integer)
+    end
+
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = !@value.nil?
 
+    sig { params(input: String, interval: T::Range[Integer], csr: CsrReadExpressionAst, field_name: String).void }
     def initialize(input, interval, csr, field_name)
       super(input, interval, [csr])
 
       @csr = csr
       @field_name = field_name
+      @memo = MemoizedState.new(value_calculated: false)
     end
 
-    def freeze_tree(symtab)
-      return if frozen?
+    sig { params(symtab: SymbolTable).returns(Csr) }
+    def csr_obj(symtab)
+      @memo.csr ||=
+        begin
+          obj = @csr.csr_def(symtab)
+          type_error "No CSR '#{@csr.text_value}'" if obj.nil?
 
-      @children.each { |child| child.freeze_tree(symtab) }
-
-      @csr_obj = @csr.csr_def(symtab)
-      type_error "No CSR '#{@csr.text_value}'" if @csr_obj.nil?
-
-      value_result = value_try do
-        @value = calc_value(symtab)
-      end
-      value_else(value_result) do
-        @value = nil
-      end
-
-      @type = calc_type(symtab)
-
-      freeze
+          obj
+        end
     end
 
     # @!macro type_check
+    sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
       @csr.type_check(symtab)
 
-      type_error "CSR[#{csr_name}] has no field named #{@field_name}" if field_def(symtab).nil?
       type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV32" if symtab.mxlen == 32 && !field_def(symtab).defined_in_base32?
       type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV64" if symtab.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
+    sig { params(symtab: SymbolTable).returns(Csr) }
     def csr_def(symtab)
-      @csr_obj
+      csr_obj(symtab)
     end
 
+    sig { returns(String) }
     def csr_name = @csr.csr_name
 
+    sig { params(symtab: SymbolTable).returns(CsrField) }
     def field_def(symtab)
-      @csr_obj.fields.find { |f| f.name == @field_name }
+      T.must(csr_obj(symtab).fields.find { |f| f.name == @field_name })
     end
 
+    sig { params(symtab: SymbolTable).returns(String) }
     def field_name(symtab)
-      field_def(symtab)&.name
+      field_def(symtab).name
     end
 
     # @!macro to_idl
@@ -7237,13 +7577,15 @@ end,
     end
 
     # @!macro type
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
-      @type
+      @memo.type ||= T.must(calc_type(symtab))
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).returns(T.nilable(Type)) }
     def calc_type(symtab)
       fd = field_def(symtab)
-      internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
 
       if fd.defined_in_all_bases?
         Type.new(:bits, width: symtab.possible_xlens.map { |xlen| fd.width(xlen) }.max)
@@ -7260,18 +7602,35 @@ end,
       end
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).void }
+    def calc_value(symtab)
+      value_result = value_try do
+        @memo.value = calc_value(symtab)
+      end
+      value_else(value_result) do
+        @memo.value = nil
+      end
+      @memo.value_calculated = true
+    end
+
     # @!macro value
+    sig { override.params(symtab: SymbolTable).returns(ValueRbType) }
     def value(symtab)
-      if @value.nil?
+      calc_value(symtab) unless @memo.value_calculated
+
+      if @memo.value.nil?
         value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
       else
-        @value
+        @memo.value
       end
     end
 
+    # @api private
+    sig { params(symtab: SymbolTable).void }
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
-      return 0 if field_def(symtab).nil? || !field_def(symtab).exists?
+      return 0 if !field_def(symtab).exists?
 
       symtab.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"
@@ -7447,9 +7806,6 @@ end,
 
       if ["sw_read", "address"].include?(function_name)
         type_error "unexpected argument(s)" unless args.empty?
-      elsif ["implemented_without?"].include?(function_name)
-        type_error "Expecting one argument" unless args.size == 1
-        type_error "Expecting an ExtensionName" unless args[0].type(symtab).kind == :enum_ref && args[0].class_name == "ExtensionName"
       else
         type_error "'#{function_name}' is not a supported CSR function call"
       end
@@ -7467,8 +7823,6 @@ end,
         end
       when "address"
         Type.new(:bits, width: 12, qualifiers: [:const, :known])
-      when "implemented_without?"
-        ConstBoolType
       else
         internal_error "No function '#{function_name}' for CSR. call type check first!"
       end
@@ -7497,15 +7851,6 @@ end,
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
         cd.address
-      when "implemented_without?"
-        value_error "CSR not knowable" unless csr_known?(symtab)
-        cd = csr_def(symtab)
-        extension_name_enum_type = symtab.get("ExtensionName")
-        enum_value = args[0].value(symtab)
-        idx = extension_name_enum_type.element_values.index(enum_value)
-        ext_name = extension_name_enum_type.element_names[idx]
-
-        cd.implemented_without?(ext_name)
       else
         internal_error "TODO: #{function_name}"
       end

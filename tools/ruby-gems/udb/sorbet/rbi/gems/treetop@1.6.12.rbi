@@ -1629,10 +1629,10 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
   def input; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#17
+  # source://idlc/0.1.0/lib/idlc.rb#18
   def input_file; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#28
+  # source://idlc/0.1.0/lib/idlc.rb#29
   def instantiate_node(node_type, *args); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
@@ -1644,7 +1644,7 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#7
   def root=(_arg0); end
 
-  # source://idlc/0.1.0/lib/idlc.rb#19
+  # source://idlc/0.1.0/lib/idlc.rb#20
   def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#54

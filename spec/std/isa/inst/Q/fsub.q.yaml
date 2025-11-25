@@ -13,7 +13,9 @@ description:
     text: |
       The `fsub.q` instruction performs the quad-precision floating-point subtraction of `fs2` from `fs1`.
       It computes the result as `fs1 - fs2` and writes the result to the destination register `fd`.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000111------------------1010011

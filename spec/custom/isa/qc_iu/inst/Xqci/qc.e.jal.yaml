@@ -12,9 +12,10 @@ description: |
   Instruction encoded in QC.EJ instruction format.
   address in x1.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilb
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcilb
 assembly: " imm"
 base: 32
 encoding:

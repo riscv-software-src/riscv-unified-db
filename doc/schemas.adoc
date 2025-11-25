@@ -8,3 +8,7 @@ Many UDB data objects share common field types, including:
 * xref:prose-schema.adoc[Schema for Prose]
 
 TODO
+
+== Conditions
+
+All conditions are represented using the same schema.

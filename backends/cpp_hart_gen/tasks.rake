@@ -1,4 +1,5 @@
 
+# typed: false
 require "active_support"
 require "active_support/core_ext/string/inflections"
 
@@ -82,7 +83,8 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
   [
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
-  ] + Dir.glob(CPP_HART_GEN_SRC / 'lib' / '**' / '*')
+  ] + Dir.glob(CPP_HART_GEN_SRC / "lib" / "**" / "*") \
+  + FileList[$resolver.resolved_spec_path(configs_build_name[0][0]) / "**" / "*.yaml"]
 } do |t|
   configs, = configs_build_name
   config_name = configs[0]
@@ -134,7 +136,8 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
-  ]
+  ] \
+  + FileList[$resolver.resolved_spec_path(config_name) / "**" / "*.yaml"]
 } do |t|
   parts = t.name.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
@@ -296,7 +299,6 @@ namespace :gen do
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"
@@ -342,7 +344,7 @@ namespace :build do
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
-      sh "make -j #{$jobs}"
+      sh "make -j #{$jobs} iss"
     end
   end
 
@@ -410,12 +412,12 @@ namespace :test do
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
     end
 
-    rv32umTests = [ "div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu" ]
+    rv32umTests = ["div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu"]
     rv32umTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
     end
 
-    rv32ucTests = [ "rvc" ]
+    rv32ucTests = ["rvc"]
     rv32ucTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
     end

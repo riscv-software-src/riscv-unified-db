@@ -11,9 +11,10 @@ description: |
   C.JR (jump register) performs an unconditional control transfer to the address in register xs1.
   C.JR expands to jalr x0, 0(xs1).
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xs1
 encoding:
   match: 1000-----0000010

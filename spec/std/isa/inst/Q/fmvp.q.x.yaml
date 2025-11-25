@@ -17,7 +17,12 @@ description:
       floating-point register `fd`.
       `fmvp.q.x` is encoded in the OP-FP major opcode with _funct3_=0 and _funct7_=1011011.
 definedBy:
-  allOf: [Q, Zfa]
+  allOf:
+    - xlen: 64
+    - extension:
+        allOf:
+          - name: Q
+          - name: Zfa
 base: 64
 assembly: fd, xs1, xs2
 encoding:

@@ -12,7 +12,9 @@ writable: false
 priv_mode: U
 length: MXLEN
 description: Holds the value VLEN/8, the vector register length in bytes.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 fields:
   VALUE:
     location_rv32: 31-0

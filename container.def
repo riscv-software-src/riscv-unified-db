@@ -1,10 +1,9 @@
 Bootstrap: docker
 From: ubuntu:24.04
 
-# %files
-
-#   Gemfile $HOME/
-#   package.json $HOME/
+%files
+  requirements.txt /opt/requirements.txt
+  package.json /opt/node/package.json
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -31,6 +30,7 @@ From: ubuntu:24.04
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
+    minisat \
     nodejs \
     npm \
     parallel \
@@ -39,9 +39,47 @@ From: ubuntu:24.04
     python3.12-venv \
     ruby \
     ruby-dev \
-    shellcheck
+    shellcheck \
+    zlib1g-dev
 
-# cleanup
+  # build/install eqntott
+  git clone --depth=1 https://github.com/TheProjecter/eqntott.git
+  cd eqntott
+  ./configure
+  make && make install
+  cd ..
+  rm -rf eqntott
+
+  # build/install espresso
+  git clone --depth=1 https://github.com/psksvp/espresso-ab-1.0.git
+  cd espresso-ab-1.0
+  ./configure
+  make && make install
+  cd ..
+  rm -rf espresso-ab-1.0
+
+  # build / install must
+  git clone https://github.com/jar-ben/mustool.git
+  cd mustool
+  git checkout 17fa9f9542a9ce05328dfccd1cd410f05f741ab3
+  # mcsmus/mcsmus/control.cc is missing #include <cstdio>
+  sed -i -e 's/#include <signal.h>/#include <signal.h>\n#include <cstdio>/' mcsmus/mcsmus/control.cc
+  make
+  install must -m 0777 /usr/bin/must
+  cd ..
+  rm -rf mustool
+
+  # Create Python virtual environment and install packages
+  /usr/bin/python3 -m venv /opt/venv
+  /opt/venv/bin/pip install -r /opt/requirements.txt
+  rm /opt/requirements.txt
+
+  # Install npm packages globally in the container
+  cd /opt/node
+  /usr/bin/npm i
+  rm /opt/node/package.json /opt/node/package-lock.json
+
+  # cleanup
   apt-get clean autoclean
   apt-get autoremove -y
   rm -rf /var/lib/{apt, dpkg, cache, log}
@@ -49,5 +87,6 @@ From: ubuntu:24.04
   # cd $HOME
   # bundle install
 
-  # npm i wavedrom-cli
-  # npm i i -E  @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension asciidoctor-kroki
+%environment
+  export PATH="/opt/venv/bin:/opt/node/node_modules/.bin:$PATH"
+  export NODE_PATH="/opt/node/node_modules"

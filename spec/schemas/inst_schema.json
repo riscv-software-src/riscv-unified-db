@@ -330,7 +330,7 @@
           "description": "Detailed description of the instruction"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "$ref": "schema_defs.json#/$defs/condition",
           "description": "Extension(s) that defines the instruction"
         },
 
@@ -504,6 +504,9 @@
             }
           ]
         }
+      },
+      "patternProperties": {
+        "^custom_[A-Za-z0-9_]+$": {}
       }
     }
   },

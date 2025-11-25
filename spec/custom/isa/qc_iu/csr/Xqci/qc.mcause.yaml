@@ -15,11 +15,12 @@ writable: true
 description: |
   Machine Mode Custom Cause Register / Interrupt context register.
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">=0.7"
-    - name: Xqciint
-      version: ">=0.4"
+  extension:
+    anyOf:
+      - name: Xqci
+        version: ">=0.7"
+      - name: Xqciint
+        version: ">=0.4"
 fields:
   INT:
     location: 31

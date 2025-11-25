@@ -11,9 +11,10 @@ description: |
   Loads the 32-bit immediate `imm` into `rd`.
   Instruction encoded in QC.EAI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcili
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcili
 base: 32
 encoding:
   match: --------------------------------0000-----0011111

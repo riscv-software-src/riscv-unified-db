@@ -23,7 +23,7 @@ grammar Idl
         fetch
         /
         space+
-      )+ <Idl::IsaSyntaxNode>
+      )* <Idl::IsaSyntaxNode>
   end
 
   rule include_statement
@@ -299,6 +299,8 @@ grammar Idl
 
   # expression that can accept an array index operator (expr[])
   rule ary_eligible_expression
+    enum_to_a
+    /
     paren_expression
     /
     replication_expression
@@ -340,7 +342,15 @@ grammar Idl
     space* ')' <Idl::BitsCastSyntaxNode>
   end
 
+  rule enum_to_a
+    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+  end
+
   rule unary_expression
+    'true' <Idl::TrueExpressionSyntaxNode>
+    /
+    'false' <Idl::FalseExpressionSyntaxNode>
+    /
     '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralSyntaxNode>
     /
     ary_access
@@ -356,15 +366,17 @@ grammar Idl
     /
     '$enum_element_size' space* '(' space* user_type_name ')' <Idl::EnumElementSizeSyntaxNode>
     /
-    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+    enum_to_a
     /
     '$enum' space* '(' space* user_type_name space* ',' space* expression space* ')' <Idl::EnumCastSyntaxNode>
     /
     '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
     /
+    '$array_includes?' space* '(' space* ary:ary_eligible_expression space* ',' space* value:expression space* ')' <Idl::ArrayIncludesSyntaxNode>
+    /
     paren_expression
     /
-    o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
+    o:unary_operator space* e:unary_expression <Idl::UnaryOperatorExpressionSyntaxNode>
     /
     post_dec
     /
@@ -391,6 +403,24 @@ grammar Idl
 
   rule template_safe_ternary_expression
     e:template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
+  end
+
+  rule implication_expression
+    antecedent:p9_binary_expression? space* '->' space* consequent:p9_binary_expression <Idl::ImplicationExpressionSyntaxNode>
+  end
+
+  rule implication_for_loop
+    'for' space* '(' space* for_loop_iteration_variable_declaration space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+      stmts:(s:(implication_statement / implication_for_loop) space*)+
+    '}' <Idl::ForLoopSyntaxNode>
+  end
+
+  rule implication_statement
+    implication_expression space* ';' <Idl::ImplicationStatementSyntaxNode>
+  end
+
+  rule constraint_body
+    space* b:(i:(implication_statement / implication_for_loop) space*)+ <Idl::ConstraintBodySyntaxNode>
   end
 
   rule expression
@@ -489,8 +519,8 @@ grammar Idl
     # note: there is no full CSR assignment (must assign fields)
     csr_field_access_expression space* '=' space* rval:expression <Idl::CsrFieldAssignmentSyntaxNode> /
     id space* '.' space* field_name space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
-    var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
-    var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
+    var:ary_eligible_expression space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
+    var:ary_eligible_expression space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
   end
 
   rule ary_size_decl
@@ -609,7 +639,9 @@ grammar Idl
     'generated' ![A-Za-z0-9_] /
     'enum' ![A-Za-z0-9_]  /
     'bitfield' ![A-Za-z0-9_] /
-    'CSR' ![A-Za-z0-9_]
+    'CSR' ![A-Za-z0-9_] /
+    'true' ![A-Za-z0-9_] /
+    'false' ![A-Za-z0-9_]
   end
 
   rule user_type_name

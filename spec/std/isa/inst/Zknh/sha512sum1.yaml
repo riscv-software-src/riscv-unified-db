@@ -9,7 +9,11 @@ name: sha512sum1
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zknh
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zknh
 base: 64
 assembly: xd, xs1
 encoding:

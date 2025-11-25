@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: ELEN
+description: |
+  The maximum size in bits of a vector element that any operation can produce or consume.
+long_name: TODO
+schema:
+  type: integer
+#    requirements:
+#      idl(): |
+#        -> (ELEN >='h8) && (popcount(ELEN) == 1);
+#      reason: ELEN >= 8, which must be a power of 2.
+definedBy:
+  extension:
+    name: V

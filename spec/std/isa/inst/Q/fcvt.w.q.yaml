@@ -12,7 +12,9 @@ description:
     normative: false
     text: |
       `fcvt.w.q` converts a quad-precision floating-point number to a 32-bit signed integer.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: xd, fs1, rm
 encoding:
   match: 110001100000-------------1010011

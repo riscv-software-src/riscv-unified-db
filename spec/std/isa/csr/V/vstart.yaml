@@ -12,7 +12,9 @@ writable: true
 priv_mode: U
 length: MXLEN
 description: Specifies the index of the first element to be executed by a vector instruction.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 fields:
   VALUE:
     location_rv32: 31-0

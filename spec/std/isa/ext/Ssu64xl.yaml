@@ -17,7 +17,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    param_constraints:
-      UXLEN:
-        schema:
-          enum: [64, 3264]
+requirements:
+  param:
+    name: UXLEN
+    oneOf: [ [64], [32, 64] ]
+    reason: Ssu64xl is satisfied when UXLEN is either read-only RV64 or read-write

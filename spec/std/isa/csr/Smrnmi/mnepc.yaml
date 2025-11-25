@@ -15,7 +15,9 @@ description: |
   Written with the PC of an instruction on an exception or interrupt taken in M-mode.
 
   Also controls where the hart jumps on an exception return from M-mode.
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   PC:
     location_rv32: 31-0

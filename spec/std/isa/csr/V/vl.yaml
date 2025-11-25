@@ -12,7 +12,9 @@ writable: false
 priv_mode: U
 length: MXLEN
 description: Holds an unsigned integer specifying number of elements to be updated with results from a vector instruction.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 fields:
   VALUE:
     location_rv32: 31-0

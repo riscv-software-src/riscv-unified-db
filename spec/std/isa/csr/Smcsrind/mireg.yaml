@@ -10,7 +10,9 @@ address: 0x351
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description:
   - id: csr-mireg-purpose
     normative: true

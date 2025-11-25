@@ -9,7 +9,9 @@ name: brev8
 long_name: Reverse bits in bytes
 description: |
   Reverses the order of the bits in every byte of a register.
-definedBy: Zbkb
+definedBy:
+  extension:
+    name: Zbkb
 assembly: xd, xs1
 encoding:
   match: 011010000111-----101-----0010011

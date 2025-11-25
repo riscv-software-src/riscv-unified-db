@@ -12,7 +12,9 @@ writable: true
 priv_mode: U
 length: MXLEN
 description: Indicates if a fixed-point instruction has had to saturate an output value to fit into a destination format
-definedBy: V
+definedBy:
+  extension:
+    name: V
 sw_read(): |
   return CSR[vcsr].VXSAT;
 fields:

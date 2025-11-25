@@ -8,7 +8,10 @@ kind: instruction
 name: fcvt.s.h
 long_name: Convert single-precision float to a half-precision float
 definedBy:
-  allOf: [Zfh, Zfhmin]
+  extension:
+    allOf:
+      - name: Zfh
+      - name: Zfhmin
 assembly: fd, fs1, rm
 description: |
   Converts a single-precision number in floating-point register _fs1_ into a half-precision floating-point number in

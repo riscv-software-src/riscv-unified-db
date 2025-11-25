@@ -9,10 +9,12 @@ name: lpad
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zicfilp
+definedBy:
+  extension:
+    name: Zicfilp
 assembly: imm
 encoding:
-  match: --------------------000000010111
+  match: "--------------------000000010111"
   variables:
     - name: imm
       location: 31-12

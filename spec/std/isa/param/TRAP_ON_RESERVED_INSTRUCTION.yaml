@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TRAP_ON_RESERVED_INSTRUCTION
+long_name: |
+  Whether or not fetching an unimplemented standard instruction and/or an undefined standard
+  instruction from the standard/reserved opcode space causes a trap
+definedBy:
+  extension:
+    name: Sm
+description: |
+  Options:
+
+    * true: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcode space will cause an IllegalInstruction exception.
+    * false: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcose space causes unpredictable behavior.
+
+  TRAP_ON_RESERVED_INSTRUCTION may be false while TRAP_ON_UNIMPLEMENTED_INSTRUCTION is true
+  when a custom instruction is implemented in the standard/reserved opcode space.
+schema:
+  type: boolean

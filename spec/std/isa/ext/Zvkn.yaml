@@ -19,12 +19,14 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    implies:
-      - name: Zvkned
-        version: "1.0.0"
-      - name: Zvknhb
-        version: "1.0.0"
-      - name: Zvkb
-        version: "1.0.0"
-      - name: Zvkt
-        version: "1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zvkned
+            version: "= 1.0.0"
+          - name: Zvknhb
+            version: "= 1.0.0"
+          - name: Zvkb
+            version: "= 1.0.0"
+          - name: Zvkt
+            version: "= 1.0.0"

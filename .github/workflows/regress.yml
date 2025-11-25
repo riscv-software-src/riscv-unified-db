@@ -44,6 +44,97 @@ jobs:
           disable_search: true
           files: tools/ruby-gems/idlc/coverage/coverage.xml
           flags: idlc
+  regress-find-configs:
+    runs-on: ubuntu-latest
+
+    outputs:
+      configs: ${{ steps.configs.outputs.configs }}
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - name: Find configuration files
+        id: configs
+        run: |
+          ruby -e "puts 'configs=[\"' + Dir.glob('cfgs/*.yaml').map { |f| File.basename(f, '.yaml') }.join('\", \"') + '\"]'" >> "$GITHUB_OUTPUT"
+  regress-udb-validate-configs:
+    runs-on: ubuntu-latest
+
+    needs: regress-find-configs
+    strategy:
+      matrix:
+        config: ${{ fromJSON(needs.regress-find-configs.outputs.configs) }}
+
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem test_${{ matrix.config }} unit test
+        run: ./bin/ruby tools/ruby-gems/udb/test/test_cfg.rb -n test_cfg_${{ matrix.config }}_valid
+      - name: Rename coverage file
+        run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.config }}.resultset.json
+      - name: Save coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: udb-test-cfg-${{ matrix.config }}-cov
+          path: tools/ruby-gems/udb/coverage/${{ matrix.config }}.resultset.json
+  regress-udb-unit-test:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    strategy:
+      matrix:
+        test:
+          - logic
+          - conditions
+          - cli
+          - yaml_loader
+          - cfg_arch
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem ${{ matrix.test }} unit tests
+        run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
+      - name: Rename coverage file
+        run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+      - name: Save coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: udb-${{ matrix.test }}-cov
+          path: tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+  regress-udb-cov-report:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    needs:
+      - regress-udb-unit-test
+      - regress-udb-validate-configs
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: download coverage
+        uses: actions/download-artifact@v5
+        with:
+          pattern: udb-*-cov
+          path: _cov/udb
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Collate coverage
+        run: ./do chore:udb:collate_cov[_cov/udb]
+      - name: Upload udb coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/udb/coverage/coverage.xml
+          flags: udb
   regress-gen-isa-manual:
     runs-on: ubuntu-latest
     env:

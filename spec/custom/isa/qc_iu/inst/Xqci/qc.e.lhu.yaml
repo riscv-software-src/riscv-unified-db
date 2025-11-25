@@ -13,9 +13,10 @@ description: |
   Zero extend the result.
   Instruction encoded in QC.EI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilo
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcilo
 assembly: " xd, imm(xs1)"
 base: 32
 encoding:

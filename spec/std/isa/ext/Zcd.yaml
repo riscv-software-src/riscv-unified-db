@@ -38,9 +38,14 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
-    requires:
-      allOf:
-        - anyOf:
-          - { name: Zca, version: "= 1.0.0" }
-          - { name: C, version: "~> 2.0.0" }
-        - { name: D, version: "~> 2.2.0" }
+    requirements:
+      extension:
+        allOf:
+          - name: Zca
+            version: "= 1.0.0"
+          - name: D
+            version: "~> 2.2.0"
+requirements:
+  idl(): |
+    # if Zcd is implemented, then Zca and D must also be implemented
+    -> implemented?(ExtensionName::Zca) && implemented?(ExtensionName::D);

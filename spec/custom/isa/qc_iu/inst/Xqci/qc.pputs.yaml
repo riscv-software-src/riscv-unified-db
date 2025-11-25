@@ -13,9 +13,10 @@ description: |
   Simulation environment expected to print the string on its console or standard output.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisim
+  extension:
+    anyOf:
+      - name: Xqci
+      - name: Xqcisim
 assembly: " xs1"
 base: 32
 encoding:

@@ -19,7 +19,8 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    param_constraints:
-      VSTVEC_MODE_DIRECT:
-        schema:
-          const: true
+requirements:
+  idl(): |
+    -> VSTVEC_MODE_DIRECT;
+  reason:
+    Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).

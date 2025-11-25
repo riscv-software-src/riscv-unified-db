@@ -12,7 +12,7 @@
 #   - integer widening arith ()
 
 # the vector register file
-Bits<VLEN> v[32];
+Bits<128> v[32];
 
 enum VectorLmulType {
   Divide

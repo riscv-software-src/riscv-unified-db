@@ -12,7 +12,9 @@ writable: true
 priv_mode: U
 length: MXLEN
 description: Contains aliases to vxrm and vxsat CSRs
-definedBy: V
+definedBy:
+  extension:
+    name: V
 fields:
   VXRM:
     location: 2-1

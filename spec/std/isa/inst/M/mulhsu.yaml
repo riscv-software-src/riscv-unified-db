@@ -20,7 +20,10 @@ description: |
 
   Microarchitectures may look for that sequence and fuse the operations.
 definedBy:
-  anyOf: [M, Zmmul]
+  extension:
+    anyOf:
+      - name: M
+      - name: Zmmul
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------010-----0110011

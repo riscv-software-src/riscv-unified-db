@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
 
 $schema: ext_schema.json#
 kind: extension
@@ -25,9 +25,10 @@ versions:
   - name: James Ball
     company: Qualcomm Technologies, Inc.
     email: jameball@qti.qualcomm.com
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      name: Zca
+      version: ">= 1.0.0"
 - version: "0.2.0"
   state: development
   ratification_date: null
@@ -50,9 +51,10 @@ versions:
     - Add CSRs qc.mstkbottomaddr and qc.mstktopaddr to support cache range checking
     - Add list of supported custom exceptions - stack alignment check and stack range check
     - Add stack exception checks in all push/pop instructions
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      name: Zca
+      version: ">= 1.0.0"
 - version: "0.3.0"
   state: frozen
   ratification_date: null
@@ -72,9 +74,10 @@ versions:
   changes:
     - Fix all push and pop instructions IDL code to take in consideration that xlen() returns bits and not bytes
     - Declare state of extension as "frozen"
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      name: Zca
+      version: ">= 1.0.0"
 description: |
   The Xqccmp extension is a set of instructions which may be executed as a series of existing 32-bit RISC-V instructions.
 
@@ -148,8 +151,13 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
-conflicts:
-  anyOf:
-    - allOf: [C, D]
-    - Zcd
-    - Zcmp
+# cannot be implemented with Zcd or Zcmp
+requirements:
+  not:
+    extension:
+      anyOf:
+        - allOf:
+          - name: C
+          - name: D
+        - name: Zcd
+        - name: Zcmp

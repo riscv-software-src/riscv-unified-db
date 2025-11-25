@@ -95,10 +95,11 @@ namespace udb {
     {
       auto yaml = YAML::LoadFile(cfg_path.string());
       nlohmann::json json = ConfigValidator::validate(yaml);
+      Config cfg(json["implemented_extensions"], json["params"]);
 
       <%- cfg_list.each do |config| -%>
       if (config_name == "<%= config %>") {
-        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
+        return new <%= name_of(:hart, config) %>(hart_id, soc, cfg);
       }
       <%- end %>
 
@@ -112,10 +113,11 @@ namespace udb {
     {
       auto yaml = YAML::Load(cfg_yaml);
       nlohmann::json json = ConfigValidator::validate(yaml);
+      Config cfg(json["implemented_extensions"], json["params"]);
 
       <%- cfg_list.each do |config| -%>
       if (config_name == "<%= config %>") {
-        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
+        return new <%= name_of(:hart, config) %>(hart_id, soc, cfg);
       }
       <%- end %>
 

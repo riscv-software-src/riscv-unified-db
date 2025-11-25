@@ -26,10 +26,11 @@ description:
       `hstateen1h`, `hstateen2h`, and `hstateen3h`.
 
 definedBy:
-  allOf:
-    - H
-    - Smstateen
-    - Ssstateen
+  extension:
+    allOf:
+      - name: H
+      - name: Smstateen
+      - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen3 access control

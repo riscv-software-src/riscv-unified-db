@@ -175,5 +175,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires:
-      name: Sv39
+requirements:
+  extension:
+    allOf:
+      - name: Sv39
+      # Svinval was defined with Sm 1.13
+      - name: Sm
+        version: ">= 1.13"

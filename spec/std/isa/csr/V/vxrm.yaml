@@ -12,7 +12,9 @@ writable: true
 priv_mode: U
 length: MXLEN
 description: Holds a 2-bit read-write rounding-mode field in the least-significant bits
-definedBy: V
+definedBy:
+  extension:
+    name: V
 sw_read(): |
   return CSR[vcsr].VXRM;
 fields:

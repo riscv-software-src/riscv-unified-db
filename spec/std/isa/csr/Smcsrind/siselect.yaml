@@ -10,7 +10,9 @@ address: 0x150
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Sscsrind
+definedBy:
+  extension:
+    name: Sscsrind
 description:
   - id: csr-siselect-value-range
     normative: true

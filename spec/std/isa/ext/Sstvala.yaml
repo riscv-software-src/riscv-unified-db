@@ -30,37 +30,28 @@ versions:
     contributors:
       - name: Krste Asanovic
         company: SiFive, Inc.
-    param_constraints:
-      REPORT_VA_IN_STVAL_ON_BREAKPOINT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED:
-        schema:
-          const: true
-      REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED:
-        schema:
-          const: true
-      REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION:
-        schema:
-          const: true
+requirements:
+  param:
+    allOf:
+    - name: REPORT_VA_IN_STVAL_ON_BREAKPOINT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED
+      equal: true
+    - name: REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED
+      equal: true
+    - name: REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+      equal: true
