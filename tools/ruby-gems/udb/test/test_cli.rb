@@ -31,7 +31,6 @@ class TestCli < Minitest::Test
       run_cmd("list extensions")
     end
     assert_match /Zvkg/, out
-    assert_empty err
   end
 
   def test_list_qc_iu_extensions

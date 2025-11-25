@@ -2,7 +2,7 @@
   Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
   SPDX-License-Identifier: BSD-3-Clause-Clear
 %>
-<%= anchor_for(csr) %>
+<%= anchor_for_udb_doc_csr(csr.name) %>
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
@@ -63,7 +63,7 @@ This CSR format changes dynamically.
 @Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-@ <%= link_to(field) %>
+@ <%= link_to_udb_doc_csr_field(field.csr.name, field.name) %>
 @ <%= field.location_pretty %>
 @ <%= field.type_pretty %>
 @ <%= field.reset_value_pretty %>
@@ -72,7 +72,6 @@ This CSR format changes dynamically.
 |===
 
 
-<%- unless params[:exclude_csr_field_descriptions] -%>
 == Fields
 
 <%-   if csr.fields.empty? -%>
@@ -80,7 +79,7 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 <%-   else -%>
 
 <%-     csr.fields.each do |field| -%>
-<%= anchor_for(field) %>
+<%= anchor_for_udb_doc_csr_field(field.csr.name, field.name) %>
 === `<%= field.name %>`
 
 [example]
@@ -99,7 +98,6 @@ Reset value::
 
 --
 
-<%-     end -%>
 <%-   end -%>
 <%- end -%>
 

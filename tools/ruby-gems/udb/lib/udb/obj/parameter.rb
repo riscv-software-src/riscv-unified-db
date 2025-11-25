@@ -84,11 +84,6 @@ module Udb
       end
     end
 
-    sig { override.params(resolver: Resolver).void }
-    def validate(resolver)
-
-    end
-
     # whether or not the schema is unambiguously known
     # since schemas can change based on parameter values and/or extension presence,
     # non-full configs may not be able to know which schema applies
@@ -146,6 +141,28 @@ module Udb
       end
 
       @idl_type ||= schema.to_idl_type.make_const.freeze
+    end
+
+    # returns the largest (compatibale with all) type of any possible schema
+    sig { returns(Idl::Type) }
+    def maximal_idl_type
+      @maximal_idl_type ||=
+        if schema_known?
+          idl_type
+        else
+          idl_types = possible_schemas.map(&:to_idl_type)
+          unless idl_types.all? { |t| t.kind == :bit }
+            raise "TODO: paramter has multiple schemas that are not Bits"
+          end
+          max_width = idl_types.map(&:width).max do |a, b|
+            if [a, b].include?(:unknown)
+              a == :unknown ? 1 : -1
+            else
+              (T.cast(a, Integer) <=> T.cast(b, Integer))
+            end
+          end
+          Idl::Type.new(:bits, width: max_width, qualifiers: [:const])
+        end
     end
 
     # @return if this parameter is defined in +cfg_arch+

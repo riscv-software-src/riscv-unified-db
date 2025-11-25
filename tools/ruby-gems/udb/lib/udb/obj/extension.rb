@@ -233,6 +233,7 @@ module Udb
           cfg_arch.instructions.select do |i|
             pb.advance
             inst_defined = i.defined_by_condition
+            next unless inst_defined.mentions?(self)
             requirement_met = to_condition
             preconditions_met = requirements_condition
 
@@ -306,6 +307,7 @@ module Udb
           cfg_arch.csrs.select do |csr|
             pb.advance
             csr_defined = csr.defined_by_condition
+            next unless csr_defined.mentions?(self)
             requirement_met = to_condition
             preconditions_met = requirements_condition
 

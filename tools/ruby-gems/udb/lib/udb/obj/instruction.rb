@@ -1266,7 +1266,7 @@ module Udb
       @profiles_mandating_inst ||=
         cfg_arch.profiles.select do |profile|
           profile.mandatory_ext_reqs.any? do |ext_req|
-            defined_by_condition.satisfiability_depends_on_ext_req?(ext_req)
+            defined_by_condition.satisfiability_depends_on_ext_req?(ext_req.ext_req)
           end
         end
     end
@@ -1277,7 +1277,7 @@ module Udb
       @profiles_optioning_inst ||=
         cfg_arch.profiles.select do |profile|
           profile.optional_ext_reqs.any? do |ext_req|
-            defined_by_condition.satisfiability_depends_on_ext_req?(ext_req)
+            defined_by_condition.satisfiability_depends_on_ext_req?(ext_req.ext_req)
           end
         end
     end
