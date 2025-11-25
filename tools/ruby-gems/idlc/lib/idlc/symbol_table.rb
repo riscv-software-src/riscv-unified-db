@@ -218,7 +218,7 @@ module Idl
 
     sig { returns(T::Hash[String, RuntimeParam]) }
     def params_hash
-      @memo.params_hash ||= @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
+      @memo.params_hash ||= @params.map { |p| [p.name.freeze, p] }.to_h.freeze
     end
 
     sig {
