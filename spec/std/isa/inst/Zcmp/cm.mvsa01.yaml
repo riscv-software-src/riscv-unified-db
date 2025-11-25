@@ -12,7 +12,9 @@ description: |
   The execution is atomic, so it is not possible to observe state where only one of r1s' or r2s' has been updated.
   The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.
   The mapping between them is specified in the pseudo-code below.
-definedBy: Zcmp
+definedBy:
+  extension:
+    name: Zcmp
 assembly: r1s, r2s
 encoding:
   match: 101011---01---10

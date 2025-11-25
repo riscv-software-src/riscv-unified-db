@@ -18,10 +18,14 @@ description: |
   `fsh` is only guaranteed to execute atomically if the effective address is naturally aligned.
 
 definedBy:
-  anyOf: [Zfh, Zfhmin, Zhinx]
+  extension:
+    anyOf:
+      - name: Zfh
+      - name: Zfhmin
+      - name: Zhinx
 assembly: fs2, imm(xs1)
 encoding:
-  match: -----------------001-----0100111
+  match: "-----------------001-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

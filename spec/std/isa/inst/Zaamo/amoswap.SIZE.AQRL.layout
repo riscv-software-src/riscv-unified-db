@@ -42,7 +42,16 @@ description: |
     * Load the <%= current_size[:name] %> at address _xs1_
     * Write the <%= %w[b h].include?(size) ? "sign-extended value" : (size == "w" ? "sign-extended value" : "loaded value") %> into _xd_
     * Store the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the address in _xs1_
-definedBy: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+definedBy:
+<%- if size == "d" -%>
+  allOf:
+    - extension:
+        name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+    - xlen: 64
+<%- else -%>
+  extension:
+    name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+<%- end -%>
 <%- if size == "d" -%>
 base: 64
 <%- end -%>

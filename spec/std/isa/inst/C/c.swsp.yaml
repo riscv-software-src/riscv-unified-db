@@ -13,9 +13,10 @@ description: |
   to the stack pointer, x2.
   It expands to `sw` `xs2, offset(x2)`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    anyOf:
+      - name: C
+      - name: Zca
 assembly: xs2, imm(sp)
 encoding:
   match: 110-----------10

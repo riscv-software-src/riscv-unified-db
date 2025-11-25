@@ -33,7 +33,9 @@ description: |
   `vsatp` is effected.
 priv_mode: VS
 length: VSXLEN
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   MODE:
     location_rv64: 63-60

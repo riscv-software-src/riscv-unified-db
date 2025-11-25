@@ -104,7 +104,7 @@ FetchContent_MakeAvailable(compile_time_regular_expressions)
 
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
+  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
 endforeach()
 
 add_library(hart

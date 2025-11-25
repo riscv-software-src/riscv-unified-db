@@ -9,7 +9,9 @@ name: maxu
 long_name: Unsigned maximum
 description: |
   Returns the larger of two unsigned integers.
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------111-----0110011

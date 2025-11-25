@@ -1,11 +1,13 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
 
+require_relative "test_helper"
+
 require "English"
 require "fileutils"
-require "minitest/autorun"
 require "open3"
 require "tmpdir"
 require "yaml"
@@ -286,7 +288,7 @@ class TestYamlLoader < Minitest::Test
     refute_nil(doc)
     assert_equal("test/test2.yaml#", doc["$child_of"])
     assert_equal("Should take precedence", doc["target1"])
-    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" }}, doc["target2"])
+    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" } }, doc["target2"])
   end
 
   def test_multi_inherits_in_the_same_document

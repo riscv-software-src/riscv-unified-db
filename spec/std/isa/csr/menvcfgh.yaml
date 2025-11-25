@@ -14,10 +14,11 @@ description: Contains bits to enable/disable extensions
 priv_mode: M
 length: 32
 definedBy:
-  allOf:
-    - name: Sm
-      version: ">=1.12"
-    - name: U
+  extension:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: U
 fields:
   STCE:
     location: 31
@@ -26,7 +27,9 @@ fields:
       *STimecmp Enable*
 
       Alias of `menvcfg.STCE`
-    definedBy: Sstc
+    definedBy:
+      extension:
+        name: Sstc
     type: RW
     reset_value: UNDEFINED_LEGAL
   PBMTE:
@@ -36,7 +39,9 @@ fields:
       *Page Based Memory Type Enable*
 
       Alias of `menvcfg.PBMTE`
-    definedBy: Svpbmt
+    definedBy:
+      extension:
+        name: Svpbmt
     type: RW
     reset_value: UNDEFINED_LEGAL
   ADUE:
@@ -44,7 +49,9 @@ fields:
     alias: menvcfg.ADUE
     description: |
       Alias of `menvcfg.ADUE`
-    definedBy: Svadu
+    definedBy:
+      extension:
+        name: Svadu
     type(): |
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

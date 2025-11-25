@@ -18,8 +18,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2023-09
-    implies:
-      - name: Zvks
-        version: "1.0.0"
-      - name: Zvbc
-        version: "1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zvks
+            version: "= 1.0.0"
+          - name: Zvbc
+            version: "= 1.0.0"

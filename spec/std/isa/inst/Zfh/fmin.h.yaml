@@ -9,7 +9,9 @@ name: fmin.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy:
+  extension:
+    name: Zfh
 assembly: fd, fs1, fs2
 encoding:
   match: 0010110----------000-----1010011

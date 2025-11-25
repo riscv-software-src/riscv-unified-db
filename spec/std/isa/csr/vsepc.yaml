@@ -16,7 +16,9 @@ description: |
   Written with the PC of an instruction on an exception or interrupt taken in VS-mode.
 
   Also controls where the hart jumps on an exception return from VS-mode.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   PC:
     location: 63-0

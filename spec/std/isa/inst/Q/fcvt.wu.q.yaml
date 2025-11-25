@@ -7,9 +7,11 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.wu.q
 long_name: Floating-Point Convert Unsigned Quad-Precision to Word
+definedBy:
+  extension:
+    name: Q
 description: |
   `fcvt.wu.q` converts a quad-precision floating-point number to a 32-bit unsigned integer.
-definedBy: Q
 assembly: xd, fs1, rm
 encoding:
   match: 110001100001-------------1010011

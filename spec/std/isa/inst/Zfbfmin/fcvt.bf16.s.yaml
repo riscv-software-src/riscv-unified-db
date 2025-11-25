@@ -9,7 +9,9 @@ name: fcvt.bf16.s
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfbfmin
+definedBy:
+  extension:
+    name: Zfbfmin
 assembly: fd, fs1, rm
 encoding:
   match: 010001001000-------------1010011

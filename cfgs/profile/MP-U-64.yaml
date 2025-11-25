@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: CC0-1.0
+
+# AUTO-GENERATED FILE. DO NOT EDIT
+# To regenerate, run `./do gen:cfg` in the UDB root directory
+# The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+---
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: MP-U-64
+description:
+params:
+  MXLEN: 64
+mandatory_extensions:
+- name: I
+  version: "~> 2.1"
+- name: Svade
+  version: "~> 1.0.0"
+non_mandatory_extensions:
+- name: A
+  version: "= 2.1"
+additional_extensions: true

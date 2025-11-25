@@ -10,7 +10,9 @@ address: 0x150
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Sscsrind
+definedBy:
+  extension:
+    name: Sscsrind
 description: |
   The `siselect` register will support the value range 0..0xFFF at a minimum. A future extension may
   define a value range outside of this minimum range. Only if such an extension is implemented will

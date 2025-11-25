@@ -49,4 +49,6 @@ fields:
       does not retire and does not cause `minstret.COUNT` to increment.
     reset_value: UNDEFINED_LEGAL
     affectedBy: [Zicntr, Smcntrpmf, Smcdeleg, Ssccfg]
-definedBy: Zicntr
+definedBy:
+  extension:
+    name: Zicntr

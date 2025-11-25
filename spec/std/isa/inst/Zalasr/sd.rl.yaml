@@ -9,7 +9,9 @@ name: sd.rl
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zalasr
+definedBy:
+  extension:
+    name: Zalasr
 assembly: xs2, (xs1)
 encoding:
   match: 0011101----------011000000101111

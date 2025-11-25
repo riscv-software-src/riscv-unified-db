@@ -33,7 +33,7 @@ namespace udb {
     static const <%= enum.name %> from_s(const std::string_view& value);
 
     <%= underlying_type %> m_value;
-    <%= underlying_type %> value() const { return m_value; }
+    constexpr <%= underlying_type %> value() const { return m_value; }
 
     constexpr uint32_t size() const { return <%= element_names.size %>; }
 

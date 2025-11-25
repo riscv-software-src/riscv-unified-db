@@ -9,7 +9,9 @@ name: fsqrt.s
 long_name: Floating-Point Square Root Single-Precision
 description: |
   The `fsqrt.s` instruction computes the square root of `fs1` and writes the result is written to `fd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, rm
 encoding:
   match: 010110000000-------------1010011

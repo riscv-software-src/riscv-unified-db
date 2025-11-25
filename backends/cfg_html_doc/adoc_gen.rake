@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "udb_helpers/backend_helpers"
@@ -27,13 +28,13 @@ require "ruby-prof"
     when "csr"
       cfg_arch.transitive_implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
-        puts "  Generating #{path}"
+        Udb.logger.info "  Generating #{path}"
         File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "inst"
       cfg_arch.transitive_implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
-        puts "  Generating #{path}"
+        Udb.logger.info "  Generating #{path}"
         # RubyProf.start
         File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
         # result = RubyProf.stop
@@ -43,13 +44,13 @@ require "ruby-prof"
       cfg_arch.transitive_implemented_extension_versions.each do |ext_version|
         ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
-        puts "  Generating #{path}"
+        Udb.logger.info "  Generating #{path}"
         File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "func"
       global_symtab = cfg_arch.symtab
       path = dir_path / "funcs.adoc"
-      puts "  Generating #{path}"
+      Udb.logger.info "  Generating #{path}"
       File.write(path, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
     else
       raise "todo"
@@ -82,22 +83,22 @@ require "ruby-prof"
 
     case type
     when "csr"
-      puts "Generating full CSR list"
+      Udb.logger.info "Generating full CSR list"
       cfg_arch.transitive_implemented_csrs.each do |csr|
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
-      puts "Generating full extension list"
+      Udb.logger.info "Generating full extension list"
       cfg_arch.transitive_implemented_extension_versions.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
-      puts "Generating full instruction list"
+      Udb.logger.info "Generating full instruction list"
       cfg_arch.transitive_implemented_instructions.each do |inst|
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
-      puts "Generating function list"
+      Udb.logger.info "Generating function list"
       cfg_arch.implemented_functions.each do |func|
         lines << " * `#{func.name}`"
       end
@@ -105,6 +106,7 @@ require "ruby-prof"
       raise "Unsupported type"
     end
 
+    FileUtils.mkdir_p File.dirname(t.name)
     File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(lines.join("\n")))
   end
 end
@@ -117,7 +119,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => [
 
   cfg_arch = $resolver.cfg_arch_for(config_name.to_s)
 
-  puts "Generating landing page for #{config_name}"
+  Udb.logger.info "Generating landing page for #{config_name}"
   erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")
 
   FileUtils.mkdir_p File.dirname(t.name)

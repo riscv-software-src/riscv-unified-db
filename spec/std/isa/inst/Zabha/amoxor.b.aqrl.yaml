@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amoxor.SIZE.AQRL.layout# Copyright (c) Abhijit Das(Sukuna0007Abhi)
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amoxor.SIZE.AQRL.layout
+
+# Copyright (c) Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -16,7 +18,9 @@ description: |
     * Write the sign-extended value into _xd_
     * XOR the least-significant byte of register _xs2_ to the loaded value
     * Write the result to the address in _xs1_
-definedBy: Zabha
+definedBy:
+  extension:
+    name: Zabha
 assembly: xd, xs2, (xs1)
 encoding:
   match: 0010011----------000-----0101111

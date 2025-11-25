@@ -9,7 +9,9 @@ name: vmv8r.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2
 encoding:
   match: 1001111-----00111011-----1010111

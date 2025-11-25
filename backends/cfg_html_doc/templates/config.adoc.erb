@@ -16,11 +16,10 @@
 
 [cols="1,4,1"]
 |===
-| Value | Description | From Extension
+| Value | Description
 
 | <%= param.value %>
-a| <%= param.desc %>
-a| <%= param.exts.map { |e| "`#{e.name}`" }.join(", ")%>
+a| <%= param.description %>
 |===
 
 <%- end -%>

@@ -19,12 +19,14 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2023-09
-    implies:
-      - name: Zvksed
-        version: "1.0.0"
-      - name: Zvksh
-        version: "1.0.0"
-      - name: Zvkb
-        version: "1.0.0"
-      - name: Zvkt
-        version: "1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zvksed
+            version: "= 1.0.0"
+          - name: Zvksh
+            version: "= 1.0.0"
+          - name: Zvkb
+            version: "= 1.0.0"
+          - name: Zvkt
+            version: "= 1.0.0"

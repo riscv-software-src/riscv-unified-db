@@ -20,7 +20,9 @@ description: |
   In modes other than M-mode, `fence.tso` is further affected by `menvcfg.FIOM`,
   `senvcfg.FIOM`<% if ext?(:H) %>, and/or `henvcfg.FIOM`<% end %>.
 
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: ""
 encoding:
   match: 100000110011-----000-----0001111

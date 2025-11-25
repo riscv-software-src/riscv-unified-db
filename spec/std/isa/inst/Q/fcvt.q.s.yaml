@@ -7,9 +7,11 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.s
 long_name: Floating-Point Convert Single-Precision to Quad-Precision
+definedBy:
+  extension:
+    name: Q
 description: |
   `fcvt.q.s` converts a single-precision floating-point number to a quad-precision floating-point number.
-definedBy: Q
 assembly: fd, fs1, rm
 encoding:
   match: 010001100000-------------1010011

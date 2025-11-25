@@ -9,7 +9,9 @@ name: vadc.vim
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, imm, v0
 encoding:
   match: 0100000----------011-----1010111

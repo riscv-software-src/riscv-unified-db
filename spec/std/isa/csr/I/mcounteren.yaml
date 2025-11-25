@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/I/mcounteren.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/I/mcounteren.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -85,7 +87,9 @@ description: |
   <%- end -%>
   .
   <%- end -%>
-definedBy: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
+definedBy:
+  extension:
+    name: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
 fields:
   CY:
     location: 0

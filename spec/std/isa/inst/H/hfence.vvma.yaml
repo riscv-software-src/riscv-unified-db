@@ -9,7 +9,9 @@ name: hfence.vvma
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 assembly: xs1, xs2
 encoding:
   match: 0010001----------000000001110011

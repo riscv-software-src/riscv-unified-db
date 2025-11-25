@@ -8,10 +8,12 @@ kind: instruction
 name: auipc
 long_name: Add upper immediate to pc
 description: Add an immediate to the current PC.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm
 encoding:
-  match: -------------------------0010111
+  match: "-------------------------0010111"
   variables:
     - name: imm
       location: 31-12

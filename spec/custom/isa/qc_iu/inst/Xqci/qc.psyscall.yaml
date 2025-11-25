@@ -13,9 +13,8 @@ description: |
   Instruction is used to call simulator to execute function according to the argument.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisim
+  extension:
+    name: Xqcisim
 assembly: " xs1"
 base: 32
 encoding:

@@ -10,7 +10,9 @@ long_name: Sign-extend byte
 description: |
   Sign-extends the least-significant byte in the source to XLEN by copying the
   most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
-definedBy: Zbb
+definedBy:
+  extension:
+    name: Zbb
 assembly: xd, xs1
 encoding:
   match: 011000000100-----001-----0010011
