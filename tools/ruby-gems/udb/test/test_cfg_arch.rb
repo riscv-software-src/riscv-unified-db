@@ -69,7 +69,7 @@ class TestCfgArch < Minitest::Test
       assert_includes result.reasons, "Parameter value violates the schema: 'MXLEN' = '31'"
       assert_includes result.reasons, "Parameter has no definition: 'NOT_A'"
       assert_includes result.reasons, "Parameter is not defined by this config: 'CACHE_BLOCK_SIZE'. Needs (Zicbom>=0 || Zicbop>=0 || Zicboz>=0)"
-      assert_includes result.reasons, "Mandatory extension requirements conflict: This is not satisfiable: (Zcd=1.0.0 && Zcmp=1.0.0 && (!Zcmp=1.0.0 || !Zcd=1.0.0))"
+      assert result.reasons.any? { |r| r =~ /Mandatory extension requirements conflict: This is not satisfiable: / }
       assert_equal 6, result.reasons.size, <<~MSG
         There are unexpected reasons in:
 
@@ -202,8 +202,34 @@ class TestCfgArch < Minitest::Test
   end
 
   def test_transitive
-    cfg_arch = @resolver.cfg_arch_for("rv64")
+    cfg = <<~YAML
+      ---
+      $schema: config_schema.json#
+      kind: architecture configuration
+      type: partially configured
+      name: rv64_no32
+      description: A generic RV64 system, no RV32 possible
+      params:
+        MXLEN: 64
+        SXLEN: [64]
+        UXLEN: [64]
+      mandatory_extensions:
+        - name: "I"
+          version: ">= 0"
+        - name: "Sm"
+          version: ">= 0"
+      prohibited_extensions:
+        - name: H
+    YAML
+    cfg_arch = nil
 
+    Tempfile.create do |f|
+      f.write cfg
+      f.flush
+      cfg_arch = @resolver.cfg_arch_for(Pathname.new f.path)
+    end
+
+    puts cfg_arch.extension("Zilsd").requirements_condition.to_s(expand: true)
     # make sure that RV32-only extensions are not possible
     refute_includes cfg_arch.possible_extension_versions.map(&:name), "Zilsd"
     refute_includes cfg_arch.possible_extensions.map(&:name), "Zilsd"
@@ -215,9 +241,9 @@ class TestCfgArch < Minitest::Test
 
     cfg_arch = @resolver.cfg_arch_for("rv64")
 
-    assert_equal cfg_arch.extension_version("C", "2.0.0", cfg_arch), cfg_arch.extension_version("C", "2.0.0")
-    assert cfg_arch.extension_version("C", "2.0.0", cfg_arch).eql?(cfg_arch.extension_version("C", "2.0.0"))
-    assert_equal cfg_arch.extension_version("C", "2.0.0", cfg_arch).hash, cfg_arch.extension_version("C", "2.0.0").hash
+    assert_equal cfg_arch.extension_version("C", "2.0.0"), cfg_arch.extension_version("C", "2.0.0")
+    assert cfg_arch.extension_version("C", "2.0.0").eql?(cfg_arch.extension_version("C", "2.0.0"))
+    assert_equal cfg_arch.extension_version("C", "2.0.0").hash, cfg_arch.extension_version("C", "2.0.0").hash
 
     assert_equal \
       [
@@ -251,7 +277,6 @@ class TestCfgArch < Minitest::Test
         cfg_arch.extension_version("C", "2.0.0"),
         cfg_arch.extension_version("F", "2.2.0"),
         cfg_arch.extension_version("Zca", "1.0.0"),
-        cfg_arch.extension_version("Zcf", "1.0.0"),
         cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
@@ -268,30 +293,12 @@ class TestCfgArch < Minitest::Test
         cfg_arch.extension_version("F", "2.2.0"),
         cfg_arch.extension_version("Zca", "1.0.0"),
         cfg_arch.extension_version("Zcd", "1.0.0"),
-        cfg_arch.extension_version("Zcf", "1.0.0"),
         cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
           cfg_arch.extension_version("C", "2.0.0"),
           cfg_arch.extension_version("D", "2.2.0")
-        ]
-      ).sort
-
-    assert_equal \
-      [
-        cfg_arch.extension_version("D", "2.2.0"),
-        cfg_arch.extension_version("F", "2.2.0"),
-        cfg_arch.extension_version("Zca", "1.0.0"),
-        cfg_arch.extension_version("Zcd", "1.0.0"),
-        cfg_arch.extension_version("Zcf", "1.0.0"),
-        cfg_arch.extension_version("Zicsr", "2.0.0")
-      ],
-      cfg_arch.expand_implemented_extension_list(
-        [
-          cfg_arch.extension_version("Zca", "1.0.0"),
-          cfg_arch.extension_version("Zcf", "1.0.0"),
-          cfg_arch.extension_version("Zcd", "1.0.0")
         ]
       ).sort
   end

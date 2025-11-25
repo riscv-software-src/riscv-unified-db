@@ -21,12 +21,11 @@ schema:
   uniqueItems: true
 requirements:
   idl(): |
+    # XLEN in U-mode can never be larger than XLEN in M-mode
     MXLEN == 32 -> !$array_includes?(UXLEN, 64);
-    $array_includes?(SXLEN, 32) -> $array_includes?(UXLEN, 32);
-  reason: |
-    XLEN in U-mode can never be larger than XLEN in M-mode
 
-    If S-mode supports RV32, then U mode must also support it.
+    # If S-mode supports RV32, then U mode must also support it.
+    $array_includes?(SXLEN, 32) -> $array_includes?(UXLEN, 32);
 definedBy:
   extension:
     name: U

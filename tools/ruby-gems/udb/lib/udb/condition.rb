@@ -601,6 +601,7 @@ module Udb
     def expand_xlen(tree, expansion_clauses)
       if tree.terms.any? { |t| t.is_a?(XlenTerm) } || expansion_clauses.any? { |clause| clause.terms.any? { |t| t.is_a?(XlenTerm) } }
         expansion_clauses << LogicNode.new(LogicNodeType::Xor, [LogicNode::Xlen32, LogicNode::Xlen64])
+        expansion_clauses << @cfg_arch.param("MXLEN").requirements_condition.to_logic_tree(expand: false)
       end
     end
     private :expand_xlen

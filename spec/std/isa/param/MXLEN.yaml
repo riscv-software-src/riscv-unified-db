@@ -14,3 +14,32 @@ description: XLEN in machine mode, specified in bits
 schema:
   type: integer
   enum: [32, 64]
+requirements:
+  idl(): |
+    MXLEN == 32 -> xlen() == 32;
+    xlen() == 64 -> MXLEN == 64;
+
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::H) &&
+      !$array_includes?(VUXLEN, 32) &&
+      !$array_includes?(VSXLEN, 32) &&
+      !$array_includes?(UXLEN, 32) &&
+      !$array_includes?(SXLEN, 32)
+    ) -> xlen() == 64;
+
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::S) &&
+      !implemented?(ExtensionName::H) &&
+      !$array_includes?(UXLEN, 32) &&
+      !$array_includes?(SXLEN, 32)
+    ) -> xlen() == 64;
+
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::U) &&
+      !implemented?(ExtensionName::S) &&
+      !implemented?(ExtensionName::H) &&
+      !$array_includes?(UXLEN, 32)
+    ) -> xlen() == 64;

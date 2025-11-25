@@ -1306,7 +1306,7 @@ module Udb
     }
     def self.create_from_yaml(yaml, cfg_arch)
       requirements =
-        if yaml.key?("version")
+        if yaml["version"]
           yaml.fetch("version")
         else
           ">= 0"
