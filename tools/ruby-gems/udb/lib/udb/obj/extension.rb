@@ -1176,11 +1176,11 @@ module Udb
     sig { returns(T::Array[ExceptionCode]) }
     def exception_codes
       @exception_codes ||=
-        @cfg_arch.exception_codes.select do |ecode|
+        @arch.exception_codes.select do |ecode|
           # define every extension version except this one (and compatible),
           # and test if the condition can be satisfied
-          ecode.defined_by_condition.satisfied_by_ext_req?(@cfg_arch.extension_requirement(@name, "~> #{@version_spec}"), include_requirements: false) ||
-            ecode.defined_by_condition.satisfiability_depends_on_ext_req?(@cfg_arch.extension_requirement(@name, "~> #{@version_spec}"))
+          ecode.defined_by_condition.satisfied_by_ext_req?(@arch.extension_requirement(@name, "~> #{@version_spec}"), include_requirements: false) ||
+            ecode.defined_by_condition.satisfiability_depends_on_ext_req?(@arch.extension_requirement(@name, "~> #{@version_spec}"))
         end
     end
 
@@ -1189,9 +1189,9 @@ module Udb
     sig { returns(T::Array[InterruptCode]) }
     def interrupt_codes
       @interrupt_codes ||=
-        @cfg_arch.interrupt_codes.select do |icode|
-          icode.defined_by_condition.satisfied_by_ext_req?(@cfg_arch.extension_requirement(@name, "~> #{@version_spec}"), include_requirements: false) ||
-            icode.defined_by_condition.satisfiability_depends_on_ext_req?(@cfg_arch.extension_requirement(@name, "~> #{@version_spec}"))
+        @arch.interrupt_codes.select do |icode|
+          icode.defined_by_condition.satisfied_by_ext_req?(@arch.extension_requirement(@name, "~> #{@version_spec}"), include_requirements: false) ||
+            icode.defined_by_condition.satisfiability_depends_on_ext_req?(@arch.extension_requirement(@name, "~> #{@version_spec}"))
         end
     end
 

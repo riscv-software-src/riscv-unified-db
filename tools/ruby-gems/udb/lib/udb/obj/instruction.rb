@@ -1249,11 +1249,13 @@ module Udb
 
       t = remaining_requirements.type
       case t
+      when LogicNodeType::True
+        []
       when LogicNodeType::Or
         remaining_requirements.node_children.map { |child| LogicCondition.new(child, cfg_arch) }
       when LogicNodeType::And
         [LogicCondition.new(remaining_requirements.node_children.fetch(0), cfg_arch)]
-      when LogicNodeType::Term
+      when LogicNodeType::Term, LogicNodeType::Not
         [LogicCondition.new(remaining_requirements, cfg_arch)]
       else
         raise "unexpected: #{t}"

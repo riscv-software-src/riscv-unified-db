@@ -80,13 +80,23 @@ Decode Variables::
 
 Included in::
 
+<%- unless inst.unconditional_extension_requirements.empty? -%>
+
 |===
 | Extension | Version
 
 <%-   inst.unconditional_extension_requirements.each do |ext_req| -%>
-| *<%= ext_req.to_s_pretty %>*
-| <%= inst.fix_entities(ext_req.to_s_pretty) %>
+| *<%= ext_req.name %>*
+| <%= inst.fix_entities(ext_req.requirement_specs_to_s_pretty) %>
 <%-   end -%>
 |===
+
+<%- end -%>
+
+<%- unless inst.other_requirements.empty? -%>
+<%- if inst.unconditional_extension_requirements.empty? -%>This<%- else -%>Additionally, this<%- end -%> instruction is defined when the following is met:
+
+<%= inst.other_requirements.map(&:to_asciidoc) %>
+<%- end -%>
 
 <%- end -%>

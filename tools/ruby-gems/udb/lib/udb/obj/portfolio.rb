@@ -25,7 +25,7 @@ module Udb
     extend Forwardable
 
     def_delegators :@ext_req,
-      :name, :satisfying_versions, :extension, :to_s, :to_s_pretty, :requirement_specs
+      :name, :satisfying_versions, :extension, :to_s, :to_s_pretty, :requirement_specs, :requirement_specs_to_s_pretty
 
     attr_reader :ext_req, :note, :req_id, :presence
 
