@@ -1274,7 +1274,7 @@ module Udb
       @memo.terms ||=
         begin
           t = literals.uniq
-          raise "Problem with parameter hashing\n#{t.map(&:to_s).uniq}\n#{t.map(&:to_s)}" unless @memo.terms.map(&:to_s).uniq == @memo.terms.map(&:to_s)
+          raise "Problem with parameter hashing\n#{t.map(&:to_s).uniq}\n#{t.map(&:to_s)}" unless t.map(&:to_s).uniq == t.map(&:to_s)
           t
         end
     end
