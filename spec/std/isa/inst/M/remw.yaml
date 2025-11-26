@@ -45,7 +45,7 @@ operation(): |
     Bits<1> sign_bit = src1[31];
     X[xd] = {{32{sign_bit}}, src1};
 
-  } else if ((src1 == {33'b1, 31'b0}) && (src2 == 32'b1)) {
+  } else if ((src1 == 32'h80000000) && (src2 == 32'hFFFFFFFF)) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
     X[xd] = 0;

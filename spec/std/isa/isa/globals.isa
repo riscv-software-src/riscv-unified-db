@@ -120,8 +120,8 @@ generated enum ExceptionCode;
 
 # XLEN encoding, as defined in CSR[mstatus].mxl, etc.
 enum XRegWidth {
-  XLEN32 0
-  XLEN64 1
+  XLEN32 1
+  XLEN64 2
 }
 
 # enum ExceptionCode {
@@ -1003,19 +1003,19 @@ function pmp_match_64 {
 
       # set up the default range limits, which will result in NoMatch when
       # compared to the access
-      Bits<PHYS_ADDR_WIDTH> range_hi = 0;
-      Bits<PHYS_ADDR_WIDTH> range_lo = 0;
+      Bits<PHYS_ADDR_WIDTH> range_base = 0;
+      Bits<PHYS_ADDR_WIDTH> range_limit = 0;
 
       if (cfg.A == $bits(PmpCfg_A::TOR)) {
         if (i == 0) {
           # when entry zero is TOR, zero is the lower address bound
-          range_lo = 0;
+          range_base = 0;
         } else {
           # otherwise, it's the address in the next lowest pmpaddr register
           Csr tor_pmpaddr_csr = direct_csr_lookup(pmpaddr_idx - 1);
-          range_lo = (csr_sw_read(tor_pmpaddr_csr) << 2)[PHYS_ADDR_WIDTH-1:0];
+          range_base = (csr_sw_read(tor_pmpaddr_csr))[PHYS_ADDR_WIDTH-1:0];
         }
-        range_hi = (pmpaddr_csr_value << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0] - 1;
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1024,21 +1024,20 @@ function pmp_match_64 {
         # mask:            0b00000011111
         # ~mask:           0b11111100000
         # len = mask + 1:  0b00000100000
-        Bits<PHYS_ADDR_WIDTH-2> pmpaddr_value = pmpaddr_csr_value[PHYS_ADDR_WIDTH-3:0];
-        Bits<PHYS_ADDR_WIDTH-2> mask = pmpaddr_value ^ (pmpaddr_value + 1);
-        range_lo = (pmpaddr_value & ~mask) << 2;
-        Bits<PHYS_ADDR_WIDTH-2> len = mask + 1;
-        range_hi = ((pmpaddr_value & ~mask) + len) << 2;
+        Bits<PHYS_ADDR_WIDTH-1> pmpaddr_value = pmpaddr_csr_value[PHYS_ADDR_WIDTH-1:0];
+        Bits<PHYS_ADDR_WIDTH-1> mask = pmpaddr_value ^ (pmpaddr_value + 1);
+        range_base = (pmpaddr_value & ~mask);
+        range_limit = range_base + mask;
 
       } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
-        range_lo = (pmpaddr_csr_value << 2)[PHYS_ADDR_WIDTH-1:0];
-        range_hi = range_lo + 4;
+        range_base = pmpaddr_csr_value[PHYS_ADDR_WIDTH-1:0];
+        range_limit = range_base + 3;
       }
 
-      if ((paddr >= range_lo) && ((paddr + (access_size/8)) < range_hi)) {
+      if (((paddr >> 2) >= range_base) && (((paddr + (access_size/8) - 1) >> 2) <= range_limit)) {
         # full match
         return PmpMatchResult::FullMatch, cfg;
-      } else if (!(((paddr + (access_size/8) - 1) < range_lo) || (paddr >= range_hi))) {
+      } else if (!(((paddr + (access_size/8) - 1) < range_base) || (paddr >= range_limit))) {
         # this is a partial match. By definition, the access must fail, regardless
         # of the pmp cfg settings
         return PmpMatchResult::PartialMatch, -;
@@ -2104,8 +2103,8 @@ function stage1_page_walk {
       raise (page_fault_code, mode(), vaddr);
     }
 
-    for (U32 i = (LEVELS - 1); i >= 0; i--) {
-      U32 vpn = (vaddr >> (12 + VPN_SIZE*i)) & ((1 `<< VPN_SIZE) - 1);
+    for (U32 I = (LEVELS - 1); I >= 0; I--) {
+      U32 vpn = (vaddr >> (12 + VPN_SIZE*I)) & ((1 `<< VPN_SIZE) - 1);
 
       Bits<PA_SIZE> pte_gpaddr = (ppn << 12) + (vpn * (PTESIZE/8));
 
@@ -2178,6 +2177,8 @@ function stage1_page_walk {
 
       if (pte_flags.R == 1 || pte_flags.X == 1) {
         # found a leaf PTE
+        Bits<PA_SIZE> paddr_base = pte[PA_SIZE-3:I*VPN_SIZE + 10] `<< (I*VPN_SIZE + 12);
+        Bits<PA_SIZE> offset = vaddr[I*VPN_SIZE + 11:0];
 
         # see if there is permission to perform the access
         if (op == MemoryOperation::Read || op == MemoryOperation::ReadModifyWrite) {
@@ -2214,7 +2215,7 @@ function stage1_page_walk {
         }
 
         # ensure remaining PPN bits are zero, otherwise there is a misaligned super page
-        raise (page_fault_code, mode(), vaddr) if ((i > 0) && (pte[i*VPN_SIZE + 10:10] != 0));
+        raise (page_fault_code, mode(), vaddr) if ((I > 0) && (pte[I*VPN_SIZE + 10:10] != 0));
 
         # check access and dirty bits
         if ((pte_flags.A == 0)         # access is clear
@@ -2267,12 +2268,12 @@ function stage1_page_walk {
             if (!success) {
               # the PTE changed between the read during the walk and the attempted atomic update
               # roll back, and try this level again
-              i = i + 1;
+              I = I + 1;
             } else {
               # successful translation and update
-              TranslationResult pte_phys =
-                translate_gstage(
-                  {pte[PA_SIZE-3:i*VPN_SIZE + 10], vaddr[i*VPN_SIZE + 11:0]},
+
+              TranslationResult pte_phys = translate_gstage(
+                  paddr_base + offset,
                   vaddr,
                   op,
                   effective_mode,
@@ -2292,7 +2293,7 @@ function stage1_page_walk {
         # translation succeeded
         TranslationResult pte_phys =
           translate_gstage(
-            {pte[PA_SIZE-3:i*VPN_SIZE + 10], vaddr[i*VPN_SIZE + 11:0]},
+            paddr_base + offset,
             vaddr,
             op,
             effective_mode,
@@ -2307,7 +2308,7 @@ function stage1_page_walk {
       } else {
         # found a pointer to the next level
 
-        if (i == 0) {
+        if (I == 0) {
           # a pointer can't exist on the last level
           raise (page_fault_code, mode(), vaddr);
         }
@@ -2328,7 +2329,7 @@ function stage1_page_walk {
         }
 
         # fall through to next level
-        ppn = pte[PA_SIZE-3:10] << 12;
+        ppn = pte[PA_SIZE-3:10];
       }
     }
   }
@@ -2398,16 +2399,16 @@ function translate {
 
     if (translation_mode == SatpMode::Bare) {
       result.paddr = vaddr;
-    } else if (translation_mode == SatpMode::Sv32) {
+    } else if (xlen() == 32 && translation_mode == SatpMode::Sv32) {
       # Sv32 page table walk
       result = stage1_page_walk<32, 34, 32, 2>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv39) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv39) {
       # Sv39 page table walk
       result = stage1_page_walk<39, 56, 64, 3>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv48) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv48) {
       # Sv48 page table walk
       result = stage1_page_walk<48, 56, 64, 4>(vaddr, op, effective_mode, encoding);
-    } else if (translation_mode == SatpMode::Sv57) {
+    } else if (xlen() == 64 && translation_mode == SatpMode::Sv57) {
       # Sv57 page table walk
       result = stage1_page_walk<57, 56, 64, 5>(vaddr, op, effective_mode, encoding);
     } else {
