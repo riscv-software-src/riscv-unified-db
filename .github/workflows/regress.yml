@@ -212,7 +212,7 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
         run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
-  regress-riscv-tests-32:
+  regress-riscv-tests:
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
