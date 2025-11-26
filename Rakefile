@@ -251,7 +251,7 @@ namespace :test do
     cfg_files.each do |cfg_file|
       cfg_name = File.basename(cfg_file, ".yaml")
       puts "Validating #{cfg_name}..."
-      unless system("#{$root}/bin/udb validate cfg #{cfg_file}")
+      unless system "bundle exec udb validate cfg #{cfg_file}"
         failed_cfgs << cfg_name
       end
     end
