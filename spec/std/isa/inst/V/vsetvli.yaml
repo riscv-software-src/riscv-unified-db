@@ -68,7 +68,7 @@ operation(): |
           unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
       }
   } else {
-     CSR[vl].VALUE = vlmax;
+      CSR[vl].VALUE = vlmax;
   }
 
   X[xd] = CSR[vl].VALUE;
