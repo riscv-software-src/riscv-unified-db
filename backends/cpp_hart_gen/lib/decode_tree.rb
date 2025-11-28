@@ -112,20 +112,22 @@ class DecodeGen
 
     tree.insts.each do |inst|
       inst_format = inst.encoding(xlen).format
-      if inst_format.reverse[cur_range].match?(/^[01]+$/)
+      range_bits = inst_format.reverse[cur_range]
+      if range_bits && range_bits.match?(/^[01]+$/)
         # puts "#{inst.name} has opcode bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse})"
         # whole range is opcode bits
         if inst_format.gsub('0', '1') == tree.mask(cur_range).to_s(2).gsub('0', '-').rjust(inst.encoding(xlen).size, '-')
-          done_insts[inst_format.reverse[cur_range]] = inst
+          done_insts[range_bits] = inst
         else
-          in_progress_groups[inst_format.reverse[cur_range]] ||= []
-          in_progress_groups[inst_format.reverse[cur_range]] << inst
+          in_progress_groups[range_bits] ||= []
+          in_progress_groups[range_bits] << inst
         end
       else
-        # puts "#{inst.name} has variable bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse} #{inst_format.reverse})"
+        # puts "#{inst.name} has variable bit(s) in #{cur_range} (#{range_bits || 'nil'} #{inst_format.reverse})"
         variable_insts << inst
       end
     end
+
     if test
       # puts "test result for #{cur_range}: #{variable_insts.empty?} (#{tree.insts.map(&:name)})"
       return variable_insts.empty?
