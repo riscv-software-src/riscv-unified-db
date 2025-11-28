@@ -18,6 +18,18 @@ description: |
   * Code waiting on a flag to be set in memory indicative of an event occurring.
     For example, software on a RISC-V hart may wait on a "done" flag to be set in memory by an
     accelerator device indicating completion of a job previously submitted to the device.
+params:
+  BOUNDED_TIME_LIMIT:
+    description: |
+      Defines the implementation-specific bounded time limit within which a wrs.nto instruction must complete.
+    schema:
+      type: integer
+  STO_DURATION:
+    description: |
+      Implementation-defined short timeout for wrs.sto instruction such that the stall is terminated on
+      the timeout if no other conditions have occurred to terminate the stall.
+    schema:
+      type: integer
 type: unprivileged
 versions:
   - version: "1.0.1"
