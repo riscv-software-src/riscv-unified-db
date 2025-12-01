@@ -202,9 +202,14 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/build/Makefile} => [
     "-DCONFIG_LIST=\"#{ENV['CONFIG'].gsub(',', ';')}\"",
     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     "-DCMAKE_BUILD_TYPE=#{cmake_build_type}"
-  ].join(" ")
+  ]
+  if ENV["IGNOREUNDEFINED"].nil?
+    cmd.push("-DIGNOREUNDEFINED=NO")
+  else
+    cmd.push("-DIGNOREUNDEFINED=YES")
+  end
 
-  sh cmd
+  sh cmd.join(" ")
 end
 
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hpp} do |t|
@@ -346,6 +351,15 @@ namespace :build do
     end
   end
 
+  task iss: ["gen:cpp_hart"] do
+    _, build_name = configs_build_name
+
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+    Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
+      sh "make -j #{$jobs} iss"
+    end
+  end
+
   task renode_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 
@@ -395,7 +409,7 @@ namespace :test do
     end
   end
 
-  task riscv_tests: ["build_riscv_tests", "build:cpp_hart"] do
+  task riscv_tests: ["build_riscv_tests", "build:iss"] do
     configs_name, build_name = configs_build_name
     rv32uiTests = ["simple", "add", "addi", "and",
       "andi", "auipc", "beq", "bge", "bgeu", "blt",
@@ -405,24 +419,62 @@ namespace :test do
       "sw", "st_ld", "sll", "slli", "slt", "slti",
       "sltiu", "sltu", "sra", "srai", "srl",
       "srli", "sub", "xor", "xori"]
+    rv64uiTests = ["add", "addi", "addiw", "addw",
+      "and", "andi",
+      "auipc",
+      "beq", "bge", "bgeu", "blt", "bltu", "bne",
+      "simple",
+      "fence_i",
+      "jal", "jalr",
+      "lb", "lbu", "lh", "lhu", "lw", "lwu", "ld", "ld_st",
+      "lui",
+      "ma_data",
+      "or", "ori",
+      "sb", "sh", "sw", "sd", "st_ld",
+      "sll", "slli", "slliw", "sllw",
+      "slt", "slti", "sltiu", "sltu",
+      "sra", "srai", "sraiw", "sraw",
+      "srl", "srli", "srliw", "srlw",
+      "sub", "subw",
+      "xor", "xori"]
 
-    rv32uiTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
-    end
+    rv32umTests = [ "div", "divu",
+      "mul", "mulh", "mulhsu", "mulhu",
+      "rem", "remu" ]
+    rv64umTests = ["div", "divu", "divuw", "divw",
+      "mul", "mulh", "mulhsu", "mulhu", "mulw",
+      "rem", "remu", "remuw", "remw"]
 
-    rv32umTests = [ "div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu" ]
-    rv32umTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
-    end
-
-    rv32ucTests = [ "rvc" ]
-    rv32ucTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
-    end
+    # compressed tests same for rv32 as rv64
+    ucTests = [ "rvc" ]
 
     rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
-    rv32siTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
+    rv64siTests = ["csr", "dirty", "icache-alias", "ma_fetch", "scall", "sbreak"]
+
+    if configs_name[0] == "rv64"
+      uiTests = rv64uiTests
+      umTests = rv64umTests
+      siTests = rv64siTests
+    else
+      uiTests = rv32uiTests
+      umTests = rv32umTests
+      siTests = rv32siTests
+    end
+
+    uiTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}ui-p-#{t}"
+    end
+
+    umTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}um-p-#{t}"
+    end
+
+    ucTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}uc-p-#{t}"
+    end
+
+    siTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}"
     end
   end
 end
