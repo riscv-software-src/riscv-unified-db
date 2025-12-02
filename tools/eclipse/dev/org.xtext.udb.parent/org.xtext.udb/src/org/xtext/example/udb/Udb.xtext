@@ -28,7 +28,7 @@ Model:
 ;
 
 // This is so we can directly copy+paste from a UDB .yaml file
-Schema: "$schema" ":" STRING;
+Schema: "$schema" ":" schema=STRING;
 
 /* Required fields for the CSR schema */
 Kind: 'kind' ':' kind=KindType ;
@@ -62,8 +62,8 @@ KindType: type=('csr'|'extension');
 NameType: type=(CSR_NAME);
 PrivType: type=('M'|'S'|'U'|'VS'|'D');
 
-LengthType: IntType | ParmType;
-IntType: intVal=INT; //('32' | '64');
+LengthType: intType = IntType | parmType = ParmType;
+IntType: intVal=INT; // must be either 32 or 64
 ParmType: parmName=('MXLEN'|'SXLEN'|'VSXLEN'|'XLEN');
 
 CNRType: '[' id=STRING ',' name=STRING ',' docLinks=StringArray ','
