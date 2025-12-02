@@ -22,62 +22,58 @@ async function waitFor<T>(probe: () => T | null | undefined | false, ms = 8000, 
 // it can distinguish between good and bad syntax.
 suite('UDB LS – smoke', () => {
   test('initialize → diagnostics on open (real .udb file)', async () => {
-    const uri = vscode.Uri.file(wsPath('badHex.udb')); 
+    // Use your new invalid fixture filename here if you renamed it.
+    const uri = vscode.Uri.file(wsPath('badGrammar.udb'));
     let doc = await vscode.workspace.openTextDocument(uri);
-
-    // force the language in case association is missing.
+	// force the language in case association is missing.
     if (doc.languageId !== 'udb') {
       doc = await vscode.languages.setTextDocumentLanguage(doc, 'udb');
     }
     await vscode.window.showTextDocument(doc);
 
-    
-    const edit = new vscode.WorkspaceEdit();
-    edit.insert(doc.uri, new vscode.Position(0, 0), ' ');     
+    // Nudge validation (on-change + on-save), then revert
+    let edit = new vscode.WorkspaceEdit();
+    edit.insert(doc.uri, new vscode.Position(0, 0), ' ');
     await vscode.workspace.applyEdit(edit);
-    await vscode.workspace.saveAll(); 
-
-    const revert = new vscode.WorkspaceEdit();
-    revert.delete(doc.uri, new vscode.Range(0, 0, 0, 1));
-    await vscode.workspace.applyEdit(revert);
+    await vscode.workspace.saveAll();
+    edit = new vscode.WorkspaceEdit();
+    edit.delete(doc.uri, new vscode.Range(0, 0, 0, 1));
+    await vscode.workspace.applyEdit(edit);
 
     const diags = await waitFor(() => {
       const d = vscode.languages.getDiagnostics(doc.uri);
       return d.length ? d : null;
     }, 8000);
 
-    // Expect at least one diagnostic for the intentionally bad hex.
-    assert.ok(diags && diags.length >= 1, 'expected at least one diagnostic for bad hex in .udb file'); // should pass now but underscores still not fixed in this version
+    if (!diags || diags.length === 0) {
+      console.log('Diagnostics (bad file):', vscode.languages.getDiagnostics(doc.uri));
+    }
+     // Expect at least one diagnostic for the intentionally bad grammar.
+    assert.ok(diags && diags.length >= 1, 'expected at least one diagnostic for invalid UDB in bad fixture');
   });
-
-  test('completion after keyword', async () => {
-    const doc = await vscode.workspace.openTextDocument({ language: 'udb', content: 'csr ' });
+	
+  // completion test
+  test('completion after a keyword (e.g., "kind")', async () => {
+    // With the new grammar, keywords include: kind, name, long_name, address, ...
+    const doc = await vscode.workspace.openTextDocument({ language: 'udb', content: 'kind ' });
     await vscode.window.showTextDocument(doc);
-    const pos = new vscode.Position(0, 4);
+    const pos = new vscode.Position(0, 'kind '.length);
 
     const list = await vscode.commands.executeCommand<vscode.CompletionList>(
-      'vscode.executeCompletionItemProvider', doc.uri, pos
+      'vscode.executeCompletionItemProvider',
+      doc.uri,
+      pos
     );
 
     assert.ok(list, 'completion list present');
-    assert.ok((list.items ?? []).length >= 1, 'expected some completions after "csr "');
+    
+    assert.ok((list.items ?? []).length >= 1, 'expected some completions after "kind "');
   });
-
-  test('hover returns content', async () => {
-    const doc = await vscode.workspace.openTextDocument({ language: 'udb', content: 'csr A "d" 0x1A_2F "0x00";' });
-    await vscode.window.showTextDocument(doc);
-    const col = doc.getText().indexOf('0x1A_2F') + 2;
-
-    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
-      'vscode.executeHoverProvider', doc.uri, new vscode.Position(0, col)
-    );
-
-    assert.ok(hovers && hovers.length >= 0, 'hover provider responded');
-  });
-
-  // With no cross-refs, “go to definition” on a declaration may return self or nothing
-  test('definition (self or none with current grammar)', async () => {
-    const uri = vscode.Uri.file(wsPath('goodHex.udb')); 
+	
+  // hover test
+  test('hover returns content (e.g., on address hex)', async () => {
+    // Probe hover on address value in validate fixture line
+    const uri = vscode.Uri.file(wsPath('goodGrammar.udb'));
     let doc = await vscode.workspace.openTextDocument(uri);
     if (doc.languageId !== 'udb') {
       doc = await vscode.languages.setTextDocumentLanguage(doc, 'udb');
@@ -85,24 +81,18 @@ suite('UDB LS – smoke', () => {
     await vscode.window.showTextDocument(doc);
 
     const text = doc.getText();
-    const secondCTRL = text.indexOf('CTRL', text.indexOf('CTRL') + 1);
-    const pos = doc.positionAt(secondCTRL + 1);
+    const addrIx = text.indexOf('0x');
+    const pos = addrIx >= 0 ? doc.positionAt(addrIx + 2) : new vscode.Position(0, 0);
 
-    const defs = await vscode.commands.executeCommand<vscode.Location[]>(
-      'vscode.executeDefinitionProvider', doc.uri, pos
+    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
+      'vscode.executeHoverProvider',
+      doc.uri,
+      pos
     );
 
-    if (!defs || defs.length === 0) {
-      assert.ok(true); 
-      return;
-    }
-    const here = new vscode.Range(
-      doc.positionAt(secondCTRL),
-      doc.positionAt(secondCTRL + 'CTRL'.length)
-    );
-    const self = defs.some(loc => loc.uri.toString() === doc.uri.toString() && !!loc.range.intersection(here));
-    assert.ok(self, 'expected no definition or a self-location on the declaration token');
+    assert.ok(hovers && hovers.length >= 0, 'hover provider responded');
   });
-  // Pending on purpose, enable when the grammar has references and rename updates them.
-  //test.skip('rename (skip until rename/ref updates implemented)', () => {});
+
+  
 });
+

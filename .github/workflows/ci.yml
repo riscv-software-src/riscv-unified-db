@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, PRIDE1095-HEX ]
+    branches: [PRIDE1097-CSRs]
   pull_request:
-    branches: [ main, PRIDE1095-HEX ]
+    branches: [PRIDE1097-CSRs]
 
 jobs:
   java-tests:

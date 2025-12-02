@@ -24,5 +24,6 @@ Export-Package: org.xtext.example.udb.parser.antlr,
  org.xtext.example.udb.udb.util,
  org.xtext.example.udb.validation,
  org.xtext.example.udb.serializer,
- org.xtext.example.udb
+ org.xtext.example.udb,
+ org.xtext.example.udb.parser.antlr.lexer
 Import-Package: org.apache.log4j

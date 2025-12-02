@@ -12,4 +12,5 @@ Require-Bundle: org.xtext.udb,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.xtext.example.udb.ide.contentassist.antlr,
- org.xtext.example.udb.ide.contentassist.antlr.internal
+ org.xtext.example.udb.ide.contentassist.antlr.internal,
+ org.xtext.example.udb.ide.contentassist.antlr.lexer
