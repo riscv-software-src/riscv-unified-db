@@ -1,4 +1,6 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amoxor.SIZE.AQRL.layout# Copyright (c) Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -17,12 +19,8 @@ description: |
 definedBy: Zaamo
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 00100------------010-----0101111
+  match: 0010000----------010-----0101111
   variables:
-    - name: aq
-      location: 26
-    - name: rl
-      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -35,15 +33,12 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
-    # even though this is a memory operation, the exception occurs before that would be known,
-    # so mode() is the correct reporting mode rathat than effective_ldst_mode()
+  if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   XReg virtual_address = X[xs1];
-
-  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Xor, aq, rl, $encoding);
+  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Xor, 1'b0, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

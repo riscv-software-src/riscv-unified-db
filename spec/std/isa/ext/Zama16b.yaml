@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zama16b
-long_name: Misaligned load/store/AMO within aligned 16-byte address are atomic
+long_name: Misaligned load/store/AMO within aligned 16-byte boundaries are atomic
 type: unprivileged
 description: |
   Misaligned loads, stores, and AMOs to main memory regions that do not cross a
@@ -21,4 +21,4 @@ description: |
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2024-10

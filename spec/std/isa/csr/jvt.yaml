@@ -1,7 +1,7 @@
 # Copyright (c) Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -9,17 +9,12 @@ name: jvt
 long_name: Table Jump Base Vector and Control Register
 address: 0x017
 writable: true
-description:
-  - id: csr-jvt-purpose
-    normative: true
-    text: |
-      The `jvt` register is an XLEN-bit WARL read/write register that holds the jump table configuration,
-      consisting of the jump table base address (BASE) and the jump table mode (MODE).
-  - id: csr-jvt-architectural
-    normative: false
-    text: |
-      `jvt` CSR adds architectural state to the system software context (such as an OS process), therefore
-      must be saved/restored on context switches.
+description: |
+  The `jvt` register is an XLEN-bit WARL read/write register that holds the jump table configuration,
+  consisting of the jump table base address (BASE) and the jump table mode (MODE).
+
+  `jvt` CSR adds architectural state to the system software context (such as an OS process), therefore
+  must be saved/restored on context switches.
 priv_mode: U
 length: XLEN
 definedBy: Zcmt
@@ -46,25 +41,19 @@ fields:
       }
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if ((mode() != PrivilegeMode::M) && implemented?(ExtensionName::Smstateen)) {
-        if (CSR[mstateen0].JVT == 1'b0) {
-          unimplemented_csr($encoding);
-        }
-      }
-      else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstateen)) {
-        if (CSR[sstateen0].JVT == 1'b0) {
-          unimplemented_csr($encoding);
-        }
-      }
-      else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstateen)) {
-        if (CSR[hstateen0].JVT == 1'b0) {
-          unimplemented_csr($encoding);
-        }
-      }
-      else if ((mode() == PrivilegeMode::VU) && implemented?(ExtensionName::Ssstateen)) {
-        if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
-          unimplemented_csr($encoding);
-        }
+      if (( mode() != PrivilegeMode::M && implemented?(ExtensionName::Smstateen)
+            && CSR[mstateen0].JVT == 1'b0 )
+          ||
+          ( mode() == PrivilegeMode::U && implemented?(ExtensionName::Ssstateen)
+            && CSR[sstateen0].JVT == 1'b0 )
+          ||
+          ( mode() == PrivilegeMode::VS && implemented?(ExtensionName::Ssstateen)
+            && CSR[hstateen0].JVT == 1'b0 )
+          ||
+          ( mode() == PrivilegeMode::VU && implemented?(ExtensionName::Ssstateen)
+            && (CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0) )) {
+
+        unimplemented_csr($encoding);
       }
       else {
         if (JVT_BASE_TYPE == "custom") {
@@ -94,28 +83,4 @@ fields:
       }
       return 0;
 sw_read(): |
-  # If the Smstateen extension is implemented, then bit 2 in `mstateen0`, `sstateen0`, and `hstateen0` is
-  # implemented. If bit 2 of a controlling `stateen0` CSR is zero, then access to the `jvt` CSR and execution
-  # of a `cm.jalt` or `cm.jt` instruction by a lower privilege level results in an illegal-instruction trap (or, if
-  # appropriate, a virtual-instruction trap).
-
-  if ((mode() != PrivilegeMode::M) && implemented?(ExtensionName::Smstateen)) {
-    if (CSR[mstateen0].JVT == 1'b0) {
-      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-    }
-  }
-  else if ((mode() == PrivilegeMode::U) && implemented?(ExtensionName::Ssstateen)) {
-    if (CSR[sstateen0].JVT == 1'b0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-    }
-  }
-  else if ((mode() == PrivilegeMode::VS) && implemented?(ExtensionName::Ssstateen)) {
-    if (CSR[hstateen0].JVT == 1'b0) {
-      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-    }
-  }
-  else if ((mode() == PrivilegeMode::VU) && implemented?(ExtensionName::Ssstateen)) {
-    if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
-      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
-    }
-  }
+  check_zcmt_enabled($encoding);

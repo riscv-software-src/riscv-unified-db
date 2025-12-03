@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Ziccif
-long_name: Main memory fetch requirement for RVA profiles
+long_name: Main memory supports instruction fetch with atomicity requirement
 type: unprivileged
 description: |
   Main memory regions with both the cacheability and coherence PMAs must support instruction
@@ -18,4 +18,4 @@ description: |
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03

@@ -28,9 +28,9 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  XReg operand1 = sext(X[xs1], 31);
+  XReg operand1 = sext(X[xs1], 32);
 
-  X[xd] = sext(operand1 >>> X[xs2][4:0], 31);
+  X[xd] = sext(operand1 >>> X[xs2][4:0], 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

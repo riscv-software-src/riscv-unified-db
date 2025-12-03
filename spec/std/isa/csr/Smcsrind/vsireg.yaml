@@ -12,47 +12,26 @@ writable: true
 priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
-description:
-  - id: csr-vsireg-purpose
-    normative: true
-    text: |
-      The `vsireg` CSR is one of several alias registers used to indirectly access
-      virtual supervisor-level CSRs in VS-mode or VU-mode.
+description: |
+  The `vsireg` CSR is one of several alias registers used to indirectly access
+  virtual supervisor-level CSRs in VS-mode or VU-mode.
 
-  - id: csr-vsireg-selection-mechanism
-    normative: true
-    text: |
-      The register addressed by `vsireg` is selected by the current value of the `vsiselect` CSR.
+  The register addressed by `vsireg` is selected by the current value of the `vsiselect` CSR.
 
-  - id: csr-vsireg-indirect-access-benefit
-    normative: false
-    text: |
-      The alias mechanism allows indirect CSR access, which helps in virtualization and future extensibility.
+  The alias mechanism allows indirect CSR access, which helps in virtualization and future extensibility.
 
-  - id: csr-vsireg-access-exception
-    normative: true
-    text: |
-      A virtual instruction exception is raised for attempts from VS-mode or VU-mode
-      to directly access `vsiselect` or `vsireg`, or from VU-mode to access `siselect` or `sireg`.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg`, or from VU-mode to access `siselect` or `sireg`.
 
-  - id: csr-vsireg-unimplemented-target
-    normative: true
-    text: |
-      The behavior of accesses to `vsireg` when `vsiselect` holds a value that is
-      not implemented at the HS level is UNSPECIFIED.
+  The behavior of accesses to `vsireg` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED.
 
-  - id: csr-vsireg-unimplemented-target-recommendation
-    normative: false
-    text: |
-      Implementations are recommended to raise an illegal instruction exception for
-      accesses to unimplemented targets via `vsireg`.
+  Implementations are recommended to raise an illegal instruction exception for
+  accesses to unimplemented targets via `vsireg`.
 
-  - id: csr-vsireg-width
-    normative: true
-    text: |
-      The width of `vsireg` is always the current `XLEN`, not `VSXLEN`.
-      For example, if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg` is 64 bits wide
-      when accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
+  The width of `vsireg` is always the current `XLEN`, not `VSXLEN`.
+  For example, if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg` is 64 bits wide
+  when accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 
 fields:
   VALUE:
@@ -61,11 +40,8 @@ fields:
     location_rv64: 63-0
     type: RW
     description:
-      - id: csr-vsireg-value-indirect-data
-        normative: true
-        text: |
-          The data read from or written to the register selected by the current
-          value of the `vsiselect` CSR.
+      The data read from or written to the register selected by the current
+      value of the `vsiselect` CSR.
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
       Csr handle = indirect_csr_lookup(CSR[vsiselect].VALUE, 1);

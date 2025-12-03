@@ -33,6 +33,24 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
+  - when: xs1 == 0 && csr == 0x001
+    to: frflags xd
+  - when: xs1 == 0 && csr == 0x002
+    to: frrm xd
+  - when: xs1 == 0 && csr == 0x003
+    to: frcsr xd
+  - when: xs1 == 0 && csr == 0xC00
+    to: rdcycle xd
+  - when: xs1 == 0 && csr == 0xC01
+    to: rdtime xd
+  - when: xs1 == 0 && csr == 0xC02
+    to: rdinstret xd
+  - when: xs1 == 0 && csr == 0xC80
+    to: rdcycleh xd
+  - when: xs1 == 0 && csr == 0xC81
+    to: rdtimeh xd
+  - when: xs1 == 0 && csr == 0xC82
+    to: rdinstreth xd
   - when: xs1 == 0
     to: csrr xd,csr
   - when: xd == 0

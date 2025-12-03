@@ -340,7 +340,7 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: 2021-11
+    ratification_date: 2021-12
     contributors:
       - name: Alexander Zeh
       - name: Andy Glew
@@ -355,9 +355,9 @@ versions:
       - name: L Peter Deutsch
       - name: Richard Newell
       - name: Claire Wolf
-  - version: 1.0.1
+  - version: "1.0.1"
     state: ratified
-    ratification_date: null
+    ratification_date: 2022-02
     changes:
       - Fix typos to show that `c.srli`, `c.srai`, and `c.slli` are Zkt instructions in RV64.
 company:

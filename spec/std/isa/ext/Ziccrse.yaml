@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Ziccrse
-long_name: Main memory reservability requirement for RVA profiles
+long_name: Main memory supports forward progress on LR/SC sequences
 type: unprivileged
 description: |
   Main memory regions with both the cacheability and coherence PMAs must support RsrvEventual.
@@ -16,4 +16,4 @@ description: |
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03

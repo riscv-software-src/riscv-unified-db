@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zalrsc
-long_name: Atomic read-modify-write instructions
+long_name: Load-Reserved/Store-Conditional Instructions
 type: unprivileged
 versions:
   - version: "1.0.0"

@@ -19,7 +19,7 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2019-04
     requires: D
 params:
   MUTABLE_MISA_Q:

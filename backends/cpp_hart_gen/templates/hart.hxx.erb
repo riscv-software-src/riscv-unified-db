@@ -402,12 +402,9 @@ namespace udb {
         _set_xreg(Bits<8>{num}, Bits<MXLEN>{value});
       }
 
-      template <
-        template <unsigned, bool> class IdxType, unsigned IdxN, bool IdxSigned,
-        template<unsigned, bool> class ValueType, unsigned ValueN, bool ValueSigned
-      >
-        requires (BitsType<IdxType<IdxN, IdxSigned>> && BitsType<ValueType<ValueN, ValueSigned>>)
-      void _set_xreg(const IdxType<IdxN, IdxSigned>& num, const ValueType<ValueN, ValueSigned>& value) {
+      template < template <unsigned, bool> class IdxType, unsigned IdxN, bool IdxSigned >
+        requires (BitsType<IdxType<IdxN, IdxSigned>>)
+      void _set_xreg(const IdxType<IdxN, IdxSigned>& num, const _PossiblyUnknownBits<MXLEN, false>& value) {
         if (num != 0_b) {
           m_xregs[static_cast<unsigned>(num.get())] = value;
         }
