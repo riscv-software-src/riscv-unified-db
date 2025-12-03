@@ -427,8 +427,8 @@ namespace :test do
 
     # These extensions to the riscv-tests suite have binaries under a different diretcory
     rv32uvTests = ["vsetivli", "vsetvl", "vsetvli"]
-    rv32siTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml tests/isa/rv32si-p-#{t}"
+    rv32uvTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml tests/isa/rv32uv-p-#{t}"
     end
   end
 end
