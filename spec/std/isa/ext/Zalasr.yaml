@@ -6,11 +6,11 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zalasr
-long_name: Atomic, Load-Acquire Store-Release
+long_name: Atomic Load-Acquire and Store-Release
 description: |
   load-acquire and store-release instructions.
 type: unprivileged
 versions:
-  - version: "0.3.5"
-    state: development
-    ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2025-10

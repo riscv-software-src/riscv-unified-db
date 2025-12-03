@@ -7,11 +7,8 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.d
 long_name: Floating-point Convert Double-precision to Half-precision
-description:
-  - id: inst-fcvt.h.d-behaviour
-    normative: false
-    text: |
-      `fcvt.h.d` converts a Double-precision Floating-point number to a Half-precision floating-point number.
+description: |
+  `fcvt.h.d` converts a Double-precision Floating-point number to a Half-precision floating-point number.
 definedBy:
   allOf: [D, Zfh]
 assembly: fd, fs1, rm

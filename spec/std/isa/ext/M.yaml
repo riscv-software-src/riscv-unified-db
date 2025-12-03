@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: M
 type: unprivileged
-long_name: Integer multiply and divide instructions
+long_name: Integer multiply and divide
 versions:
   - version: "2.0.0"
     state: ratified

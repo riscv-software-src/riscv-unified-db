@@ -27,7 +27,7 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[xd] = sext(X[xs1][31:0] >> X[xs2][4:0], 31);
+operation(): X[xd] = sext(X[xs1][31:0] >> X[xs2][4:0], 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

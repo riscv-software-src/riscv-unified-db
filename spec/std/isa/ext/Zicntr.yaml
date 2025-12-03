@@ -6,8 +6,10 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicntr
-long_name: Architectural performance counters
-description: Architectural performance counters
+long_name: Base Counters and Timers
+description: |
+  The CYCLE, TIME, and INSTRET counters, which have dedicated functions
+  (cycle count, real-time clock, and instructions retired, respectively).
 type: unprivileged
 versions:
   - version: "2.0.0"

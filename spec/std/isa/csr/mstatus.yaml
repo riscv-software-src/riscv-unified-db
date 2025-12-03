@@ -143,13 +143,13 @@ fields:
     description: |
       *S-mode XLEN*
 
-      Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
+      Sets the effective XLEN for S-mode (1 = 32-bit, 2 = 64-bit, 3 = 128-bit [reserved]).
 
       [when,"SXLEN==32"]
-      Since the CPU only supports SXLEN==32, this is hardwired to 0.
+      Since the CPU only supports SXLEN==32, this is hardwired to 1.
 
-      [when,"SXLEN==32"]
-      Since the CPU only supports SXLEN==64, this is hardwired to 1.
+      [when,"SXLEN==64"]
+      Since the CPU only supports SXLEN==64, this is hardwired to 2.
 
       [when,"SXLEN=3264"]
       --
@@ -164,26 +164,34 @@ fields:
 
     legal?(csr_value): |
       if (SXLEN == 32) {
-        # SXLEN == 32 is encoded as 0
-        return csr_value.SXL == 0;
-      } else if (SXLEN == 64) {
-        # SXLEN == 64 is encoded as 1
+        # SXLEN == 32 is encoded as 1
         return csr_value.SXL == 1;
+      } else if (SXLEN == 64) {
+        # SXLEN == 64 is encoded as 2
+        return csr_value.SXL == 2;
       } else {
         # SXLEN could be 32 or 64
-        return csr_value.SXL <= 1;
+        return (csr_value.SXL >= 1 && csr_value.SXL <= 2);
       }
 
     sw_write(csr_value): |
       if (csr_value.SXL < csr_value.UXL) {
-        return UNDEFINED_LEGAL_DETERMINISTIC;
-      } else if (csr_value.SXL > 1) {
-        # SXL != [0, 1] is not defined (2 reserved for RV128, but that isn't ratified)
-        return UNDEFINED_LEGAL_DETERMINISTIC;
+        return CSR[mstatus].SXL;
+      } else if (csr_value.SXL < 1 || csr_value.SXL > 2) {
+        # SXL != [1, 2] is not defined (3 reserved for RV128, but that isn't ratified)
+        return CSR[mstatus].SXL;
       } else {
         return csr_value.SXL;
       }
-    reset_value: UNDEFINED_LEGAL
+
+    reset_value(): |
+      if (SXLEN == 32) {
+        return 1;
+      } else if (SXLEN == 64) {
+        return 2;
+      } else {
+        return 2;
+      }
 
   UXL:
     location: 33-32
@@ -192,13 +200,13 @@ fields:
     description: |
       U-mode XLEN.
 
-      Sets the effective XLEN for U-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
+      Sets the effective XLEN for U-mode (1 = 32-bit, 2 = 64-bit, 3 = 128-bit [reserved]).
 
       [when,"UXLEN == 32"]
-      Since the CPU only supports UXLEN==32, this is hardwired to 0.
+      Since the CPU only supports UXLEN==32, this is hardwired to 1.
 
       [when,"UXLEN == 64"]
-      Since the CPU only supports UXLEN==64, this is hardwired to 1.
+      Since the CPU only supports UXLEN==64, this is hardwired to 2.
 
 
       [when,"UXLEN == 3264"]
@@ -214,30 +222,30 @@ fields:
 
     sw_write(csr_value): |
       if (csr_value.SXL < csr_value.UXL) {
-        return UNDEFINED_LEGAL_DETERMINISTIC;
-      } else if (csr_value.UXL > 1) {
-        # UXL != [0, 1] is not defined (2 reserved for RV128, but that isn't ratified)
-        return UNDEFINED_LEGAL_DETERMINISTIC;
+        return CSR[mstatus].UXL;
+      } else if (csr_value.UXL < 1 || csr_value.UXL > 2) {
+        # UXL != [1, 2] is not defined (3 reserved for RV128, but that isn't ratified)
+        return CSR[mstatus].UXL;
       } else {
         return csr_value.UXL;
       }
 
     legal?(csr_value): |
       if (UXLEN == 32) {
-        return csr_value.UXL == 0;
-      } else if (UXLEN == 64) {
         return csr_value.UXL == 1;
+      } else if (UXLEN == 64) {
+        return csr_value.UXL == 2;
       } else {
-        return csr_value.UXL <= 1;
+        return (csr_value.UXL >= 1 && csr_value.UXL <= 2);
       }
 
     reset_value(): |
       if (UXLEN == 32) {
-        return 0;
-      } else if (UXLEN == 64) {
         return 1;
+      } else if (UXLEN == 64) {
+        return 2;
       } else {
-        return UNDEFINED_LEGAL;
+        return 2;
       }
 
   TSR:
