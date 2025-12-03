@@ -371,8 +371,8 @@ end
 task checkout_riscv_tests: "#{$root}/ext/riscv-tests/env/LICENSE"
 
 task build_riscv_tests: "checkout_riscv_tests" do
-  Dir.chdir "#{$root}/ext/riscv-tests/isa" do
-    sh "make RISCV_GCC_OPTS='-static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -I/usr/include/newlib'"
+  Dir.chdir "#{$root}/tests/isa" do
+    sh "make"
   end
 end
 
@@ -425,6 +425,12 @@ namespace :test do
     rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
     rv32siTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
+    end
+
+    # These extensions to the riscv-tests suite have binaries under a different diretcory
+    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli"]
+    rv32siTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml tests/isa/rv32si-p-#{t}"
     end
   end
 end
