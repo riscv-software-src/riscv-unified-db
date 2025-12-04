@@ -1,13 +1,12 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# SPDX-License-Identifier: BSD-3-Clause-Clear
 #=======================================================================
 # Makefrag for rv32uv tests
 #-----------------------------------------------------------------------
 
 rv32uv_sc_tests = \
     vsetivli \
-    vsetvli \
-    vsetvl
+    vsetvl \
+    vsetvli_vl_lt_vlmax \
+    vsetvli_rs1_eq_zero
 
 rv32uv_p_tests = $(addprefix rv32uv-p-, $(rv32uv_sc_tests))
 rv32uv_v_tests = $(addprefix rv32uv-v-, $(rv32uv_sc_tests))

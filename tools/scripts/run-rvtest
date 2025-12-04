@@ -38,5 +38,5 @@ do
     ./gen/cpp_hart_gen/${ARCH_TYPE}_${BUILD_TYPE}/build/iss \
 		-m ${ARCH_TYPE} \
 		-c ./cfgs/${config}.yaml \
-		./ext/riscv-tests/isa/${test_prefix}-$rvtest
+		./tests/isa/${test_prefix}-$rvtest
 done
