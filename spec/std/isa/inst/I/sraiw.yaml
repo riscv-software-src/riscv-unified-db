@@ -30,8 +30,8 @@ access:
 data_independent_timing: true
 operation(): |
   # shamt is between 0-32
-  XReg operand = sext(X[xs1], 31);
-  X[xd] = sext(operand >>> shamt, 31);
+  XReg operand = sext(X[xs1], 32);
+  X[xd] = sext(operand >>> shamt, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
