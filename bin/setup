@@ -137,7 +137,7 @@ elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; the
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}
-    HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
+    GEM_PATH=${ROOT}/.home/.gems && GEM_HOME=$GEM_PATH
     SINGULARITY_CACHE=
     if [ ! -f ${CONTAINER_PATH} ]; then
       echo "Fetching container..."
