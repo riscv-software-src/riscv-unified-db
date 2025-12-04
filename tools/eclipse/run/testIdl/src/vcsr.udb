@@ -1,0 +1,30 @@
+kind: csr
+name: vcsr
+address: 0x99F # validator works
+definedBy: "V"
+long_name: "Vector Control and Status Register"
+description: "Contains aliases to vxrm and vxsat CSRs"
+writable: true
+priv_mode: VS
+virtual_address: 0x00
+length: RNDLEN
+# single line comment works
+fields:
+	VXRM:
+		location: 2-1
+		reset_value: 0
+		description: "See vxrm."
+		sw_write(csr_value): "|
+	      CSR[vxrm].VALUE = csr_value.VXRM;
+	      return csr_value.VXRM;"
+		type: RW-RH
+		alias: vxrm.VALUE[1:0]
+	VXSAT:  # syntax error if vxrm is dedented TODO: better error message
+		location: 0
+		reset_value: 0
+		sw_write(csr_value): "|
+	      CSR[vxsat].VALUE = csr_value.VXSAT
+	      return csr_value.VXSAT;"
+		description: "See vxsat."
+		type: RW-RH
+		alias: vxsat.VALUE[0]
