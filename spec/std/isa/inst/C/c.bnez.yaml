@@ -21,6 +21,7 @@ encoding:
     - name: imm
       location: 12|6-5|2|11-10|4-3
       left_shift: 1
+      sign_extend: true
     - name: xs1
       location: 9-7
 access:
