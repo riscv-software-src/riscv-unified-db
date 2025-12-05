@@ -15,10 +15,10 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#6173
   def _nt_ary_eligible_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11728
+  # source://idlc//lib/idlc/idl_parser.rb#11858
   def _nt_ary_size_decl; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10974
+  # source://idlc//lib/idlc/idl_parser.rb#11104
   def _nt_assignment; end
 
   # source://idlc//lib/idlc/idl_parser.rb#889
@@ -27,49 +27,49 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#6576
   def _nt_bits_cast; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9484
+  # source://idlc//lib/idlc/idl_parser.rb#9614
   def _nt_body_function_definition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10248
+  # source://idlc//lib/idlc/idl_parser.rb#10378
   def _nt_builtin_function_definition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16220
+  # source://idlc//lib/idlc/idl_parser.rb#16350
   def _nt_builtin_read_only_var; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16244
+  # source://idlc//lib/idlc/idl_parser.rb#16374
   def _nt_builtin_read_write_var; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14581
+  # source://idlc//lib/idlc/idl_parser.rb#14711
   def _nt_builtin_type_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15830
+  # source://idlc//lib/idlc/idl_parser.rb#15960
   def _nt_comment; end
 
   # source://idlc//lib/idlc/idl_parser.rb#5747
   def _nt_concatenation_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8484
+  # source://idlc//lib/idlc/idl_parser.rb#8614
   def _nt_constraint_body; end
 
   # source://idlc//lib/idlc/idl_parser.rb#5888
   def _nt_csr_field_access_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16326
+  # source://idlc//lib/idlc/idl_parser.rb#16456
   def _nt_csr_field_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16271
+  # source://idlc//lib/idlc/idl_parser.rb#16401
   def _nt_csr_name; end
 
   # source://idlc//lib/idlc/idl_parser.rb#5962
   def _nt_csr_register_access_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12080
+  # source://idlc//lib/idlc/idl_parser.rb#12210
   def _nt_declaration; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12520
+  # source://idlc//lib/idlc/idl_parser.rb#12650
   def _nt_dontcare_lvalue; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12544
+  # source://idlc//lib/idlc/idl_parser.rb#12674
   def _nt_dontcare_return; end
 
   # source://idlc//lib/idlc/idl_parser.rb#468
@@ -81,13 +81,13 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#6699
   def _nt_enum_to_a; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#13629
+  # source://idlc//lib/idlc/idl_parser.rb#13759
   def _nt_execute_if_block; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8574
+  # source://idlc//lib/idlc/idl_parser.rb#8704
   def _nt_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10703
+  # source://idlc//lib/idlc/idl_parser.rb#10833
   def _nt_fetch; end
 
   # source://idlc//lib/idlc/idl_parser.rb#6058
@@ -96,58 +96,58 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#6106
   def _nt_field_access_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15704
+  # source://idlc//lib/idlc/idl_parser.rb#15834
   def _nt_field_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14238
+  # source://idlc//lib/idlc/idl_parser.rb#14368
   def _nt_for_loop; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11948
+  # source://idlc//lib/idlc/idl_parser.rb#12078
   def _nt_for_loop_iteration_variable_declaration; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9302
+  # source://idlc//lib/idlc/idl_parser.rb#9432
   def _nt_function_arg_list; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15978
+  # source://idlc//lib/idlc/idl_parser.rb#16108
   def _nt_function_body; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8787
+  # source://idlc//lib/idlc/idl_parser.rb#8917
   def _nt_function_call; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8654
+  # source://idlc//lib/idlc/idl_parser.rb#8784
   def _nt_function_call_template_arguments; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10799
+  # source://idlc//lib/idlc/idl_parser.rb#10929
   def _nt_function_definition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12971
+  # source://idlc//lib/idlc/idl_parser.rb#13101
   def _nt_function_if_block; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9207
+  # source://idlc//lib/idlc/idl_parser.rb#9337
   def _nt_function_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15921
+  # source://idlc//lib/idlc/idl_parser.rb#16051
   def _nt_function_statement; end
 
   # source://idlc//lib/idlc/idl_parser.rb#290
   def _nt_global_definition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16156
+  # source://idlc//lib/idlc/idl_parser.rb#16286
   def _nt_id; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8020
+  # source://idlc//lib/idlc/idl_parser.rb#8031
   def _nt_implication_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8118
+  # source://idlc//lib/idlc/idl_parser.rb#8248
   def _nt_implication_for_loop; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8421
+  # source://idlc//lib/idlc/idl_parser.rb#8551
   def _nt_implication_statement; end
 
   # source://idlc//lib/idlc/idl_parser.rb#196
   def _nt_include_statement; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16062
+  # source://idlc//lib/idlc/idl_parser.rb#16192
   def _nt_instruction_operation; end
 
   # source://idlc//lib/idlc/idl_parser.rb#1529
@@ -156,7 +156,7 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#26
   def _nt_isa; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14958
+  # source://idlc//lib/idlc/idl_parser.rb#15088
   def _nt_keyword; end
 
   # source://idlc//lib/idlc/idl_parser.rb#3517
@@ -234,37 +234,37 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#5594
   def _nt_replication_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15788
+  # source://idlc//lib/idlc/idl_parser.rb#15918
   def _nt_reserved; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12596
+  # source://idlc//lib/idlc/idl_parser.rb#12726
   def _nt_return_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12778
+  # source://idlc//lib/idlc/idl_parser.rb#12908
   def _nt_return_statement; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10831
+  # source://idlc//lib/idlc/idl_parser.rb#10961
   def _nt_rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12252
+  # source://idlc//lib/idlc/idl_parser.rb#12382
   def _nt_single_declaration; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11819
+  # source://idlc//lib/idlc/idl_parser.rb#11949
   def _nt_single_declaration_with_initialization; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16596
+  # source://idlc//lib/idlc/idl_parser.rb#16726
   def _nt_space; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12350
+  # source://idlc//lib/idlc/idl_parser.rb#12480
   def _nt_statement; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16501
+  # source://idlc//lib/idlc/idl_parser.rb#16631
   def _nt_string; end
 
   # source://idlc//lib/idlc/idl_parser.rb#1213
   def _nt_struct_definition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8606
+  # source://idlc//lib/idlc/idl_parser.rb#8736
   def _nt_template_safe_expression; end
 
   # source://idlc//lib/idlc/idl_parser.rb#3989
@@ -294,7 +294,7 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#7782
   def _nt_ternary_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15756
+  # source://idlc//lib/idlc/idl_parser.rb#15886
   def _nt_type_name; end
 
   # source://idlc//lib/idlc/idl_parser.rb#6866
@@ -303,10 +303,10 @@ module Idl
   # source://idlc//lib/idlc/idl_parser.rb#3441
   def _nt_unary_operator; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#15637
+  # source://idlc//lib/idlc/idl_parser.rb#15767
   def _nt_user_type_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#16385
+  # source://idlc//lib/idlc/idl_parser.rb#16515
   def _nt_var_write; end
 
   # source://idlc//lib/idlc/idl_parser.rb#1397
@@ -360,7 +360,7 @@ class Idl::ArrayIncludesAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#142
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#142
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -506,7 +506,7 @@ class Idl::AryElementAccessAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#113
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#113
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -653,90 +653,90 @@ class Idl::AryRangeAssignmentSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#11721
+# source://idlc//lib/idlc/idl_parser.rb#11851
 module Idl::ArySizeDecl0
-  # source://idlc//lib/idlc/idl_parser.rb#11722
+  # source://idlc//lib/idlc/idl_parser.rb#11852
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10881
+# source://idlc//lib/idlc/idl_parser.rb#11011
 module Idl::Assignment0
-  # source://idlc//lib/idlc/idl_parser.rb#10882
+  # source://idlc//lib/idlc/idl_parser.rb#11012
   def var; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10888
+# source://idlc//lib/idlc/idl_parser.rb#11018
 module Idl::Assignment1
-  # source://idlc//lib/idlc/idl_parser.rb#10889
+  # source://idlc//lib/idlc/idl_parser.rb#11019
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10897
+  # source://idlc//lib/idlc/idl_parser.rb#11027
   def function_call; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10893
+  # source://idlc//lib/idlc/idl_parser.rb#11023
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10902
+# source://idlc//lib/idlc/idl_parser.rb#11032
 module Idl::Assignment2
-  # source://idlc//lib/idlc/idl_parser.rb#10903
+  # source://idlc//lib/idlc/idl_parser.rb#11033
   def rval; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10908
+# source://idlc//lib/idlc/idl_parser.rb#11038
 module Idl::Assignment3
-  # source://idlc//lib/idlc/idl_parser.rb#10913
+  # source://idlc//lib/idlc/idl_parser.rb#11043
   def rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10909
+  # source://idlc//lib/idlc/idl_parser.rb#11039
   def var; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10918
+# source://idlc//lib/idlc/idl_parser.rb#11048
 module Idl::Assignment4
-  # source://idlc//lib/idlc/idl_parser.rb#10919
+  # source://idlc//lib/idlc/idl_parser.rb#11049
   def csr_field_access_expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10923
+  # source://idlc//lib/idlc/idl_parser.rb#11053
   def rval; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10928
+# source://idlc//lib/idlc/idl_parser.rb#11058
 module Idl::Assignment5
-  # source://idlc//lib/idlc/idl_parser.rb#10933
+  # source://idlc//lib/idlc/idl_parser.rb#11063
   def field_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10929
+  # source://idlc//lib/idlc/idl_parser.rb#11059
   def id; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10937
+  # source://idlc//lib/idlc/idl_parser.rb#11067
   def rval; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10942
+# source://idlc//lib/idlc/idl_parser.rb#11072
 module Idl::Assignment6
-  # source://idlc//lib/idlc/idl_parser.rb#10951
+  # source://idlc//lib/idlc/idl_parser.rb#11081
   def lsb; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10947
+  # source://idlc//lib/idlc/idl_parser.rb#11077
   def msb; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10955
+  # source://idlc//lib/idlc/idl_parser.rb#11085
   def rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10943
+  # source://idlc//lib/idlc/idl_parser.rb#11073
   def var; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10960
+# source://idlc//lib/idlc/idl_parser.rb#11090
 module Idl::Assignment7
-  # source://idlc//lib/idlc/idl_parser.rb#10965
+  # source://idlc//lib/idlc/idl_parser.rb#11095
   def idx; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10969
+  # source://idlc//lib/idlc/idl_parser.rb#11099
   def rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10961
+  # source://idlc//lib/idlc/idl_parser.rb#11091
   def var; end
 end
 
@@ -849,7 +849,7 @@ class Idl::AstNode
   sig { overridable.returns(::String) }
   def to_idl_verbose; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#18
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#18
   sig { overridable.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -1052,7 +1052,7 @@ class Idl::BinaryExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#201
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#201
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -1265,81 +1265,81 @@ end
 # source://idlc//lib/idlc/type.rb#984
 Idl::BitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/idl_parser.rb#9392
+# source://idlc//lib/idlc/idl_parser.rb#9522
 module Idl::BodyFunctionDefinition0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#9395
+# source://idlc//lib/idlc/idl_parser.rb#9525
 module Idl::BodyFunctionDefinition1
-  # source://idlc//lib/idlc/idl_parser.rb#9396
+  # source://idlc//lib/idlc/idl_parser.rb#9526
   def single_declaration; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9401
+# source://idlc//lib/idlc/idl_parser.rb#9531
 module Idl::BodyFunctionDefinition2
-  # source://idlc//lib/idlc/idl_parser.rb#9402
+  # source://idlc//lib/idlc/idl_parser.rb#9532
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9406
+  # source://idlc//lib/idlc/idl_parser.rb#9536
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9412
+# source://idlc//lib/idlc/idl_parser.rb#9542
 module Idl::BodyFunctionDefinition3
-  # source://idlc//lib/idlc/idl_parser.rb#9413
+  # source://idlc//lib/idlc/idl_parser.rb#9543
   def type_name; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9418
+# source://idlc//lib/idlc/idl_parser.rb#9548
 module Idl::BodyFunctionDefinition4
-  # source://idlc//lib/idlc/idl_parser.rb#9419
+  # source://idlc//lib/idlc/idl_parser.rb#9549
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9423
+  # source://idlc//lib/idlc/idl_parser.rb#9553
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9429
+# source://idlc//lib/idlc/idl_parser.rb#9559
 module Idl::BodyFunctionDefinition5
-  # source://idlc//lib/idlc/idl_parser.rb#9430
+  # source://idlc//lib/idlc/idl_parser.rb#9560
   def single_declaration; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9435
+# source://idlc//lib/idlc/idl_parser.rb#9565
 module Idl::BodyFunctionDefinition6
-  # source://idlc//lib/idlc/idl_parser.rb#9436
+  # source://idlc//lib/idlc/idl_parser.rb#9566
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9440
+  # source://idlc//lib/idlc/idl_parser.rb#9570
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9446
+# source://idlc//lib/idlc/idl_parser.rb#9576
 module Idl::BodyFunctionDefinition7
-  # source://idlc//lib/idlc/idl_parser.rb#9447
+  # source://idlc//lib/idlc/idl_parser.rb#9577
   def function_body; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9453
+# source://idlc//lib/idlc/idl_parser.rb#9583
 module Idl::BodyFunctionDefinition8
-  # source://idlc//lib/idlc/idl_parser.rb#9470
+  # source://idlc//lib/idlc/idl_parser.rb#9600
   def args; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9478
+  # source://idlc//lib/idlc/idl_parser.rb#9608
   def body_block; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9474
+  # source://idlc//lib/idlc/idl_parser.rb#9604
   def desc; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9458
+  # source://idlc//lib/idlc/idl_parser.rb#9588
   def function_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9466
+  # source://idlc//lib/idlc/idl_parser.rb#9596
   def ret; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9462
+  # source://idlc//lib/idlc/idl_parser.rb#9592
   def targs; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9454
+  # source://idlc//lib/idlc/idl_parser.rb#9584
   def type; end
 end
 
@@ -1386,64 +1386,64 @@ class Idl::BuiltinEnumDefinitionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10201
+# source://idlc//lib/idlc/idl_parser.rb#10331
 module Idl::BuiltinFunctionDefinition0
-  # source://idlc//lib/idlc/idl_parser.rb#10202
+  # source://idlc//lib/idlc/idl_parser.rb#10332
   def first; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10208
+# source://idlc//lib/idlc/idl_parser.rb#10338
 module Idl::BuiltinFunctionDefinition1
-  # source://idlc//lib/idlc/idl_parser.rb#10209
+  # source://idlc//lib/idlc/idl_parser.rb#10339
   def single_declaration; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10214
+# source://idlc//lib/idlc/idl_parser.rb#10344
 module Idl::BuiltinFunctionDefinition2
-  # source://idlc//lib/idlc/idl_parser.rb#10215
+  # source://idlc//lib/idlc/idl_parser.rb#10345
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10219
+  # source://idlc//lib/idlc/idl_parser.rb#10349
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10225
+# source://idlc//lib/idlc/idl_parser.rb#10355
 module Idl::BuiltinFunctionDefinition3
-  # source://idlc//lib/idlc/idl_parser.rb#10238
+  # source://idlc//lib/idlc/idl_parser.rb#10368
   def args; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10242
+  # source://idlc//lib/idlc/idl_parser.rb#10372
   def desc; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10230
+  # source://idlc//lib/idlc/idl_parser.rb#10360
   def function_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10234
+  # source://idlc//lib/idlc/idl_parser.rb#10364
   def ret; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#10226
+  # source://idlc//lib/idlc/idl_parser.rb#10356
   def type; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#14559
+# source://idlc//lib/idlc/idl_parser.rb#14689
 module Idl::BuiltinTypeName0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14562
+# source://idlc//lib/idlc/idl_parser.rb#14692
 module Idl::BuiltinTypeName1
-  # source://idlc//lib/idlc/idl_parser.rb#14563
+  # source://idlc//lib/idlc/idl_parser.rb#14693
   def i; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#14569
+# source://idlc//lib/idlc/idl_parser.rb#14699
 module Idl::BuiltinTypeName2; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14572
+# source://idlc//lib/idlc/idl_parser.rb#14702
 module Idl::BuiltinTypeName3; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14575
+# source://idlc//lib/idlc/idl_parser.rb#14705
 module Idl::BuiltinTypeName4; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14578
+# source://idlc//lib/idlc/idl_parser.rb#14708
 module Idl::BuiltinTypeName5; end
 
 # source://idlc//lib/idlc/ast.rb#5534
@@ -1517,12 +1517,12 @@ class Idl::BuiltinVariableSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#15820
+# source://idlc//lib/idlc/idl_parser.rb#15950
 module Idl::Comment0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#15823
+# source://idlc//lib/idlc/idl_parser.rb#15953
 module Idl::Comment1
-  # source://idlc//lib/idlc/idl_parser.rb#15824
+  # source://idlc//lib/idlc/idl_parser.rb#15954
   def content; end
 end
 
@@ -1552,39 +1552,45 @@ class Idl::CommentSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc.rb#57
+# source://idlc//lib/idlc.rb#63
 class Idl::Compiler
-  # source://idlc//lib/idlc.rb#62
+  # source://idlc//lib/idlc.rb#68
   def initialize; end
 
-  # source://idlc//lib/idlc.rb#353
+  # source://idlc//lib/idlc.rb#372
   sig { params(body: ::String, symtab: ::Idl::SymbolTable, pass_error: T::Boolean).returns(::Idl::ConstraintBodyAst) }
   def compile_constraint(body, symtab, pass_error: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#309
+  # source://idlc//lib/idlc.rb#328
   def compile_expression(expression, symtab, pass_error: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#66
+  # source://idlc//lib/idlc.rb#84
   def compile_file(path); end
 
-  # source://idlc//lib/idlc.rb#128
+  # source://idlc//lib/idlc.rb#147
   sig { params(loop: ::String, symtab: ::Idl::SymbolTable, pass_error: T::Boolean).returns(::Idl::ForLoopAst) }
   def compile_for_loop(loop, symtab, pass_error: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#181
+  # source://idlc//lib/idlc.rb#200
   def compile_func_body(body, return_type: T.unsafe(nil), symtab: T.unsafe(nil), name: T.unsafe(nil), input_file: T.unsafe(nil), input_line: T.unsafe(nil), no_rescue: T.unsafe(nil), extra_syms: T.unsafe(nil), type_check: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#270
+  # source://idlc//lib/idlc.rb#289
   def compile_inst_operation(inst, symtab:, input_file: T.unsafe(nil), input_line: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#243
+  # source://idlc//lib/idlc.rb#262
   def compile_inst_scope(idl, symtab:, input_file:, input_line: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#60
+  # source://idlc//lib/idlc.rb#66
   def parser; end
 
-  # source://idlc//lib/idlc.rb#281
+  # source://idlc//lib/idlc.rb#73
+  def pb=(pb); end
+
+  # source://idlc//lib/idlc.rb#300
   def type_check(ast, symtab, what); end
+
+  # source://idlc//lib/idlc.rb#79
+  def unset_pb; end
 
   class << self
     # source://idlc//lib/idlc/version.rb#8
@@ -1749,15 +1755,15 @@ Idl::ConstBitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 # source://idlc//lib/idlc/type.rb#986
 Idl::ConstBoolType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/idl_parser.rb#8471
+# source://idlc//lib/idlc/idl_parser.rb#8601
 module Idl::ConstraintBody0
-  # source://idlc//lib/idlc/idl_parser.rb#8472
+  # source://idlc//lib/idlc/idl_parser.rb#8602
   def i; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8478
+# source://idlc//lib/idlc/idl_parser.rb#8608
 module Idl::ConstraintBody1
-  # source://idlc//lib/idlc/idl_parser.rb#8479
+  # source://idlc//lib/idlc/idl_parser.rb#8609
   def b; end
 end
 
@@ -1789,7 +1795,7 @@ class Idl::ConstraintBodyAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#53
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#53
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -1941,7 +1947,7 @@ class Idl::CsrFieldAssignmentSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16323
+# source://idlc//lib/idlc/idl_parser.rb#16453
 module Idl::CsrFieldName0; end
 
 # source://idlc//lib/idlc/ast.rb#7524
@@ -2087,7 +2093,7 @@ class Idl::CsrFunctionCallSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16268
+# source://idlc//lib/idlc/idl_parser.rb#16398
 module Idl::CsrName0; end
 
 # source://idlc//lib/idlc/ast.rb#7669
@@ -2258,21 +2264,21 @@ module Idl::Declaration
   def add_symbol(symtab); end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12059
+# source://idlc//lib/idlc/idl_parser.rb#12189
 module Idl::Declaration0
-  # source://idlc//lib/idlc/idl_parser.rb#12060
+  # source://idlc//lib/idlc/idl_parser.rb#12190
   def id; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12065
+# source://idlc//lib/idlc/idl_parser.rb#12195
 module Idl::Declaration1
-  # source://idlc//lib/idlc/idl_parser.rb#12070
+  # source://idlc//lib/idlc/idl_parser.rb#12200
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12074
+  # source://idlc//lib/idlc/idl_parser.rb#12204
   def rest; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12066
+  # source://idlc//lib/idlc/idl_parser.rb#12196
   def type_name; end
 end
 
@@ -2732,51 +2738,51 @@ end
 # source://idlc//lib/idlc/ast.rb#514
 Idl::ExecutableAst = T.type_alias { T.all(::Idl::AstNode, ::Idl::Executable) }
 
-# source://idlc//lib/idlc/idl_parser.rb#13572
+# source://idlc//lib/idlc/idl_parser.rb#13702
 module Idl::ExecuteIfBlock0
-  # source://idlc//lib/idlc/idl_parser.rb#13573
+  # source://idlc//lib/idlc/idl_parser.rb#13703
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#13579
+# source://idlc//lib/idlc/idl_parser.rb#13709
 module Idl::ExecuteIfBlock1
-  # source://idlc//lib/idlc/idl_parser.rb#13580
+  # source://idlc//lib/idlc/idl_parser.rb#13710
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#13586
+# source://idlc//lib/idlc/idl_parser.rb#13716
 module Idl::ExecuteIfBlock2
-  # source://idlc//lib/idlc/idl_parser.rb#13591
+  # source://idlc//lib/idlc/idl_parser.rb#13721
   def body; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#13587
+  # source://idlc//lib/idlc/idl_parser.rb#13717
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#13597
+# source://idlc//lib/idlc/idl_parser.rb#13727
 module Idl::ExecuteIfBlock3
-  # source://idlc//lib/idlc/idl_parser.rb#13598
+  # source://idlc//lib/idlc/idl_parser.rb#13728
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#13604
+# source://idlc//lib/idlc/idl_parser.rb#13734
 module Idl::ExecuteIfBlock4
-  # source://idlc//lib/idlc/idl_parser.rb#13605
+  # source://idlc//lib/idlc/idl_parser.rb#13735
   def body; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#13611
+# source://idlc//lib/idlc/idl_parser.rb#13741
 module Idl::ExecuteIfBlock5
-  # source://idlc//lib/idlc/idl_parser.rb#13620
+  # source://idlc//lib/idlc/idl_parser.rb#13750
   def elseifs; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#13624
+  # source://idlc//lib/idlc/idl_parser.rb#13754
   def final_else; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#13616
+  # source://idlc//lib/idlc/idl_parser.rb#13746
   def if_body; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#13612
+  # source://idlc//lib/idlc/idl_parser.rb#13742
   def if_cond; end
 end
 
@@ -2802,7 +2808,7 @@ class Idl::FalseExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#71
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#71
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -2825,9 +2831,9 @@ class Idl::FalseExpressionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#10696
+# source://idlc//lib/idlc/idl_parser.rb#10826
 module Idl::Fetch0
-  # source://idlc//lib/idlc/idl_parser.rb#10697
+  # source://idlc//lib/idlc/idl_parser.rb#10827
   def function_body; end
 end
 
@@ -2968,27 +2974,27 @@ class Idl::FieldAssignmentSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#15701
+# source://idlc//lib/idlc/idl_parser.rb#15831
 module Idl::FieldName0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14212
+# source://idlc//lib/idlc/idl_parser.rb#14342
 module Idl::ForLoop0
-  # source://idlc//lib/idlc/idl_parser.rb#14213
+  # source://idlc//lib/idlc/idl_parser.rb#14343
   def s; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#14219
+# source://idlc//lib/idlc/idl_parser.rb#14349
 module Idl::ForLoop1
-  # source://idlc//lib/idlc/idl_parser.rb#14228
+  # source://idlc//lib/idlc/idl_parser.rb#14358
   def action; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14224
+  # source://idlc//lib/idlc/idl_parser.rb#14354
   def condition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14220
+  # source://idlc//lib/idlc/idl_parser.rb#14350
   def for_loop_iteration_variable_declaration; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#14232
+  # source://idlc//lib/idlc/idl_parser.rb#14362
   def stmts; end
 end
 
@@ -3055,7 +3061,7 @@ class Idl::ForLoopAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#88
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#88
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -3070,18 +3076,18 @@ end
 # source://idlc//lib/idlc/ast.rb#6875
 Idl::ForLoopAst::StmtType = T.type_alias { T.any(::Idl::ForLoopAst, ::Idl::IfAst, ::Idl::ImplicationStatementAst, ::Idl::ReturnStatementAst, ::Idl::StatementAst) }
 
-# source://idlc//lib/idlc/idl_parser.rb#11930
+# source://idlc//lib/idlc/idl_parser.rb#12060
 module Idl::ForLoopIterationVariableDeclaration0
-  # source://idlc//lib/idlc/idl_parser.rb#11939
+  # source://idlc//lib/idlc/idl_parser.rb#12069
   def ary_size; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11935
+  # source://idlc//lib/idlc/idl_parser.rb#12065
   def id; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11943
+  # source://idlc//lib/idlc/idl_parser.rb#12073
   def rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11931
+  # source://idlc//lib/idlc/idl_parser.rb#12061
   def type_name; end
 end
 
@@ -3097,30 +3103,30 @@ class Idl::ForLoopSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9286
+# source://idlc//lib/idlc/idl_parser.rb#9416
 module Idl::FunctionArgList0
-  # source://idlc//lib/idlc/idl_parser.rb#9287
+  # source://idlc//lib/idlc/idl_parser.rb#9417
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9292
+# source://idlc//lib/idlc/idl_parser.rb#9422
 module Idl::FunctionArgList1
-  # source://idlc//lib/idlc/idl_parser.rb#9293
+  # source://idlc//lib/idlc/idl_parser.rb#9423
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#9297
+  # source://idlc//lib/idlc/idl_parser.rb#9427
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#15965
+# source://idlc//lib/idlc/idl_parser.rb#16095
 module Idl::FunctionBody0
-  # source://idlc//lib/idlc/idl_parser.rb#15966
+  # source://idlc//lib/idlc/idl_parser.rb#16096
   def choice; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#15972
+# source://idlc//lib/idlc/idl_parser.rb#16102
 module Idl::FunctionBody1
-  # source://idlc//lib/idlc/idl_parser.rb#15973
+  # source://idlc//lib/idlc/idl_parser.rb#16103
   def func_stmt_list; end
 end
 
@@ -3184,42 +3190,42 @@ class Idl::FunctionBodySyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8739
+# source://idlc//lib/idlc/idl_parser.rb#8869
 module Idl::FunctionCall0
-  # source://idlc//lib/idlc/idl_parser.rb#8740
+  # source://idlc//lib/idlc/idl_parser.rb#8870
   def csr; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8744
+  # source://idlc//lib/idlc/idl_parser.rb#8874
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8750
+# source://idlc//lib/idlc/idl_parser.rb#8880
 module Idl::FunctionCall1
-  # source://idlc//lib/idlc/idl_parser.rb#8751
+  # source://idlc//lib/idlc/idl_parser.rb#8881
   def csr; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8759
+  # source://idlc//lib/idlc/idl_parser.rb#8889
   def function_arg_list; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8755
+  # source://idlc//lib/idlc/idl_parser.rb#8885
   def function_name; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8765
+# source://idlc//lib/idlc/idl_parser.rb#8895
 module Idl::FunctionCall2
-  # source://idlc//lib/idlc/idl_parser.rb#8766
+  # source://idlc//lib/idlc/idl_parser.rb#8896
   def targs; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8772
+# source://idlc//lib/idlc/idl_parser.rb#8902
 module Idl::FunctionCall3
-  # source://idlc//lib/idlc/idl_parser.rb#8781
+  # source://idlc//lib/idlc/idl_parser.rb#8911
   def function_arg_list; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8773
+  # source://idlc//lib/idlc/idl_parser.rb#8903
   def function_name; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8777
+  # source://idlc//lib/idlc/idl_parser.rb#8907
   def t; end
 end
 
@@ -3284,7 +3290,7 @@ class Idl::FunctionCallExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#163
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#163
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -3304,18 +3310,18 @@ class Idl::FunctionCallExpressionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8638
+# source://idlc//lib/idlc/idl_parser.rb#8768
 module Idl::FunctionCallTemplateArguments0
-  # source://idlc//lib/idlc/idl_parser.rb#8639
+  # source://idlc//lib/idlc/idl_parser.rb#8769
   def arg; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8644
+# source://idlc//lib/idlc/idl_parser.rb#8774
 module Idl::FunctionCallTemplateArguments1
-  # source://idlc//lib/idlc/idl_parser.rb#8645
+  # source://idlc//lib/idlc/idl_parser.rb#8775
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8649
+  # source://idlc//lib/idlc/idl_parser.rb#8779
   def rest; end
 end
 
@@ -3431,55 +3437,55 @@ class Idl::FunctionDefSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12914
+# source://idlc//lib/idlc/idl_parser.rb#13044
 module Idl::FunctionIfBlock0
-  # source://idlc//lib/idlc/idl_parser.rb#12915
+  # source://idlc//lib/idlc/idl_parser.rb#13045
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12921
+# source://idlc//lib/idlc/idl_parser.rb#13051
 module Idl::FunctionIfBlock1
-  # source://idlc//lib/idlc/idl_parser.rb#12922
+  # source://idlc//lib/idlc/idl_parser.rb#13052
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12928
+# source://idlc//lib/idlc/idl_parser.rb#13058
 module Idl::FunctionIfBlock2
-  # source://idlc//lib/idlc/idl_parser.rb#12933
+  # source://idlc//lib/idlc/idl_parser.rb#13063
   def body; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12929
+  # source://idlc//lib/idlc/idl_parser.rb#13059
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12939
+# source://idlc//lib/idlc/idl_parser.rb#13069
 module Idl::FunctionIfBlock3
-  # source://idlc//lib/idlc/idl_parser.rb#12940
+  # source://idlc//lib/idlc/idl_parser.rb#13070
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12946
+# source://idlc//lib/idlc/idl_parser.rb#13076
 module Idl::FunctionIfBlock4
-  # source://idlc//lib/idlc/idl_parser.rb#12947
+  # source://idlc//lib/idlc/idl_parser.rb#13077
   def body; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12953
+# source://idlc//lib/idlc/idl_parser.rb#13083
 module Idl::FunctionIfBlock5
-  # source://idlc//lib/idlc/idl_parser.rb#12962
+  # source://idlc//lib/idlc/idl_parser.rb#13092
   def elseifs; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12966
+  # source://idlc//lib/idlc/idl_parser.rb#13096
   def final_else; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12958
+  # source://idlc//lib/idlc/idl_parser.rb#13088
   def if_body; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12954
+  # source://idlc//lib/idlc/idl_parser.rb#13084
   def if_cond; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#9204
+# source://idlc//lib/idlc/idl_parser.rb#9334
 module Idl::FunctionName0; end
 
 # source://idlc//lib/idlc/type.rb#748
@@ -3668,7 +3674,7 @@ class Idl::GlobalWithInitializationSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16153
+# source://idlc//lib/idlc/idl_parser.rb#16283
 module Idl::Id0; end
 
 # source://idlc//lib/idlc/ast.rb#818
@@ -3709,7 +3715,7 @@ class Idl::IdAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#76
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#76
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -3877,6 +3883,15 @@ module Idl::ImplicationExpression0
   def consequent; end
 end
 
+# source://idlc//lib/idlc/idl_parser.rb#8021
+module Idl::ImplicationExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#8022
+  def antecedent; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8026
+  def consequent; end
+end
+
 # source://idlc//lib/idlc/ast.rb#3171
 class Idl::ImplicationExpressionAst < ::Idl::AstNode
   # source://idlc//lib/idlc/ast.rb#3180
@@ -3910,7 +3925,7 @@ class Idl::ImplicationExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#25
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#25
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -3926,30 +3941,30 @@ class Idl::ImplicationExpressionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8092
+# source://idlc//lib/idlc/idl_parser.rb#8222
 module Idl::ImplicationForLoop0
-  # source://idlc//lib/idlc/idl_parser.rb#8093
+  # source://idlc//lib/idlc/idl_parser.rb#8223
   def s; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8099
+# source://idlc//lib/idlc/idl_parser.rb#8229
 module Idl::ImplicationForLoop1
-  # source://idlc//lib/idlc/idl_parser.rb#8108
+  # source://idlc//lib/idlc/idl_parser.rb#8238
   def action; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8104
+  # source://idlc//lib/idlc/idl_parser.rb#8234
   def condition; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8100
+  # source://idlc//lib/idlc/idl_parser.rb#8230
   def for_loop_iteration_variable_declaration; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#8112
+  # source://idlc//lib/idlc/idl_parser.rb#8242
   def stmts; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#8414
+# source://idlc//lib/idlc/idl_parser.rb#8544
 module Idl::ImplicationStatement0
-  # source://idlc//lib/idlc/idl_parser.rb#8415
+  # source://idlc//lib/idlc/idl_parser.rb#8545
   def implication_expression; end
 end
 
@@ -3981,7 +3996,7 @@ class Idl::ImplicationStatementAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#46
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#46
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -4033,15 +4048,15 @@ class Idl::IncludeStatementSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16049
+# source://idlc//lib/idlc/idl_parser.rb#16179
 module Idl::InstructionOperation0
-  # source://idlc//lib/idlc/idl_parser.rb#16050
+  # source://idlc//lib/idlc/idl_parser.rb#16180
   def choice; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16056
+# source://idlc//lib/idlc/idl_parser.rb#16186
 module Idl::InstructionOperation1
-  # source://idlc//lib/idlc/idl_parser.rb#16057
+  # source://idlc//lib/idlc/idl_parser.rb#16187
   def op_stmt_list; end
 end
 
@@ -4208,52 +4223,52 @@ class Idl::IsaSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#14910
+# source://idlc//lib/idlc/idl_parser.rb#15040
 module Idl::Keyword0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14913
+# source://idlc//lib/idlc/idl_parser.rb#15043
 module Idl::Keyword1; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14940
+# source://idlc//lib/idlc/idl_parser.rb#15070
 module Idl::Keyword10; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14943
+# source://idlc//lib/idlc/idl_parser.rb#15073
 module Idl::Keyword11; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14946
+# source://idlc//lib/idlc/idl_parser.rb#15076
 module Idl::Keyword12; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14949
+# source://idlc//lib/idlc/idl_parser.rb#15079
 module Idl::Keyword13; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14952
+# source://idlc//lib/idlc/idl_parser.rb#15082
 module Idl::Keyword14; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14955
+# source://idlc//lib/idlc/idl_parser.rb#15085
 module Idl::Keyword15; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14916
+# source://idlc//lib/idlc/idl_parser.rb#15046
 module Idl::Keyword2; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14919
+# source://idlc//lib/idlc/idl_parser.rb#15049
 module Idl::Keyword3; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14922
+# source://idlc//lib/idlc/idl_parser.rb#15052
 module Idl::Keyword4; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14925
+# source://idlc//lib/idlc/idl_parser.rb#15055
 module Idl::Keyword5; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14928
+# source://idlc//lib/idlc/idl_parser.rb#15058
 module Idl::Keyword6; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14931
+# source://idlc//lib/idlc/idl_parser.rb#15061
 module Idl::Keyword7; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14934
+# source://idlc//lib/idlc/idl_parser.rb#15064
 module Idl::Keyword8; end
 
-# source://idlc//lib/idlc/idl_parser.rb#14937
+# source://idlc//lib/idlc/idl_parser.rb#15067
 module Idl::Keyword9; end
 
 # source://idlc//lib/idlc/ast.rb#2626
@@ -4590,7 +4605,7 @@ class Idl::ParenExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#39
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#39
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -4794,30 +4809,30 @@ class Idl::ReplicationExpressionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12568
+# source://idlc//lib/idlc/idl_parser.rb#12698
 module Idl::ReturnExpression0
-  # source://idlc//lib/idlc/idl_parser.rb#12569
+  # source://idlc//lib/idlc/idl_parser.rb#12699
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12574
+# source://idlc//lib/idlc/idl_parser.rb#12704
 module Idl::ReturnExpression1
-  # source://idlc//lib/idlc/idl_parser.rb#12575
+  # source://idlc//lib/idlc/idl_parser.rb#12705
   def e; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12580
+# source://idlc//lib/idlc/idl_parser.rb#12710
 module Idl::ReturnExpression2
-  # source://idlc//lib/idlc/idl_parser.rb#12581
+  # source://idlc//lib/idlc/idl_parser.rb#12711
   def first; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12585
+  # source://idlc//lib/idlc/idl_parser.rb#12715
   def rest; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12590
+# source://idlc//lib/idlc/idl_parser.rb#12720
 module Idl::ReturnExpression3
-  # source://idlc//lib/idlc/idl_parser.rb#12591
+  # source://idlc//lib/idlc/idl_parser.rb#12721
   def vals; end
 end
 
@@ -4870,18 +4885,18 @@ class Idl::ReturnExpressionSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12760
+# source://idlc//lib/idlc/idl_parser.rb#12890
 module Idl::ReturnStatement0
-  # source://idlc//lib/idlc/idl_parser.rb#12765
+  # source://idlc//lib/idlc/idl_parser.rb#12895
   def expression; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12761
+  # source://idlc//lib/idlc/idl_parser.rb#12891
   def return_expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12771
+# source://idlc//lib/idlc/idl_parser.rb#12901
 module Idl::ReturnStatement1
-  # source://idlc//lib/idlc/idl_parser.rb#12772
+  # source://idlc//lib/idlc/idl_parser.rb#12902
   def return_expression; end
 end
 
@@ -5126,57 +5141,57 @@ class Idl::SignCastSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12232
+# source://idlc//lib/idlc/idl_parser.rb#12362
 module Idl::SingleDeclaration0
-  # source://idlc//lib/idlc/idl_parser.rb#12233
+  # source://idlc//lib/idlc/idl_parser.rb#12363
   def ary_size_decl; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12238
+# source://idlc//lib/idlc/idl_parser.rb#12368
 module Idl::SingleDeclaration1
-  # source://idlc//lib/idlc/idl_parser.rb#12247
+  # source://idlc//lib/idlc/idl_parser.rb#12377
   def ary_size; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12243
+  # source://idlc//lib/idlc/idl_parser.rb#12373
   def id; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12239
+  # source://idlc//lib/idlc/idl_parser.rb#12369
   def type_name; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#11801
+# source://idlc//lib/idlc/idl_parser.rb#11931
 module Idl::SingleDeclarationWithInitialization0
-  # source://idlc//lib/idlc/idl_parser.rb#11810
+  # source://idlc//lib/idlc/idl_parser.rb#11940
   def ary_size; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11806
+  # source://idlc//lib/idlc/idl_parser.rb#11936
   def id; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11814
+  # source://idlc//lib/idlc/idl_parser.rb#11944
   def rval; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#11802
+  # source://idlc//lib/idlc/idl_parser.rb#11932
   def type_name; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16592
+# source://idlc//lib/idlc/idl_parser.rb#16722
 module Idl::Space0
-  # source://idlc//lib/idlc/idl_parser.rb#16593
+  # source://idlc//lib/idlc/idl_parser.rb#16723
   def space?; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12332
+# source://idlc//lib/idlc/idl_parser.rb#12462
 module Idl::Statement0
-  # source://idlc//lib/idlc/idl_parser.rb#12333
+  # source://idlc//lib/idlc/idl_parser.rb#12463
   def a; end
 
-  # source://idlc//lib/idlc/idl_parser.rb#12337
+  # source://idlc//lib/idlc/idl_parser.rb#12467
   def expression; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#12343
+# source://idlc//lib/idlc/idl_parser.rb#12473
 module Idl::Statement1
-  # source://idlc//lib/idlc/idl_parser.rb#12344
+  # source://idlc//lib/idlc/idl_parser.rb#12474
   def a; end
 end
 
@@ -5229,10 +5244,10 @@ class Idl::StatementSyntaxNode < ::Idl::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16495
+# source://idlc//lib/idlc/idl_parser.rb#16625
 module Idl::String0; end
 
-# source://idlc//lib/idlc/idl_parser.rb#16498
+# source://idlc//lib/idlc/idl_parser.rb#16628
 module Idl::String1; end
 
 # source://idlc//lib/idlc/ast.rb#5642
@@ -5808,7 +5823,7 @@ class Idl::TrueExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#66
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#66
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -6077,7 +6092,7 @@ class Idl::UnaryOperatorExpressionAst < ::Idl::AstNode
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://udb/0.1.0/lib/udb/idl/condition_to_udb.rb#126
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#126
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
@@ -6109,7 +6124,7 @@ class Idl::UnknownLiteral
   def to_s; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#15634
+# source://idlc//lib/idlc/idl_parser.rb#15764
 module Idl::UserTypeName0; end
 
 # source://idlc//lib/idlc/ast.rb#6209
@@ -6208,9 +6223,9 @@ class Idl::Var
   def value=(new_value); end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16378
+# source://idlc//lib/idlc/idl_parser.rb#16508
 module Idl::VarWrite0
-  # source://idlc//lib/idlc/idl_parser.rb#16379
+  # source://idlc//lib/idlc/idl_parser.rb#16509
   def csr_name; end
 end
 
@@ -6468,9 +6483,29 @@ class Idl::XregType < ::Idl::Type
   def to_s; end
 end
 
-# source://idlc//lib/idlc/idl_parser.rb#16640
+# source://idlc//lib/idlc.rb#13
 class IdlParser < ::Treetop::Runtime::CompiledParser
   include ::Idl
+
+  # source://idlc//lib/idlc.rb#14
+  def input_file; end
+
+  # source://idlc//lib/idlc.rb#35
+  def instantiate_node(node_type, *args); end
+
+  # source://idlc//lib/idlc.rb#16
+  def set_input_file(filename, starting_line = T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc.rb#21
+  def set_pb(pb); end
+
+  # source://idlc//lib/idlc.rb#27
+  def unset_pb; end
+
+  protected
+
+  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
+  def idlc_instantiate_node(node_type, *args); end
 end
 
 class Object < ::BasicObject
@@ -6503,92 +6538,6 @@ end
 
 # source://idlc//lib/idlc/syntax_node.rb#12
 module Treetop::Runtime; end
-
-# source://idlc//lib/idlc.rb#17
-class Treetop::Runtime::CompiledParser
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#11
-  def initialize; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input=(_arg0); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input?; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#38
-  def failure_column; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#30
-  def failure_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#34
-  def failure_line; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#43
-  def failure_reason; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def input; end
-
-  # source://idlc//lib/idlc.rb#18
-  def input_file; end
-
-  # source://idlc//lib/idlc.rb#29
-  def instantiate_node(node_type, *args); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def max_terminal_failure_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#15
-  def parse(input, options = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#7
-  def root=(_arg0); end
-
-  # source://idlc//lib/idlc.rb#20
-  def set_input_file(filename, starting_line = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#54
-  def terminal_failures; end
-
-  protected
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#78
-  def forget_failures_to_here; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#106
-  def has_terminal?(terminal, mode, index); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
-  def idlc_instantiate_node(node_type, *args); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#66
-  def index=(_arg0); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#65
-  def input_length; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#65
-  def node_cache; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#87
-  def parse_anything(node_class = T.unsafe(nil), inline_module = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#68
-  def prepare_to_parse(input); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#83
-  def reset_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#120
-  def terminal_parse_failure(expected_string, unexpected = T.unsafe(nil)); end
-end
 
 # source://idlc//lib/idlc/syntax_node.rb#13
 class Treetop::Runtime::SyntaxNode

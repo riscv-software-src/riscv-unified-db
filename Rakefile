@@ -67,7 +67,7 @@ namespace :chore do
   task :update_deps do
     # these should run in order,
     # so don't change this to use task prereqs, which might run in any order
-    sh "bundle update --gemfile Gemfile --all"
+    sh "bundle update --gemfile Gemfile"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
     Rake::Task["chore:udb_gen:update_deps"].invoke

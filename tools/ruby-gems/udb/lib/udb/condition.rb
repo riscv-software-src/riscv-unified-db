@@ -137,16 +137,12 @@ module Udb
     def to_logic_tree_internal; end
 
     # is this condition satisfiable?
-    sig { returns(T::Boolean) }
-    def satisfiable?
-      to_logic_tree(expand: true).satisfiable?
-    end
+    sig { abstract.returns(T::Boolean) }
+    def satisfiable?; end
 
     # is this condition unsatisfiable?
-    sig { returns(T::Boolean) }
-    def unsatisfiable?
-      to_logic_tree(expand: true).unsatisfiable?
-    end
+    sig { abstract.returns(T::Boolean) }
+    def unsatisfiable?; end
 
     # is this condition in any way affected by term?
     sig { params(term: T.any(Extension, ExtensionVersion, ExtensionRequirement, Parameter, ParameterWithValue), expand: T::Boolean).returns(T::Boolean) }
@@ -601,7 +597,7 @@ module Udb
     def expand_xlen(tree, expansion_clauses)
       if tree.terms.any? { |t| t.is_a?(XlenTerm) } || expansion_clauses.any? { |clause| clause.terms.any? { |t| t.is_a?(XlenTerm) } }
         expansion_clauses << LogicNode.new(LogicNodeType::Xor, [LogicNode::Xlen32, LogicNode::Xlen64])
-        expansion_clauses << @cfg_arch.param("MXLEN").requirements_condition.to_logic_tree(expand: false)
+        expansion_clauses << T.must(@cfg_arch.param("MXLEN")).requirements_condition.to_logic_tree(expand: false)
       end
     end
     private :expand_xlen
@@ -659,6 +655,46 @@ module Udb
       else
         @logic_tree_unexpanded ||= to_logic_tree_helper(@yaml)
       end
+    end
+
+    def self.solver
+      @solver ||= Z3Solver.new
+    end
+
+    sig {
+      type_parameters(:U)
+      .params(blk: T.proc.params(s: Z3Solver).returns(T.type_parameter(:U)))
+      .returns(T.type_parameter((:U)))
+    }
+    def solver(&blk)
+      s = Condition.solver
+      s.push
+      s.assert to_logic_tree(expand: false).to_z3(@cfg_arch, s)
+      expansion_clauses = expand_term_requirements(to_logic_tree(expand: false))
+      expansion_clauses.each do |clause|
+        s.assert clause.to_z3(@cfg_arch, s)
+      end
+      # puts "-----------------------"
+      # puts s.assertions
+      # puts "^^^^^^^^^^^^^^^^^^^^^^"
+
+      ret = yield s
+
+      s.pop
+
+      ret
+    end
+
+    # is this condition satisfiable?
+    sig { override.returns(T::Boolean) }
+    def satisfiable?
+      solver { |s| s.satisfiable? }
+    end
+
+    # is this condition unsatisfiable?
+    sig { override.returns(T::Boolean) }
+    def unsatisfiable?
+      solver { |s| s.unsatisfiable? }
     end
 
     sig { override.params(expand: T::Boolean).returns(AbstractCondition) }
@@ -1400,6 +1436,12 @@ module Udb
     def -@
       AlwaysFalseCondition.new(@cfg_arch)
     end
+
+    sig { override.returns(T::Boolean) }
+    def satisfiable? = true
+
+    sig { override.returns(T::Boolean) }
+    def unsatisfiable? = false
   end
 
   class AlwaysFalseCondition < AbstractCondition
@@ -1496,6 +1538,12 @@ module Udb
     def -@
       AlwaysTrueCondition.new(@cfg_arch)
     end
+
+    sig { override.returns(T::Boolean) }
+    def satisfiable? = false
+
+    sig { override.returns(T::Boolean) }
+    def unsatisfiable? = true
   end
 
   class ParamCondition < Condition

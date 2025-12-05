@@ -165,6 +165,29 @@ module Udb
         end
     end
 
+    # returns the largest (compatibale with all) type of any possible schema
+    sig { returns(Schema) }
+    def maximal_schema
+      @maximal_schema ||=
+        if schema_known?
+          schema
+        else
+          idl_types = possible_schemas.map(&:to_idl_type)
+          unless idl_types.all? { |t| t.kind == :bits }
+            raise "TODO: paramter has multiple schemas that are not Bits (#{idl_types.map(&:kind)})"
+          end
+          possible_schemas.max do |a, b|
+            at = a.to_idl_type
+            bt = b.to_idl_type
+            if [at.width, bt.width].include?(:unknown)
+              at.width == :unknown ? 1 : -1
+            else
+              (T.cast(at.width, Integer) <=> T.cast(bt.width, Integer))
+            end
+          end
+        end
+    end
+
     # @return if this parameter is defined in +cfg_arch+
     sig { params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def defined_in_cfg?(cfg_arch)

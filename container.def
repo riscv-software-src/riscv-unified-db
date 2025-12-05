@@ -30,6 +30,7 @@ From: ubuntu:24.04
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
+    libz3-dev \
     minisat \
     nodejs \
     npm \
@@ -64,7 +65,7 @@ From: ubuntu:24.04
   git checkout 17fa9f9542a9ce05328dfccd1cd410f05f741ab3
   # mcsmus/mcsmus/control.cc is missing #include <cstdio>
   sed -i -e 's/#include <signal.h>/#include <signal.h>\n#include <cstdio>/' mcsmus/mcsmus/control.cc
-  make
+  make -j
   install must -m 0777 /usr/bin/must
   cd ..
   rm -rf mustool

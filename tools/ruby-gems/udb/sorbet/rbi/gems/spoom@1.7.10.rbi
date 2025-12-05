@@ -20,6 +20,15 @@ module Spoom
   end
 end
 
+# source://spoom//lib/spoom/bundler_helper.rb#5
+module Spoom::BundlerHelper
+  class << self
+    # source://spoom//lib/spoom/bundler_helper.rb#16
+    sig { params(gem_name: ::String).returns(::String) }
+    def gem_requirement_from_real_bundle(gem_name); end
+  end
+end
+
 # source://spoom//lib/spoom/cli/helper.rb#9
 module Spoom::Cli; end
 
@@ -299,26 +308,26 @@ class Spoom::Cli::Srb::Metrics < ::Thor
   def show(*paths); end
 end
 
-# source://spoom//lib/spoom/cli/srb/sigs.rb#7
+# source://spoom//lib/spoom/cli/srb/sigs.rb#9
 class Spoom::Cli::Srb::Sigs < ::Thor
   include ::Spoom::Colorize
   include ::Spoom::Cli::Helper
 
-  # source://spoom//lib/spoom/cli/srb/sigs.rb#222
+  # source://spoom//lib/spoom/cli/srb/sigs.rb#226
   def exec(context, command); end
 
-  # source://spoom//lib/spoom/cli/srb/sigs.rb#93
+  # source://spoom//lib/spoom/cli/srb/sigs.rb#95
   def export(output_path = T.unsafe(nil)); end
 
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
 
-  # source://spoom//lib/spoom/cli/srb/sigs.rb#74
+  # source://spoom//lib/spoom/cli/srb/sigs.rb#76
   def strip(*paths); end
 
-  # source://spoom//lib/spoom/cli/srb/sigs.rb#199
+  # source://spoom//lib/spoom/cli/srb/sigs.rb#203
   def transform_files(files, &block); end
 
-  # source://spoom//lib/spoom/cli/srb/sigs.rb#23
+  # source://spoom//lib/spoom/cli/srb/sigs.rb#25
   def translate(*paths); end
 end
 

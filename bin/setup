@@ -70,6 +70,9 @@ fi
 #  6. The choice made by the user, which will be cached in .container-type
 if [ -v DEVCONTAINER_ENV ]; then
 CONTAINER_TYPE=devcontainer
+elif [ -v SINGULARITY_NAME ]; then
+# already in a container
+CONTAINER_TYPE=devcontainer
 elif [ -f ${ROOT}/.container-type ]; then
 CONTAINER_TYPE=`cat ${ROOT}/.container-type`
 elif [ -v DOCKER ]; then

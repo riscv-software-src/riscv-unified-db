@@ -232,7 +232,6 @@ class TestCfgArch < Minitest::Test
       cfg_arch = @resolver.cfg_arch_for(Pathname.new f.path)
     end
 
-    puts cfg_arch.extension("Zilsd").requirements_condition.to_s(expand: true)
     # make sure that RV32-only extensions are not possible
     refute_includes cfg_arch.possible_extension_versions.map(&:name), "Zilsd"
     refute_includes cfg_arch.possible_extensions.map(&:name), "Zilsd"
@@ -304,5 +303,35 @@ class TestCfgArch < Minitest::Test
           cfg_arch.extension_version("D", "2.2.0")
         ]
       ).sort
+  end
+
+  def test_xqci
+
+    cfg_arch = @resolver.cfg_arch_for("qc_iu")
+
+    exts = [
+      cfg_arch.extension("Xqci"),
+      cfg_arch.extension("Xqcia"),
+      cfg_arch.extension("Xqciac"),
+      cfg_arch.extension("Xqcibi"),
+      cfg_arch.extension("Xqcibm"),
+      cfg_arch.extension("Xqcicli"),
+      cfg_arch.extension("Xqcicm"),
+      cfg_arch.extension("Xqcics"),
+      cfg_arch.extension("Xqcicsr"),
+      cfg_arch.extension("Xqciint"),
+      cfg_arch.extension("Xqciio"),
+      cfg_arch.extension("Xqcilb"),
+      cfg_arch.extension("Xqcili"),
+      cfg_arch.extension("Xqcilia"),
+      cfg_arch.extension("Xqcilo"),
+      cfg_arch.extension("Xqcilsm"),
+      cfg_arch.extension("Xqcisim"),
+      cfg_arch.extension("Xqcisls"),
+      cfg_arch.extension("Xqcisync")
+    ]
+
+    assert_equal 11, cfg_arch.extension("Xqcia").max_version.directly_defined_instructions.size
+    assert_equal 157, cfg_arch.extension("Xqci").max_version.implied_instructions.count { |i| exts.any? { |e| i.defined_by_condition.mentions?(e) } }
   end
 end

@@ -1375,7 +1375,7 @@ module Udb
     sig {
       params(
         name: String,
-        requirements: T.any(String, T::Array[String]),
+        requirements: T.any(String, T::Array[String], RequirementSpec, T::Array[RequirementSpec]),
         arch: ConfiguredArchitecture
       ).void
     }
@@ -1385,24 +1385,29 @@ module Udb
       @ext = @arch.extension(@name)
       Udb.logger.warn "Could not find extension named '#{@name}'" if @ext.nil?
 
-      requirements_ary =
+      @requirements =
         if @ext.nil?
           []
         else
           case requirements
           when Array
             if requirements.empty?
-              ["~> #{@ext.min_version.version_str}"]
+              [RequirementSpec.new(">= 0")]
             else
-              requirements
+              if requirements.fetch(0).is_a?(String)
+                requirements.map { |r| RequirementSpec.new(r) }
+              else
+                requirements
+              end
             end
           when String
+            [RequirementSpec.new(requirements)]
+          when RequirementSpec
             [requirements]
           else
             T.absurd(requirements)
           end
-        end
-      @requirements = requirements_ary.map { |r| RequirementSpec.new(r).freeze }.freeze
+        end.freeze
     end
     private_class_method :new
 

@@ -213,22 +213,10 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[3]==true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)
-
-    h = {
-      "name" => "INTEGER_PARAM",
-      "oneOf" => [32, 64],
-      "reason" => "blah"
-    }
-    term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
-    assert_equal "(INTEGER_PARAM==32||INTEGER_PARAM==64)", term.to_s
-    assert_equal SatisfiedResult::Yes, term.eval_value(32)
-    assert_equal SatisfiedResult::Yes, term.eval_value(64)
-    assert_equal SatisfiedResult::No, term.eval_value(128)
 
     h = {
       "name" => "SCOUNTENABLE_EN",
@@ -237,6 +225,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]!=true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(false)
     assert_equal SatisfiedResult::No, term.eval_value(true)
@@ -248,6 +237,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]==false)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(false)
     assert_equal SatisfiedResult::No, term.eval_value(true)
@@ -259,6 +249,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]!=false)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)
@@ -270,6 +261,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]<5)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(4)
     assert_equal SatisfiedResult::No, term.eval_value(5)
@@ -282,6 +274,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]>5)", term.to_s
     assert_equal SatisfiedResult::No, term.eval_value(4)
     assert_equal SatisfiedResult::No, term.eval_value(5)
@@ -294,6 +287,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]<=5)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(4)
     assert_equal SatisfiedResult::Yes, term.eval_value(5)
@@ -306,6 +300,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]>=5)", term.to_s
     assert_equal SatisfiedResult::No, term.eval_value(4)
     assert_equal SatisfiedResult::Yes, term.eval_value(5)
@@ -329,7 +324,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN==true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)

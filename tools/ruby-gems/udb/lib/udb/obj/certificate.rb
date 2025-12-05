@@ -194,8 +194,11 @@ module Udb
     # @param [ExtensionRequirement]
     # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
     # These are always IN SCOPE by definition (since they are listed in the portfolio).
+    sig {
+      params(ext_req: T.any(ExtensionRequirement, PortfolioExtensionRequirement))
+      .returns(T::Array[InScopeParameter])
+    }
     def in_scope_params(ext_req)
-      raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
 
       params = []    # Local variable, no caching
 

@@ -776,18 +776,32 @@ module Udb
     # @deprecated in favor of implemented_extension_versions
     def transitive_implemented_extension_versions = implemented_extension_versions
 
-    sig { params(name: String, requirements: T.any(String, T::Array[String])).returns(ExtensionRequirement) }
+    sig { params(name: String, requirements: T.any(String, T::Array[String], RequirementSpec, T::Array[RequirementSpec])).returns(ExtensionRequirement) }
     def extension_requirement(name, requirements)
-      key =
+      requirement_specs =
         if requirements.is_a?(Array)
-          [name, *requirements].hash
+          if requirements.fetch(0).is_a?(RequirementSpec)
+            requirements
+          else
+            requirements.map { |r| RequirementSpec.new(r) }
+          end
         else
-          [name, requirements].hash
+          if requirements.is_a?(RequirementSpec)
+            requirements
+          else
+            RequirementSpec.new(requirements)
+          end
+        end
+      key =
+        if requirement_specs.is_a?(Array)
+          [name, *requirement_specs].hash
+        else
+          [name, requirement_specs].hash
         end
 
       cached_ext_req = @memo.extension_requirements_hash[key]
       if cached_ext_req.nil?
-        ext_req = ExtensionRequirement.send(:new, name, requirements, arch: self)
+        ext_req = ExtensionRequirement.send(:new, name, requirement_specs, arch: self)
         @memo.extension_requirements_hash[key] = ext_req
       else
         cached_ext_req

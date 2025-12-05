@@ -16,9 +16,7 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        anyOf:
-          - name: C
-          - name: Zca
+        name: Zca
 base: 64
 assembly: xd, imm
 encoding:

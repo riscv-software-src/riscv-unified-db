@@ -39,7 +39,7 @@ namespace :chore do
       Dir.chdir(RUBY_UDB_ROOT) do
         sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
-        Rake["chore:udb:tapioca"].invoke
+        Rake::Task["chore:udb:tapioca"].invoke
       end
     end
 

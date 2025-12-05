@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.bindir = "bin"
   s.executables << "udb"
+  s.extensions = ["ext/z3/extconf.rb"]
 
   s.add_dependency "activesupport"
   s.add_dependency "asciidoctor"
@@ -49,6 +50,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-logger"
   s.add_dependency "tty-progressbar"
   s.add_dependency "udb_helpers"
+  s.add_dependency "z3"
 
   s.add_development_dependency "rubocop-github"
   s.add_development_dependency "rubocop-minitest"

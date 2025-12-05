@@ -84,7 +84,7 @@ module Idl
     def compile_file(path)
       @parser.set_input_file(path.to_s)
 
-      @pb.log "Parsing #{path}" unless @pb.nil?
+      @pb.format = "Parsing #{File.basename(path)} [:bar]" unless @pb.nil?
       m = @parser.parse path.read
 
       if m.nil?

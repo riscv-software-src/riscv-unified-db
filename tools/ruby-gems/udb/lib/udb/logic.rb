@@ -10,8 +10,9 @@ require "tempfile"
 require "treetop"
 
 require "idlc/symbol_table"
-require "udb/eqn_parser"
+require "udb/eqn"
 require "udb/version_spec"
+require "udb/z3"
 
 # Implements the LogicNode class, which is used to test for satisfiability/equality/etc of logic
 #
@@ -54,6 +55,11 @@ module Udb
     sig { override.returns(String) }
     def to_s
       "xlen=#{@xlen}"
+    end
+
+    sig { params(solver: Z3Solver).returns(Z3::BoolExpr) }
+    def to_z3(solver)
+      solver.xlen == @xlen
     end
 
     sig { returns(String) }
@@ -197,6 +203,17 @@ module Udb
       else
         "implemented_version?(ExtensionName::#{@name}, \"#{@op.serialize} #{@version}\")"
       end
+    end
+
+    sig { returns(RequirementSpec).checked(:never) }
+    def requirement_spec
+      @requirement_spec ||= RequirementSpec.new("#{@op.serialize} #{@version}")
+    end
+
+    sig { params(solver: Z3Solver, cfg_arch: ConfiguredArchitecture).returns(Z3::BoolExpr) }
+    def to_z3(solver, cfg_arch)
+      ext = solver.ext_req(name, requirement_spec, cfg_arch)
+      ext.term
     end
 
     # return the minimum version possible that would satisfy this term
@@ -387,6 +404,52 @@ module Udb
       end
     end
 
+    sig { params(solver: Z3Solver, cfg_arch: ConfiguredArchitecture).returns(Z3::BoolExpr) }
+    def to_z3(solver, cfg_arch)
+      t = comparison_type
+      e = T.let(
+        solver.param(name, T.must(cfg_arch.param(name)).maximal_schema.to_h),
+        T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr, Z3::BoolExpr)
+      )
+      if @yaml.key?("size")
+        e = T.cast(e, Z3ParameterTerm).size_term
+      elsif @yaml.key?("index")
+        e = T.cast(e, Z3ParameterTerm)[@yaml.fetch("index")]
+      end
+      if @yaml.key?("range")
+        msb, lsb = @yaml.fetch("range").split("-").map(&:to_i)
+        e = T.cast(e, Z3ParameterTerm).extract(msb, lsb)
+      end
+      case t
+      when ParameterComparisonType::Equal
+        e == @yaml["equal"]
+      when ParameterComparisonType::NotEqual
+        e != @yaml["not_equal"]
+      when ParameterComparisonType::LessThan
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) < @yaml["less_than"]
+      when ParameterComparisonType::GreaterThan
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) > @yaml["greater_than"]
+      when ParameterComparisonType::LessThanOrEqual
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) <= @yaml["less_than_or_equal"]
+      when ParameterComparisonType::GreaterThanOrEqual
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) >= @yaml["greater_than_or_equal"]
+      when ParameterComparisonType::Includes
+        expr = T.cast(e, Z3ParameterTerm)[0] == @yaml["includes"]
+        T.cast(e, Z3ParameterTerm).max_items.times do |i|
+          expr = expr | (T.cast(e, Z3ParameterTerm)[i] == @yaml["includes"])
+        end
+        expr
+      when ParameterComparisonType::OneOf
+        expr = e == @yaml["oneOf"][0]
+        @yaml["oneOf"][1..].each do |v|
+          expr = expr | (e == v)
+        end
+        expr
+      else
+        T.absurd(t)
+      end
+    end
+
     sig { params(value: T.untyped).returns(SatisfiedResult) }
     def eval_value(value)
       t = comparison_type
@@ -482,6 +545,11 @@ module Udb
       else
         @yaml
       end
+    end
+
+    sig { returns(LogicNode) }
+    def to_logic_node
+      LogicNode.new(LogicNodeType::Term, [self])
     end
 
     sig { params(cfg_arch: T.nilable(ConfiguredArchitecture)).returns(String) }
@@ -1017,6 +1085,14 @@ module Udb
       return false unless other.is_a?(ParameterTerm)
 
       (self <=> other) == 0
+    end
+
+    # test for logical equivalence
+    sig { params(other: ParameterTerm).returns(T::Boolean) }
+    def equivalent?(other)
+      return false unless other.name == name
+
+      LogicNode.new(LogicNodeType::Term, [self]).equivalent?(LogicNode.new(LogicNodeType::Term, [other]))
     end
   end
 
@@ -2963,6 +3039,51 @@ module Udb
         ]
       )
       !contradiction.satisfiable?
+    end
+
+    sig { params(cfg_arch: ConfiguredArchitecture, solver: Z3Solver).returns(Z3::BoolExpr) }
+    def to_z3(cfg_arch, solver = Z3Solver.new)
+      case @type
+      when LogicNodeType::Term
+        t = @children.fetch(0)
+        if t.is_a?(ParameterTerm) || t.is_a?(ExtensionTerm)
+          t.to_z3(solver, cfg_arch)
+        else
+          raise "unexpected" if t.is_a?(FreeTerm) || t.is_a?(LogicNode)
+
+          t.to_z3(solver)
+        end
+      when LogicNodeType::Or
+        T.unsafe(Z3).Or(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+      when LogicNodeType::And
+        T.unsafe(Z3).And(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+      when LogicNodeType::Xor
+        if node_children.size == 2
+          T.unsafe(Z3).Xor(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+        else
+          # see https://stackoverflow.com/questions/14888174/how-do-i-determine-if-exactly-one-boolean-is-true-without-type-conversion#33268481
+          uneven_number_is_true = T.unsafe(Z3).Xor(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+          max_one_is_true =
+            T.unsafe(Z3).And(
+              *node_children.combination(2).map do |pair|
+                !(pair.fetch(0).to_z3(cfg_arch, solver) & pair.fetch(1).to_z3(cfg_arch, solver))
+              end
+            )
+          uneven_number_is_true & max_one_is_true
+        end
+      when LogicNodeType::True
+        Z3.True
+      when LogicNodeType::False
+        Z3.False
+      when LogicNodeType::Not
+        !node_children.fetch(0).to_z3(cfg_arch, solver)
+      when LogicNodeType::None
+        !node_children.map { |c| c.to_z3(cfg_arch, solver) }.reduce(:|)
+      when LogicNodeType::If
+        node_children.fetch(0).to_z3(cfg_arch, solver).implies(node_children.fetch(1).to_z3(cfg_arch, solver))
+      else
+        T.absurd(@type)
+      end
     end
 
     # @return true iff self is satisfiable (possible to be true for some combination of term values)
