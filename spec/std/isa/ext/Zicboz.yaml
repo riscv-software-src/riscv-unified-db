@@ -6,8 +6,8 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicboz
-long_name: Cache block zero instruction
-description: Cache block zero instruction
+long_name: Cache-block zero instruction
+description: Cache-block zero instruction
 type: unprivileged
 versions:
   - version: "1.0.0"

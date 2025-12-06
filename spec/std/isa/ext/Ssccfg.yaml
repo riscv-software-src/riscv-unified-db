@@ -12,5 +12,5 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2024-03
     url: https://docs.google.com/document/d/1s-GeH5XpHBLzbQZucA8DPA7vvF7Xvf_nrPbrU2YLBcE/edit#heading=h.yyrgtolcaczx
