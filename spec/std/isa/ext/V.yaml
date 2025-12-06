@@ -15,12 +15,6 @@ versions:
 description: |
   TODO
 params:
-  VLEN:
-    description: |
-      The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
-    schema:
-      type: integer
-      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
   ELEN:
     description: |
       The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ {ge} 8, which
@@ -28,8 +22,14 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
-    extra_validation: |
-      assert ELEN <= VLEN
+  VLEN:
+    description: |
+      The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.
+    schema:
+      type: integer
+      enum: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+      extra_validation: |
+        assert VLEN >= ELEN
   SEW_MIN:
     description: |
       Implementations must provide fractional LMUL settings that allow the
@@ -42,16 +42,9 @@ params:
     schema:
       type: integer
       enum: [8, 16, 32, 64]
-    extra_validation: |
-      assert SEW_MIN <= ELEN
-  VECTOR_AGNOSTIC_BEHAVIOR:
-    description:
-      When a set is marked agnostic, the corresponding set of destination
-      elements in any vector destination operand can either retain the value
-      they previously held, or are overwritten with 1s.
-    schema:
-      type: string
-      enum: ["never_overwritten", "custom"]
+      default: 8
+      extra_validation: |
+        assert SEW_MIN <= ELEN
   SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED:
     description:
       For a given supported fractional LMUL setting, implementations must support
@@ -66,28 +59,39 @@ params:
       support these configurations.
     schema:
       type: boolean
-  RESERVED_VILL_SET:
+  RESERVED_VSET_X0X0_VILL_SET:
     description: |
       When _rs1_=`x0` and _rd_=`x0`, the instructions operate as if the current vector length in `vl` is used as the AVL...
-      Use of the instructions with a new SEW/LMUL ratio that would result in a change of VLMAX is reserved. 
-      Use of the instructions is also reserved if `vill` was 1 beforehand. Implementations may set `vill` in either case.
+      Use of the [vset] instructions is also reserved if `vill` was 1 beforehand. Implementations may set `vill` in either case.
     schema:
       type: string
-      enum: ["never", "on_vlmax_change", "on_vill_set", "always", "custom"]
+      enum: ["never", "always", "custom"]
+  RESERVED_VSET_X0X0_VLMAX_CHANGE:
+    description: |
+      When _rs1_=`x0` and _rd_=`x0`, the instructions operate as if the current vector length in `vl` is used as the AVL...
+      Use of the [vset] instructions with a new SEW/LMUL ratio that would result in a change of VLMAX is reserved...
+      Implementations may set `vill` in either case.
+    schema:
+      type: string
+      enum: ["never", "always", "custom"]
   VECTOR_LS_INDEX_MAX_EEW:
     description:
       A profile may place an upper limit on the maximum supported index
       EEW (e.g., only up to XLEN) smaller than ELEN.
     schema:
-      type: integer
-      enum: [8, 16, 32, 64]
-    extra_validation: |
-      assert VECTOR_LS_INDEX_MAX_EEW <= ELEN
+      type: string
+      enum: ["8", "16", "32", "64", "XLEN"]
+      extra_validation: |
+        assert 8 <= ELEN    if VECTOR_LS_INDEX_MAX_EEW == "8"
+        assert 16 <= ELEN   if VECTOR_LS_INDEX_MAX_EEW == "16"
+        assert 32 <= ELEN   if VECTOR_LS_INDEX_MAX_EEW == "32"
+        assert 64 <= ELEN   if VECTOR_LS_INDEX_MAX_EEW == "64"
+        assert XLEN <= ELEN if VECTOR_LS_INDEX_MAX_EEW == "XLEN"
   VECTOR_FF_UPDATE_PAST_TRIM:
-    description: 
-      Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming 
-      of the vector length (but not past the original vector length).  The values of these spurious updates do not have to correspond 
-      to the values in memory at the addressed memory locations.  Non-idempotent memory locations can only be accessed when it is known 
+    description:
+      Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming
+      of the vector length (but not past the original vector length).  The values of these spurious updates do not have to correspond
+      to the values in memory at the addressed memory locations.  Non-idempotent memory locations can only be accessed when it is known
       the corresponding element load operation will not be restarted due to a trap or vector-length trimming.
     schema:
       type: string
@@ -105,7 +109,7 @@ params:
       enum: ["no_subsegment_loaded", "custom"]
   VECTOR_LS_MISSALIGNED_EXCEPTION:
     description: |
-      If an element accessed by a vector memory instruction is not naturally aligned to the size of the element, 
+      If an element accessed by a vector memory instruction is not naturally aligned to the size of the element,
       either the element is transferred successfully or an address misaligned exception is raised on that element.
 
       Support for misaligned vector memory accesses is independent of an implementation’s support for misaligned scalar memory accesses.
@@ -117,7 +121,7 @@ params:
       group elements past the element index at which the trap is reported.
     schema:
       type: boolean
-  VECTOR_LS_SEG_FF_OVERLOAD:
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT:
     description: |
       These instructions may overwrite destination vector register group
       elements past the point at which a trap is reported or past the point
@@ -176,6 +180,31 @@ params:
     schema:
       type: string
       enum: ["no_change", "custom"]
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR:
+    description: |
+      Each operator first computes an exact sum as a RISC-V scalar floating-point
+      addition with infinite exponent range and precision, then converts this exact
+      sum to a floating-point format with range and precision each at least as great as
+      the element floating-point format indicated by SEW, rounding using the currently
+      active floating-point dynamic rounding mode and raising exception flags as necessary.
+      A different floating-point range and precision may be chosen for the result of each operator.
+    schema:
+      type: string
+      enum: ["SEW_precision", "custom"]
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR:
+    description: |
+      A node where one input is derived only from elements masked-off or beyond the active
+      vector length may either treat that input as the additive identity of the appropriate
+      EEW or simply copy the other input to its output.
+    schema:
+      type: string
+      enum: ["additive_identity", "copy"]
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR:
+    description: |
+      An implementation is allowed to add an additional additive identity to the final result.
+    schema:
+      type: string
+      enum: ["additive_identity", "copy"]
   IMPRECISE_VECTOR_TRAP_SETTABLE:
     description: |
       Some profiles may choose to provide a privileged mode bit to select between precise and imprecise vector traps.
