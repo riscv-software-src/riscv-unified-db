@@ -1,0 +1,7 @@
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = "HMC Qualcomm Clinic Team (Isabel Godoy, Nina Luo, Brayden Mendoza, Lughnasa Miller, Madeline Seifert, Ben Wiedermann)"
+SPDX-License-Identifier = "CC0-1.0"

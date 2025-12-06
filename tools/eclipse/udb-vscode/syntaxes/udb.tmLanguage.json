@@ -1,0 +1,67 @@
+{
+  "name": "UDB",
+  "scopeName": "source.udb",
+  "patterns": [
+    { "include": "#keyword" },
+    { "include": "#string" },
+    { "include": "#hex" },
+    { "include": "#boolean" },
+    { "include": "#comment" },
+    { "include": "#ident" }
+  ],
+  "repository": {
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.udb",
+          "match": "\\b(kind|name|long_name|address|writable|priv_mode|length|description|definedBy|fields|type|alias|sw_write\\(csr_value\\)|reset_value|location|location_rv32|location_rv64)\\b"
+        },
+        {
+          "name": "keyword.other.enum.udb",
+          "match": "\\b(csr|extension|U|S|M|VXRM|VXSAT)\\b"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.udb",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.udb", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "hex": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.udb",
+          "match": "\\b0[xX][0-9A-Fa-f](?:[0-9A-Fa-f_]*[0-9A-Fa-f])?\\b"
+        }
+      ]
+    },
+    "boolean": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.udb",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        { "name": "comment.line.double-slash.udb", "match": "//.*$" }
+      ]
+    },
+    "ident": {
+      "patterns": [
+        {
+          "name": "entity.name.type.udb",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}

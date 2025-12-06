@@ -1,0 +1,217 @@
+grammar org.xtext.example.udb.Udb with org.eclipse.xtext.common.Terminals
+hidden(SL_COMMENT, WS)
+generate udb "http://www.xtext.org/example/udb/Udb"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Model:
+	schema = Schema
+	kind = Kind &
+	csrName = Name &
+	base = Base? &
+	longName = LongName &
+	description = Description &
+	definedBy = DefinedBy &
+	address = Address &
+	indirectAddress = IndirectAddress? &
+	indirectSlot = IndirectSlot? &
+	writable = Writable &
+	privmode = PrivMode &
+	virtualAddress = VirtualAddress? &
+	length = Length &
+	requires = Requires? &
+	fields = Fields? &
+	swRead = SwRead? &
+	source = Source? &
+	certNormativeRules = CertNormativeRules? &
+	certTestProcedures = CertTestProcedures?
+;
+
+// This is so we can directly copy+paste from a UDB .yaml file
+Schema: "$schema" ":" schema=STRING;
+
+/* Required fields for the CSR schema */
+Kind: 'kind' ':' kind=KindType ;
+Name: 'name' ':' name=NameType ;
+LongName: 'long_name' ':' longName=STRING ;
+Address: 'address' ':' address=Hex ;
+Writable: 'writable' ':' writable=Boolean ;
+PrivMode:'priv_mode' ':' privMode=PrivType ;
+Length: 'length' ':' length=LengthType ;
+Description: 'description' ':' description=STRING ;
+DefinedBy:'definedBy' ':'extensionName=STRING ;
+
+/* Optional fields for the CSR schema */
+Base: 'base' ':' base=INT ;
+IndirectAddress:'indirect_address' ':' indirectAddress=Hex;
+IndirectSlot:'indirect_slot' ':' indirectSlot=INT ; /* TODO: validator: min:1 max:6 */
+
+
+VirtualAddress:'virtual_address' ':' virtualAddress=Hex ;
+CertNormativeRules: 'cert_normative_rules' ':' certNormativeRules=CNRType ;
+CertTestProcedures: 'cert_test_procedures' ':' certTestProcedures=CTPType ;
+
+// implement in validator?
+Requires:'requires' ':' requires=STRING ;
+SwRead:'sw_read()' ':' swRead=STRING ;
+Source:'$source' ':' source=STRING ;
+
+
+/* CSR Schema Types */
+KindType: type=('csr'|'extension');
+NameType: type=(CSR_NAME);
+PrivType: type=('M'|'S'|'U'|'VS'|'D');
+
+LengthType: intType = IntType | parmType = ParmType;
+IntType: intVal=INT; // must be either 32 or 64
+ParmType: parmName=('MXLEN'|'SXLEN'|'VSXLEN'|'XLEN');
+
+CNRType: '[' id=STRING ',' name=STRING ',' docLinks=StringArray ','
+			 description=STRING ']';
+CTPType: '[' id=STRING ',' name=STRING ',' description=STRING ','
+			 normativeRules=StringArray ',' list=STRING?']';
+
+
+
+/* Grammar for fields */
+Fields:
+	{Fields} 'fields' ':'
+	INDENT
+    	fields += FieldDef+
+    DEDENT
+;
+
+FieldDef:
+	name=FIELD_NAME ':'
+	INDENT
+		('name' ':' fieldName = STRING ';')? &
+		longName = LongName? &
+		location = LocationType &
+		resetValue = ResetValueType &
+		swWriteFunc = SWWriteFunc? &
+		legalFunc = LegalFunc? &
+		base = Base? &
+		description = Description &
+		type = TypeType &
+		alias = Alias? &
+		definedBy = DefinedBy? &
+		affectedBy = AffectedBy? &
+		certNormativeRules = CertNormativeRules? &
+		certTestProcedures = CertTestProcedures?
+	DEDENT
+;
+
+FieldDisplayName: 'name' ':' fieldName=STRING ;
+
+
+
+/* fields for Fields */
+StaticLocation: 'location' ':' locValue=FieldLocation ;
+LocationRV32: "location_rv32" ":" locationRV32=FieldLocation ;
+LocationRV64: "location_rv64" ":" locationRV64=FieldLocation ;
+
+
+ResetValue: "reset_value" ":" resetValue=ResetValueValue ;
+ResetValueFunc: "reset_value()" ":" resetValueFunc=IDL ;
+SWWriteFunc: "sw_write(csr_value)" ":" swWriteFunc=IDL ;
+LegalFunc: "legal?(csr_value)" ":" legalFunc=IDL ;
+Type: "type" ":" perms=("RO"|"RO-H"|"RW"|"RW-R"|"RW-H"|"RW-RH") ;
+TypeFunc: "type()" ":" idl=IDL ;
+Alias: "alias" ":" alias=AliasType ;
+AffectedBy: "affectedBy" ":" affectedBy=AffectedByType ;
+
+/* Types for Fields */
+
+LocationType: staticLoc = StaticLocation | funcLoc = VarLocation;
+VarLocation:
+	locationRV32=LocationRV32
+	locationRV64=LocationRV64
+;
+FieldLocation: value=INT | range=Range;
+Range: upper=INT '-' lower=INT;
+ResetValueType: value=ResetValue | function=ResetValueFunc;
+ResetValueValue: value=INT | undefinedLegal=UndefinedLegal;
+TypeType: typeVal=Type | typeFunc=TypeFunc;
+AliasType: alias+=(CSR_FIELD | CSR_FIELD_BITS)+;
+
+// TODO: we probably will want a cross ref thing for this
+AffectedByType: affectedByName=STRING | affectedByArray=StringArray;
+
+
+
+/* Conditions */
+//Condition: yamlCond=YAMLCondition | idlCond=IDLCondition;
+
+//YAMLCondition:
+//	yaml = YAMLCondition (TODO: implement)
+//	  extensionCond = ExtensionCondition
+//	| paramCond = ParamCondition
+//	| xlenCond = XLenCondition
+//;
+
+IDLCondition:
+	"idl()" ":" idl=IDL
+	reason?=Reason
+;
+
+ExtensionCondition:
+	STRING /* TODO */
+;
+
+ParamCondition:
+	STRING /* TODO */
+;
+
+XLenCondition: xlen=INT; /* can be 32 or 64 (TODO: implement in validator) */
+
+Reason: "reason" ":" reasonStr=STRING;
+
+
+
+/* IDL Grammar */
+IDL: idl=STRING;
+
+
+
+
+
+/* Keywords */
+UndefinedLegal: "UNDEFINED_LEGAL";
+Boolean returns ecore::EBoolean: "true" | "false";
+
+/* Helpers*/
+StringArray: '[' names+=STRING (',' names+=STRING)+ ']';
+
+/* Terminals */
+terminal CSR_NAME:
+	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
+;
+terminal FIELD_NAME:
+	('a'..'z' | 'A'..'Z')+
+;
+terminal CSR_FIELD:
+	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
+	('.')('A'..'Z' | '0'..'9')+
+;
+terminal CSR_FIELD_BITS:
+	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
+	'.'('A'..'Z' | '0'..'9')+
+	'[' ('0'..'9')+(':'('0'..'9')+)? ']'
+;
+
+
+Hex: value=HEX_VALUE;
+terminal HEX_VALUE returns ecore::EInt:
+	('0x' | '0X')
+	('0'..'9' | 'A'..'F' | 'a'..'f')
+	(('0'..'9' | 'A'..'F' | 'a'..'f' | '_')*('0'..'9' | 'A'..'F' | 'a'..'f'))?
+;
+
+terminal INDENT: 'synthetic:INDENT';
+terminal DEDENT: 'synthetic:DEDENT';
+
+@Override
+terminal SL_COMMENT: '#' !('\n'|'\r')*;
+
+@Override
+terminal WS: ('\r'|'\n'|'\t'|' ')+;
