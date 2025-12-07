@@ -19,7 +19,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcisync
-assembly: " slist"
+assembly: slist
 base: 32
 encoding:
   match: "100001---0000001"
