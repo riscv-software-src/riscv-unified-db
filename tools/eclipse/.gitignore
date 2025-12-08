@@ -1,6 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/eclipse
 ### Eclipse ###
-# **/.metadata ### Git repo should be outside the Eclipse workspace!
+# .metadata ### Git repo should be outside the Eclipse workspace!
 bin/
 tmp/
 *.tmp
@@ -28,23 +28,13 @@ build/
 .gradle/
 # bin/ was already ignored above
 
-# ---- TBD: Review the following rule ----
-# Do we need to ignore node_modules/ everywhere under this directory?
 node_modules/
 
 udb-vscode/out/
 udb-vscode/.vscode-test/
 
-# ---- TBD: Review the following rules ----
-# Starting with a "!" without a preceding ignore rule for the directory
-#   means that the directory itself is not ignored, i.e., unignore patterns
-#   for {launch,tasks}.json are not required.
-# If the intention is to unignore only {launch,tasks}.json,
-#   this should be udb-vscode/.vscode/*
-!udb-vscode/.vscode/
+udb-vscode/.vscode/*
 !udb-vscode/.vscode/launch.json
 !udb-vscode/.vscode/tasks.json
 
-# Ignore everything under server/ except the jar file
-udb-vscode/server/*
-!udb-vscode/server/udb-ls-all.jar
+udb-vscode/server/
