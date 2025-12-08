@@ -34,7 +34,7 @@ access:
 operation(): |
   Bits<32> t0 = X[creg2reg(xd)][31:0];
   Bits<32> t1 = X[creg2reg(xs2)][31:0];
-  X[creg2reg(xd)] = sext(t0 - t1, 31);
+  X[creg2reg(xd)] = sext(t0 - t1, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

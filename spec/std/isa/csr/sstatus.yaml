@@ -36,14 +36,14 @@ fields:
     location: 33-32
     definedBy:
       xlen: 64
-    alias: mstatus.MXR
+    alias: mstatus.UXL
     description: |
       *U-mode XLEN*
 
       Alias of `mstatus.UXL`.
 
     type: RO
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 2
   MXR:
     alias: mstatus.MXR
     location: 19

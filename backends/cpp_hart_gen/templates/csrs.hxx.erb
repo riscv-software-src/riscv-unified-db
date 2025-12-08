@@ -281,7 +281,7 @@ namespace udb {
       } else {
         udb_assert(xlen == 64_b, "Bad xlen");
         <%-
-          field_cpp = fields_for_xlen32.map do |field|
+          field_cpp = fields_for_xlen64.map do |field|
             if field.dynamic_location?
               "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(64).size) - 1).to_s(16)}_b).template widening_sll<#{field.location(64).begin}>())"
             else

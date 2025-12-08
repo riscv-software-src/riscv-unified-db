@@ -109,7 +109,7 @@ if [ -v GITHUB_ACTIONS ]; then
     echo "Running in a GitHub Action"
     CONTAINER_PATH=${ROOT}/.singularity/image.sif
     HOME_PATH=${GITHUB_WORKSPACE}
-    HOME_OPT="--home ${ROOT}/.home"
+    GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
     SINGULARITY_CACHE=--disable-cache
 
     # needed to get singularity working on Ubuntu 24.04
@@ -140,7 +140,7 @@ elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; the
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}
-    HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
+    GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
     SINGULARITY_CACHE=
     if [ ! -f ${CONTAINER_PATH} ]; then
       echo "Fetching container..."
