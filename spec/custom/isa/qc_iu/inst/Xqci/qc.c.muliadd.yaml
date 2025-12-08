@@ -11,9 +11,10 @@ description: |
   Increments `rd` by the multiplication of `rs1` and an unsigned immediate
   Instruction encoded in CL instruction format.
 definedBy:
-  extension:
-    name: Xqciac
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciac
 encoding:
   match: 001-----------10
   variables:

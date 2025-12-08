@@ -9,11 +9,12 @@ name: qc.mclicie3
 long_name: IRQ Enable 3
 address: 0x7fb
 length: 32
-base: 32
 priv_mode: M
 definedBy:
-  extension:
-    name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 writable: true
 description: |
   Enable bits for IRQs 96-127

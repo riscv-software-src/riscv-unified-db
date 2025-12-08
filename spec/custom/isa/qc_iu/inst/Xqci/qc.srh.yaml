@@ -12,10 +12,10 @@ description: |
   address formed by adding `rs1` to `rs2`, shifted by `shamt`.
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    name: Xqcisls
-assembly: " xs3, xs1, xs2, shamt"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisls
 encoding:
   match: 1110-------------110-----0101011
   variables:

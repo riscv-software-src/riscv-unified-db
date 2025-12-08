@@ -14,10 +14,10 @@ description: |
   Immediate argument is 5-bit bitmask field that specifies up to five pre-defined devices.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    name: Xqcisync
-assembly: " imm"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisync
 encoding:
   match: 0001000-----00000011000000010011
   variables:

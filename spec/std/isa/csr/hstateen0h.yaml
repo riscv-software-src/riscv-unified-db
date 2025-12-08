@@ -10,7 +10,6 @@ long_name: Upper 32 bits of Hypervisor State Enable 0 Register
 address: 0x61C
 priv_mode: S
 length: 32
-base: 32
 writable: true
 description: |
   For RV64 harts, the Smstateen/Ssstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State Enable 0),
@@ -23,11 +22,13 @@ description: |
   `hstateen1h`, `hstateen2h`, and `hstateen3h`.
 
 definedBy:
-  extension:
-    allOf:
-      - name: H
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: H
+          - name: Smstateen
+          - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen0 access control

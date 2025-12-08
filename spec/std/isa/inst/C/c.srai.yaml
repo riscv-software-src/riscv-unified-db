@@ -13,9 +13,7 @@ description: |
   C.SRAI expands into `srai xd, xd, shamt`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, shamt
 encoding:
   RV32:

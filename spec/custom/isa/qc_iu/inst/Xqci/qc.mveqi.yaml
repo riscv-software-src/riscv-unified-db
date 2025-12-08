@@ -11,9 +11,10 @@ description: |
   Move `rs3` to `rd` if the value in `rs1` is equal to value of `imm`.
   Instruction encoded in R4 instruction format.
 definedBy:
-  extension:
-    name: Xqcicm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicm
 encoding:
   match: -----10----------000-----1011011
   variables:

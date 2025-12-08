@@ -12,10 +12,10 @@ description: |
   Simulation environment expected to print the 8-bit character on its console or standard output.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    name: Xqcisim
-assembly: " imm"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
 encoding:
   match: 0100--------00000010000000010011
   variables:

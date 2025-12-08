@@ -18,7 +18,6 @@ definedBy:
         anyOf:
           - name: C
           - name: Zca
-base: 64
 assembly: xd, xs2
 encoding:
   match: 100111---01---01

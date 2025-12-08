@@ -13,10 +13,10 @@ description: |
   Instruction is used to call simulator to execute function according to the argument.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    name: Xqcisim
-assembly: " xs1"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
 encoding:
   match: 110000000000-----010000000010011
   variables:

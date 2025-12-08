@@ -12,9 +12,7 @@ description: |
   C.JR expands to jalr x0, 0(xs1).
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xs1
 encoding:
   match: 1000-----0000010

@@ -23,7 +23,8 @@ fields:
   VSXL:
     long_name: VS-mode XLen
     location: 33-32
-    base: 64
+    definedBy:
+      xlen: 64
     description:
       - text: |
           Determines the effective XLEN in VS-mode. Valid values are:
@@ -39,11 +40,11 @@ fields:
 
       - text: |
           Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.
-        when(): return $array_includes?(VSXLEN, 32);
+        when(): return $array_size(VSXLEN) == 1 && $array_includes?(VSXLEN, 32);
 
       - text: |
           Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
-        when(): return $array_size(VSXLEN) > 1;
+        when(): return $array_size(VSXLEN) == 1 && $array_includes?(VSXLEN, 64);
 
     type(): |
       if ($array_size(VSXLEN) == 1) {

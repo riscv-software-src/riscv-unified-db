@@ -510,7 +510,7 @@ end
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    # Rake::Task["test:udb:unit"].invoke
+    Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC

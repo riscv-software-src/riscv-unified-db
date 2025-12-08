@@ -27,6 +27,8 @@ mandatory_extensions:
   version: "= 2.0"
 - name: U
   version: "~> 2.0"
+- name: Za128rs
+  version: "= 1.0"
 - name: Za64rs
   version: "~> 1.0"
 - name: Zawrs

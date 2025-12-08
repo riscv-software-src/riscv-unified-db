@@ -18,7 +18,7 @@ mandatory_extensions:
 - name: I
   version: "~> 2.1"
 - name: Svade
-  version: "~> 1.0.0"
+  version: ">= 0"
 - name: Xmock
   version: "~> 0.9.9"
 non_mandatory_extensions:

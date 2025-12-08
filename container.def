@@ -83,7 +83,7 @@ From: ubuntu:24.04
   # cleanup
   apt-get clean autoclean
   apt-get autoremove -y
-  rm -rf /var/lib/{apt, dpkg, cache, log}
+  rm -rf /var/lib/{apt,dpkg,cache,log}
 
   # cd $HOME
   # bundle install

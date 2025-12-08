@@ -17,7 +17,6 @@ definedBy:
     - xlen: 32
     - extension:
         name: Zcf
-base: 32
 assembly: fs2, imm(xs1)
 encoding:
   match: 111-----------00

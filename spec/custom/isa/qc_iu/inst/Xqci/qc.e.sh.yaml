@@ -12,10 +12,10 @@ description: |
   address formed by adding `rs1` to a signed offset `imm`.
   Instruction encoded in QC.ES instruction format.
 definedBy:
-  extension:
-    name: Xqcilo
-assembly: " xs2, imm(xs1)"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilo
 encoding:
   match: ----------------10---------------110-----0011111
   variables:

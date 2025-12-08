@@ -11,10 +11,10 @@ description: |
   Clear interrupt, interrupt number is in `imm` (0 - 1023).
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    name: Xqciint
-assembly: " imm"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 encoding:
   match: 1100111----------000000001110011
   variables:

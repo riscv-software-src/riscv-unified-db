@@ -10,11 +10,12 @@ long_name: IRQ Level 0
 address: 0xbc0
 length: 32
 priv_mode: M
-base: 32
 definedBy:
-  extension:
-    name: Xqciint
-    version: ">=0.4"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+        version: ">=0.4"
 writable: true
 description: |
   Level bits for IRQs 0-7

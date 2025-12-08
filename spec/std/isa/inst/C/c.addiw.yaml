@@ -17,7 +17,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zca
-base: 64
 assembly: xd, imm
 encoding:
   match: 001-----------01

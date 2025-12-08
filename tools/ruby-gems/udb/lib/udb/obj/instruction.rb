@@ -327,7 +327,7 @@ module Udb
 
       if has_type?
         if @data["format"]["RV32"].nil?
-          b = @data["base"].nil? ? 64 : T.cast(@data["base"], Integer)
+          b = base.nil? ? 64 : T.cast(base, Integer)
           Instruction.validate_encoding(self, b)
         else
           Instruction.validate_encoding(self, 32)
@@ -387,10 +387,18 @@ module Udb
       @data["access_detail"]
     end
 
-    # @return [Integer] XLEN that must be effective for instruction to exist
-    # @return [nil] if instruction exists in all XLENs
+    sig { returns(T.nilable(Integer)) }
     def base
-      @data["base"]
+      return @base if defined?(@base)
+
+      @base =
+        if defined_by_condition.rv32_only?
+          32
+        elsif defined_by_condition.rv64_only?
+          64
+        else
+          nil
+        end
     end
 
     # @return [Boolean] Whether or not the instruction must have data-independent timing when Zkt is enabled.
@@ -988,8 +996,8 @@ module Udb
     def load_encoding
       @encodings = {}
       if has_type?
-        if @data.key?("base")
-          @encodings[@data["base"]] = Encoding.new(encoding_format(@data["base"]), subtype(@data["base"]).variables)
+        if !base.nil?
+          @encodings[base] = Encoding.new(encoding_format(T.must(base)), subtype(T.must(base)).variables)
         else
           @encodings[32] = Encoding.new(encoding_format(32), subtype(32).variables)
           @encodings[64] = Encoding.new(encoding_format(64), subtype(64).variables)
@@ -999,8 +1007,8 @@ module Udb
           # there are different encodings for RV32/RV64
           @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
           @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
-        elsif @data.key("base")
-          @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+        elsif !base.nil?
+          @encodings[base] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
         else
           @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
           @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
@@ -1161,12 +1169,12 @@ module Udb
 
     # @return [Boolean] whether or not this instruction is defined for RV32
     def rv32?
-      !@data.key?("base") || base == 32
+      base != 64
     end
 
     # @return [Boolean] whether or not this instruction is defined for RV64
     def rv64?
-      !@data.key?("base") || base == 64
+      base != 32
     end
 
     # @return [Array<Instruction>] List of HINTs based on this instruction encoding
@@ -1178,12 +1186,12 @@ module Udb
     # @return [Boolean] whether or not the instruction is implemented given the supplied config options
     def exists_in_cfg?(cfg_arch)
       if cfg_arch.fully_configured?
-        (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
+        (base.nil? || (cfg_arch.possible_xlens.include? base)) &&
           (defined_by_condition.satisfied_by_cfg_arch?(cfg_arch) == SatisfiedResult::Yes)
       else
         raise "unexpected cfg_arch type" unless cfg_arch.partially_configured?
 
-        (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
+        (base.nil? || (cfg_arch.possible_xlens.include? base)) &&
           (defined_by_condition.satisfied_by_cfg_arch?(cfg_arch) != SatisfiedResult::No)
       end
     end

@@ -22,9 +22,7 @@ description: |
   and should not increment the `minstret` CSR.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: " "
 encoding:
   match: "1001000000000010"

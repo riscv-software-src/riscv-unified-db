@@ -7,7 +7,6 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: add.uw
 long_name: Add unsigned word
-base: 64
 description: |
   Performs an XLEN-wide addition between xs2 and the
   zero-extended least-significant word of xs1.

@@ -49,6 +49,8 @@ mandatory_extensions:
   version: "~> 2.0"
 - name: Za128rs
   version: "= 1.0"
+- name: Za64rs
+  version: "~> 1.0"
 - name: Zba
   version: "~> 1.0"
 - name: Zbb
@@ -98,14 +100,6 @@ non_mandatory_extensions:
   version: "~> 1.12"
 - name: Svnapot
   version: "~> 1.0"
-- name: V
-  version: "~> 1.0"
-- name: Zfh
-  version: "~> 1.0"
-- name: Zkn
-  version: "~> 1.0"
 - name: Zkr
-  version: "~> 1.0"
-- name: Zks
   version: "~> 1.0"
 additional_extensions: true

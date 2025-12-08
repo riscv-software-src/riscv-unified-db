@@ -45,7 +45,7 @@ description: |
     * Compare the loaded value with the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_
     * If equal, write the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2+1_ to the address in _xs1_
 definedBy:
-<%- if size == "d" -%>
+<%- if size == "q" -%>
   allOf:
     - extension:
         name: <%= current_size[:extension] %>
@@ -53,9 +53,6 @@ definedBy:
 <%- else -%>
   extension:
     name: <%= current_size[:extension] %>
-<%- end -%>
-<%- if %w[d q].include?(size) -%>
-base: 64
 <%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:

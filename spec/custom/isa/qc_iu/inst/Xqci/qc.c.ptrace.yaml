@@ -13,10 +13,10 @@ description: |
   Instruction is used to signal simulator to collect some tracing information.
   Instruction encoded in CI instruction format.
 definedBy:
-  extension:
-    name: Xqcisim
-assembly: ""
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
 encoding:
   match: "0000000000000010"
 access:

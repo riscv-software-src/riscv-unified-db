@@ -53,9 +53,6 @@ definedBy:
   extension:
     name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
 <%- end -%>
-<%- if size == "d" -%>
-base: 64
-<%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:
   match: 11000<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111

@@ -12,10 +12,10 @@ description: |
   The index is read from the lower log2(XLEN) bits of `shamt`.
   Instruction encoded in CB instruction format.
 definedBy:
-  extension:
-    name: Xqcibm
-assembly: " xd, shamt"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 100101--------01
   variables:

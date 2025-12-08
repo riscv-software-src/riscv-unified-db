@@ -59,7 +59,6 @@ fields:
 
   MDT:
     location: 42
-    base: 64
     long_name: Machine Disable Trap
     description: |
       Written to 1 when entering M-mode from an exception/interrupt.
@@ -67,13 +66,14 @@ fields:
       On reset in set to 1, and software should write it to 0 when boot sequence is done.
       When mstatus.MDT=1, direct write by CSR instruction cannot set mstatus.MIE to 1, if not written together.
     definedBy:
-      extension:
-        name: Smdbltrp
+      allOf:
+        - xlen: 64
+        - extension:
+            name: Smdbltrp
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   MPV:
     location: 39
-    base: 64
     long_name: Machine Previous Virtualization mode
     description: |
       Written with the prior virtualization mode when entering M-mode from an exception/interrupt.
@@ -82,11 +82,12 @@ fields:
     type: RW-H
     reset_value: UNDEFINED_LEGAL
     definedBy:
-      extension:
-        name: H
+      allOf:
+        - xlen: 64
+        - extension:
+            name: H
   GVA:
     location: 38
-    base: 64
     long_name: Guest Virtual Address
     description: |
       When a trap is taken and a guest virtual address is written into mtval, GVA is set.
@@ -94,11 +95,14 @@ fields:
     type: RW-H
     reset_value: 0
     definedBy:
-      extension:
-        name: H
+      allOf:
+        - xlen: 64
+        - extension:
+            name: H
   MBE:
     location: 37
-    base: 64
+    definedBy:
+      xlen: 64
     long_name: M-mode Big Endian
     description: |
       Controls the endianness of data M-mode (0 = little, 1 = big).
@@ -118,10 +122,11 @@ fields:
 
   SBE:
     location: 36
-    base: 64
     definedBy:
-      extension:
-        name: S
+      allOf:
+        - xlen: 64
+        - extension:
+            name: S
     long_name: S-mode Big Endian
     description: |
       Controls the endianness of S-mode (0 = little, 1 = big).
@@ -145,10 +150,11 @@ fields:
       }
   SXL:
     location: 35-34
-    base: 64
     definedBy:
-      extension:
-        name: S
+      allOf:
+        - xlen: 64
+        - extension:
+            name: S
     long_name: S-mode XLEN
     description: |
       Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
@@ -183,10 +189,11 @@ fields:
 
   UXL:
     location: 33-32
-    base: 64
     definedBy:
-      extension:
-        name: U
+      allOf:
+        - xlen: 64
+        - extension:
+            name: U
     long_name: U-mode XLEN
     description: |
       U-mode XLEN.

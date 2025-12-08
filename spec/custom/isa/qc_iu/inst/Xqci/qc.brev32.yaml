@@ -11,9 +11,10 @@ description: |
   Reverses the bit order of `rs1` and writes the result to `rd`.
   Instruction encoded in I instruction format
 definedBy:
-  extension:
-    name: Xqcibm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 000011000000-----011-----0001011
   variables:

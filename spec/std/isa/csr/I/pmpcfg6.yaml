@@ -253,7 +253,8 @@ fields:
       return CSR[pmpcfg6].pmp27cfg;
   pmp28cfg:
     location: 39-32
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 28*
 
@@ -312,7 +313,8 @@ fields:
       return CSR[pmpcfg6].pmp28cfg;
   pmp29cfg:
     location: 47-40
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 29*
 
@@ -371,7 +373,8 @@ fields:
       return CSR[pmpcfg6].pmp29cfg;
   pmp30cfg:
     location: 55-48
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 30*
 
@@ -430,7 +433,8 @@ fields:
       return CSR[pmpcfg6].pmp30cfg;
   pmp31cfg:
     location: 63-56
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 31*
 

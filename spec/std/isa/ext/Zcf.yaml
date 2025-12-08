@@ -39,8 +39,8 @@ versions:
       - name: Nicolas Brunie
       - name: Jiawei
 requirements:
-  idl(): |
-    -> xlen() == 32;
-
+  allOf:
+    - xlen: 32
     # if Zcf is implemented, then Zca and F must also be implemented
-    -> implemented?(ExtensionName::Zca) && implemented?(ExtensionName::F);
+    - extension: { name: Zca }
+    - extension: { name: F }

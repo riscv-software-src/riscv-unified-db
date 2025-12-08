@@ -19,7 +19,6 @@ definedBy:
           - name: Zbb
           - name: Zbkb
 assembly: xd, xs1, shamt
-base: 64
 encoding:
   match: 0110000----------101-----0011011
   variables:

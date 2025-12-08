@@ -51,7 +51,6 @@ def arch2ext_table(arch)
       { name: "Requires\n(Exts)", formatter: "textarea", sorter: "alphanum" },
       { name: "Transitive Requires\n(Ext)", formatter: "textarea", sorter: "alphanum" },
       { name: "Incompatible\n(Ext Reqs)", formatter: "textarea", sorter: "alphanum" },
-      # { name: "Transitive Incompatible\n(Ext Ver)", formatter: "textarea", sorter: "alphanum" },
       { name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true },
       { name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true },
       sorted_profile_releases.map do |pr|
@@ -64,9 +63,6 @@ def arch2ext_table(arch)
     }
 
   arch.extensions.sort_by!(&:name).each do |ext|
-    next if ext.name == "Shcounterenw"
-    next if ext.name == "Sscounterenw"
-    next if ext.name == "Sha"
     row = [
       ext.name,           # Name
       ext.long_name,      # Description
@@ -86,14 +82,6 @@ def arch2ext_table(arch)
         end
       end.uniq,  # Transitive Requires
       ext.conflicting_extensions.map(&:name),
-      # ext.max_version.ext_conflicts(expand: false).map do |cond_ext_req|
-      #   if cond_ext_req.cond.empty?
-      #     cond_ext_req.ext_req.name
-      #   else
-      #     "#{cond_ext_req.ext_req.name} unless #{cond_ext_req.cond.to_asciidoc}"
-      #   end
-      # end.uniq,  # Conlifct
-      # ext.max_version.unconditional_extension_version_conflicts.map(&:to_s),  # Transitive Conlifct
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -367,7 +355,6 @@ def gen_js_table(table, div_name)
       fp.write "      labelField:\"#{column_name}\",\n"
       fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
       fp.write "      }\n"
-    # elsif formatter == "array"
     end
     fp.write "    },\n"
   end

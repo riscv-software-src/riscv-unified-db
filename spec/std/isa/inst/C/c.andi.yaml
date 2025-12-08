@@ -13,9 +13,7 @@ description: |
   C.ANDI expands into `andi xd, xd, imm`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, imm
 encoding:
   match: 100-10--------01

@@ -15,7 +15,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: F
-base: 64
 assembly: xd, fs1, rm
 encoding:
   match: 110000000010-------------1010011

@@ -14,9 +14,7 @@ description: |
   C.ADDI4SPN is only valid when nzuimm &ne; 0; the code points with nzuimm=0 are reserved.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, sp, imm
 encoding:
   match: 000-----------00

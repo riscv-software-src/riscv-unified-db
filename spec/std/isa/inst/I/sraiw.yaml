@@ -15,7 +15,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: I
-base: 64
 assembly: xd, xs1, shamt
 encoding:
   match: 0100000----------101-----0011011

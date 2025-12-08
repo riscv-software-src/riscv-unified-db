@@ -8,18 +8,19 @@ kind: csr
 name: henvcfgh
 address: 0x61A
 writable: true
-base: 32
 long_name: most-significant 32 bits of Hypervisor Environment Configuration
 description: |
   The henvcfgh CSR is a 32-bit read/write register for the most-significant 32 bits of `henvcfg`.
 priv_mode: S
 length: 32
 definedBy:
-  extension:
-    allOf:
-      - name: Sm
-        version: ">=1.12"
-      - name: H
+  allOf:
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: Sm
+            version: ">=1.12"
+          - name: H
 fields:
   STCE:
     location: 31

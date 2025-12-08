@@ -91,20 +91,32 @@ module Udb
 
     # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in
     # @return [nil] if this CSR is defined in all bases
-    def base = @data["base"]
+    sig { returns(T.nilable(Integer)) }
+    def base
+      return @base if defined?(@base)
+
+      @base =
+        if defined_by_condition.rv32_only?
+          32
+        elsif defined_by_condition.rv64_only?
+          64
+        else
+          nil
+        end
+    end
 
     # @return [Boolean] true if this CSR is defined when XLEN is 32
-    def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
+    def defined_in_base32? = base != 64
 
     # @return [Boolean] true if this CSR is defined when XLEN is 64
-    def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+    def defined_in_base64? = base != 32
 
     # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
-    def defined_in_all_bases? = @data["base"].nil?
+    def defined_in_all_bases? = base.nil?
 
     # @return [Boolean] true if this CSR is defined when XLEN is xlen
     # @param xlen [32,64] base
-    def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
+    def defined_in_base?(xlen) = xlen == 32 ? defined_in_base32? : defined_in_base64?
 
     # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
     def format_changes_with_xlen?
@@ -159,7 +171,7 @@ module Udb
       return false if @data["length"].is_a?(Integer)
 
       # when a CSR is only defined in one base, its length can't change
-      return false unless @data["base"].nil?
+      return false unless base.nil?
 
       case @data["length"]
       when "MXLEN"
@@ -206,8 +218,8 @@ module Udb
       when "MXLEN"
         return T.must(cfg_arch.mxlen) unless cfg_arch.mxlen.nil?
 
-        if !@data["base"].nil?
-          @data["base"]
+        if !base.nil?
+          base
         else
           # don't know MXLEN
           effective_xlen
@@ -219,9 +231,9 @@ module Udb
           else
             cfg_arch.param_values["SXLEN"][0]
           end
-        elsif !@data["base"].nil?
+        elsif !base.nil?
           # if this CSR is only available in one base, then we know its length
-          @data["base"]
+          base
         else
           # don't know SXLEN
           effective_xlen
@@ -233,9 +245,9 @@ module Udb
           else
             cfg_arch.param_values["VSXLEN"][0]
           end
-        elsif !@data["base"].nil?
+        elsif !base.nil?
           # if this CSR is only available in one base, then we know its length
-          @data["base"]
+          base
         else
           # don't know VSXLEN
           effective_xlen
@@ -253,7 +265,7 @@ module Udb
     # sig { override.returns(Integer) }    dhower: sorbet doesn't think this is an override??
     sig { override.returns(Integer) }
     def max_length
-      return @data["base"] unless @data["base"].nil?
+      return T.must(base) unless base.nil?
 
       case @data["length"]
       when "MXLEN"

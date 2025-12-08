@@ -13,7 +13,7 @@ description: |
   available only on RV32.
 definedBy:
   allOf:
-    - xlen: 64
+    - xlen: 32
     - extension:
         name: Zbkb
 assembly: xd, xs1
@@ -30,7 +30,6 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 32
 operation(): |
   XReg input = X[xs1];
   XReg output = 0;

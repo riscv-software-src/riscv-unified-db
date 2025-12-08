@@ -12,14 +12,14 @@ description: |
   Instruction encoded in CI instruction format.
 assembly: ""
 definedBy:
-  extension:
-    name: Xqciint
-access:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
   s: never
   u: never
   vs: never
   vu: never
-base: 32
 encoding:
   match: "0001100110010010"
 operation(): |

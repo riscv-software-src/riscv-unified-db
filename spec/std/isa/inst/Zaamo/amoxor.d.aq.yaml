@@ -23,7 +23,6 @@ definedBy:
     - extension:
         name: Zaamo
     - xlen: 64
-base: 64
 assembly: xd, xs2, (xs1)
 encoding:
   match: 0010010----------011-----0101111

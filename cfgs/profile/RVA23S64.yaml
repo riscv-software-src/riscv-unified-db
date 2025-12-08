@@ -136,46 +136,6 @@ non_mandatory_extensions:
   version: "~> 1.0"
 - name: Svvptc
   version: "~> 1.0"
-- name: Zabha
-  version: "~> 1.0"
-- name: Zacas
-  version: "~> 1.0"
-- name: Zama16b
-  version: "~> 1.0"
-- name: Zbc
-  version: "~> 1.0"
-- name: Zfbfmin
-  version: "~> 1.0"
-- name: Zfh
-  version: "~> 1.0"
-- name: Ziccamoc
-  version: "~> 1.0"
-- name: Zicfilp
-  version: "~> 1.0"
-- name: Zicfiss
-  version: "~> 1.0"
-- name: Zkn
-  version: "~> 1.0"
 - name: Zkr
-  version: "~> 1.0"
-- name: Zks
-  version: "~> 1.0"
-- name: Zvbc
-  version: "~> 1.0"
-- name: Zvfbfmin
-  version: "~> 1.0"
-- name: Zvfbfwma
-  version: "~> 1.0"
-- name: Zvfh
-  version: "~> 1.0"
-- name: Zvkg
-  version: "~> 1.0"
-- name: Zvknc
-  version: "~> 1.0"
-- name: Zvkng
-  version: "~> 1.0"
-- name: Zvksc
-  version: "~> 1.0"
-- name: Zvksg
   version: "~> 1.0"
 additional_extensions: true

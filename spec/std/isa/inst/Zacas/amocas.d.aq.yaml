@@ -19,11 +19,8 @@ description: |
     * Compare the loaded value with the value of register _xs2_
     * If equal, write the value of register _xs2+1_ to the address in _xs1_
 definedBy:
-  allOf:
-    - extension:
-        name: Zacas
-    - xlen: 64
-base: 64
+  extension:
+    name: Zacas
 assembly: xd, xs2, (xs1)
 encoding:
   match: 0010110----------011-----0101111

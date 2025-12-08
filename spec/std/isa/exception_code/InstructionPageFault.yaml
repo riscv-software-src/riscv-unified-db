@@ -6,7 +6,7 @@
 $schema: exception_code_schema.json#
 kind: exception_code
 name: InstructionPageFault
-num: 13
+num: 12
 display_name: Instruction page fault
 definedBy:
   extension:

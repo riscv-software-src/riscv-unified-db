@@ -14,15 +14,16 @@ address: 0x738
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Alias of `mhpmevent24`[63:32].
 
   Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
   32-bits of `mhpmevent#{hpm_num}`.
 definedBy:
-  extension:
-    name: Sscofpmf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31

@@ -15,7 +15,6 @@ definedBy:
 description: |
   Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
   round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
-base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0011011----------000-----0110011

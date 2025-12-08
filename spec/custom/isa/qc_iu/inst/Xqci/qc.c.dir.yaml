@@ -12,10 +12,10 @@ description: |
   Equivalent to "csrrci `rd`, `mstatus`, 8".
   Instruction encoded in CI instruction format.
 definedBy:
-  extension:
-    name: Xqciint
-assembly: xd
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 encoding:
   match: 0001-----0000010
   variables:

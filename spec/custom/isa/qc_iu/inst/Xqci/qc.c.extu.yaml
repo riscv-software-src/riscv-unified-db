@@ -12,10 +12,10 @@ description: |
   The width of the subset is determined by (`width_minus1`[4:0] + 1) (1..32).
   Instruction encoded in CI instruction format.
 definedBy:
-  extension:
-    name: Xqcibm
-assembly: " xd, width"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 0001----------10
   variables:

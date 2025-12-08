@@ -12,7 +12,6 @@ name: hpmcounter10h
 long_name: User-mode Hardware Performance Counter 7, high half
 address: 0xC8A
 writable: false
-base: 32
 description: |
   Alias for M-mode CSR `mhpmcounter10h`.
 
@@ -33,8 +32,10 @@ description: |
 priv_mode: U
 length: 32
 definedBy:
-  extension:
-    name: Sscofpmf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   COUNT:
     location: 31-0

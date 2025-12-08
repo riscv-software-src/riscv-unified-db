@@ -30,5 +30,4 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 64
 operation(): |

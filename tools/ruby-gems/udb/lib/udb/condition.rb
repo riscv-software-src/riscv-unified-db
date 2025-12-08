@@ -159,6 +159,46 @@ module Udb
       end
     end
 
+    sig { returns(T::Boolean) }
+    def rv32_only?
+      cb32 = LogicNode.make_eval_cb do |term|
+        if term.is_a?(XlenTerm) && term.xlen == 32
+          SatisfiedResult::Yes
+        else
+          SatisfiedResult::Maybe
+        end
+      end
+      cb64 = LogicNode.make_eval_cb do |term|
+        if term.is_a?(XlenTerm) && term.xlen == 64
+          SatisfiedResult::Yes
+        else
+          SatisfiedResult::Maybe
+        end
+      end
+      to_logic_tree(expand: true).eval_cb(cb32) != SatisfiedResult::No && \
+        to_logic_tree(expand: true).eval_cb(cb64) == SatisfiedResult::No
+    end
+
+    sig { returns(T::Boolean) }
+    def rv64_only?
+      cb32 = LogicNode.make_eval_cb do |term|
+        if term.is_a?(XlenTerm) && term.xlen == 32
+          SatisfiedResult::Yes
+        else
+          SatisfiedResult::Maybe
+        end
+      end
+      cb64 = LogicNode.make_eval_cb do |term|
+        if term.is_a?(XlenTerm) && term.xlen == 64
+          SatisfiedResult::Yes
+        else
+          SatisfiedResult::Maybe
+        end
+      end
+      to_logic_tree(expand: true).eval_cb(cb32) != SatisfiedResult::No && \
+        to_logic_tree(expand: true).eval_cb(cb64) == SatisfiedResult::No
+    end
+
     # return list of all extension requirements in the condition
     #
     # if expand is true, expand the condition to include transitive requirements

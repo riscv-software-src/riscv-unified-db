@@ -17,10 +17,10 @@ description: |
   cause any of the side effects that might occur on a CSR read.
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    name: Xqcicsr
-assembly: " xd, imm, xs2"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicsr
 encoding:
   match: 1000111----------000-----1110011
   variables:

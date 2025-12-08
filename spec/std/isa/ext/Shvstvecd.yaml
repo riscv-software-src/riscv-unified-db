@@ -20,7 +20,7 @@ versions:
     state: ratified
     ratification_date: 2023-03
 requirements:
-  idl(): |
-    -> VSTVEC_MODE_DIRECT;
-  reason:
-    Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).
+  # Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).
+  param:
+    name: VSTVEC_MODE_DIRECT
+    equal: true

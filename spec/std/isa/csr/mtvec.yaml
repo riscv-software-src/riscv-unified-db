@@ -29,38 +29,37 @@ fields:
       # Base spec says that BASE must be 4-byte aligned, which will always be the case
       # implementations may put further constraints on BASE when MODE != Direct
       # If that is the case, stvec should have an override for the implementation
+
       if (csr_value.MODE == 0) {
         if ($array_includes?(MTVEC_MODES, 0)) {
           return csr_value.BASE;
-        } else {
-          if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "retain") {
-            return CSR[mtvec].BASE;
-          } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
-            return UNDEFINED_LEGAL_DETERMINISTIC;
-          } else {
-            unreachable();
-          }
         }
+        if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "retain") {
+          return CSR[mtvec].BASE;
+        }
+        if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        }
+        unreachable();
       } else if (csr_value.MODE == 1) {
         if ($array_includes?(MTVEC_MODES, 1)) {
           return csr_value.BASE;
-        } else {
-          if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "retain") {
-            return CSR[mtvec].BASE;
-          } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
-            return UNDEFINED_LEGAL_DETERMINISTIC;
-          } else {
-            unreachable();
-          }
         }
+        if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "retain") {
+          return CSR[mtvec].BASE;
+        }
+        if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        }
+        unreachable();
       } else {
         if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "retain") {
           return CSR[mtvec].BASE;
-        } else if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
-          return UNDEFINED_LEGAL_DETERMINISTIC;
-        } else {
-          unreachable();
         }
+        if (MTVEC_ILLEGAL_WRITE_BEHAVIOR == "custom") {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        }
+        unreachable();
       }
     reset_value: 0
   MODE:
@@ -76,9 +75,9 @@ fields:
     type(): |
       if (MTVEC_ACCESS == "read-only") {
         return CsrFieldType::RO;
-      } else {
-        return ($array_size(MTVEC_MODES) == 1) ? CsrFieldType::RO : CsrFieldType::RWR;
       }
+
+      return ($array_size(MTVEC_MODES) == 1) ? CsrFieldType::RO : CsrFieldType::RWR;
     sw_write(csr_value): |
       if (csr_value.MODE == 0) {
         if ($array_includes?(MTVEC_MODES, 0)) {
@@ -107,5 +106,6 @@ fields:
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       }
+      unreachable();
     reset_value(): |
       return ($array_size(MTVEC_MODES) == 1) ? MTVEC_MODES[0] : UNDEFINED_LEGAL;

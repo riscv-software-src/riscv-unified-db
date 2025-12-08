@@ -10,7 +10,6 @@ long_name: Upper 32 bits of Machine State Enable 2 Register
 address: 0x31E
 priv_mode: M
 length: 32
-base: 32
 writable: true
 description: |
   For RV64 harts, the Smstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State
@@ -19,8 +18,10 @@ description: |
   `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`.
 
 definedBy:
-  extension:
-    name: Smstateen
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Smstateen
 fields:
   SE0:
     long_name: hstateen2, hstateen2h, and sstateen2 access control

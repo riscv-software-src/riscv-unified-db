@@ -9,7 +9,6 @@ name: hedelegh
 long_name: Hypervisor Exception Delegation High
 address: 0x612
 writable: true
-base: 32
 priv_mode: S
 length: 32
 description: |
@@ -17,6 +16,8 @@ description: |
 
   Alias of upper bits of `hedeleg`[63:32].
 definedBy:
-  extension:
-    name: H
+  allOf:
+    - xlen: 32
+    - extension:
+        name: H
 fields: {}

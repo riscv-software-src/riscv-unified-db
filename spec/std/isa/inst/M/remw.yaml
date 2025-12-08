@@ -19,7 +19,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: M
-base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0111011

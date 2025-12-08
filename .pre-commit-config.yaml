@@ -19,7 +19,7 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        # exclude read-only files, and those sensitive to any change
+        # Exclude reference and generated files
         exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml$)
       - id: trailing-whitespace
         stages: [pre-commit]

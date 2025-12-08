@@ -18,7 +18,6 @@ definedBy:
     - extension:
         name: Zcf
 assembly: fd, imm(sp)
-base: 32
 encoding:
   match: 011-----------10
   variables:

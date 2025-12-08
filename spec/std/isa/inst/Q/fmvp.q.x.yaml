@@ -20,7 +20,6 @@ definedBy:
         allOf:
           - name: Q
           - name: Zfa
-base: 64
 assembly: fd, xs1, xs2
 encoding:
   match: 1011011----------000-----1010011

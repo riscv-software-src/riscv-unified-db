@@ -9,7 +9,6 @@ name: cycleh
 long_name: High-half cycle counter for RDCYCLE Instruction
 address: 0xC80
 writable: false
-base: 32
 description: |
   Alias for M-mode CSR `mcycleh`.
 
@@ -30,8 +29,10 @@ description: |
 priv_mode: U
 length: 32
 definedBy:
-  extension:
-    name: Zicntr
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zicntr
 fields:
   COUNT:
     location: 31-0

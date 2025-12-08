@@ -20,11 +20,9 @@ versions:
     ratification_date: 2023-03
 requirements:
   allOf:
-  -
-    extension:
+  - extension:
       name: S
-  -
-    param:
+  - param:
       name: SATP_MODE_BARE
       equal: true
       reason: Svbare mandates that the `satp` mode Bare must be supported.

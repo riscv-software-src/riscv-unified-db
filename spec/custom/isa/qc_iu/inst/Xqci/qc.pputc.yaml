@@ -12,10 +12,10 @@ description: |
   Simulation environment expected to print the character on its console or standard output.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    name: Xqcisim
-assembly: " xs1"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
 encoding:
   match: 100100000000-----010000000010011
   variables:

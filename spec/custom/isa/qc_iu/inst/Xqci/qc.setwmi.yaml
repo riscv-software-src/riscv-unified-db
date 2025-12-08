@@ -12,9 +12,10 @@ description: |
   The number of writes is in length.
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    name: Xqcilsm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilsm
 encoding:
   match: 11---------------111-----0101011
   variables:

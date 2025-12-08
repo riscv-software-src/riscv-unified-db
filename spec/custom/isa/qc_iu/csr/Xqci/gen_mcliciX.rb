@@ -19,10 +19,11 @@ pend_template = <<~YAML
   address: 0x<%= (0x7f0 + num).to_s(16) %>
   length: 32
   priv_mode: M
-  base: 32
   definedBy:
-    extension:
-      name: Xqciint
+    allOf:
+      - xlen: 32
+      - extension:
+          name: Xqciint
   writable: true
   description: |
     Pending bits for IRQs <%= num*32 %>-<%= (num + 1)*32 - 1 %>
@@ -48,11 +49,12 @@ en_template = <<~YAML
   long_name: IRQ Enable <%= num %>
   address: 0x<%= (0x7f8 + num).to_s(16) %>
   length: 32
-  base: 32
   priv_mode: M
   definedBy:
-    extension:
-      name: Xqciint
+    allOf:
+      - xlen: 32
+      - extension:
+          name: Xqciint
   writable: true
   description: |
     Enable bits for IRQs <%= num*32 %>-<%= (num + 1)*32 - 1 %>
@@ -79,11 +81,12 @@ level_template = <<~YAML
   address: 0x<%= (0xbc0 + num).to_s(16) %>
   length: 32
   priv_mode: M
-  base: 32
   definedBy:
-    extension:
-      name: Xqciint
-      version: ">=0.4"
+    allOf:
+      - xlen: 32
+      - extension:
+          name: Xqciint
+          version: ">=0.4"
   writable: true
   description: |
     Level bits for IRQs <%= num*8 %>-<%= (num + 1)*8 - 1 %>
@@ -110,11 +113,12 @@ wp_start_template = <<~YAML
   address: 0x<%= (0x7d0 + num).to_s(16) %>
   length: 32
   priv_mode: M
-  base: 32
   definedBy:
-    extension:
-      name: Xqciint
-      version: ">=0.4"
+    allOf:
+      - xlen: 32
+      - extension:
+          name: Xqciint
+          version: ">=0.4"
   writable: true
   description: |
     Watchpoint start address for region <%= num %>
@@ -139,11 +143,12 @@ wp_end_template = <<~YAML
   address: 0x<%= (0x7d4 + num).to_s(16) %>
   length: 32
   priv_mode: M
-  base: 32
   definedBy:
-    extension:
-      name: Xqciint
-      version: ">=0.4"
+    allOf:
+      - xlen: 32
+      - extension:
+          name: Xqciint
+          version: ">=0.4"
   writable: true
   description: |
     Watchpoint end address for region <%= num %>

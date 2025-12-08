@@ -18,7 +18,6 @@ definedBy:
         anyOf:
           - name: Zknd
           - name: Zkne
-base: 64
 assembly: xd, xs1, rnum
 encoding:
   match: 00110001---------001-----0010011

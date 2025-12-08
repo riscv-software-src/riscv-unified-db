@@ -9,7 +9,6 @@
 $schema: csr_schema.json#
 kind: csr
 name: pmpcfg3
-base: 32 # odd numbered pmpcfg registers do not exist in RV64
 long_name: PMP Configuration Register 3
 address: 0x3A3
 writable: true
@@ -17,8 +16,10 @@ priv_mode: M
 length: MXLEN
 description: PMP entry configuration
 definedBy:
-  extension:
-    name: Smpmp
+  allOf:
+    - xlen: 32 # odd numbered pmpcfg registers do not exist in RV64
+    - extension:
+      name: Smpm
 fields:
   pmp12cfg:
     location: 7-0

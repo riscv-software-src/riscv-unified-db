@@ -14,9 +14,7 @@ description: |
   C.ADDI16SP is only valid when nzimm &ne; 0; the code point with nzimm=0 is reserved.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: sp, imm
 encoding:
   match: 011-00010-----01

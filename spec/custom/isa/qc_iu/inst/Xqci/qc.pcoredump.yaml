@@ -14,10 +14,10 @@ description: |
   The core dump format and content are defined by simulation environment.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    name: Xqcisim
-assembly: ""
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
 encoding:
   match: "01100000000000000010000000010011"
 access:

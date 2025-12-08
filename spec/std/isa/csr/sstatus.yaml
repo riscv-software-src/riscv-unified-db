@@ -34,7 +34,8 @@ fields:
     affectedBy: [F, D, V]
   UXL:
     location: 33-32
-    base: 64
+    definedBy:
+      xlen: 64
     alias: mstatus.MXR
     description: |
       *U-mode XLEN*

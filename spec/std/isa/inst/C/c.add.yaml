@@ -12,9 +12,7 @@ description: |
   C.ADD expands into `add xd, xd, xs2`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, xs2
 encoding:
   match: 1001----------10

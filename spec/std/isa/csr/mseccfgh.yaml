@@ -7,14 +7,15 @@ $schema: "csr_schema.json#"
 kind: csr
 name: mseccfgh
 long_name: Most significant 32 bits of Machine Security Configuration
-base: 32
 address: 0x757
 writable: true
 priv_mode: M
 length: 32
 description: Machine Security Configuration
 definedBy:
-  extension:
-    name: Sm
-    version: ">= 1.12"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sm
+        version: ">= 1.12"
 fields: {}

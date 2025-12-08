@@ -13,10 +13,10 @@ description: |
   Sign extend the result.
   Instruction encoded in QC.EI instruction format.
 definedBy:
-  extension:
-    name: Xqcilo
-assembly: " xd, imm(xs1)"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilo
 encoding:
   match: ----------------00---------------110-----0011111
   variables:

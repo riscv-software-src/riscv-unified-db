@@ -14,12 +14,13 @@ address: 0xB88
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Upper half of mhpmcounter8.
 definedBy:
-  extension:
-    name: Smhpm
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Smhpm
 fields:
   COUNT:
     location: 31-0
