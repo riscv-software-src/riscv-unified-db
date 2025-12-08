@@ -18,7 +18,7 @@ definedBy:
   allOf:
     - xlen: 32 # odd numbered pmpcfg registers do not exist in RV64
     - extension:
-      name: Smpm
+        name: Smpmp
 <%- else -%>
   extension:
     name: Smpmp

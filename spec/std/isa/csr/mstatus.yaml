@@ -187,9 +187,9 @@ fields:
       }
 
     reset_value(): |
-      if (SXLEN == 32) {
+      if ($array_size(SXLEN) == 1 && $array_includes?(SXLEN, 32)) {
         return 1;
-      } else if (SXLEN == 64) {
+      } else if ($array_size(SXLEN) == 1 && $array_includes?(SXLEN, 64)) {
         return 2;
       } else {
         return 2;
@@ -240,8 +240,6 @@ fields:
       if ($array_size(UXLEN) == 1 && UXLEN[0] == 32) {
         return 1;
       } else if ($array_size(UXLEN) == 1 && UXLEN[0] == 64) {
-        return 1;
-      } else if (UXLEN == 64) {
         return 2;
       } else {
         return 2;

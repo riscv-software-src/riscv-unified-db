@@ -1250,7 +1250,7 @@ module Udb
       if @requirements.size == 1
         ExtensionTerm.new(name, @requirements.fetch(0).op, @requirements.fetch(0).version_spec)
       else
-        raise "TODO"
+        raise "TODO #{self} #{@requirements.size}"
       end
     end
 

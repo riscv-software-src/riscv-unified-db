@@ -218,9 +218,9 @@ namespace udb {
           # check that (1) the extension is implemented and (2) that the implemented version is compatible with the requirement
           "(m_parent->m_cfg.implemented_exts_hash().find(ExtensionName::#{term.name}) != m_parent->m_cfg.implemented_exts_hash().end()) \
           && (VersionRequirement(\"#{term.comparison.serialize} #{term.version}\"sv).satisfied_by(m_parent->m_cfg.implemented_exts_hash().find(ExtensionName::#{term.name})->second.version))"
-        elsif term.is_a?(XlenTerm)
+        elsif term.is_a?(Udb::XlenTerm)
           "(m_parent->xlen() == #{term.xlen}_b)"
-        elsif term.is_a?(ParameterTerm)
+        elsif term.is_a?(Udb::ParameterTerm)
           var = "m_parent->m_params.#{term.name}.value()"
           comparison_type = term.comparison_type
           case comparison_type

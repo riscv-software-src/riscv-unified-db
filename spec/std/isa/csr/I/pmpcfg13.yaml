@@ -19,7 +19,7 @@ definedBy:
   allOf:
     - xlen: 32 # odd numbered pmpcfg registers do not exist in RV64
     - extension:
-      name: Smpm
+        name: Smpmp
 fields:
   pmp52cfg:
     location: 7-0

@@ -37,6 +37,10 @@ module Udb
     def base
       return @base if defined?(@base)
 
+      if name == "VSXL"
+        puts "VSXL: #{@data["definedBy"]} #{defined_by_condition.rv32_only?} #{defined_by_condition.rv64_only?}"
+      end
+
       @base =
         if defined_by_condition.rv32_only?
           32
