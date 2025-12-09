@@ -19,12 +19,10 @@ versions:
 requirements:
   allOf:
     - xlen: 32
-    -
-      not:
+    - not:
         extension:
           name: Zcf
-    -
-      extension:
+    - extension:
         allOf:
           - name: Zilsd
           - name: Zca
