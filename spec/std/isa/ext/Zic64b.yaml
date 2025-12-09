@@ -25,16 +25,7 @@ versions:
       - name: Krste Asanovic
         company: SiFive, Inc.
 requirements:
-  allOf:
-    -
-      param:
-        name: CACHE_BLOCK_SIZE
-        equal: 64
-        reason: Zic64b mandates 64-byte cache block sizes
-    -
-      extension:
-        # at least one of [Zicbom, Zicboz, Zicbop] must also be implemented!
-        oneOf:
-          - name: Zicbom
-          - name: Zicboz
-          - name: Zicbop
+  param:
+    name: CACHE_BLOCK_SIZE
+    equal: 64
+    reason: Zic64b mandates 64-byte cache block sizes
