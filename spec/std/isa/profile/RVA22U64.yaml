@@ -36,6 +36,9 @@ extensions:
       should use the instruction whenever it would make sense and that
       implementers are expected to exploit this information to optimize
       hardware execution.
+  B:
+    presence: mandatory
+    version: "~> 1.0.0"
   Zba:
     presence: mandatory
     version: "~> 1.0"

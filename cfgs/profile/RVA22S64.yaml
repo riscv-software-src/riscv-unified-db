@@ -15,6 +15,8 @@ params:
 mandatory_extensions:
 - name: A
   version: "= 2.1"
+- name: B
+  version: "~> 1.0.0"
 - name: C
   version: "= 2.0"
 - name: D
@@ -36,7 +38,7 @@ mandatory_extensions:
 - name: Sstvecd
   version: "= 1.0"
 - name: Sv39
-  version: "= 1.11"
+  version: "~> 1.12"
 - name: Svade
   version: "~> 1.0"
 - name: Svbare
