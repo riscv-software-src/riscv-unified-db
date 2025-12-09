@@ -9,7 +9,9 @@ name: fmax.d
 long_name: Floating-Point Maximum-Number Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fmax.d` instruction writes larger of `fs1` and `fs2` to `fd`. For the purposes of this instruction,
   the value `-0.0` is considered to be less than the value `+0.0`. If both inputs are NaNs, the result is

@@ -9,7 +9,9 @@ name: fnmadd.d
 long_name: Floating-Point Negate-Multiply-Add Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fnmadd.d` instruction multiplies the values in `fs1` and `fs2`, negates the product, subtracts the value in `fs3`, and
   writes the final result to `fd`.

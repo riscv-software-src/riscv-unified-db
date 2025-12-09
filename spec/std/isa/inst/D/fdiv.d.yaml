@@ -9,7 +9,9 @@ name: fdiv.d
 long_name: Floating-Point Divide Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fdiv.d` instruction performs the double-precision floating-point division of `fs1` by `fs2`. It is defined analogously
   to its single-precision counterpart, but operates on double-precision operands and produces double-precision results.

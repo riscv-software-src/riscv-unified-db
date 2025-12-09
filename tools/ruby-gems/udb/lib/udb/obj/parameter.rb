@@ -31,7 +31,7 @@ module Udb
     # Pretty convert extension schema to a string.
     sig { returns(String) }
     def schema_type
-      @schema.to_pretty_s
+      schema.to_pretty_s
     end
 
     sig { returns(AbstractCondition) }

@@ -9,7 +9,9 @@ name: fsqrt.d
 long_name: Floating-Point Square Root Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fsqrt.d` instruction computes the square root of `fs1` and result is written in `fd`. It is defined
   analogously to its single-precision counterpart, but operates on double-precision operands and produces

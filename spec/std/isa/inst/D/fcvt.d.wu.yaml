@@ -9,7 +9,9 @@ name: fcvt.d.wu
 long_name: Floating-Point Convert Unsigned Word to Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fcvt.d.wu` instruction converts a 32-bit unsigned integer in integer register `xs1` into a double-precision
   floating-point number in floating-point register `fd`. Note `fcvt.d.wu` always produces an exact result and is

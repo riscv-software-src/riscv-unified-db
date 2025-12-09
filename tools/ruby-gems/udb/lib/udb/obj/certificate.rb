@@ -166,64 +166,19 @@ module Udb
 
       @all_in_scope_params = []
 
-      @data["extensions"].each do |ext_name, ext_data|
-        next if ext_name[0] == "$"
-
-        # Find Extension object from database
-        ext = @arch.extension(ext_name)
-        if ext.nil?
-          raise "Cannot find extension named #{ext_name}"
+      @data["param_constraints"]&.each do |param_name, param_data|
+        param = @arch.param(param_name)
+        if param.nil?
+          cond_param = ext.conditional_params.find { |p| p.param.name == param_name }
+          raise "There is no param '#{param_name}' in extension '#{ext_name}" if cond_param.nil?
+          param = cond_param.param
         end
-
-        ext_data["param_constraints"]&.each do |param_name, param_data|
-          param = ext.params.find { |p| p.name == param_name }
-          if param.nil?
-            cond_param = ext.conditional_params.find { |p| p.param.name == param_name }
-            raise "There is no param '#{param_name}' in extension '#{ext_name}" if cond_param.nil?
-            param = cond_param.param
-          end
-
-          # next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
-
-          @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
-        end
+        @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
+      # next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
       end
+
       @all_in_scope_params << InScopeParameter.new(@arch.param("MXLEN"), { "const" => @data["base"] }, "")
       @all_in_scope_params.sort!
-    end
-
-    # @param [ExtensionRequirement]
-    # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
-    # These are always IN SCOPE by definition (since they are listed in the portfolio).
-    sig {
-      params(ext_req: T.any(ExtensionRequirement, PortfolioExtensionRequirement))
-      .returns(T::Array[InScopeParameter])
-    }
-    def in_scope_params(ext_req)
-
-      params = []    # Local variable, no caching
-
-      # Get extension information from portfolio YAML for passed in extension requirement.
-      ext_data = @data["extensions"][ext_req.name]
-      raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
-
-      # Find Extension object from database
-      ext = @arch.extension(ext_req.name)
-      raise "Cannot find extension named #{ext_req.name}" if ext.nil?
-
-      # Loop through an extension's parameter constraints (hash) from the certificate model.
-      # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
-      ext_data["param_constraints"]&.each do |param_name, param_data|
-        # Find Parameter object from database
-        param = ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
-
-        next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch)
-
-        params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
-      end
-
-      params.sort!
     end
 
     # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions

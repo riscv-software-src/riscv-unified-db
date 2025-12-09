@@ -9,7 +9,9 @@ name: fadd.d
 long_name: Floating-Point Add Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fadd.d` instruction is analogous to `fadd.s` and performs double-precision floating-point addition of
   `fs1` and `fs2` and writes the final result to `fd`.

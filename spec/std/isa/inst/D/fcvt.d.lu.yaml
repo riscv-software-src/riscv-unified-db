@@ -11,7 +11,9 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        name: D
+        oneOf:
+          - name: D
+          - name: Zdinx
 description: |
   The `fcvt.d.lu` instruction converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
   floating-point number in floating-point register `fd`.

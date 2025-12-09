@@ -437,7 +437,7 @@ module Udb
     sig {
       params(
         yaml: T.any(T::Hash[String, T.untyped], T::Boolean),
-        cfg_arch: ConfiguredArchitecture,
+        cfg_arch: T.nilable(ConfiguredArchitecture),
         input_file: T.nilable(Pathname),
         input_line: T.nilable(Integer)
       )
@@ -1718,6 +1718,38 @@ module Udb
       end
     end
     private :to_logic_tree_helper
+  end
+
+  class XlenCondition < Condition
+    extend T::Sig
+
+    sig { params(xlen: Integer).void }
+    def initialize(xlen)
+      @xlen = xlen
+    end
+
+    sig { override.returns(LogicNode) }
+    def to_logic_tree_internal
+      if @xlen == 32
+        LogicNode::Xlen32
+      elsif @xlen == 64
+        LogicNode::Xlen64
+      else
+        raise "unexpected"
+      end
+    end
+
+    sig { override.returns(T.any(T::Hash[String, T.untyped], T::Boolean)) }
+    def to_h = { "xlen" => @xlen }
+
+    sig { override.params(cfg_arch: ConfiguredArchitecture).returns(String) }
+    def to_idl(cfg_arch) = "xlen() == #{@xlen}"
+
+  end
+
+  class Condition < AbstractCondition
+    Xlen32 = XlenCondition.new(32)
+    Xlen64 = XlenCondition.new(64)
   end
 
   class IdlCondition < Condition

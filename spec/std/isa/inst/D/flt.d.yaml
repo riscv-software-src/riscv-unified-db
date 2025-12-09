@@ -9,7 +9,9 @@ name: flt.d
 long_name: Floating-Point Less Than Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `flt.d` instruction writes 1 to `xd` if `fs1` is less than `fs2`, and 0 otherwise. It is defined analogously to its
   single-precision counterpart, but operates on double-precision operands.

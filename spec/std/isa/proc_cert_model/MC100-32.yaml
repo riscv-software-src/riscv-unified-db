@@ -117,40 +117,39 @@ extensions:
   Zicntr:
     version: "~> 2.0"
     presence: optional
-    param_constraints:
-      TIME_CSR_IMPLEMENTED: {} # Unconstrained
   Sm:
     version: "~> 1.11.0"
     presence: mandatory
-    param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID_VALUE: {} # Unconstrained
-      IMP_ID_VALUE: {} # Unconstrained
-      VENDOR_ID_BANK: {} # Unconstrained
-      VENDOR_ID_OFFSET: {} # Unconstrained
-      MISA_CSR_IMPLEMENTED: {} # Unconstrained
-      MTVAL_WIDTH: {} # Unconstrained
-      MTVEC_MODES: {} # Unconstrained
-      PHYS_ADDR_WIDTH: {} # Unconstrained
-      MISALIGNED_LDST: {} # Unconstrained
-      MISALIGNED_LDST_EXCEPTION_PRIORITY: {} # Unconstrained
-      MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
-      MISALIGNED_SPLIT_STRATEGY:
-        schema:
-          const: sequential_bytes
-      PRECISE_SYNCHRONOUS_EXCEPTIONS:
-        schema:
-          const: true
-      TRAP_ON_ECALL_FROM_M:
-        schema:
-          const: true
-      TRAP_ON_EBREAK:
-        schema:
-          const: true
-      M_MODE_ENDIANNESS:
-        schema:
-          const: little
-      MXLEN:
-        schema:
-          const: 32
+param_constraints:
+  TIME_CSR_IMPLEMENTED: {} # Unconstrained
+  MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+  MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+  ARCH_ID_VALUE: {} # Unconstrained
+  IMP_ID_VALUE: {} # Unconstrained
+  VENDOR_ID_BANK: {} # Unconstrained
+  VENDOR_ID_OFFSET: {} # Unconstrained
+  MISA_CSR_IMPLEMENTED: {} # Unconstrained
+  MTVAL_WIDTH: {} # Unconstrained
+  MTVEC_MODES: {} # Unconstrained
+  PHYS_ADDR_WIDTH: {} # Unconstrained
+  MISALIGNED_LDST: {} # Unconstrained
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: {} # Unconstrained
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
+  MISALIGNED_SPLIT_STRATEGY:
+    schema:
+      const: sequential_bytes
+  PRECISE_SYNCHRONOUS_EXCEPTIONS:
+    schema:
+      const: true
+  TRAP_ON_ECALL_FROM_M:
+    schema:
+      const: true
+  TRAP_ON_EBREAK:
+    schema:
+      const: true
+  M_MODE_ENDIANNESS:
+    schema:
+      const: little
+  MXLEN:
+    schema:
+      const: 32

@@ -3,12 +3,29 @@
 :wavedrom: /opt/node/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
+<%- pb = Udb.create_progressbar(
+              "Generating instruction pages [:bar] :current/:total",
+              total: instructions.size,
+              clear: true
+            )
+-%>
 <% instructions.sort_by(&:name).each do |inst| %>
+<%- pb.advance -%>
 <%= anchor_for_udb_doc_inst(inst.name) %>
 == <%= inst.name %>
 
 Synopsis::
 <%= inst.long_name %>
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| <%= (inst.defined_by_condition & Udb::Condition::Xlen32).satisfiable? ? "&#x2713;" : "" %>
+| <%= (inst.defined_by_condition & Udb::Condition::Xlen64).satisfiable? ? "&#x2713;" : "" %>
+|===
 
 Assembly::
 <%= inst.fix_entities("#{inst.name.downcase}#{inst.assembly.to_s.strip == '' ? '' : ' ' + inst.assembly}") %>
@@ -82,6 +99,7 @@ Included in::
 
 <%- unless inst.unconditional_extension_requirements.empty? -%>
 
+[width="100%",cols="1,2",options="header"]
 |===
 | Extension | Version
 
@@ -94,9 +112,9 @@ Included in::
 <%- end -%>
 
 <%- unless inst.other_requirements.empty? -%>
-<%- if inst.unconditional_extension_requirements.empty? -%>This<%- else -%>Additionally, this<%- end -%> instruction is defined when the following is met:
+<%- if inst.unconditional_extension_requirements.empty? -%>This<%- else -%>Additionally, this<%- end -%> instruction requires the following:
 
-<%= inst.other_requirements.map(&:to_asciidoc) %>
+<%= inst.other_requirements.map(&:to_asciidoc).join("\n") %>
 <%- end -%>
 
 <%- end -%>

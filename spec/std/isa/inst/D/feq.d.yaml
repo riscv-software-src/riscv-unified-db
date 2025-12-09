@@ -9,7 +9,9 @@ name: feq.d
 long_name: Floating-Point Equal Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `feq.d` instruction writes 1 to `xd` if `fs1` and `fs2` are equal, and 0 otherwise. It is defined analogously to its
   single-precision counterpart, but operates on double-precision operands.

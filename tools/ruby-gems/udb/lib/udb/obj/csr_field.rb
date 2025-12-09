@@ -737,6 +737,8 @@ module Udb
         "CSR[mstatus].SXL == 0"
       when "VS"
         "CSR[hstatus].VSXL == 0"
+      when "U"
+        "CSR[mstatus].UXL == 0"
       else
         raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
       end
@@ -751,6 +753,8 @@ module Udb
         "CSR[mstatus].SXL == 1"
       when "VS"
         "CSR[hstatus].VSXL == 1"
+      when "U"
+        "CSR[mstatus].UXL == 1"
       else
         raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
       end

@@ -33,8 +33,9 @@ description: |
 
 definedBy:
   extension:
-    name: D
-
+    oneOf:
+      - name: D
+      - name: Zdinx
 assembly: xd, fs1
 encoding:
   match: 111000100000-----001-----1010011

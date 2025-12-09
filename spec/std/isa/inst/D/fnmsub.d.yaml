@@ -9,7 +9,9 @@ name: fnmsub.d
 long_name: Floating-Point Negate-Multiply-Subtract Double-Precision
 definedBy:
   extension:
-    name: D
+    oneOf:
+      - name: D
+      - name: Zdinx
 description: |
   The `fnmsub.d` instruction multiplies the values in `fs1` and `fs2`, negates the product, adds the value in `fs3`, and
   writes the final result to `fd`.

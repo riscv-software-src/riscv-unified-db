@@ -32,10 +32,6 @@ extensions:
   U:
     presence: mandatory
     version: "~> 2.0"
-    param_constraints:
-      U_MODE_ENDIANNESS:
-        schema:
-          const: little
   Zicsr:
     presence: mandatory
   Zicntr:
@@ -104,3 +100,7 @@ recommendations:
   - text: |
       Implementations are strongly recommended to raise illegal-instruction
       exceptions on attempts to execute unimplemented opcodes.
+param_constraints:
+  U_MODE_ENDIANNESS:
+    schema:
+      const: little
