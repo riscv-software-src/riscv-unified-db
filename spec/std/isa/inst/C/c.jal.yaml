@@ -14,9 +14,7 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        anyOf:
-          - name: C
-          - name: Zca
+        name: Zca
 assembly: imm
 encoding:
   match: 001-----------01

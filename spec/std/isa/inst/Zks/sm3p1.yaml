@@ -11,9 +11,7 @@ description: |
   No description available.
 definedBy:
   extension:
-    anyOf:
-      - name: Zks
-      - name: Zksh
+    name: Zksh
 assembly: xd, xs1
 encoding:
   match: 000100001001-----001-----0010011

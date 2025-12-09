@@ -13,9 +13,7 @@ description: |
   It expands to `sb` `xs2, offset(xs1)`.
 definedBy:
   extension:
-    anyOf:
-      - name: Zcb
-      - name: Zce
+    name: Zcb
 assembly: xs2, imm(xs1)
 encoding:
   match: 100010--------00

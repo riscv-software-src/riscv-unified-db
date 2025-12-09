@@ -11,9 +11,7 @@ description: |
   No description available.
 definedBy:
   extension:
-    anyOf:
-      - name: Zvks
-      - name: Zvksh
+    name: Zvksh
 assembly: vd, vs2, imm
 encoding:
   match: 1010111----------010-----1110111

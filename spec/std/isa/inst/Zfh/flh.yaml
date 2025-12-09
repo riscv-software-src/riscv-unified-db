@@ -16,10 +16,7 @@ description: |
 
 definedBy:
   extension:
-    anyOf:
-      - name: Zfh
-      - name: Zfhmin
-      - name: Zhinx
+    name: Zfhmin
 assembly: fd, imm(xs1)
 encoding:
   match: "-----------------001-----0000111"

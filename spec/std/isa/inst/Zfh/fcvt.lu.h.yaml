@@ -11,7 +11,9 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        name: Zfh
+        oneOf:
+          - name: Zfh
+          - name: Zhinx
 description: |
   `fcvt.lu.h` converts a half-precision floating-point number to an unsigned 64-bit integer.
 assembly: xd, fs1, rm

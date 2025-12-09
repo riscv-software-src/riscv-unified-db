@@ -13,7 +13,7 @@ definedBy:
   extension:
     allOf:
       - name: Q
-      - name: Zfh
+      - name: Zfhmin
 assembly: fd, fs1, rm
 encoding:
   match: 010001000011-------------1010011

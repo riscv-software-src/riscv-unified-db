@@ -9,7 +9,9 @@ name: fcvt.h.w
 long_name: Floating-point Convert Word to Half-precision
 definedBy:
   extension:
-    name: Zfh
+    oneOf:
+      - name: Zfh
+      - name: Zhinx
 description: |
   `fcvt.h.w` converts a 32-bit signed integer to a half-precision floating-point number.
 assembly: fd, xs1, rm
