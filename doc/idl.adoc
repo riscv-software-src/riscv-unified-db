@@ -515,7 +515,7 @@ The result of a binary operation is signed if both operands are signed; otherwis
 === Implications
 
 Implications are used to specify dependencies that must hold among data.
-Implications cannot appear in general IDL code, and are used in specific contexts, for example when expression link:schema/conditions.adoc#_generic_constraints[generic constraints] in RISC-V Unified Database.
+Implications cannot appear in general IDL code, and are used in specific contexts, for example when expressing link:schema/conditions.adoc#_generic_constraints[generic constraints] in RISC-V Unified Database.
 
 An implication takes the form:
 
