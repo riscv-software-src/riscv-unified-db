@@ -11,11 +11,10 @@ description: |
   Loads the 20-bit immediate `imm` into `rd`.
   Instruction encoded in U instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcili
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcili
 encoding:
   match: -------------------------0011011
   variables:

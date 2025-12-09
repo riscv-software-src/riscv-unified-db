@@ -8,18 +8,16 @@ kind: csr
 name: qc.mstktopaddr
 long_name: Machine Stack Top Limit
 address: 0x7c4
-base: 32
 priv_mode: M
 length: MXLEN
 writable: true
 description: |
   Stack top limit register. If the stack pointer (sp == x2) greater then its value - SpOutOfRange exception occurs
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-        version: ">=0.7"
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
         version: ">=0.4"
 fields:
   STKADDR:

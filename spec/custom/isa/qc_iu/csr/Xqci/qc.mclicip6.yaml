@@ -10,12 +10,11 @@ long_name: IRQ Pending 6
 address: 0x7f6
 length: 32
 priv_mode: M
-base: 32
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 writable: true
 description: |
   Pending bits for IRQs 192-223

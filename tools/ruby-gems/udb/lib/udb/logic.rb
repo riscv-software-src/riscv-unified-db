@@ -10,8 +10,9 @@ require "tempfile"
 require "treetop"
 
 require "idlc/symbol_table"
-require "udb/eqn_parser"
+require "udb/eqn"
 require "udb/version_spec"
+require "udb/z3"
 
 # Implements the LogicNode class, which is used to test for satisfiability/equality/etc of logic
 #
@@ -56,11 +57,16 @@ module Udb
       "xlen=#{@xlen}"
     end
 
+    sig { params(solver: Z3Solver).returns(Z3::BoolExpr) }
+    def to_z3(solver)
+      solver.xlen == @xlen
+    end
+
     sig { returns(String) }
     def to_s_pretty = to_s
 
     sig { returns(String) }
-    def to_asciidoc = "xlen() == #{@xlen}"
+    def to_asciidoc = "xlen+++()+++ == #{@xlen}"
 
     sig { returns(T::Hash[String, Integer]) }
     def to_h
@@ -97,8 +103,6 @@ module Udb
       .checked(:never)
     }
     def eql?(other)
-      return false unless other.is_a?(XlenTerm)
-
       (self <=> other) == 0
     end
   end
@@ -110,13 +114,21 @@ module Udb
     include Comparable
 
     class ComparisonOp < T::Enum
+      include Comparable
+
+      def eql?(other)
+        (self <=> other) == 0
+      end
+
+      def hash = serialize.hash
+
       enums do
         Equal = new("=")
         GreaterThanOrEqual = new(">=")
         GreaterThan = new(">")
         LessThanOrEqual = new("<=")
         LessThan = new("<")
-        Comparable = new("~>")
+        Compatible = new("~>")
       end
     end
 
@@ -150,7 +162,7 @@ module Udb
 
     sig { params(cfg_arch: ConfiguredArchitecture).returns(ExtensionRequirement) }
     def to_ext_req(cfg_arch)
-      ExtensionRequirement.new(@name, "#{@op.serialize} #{@version}", arch: cfg_arch)
+      cfg_arch.extension_requirement(@name, "#{@op.serialize} #{@version}")
     end
 
 
@@ -158,7 +170,7 @@ module Udb
     def to_ext_ver(cfg_arch)
       raise "Not an extension version" unless @op == ComparisonOp::Equal
 
-      ExtensionVersion.new(@name, @version.to_s, cfg_arch)
+      cfg_arch.extension_version(@name, @version.to_s)
     end
 
     sig { params(cfg_arch: ConfiguredArchitecture).returns(Condition) }
@@ -193,10 +205,21 @@ module Udb
       end
     end
 
+    sig { returns(RequirementSpec).checked(:never) }
+    def requirement_spec
+      @requirement_spec ||= RequirementSpec.new("#{@op.serialize} #{@version}")
+    end
+
+    sig { params(solver: Z3Solver, cfg_arch: ConfiguredArchitecture).returns(Z3::BoolExpr) }
+    def to_z3(solver, cfg_arch)
+      ext = solver.ext_req(name, requirement_spec, cfg_arch)
+      ext.term
+    end
+
     # return the minimum version possible that would satisfy this term
     def min_possible_version
       case @op
-      when ComparisonOp::Equal, ComparisonOp::GreaterThanOrEqual, ComparisonOp::Comparable
+      when ComparisonOp::Equal, ComparisonOp::GreaterThanOrEqual, ComparisonOp::Compatible
         @version
       when ComparisonOp::GreaterThan
         @version.increment_patch
@@ -211,7 +234,7 @@ module Udb
     sig { returns(VersionSpec) }
     def max_possible_version
       case @op
-      when ComparisonOp::Equal, ComparisonOp::LessThanOrEqual, ComparisonOp::Comparable
+      when ComparisonOp::Equal, ComparisonOp::LessThanOrEqual, ComparisonOp::Compatible
         @version
       when ComparisonOp::LessThan
         if @version.zero?
@@ -266,8 +289,6 @@ module Udb
       .checked(:never)
     }
     def eql?(other)
-      return false unless other.is_a?(ExtensionTerm)
-
       (self <=> other) == 0
     end
 
@@ -318,6 +339,48 @@ module Udb
       @yaml.fetch(comparison_type.serialize)
     end
 
+    # return a negated version of self, or nil if no simple negation exists
+    sig { returns(T.nilable(ParameterTerm)) }
+    def negate
+      if @yaml.key?("equal")
+        new_yaml = @yaml.dup
+        new_yaml["not_equal"] = @yaml["equal"]
+        new_yaml.delete("equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("not_equal")
+        new_yaml = @yaml.dup
+        new_yaml["equal"] = @yaml["not_equal"]
+        new_yaml.delete("not_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("less_than")
+        new_yaml = @yaml.dup
+        new_yaml["greater_than_or_equal"] = @yaml["less_than"]
+        new_yaml.delete("less_than")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("greater_than")
+        new_yaml = @yaml.dup
+        new_yaml["less_than_or_equal"] = @yaml["greater_than"]
+        new_yaml.delete("greater_than")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("less_than_or_equal")
+        new_yaml = @yaml.dup
+        new_yaml["greater_than"] = @yaml["less_than_or_equal"]
+        new_yaml.delete("less_than_or_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("greater_than_or_equal")
+        new_yaml = @yaml.dup
+        new_yaml["less_than"] = @yaml["greater_than_or_equal"]
+        new_yaml.delete("greater_than_or_equal")
+        ParameterTerm.new(new_yaml)
+      elsif @yaml.key?("includes")
+        nil
+      elsif @yaml.key?("oneOf")
+        nil
+      else
+        raise "No comparison found in [#{@yaml.keys}]"
+      end
+    end
+
     sig { returns(ParameterComparisonType) }
     def comparison_type
       if @yaml.key?("equal")
@@ -338,6 +401,52 @@ module Udb
         ParameterComparisonType::OneOf
       else
         raise "No comparison found in [#{@yaml.keys}]"
+      end
+    end
+
+    sig { params(solver: Z3Solver, cfg_arch: ConfiguredArchitecture).returns(Z3::BoolExpr) }
+    def to_z3(solver, cfg_arch)
+      t = comparison_type
+      e = T.let(
+        solver.param(name, T.must(cfg_arch.param(name)).maximal_schema.to_h),
+        T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr, Z3::BoolExpr)
+      )
+      if @yaml.key?("size")
+        e = T.cast(e, Z3ParameterTerm).size_term
+      elsif @yaml.key?("index")
+        e = T.cast(e, Z3ParameterTerm)[@yaml.fetch("index")]
+      end
+      if @yaml.key?("range")
+        msb, lsb = @yaml.fetch("range").split("-").map(&:to_i)
+        e = T.cast(e, Z3ParameterTerm).extract(msb, lsb)
+      end
+      case t
+      when ParameterComparisonType::Equal
+        e == @yaml["equal"]
+      when ParameterComparisonType::NotEqual
+        e != @yaml["not_equal"]
+      when ParameterComparisonType::LessThan
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) < @yaml["less_than"]
+      when ParameterComparisonType::GreaterThan
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) > @yaml["greater_than"]
+      when ParameterComparisonType::LessThanOrEqual
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) <= @yaml["less_than_or_equal"]
+      when ParameterComparisonType::GreaterThanOrEqual
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) >= @yaml["greater_than_or_equal"]
+      when ParameterComparisonType::Includes
+        expr = T.cast(e, Z3ParameterTerm)[0] == @yaml["includes"]
+        T.cast(e, Z3ParameterTerm).max_items.times do |i|
+          expr = expr | (T.cast(e, Z3ParameterTerm)[i] == @yaml["includes"])
+        end
+        expr
+      when ParameterComparisonType::OneOf
+        expr = e == @yaml["oneOf"][0]
+        @yaml["oneOf"][1..].each do |v|
+          expr = expr | (e == v)
+        end
+        expr
+      else
+        T.absurd(t)
       end
     end
 
@@ -420,7 +529,27 @@ module Udb
 
     sig { returns(T::Hash[String, T.untyped]) }
     def to_h
-      @yaml
+      if @yaml.key?("oneOf")
+        excl_terms = @yaml["oneOf"].size.times.map do |i|
+          els = [
+            { "param" => { "name" => @yaml["name"], "equal" => @yaml.fetch("oneOf").fetch(i) } }
+          ]
+          els += @yaml.fetch("oneOf").size.times.select { |j| j != i }.map do |j|
+            { "param" => { "name" => @yaml["name"], "not_equal" => @yaml.fetch("oneOf").fetch(j) } }
+          end
+          { "allOf" => els }
+        end
+        {
+          "anyOf" => excl_terms
+        }
+      else
+        @yaml
+      end
+    end
+
+    sig { returns(LogicNode) }
+    def to_logic_node
+      LogicNode.new(LogicNodeType::Term, [self])
     end
 
     sig { params(cfg_arch: T.nilable(ConfiguredArchitecture)).returns(String) }
@@ -450,7 +579,17 @@ module Udb
       when ParameterComparisonType::Includes
         "$array_includes?(#{param_to_s}, #{comparison_value})"
       when ParameterComparisonType::OneOf
-        "(#{T.cast(comparison_value, T::Array[T.any(Integer, String)]).map { |v| "#{param_to_s}==#{v}" }.join("||")})"
+        # construct XOR out of AND and OR
+        # e.g.,
+        # a XOR B XOR C = (a AND !b AND !c) OR (!a AND b AND !c) OR (!a AND !b AND c)
+        terms =
+          T.cast(comparison_value, T::Array[T.any(Integer, String)]).map do |v|
+            v.is_a?(String) ? "(#{param_to_s}==\"#{v}\")" : "(#{param_to_s}==#{v})"
+          end
+        excl_terms = terms.size.times.map do |i|
+          "(#{terms[i]} && #{terms.size.times.select { |j| j != i }.map { |j| "!#{terms[j]}" }.join(" && ")})"
+        end
+        "(#{excl_terms.join(" || ")})"
       else
         T.absurd(t)
       end
@@ -490,6 +629,9 @@ module Udb
         "#{name}[#{index}]"
       elsif !size.nil?
         "$array_size(#{name})"
+      elsif @yaml.key?("range")
+        msb, lsb = @yaml.fetch("range").split("-").map(&:to_i)
+        "#{name}[#{msb}:#{lsb}]"
       else
         name
       end
@@ -582,7 +724,7 @@ module Udb
           end
         elsif @yaml.key?("size")
           scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
-        elsif @yaml.key?("index") && other_param.to_h.key?("index")
+        elsif @yaml.key?("index") && other_param.to_h.key?("index") && @yaml.fetch("index") == other_param.to_h.fetch("index")
           scalar_relation_to(other_param, self_implies_other, self_implies_not_other)
         end
       else
@@ -607,11 +749,9 @@ module Udb
           end
         when ParameterComparisonType::NotEqual
           if comparison_value != other_param.comparison_value
-            if comparison_value.is_a?(TrueClass) || comparison_value.is_a?(FalseClass)
-              self_implies_other
-            end
-          else
             self_implies_other
+          else
+            self_implies_not_other
           end
         when ParameterComparisonType::LessThan
           if T.cast(comparison_value, Integer) < T.cast(other_param.comparison_value, Integer)
@@ -644,7 +784,12 @@ module Udb
             self_implies_not_other
           end
         when ParameterComparisonType::Includes
-          raise "impossible"
+          # self must be a size comparison
+          raise "impossible: comparing #{self} to #{other_param}" unless @yaml.key?("size")
+          # if size is 0, we know it doesn't include something
+          if comparison_value == 0
+            self_implies_not_other
+          end
         else
           T.absurd(other_op)
         end
@@ -656,7 +801,7 @@ module Udb
               self_implies_other
             end
           else
-            self_implies_other
+            self_implies_not_other
           end
         when ParameterComparisonType::NotEqual
           if comparison_value != other_param.comparison_value # otherwise, this would be self-comparison
@@ -824,11 +969,11 @@ module Udb
       when ParameterComparisonType::OneOf
         case other_op
         when ParameterComparisonType::Equal
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| v != other_param.comparison_value }
             self_implies_not_other
           end
         when ParameterComparisonType::NotEqual
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| v != T.cast(other_param.comparison_value, Integer) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| v != other_param.comparison_value }
             self_implies_other
           end
         when ParameterComparisonType::LessThan
@@ -849,11 +994,11 @@ module Udb
           end
         when ParameterComparisonType::OneOf
           # self implies other if all in set set are also in other set
-          if T.cast(comparison_value, T::Array[Integer]).all? { |v| T.cast(other_param.comparison_value, T::Array[Integer]).include?(v) }
+          if T.cast(comparison_value, T::Array[T.any(Integer, String)]).all? { |v| T.cast(other_param.comparison_value, T::Array[T.any(Integer, String)]).include?(v) }
             self_implies_other
           end
         when ParameterComparisonType::Includes
-          raise "impossible"
+          raise "impossible: comparing #{self} to #{other_param}"
         else
           T.absurd(other_op)
         end
@@ -897,6 +1042,14 @@ module Udb
         else
           -1
         end
+      elsif @yaml.key?("range") || other_param.to_h.key?("range")
+        if @yaml["range"] == other_param.to_h["range"]
+          comparison_value <=> T.cast(other_param.comparison_value, Integer)
+        elsif @yaml.key?("range")
+          1
+        else
+          -1
+        end
       elsif comparison_type != other_param.comparison_type
         comparison_type <=> other_param.comparison_type
       elsif comparison_value != other_param.comparison_value
@@ -920,7 +1073,7 @@ module Udb
       .returns(Integer)
       .checked(:never)
     }
-    def hash = @yaml.hash
+    def hash = @yaml.reject { |k, _| k == "reason" }.hash
 
     sig {
       override
@@ -932,6 +1085,14 @@ module Udb
       return false unless other.is_a?(ParameterTerm)
 
       (self <=> other) == 0
+    end
+
+    # test for logical equivalence
+    sig { params(other: ParameterTerm).returns(T::Boolean) }
+    def equivalent?(other)
+      return false unless other.name == name
+
+      LogicNode.new(LogicNodeType::Term, [self]).equivalent?(LogicNode.new(LogicNodeType::Term, [other]))
     end
   end
 
@@ -1010,6 +1171,42 @@ module Udb
   # Abstract syntax tree of the condition logic
   class LogicNode
     extend T::Sig
+
+    # statistics counters
+    def self.reset_stats
+      @num_brute_force_sat_solves = 0
+      @time_brute_force_sat_solves = 0
+      @num_minisat_sat_solves = 0
+      @time_minisat_sat_solves = 0
+      @num_minisat_cache_hits = 0
+    end
+
+    reset_stats
+
+    def self.num_brute_force_sat_solves
+      @num_brute_force_sat_solves
+    end
+
+    def self.inc_brute_force_sat_solves
+      @num_brute_force_sat_solves += 1
+    end
+
+    def self.num_minisat_sat_solves
+      @num_minisat_sat_solves
+    end
+
+    def self.inc_minisat_sat_solves
+      @num_minisat_sat_solves += 1
+    end
+
+    def self.num_minisat_cache_hits
+      @num_minisat_cache_hits
+    end
+
+    def self.inc_minisat_cache_hits
+      @num_minisat_cache_hits += 1
+    end
+
 
     ChildType = T.type_alias { T.any(LogicNode, TermType) }
 
@@ -1150,7 +1347,12 @@ module Udb
     # @return The unique terms (leafs) of this tree
     sig { returns(T::Array[TermType]) }
     def terms
-      @memo.terms ||= literals.uniq
+      @memo.terms ||=
+        begin
+          t = literals.uniq
+          raise "Problem with parameter hashing\n#{t.map(&:to_s).uniq}\n#{t.map(&:to_s)}" unless t.map(&:to_s).uniq == t.map(&:to_s)
+          t
+        end
     end
 
     # @return The unique terms (leafs) of this tree, exculding antecendents of an IF
@@ -1170,11 +1372,11 @@ module Udb
     sig { returns(T::Array[TermType]) }
     def literals
       @memo.literals ||=
-        if @type == LogicNodeType::Term
-          [@children.fetch(0)]
-        else
-          node_children.map { |child| child.literals }.flatten
-        end
+      if @type == LogicNodeType::Term
+        [@children.fetch(0)]
+      else
+        node_children.map { |child| child.literals }.flatten
+      end
     end
 
 
@@ -1311,6 +1513,13 @@ module Udb
     def quine_mccluskey(result_type)
       # map terms to indicies for later
       nterms = terms.size
+      if nterms.zero?
+        # trival case; this is either true or false
+        assert_cb = LogicNode.make_eval_cb do |term|
+          raise "unreachable"
+        end
+        return eval_cb(assert_cb) == SatisfiedResult::Yes ? LogicNode::True : LogicNode::False
+      end
       term_idx = T.let({}, T::Hash[TermType, Integer])
       terms.each_with_index do |term, idx|
         term_idx[term] = idx
@@ -1513,9 +1722,13 @@ module Udb
         yes_cnt = T.let(0, Integer)
         node_children.each do |child|
           res1 = child.eval_cb(callback)
-          return SatisfiedResult::No if res1 == SatisfiedResult::No
+          if res1 == SatisfiedResult::No
+            return SatisfiedResult::No
+          end
 
-          yes_cnt += 1 if res1 == SatisfiedResult::Yes
+          if res1 == SatisfiedResult::Yes
+            yes_cnt += 1
+          end
         end
         if yes_cnt == node_children.size
           SatisfiedResult::Yes
@@ -1556,7 +1769,9 @@ module Udb
 
           has_maybe ||= (res1 == SatisfiedResult::Maybe)
           yes_cnt += 1 if res1 == SatisfiedResult::Yes
-          return SatisfiedResult::No if yes_cnt > 1
+          if yes_cnt > 1
+            return SatisfiedResult::No
+          end
         end
         if yes_cnt == 1 && !has_maybe
           SatisfiedResult::Yes
@@ -1662,6 +1877,31 @@ module Udb
       end
     end
 
+    sig { override.returns(Integer) }
+    def hash
+      if @type == LogicNodeType::True
+        true.hash
+      elsif @type == LogicNodeType::False
+        false.hash
+      elsif @type == LogicNodeType::Term
+        @children[0].to_s.hash
+      elsif @type == LogicNodeType::Not
+        [:not, node_children.fetch(0).hash].hash
+      elsif @type == LogicNodeType::And
+        [:and, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::Or
+        [:or, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::Xor
+        [:xor, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::None
+        [:none, node_children.map(&:hash)].hash
+      elsif @type == LogicNodeType::If
+        [:if, node_children.map(&:hash)].hash
+      else
+        T.absurd(@type)
+      end
+    end
+
     sig { params(format: LogicSymbolFormat).returns(String) }
     def to_s(format: LogicSymbolFormat::Predicate)
       if @type == LogicNodeType::True
@@ -1682,6 +1922,43 @@ module Udb
         "#{LOGIC_SYMBOLS[format][:NOT]}(#{node_children.map { |c| c.to_s(format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
       elsif @type == LogicNodeType::If
         "(#{node_children.fetch(0).to_s(format:)} #{LOGIC_SYMBOLS[format][:IMPLIES]} #{node_children.fetch(1).to_s(format:)})"
+      else
+        T.absurd(@type)
+      end
+    end
+
+    sig { params(callback: EvalCallbackType, format: LogicSymbolFormat).returns(String) }
+    def to_s_with_value(callback, format: LogicSymbolFormat::Predicate)
+      if @type == LogicNodeType::True
+        LOGIC_SYMBOLS[format][:TRUE]
+      elsif @type == LogicNodeType::False
+        LOGIC_SYMBOLS[format][:FALSE]
+      elsif @type == LogicNodeType::Term
+        v = callback.call(T.cast(@children.fetch(0), TermType))
+        str =
+          case v
+          when SatisfiedResult::Yes
+            "{true}"
+          when SatisfiedResult::No
+            "{false}"
+          when SatisfiedResult::Maybe
+            "{unknown}"
+          else
+            T.absurd(v)
+          end
+        "`#{@children.fetch(0)}`#{str}"
+      elsif @type == LogicNodeType::Not
+        "#{LOGIC_SYMBOLS[format][:NOT]}#{node_children.fetch(0).to_s_with_value(callback, format:)}"
+      elsif @type == LogicNodeType::And
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:AND]} ")})"
+      elsif @type == LogicNodeType::Or
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
+      elsif @type == LogicNodeType::Xor
+        "(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:XOR]} ")})"
+      elsif @type == LogicNodeType::None
+        "#{LOGIC_SYMBOLS[format][:NOT]}(#{node_children.map { |c| c.to_s_with_value(callback, format:) }.join(" #{LOGIC_SYMBOLS[format][:OR]} ")})"
+      elsif @type == LogicNodeType::If
+        "(#{node_children.fetch(0).to_s_with_value(callback, format:)} #{LOGIC_SYMBOLS[format][:IMPLIES]} #{node_children.fetch(1).to_s_with_value(callback, format:)})"
       else
         T.absurd(@type)
       end
@@ -1712,17 +1989,26 @@ module Udb
       when LogicNodeType::True
         "true"
       when LogicNodeType::Not
+        if node_children.fetch(0).type == LogicNodeType::Term
+          term = node_children.fetch(0).children.fetch(0)
+          if term.is_a?(ParameterTerm)
+            negation = term.negate
+            unless negation.nil?
+              return negation.to_asciidoc
+            end
+          end
+        end
         "!#{node_children.fetch(0).to_asciidoc(include_versions:)}"
       when LogicNodeType::And
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" && ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" && ")})"
       when LogicNodeType::Or
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" pass:[||] ")})"
       when LogicNodeType::If
-        "(#{node_children.fetch(0).to_asciidoc(include_versions:)} -> #{node_children.fetch(1).to_asciidoc(include_versions:)})"
+        "++(++#{node_children.fetch(0).to_asciidoc(include_versions:)} -> #{node_children.fetch(1).to_asciidoc(include_versions:)})"
       when LogicNodeType::Xor
-        "(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" &#2295; ")})"
+        "++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" &#2295; ")})"
       when LogicNodeType::None
-        "!(#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" || ")})"
+        "!++(++#{node_children.map { |c| c.to_asciidoc(include_versions:) }.join(" pass:[||] ")})"
       else
         T.absurd(@type)
       end
@@ -1770,7 +2056,7 @@ module Udb
           when ParameterTerm
             { "param" => @children.fetch(0).to_h }
           when FreeTerm
-            raise "unexpected"
+            { "free" => child.id } # only needed for #hash
           when XlenTerm
             @children.fetch(0).to_h
           else
@@ -2755,6 +3041,51 @@ module Udb
       !contradiction.satisfiable?
     end
 
+    sig { params(cfg_arch: ConfiguredArchitecture, solver: Z3Solver).returns(Z3::BoolExpr) }
+    def to_z3(cfg_arch, solver = Z3Solver.new)
+      case @type
+      when LogicNodeType::Term
+        t = @children.fetch(0)
+        if t.is_a?(ParameterTerm) || t.is_a?(ExtensionTerm)
+          t.to_z3(solver, cfg_arch)
+        else
+          raise "unexpected" if t.is_a?(FreeTerm) || t.is_a?(LogicNode)
+
+          t.to_z3(solver)
+        end
+      when LogicNodeType::Or
+        T.unsafe(Z3).Or(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+      when LogicNodeType::And
+        T.unsafe(Z3).And(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+      when LogicNodeType::Xor
+        if node_children.size == 2
+          T.unsafe(Z3).Xor(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+        else
+          # see https://stackoverflow.com/questions/14888174/how-do-i-determine-if-exactly-one-boolean-is-true-without-type-conversion#33268481
+          uneven_number_is_true = T.unsafe(Z3).Xor(*node_children.map { |c| c.to_z3(cfg_arch, solver) })
+          max_one_is_true =
+            T.unsafe(Z3).And(
+              *node_children.combination(2).map do |pair|
+                !(pair.fetch(0).to_z3(cfg_arch, solver) & pair.fetch(1).to_z3(cfg_arch, solver))
+              end
+            )
+          uneven_number_is_true & max_one_is_true
+        end
+      when LogicNodeType::True
+        Z3.True
+      when LogicNodeType::False
+        Z3.False
+      when LogicNodeType::Not
+        !node_children.fetch(0).to_z3(cfg_arch, solver)
+      when LogicNodeType::None
+        !node_children.map { |c| c.to_z3(cfg_arch, solver) }.reduce(:|)
+      when LogicNodeType::If
+        node_children.fetch(0).to_z3(cfg_arch, solver).implies(node_children.fetch(1).to_z3(cfg_arch, solver))
+      else
+        T.absurd(@type)
+      end
+    end
+
     # @return true iff self is satisfiable (possible to be true for some combination of term values)
     sig { returns(T::Boolean) }
     def satisfiable?
@@ -2762,8 +3093,9 @@ module Udb
         begin
           nterms = terms.size
 
-          if nterms < 4 && literals.size <= 32
+          if nterms < 8 && literals.size <= 128
             # just brute force it
+            LogicNode.inc_brute_force_sat_solves
             term_idx = T.let({}, T::Hash[TermType, Integer])
             terms.each_with_index do |term, idx|
               term_idx[term] = idx
@@ -2788,10 +3120,17 @@ module Udb
 
           else
             # use SAT solver
+            LogicNode.inc_minisat_sat_solves
 
+            @@cache ||= {}
+            cache_key = hash
+            if @@cache.key?(cache_key)
+              LogicNode.inc_minisat_cache_hits
+              return @@cache[cache_key]
+            end
 
             c = self.cnf? ? self : equisat_cnf
-            raise "cnf error" unless c.cnf?
+            # raise "cnf error" unless c.cnf?
 
             if c.type == LogicNodeType::True
               return true
@@ -2814,10 +3153,14 @@ module Udb
             build_solver(solver, flatten_cnf(c), term_map, nil)
 
             solver.solve
-            solver.satisfied?
+            @@cache[cache_key] = solver.satisfied?
           end
         end
     end
+
+    # @return true iff self is unsatisfiable (not possible to be true for any combination of term values)
+    sig { returns(T::Boolean) }
+    def unsatisfiable? = !satisfiable?
 
     sig { params(other: LogicNode).returns(T::Boolean) }
     def equisatisfiable?(other)
@@ -2866,7 +3209,7 @@ module Udb
           )
         ]
       )
-      !contradiction.satisfiable?
+      contradiction.unsatisfiable?
     end
 
     sig {
@@ -3080,7 +3423,7 @@ module Udb
           p cnf 1 1
           1 0
         DIMACS
-      elsif @type == LogicNodeType::Not
+      elsif @type == LogicNodeType::Not && node_children.fetch(0).type == LogicNodeType::Term
         <<~DIMACS
           p cnf 1 1
           -1 0

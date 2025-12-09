@@ -25,14 +25,21 @@ end
 # initialize sorbet
 namespace :chore do
   namespace :udb do
+    task :tapioca do
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+      end
+    end
+
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(RUBY_UDB_ROOT) do
         sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle update --gemfile #{RUBY_UDB_ROOT}/Gemfile"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+        Rake::Task["chore:udb:tapioca"].invoke
       end
     end
 
@@ -80,6 +87,7 @@ namespace :test do
     desc "Run unit tests for the udb gem"
     task :unit do
       Dir.chdir(RUBY_UDB_ROOT) do
+        Udb.logger.info "Type checking udb gem"
         sh "ruby -Ilib:test test/run.rb"
       end
     end

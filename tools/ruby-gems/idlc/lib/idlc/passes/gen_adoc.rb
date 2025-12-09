@@ -290,7 +290,8 @@ module Idl
       after_name = []
       after_name << "<#{template_arg_nodes.map { |t| t.gen_adoc(0, indent_spaces:) }.join(', ')}>" unless template_arg_nodes.empty?
       after_name << "pass:[(]#{arg_nodes.map { |a| a.gen_adoc(0, indent_spaces:) }.join(', ')})"
-      "#{' ' * indent}" + link_to_udb_doc_idl_func("#{name}") + "#{after_name.join ''}"
+      func_link = "%%UDB_DOC_LINK%func;#{name};#{name}%%"
+      "#{' ' * indent}" + func_link + "#{after_name.join ''}"
     end
   end
 
@@ -314,13 +315,15 @@ module Idl
 
   class CsrFieldReadExpressionAst < AstNode
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}" + link_to_udb_doc_csr_field("#{@csr_name}", "#{@field_name}")
+      csr_link = "%%UDB_DOC_LINK%csr;#{csr_name};#{csr_name}%%"
+      field_link = "%%UDB_DOC_LINK%csr_field;#{csr_name}*#{@field_name};#{@field_name}%%"
+      "#{' ' * indent}" + "CSR[#{csr_link}].#{field_link}"
     end
   end
 
   class CsrReadExpressionAst < AstNode
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}" + link_to_udb_doc_csr("#{csr_name}")
+      "#{' ' * indent}" + "CSR[%%UDB_DOC_LINK%csr;#{csr_name};#{text_value}%%]"
     end
   end
 

@@ -15,7 +15,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: I
-base: 64
 assembly: xd, xs1, imm
 encoding:
   match: "-----------------000-----0011011"
@@ -36,8 +35,7 @@ pseudoinstructions:
   - when: imm == 0
     to: sext.w xd,xs1
 operation(): |
-  XReg operand = sext(X[xs1], 31);
-  X[xd] = sext(operand + imm, 31);
+  X[xd] = $signed((X[xs1] + $signed(imm))[31:0]);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

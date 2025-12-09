@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shtvala
-long_name: htval profile requirements
+long_name: Hypervisor Trap Value provides all needed values
 description: |
   htval must be written with the faulting guest physical address in all circumstances permitted by
   the ISA.
@@ -17,12 +17,13 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
 requirements:
-  idl(): |
-    -> implemented?(ExtensionName::H);
-
-    -> REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT;
-  reason: |
-    When Shtvala is implemented, htval must be written with the faulting guest physical address in all circumstances permitted by
-    the ISA.
+  # When Shtvala is implemented, htval must be written with the faulting guest physical address in all circumstances permitted by
+  # the ISA.
+  allOf:
+    - extension:
+        name: H
+    - param:
+        name: REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        equal: true

@@ -388,7 +388,7 @@ module PrmGenerator
       when "ext"
         "<<ext:#{name}-def,#{escaped_text}>>"
       else
-        warn "[WARN] Unknown link type '#{type}' for link to '#{name}'"
+        Udb.logger.warn "[WARN] Unknown link type '#{type}' for link to '#{name}'"
         escaped_text
       end
     end

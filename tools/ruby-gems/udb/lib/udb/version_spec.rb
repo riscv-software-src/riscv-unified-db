@@ -62,6 +62,10 @@ module Udb
         @patch_given = !m[3].nil?
         @patch = @patch_given ? m[3].to_i : 0
         @pre = !m[4].nil?
+        @major.freeze
+        @minor.freeze
+        @patch.freeze
+        @pre.freeze
       else
         raise ArgumentError, "#{version_str} is not a valid Version spec"
       end
@@ -117,23 +121,25 @@ module Udb
       end
     end
 
-    sig { override.params(other: T.untyped).returns(T::Boolean) }
+    sig { override.params(other: T.untyped).returns(T::Boolean).checked(:never) }
     def eql?(other)
       if other.is_a?(VersionSpec)
-        self.==(VersionSpec)
+        self.hash == other.hash
       else
         false
       end
     end
 
-    sig { override.returns(Integer) }
+    sig { override.returns(Integer).checked(:never) }
     def hash
       [@major, @minor, @patch, @pre].hash
     end
 
     sig { returns(VersionSpec) }
     def increment_patch
-      dup.instance_variable_set(:@patch, @patch + 1)
+      copy = dup
+      copy.instance_variable_set(:@patch, @patch + 1)
+      copy
     end
 
     sig { returns(VersionSpec) }
@@ -166,7 +172,7 @@ module Udb
 #   RequirementSpec.new(">= 0.5").satisfied_by?(VersionSpec.new("0.4"), nil) #=> false
 #
 # @example Compatible requirement
-#   s_ext = Extension.new(...) # S extension, which is breaking between 1.11 -> 1.12
+#   s_ext = cfg_arch.extension(...) # S extension, which is breaking between 1.11 -> 1.12
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.10"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.11"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.12"), s_ext) #=> false
@@ -186,12 +192,28 @@ module Udb
     def initialize(requirement)
       if requirement =~ /^\s*#{REQUIREMENT_REGEX}\s*$/
         m = T.must(::Regexp.last_match)
-        @op = T.must(m[1])
-        @version_str = T.must(m[2])
-        @version_spec = VersionSpec.new(@version_str)
+        @op = T.must(m[1]).freeze
+        @op_sym = @op.to_sym
+        @op_sym.freeze
+        @version_str = T.must(m[2]).freeze
+        @version_spec = VersionSpec.new(@version_str).freeze
       else
         raise ArgumentError, "Bad requirement string '#{requirement}' #{REQUIREMENT_REGEX}"
       end
+    end
+
+    sig { override.params(other: T.untyped).returns(T::Boolean).checked(:never) }
+    def eql?(other)
+      if other.is_a?(RequirementSpec)
+        self.hash == other.hash
+      else
+        false
+      end
+    end
+
+    sig { override.returns(Integer).checked(:never) }
+    def hash
+      @hash ||= [@op_sym, @version_spec].hash.freeze
     end
 
     sig { returns(String) }
@@ -199,27 +221,27 @@ module Udb
       "#{@op} #{@version_str}"
     end
 
-    # invert the requirement
-    sig { void }
-    def invert!
-      case @op
-      when ">="
-        @op = "<"
-      when ">"
-        @op = "<="
-      when "<="
-        @op = ">"
-      when "<"
-        @op = ">="
-      when "="
-        @op = "!="
-      when "!="
-        @op = "="
-      when "~>"
-        @op = "!~>"
-      end
-      self
-    end
+    # # invert the requirement
+    # sig { void }
+    # def invert!
+    #   case @op_sym
+    #   when :">="
+    #     @op = "<"
+    #   when :">"
+    #     @op = "<="
+    #   when :"<="
+    #     @op = ">"
+    #   when :"<"
+    #     @op = ">="
+    #   when :"="
+    #     @op = "!="
+    #   when :"!="
+    #     @op = "="
+    #   when :"~>"
+    #     @op = "!~>"
+    #   end
+    #   self
+    # end
 
     # @param version [String] A version string
     # @param version [VersionSpec] A version spec
@@ -239,25 +261,25 @@ module Udb
         end
 
       result =
-        case @op
-        when ">="
+        case @op_sym
+        when :>=
           v_spec >= @version_spec
-        when ">"
+        when :>
           v_spec > @version_spec
-        when "<="
+        when :<=
           v_spec <= @version_spec
-        when "<"
+        when :<
           v_spec < @version_spec
-        when "="
+        when :"="
           v_spec == @version_spec
-        when "!="
+        when :"!="
           v_spec != @version_spec
-        when "~>"
+        when :"~>"
           if ext.is_a?(Extension)
             matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
             raise "Can't find version?" if matching_ver.nil?
 
-            matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+            matching_ver.compatible?(ext.arch.extension_version(ext.name, v_spec.to_s))
           else
             versions = ext.fetch("versions")
             compatible_versions = []
@@ -269,12 +291,12 @@ module Udb
 
             compatible_versions.include?(v_spec)
           end
-        when "!~>" # not a legal spec, but used for inversion
+        when :"!~>" # not a legal spec, but used for inversion
           if ext.is_a?(Extension)
             matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
             raise "Can't find version?" if matching_ver.nil?
 
-            !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+            !matching_ver.compatible?(ext.arch.extension_version(ext.name, v_spec.to_s))
           else
             versions = ext.fetch("versions")
             compatible_versions = []

@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/hpmcounterNh.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/hpmcounterNh.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -10,7 +12,6 @@ name: hpmcounter31h
 long_name: User-mode Hardware Performance Counter 28, high half
 address: 0xC9F
 writable: false
-base: 32
 description: |
   Alias for M-mode CSR `mhpmcounter31h`.
 
@@ -31,8 +32,10 @@ description: |
 priv_mode: U
 length: 32
 definedBy:
-  extension:
-    name: Sscofpmf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   COUNT:
     location: 31-0

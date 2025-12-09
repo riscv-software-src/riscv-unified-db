@@ -14,9 +14,7 @@ description: |
   The code points with xd=x0 encode the C.NOP instruction; the remaining code points with imm=0 encode HINTs.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, imm
 encoding:
   match: 000-----------01

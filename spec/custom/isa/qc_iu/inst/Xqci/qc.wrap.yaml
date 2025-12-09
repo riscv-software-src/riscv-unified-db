@@ -13,11 +13,10 @@ description: |
   else, select `rs1`. The result is stored in `rd`.
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcia
 encoding:
   match: 0010010----------011-----0001011
   variables:

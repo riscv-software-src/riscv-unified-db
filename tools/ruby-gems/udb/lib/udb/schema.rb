@@ -62,16 +62,32 @@ module Udb
     private :rb_obj_to_jsonschema_type
 
     # @return Human-readable type of the schema (e.g., array, string, integer)
+    sig { params(hsh: T::Hash[String, T.untyped]).returns(String) }
+    def type_pretty_helper(hsh)
+      if hsh.key?("const")
+        rb_obj_to_jsonschema_type(hsh["const"])
+      elsif hsh.key?("enum") && !hsh["enum"].empty? && hsh["enum"].all? { |elem| elem.class == hsh["enum"][0].class }
+        rb_obj_to_jsonschema_type(hsh["enum"][0])
+      elsif hsh.key?("$ref")
+        if hsh["$ref"].split("/").last == "uint32"
+          "integer"
+        elsif hsh["$ref"].split("/").last == "uint64"
+          "integer"
+        else
+          raise "unhandled type ref: #{hsh["$ref"]}"
+        end
+      elsif hsh.key?("allOf")
+        type_pretty_helper(hsh["allOf"][0])
+      else
+        raise "Missing type information for '#{hsh}'" unless hsh.key?("type")
+        hsh["type"]
+      end
+    end
+    private :type_pretty_helper
+
     sig { returns(String) }
     def type_pretty
-      if @schema_hash.key?("const")
-        rb_obj_to_jsonschema_type(@schema_hash["const"])
-      elsif @schema_hash.key?("enum") && !@schema_hash["enum"].empty? && @schema_hash["enum"].all? { |elem| elem.class == @schema_hash["enum"][0].class }
-        rb_obj_to_jsonschema_type(@schema_hash["enum"][0])
-      else
-        raise "Missing type information for '#{@schema_hash}'" unless @schema_hash.key?("type")
-        @schema_hash["type"]
-      end
+      type_pretty_helper(@schema_hash)
     end
 
     # @return A human-readable description of the schema
@@ -83,6 +99,28 @@ module Udb
         large2hex(schema_hash["const"])
       elsif schema_hash.key?("enum")
         "[#{schema_hash["enum"].join(', ')}]"
+      elsif schema_hash.key?("$ref")
+        if schema_hash["$ref"].split("/").last == "uint32"
+          "32-bit integer"
+        elsif schema_hash["$ref"].split("/").last == "uint64"
+          "64-bit integer"
+        else
+          raise "unhandled type ref: #{schema_hash["$ref"]}"
+        end
+      elsif schema_hash.key?("not")
+        if schema_hash["not"].key?("const")
+          "≠ #{large2hex(schema_hash["not"]["const"])}"
+        elsif schema_hash["not"].key?("anyOf")
+          if schema_hash["not"]["anyOf"].all? { |h| h.key?("const") }
+            "≠ #{schema_hash["not"]["anyOf"].map { |h| large2hex(h["const"]) }.join(" or ")}"
+          else
+            raise "unhandled exclusion: #{schema_hash}"
+          end
+        else
+          raise "unhandled exclusion: #{schema_hash}"
+        end
+      elsif schema_hash.key?("allOf")
+        schema_hash["allOf"].map { |hsh| to_pretty_s(hsh) }.join(", ")
       elsif schema_hash.key?("type")
         case schema_hash["type"]
         when "integer"
@@ -165,7 +203,7 @@ module Udb
     end
 
     # Convert large integers to hex str.
-    sig { params(value: Numeric).returns(String) }
+    sig { params(value: T.nilable(T.any(Numeric, T::Boolean, String))).returns(String) }
     def large2hex(value)
       if value.nil?
         ""

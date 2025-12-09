@@ -16,10 +16,7 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        anyOf:
-          - name: C
-          - name: Zca
-base: 64
+        name: Zca
 assembly: xd, imm
 encoding:
   match: 001-----------01
@@ -39,4 +36,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[xd] = sext((X[xd] + imm), 32);
+  X[xd] = sext((X[xd] + sext(imm, 6)), 32);

@@ -11,7 +11,9 @@ description: |
   No description available.
 definedBy:
   extension:
-    name: Zfh
+    anyOf:
+      - name: Zfh
+      - name: Zhinx
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000010------------------1010011

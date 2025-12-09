@@ -11,11 +11,10 @@ description: |
   Add unsigned values `rs1` and `rs2`, saturate the unsigned result, and write to `rd`.
   Instruction encoded in R instruction format
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcia
 encoding:
   match: 0001111----------011-----0001011
   variables:

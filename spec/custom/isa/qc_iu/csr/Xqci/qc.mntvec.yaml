@@ -8,16 +8,15 @@ kind: csr
 name: qc.mntvec
 long_name: Machine Non-Maskable Interrupt Vector Control
 address: 0x7c3
-base: 32
 priv_mode: M
 length: MXLEN
 writable: true
 description: Controls where NMI jump.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 fields:
   BASE:
     location: 31-2

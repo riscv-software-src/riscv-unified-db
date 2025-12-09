@@ -11,12 +11,11 @@ description: |
   Jump to a PC-relative offset.
   Instruction encoded in QC.EJ instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilb
-assembly: " imm"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilb
+assembly: imm
 encoding:
   match: -----------------------00000---00100-----0011111
   variables:

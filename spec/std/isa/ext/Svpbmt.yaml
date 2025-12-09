@@ -8,19 +8,20 @@ kind: extension
 name: Svpbmt
 long_name: Page-based memory types
 description: |
-  TODO
+  This extension mandates that the `satp` mode Bare must
+  be supported.
 type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2021-12
 requirements:
   extension:
     allOf:
-      # Svpbmt was defined with Sm 1.13
-      # it needs at least Sm 1.11 for menvcfg defintion
-      - name: Sm
-        version: ">= 1.13"
+      # Svpbmt was defined with Sm 1.12
+      # it needs at least Sm 1.12 for menvcfg defintion
+      - name: S
+        version: ">= 1.12"
       # Svpbmt is not defined for Sv32
       - anyOf:
           - name: Sv39

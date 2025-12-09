@@ -10,15 +10,16 @@ long_name: Machine Status High
 address: 0x310
 writable: true
 priv_mode: M
-base: 32
 length: 32
 description:
   The mstatus register tracks and controls the hart's current operating
   state.
 definedBy:
-  extension:
-    name: Sm
-    version: ">= 1.12"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sm
+        version: ">= 1.12"
 fields:
   MDT:
     location: 10

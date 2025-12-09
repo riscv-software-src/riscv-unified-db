@@ -22,6 +22,7 @@ namespace :chore do
       Dir.chdir(IDLC_ROOT) do
         sh "bundle install --gemfile #{IDLC_ROOT}/Gemfile"
         sh "bundle update --gemfile #{IDLC_ROOT}/Gemfile --all"
+        sh "bundle list"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca gems --all"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca dsl"
         sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca annotations"

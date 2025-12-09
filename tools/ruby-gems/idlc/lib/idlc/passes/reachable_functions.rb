@@ -8,7 +8,7 @@
 
 module Idl
   class AstNode
-    # @return [Array<FunctionBodyAst>] List of all functions that can be reached (via function calls) from this node
+    # @return [Array<FunctionDefAst>] List of all functions that can be reached (via function calls) from this node
     def reachable_functions(symtab, cache = {})
       children.reduce([]) do |list, e|
         fns = e.reachable_functions(symtab, cache)

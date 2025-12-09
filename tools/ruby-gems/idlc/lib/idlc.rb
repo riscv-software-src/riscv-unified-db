@@ -10,28 +10,34 @@ require "treetop"
 
 require_relative "idlc/syntax_node"
 
-module Treetop
-  module Runtime
-    # open up Treetop::Runtime::CompiledParser and add a few utility functions
-    # so we can track where the code is coming from
-    class CompiledParser
-      attr_reader :input_file
+class IdlParser < Treetop::Runtime::CompiledParser
+  attr_reader :input_file
 
-      def set_input_file(filename, starting_line = 0)
-        @input_file = filename
-        @starting_line = starting_line
-      end
+  def set_input_file(filename, starting_line = 0)
+    @input_file = filename
+    @starting_line = starting_line
+  end
 
-      # alias instantiate_node so we can call it from the override
-      alias idlc_instantiate_node instantiate_node
+  def set_pb(pb)
+    raise "Progressbar was already set" unless @pb.nil?
 
-      # override instatiate_node so we can set the input file
-      def instantiate_node(node_type, *args)
-        node = T.unsafe(self).idlc_instantiate_node(node_type, *args)
-        node.set_input_file(input_file, @starting_line.nil? ? 0 : @starting_line)
-        node
-      end
-    end
+    @pb = pb
+  end
+
+  def unset_pb
+    raise "No progressbar set" if @pb.nil?
+  end
+
+  # alias instantiate_node so we can call it from the override
+  alias idlc_instantiate_node instantiate_node
+
+  # override instatiate_node so we can set the input file
+  def instantiate_node(node_type, *args)
+    @pb.advance unless @pb.nil?
+
+    node = T.unsafe(self).idlc_instantiate_node(node_type, *args)
+    node.set_input_file(input_file, @starting_line.nil? ? 0 : @starting_line)
+    node
   end
 end
 
@@ -63,9 +69,22 @@ module Idl
       @parser = ::IdlParser.new
     end
 
+    # set a progressbar
+    def pb=(pb)
+      @parser.set_pb(pb)
+      @pb = pb
+    end
+
+    # unset a progressbar
+    def unset_pb
+      @parser.unset_pb
+      @pb = nil
+    end
+
     def compile_file(path)
       @parser.set_input_file(path.to_s)
 
+      @pb.format = "Parsing #{File.basename(path)} [:bar]" unless @pb.nil?
       m = @parser.parse path.read
 
       if m.nil?

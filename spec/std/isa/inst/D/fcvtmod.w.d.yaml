@@ -7,19 +7,16 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvtmod.w.d
 long_name: Floating-Point Convert Double-Precision to Word with Modulo
-description:
-  - id: inst-fcvtmod.w.d-behaviour
-    normative: false
-    text: |
-      The `fcvtmod.w.d` instruction always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded
-      two's complement result, then sign-extended to XLEN bits and written to integer register `xd`. ±∞ and
-      NaN are converted to zero.
+description: |
+  The `fcvtmod.w.d` instruction always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded
+  two's complement result, then sign-extended to XLEN bits and written to integer register `xd`. ±∞ and
+  NaN are converted to zero.
 
-      Floating-point exception flags are raised the same as they would be for `fcvt.w.d` with the same input
-      operand.
+  Floating-point exception flags are raised the same as they would be for `fcvt.w.d` with the same input
+  operand.
 
-      This instruction is only provided if the D extension is implemented. It is encoded like `fcvt.w.d`, but
-      with the `xs2` field set to 8 and the `rm` field set to 1 (RTZ). Other `rm` values are reserved.
+  This instruction is only provided if the D extension is implemented. It is encoded like `fcvt.w.d`, but
+  with the `xs2` field set to 8 and the `rm` field set to 1 (RTZ). Other `rm` values are reserved.
 definedBy:
   extension:
     allOf:

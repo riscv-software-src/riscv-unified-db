@@ -14,11 +14,7 @@ description: |
   It expands to `fld` `fd, offset(xs1)`.
 definedBy:
   extension:
-    anyOf:
-      - allOf:
-          - name: C
-          - name: D
-      - name: Zcd
+    name: Zcd
 assembly: fd, imm(xs1)
 encoding:
   match: 001-----------00

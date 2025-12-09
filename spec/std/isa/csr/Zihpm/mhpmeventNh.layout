@@ -12,15 +12,16 @@ address: 0x<%= (0x720 + hpm_num).to_s(16).upcase %>
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Alias of `mhpmevent<%= hpm_num %>`[63:32].
 
   Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
   32-bits of `mhpmevent#{hpm_num}`.
 definedBy:
-  extension:
-    name: Sscofpmf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31

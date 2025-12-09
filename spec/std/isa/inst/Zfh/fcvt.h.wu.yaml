@@ -7,14 +7,13 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.wu
 long_name: Floating-point Convert Unsigned Word to Half-precision
-description:
-  - id: inst-fcvt.h.wu-behaviour
-    normative: false
-    text: |
-      `fcvt.h.wu` converts a 32-bit unsigned integer to a half-precision floating-point number.
 definedBy:
   extension:
-    name: Zfh
+    oneOf:
+      - name: Zfh
+      - name: Zhinx
+description: |
+  `fcvt.h.wu` converts a 32-bit unsigned integer to a half-precision floating-point number.
 assembly: fd, xs1, rm
 encoding:
   match: 110101000001-------------1010011

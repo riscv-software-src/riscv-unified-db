@@ -12,11 +12,10 @@ description: |
   The number of words is in `rs2` bits [4:0].
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilsm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilsm
 encoding:
   match: 00---------------111-----0101011
   variables:

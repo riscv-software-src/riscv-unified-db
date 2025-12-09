@@ -14,10 +14,7 @@ description: |
   the payloads of non-canonical NaNs are preserved.
 definedBy:
   extension:
-    anyOf:
-      - name: F
-      - name: Zfhmin
-      - name: Zhinx
+    name: Zfhmin
 assembly: fd, xs1
 encoding:
   match: 111101000000-----000-----1010011

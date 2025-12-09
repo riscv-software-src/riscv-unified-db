@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shvstvala
-long_name: vstval profile requirements
+long_name: Virtual Supervisor Trap Value provides all needed values
 description: |
   vstval must be written with the faulting virtual address
   for load, store, and instruction page-fault, access-fault, and
@@ -21,28 +21,41 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
 requirements:
-  idl(): |
-    -> implemented?(ExtensionName::H);
-    ->
-      REPORT_VA_IN_VSTVAL_ON_BREAKPOINT &&
-      REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED &&
-      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED &&
-      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED &&
-      REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT &&
-      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT &&
-      REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT &&
-      REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT &&
-      REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT &&
-      REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT &&
-      REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION &&
-      REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION;
-  reason: |
-    Shvstvala mandates that vstval must be written with the faulting virtual address
-    for load, store, and instruction page-fault, access-fault, and
-    misaligned exceptions, and for breakpoint exceptions other than
-    those caused by execution of the `ebreak` or `c.ebreak` instructions.
+  #   Shvstvala mandates that vstval must be written with the faulting virtual address
+  #   for load, store, and instruction page-fault, access-fault, and
+  #   misaligned exceptions, and for breakpoint exceptions other than
+  #   those caused by execution of the `ebreak` or `c.ebreak` instructions.
 
-    For virtual-instruction and illegal-instruction exceptions,
-    vstval must be written with the faulting instruction.
+  #   For virtual-instruction and illegal-instruction exceptions,
+  #   vstval must be written with the faulting instruction.
+  allOf:
+    - extension:
+        name: H
+    - param:
+        allOf:
+          - name: REPORT_VA_IN_VSTVAL_ON_BREAKPOINT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT
+            equal: true
+          - name: REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT
+            equal: true
+          - name: REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION
+            equal: true
+          - name: REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION
+            equal: true

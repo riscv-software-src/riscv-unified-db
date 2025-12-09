@@ -31,7 +31,7 @@ module Udb
     # Pretty convert extension schema to a string.
     sig { returns(String) }
     def schema_type
-      @schema.to_pretty_s
+      schema.to_pretty_s
     end
 
     sig { returns(AbstractCondition) }
@@ -39,7 +39,7 @@ module Udb
       @requirements_condition ||=
         begin
           if @data["requirements"].nil?
-            Condition::True
+            AlwaysTrueCondition.new(@cfg_arch)
           else
             Condition.new(
               @data.fetch("requirements"),
@@ -80,13 +80,8 @@ module Udb
           @schemas << ConditionalSchema.new(schema: Schema.new(cond_schema.fetch("schema")), cond: Condition.new(cond_schema.fetch("when"), @cfg_arch))
         end
       else
-        @schemas << ConditionalSchema.new(schema: Schema.new(data["schema"]), cond: AlwaysTrueCondition.new)
+        @schemas << ConditionalSchema.new(schema: Schema.new(data["schema"]), cond: AlwaysTrueCondition.new(cfg_arch))
       end
-    end
-
-    sig { override.params(resolver: Resolver).void }
-    def validate(resolver)
-
     end
 
     # whether or not the schema is unambiguously known
@@ -146,6 +141,51 @@ module Udb
       end
 
       @idl_type ||= schema.to_idl_type.make_const.freeze
+    end
+
+    # returns the largest (compatibale with all) type of any possible schema
+    sig { returns(Idl::Type) }
+    def maximal_idl_type
+      @maximal_idl_type ||=
+        if schema_known?
+          idl_type
+        else
+          idl_types = possible_schemas.map(&:to_idl_type)
+          unless idl_types.all? { |t| t.kind == :bit }
+            raise "TODO: paramter has multiple schemas that are not Bits"
+          end
+          max_width = idl_types.map(&:width).max do |a, b|
+            if [a, b].include?(:unknown)
+              a == :unknown ? 1 : -1
+            else
+              (T.cast(a, Integer) <=> T.cast(b, Integer))
+            end
+          end
+          Idl::Type.new(:bits, width: max_width, qualifiers: [:const])
+        end
+    end
+
+    # returns the largest (compatibale with all) type of any possible schema
+    sig { returns(Schema) }
+    def maximal_schema
+      @maximal_schema ||=
+        if schema_known?
+          schema
+        else
+          idl_types = possible_schemas.map(&:to_idl_type)
+          unless idl_types.all? { |t| t.kind == :bits }
+            raise "TODO: paramter has multiple schemas that are not Bits (#{idl_types.map(&:kind)})"
+          end
+          possible_schemas.max do |a, b|
+            at = a.to_idl_type
+            bt = b.to_idl_type
+            if [at.width, bt.width].include?(:unknown)
+              at.width == :unknown ? 1 : -1
+            else
+              (T.cast(at.width, Integer) <=> T.cast(bt.width, Integer))
+            end
+          end
+        end
     end
 
     # @return if this parameter is defined in +cfg_arch+

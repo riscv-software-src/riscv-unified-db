@@ -1,0 +1,58 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smctr
+long_name: Control Transfer Records
+description: |
+  A method for recording control flow transfer history is valuable not only for performance
+  profiling but also for debugging.
+  Control flow transfers refer to jump instructions (including function calls and returns), taken
+  branch instructions, traps, and trap returns.
+  Profiling tools, such as Linux perf, collect control transfer history when sampling software
+  execution, thereby enabling tools, like AutoFDO, to identify hot paths for optimization.
+
+  Control flow trace capabilities offer very deep transfer history, but the volume of data produced
+  can result in significant performance overheads due to memory bandwidth consumption, buffer
+  management, and decoder overhead.
+  The Control Transfer Records (CTR) extension provides a method to record a limited history in
+  register-accessible internal chip storage, with the intent of dramatically reducing the
+  performance overhead and complexity of collecting transfer history.
+
+  CTR defines a circular (FIFO) buffer. Each buffer entry holds a record for a single recorded
+  control flow transfer.
+  The number of records that can be held in the buffer depends upon both the implementation (the
+  maximum supported depth) and the CTR configuration (the software selected depth).
+
+  Only qualified transfers are recorded.
+  Qualified transfers are those that meet the filtering criteria, which include the privilege mode
+  and the transfer type.
+
+  Recorded transfers are inserted at the write pointer, which is then incremented, while older
+  recorded transfers may be overwritten once the buffer is full.
+  Or the user can enable RAS (Return Address Stack) emulation mode, where only function calls are
+  recorded, and function returns pop the last call record.
+  The source PC, target PC, and some optional metadata (transfer type, elapsed cycles) are stored
+  for each recorded transfer.
+
+  The CTR buffer is accessible through an indirect CSR interface, such that software can specify
+  which logical entry in the buffer it wishes to read or write.
+  Logical entry 0 always corresponds to the youngest recorded transfer, followed by entry 1 as the
+  next youngest, and so on.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-11
+requirements:
+  extension:
+    allOf:
+      - name: S
+        version: ~> 1.13 # The latest ratified version of S when Sscntr was ratified
+      - name: Smcsrind
+        version: ~> 1.0
+      - name: Ssctr
+        version: ~> 1.0

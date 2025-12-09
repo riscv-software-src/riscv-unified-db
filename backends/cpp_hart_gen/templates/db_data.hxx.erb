@@ -184,23 +184,23 @@ namespace udb {
     <%- end -%>
 
     <%- unless cfg_arch.param_values.key?(param.name) -%>
-    void set_value(<%= param.idl_type.to_cxx_no_qualifiers %> val) {
+    void set_value(<%= param.maximal_idl_type.to_cxx_no_qualifiers %> val) {
       m_value = val;
     }
     <%- end -%>
 
     <%- if cfg_arch.param_values.key?(param.name) -%>
     <%# we know the value, so it's constexpr %>
-    static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> value() { return m_value; }
+    static constexpr <%= param.maximal_idl_type.to_cxx_no_qualifiers %> value() { return m_value; }
     <%- else -%>
-    const <%= param.idl_type.to_cxx_no_qualifiers %> value() const { return m_value.value(); }
+    const <%= param.maximal_idl_type.to_cxx_no_qualifiers %> value() const { return m_value.value(); }
     <%- end -%>
 
     private:
     <%- if cfg_arch.param_values.key?(param.name) -%>
-    static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> m_value = <%= param.idl_type.to_cxx_no_qualifiers %> (<%= cfg_arch.param_values.fetch(param.name).to_cxx %>);
+    static constexpr <%= param.maximal_idl_type.to_cxx_no_qualifiers %> m_value = <%= cfg_arch.param_values.fetch(param.name).to_cxx %>;
     <%- else -%>
-    std::optional<<%= param.idl_type.to_cxx_no_qualifiers %>> m_value;
+    std::optional<<%= param.maximal_idl_type.to_cxx_no_qualifiers %>> m_value;
     <%- end -%>
   };
   <%- end -%>

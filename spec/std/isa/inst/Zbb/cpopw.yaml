@@ -26,7 +26,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zbb
-base: 64
 assembly: xd, xs1
 encoding:
   match: 011000000010-----001-----0011011

@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Shvstvecd
-long_name: vstvec profile requirements
+long_name: Virtual Supervisor Trap Vector Base Address supports Direct mode
 description: |
   `vstvec.MODE` must be capable of holding the value 0 (Direct).
   When `vstvec.MODE`=Direct, `vstvec.BASE` must be capable of holding
@@ -18,9 +18,9 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
 requirements:
-  idl(): |
-    -> VSTVEC_MODE_DIRECT;
-  reason:
-    Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).
+  # Shvstvecd mandates that `vstvec.MODE` must be capable of holding the value 0 (Direct).
+  param:
+    name: VSTVEC_MODE_DIRECT
+    equal: true

@@ -15,9 +15,7 @@ description: |
   C.LWSP is only valid when xd &ne; x0. The code points with xd=x0 are reserved.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, imm(sp)
 encoding:
   match: 010-----------10

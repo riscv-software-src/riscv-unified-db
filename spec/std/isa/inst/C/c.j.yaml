@@ -12,9 +12,7 @@ description: |
   It expands to `jal` `x0, offset`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: imm
 encoding:
   match: 101-----------01

@@ -14,9 +14,7 @@ description: |
   It expands to `sw` `xs2, offset(x2)`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xs2, imm(sp)
 encoding:
   match: 110-----------10

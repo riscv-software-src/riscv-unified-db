@@ -16,9 +16,8 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
 requirements:
   param:
     name: UXLEN
-    oneOf: [ [64], [32, 64] ]
-    reason: Ssu64xl is satisfied when UXLEN is either read-only RV64 or read-write
+    includes: 64

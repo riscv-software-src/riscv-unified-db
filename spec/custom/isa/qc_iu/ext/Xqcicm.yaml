@@ -37,13 +37,11 @@ description: |
   The Xqcicm extension includes thirteen conditional move instructions.
 
 requirements:
-  not:
-    extension:
-      anyOf:
-        - allOf:
-          - name: C
-          - name: D
-        - name: Zcd
+  allOf:
+    - xlen: 32
+    - not:
+        extension:
+          name: Zcd
 doc_license:
   name: Creative Commons Attribution 4.0 International License
   url: https://creativecommons.org/licenses/by/4.0/

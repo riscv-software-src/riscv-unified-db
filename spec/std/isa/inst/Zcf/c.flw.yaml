@@ -13,12 +13,9 @@ description: |
   to the base address in register xs1.
   It expands to `flw` `fd, offset(xs1)`.
 definedBy:
-  allOf:
-    - xlen: 32
-    - extension:
-        name: Zcf
+  extension:
+    name: Zcf
 assembly: fd, imm(xs1)
-base: 32
 encoding:
   match: 011-----------00
   variables:

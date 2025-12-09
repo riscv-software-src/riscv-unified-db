@@ -3,18 +3,33 @@
 :wavedrom: /opt/node/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
+<%- pb = Udb.create_progressbar(
+              "Generating instruction pages [:bar] :current/:total",
+              total: instructions.size,
+              clear: true
+            )
+-%>
 <% instructions.sort_by(&:name).each do |inst| %>
+<%- pb.advance -%>
 <%= anchor_for_udb_doc_inst(inst.name) %>
 == <%= inst.name %>
 
 Synopsis::
 <%= inst.long_name %>
 
-<%- if inst.assembly.to_s.strip != "" -%>
-Assembly::
-<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+Base::
 
-<%- end -%>
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| <%= (inst.defined_by_condition & Udb::Condition::Xlen32).satisfiable? ? "&#x2713;" : "" %>
+| <%= (inst.defined_by_condition & Udb::Condition::Xlen64).satisfiable? ? "&#x2713;" : "" %>
+|===
+
+Assembly::
+<%= inst.fix_entities("#{inst.name.downcase}#{inst.assembly.to_s.strip == '' ? '' : ' ' + inst.assembly}") %>
+
 Encoding::
 <%- if inst.multi_encoding? -%>
 [NOTE]
@@ -82,28 +97,24 @@ Decode Variables::
 
 Included in::
 
-<%- if inst.defining_extension_requirements.any? { |cond_ext_req| cond_ext_req.cond.satisfied_by_cfg_arch?(cfg_arch) != Udb::SatisfiedResult::Yes } -%>
+<%- unless inst.unconditional_extension_requirements.empty? -%>
 
-|===
-| Extension | Version | When
-
-<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
-| *<%= cond_ext_req.ext_req.to_s_pretty %>*
-| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
-| <%= cond_ext_req.cond.to_asciidoc %>
-<%-   end -%>
-|===
-
-<%- else -%>
-
+[width="100%",cols="1,2",options="header"]
 |===
 | Extension | Version
 
-<%-   inst.defining_extension_requirements.each do |cond_ext_req| -%>
-| *<%= cond_ext_req.ext_req.to_s_pretty %>*
-| <%= inst.fix_entities(cond_ext_req.ext_req.to_s_pretty) %>
+<%-   inst.unconditional_extension_requirements.each do |ext_req| -%>
+| *<%= ext_req.name %>*
+| <%= inst.fix_entities(ext_req.requirement_specs_to_s_pretty) %>
 <%-   end -%>
 |===
 
 <%- end -%>
+
+<%- unless inst.other_requirements.empty? -%>
+<%- if inst.unconditional_extension_requirements.empty? -%>This<%- else -%>Additionally, this<%- end -%> instruction requires the following:
+
+<%= inst.other_requirements.map(&:to_asciidoc).join("\n") %>
+<%- end -%>
+
 <%- end -%>

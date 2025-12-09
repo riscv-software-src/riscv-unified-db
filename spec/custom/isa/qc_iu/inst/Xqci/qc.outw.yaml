@@ -13,12 +13,11 @@ description: |
   Device space address formed by adding `rs1` to  to a unsigned offset `imm`.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciio
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciio
 assembly: xs2, imm(xs1)
-base: 32
 encoding:
   match: -----------------100-----0001011
   variables:

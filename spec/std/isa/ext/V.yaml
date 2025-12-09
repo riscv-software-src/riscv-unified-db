@@ -7,10 +7,10 @@ $schema: "ext_schema.json#"
 kind: extension
 name: V
 type: unprivileged
-long_name: Variable-length vector
+long_name: Vector Operations
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2021-11
 description: |
-  RISC-V "V" Vector Extension
+  General support for data-parallel execution.

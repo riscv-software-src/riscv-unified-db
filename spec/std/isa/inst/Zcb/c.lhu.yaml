@@ -13,9 +13,7 @@ description: |
   It expands to `lhu` `xd, offset(xs1)`.
 definedBy:
   extension:
-    anyOf:
-      - name: Zcb
-      - name: Zce
+    name: Zcb
 assembly: xd, imm(xs1)
 encoding:
   match: 100001---0----00

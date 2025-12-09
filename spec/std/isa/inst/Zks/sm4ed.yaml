@@ -11,9 +11,7 @@ description: |
   No description available.
 definedBy:
   extension:
-    anyOf:
-      - name: Zks
-      - name: Zksed
+    name: Zksed
 assembly: xd, xs1, xs2, bs
 encoding:
   match: --11000----------000-----0110011

@@ -14,11 +14,10 @@ description: |
   Instruction encoded in I instruction format.
   The `imm` is an unsigned immediate.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcia
 encoding:
   match: 0----------------000-----0001011
   variables:

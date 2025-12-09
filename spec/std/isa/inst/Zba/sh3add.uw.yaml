@@ -16,7 +16,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zba
-base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0010000----------110-----0111011

@@ -6,7 +6,7 @@
 $schema: exception_code_schema.json#
 kind: exception_code
 name: Mcall
-num: 12
+num: 11
 display_name: Environment call from M-mode
 definedBy:
   extension:

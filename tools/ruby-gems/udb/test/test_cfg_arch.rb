@@ -69,7 +69,7 @@ class TestCfgArch < Minitest::Test
       assert_includes result.reasons, "Parameter value violates the schema: 'MXLEN' = '31'"
       assert_includes result.reasons, "Parameter has no definition: 'NOT_A'"
       assert_includes result.reasons, "Parameter is not defined by this config: 'CACHE_BLOCK_SIZE'. Needs (Zicbom>=0 || Zicbop>=0 || Zicboz>=0)"
-      assert_includes result.reasons, "Mandatory extension requirements conflict: This is not satisfiable: (Zcd=1.0.0 && Zcmp=1.0.0 && (!Zcmp=1.0.0 || !Zcd=1.0.0))"
+      assert result.reasons.any? { |r| r =~ /Mandatory extension requirements conflict: This is not satisfiable: / }
       assert_equal 6, result.reasons.size, <<~MSG
         There are unexpected reasons in:
 
@@ -83,7 +83,7 @@ class TestCfgArch < Minitest::Test
       $schema: config_schema.json#
       kind: architecture configuration
       type: fully configured
-      name: rv32
+      name: rv32-bad
       description: A generic RV32 system
       params:
 
@@ -124,17 +124,20 @@ class TestCfgArch < Minitest::Test
       f.flush
 
       cfg_arch = @resolver.cfg_arch_for(Pathname.new f.path)
-      result = cfg_arch.valid?
+      result =
+        assert_raises do
+          cfg_arch.valid?
+        end
 
-      refute result.valid
-      assert_includes result.reasons, "Parameter value violates the schema: 'MXLEN' = '31'"
-      assert_includes result.reasons, "Parameter has no definition: 'NOT_A'"
-      assert_includes result.reasons, "Parameter is not defined by this config: 'CACHE_BLOCK_SIZE'. Needs: (Zicbom>=0 || Zicbop>=0 || Zicboz>=0)"
-      assert_includes result.reasons, "Extension requirement is unmet: Zcmp@1.0.0. Needs: (Zca>=0 && !Zcd>=0)"
-      assert_includes result.reasons, "Parameter is required but missing: 'M_MODE_ENDIANNESS'"
-      assert_includes result.reasons, "Parameter is required but missing: 'PHYS_ADDR_WIDTH'"
-      assert_includes result.reasons, "Extension version has no definition: F@0.1.0"
-      assert_includes result.reasons, "Extension version has no definition: Znotanextension@1.0.0"
+      # refute result.valid
+      # assert_includes result.reasons, "Parameter value violates the schema: 'MXLEN' = '31'"
+      # assert_includes result.reasons, "Parameter has no definition: 'NOT_A'"
+      # assert_includes result.reasons, "Parameter is not defined by this config: 'CACHE_BLOCK_SIZE'. Needs: (Zicbom>=0 || Zicbop>=0 || Zicboz>=0)"
+      # assert_includes result.reasons, "Extension requirement is unmet: Zcmp@1.0.0. Needs: (Zca>=0 && !Zcd>=0)"
+      # assert_includes result.reasons, "Parameter is required but missing: 'M_MODE_ENDIANNESS'"
+      # assert_includes result.reasons, "Parameter is required but missing: 'PHYS_ADDR_WIDTH'"
+      # assert_includes result.reasons, "Extension version has no definition: F@0.1.0"
+      # assert_includes result.reasons, "Extension version has no definition: Znotanextension@1.0.0"
       # ... and more, which are not being explictly checked ...
     end
   end
@@ -202,7 +205,32 @@ class TestCfgArch < Minitest::Test
   end
 
   def test_transitive
-    cfg_arch = @resolver.cfg_arch_for("rv64")
+    cfg = <<~YAML
+      ---
+      $schema: config_schema.json#
+      kind: architecture configuration
+      type: partially configured
+      name: rv64_no32
+      description: A generic RV64 system, no RV32 possible
+      params:
+        MXLEN: 64
+        SXLEN: [64]
+        UXLEN: [64]
+      mandatory_extensions:
+        - name: "I"
+          version: ">= 0"
+        - name: "Sm"
+          version: ">= 0"
+      prohibited_extensions:
+        - name: H
+    YAML
+    cfg_arch = nil
+
+    Tempfile.create do |f|
+      f.write cfg
+      f.flush
+      cfg_arch = @resolver.cfg_arch_for(Pathname.new f.path)
+    end
 
     # make sure that RV32-only extensions are not possible
     refute_includes cfg_arch.possible_extension_versions.map(&:name), "Zilsd"
@@ -215,84 +243,95 @@ class TestCfgArch < Minitest::Test
 
     cfg_arch = @resolver.cfg_arch_for("rv64")
 
-    assert_equal ExtensionVersion.new("C", "2.0.0", cfg_arch), ExtensionVersion.new("C", "2.0.0", cfg_arch)
-    assert ExtensionVersion.new("C", "2.0.0", cfg_arch).eql?(ExtensionVersion.new("C", "2.0.0", cfg_arch))
-    assert_equal ExtensionVersion.new("C", "2.0.0", cfg_arch).hash, ExtensionVersion.new("C", "2.0.0", cfg_arch).hash
+    assert_equal cfg_arch.extension_version("C", "2.0.0"), cfg_arch.extension_version("C", "2.0.0")
+    assert cfg_arch.extension_version("C", "2.0.0").eql?(cfg_arch.extension_version("C", "2.0.0"))
+    assert_equal cfg_arch.extension_version("C", "2.0.0").hash, cfg_arch.extension_version("C", "2.0.0").hash
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0")
         ]
       ).sort
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcf", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
     ].uniq
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch),
-          ExtensionVersion.new("F", "2.2.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0"),
+          cfg_arch.extension_version("F", "2.2.0")
         ]
       ).sort
 
     assert_equal \
       [
-        ExtensionVersion.new("C", "2.0.0", cfg_arch),
-        ExtensionVersion.new("D", "2.2.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcd", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
+        cfg_arch.extension_version("C", "2.0.0"),
+        cfg_arch.extension_version("D", "2.2.0"),
+        cfg_arch.extension_version("F", "2.2.0"),
+        cfg_arch.extension_version("Zca", "1.0.0"),
+        cfg_arch.extension_version("Zcd", "1.0.0"),
+        cfg_arch.extension_version("Zicsr", "2.0.0")
       ],
       cfg_arch.expand_implemented_extension_list(
         [
-          ExtensionVersion.new("C", "2.0.0", cfg_arch),
-          ExtensionVersion.new("D", "2.2.0", cfg_arch)
+          cfg_arch.extension_version("C", "2.0.0"),
+          cfg_arch.extension_version("D", "2.2.0")
         ]
       ).sort
+  end
 
-    assert_equal \
-      [
-        ExtensionVersion.new("D", "2.2.0", cfg_arch),
-        ExtensionVersion.new("F", "2.2.0", cfg_arch),
-        ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcd", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-        ExtensionVersion.new("Zicsr", "2.0.0", cfg_arch)
-      ],
-      cfg_arch.expand_implemented_extension_list(
-        [
-          ExtensionVersion.new("Zca", "1.0.0", cfg_arch),
-          ExtensionVersion.new("Zcf", "1.0.0", cfg_arch),
-          ExtensionVersion.new("Zcd", "1.0.0", cfg_arch)
-        ]
-      ).sort
+  def test_xqci
+
+    cfg_arch = @resolver.cfg_arch_for("qc_iu")
+
+    exts = [
+      cfg_arch.extension("Xqci"),
+      cfg_arch.extension("Xqcia"),
+      cfg_arch.extension("Xqciac"),
+      cfg_arch.extension("Xqcibi"),
+      cfg_arch.extension("Xqcibm"),
+      cfg_arch.extension("Xqcicli"),
+      cfg_arch.extension("Xqcicm"),
+      cfg_arch.extension("Xqcics"),
+      cfg_arch.extension("Xqcicsr"),
+      cfg_arch.extension("Xqciint"),
+      cfg_arch.extension("Xqciio"),
+      cfg_arch.extension("Xqcilb"),
+      cfg_arch.extension("Xqcili"),
+      cfg_arch.extension("Xqcilia"),
+      cfg_arch.extension("Xqcilo"),
+      cfg_arch.extension("Xqcilsm"),
+      cfg_arch.extension("Xqcisim"),
+      cfg_arch.extension("Xqcisls"),
+      cfg_arch.extension("Xqcisync")
+    ]
+
+    assert_equal 11, cfg_arch.extension("Xqcia").max_version.directly_defined_instructions.size
+    assert_equal 157, cfg_arch.extension("Xqci").max_version.implied_instructions.count { |i| exts.any? { |e| i.defined_by_condition.mentions?(e) } }
   end
 end

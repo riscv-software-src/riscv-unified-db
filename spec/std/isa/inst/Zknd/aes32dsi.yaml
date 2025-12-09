@@ -16,7 +16,6 @@ definedBy:
     - xlen: 32
     - extension:
         name: Zknd
-base: 32
 assembly: xd, xs1, xs2, bs
 encoding:
   match: --10101----------000-----0110011

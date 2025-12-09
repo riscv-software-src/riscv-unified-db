@@ -7,18 +7,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: aes64ds
 long_name: AES decrypt final round
-description:
-  - id: inst-aes64ds-behavior
-    normative: true
-    text: |
-      Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
-      round output, applying the Inverse ShiftRows and SubBytes steps.
 definedBy:
   allOf:
     - xlen: 64
     - extension:
         name: Zknd
-base: 64
+description: |
+  Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+  round output, applying the Inverse ShiftRows and SubBytes steps.
 assembly: xd, xs1, xs2
 encoding:
   match: 0011101----------000-----0110011

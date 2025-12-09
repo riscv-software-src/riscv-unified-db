@@ -12,9 +12,7 @@ description: |
   C.MV expands to addi xd, x0, xs2.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, xs2
 encoding:
   match: 1000----------10

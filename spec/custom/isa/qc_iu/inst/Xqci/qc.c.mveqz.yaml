@@ -11,11 +11,10 @@ description: |
   Move `rs1` to `rd` if `rd` == 0, keep `rd` value otherwise
   Instruction encoded in CL instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicm
 encoding:
   match: 101011---00---10
   variables:

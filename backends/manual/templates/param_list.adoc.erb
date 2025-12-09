@@ -1,18 +1,25 @@
 = Architectural Parameters
 
 <%-
-  params = manual_version.extensions.map{ |e| e.params }.flatten.uniq(&:name).sort_by!(&:name)
+  params = manual_version.extensions.map{ |e| e.params }.flatten.sort_by!(&:name)
 -%>
 
 The following <%= params.size %> parameters are defined in this manual:
 
 |===
-| Name | Type | Extension(s) | Description
+| Name | Type | Existence | Description
 
 <%- params.each do |param| -%>
 | <%= param.name %>
+<%-   if param.schema_known? -%>
 | <%= param.schema.to_pretty_s %>
-| <%= param.exts.map { |ext| link_to_udb_doc_ext_param(ext.name, param.name, ext.name) }.join(", ") %>
-a| <%= param.desc %>
+<%-   else -%>
+<%-     param.schemas.each do |cond_schema| -%>
+<%-       next unless cond_schema.cond.could_be_satisfied_by_cfg_arch?(cfg_arch) -%>
+a| <%= cond_schema.schema.to_pretty_s %> when <%= cond_schema.cond.to_asciidoc %>
+<%-     end -%>
+<%-   end -%>
+a| <%= param.defined_by_condition.to_asciidoc -%>
+a| <%= param.description %>
 <%- end -%>
 |===

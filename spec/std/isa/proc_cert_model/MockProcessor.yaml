@@ -52,41 +52,9 @@ extensions:
     note: Just added this note to I extension
   Xmock:
     presence: mandatory
-    param_constraints:
-      MOCK_ENUM_2_INTS: {}
-      MOCK_ENUM_2_STRINGS: {}
-      MOCK_BOOL_1: {}
-      MOCK_BOOL_2:
-        schema:
-          const: true
-      MOCK_1_BIT_INT: {}
-      MOCK_2_BIT_INT: {}
-      MOCK_25_BIT_INT: {}
-      MOCK_32_BIT_INT:
-        schema:
-          const: 0xdeadbeef
-      MOCK_64_BIT_INT: {}
-      MOCK_INT_RANGE_0_TO_127: {}
-      MOCK_INT_RANGE_0_TO_128: {}
-      MOCK_INT_RANGE_1_TO_128: {}
-      MOCK_INT_RANGE_0_TO_999: {}
-      MOCK_INT_RANGE_0_TO_1023: {}
-      MOCK_INT_RANGE_1000_TO_2048: {}
-      MOCK_ARRAY_INT_ENUM: {}
-      MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
-      MOCK_ARRAY_STRING_ENUM1:
-        schema:
-          const: DEF
-      MOCK_ARRAY_STRING_ENUM2:
-        schema:
-          contains: { const: DEF }
   C:
     version: "~> 2.2"
     presence: mandatory
-    param_constraints:
-      MUTABLE_MISA_C:
-        schema:
-          const: false
     note: |
       Here's a multi-line note +
       for the C extension.
@@ -98,86 +66,18 @@ extensions:
   Zicntr:
     version: "~> 2.0"
     presence: mandatory
-    param_constraints:
-      TIME_CSR_IMPLEMENTED: {} # Unconstrained
   Sm:
     version: "~> 1.11"
     presence: mandatory
-    param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID_VALUE: {} # Unconstrained
-      IMP_ID_VALUE: {} # Unconstrained
-      VENDOR_ID_BANK: {} # Unconstrained
-      VENDOR_ID_OFFSET: {} # Unconstrained
-      MISA_CSR_IMPLEMENTED: {} # Unconstrained
-      MTVAL_WIDTH: {} # Unconstrained
-      MTVEC_MODES:
-        note: Here's a note for MTVEC_MODES parameter.
-        schema:
-          contains: { const: 0 }
-      PHYS_ADDR_WIDTH: {} # Unconstrained
-      PRECISE_SYNCHRONOUS_EXCEPTIONS:
-        schema:
-          const: true
-      TRAP_ON_ECALL_FROM_M:
-        schema:
-          const: true
-      TRAP_ON_EBREAK:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
-        schema:
-          const: true
-      M_MODE_ENDIANNESS:
-        schema:
-          const: little
-        # TODO: Uncomment when GitHub issue # is fixed.
-        #schema:
-        #- when:
-        #    version: "=1.0.0"
-        #    then:
-        #      const: little
-        #- when:
-        #    version: "=1.1.0"
-        #    then:
-        #      enum: [little, big]
-      MXLEN:
-        schema:
-          const: 64
-      CONFIG_PTR_ADDRESS:
-        schema:
-          const: 0xdeadbeef
-        note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
   Zifencei:
     presence: optional
     note: "Here's a note for Zifencei"
   Zicbop:
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
-    param_constraints:
-      CACHE_BLOCK_SIZE:
-        schema:
-          const: 64
   Zicbom:
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
-    param_constraints:
-      CACHE_BLOCK_SIZE:
-        schema:
-          const: 64
   B:
     presence: mandatory
     version: "~> 1.0"
@@ -225,3 +125,96 @@ recommendations:
       Implementations are strongly recommended to raise illegal-instruction
       exceptions on attempts to execute unimplemented opcodes.
   - text: Micky should give Pluto an extra treat
+
+param_constraints:
+  MOCK_ENUM_2_INTS: {}
+  MOCK_ENUM_2_STRINGS: {}
+  MOCK_BOOL_1: {}
+  MOCK_BOOL_2:
+    schema:
+      const: true
+  MOCK_1_BIT_INT: {}
+  MOCK_2_BIT_INT: {}
+  MOCK_25_BIT_INT: {}
+  MOCK_32_BIT_INT:
+    schema:
+      const: 0xdeadbeef
+  MOCK_64_BIT_INT: {}
+  MOCK_INT_RANGE_0_TO_127: {}
+  MOCK_INT_RANGE_0_TO_128: {}
+  MOCK_INT_RANGE_1_TO_128: {}
+  MOCK_INT_RANGE_0_TO_999: {}
+  MOCK_INT_RANGE_0_TO_1023: {}
+  MOCK_INT_RANGE_1000_TO_2048: {}
+  MOCK_ARRAY_INT_ENUM: {}
+  MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
+  MOCK_ARRAY_STRING_ENUM1:
+    schema:
+      const: DEF
+  MOCK_ARRAY_STRING_ENUM2:
+    schema:
+      contains: { const: DEF }
+  MUTABLE_MISA_C:
+    schema:
+      const: false
+  TIME_CSR_IMPLEMENTED: {} # Unconstrained
+  MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+  MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+  ARCH_ID_VALUE: {} # Unconstrained
+  IMP_ID_VALUE: {} # Unconstrained
+  VENDOR_ID_BANK: {} # Unconstrained
+  VENDOR_ID_OFFSET: {} # Unconstrained
+  MISA_CSR_IMPLEMENTED: {} # Unconstrained
+  MTVAL_WIDTH: {} # Unconstrained
+  MTVEC_MODES:
+    note: Here's a note for MTVEC_MODES parameter.
+    schema:
+      contains: { const: 0 }
+  PHYS_ADDR_WIDTH: {} # Unconstrained
+  PRECISE_SYNCHRONOUS_EXCEPTIONS:
+    schema:
+      const: true
+  TRAP_ON_ECALL_FROM_M:
+    schema:
+      const: true
+  TRAP_ON_EBREAK:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+    schema:
+      const: true
+  M_MODE_ENDIANNESS:
+    schema:
+      const: little
+    # TODO: Uncomment when GitHub issue # is fixed.
+    #schema:
+    #- when:
+    #    version: "=1.0.0"
+    #    then:
+    #      const: little
+    #- when:
+    #    version: "=1.1.0"
+    #    then:
+    #      enum: [little, big]
+  MXLEN:
+    schema:
+      const: 64
+  CONFIG_PTR_ADDRESS:
+    schema:
+      const: 0xdeadbeef
+    note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
+  CACHE_BLOCK_SIZE:
+    schema:
+      const: 64

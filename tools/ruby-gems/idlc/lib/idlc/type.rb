@@ -138,7 +138,7 @@ module Idl
       @name = name
       if kind == :bits
         raise "Bits type must have width" unless @width
-        raise "Bits type must have positive width" unless @width == :unknown || T.cast(@width, Integer).positive?
+        raise "Bits type must have positive width (has #{@width})" unless @width == :unknown || T.cast(@width, Integer).positive?
       end
       if kind == :enum
         raise "Enum type must have width" unless @width

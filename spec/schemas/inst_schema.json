@@ -351,10 +351,6 @@
           },
           "description": "List of HINTs that use this instruction's codepoints"
         },
-        "base": {
-          "enum": [32, 64],
-          "description": "When present, instruction is only defined for RV32 or RV64 base"
-        },
         "access": {
           "type": "object",
           "required": ["s", "u", "vs", "vu"],

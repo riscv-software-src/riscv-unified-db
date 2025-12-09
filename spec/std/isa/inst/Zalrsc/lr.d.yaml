@@ -50,7 +50,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zalrsc
-base: 64
 assembly: xd, (xs1)
 encoding:
   match: 00010--00000-----011-----0101111

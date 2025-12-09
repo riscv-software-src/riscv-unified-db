@@ -155,7 +155,7 @@ namespace udb {
         <%= pruned_ast.gen_cpp(symtab, 6) %>
         <%- symtab.release -%>
       <%- else -%>
-        if (m_parent->xlen() == 32_b) {
+      if (m_parent->xlen() == 32_b) {
         <%- pruned_ast = inst.pruned_operation_ast(32) -%>
         <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
         <%= pruned_ast.gen_cpp(symtab, 8) %>

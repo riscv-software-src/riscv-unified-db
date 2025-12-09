@@ -12,9 +12,7 @@ description: |
   It expands to `beq` `xs1, x0, offset`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xs1, imm
 encoding:
   match: 111-----------01

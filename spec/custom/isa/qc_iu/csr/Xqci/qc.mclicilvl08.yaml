@@ -10,13 +10,11 @@ long_name: IRQ Level 8
 address: 0xbc8
 length: 32
 priv_mode: M
-base: 32
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-        version: ">=0.7"
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
         version: ">=0.4"
 writable: true
 description: |

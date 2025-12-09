@@ -12,13 +12,12 @@ description: |
   address formed by adding `rs1` to a signed offset `imm`.
   Zero extend the result.
   Instruction encoded in QC.EI instruction format.
+assembly: xd, imm(xs1)
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcilo
-assembly: " xd, imm(xs1)"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilo
 encoding:
   match: ----------------01---------------101-----0011111
   variables:

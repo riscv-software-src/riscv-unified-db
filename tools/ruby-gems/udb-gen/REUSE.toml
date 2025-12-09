@@ -1,0 +1,10 @@
+version = 1
+
+# Computer-generated files that are checked in
+[[annotations]]
+path = [
+    "sorbet/**",
+    "Gemfile.lock"
+]
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"

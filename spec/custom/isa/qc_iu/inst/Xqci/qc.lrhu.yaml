@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -12,12 +12,11 @@ description: |
   address formed by adding `rs1` to `rs2`, shifted by `shamt`.
   Instruction encoded in R instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcisls
-assembly: " xd, xs1, xs2, shamt"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisls
+assembly: xd, xs1, xs2, shamt
 encoding:
   match: 1100-------------111-----0001011
   variables:

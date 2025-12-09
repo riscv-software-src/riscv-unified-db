@@ -6,11 +6,12 @@ ruby "~> 3.2"
 gem "idlc", path: "tools/ruby-gems/idlc"
 gem "idl_highlighter", path: "tools/ruby-gems/idl_highlighter"
 gem "udb", path: "tools/ruby-gems/udb"
+gem "udb-gen", path: "tools/ruby-gems/udb-gen"
 gem "udb_helpers", path: "tools/ruby-gems/udb_helpers"
 
 source "https://rubygems.org"
 
-# gem "activesupport"
+gem "activesupport"
 gem "asciidoctor-diagram", "~> 2.2"
 gem "asciidoctor-pdf"
 gem "base64"
@@ -34,7 +35,6 @@ group :development do
   gem "rubocop-performance"
   gem "rubocop-sorbet"
   gem "ruby-prof"
-  gem "solargraph"
   gem "sorbet"
   gem "spoom"
   gem "tapioca", require: false

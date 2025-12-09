@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 # Classes for Portfolios which form a common base class for profiles and certificates.
@@ -19,6 +19,35 @@ require_relative "database_obj"
 require_relative "../schema"
 
 module Udb
+
+  class PortfolioExtensionRequirement
+    extend T::Sig
+    extend Forwardable
+
+    def_delegators :@ext_req,
+      :name,
+      :satisfying_versions, :min_satisfying_ext_ver, :satisfied_by?,
+      :extension, :to_s, :to_s_pretty, :requirement_specs, :requirement_specs_to_s_pretty
+
+    attr_reader :ext_req, :note, :req_id, :presence
+
+    sig {
+      params(
+        name: String,
+        requirements: T.any(String, T::Array[String]),
+        arch: ConfiguredArchitecture,
+        note: T.nilable(String),
+        req_id: T.nilable(String),
+        presence: T.nilable(Presence)
+      ).void
+    }
+    def initialize(name, requirements, arch:, note:, req_id:, presence:)
+      @ext_req = arch.extension_requirement(name, requirements)
+      @note = note
+      @req_id = req_id
+      @presence = presence
+    end
+  end
 
 ##################
 # PortfolioClass #
@@ -58,6 +87,7 @@ module Udb
 # This not the base class for ProfileRelease but it does contain one of these.
 # This is not a DatabaseObject.
   class PortfolioGroup
+    extend T::Sig
     extend Forwardable
 
     attr_reader :name
@@ -214,21 +244,19 @@ module Udb
       @in_scope_interrupt_codes.uniq(&:name)
     end
 
-    # @return [String] Given an extension +ext_name+, return the presence as a string.
-    #                  Returns the greatest presence string across all profiles in the group.
-    #                  If the extension name isn't found in the release, return "-".
+    # @return Given an extension +ext_name+, return the presence as a string.
+    #         returns the greatest presence string across all profiles in the group.
+    #         If the extension name isn't found in the release, return "-".
+    sig { params(ext_name: String).returns(String) }
     def extension_presence(ext_name)
-      greatest_presence = nil
+      greatest_presence = T.let(nil, T.nilable(Presence))
 
       portfolios.each do |portfolio|
         presence = portfolio.extension_presence_obj(ext_name)
 
         unless presence.nil?
-          if greatest_presence.nil?
-            greatest_presence = presence
-          elsif presence > greatest_presence
-            greatest_presence = presence
-          end
+          return presence.to_s_concise if presence == Presence::Mandatory
+          greatest_presence = presence
         end
       end
 
@@ -239,17 +267,14 @@ module Udb
     #                  Returns the greatest presence string across all profiles in the group.
     #                  If the instruction name isn't found in the release, return "-".
     def instruction_presence(inst_name)
-      greatest_presence = nil
+      greatest_presence = T.let(nil, T.nilable(Presence))
 
       portfolios.each do |portfolio|
         presence = portfolio.instruction_presence_obj(inst_name)
 
         unless presence.nil?
-          if greatest_presence.nil?
-            greatest_presence = presence
-          elsif presence > greatest_presence
-            greatest_presence = presence
-          end
+          return presence.to_s_concise if presence == Presence::Mandatory
+          greatest_presence = presence
         end
       end
 
@@ -260,17 +285,14 @@ module Udb
     #                  Returns the greatest presence string across all profiles in the group.
     #                  If the CSR name isn't found in the release, return "-".
     def csr_presence(csr_name)
-      greatest_presence = nil
+      greatest_presence = T.let(nil, T.nilable(Presence))
 
       portfolios.each do |portfolio|
         presence = portfolio.csr_presence_obj(csr_name)
 
         unless presence.nil?
-          if greatest_presence.nil?
-            greatest_presence = presence
-          elsif presence > greatest_presence
-            greatest_presence = presence
-          end
+          return presence.to_s_concise if presence == Presence::Mandatory
+          greatest_presence = presence
         end
       end
 
@@ -377,7 +399,7 @@ module Udb
       # Get extension information from YAML for passed in extension name.
       ext_data = @data["extensions"][ext_name]
 
-      ext_data.nil? ? nil : Presence.new(ext_data["presence"])
+      ext_data.nil? ? nil : Presence.from_yaml(ext_data["presence"])
     end
 
     # @return [String] Given an extension +ext_name+, return the presence as a string.
@@ -388,8 +410,9 @@ module Udb
       presence_obj.nil? ? "-" : presence_obj.to_s
     end
 
-    # @return [Presence] Given an instruction +inst_name+, return the presence.
-    #                    If the instruction name isn't found in the portfolio, return nil.
+    # @return Given an instruction +inst_name+, return the presence.
+    #         If the instruction name isn't found in the portfolio, return nil.
+    sig { params(inst_name: String).returns(T.nilable(Presence)) }
     def instruction_presence_obj(inst_name)
       @instruction_presence_obj ||= {}
 
@@ -409,58 +432,65 @@ module Udb
 
       @instruction_presence_obj[inst_name] =
         if is_mandatory
-          Presence.new(Presence.mandatory)
+          Presence::Mandatory
         elsif is_optional
-          Presence.new(Presence.optional)
+          Presence::Option
         else
           nil
         end
     end
 
+    sig { returns(T::Hash[String, T.untyped]) }
+    def to_config
+      {
+        "$schema" => "config_schema.json#",
+        "kind" => "architecture configuration",
+        "type" => "partially configured",
+        "name" => name,
+        "description" => description,
+        "params" => all_in_scope_params.map do |p|
+          if p.single_value?
+            [p.name, p.value]
+          else
+            nil
+          end
+        end.compact.to_h,
+        "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
+          {
+            "name" => ext_req.name,
+            "version" => \
+              if ext_req.requirement_specs.size == 1
+                ext_req.requirement_specs.fetch(0).to_s
+              else
+                ext_req.requirement_specs.map(&:to_s)
+              end
+          }
+        end,
+        "non_mandatory_extensions" => optional_ext_reqs.map do |ext_req|
+          {
+            "name" => ext_req.name,
+            "version" => \
+              if ext_req.requirement_specs.size == 1
+                ext_req.requirement_specs.fetch(0).to_s
+              else
+                ext_req.requirement_specs.map(&:to_s)
+              end
+          }
+        end,
+        "additional_extensions" => true
+      }
+    end
+
     # returns a config arch that treats the Portfolio like a partial config
     sig { returns(ConfiguredArchitecture) }
     def to_cfg_arch
-      @cfg_arch ||= begin
-        config = PartialConfig.new(
-          {
-            "$schema" => "config_schema.json#",
-            "kind" => "architecture configuration",
-            "type" => "partially configured",
-            "name" => name,
-            "description" => description,
-            "params" => all_in_scope_params.map do |p|
-              if p.single_value?
-                [p.name, p.value]
-              else
-                nil
-              end
-            end.compact.to_h,
-            "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
-              {
-                "name" => ext_req.name,
-                "version" => \
-                  if ext_req.requirement_specs.size == 1
-                    ext_req.requirement_specs.fetch(0).to_s
-                  else
-                    ext_req.requirement_specs.map(&:to_s)
-                  end
-              }
-            end,
-            "non_mandatory_extensions" => optional_ext_reqs.map do |ext_req|
-              {
-                "name" => ext_req.name,
-                "version" => \
-                  if ext_req.requirement_specs.size == 1
-                    ext_req.requirement_specs.fetch(0).to_s
-                  else
-                    ext_req.requirement_specs.map(&:to_s)
-                  end
-              }
-            end,
-            "additional_extensions" => true
-          }
-        )
-        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+      @cfg_arch_for_mandatory ||= begin
+        Tempfile.create do |f|
+          f.write YAML.dump(to_config)
+          f.fsync
+
+          @cfg_arch.config.info.resolver.cfg_arch_for(Pathname.new f.path)
+        end
       end
     end
 
@@ -468,7 +498,7 @@ module Udb
     sig { returns(ConfiguredArchitecture) }
     def to_cfg_arch_for_optional
       @cfg_arch_for_optional ||= begin
-        config = PartialConfig.new(
+        contents =
           {
             "$schema" => "config_schema.json#",
             "kind" => "architecture configuration",
@@ -495,13 +525,18 @@ module Udb
             end,
             "additional_extensions" => true
           }
-        )
-        ConfiguredArchitecture.new(name, config, cfg_arch.arch_path)
+        Tempfile.create do |f|
+          f.write YAML.dump(contents)
+          f.fsync
+
+          @cfg_arch.config.info.resolver.cfg_arch_for(Pathname.new f.path)
+        end
       end
     end
 
     # @return [String] Given an instruction +inst_name+, return the presence as a string.
     #                  If the instruction name isn't found in the portfolio, return "-".
+    sig { params(inst_name: String).returns(T.nilable(Presence)) }
     def instruction_presence(inst_name)
       @instruction_presence ||= {}
 
@@ -533,9 +568,9 @@ module Udb
 
       @csr_presence_obj[csr_name] =
         if is_mandatory
-          Presence.new(Presence.mandatory)
+          Presence::Mandatory
         elsif is_optional
-          Presence.new(Presence.optional)
+          Presence::Option
         else
           nil
         end
@@ -554,26 +589,20 @@ module Udb
     end
 
     # Returns the greatest presence string for each of the specified versions.
-    # @param ext_name [String]
-    # @param ext_versions [Array<ExtensionVersion>]
-    # @return [Array<String>]
+    sig { params(ext_name: String, ext_versions: T::Array[ExtensionVersion]).returns(T::Array[String]) }
     def version_greatest_presence(ext_name, ext_versions)
       presences = []
 
       # See if any extension requirement in this profile lists this version as either mandatory or optional.
       ext_versions.map do |v|
-        greatest_presence = nil
+        greatest_presence = T.let(nil, T.nilable(Presence))
 
         in_scope_ext_reqs.each do |ext_req|
           if ext_req.satisfied_by?(v)
             presence = extension_presence_obj(ext_name)
 
             unless presence.nil?
-              if greatest_presence.nil?
-                greatest_presence = presence
-              elsif presence > greatest_presence
-                greatest_presence = presence
-              end
+              greatest_presence = presence unless greatest_presence == Presence::Mandatory
             end
           end
         end
@@ -594,14 +623,15 @@ module Udb
       return ext_data["note"] unless ext_data.nil?
     end
 
-    def mandatory_ext_reqs = in_scope_ext_reqs(Presence.mandatory)
-    def optional_ext_reqs = in_scope_ext_reqs(Presence.optional)
-    def optional_type_ext_reqs = in_scope_ext_reqs(Presence.optional)
+    def mandatory_ext_reqs = in_scope_ext_reqs(Presence::Mandatory)
+    def optional_ext_reqs = in_scope_ext_reqs(Presence::Option)
 
-    # @param desired_presence [String, Hash, Presence]
-    # @return [Array<ExtensionRequirements>] Sorted list of extensions with their portfolio information.
-    # If desired_presence is provided, only returns extensions with that presence.
-    # If desired_presence is a String, only the presence portion of an Presence is compared.
+    sig {
+      params(
+        desired_presence: T.any(String, T::Hash[String, T.untyped], Presence, NilClass)
+      )
+      .returns(T::Array[PortfolioExtensionRequirement])
+    }
     def in_scope_ext_reqs(desired_presence = nil)
       in_scope_ext_reqs = []
 
@@ -609,16 +639,11 @@ module Udb
       desired_presence_converted =
         if desired_presence.nil?
           nil
-else
-  if desired_presence.is_a?(String)
-    desired_presence
-else
-  desired_presence.is_a?(Presence) ? desired_presence :
-                                               Presence.new(desired_presence)
-end
-end
+        else
+          desired_presence.is_a?(Presence) ? desired_presence : Presence.from_yaml(desired_presence)
+        end
 
-      missing_ext = false
+      missing_ext = T.let(false, T::Boolean)
 
       @data["extensions"]&.each do |ext_name, ext_data|
         next if ext_name[0] == "$"
@@ -627,31 +652,36 @@ end
         # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
         ext = arch.extension(ext_name)
         if ext.nil?
-          puts "Extension #{ext_name} for #{name} not found in database"
+          Udb.logger.warn "Extension #{ext_name} for #{name} not found in database"
           missing_ext = true
         else
           actual_presence = ext_data["presence"]    # Could be a String or Hash
           raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
           # Convert presence String or Hash to object.
-          actual_presence_obj = Presence.new(actual_presence)
+          actual_presence_obj = Presence.from_yaml(actual_presence)
 
           match =
             if desired_presence.nil?
               true # Always match
             else
-              actual_presence_obj == desired_presence_converted
+              if desired_presence_converted == Presence::Mandatory
+                actual_presence_obj == Presence::Mandatory
+              else
+                # treat all optional types as equal
+                actual_presence_obj != Presence::Mandatory
+              end
             end
 
           if match
             in_scope_ext_reqs <<
               if ext_data.key?("version")
-                ExtensionRequirement.new(
+                PortfolioExtensionRequirement.new(
                   ext_name, ext_data["version"], arch: @arch,
                   presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
               else
-                ExtensionRequirement.new(
-                  ext_name, [], arch: @arch,
+                PortfolioExtensionRequirement.new(
+                  ext_name, ">= 0", arch: @arch,
                   presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
               end
           end
@@ -762,15 +792,8 @@ end
     def uses_optional_types?
       return @uses_optional_types unless @uses_optional_types.nil?
 
-      @uses_optional_types = false
-
-      in_scope_ext_reqs(Presence.optional)&.each do |ext_req|
-        if ext_req.presence.uses_optional_types?
-          @uses_optional_types = true
-        end
-      end
-
-      @uses_optional_types
+      @uses_optional_types =
+        in_scope_ext_reqs(Presence::Option).any? { |ext_req| ext_req.presence != Presence::Option }
     end
 
     ###########################################################################
@@ -895,7 +918,7 @@ end
       def initialize(data)
         @data = data
 
-        @presence_obj = Presence.new(@data["presence"])
+        @presence_obj = Presence.from_yaml(@data["presence"])
       end
 
       def presence_obj = @presence_obj
@@ -912,13 +935,15 @@ end
       @extra_notes
     end
 
-    # @param desired_presence [Presence]
-    # @return [String] Note for desired_presence
-    # @return [nil] No note for desired_presence
+    sig { params(desired_presence_obj: Presence).returns(T::Array[String]) }
     def extra_notes_for_presence(desired_presence_obj)
-      raise ArgumentError, "Expecting Presence but got a #{desired_presence_obj.class}" unless desired_presence_obj.is_a?(Presence)
-
-      extra_notes.select { |extra_note| extra_note.presence_obj == desired_presence_obj }
+      extra_notes.select do |extra_note|
+        if desired_presence_obj == Presence::Mandatory
+          extra_note.presence_obj == desired_presence_obj
+        else
+          extra_note.presence_obj != Presence::Mandatory
+        end
+      end
     end
 
     ###########################

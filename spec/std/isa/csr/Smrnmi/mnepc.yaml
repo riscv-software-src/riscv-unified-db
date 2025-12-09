@@ -17,7 +17,7 @@ description: |
   Also controls where the hart jumps on an exception return from M-mode.
 definedBy:
   extension:
-    name: Sm
+    name: Smrnmi
 fields:
   PC:
     location_rv32: 31-0

@@ -148,7 +148,7 @@ module Udb
           if @data.key?("definedBy")
             Condition.new(@data["definedBy"], @cfg_arch)
           else
-            AlwaysTrueCondition.new
+            AlwaysTrueCondition.new(@cfg_arch)
           end
         end
     end
@@ -432,7 +432,7 @@ module Udb
 
         raise SchemaValidationError.new(@data_path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
       else
-        warn "No $schema for #{@data_path}"
+        Udb.logger.warn "No $schema for #{@data_path}"
       end
     end
 
@@ -469,6 +469,9 @@ module Udb
     # @return [String] Company website
     sig { returns(String) }
     def url = T.must(@data["url"])
+
+    sig { override.returns(String) }
+    def to_s = name
   end
 
 # License information

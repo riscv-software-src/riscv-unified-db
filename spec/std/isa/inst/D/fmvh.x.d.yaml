@@ -7,13 +7,10 @@ $schema: inst_schema.json#
 kind: instruction
 name: fmvh.x.d
 long_name: Floating-Point Move High Half from Double-Precision Register to Integer Register
-description:
-  - id: inst-fmvh.x.d-behaviour
-    normative: false
-    text: |
-      The `fmvh.x.d` instruction moves bits 63:32 of floating-point register `fs1` into integer register `xd`. `fmvh.x.d`
-      is used in conjunction with the existing `fmv.x.w` instruction to move a double-precision floating-point number to a
-      pair of integer-registers.
+description: |
+  The `fmvh.x.d` instruction moves bits 63:32 of floating-point register `fs1` into integer register `xd`. `fmvh.x.d`
+  is used in conjunction with the existing `fmv.x.w` instruction to move a double-precision floating-point number to a
+  pair of integer-registers.
 definedBy:
   allOf:
     - xlen: 32
@@ -35,5 +32,4 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 32
 operation(): |

@@ -14,9 +14,7 @@ description: |
   It expands to `lw` `xd, offset(xs1)`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, imm(xs1)
 encoding:
   match: 010-----------00

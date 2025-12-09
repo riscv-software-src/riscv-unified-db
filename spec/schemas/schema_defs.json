@@ -102,25 +102,18 @@
         {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/tagged_text"
+            "$ref": "#/$defs/conditional_text"
           }
         }
       ]
     },
-    "tagged_text": {
+    "conditional_text": {
       "type": "object",
-      "required": ["id", "text", "normative"],
+      "required": ["text"],
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the statement"
-        },
         "text": {
           "type": "string",
           "description": "Asciidoctor source"
-        },
-        "normative": {
-          "type": "boolean"
         },
         "when()": {
           "type": "string",
@@ -548,9 +541,6 @@
               "properties": {
                 "name": {
                   "$ref": "#/$defs/param_name"
-                },
-                "range": {
-                  "$ref": "#/$defs/field_location"
                 },
                 "index": {
                   "type": "integer"

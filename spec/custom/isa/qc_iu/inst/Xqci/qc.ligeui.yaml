@@ -11,11 +11,10 @@ description: |
   Move `simm` to `rd` if the unsigned value in `rs1` is great or equal than unsigned value `imm`.
   Instruction encoded in I instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcicli
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicli
 encoding:
   match: -----11----------111-----1011011
   variables:

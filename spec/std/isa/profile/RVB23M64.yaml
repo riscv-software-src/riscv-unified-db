@@ -28,77 +28,9 @@ extensions:
   Sm:
     version: "~> 1.13"
     presence: mandatory
-    param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT:
-        schema:
-          const: 4
-      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-      ARCH_ID_VALUE: {} # Unconstrained
-      IMP_ID_VALUE: {} # Unconstrained
-      VENDOR_ID_BANK: {} # Unconstrained
-      VENDOR_ID_OFFSET: {} # Unconstrained
-      MISA_CSR_IMPLEMENTED: {} # Unconstrained
-      MTVAL_WIDTH: {} # Unconstrained
-      MTVEC_MODES:
-        schema:
-          items:
-            enum: [0, 1]
-      PHYS_ADDR_WIDTH: {} # Unconstrained
-      PRECISE_SYNCHRONOUS_EXCEPTIONS:
-        schema:
-          const: true
-      TRAP_ON_ECALL_FROM_M:
-        schema:
-          const: true
-      TRAP_ON_EBREAK:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
-        note: Not required when `ebreak` or `c.ebreak` instructions are executed.
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
-        schema:
-          const: true
-      REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
-        schema:
-          const: true
-      M_MODE_ENDIANNESS:
-        schema:
-          const: little
-        # TODO: Uncomment when GitHub issue # is fixed.
-        #schema:
-        #- when:
-        #    version: "=1.0.0"
-        #    then:
-        #      const: little
-        #- when:
-        #    version: "=1.1.0"
-        #    then:
-        #      enum: [little, big]
-      MXLEN:
-        schema:
-          const: 64
-      CONFIG_PTR_ADDRESS:
-        schema:
-          const: 0xdeadbeef
-        note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
   Smpmp:
     version: "~> 1.13"
     presence: mandatory
-    param_constraints:
-      NUM_PMP_ENTRIES:
-        schema:
-          minimum: 4
-      PMP_GRANULARITY:
-        schema:
-          maximum: 12
 
   #########################################################################
   # OPTIONAL LOCALIZED extensions in RVB23M64
@@ -123,3 +55,71 @@ extensions:
   #########################################################################
 
   # None
+
+param_constraints:
+  MTVEC_BASE_ALIGNMENT_DIRECT:
+    schema:
+      const: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+  ARCH_ID_VALUE: {} # Unconstrained
+  IMP_ID_VALUE: {} # Unconstrained
+  VENDOR_ID_BANK: {} # Unconstrained
+  VENDOR_ID_OFFSET: {} # Unconstrained
+  MISA_CSR_IMPLEMENTED: {} # Unconstrained
+  MTVAL_WIDTH: {} # Unconstrained
+  MTVEC_MODES:
+    schema:
+      items:
+        enum: [0, 1]
+  PHYS_ADDR_WIDTH: {} # Unconstrained
+  PRECISE_SYNCHRONOUS_EXCEPTIONS:
+    schema:
+      const: true
+  TRAP_ON_ECALL_FROM_M:
+    schema:
+      const: true
+  TRAP_ON_EBREAK:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+    note: Not required when `ebreak` or `c.ebreak` instructions are executed.
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+    schema:
+      const: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+    schema:
+      const: true
+  M_MODE_ENDIANNESS:
+    schema:
+      const: little
+    # TODO: Uncomment when GitHub issue # is fixed.
+    #schema:
+    #- when:
+    #    version: "=1.0.0"
+    #    then:
+    #      const: little
+    #- when:
+    #    version: "=1.1.0"
+    #    then:
+    #      enum: [little, big]
+  MXLEN:
+    schema:
+      const: 64
+  CONFIG_PTR_ADDRESS:
+    schema:
+      const: 0xdeadbeef
+    note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
+  NUM_PMP_ENTRIES:
+    schema:
+      minimum: 4
+  PMP_GRANULARITY:
+    schema:
+      maximum: 12

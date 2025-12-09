@@ -11,12 +11,11 @@ description: |
   Clear interrupt, interrupt number is in `rs1`.
   Instruction encoded in CI instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
-assembly: " xs1"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+assembly: xs1
 encoding:
   match: 0001-----0001110
   variables:

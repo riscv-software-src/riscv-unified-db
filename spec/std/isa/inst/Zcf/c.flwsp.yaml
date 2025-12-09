@@ -13,12 +13,9 @@ description: |
   to the stack pointer, x2.
   It expands to `flw` `fd, offset(x2)`.
 definedBy:
-  allOf:
-    - xlen: 32
-    - extension:
-        name: Zcf
+  extension:
+    name: Zcf
 assembly: fd, imm(sp)
-base: 32
 encoding:
   match: 011-----------10
   variables:

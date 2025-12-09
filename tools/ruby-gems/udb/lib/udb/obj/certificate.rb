@@ -166,56 +166,19 @@ module Udb
 
       @all_in_scope_params = []
 
-      @data["extensions"].each do |ext_name, ext_data|
-        next if ext_name[0] == "$"
-
-        # Find Extension object from database
-        ext = @arch.extension(ext_name)
-        if ext.nil?
-          raise "Cannot find extension named #{ext_name}"
+      @data["param_constraints"]&.each do |param_name, param_data|
+        param = @arch.param(param_name)
+        if param.nil?
+          cond_param = ext.conditional_params.find { |p| p.param.name == param_name }
+          raise "There is no param '#{param_name}' in extension '#{ext_name}" if cond_param.nil?
+          param = cond_param.param
         end
-
-        ext_data["param_constraints"]&.each do |param_name, param_data|
-          param = ext.params.find { |p| p.name == param_name }
-          raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
-
-          next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
-
-          @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
-        end
+        @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
+      # next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
       end
+
+      @all_in_scope_params << InScopeParameter.new(@arch.param("MXLEN"), { "const" => @data["base"] }, "")
       @all_in_scope_params.sort!
-    end
-
-    # @param [ExtensionRequirement]
-    # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
-    # These are always IN SCOPE by definition (since they are listed in the portfolio).
-    def in_scope_params(ext_req)
-      raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
-
-      params = []    # Local variable, no caching
-
-      # Get extension information from portfolio YAML for passed in extension requirement.
-      ext_data = @data["extensions"][ext_req.name]
-      raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
-
-      # Find Extension object from database
-      ext = @arch.extension(ext_req.name)
-      raise "Cannot find extension named #{ext_req.name}" if ext.nil?
-
-      # Loop through an extension's parameter constraints (hash) from the certificate model.
-      # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
-      ext_data["param_constraints"]&.each do |param_name, param_data|
-        # Find Parameter object from database
-        param = ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
-
-        next unless param.satisfied_by_cfg_arch?(to_cfg_arch)
-
-        params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
-      end
-
-      params.sort!
     end
 
     # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions
@@ -238,7 +201,7 @@ module Udb
     # @param ext_name [String] Extension name
     # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
     def out_of_scope_params(ext_name)
-      all_out_of_scope_params.select { |param| param.exts.any? { |ext| ext.name == ext_name } }.sort
+      all_out_of_scope_params.select { |param| param.defined_by_condition.mentions?(@arch.extension(ext_name)) && param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes }.sort
     end
 
     # @param param [Parameter]
@@ -247,27 +210,11 @@ module Udb
     def all_in_scope_exts_with_param(param)
       raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
-      exts = []
-
       # Iterate through all the extensions in the architecture database that define this parameter.
-      param.exts.each do |ext|
-        found = false
-
-        in_scope_extensions.each do |potential_ext|
-          if ext.name == potential_ext.name
-            found = true
-            next
-          end
-        end
-
-        if found
-          # Only add extensions that exist in this certificate model.
-          exts << ext
-        end
-      end
-
-      # Return intersection of extension names
-      exts.sort_by!(&:name)
+      in_scope_extensions.select do |potential_ext|
+        param.requirements_condition.mentions?(potential_ext) &&
+          (param.requirements_condition & potential_ext.to_condition)
+      end.sort_by!(&:name)
     end
 
     # @param param [Parameter]
@@ -276,27 +223,7 @@ module Udb
     def all_in_scope_exts_without_param(param)
       raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
-      exts = []   # Local variable, no caching
-
-      # Iterate through all the extensions in the architecture database that define this parameter.
-      param.exts.each do |ext|
-        found = false
-
-        in_scope_extensions.each do |potential_ext|
-          if ext.name == potential_ext.name
-            found = true
-            next
-          end
-        end
-
-        if found
-            # Only add extensions that are in-scope (i.e., exist in this certificate model).
-          exts << ext
-        end
-      end
-
-      # Return intersection of extension names
-      exts.sort_by!(&:name)
+      all_in_scope_exts_with_param(param)
     end
   end
 

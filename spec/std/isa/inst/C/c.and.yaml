@@ -13,9 +13,7 @@ description: |
   C.AND expands into `and xd, xd, xs2`.
 definedBy:
   extension:
-    anyOf:
-      - name: C
-      - name: Zca
+    name: Zca
 assembly: xd, xs2
 encoding:
   match: 100011---11---01

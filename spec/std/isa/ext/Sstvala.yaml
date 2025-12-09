@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sstvala
-long_name: "`stval` requirements for RVA profiles"
+long_name: "Supervisor Trap Value provides all needed values"
 description: |
   `stval` must be written with the faulting virtual address for load, store,
   and instruction page-fault, access-fault, and misaligned exceptions,
@@ -22,7 +22,7 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
     url: https://github.com/riscv/riscv-profiles/releases/tag/v1.0
     repositories:
       - url: https://github.com/riscv/riscv-profiles

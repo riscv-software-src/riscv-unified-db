@@ -106,7 +106,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zalrsc
-base: 64
 assembly: xd, xs2, (xs1)
 encoding:
   match: 00011------------011-----0101111

@@ -19,7 +19,6 @@ definedBy:
           - name: Zbb
           - name: Zbkb
 assembly: xd, xs1, xs2
-base: 64
 format:
   $inherits:
     - inst_subtype/R/R-x.yaml#/data

@@ -42,3 +42,5 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+requirements:
+  xlen: 32

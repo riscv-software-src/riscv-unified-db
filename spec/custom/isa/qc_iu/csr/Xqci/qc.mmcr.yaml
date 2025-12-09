@@ -8,18 +8,16 @@ kind: csr
 name: qc.mmcr
 long_name: Machine Mode Control Register
 address: 0x7c0
-base: 32
 priv_mode: M
 length: MXLEN
 writable: true
 description: |
   Machine Mode Control Register.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-        version: ">=0.7"
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
         version: ">=0.4"
 fields:
   WP_EXEC:

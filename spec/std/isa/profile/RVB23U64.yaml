@@ -21,7 +21,6 @@ extensions:
   # imported from RVA22U64
   #########################################################################
   $inherits: "profile/RVA22U64.yaml#/extensions"
-  $remove: Za128rs
 
   #########################################################################
   # MANDATORY extensions in RVB23 (and RVA23)
@@ -61,11 +60,6 @@ extensions:
     version: "~>1.0"
     note: |
       Wait-on-reservation-set (WRS) instructions
-  Za64rs:
-    presence: mandatory
-    version: "~>1.0"
-    note: |
-      Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes
 
   #########################################################################
   # OPTIONAL LOCALIZED extensions
@@ -269,21 +263,6 @@ extensions:
       optional: expansion
     version: "~>1.0"
     note: Vector carryless multiplication
-
-  #--------------------------------------------
-  # Ssstrict is an expansion option in RVB23U64 and RVA23U64
-  # (but is not intended to be made mandatory in future RVB or RVA Profiles)
-  #--------------------------------------------
-  Ssstrict:
-    presence:
-      optional: expansion
-    version: "~>1.0"
-    note: |
-      All opcodes in the Standard and Reserved opcode spaces (SROS),
-      other than those identified in a Profile as Mandatory or Optional,
-      cause a trap.
-    # should the above say "current or subsequent Profile" rather than just "Profile"?
-    # (where is the official definition of Ssstrict?)
 
   #########################################################################
   # TRANSITORY EXPANSION extensions in RVB23

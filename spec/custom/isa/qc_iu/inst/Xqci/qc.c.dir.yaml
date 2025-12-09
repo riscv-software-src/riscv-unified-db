@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -12,12 +12,11 @@ description: |
   Equivalent to "csrrci `rd`, `mstatus`, 8".
   Instruction encoded in CI instruction format.
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqciint
-assembly: " xd"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+assembly: xd
 encoding:
   match: 0001-----0000010
   variables:

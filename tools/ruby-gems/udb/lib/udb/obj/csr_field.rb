@@ -34,7 +34,22 @@ module Udb
     # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
     # @return [nil] if the CsrField exists in any XLEN
     sig { returns(T.nilable(Integer)) }
-    def base = @data["base"]
+    def base
+      return @base if defined?(@base)
+
+      @base =
+        if defined_by_condition.rv32_only?
+          32
+        elsif defined_by_condition.rv64_only?
+          64
+        else
+          nil
+        end
+    end
+
+    class MemoizedState < T::Struct
+      prop :reachable_functions, T::Hash[T.any(Symbol, Integer), T::Array[Idl::FunctionDefAst]]
+    end
 
     # @param parent_csr [Csr] The Csr that defined this field
     # @param field_data [Hash<String,Object>] Field data from the arch spec
@@ -42,6 +57,7 @@ module Udb
     def initialize(parent_csr, field_name, field_data)
       super(field_data, parent_csr.data_path, parent_csr.arch, DatabaseObject::Kind::CsrField, name: field_name)
       @parent = parent_csr
+      @memo = MemoizedState.new(reachable_functions: {})
     end
 
     # CSR fields are defined in their parent CSR YAML file
@@ -61,11 +77,11 @@ module Udb
     def exists_in_cfg?(cfg_arch)
       if cfg_arch.fully_configured?
         parent.exists_in_cfg?(cfg_arch) &&
-          (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
+          (base.nil? || cfg_arch.possible_xlens.include?(base)) &&
           (defined_by_condition.satisfied_by_cfg_arch?(cfg_arch) == SatisfiedResult::Yes)
       elsif cfg_arch.partially_configured?
         parent.exists_in_cfg?(cfg_arch) &&
-          (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
+          (base.nil? || cfg_arch.possible_xlens.include?(base)) &&
           defined_by_condition.could_be_satisfied_by_cfg_arch?(cfg_arch)
       else
         true
@@ -294,7 +310,8 @@ module Udb
     # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
     sig { params(effective_xlen: T.nilable(Integer)).returns(T::Array[Idl::FunctionDefAst]) }
     def reachable_functions(effective_xlen)
-      return @reachable_functions unless @reachable_functions.nil?
+      cache_key = effective_xlen.nil? ? :nil : effective_xlen
+      return @memo.reachable_functions[cache_key] unless @memo.reachable_functions[cache_key].nil?
 
       fns = []
       if has_custom_sw_write?
@@ -322,7 +339,7 @@ module Udb
         end
       end
 
-      @reachable_functions = fns.uniq
+      @memo.reachable_functions[cache_key] = fns.uniq
     end
 
     # @return [Csr] Parent CSR for this field
@@ -637,7 +654,7 @@ module Udb
       raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
       if @data[key].is_a?(Integer)
-        csr_length = csr.length(effective_xlen || @data["base"])
+        csr_length = csr.length(effective_xlen || base)
         if csr_length.nil?
           # we don't know the csr length for sure, so we can only check again max_length
           if @data[key] > csr.max_length
@@ -654,7 +671,7 @@ module Udb
         e, s = @data[key].split("-").map(&:to_i)
         raise "Invalid location" if s > e
 
-        csr_length = csr.length(effective_xlen || @data["base"])
+        csr_length = csr.length(effective_xlen || base)
         if csr_length.nil?
           # we don't know the csr length for sure, so we can only check again max_length
           if e > csr.max_length
@@ -671,24 +688,24 @@ module Udb
 
     # @return [Boolean] Whether or not this field only exists when XLEN == 64
     sig { override.returns(T::Boolean) }
-    def base64_only? = @data.key?("base") && @data["base"] == 64
+    def base64_only? = base == 64
 
     # @return [Boolean] Whether or not this field only exists when XLEN == 32
     sig { override.returns(T::Boolean) }
-    def base32_only? = @data.key?("base") && @data["base"] == 32
+    def base32_only? = base == 32
 
     sig { override.returns(T::Boolean) }
-    def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
+    def defined_in_base32? = base != 64
 
     sig { override.returns(T::Boolean) }
-    def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+    def defined_in_base64? = base != 32
 
     sig { params(xlen: Integer).returns(T::Boolean) }
-    def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
+    def defined_in_base?(xlen) = xlen == 32 ? defined_in_base32? : defined_in_base64?
 
     # @return [Boolean] Whether or not this field exists for any XLEN
     sig { override.returns(T::Boolean) }
-    def defined_in_all_bases? = @data["base"].nil?
+    def defined_in_all_bases? = base.nil?
 
     # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
     # @return [Integer] Number of bits in the field
@@ -720,6 +737,8 @@ module Udb
         "CSR[mstatus].SXL == 0"
       when "VS"
         "CSR[hstatus].VSXL == 0"
+      when "U"
+        "CSR[mstatus].UXL == 0"
       else
         raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
       end
@@ -734,6 +753,8 @@ module Udb
         "CSR[mstatus].SXL == 1"
       when "VS"
         "CSR[hstatus].VSXL == 1"
+      when "U"
+        "CSR[mstatus].UXL == 1"
       else
         raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
       end

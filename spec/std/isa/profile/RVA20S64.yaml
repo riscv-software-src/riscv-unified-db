@@ -20,10 +20,6 @@ extensions:
   U:
     presence: mandatory
     version: "~> 1.0"
-    param_constraints:
-      U_MODE_ENDIANNESS:
-        schema:
-          const: little
   S:
     presence: mandatory
     version: "= 1.11"
@@ -74,3 +70,7 @@ extensions:
     version: "= 1.0"
     note: |
       Ssu64xl is a new extension name introduced with RVA20.
+param_constraints:
+  U_MODE_ENDIANNESS:
+    schema:
+      const: little

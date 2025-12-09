@@ -18,7 +18,7 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2021-12
     requirements:
       extension:
         allOf:
@@ -28,3 +28,15 @@ versions:
             version: "= 1.0.0"
           - name: Zkt
             version: "= 1.0.0"
+  - version: "1.0.1"
+    state: ratified
+    ratification_date: 2022-02
+    requirements:
+      extension:
+        allOf:
+          - name: Zkn
+            version: "= 1.0.1"
+          - name: Zkr
+            version: "= 1.0.1"
+          - name: Zkt
+            version: "= 1.0.1"

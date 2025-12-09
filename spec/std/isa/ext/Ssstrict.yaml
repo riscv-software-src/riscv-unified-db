@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Ssstrict
-long_name: Unimplemented reserved encodings trap and no no-conforming extensions
+long_name: Unimplemented reserved encodings trap and no non-conforming extensions
 type: privileged
 description: |
   No non-conforming extensions are present.  Attempts to
@@ -39,4 +39,4 @@ description: |
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2024-10

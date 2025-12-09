@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicclsm
-long_name: Main memory misaligned requirement for RVA profiles
+long_name: "Main memory supports misaligned loads/stores"
 type: unprivileged
 description: |
   Misaligned loads and stores to main memory regions with both the cacheability and coherence
@@ -24,7 +24,7 @@ description: |
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2023-03
 requirements:
   param:
     name: MISALIGNED_LDST

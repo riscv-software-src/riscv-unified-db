@@ -8,7 +8,7 @@ kind: instruction
 name: fadd.s
 long_name: Floating-Point Add Single-Precision
 description: |
-  The `fadd.s` instruction performs single-precision floating-point addition of `xs1` and `xs2`
+  The `fadd.s` instruction performs single-precision floating-point addition of `fs1` and `fs2`
   and writes the final result to `fd`.
 definedBy:
   extension:

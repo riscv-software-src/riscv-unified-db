@@ -312,7 +312,7 @@ associated implementation-defined parameters across all its defined profiles.
 
 <%= profile.introduction %>
 
-<% Udb::Presence.presence_types.each do |presence_type| -%>
+<% ["mandatory", "optional"].each do |presence_type| -%>
 
 ==== <%= presence_type.capitalize %> Extensions
 

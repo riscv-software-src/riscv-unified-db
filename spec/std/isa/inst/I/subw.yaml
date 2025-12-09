@@ -15,7 +15,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: I
-base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------000-----0111011
@@ -38,7 +37,7 @@ pseudoinstructions:
 operation(): |
   Bits<32> t0 = X[xs1][31:0];
   Bits<32> t1 = X[xs2][31:0];
-  X[xd] = sext(t0 - t1, 31);
+  X[xd] = sext(t0 - t1, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

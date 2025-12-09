@@ -1,4 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/inst/Zaamo/amominu.SIZE.AQRL.layout
+
+# Copyright (c) Abhijit Das(Sukuna0007Abhi)
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -12,19 +16,15 @@ description: |
 
     * Load the word at address _xs1_
     * Write the sign-extended value into _xd_
-    * Unsigned compare the least-significant word of register _xs2_ to the loaded word, and select the minimum value
-    * Write the result to the address in _xs1_
+    * Unsigned compare the least-significant word of register _xs2_ to the loaded value, and select the minimum value
+    * Write the minimum to the address in _xs1_
 definedBy:
   extension:
     name: Zaamo
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 11000------------010-----0101111
+  match: 1100000----------010-----0101111
   variables:
-    - name: aq
-      location: 26
-    - name: rl
-      location: 25
     - name: xs2
       location: 24-20
     - name: xs1
@@ -37,15 +37,12 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
-    # even though this is a memory operation, the exception occurs before that would be known,
-    # so mode() is the correct reporting mode rathat than effective_ldst_mode()
+  if (!implemented?(ExtensionName::A) || (MISA_CSR_IMPLEMENTED && (CSR[misa].A == 1'b0))) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   XReg virtual_address = X[xs1];
-
-  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Minu, aq, rl, $encoding);
+  X[xd] = amo<32>(virtual_address, X[xs2][31:0], AmoOperation::Minu, 1'b0, 1'b0, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

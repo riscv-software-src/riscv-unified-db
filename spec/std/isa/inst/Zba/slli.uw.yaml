@@ -18,7 +18,6 @@ definedBy:
     - xlen: 64
     - extension:
         name: Zba
-base: 64
 encoding:
   match: 000010-----------001-----0011011
   variables:

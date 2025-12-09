@@ -5,6 +5,9 @@ require "sorbet-runtime"
 T.bind(self, T.all(Rake::DSL, Object))
 extend T::Sig
 
+require "pathname"
+require "erb"
+
 Encoding.default_external = "UTF-8"
 
 $jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
@@ -46,6 +49,11 @@ Dir.glob("#{$root}/tools/ruby-gems/*/Rakefile") do |rakefile|
   load rakefile
 end
 
+# Load and execute tools Rakefiles
+Dir.glob("#{$root}/tools/*/tasks.rake") do |rakefile|
+  load rakefile
+end
+
 directory "#{$root}/.stamps"
 
 file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
@@ -59,11 +67,10 @@ namespace :chore do
   task :update_deps do
     # these should run in order,
     # so don't change this to use task prereqs, which might run in any order
-    sh "bundle update --gemfile Gemfile --all"
+    sh "bundle update --gemfile Gemfile"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
-
-    sh "bundle update"
+    Rake::Task["chore:udb_gen:update_deps"].invoke
   end
 
   desc "Update golden instruction appendix"
@@ -140,10 +147,9 @@ namespace :test do
 
   desc "Type-check the Ruby library"
   task :sorbet do
-    $logger.info "Type checking idlc gem"
     Rake::Task["test:idlc:sorbet"].invoke
-    $logger.info "Type checking udb gem"
     Rake::Task["test:udb:sorbet"].invoke
+    Rake::Task["test:udb_gen:sorbet"].invoke
     # sh "srb tc @.sorbet-config"
   end
 end
@@ -249,7 +255,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
 end
 
 (3..31).each do |hpm_num|
@@ -370,6 +376,59 @@ file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+# Define all acquire/release combinations
+aq_rl_variants = [
+  { suffix: "", aq: false, rl: false },           # base instruction
+  { suffix: ".aq", aq: true, rl: false },         # acquire only
+  { suffix: ".rl", aq: false, rl: true },         # release only
+  { suffix: ".aqrl", aq: true, rl: true }         # both acquire and release
+]
+
+# AMO instruction generation from layouts
+%w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+  ["b", "h", "w", "d"].each do |size|
+    # Determine target extension directory based on size
+    extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+
+    aq_rl_variants.each do |variant|
+      file "#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{variant[:suffix]}.yaml" => [
+        "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout",
+        __FILE__
+      ] do |t|
+        FileUtils.rm_f(t.name)
+        aq = variant[:aq]
+        rl = variant[:rl]
+        erb = ERB.new(File.read($resolver.std_path / "inst/Zaamo/#{op}.SIZE.AQRL.layout"), trim_mode: "-")
+        erb.filename = "#{$resolver.std_path}/inst/Zaamo/#{op}.SIZE.AQRL.layout"
+        File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+        File.chmod(0444, t.name)
+      end
+    end
+  end
+end
+
+# AMOCAS instruction generation from Zabha layout (supports both Zabha and Zacas)
+# Zabha variants (b, h) -> generated in Zabha directory
+["b", "h", "w", "d", "q"].each do |size|
+  # Determine target extension directory based on size
+  extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
+
+  aq_rl_variants.each do |variant|
+    file "#{$resolver.std_path}/inst/#{extension_dir}/amocas.#{size}#{variant[:suffix]}.yaml" => [
+      "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout",
+      __FILE__
+    ] do |t|
+      FileUtils.rm_f(t.name)
+      aq = variant[:aq]
+      rl = variant[:rl]
+      erb = ERB.new(File.read($resolver.std_path / "inst/Zacas/amocas.SIZE.AQRL.layout"), trim_mode: "-")
+      erb.filename = "#{$resolver.std_path}/inst/Zacas/amocas.SIZE.AQRL.layout"
+      File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+      File.chmod(0444, t.name)
+    end
+  end
+end
+
 namespace :gen do
   desc "Generate architecture files from layouts"
   task :arch do
@@ -396,13 +455,62 @@ namespace :gen do
     (0..15).each do |pmpcfg_num|
       Rake::Task["#{$resolver.std_path}/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
+
+    # Generate AMO instruction files
+    %w[amoadd amoand amomax amomaxu amomin amominu amoor amoswap amoxor].each do |op|
+      ["b", "h", "w", "d"].each do |size|
+        extension_dir = %w[b h].include?(size) ? "Zabha" : "Zaamo"
+        ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+          Rake::Task["#{$resolver.std_path}/inst/#{extension_dir}/#{op}.#{size}#{suffix}.yaml"].invoke
+        end
+      end
+    end
+
+    # Generate AMOCAS instruction files
+    ["b", "h", "w", "d", "q"].each do |size|
+      ["", ".aq", ".rl", ".aqrl"].each do |suffix|
+        # Determine target extension directory based on size
+        extension_dir = %w[w d q].include?(size) ? "Zacas" : "Zabha"
+
+        Rake::Task["#{$resolver.std_path}/inst/#{extension_dir}/amocas.#{size}#{suffix}.yaml"].invoke
+      end
+    end
+  end
+
+  desc "DEPRECATED -- Run `./bin/udb-gen ext-doc --help` instead"
+  task :ext_pdf do
+    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/udb-gen ext-doc `"
+    exit(1)
+  end
+
+  desc "Generate config files for profiles"
+  task :cfg do
+    cfg_arch = $resolver.cfg_arch_for("_")
+    FileUtils.mkdir_p $resolver.cfgs_path / "profile"
+    cfg_arch.profiles.each do |profile|
+      path = $resolver.cfgs_path / "profile" / "#{profile.name}.yaml"
+      FileUtils.rm_f path
+      File.write(
+        path,
+        <<~YAML.strip.concat("\n")
+          # SPDX-License-Identifier: CC0-1.0
+
+          # AUTO-GENERATED FILE. DO NOT EDIT
+          # To regenerate, run `./do gen:cfg` in the UDB root directory
+          # The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+          #{YAML.dump(profile.to_config)}
+        YAML
+      )
+      File.chmod(0444, path)
+    end
   end
 end
 
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    # Rake::Task["test:udb:unit"].invoke
+    Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC
@@ -556,6 +664,8 @@ task "RVI20-32-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-32-CTP.pdf"
 task "RVI20-64-CTP": "#{$root}/gen/proc_ctp/pdf/RVI20-64-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
+task "RVI20-32-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-32-CRD.pdf"
+task "RVI20-64-CRD": "#{$root}/gen/proc_crd/pdf/RVI20-64-CRD.pdf"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
 task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"

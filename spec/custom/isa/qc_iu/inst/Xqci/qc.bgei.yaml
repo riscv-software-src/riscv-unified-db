@@ -11,11 +11,10 @@ description: |
   Branches to `PC` + `offset` if the value in `rs1` is greater than or equal to the immediate.
   Instruction encoded in BI instruction format
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-      - name: Xqcibi
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibi
 encoding:
   match: -----------------101-----1111011
   variables:

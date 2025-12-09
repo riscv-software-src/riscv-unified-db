@@ -127,9 +127,9 @@ class TestLogic < Minitest::Test
   def test_ext_ver_convert
     term = ExtensionTerm.new("A", "=", "1.0.0")
 
-    assert_equal ExtensionVersion.new("A", "1.0.0", cfg_arch), term.to_ext_ver(cfg_arch)
+    assert_equal cfg_arch.extension_version("A", "1.0.0"), term.to_ext_ver(cfg_arch)
     assert_equal ["name", "version"], term.to_h.keys
-    assert_equal ExtensionVersion.new("A", "1.0.0", cfg_arch), ExtensionVersion.new(term.to_h["name"], term.to_h["version"].gsub("= ", ""), cfg_arch)
+    assert_equal cfg_arch.extension_version("A", "1.0.0"), cfg_arch.extension_version(term.to_h["name"], term.to_h["version"].gsub("= ", ""))
   end
 
   sig { void }
@@ -213,22 +213,10 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[3]==true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)
-
-    h = {
-      "name" => "INTEGER_PARAM",
-      "oneOf" => [32, 64],
-      "reason" => "blah"
-    }
-    term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
-    assert_equal "(INTEGER_PARAM==32||INTEGER_PARAM==64)", term.to_s
-    assert_equal SatisfiedResult::Yes, term.eval_value(32)
-    assert_equal SatisfiedResult::Yes, term.eval_value(64)
-    assert_equal SatisfiedResult::No, term.eval_value(128)
 
     h = {
       "name" => "SCOUNTENABLE_EN",
@@ -237,6 +225,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]!=true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(false)
     assert_equal SatisfiedResult::No, term.eval_value(true)
@@ -248,6 +237,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]==false)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(false)
     assert_equal SatisfiedResult::No, term.eval_value(true)
@@ -259,6 +249,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[4]!=false)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)
@@ -270,6 +261,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]<5)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(4)
     assert_equal SatisfiedResult::No, term.eval_value(5)
@@ -282,6 +274,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]>5)", term.to_s
     assert_equal SatisfiedResult::No, term.eval_value(4)
     assert_equal SatisfiedResult::No, term.eval_value(5)
@@ -294,6 +287,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]<=5)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(4)
     assert_equal SatisfiedResult::Yes, term.eval_value(5)
@@ -306,6 +300,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN[10]>=5)", term.to_s
     assert_equal SatisfiedResult::No, term.eval_value(4)
     assert_equal SatisfiedResult::Yes, term.eval_value(5)
@@ -329,7 +324,7 @@ class TestLogic < Minitest::Test
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
-    assert_equal h, term.to_h
+    assert term.to_logic_node.equivalent?(ParamCondition.new(term.to_h, cfg_arch).to_logic_tree_internal)
     assert_equal "(SCOUNTENABLE_EN==true)", term.to_s
     assert_equal SatisfiedResult::Yes, term.eval_value(true)
     assert_equal SatisfiedResult::No, term.eval_value(false)
@@ -448,19 +443,21 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| SatisfiedResult::No }))
     assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
 
-    n = LogicNode.new(
-      LogicNodeType::And,
-      [
-        LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("A", "=", "1.0.0")]),
-        LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("B", "=", "1.0.0")]) # which isn't defined
-      ]
-    )
-    assert_equal(SatisfiedResult::No, n.eval_cb(cb))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
-    assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
-    assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
+    # as of PR #891, we can no longer instatiate ExtensionVersions that are not defined
+    # thus, removing this whole sequence
+    # n = LogicNode.new(
+    #   LogicNodeType::And,
+    #   [
+    #     LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("A", "=", "1.0.0")]),
+    #     LogicNode.new(LogicNodeType::Term, [ExtensionTerm.new("B", "=", "1.0.0")]) # which isn't defined
+    #   ]
+    # )
+    # assert_equal(SatisfiedResult::No, n.eval_cb(cb))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| SatisfiedResult::Maybe }))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    # assert_equal(SatisfiedResult::Maybe, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::Yes }))
+    # assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "A" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
+    # assert_equal(SatisfiedResult::No, n.eval_cb(proc { |term| term.name == "B" ? SatisfiedResult::Maybe : SatisfiedResult::No }))
 
 
     n = LogicNode.new(
@@ -586,7 +583,7 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb))
     assert_equal(SatisfiedResult::Yes, n.eval_cb(proc { |term| SatisfiedResult::No }))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("A", "1.0.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -594,7 +591,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::No, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("C", "1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -602,7 +599,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::No, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -610,7 +607,7 @@ class TestLogic < Minitest::Test
     end
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
-      if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("A", "1.0.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+      if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("A", "1.0.0") || term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
         SatisfiedResult::Yes
       else
         SatisfiedResult::No
@@ -619,7 +616,7 @@ class TestLogic < Minitest::Test
     assert_equal(SatisfiedResult::Yes, n.eval_cb(cb2))
     cb2 = LogicNode.make_eval_cb do |term|
       if term.is_a?(ExtensionTerm)
-        if term.to_ext_ver(cfg_arch) == ExtensionVersion.new("C", "1.0", cfg_arch) || term.to_ext_ver(cfg_arch) == ExtensionVersion.new("B", "2.1.0", cfg_arch)
+        if term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("C", "1.0") || term.to_ext_ver(cfg_arch) == cfg_arch.extension_version("B", "2.1.0")
           SatisfiedResult::Yes
         else
           SatisfiedResult::No

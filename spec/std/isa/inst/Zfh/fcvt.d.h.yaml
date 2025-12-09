@@ -11,9 +11,13 @@ description: |
   No description available.
 definedBy:
   extension:
-    allOf:
-      - name: D
-      - name: Zfh
+    oneOf:
+      - allOf:
+          - name: D
+          - name: Zfhmin
+      - allOf:
+          - name: Zhinx
+          - name: Zdinx
 assembly: fd, fs1, rm
 encoding:
   match: 010000100010-------------1010011

@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventNh.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventNh.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -12,15 +14,16 @@ address: 0x72E
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Alias of `mhpmevent14`[63:32].
 
   Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
   32-bits of `mhpmevent#{hpm_num}`.
 definedBy:
-  extension:
-    name: Sscofpmf
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31

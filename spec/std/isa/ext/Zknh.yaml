@@ -6,11 +6,14 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zknh
-long_name: "NIST Suite: Hash Function Instructions"
+long_name: "NIST Suite: SHA2 Hashing"
 description: |
   Instructions for accelerating the SHA2 family of cryptographic hash functions.
 type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2021-12
+  - version: "1.0.1"
+    state: ratified
+    ratification_date: 2022-02

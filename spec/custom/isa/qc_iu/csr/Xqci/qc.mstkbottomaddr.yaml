@@ -8,18 +8,16 @@ kind: csr
 name: qc.mstkbottomaddr
 long_name: Machine Stack Bottom Limit
 address: 0x7c5
-base: 32
 priv_mode: M
 length: MXLEN
 writable: true
 description: |
   Stack bottom limit register. If the stack pointer (sp == x2) lesser then its value - SpOutOfRange exception occurs
 definedBy:
-  extension:
-    anyOf:
-      - name: Xqci
-        version: ">=0.7"
-      - name: Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
         version: ">=0.4"
 fields:
   STKADDR:

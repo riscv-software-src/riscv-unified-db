@@ -11,11 +11,12 @@ address: 0x312
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Alias of the upper 32 bits of `medeleg`.
 definedBy:
-  extension:
-    name: S
-    version: ">= 1.13"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: S
+        version: ">= 1.13"
 fields: {}

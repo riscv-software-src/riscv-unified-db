@@ -4,6 +4,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "idlc/ast"
 require "idlc/interfaces"
 
 require_relative "database_obj"
@@ -17,6 +18,17 @@ module Udb
     include CertifiableObject
 
     include Idl::Csr
+
+    class MemoizedState < T::Struct
+      prop :reachable_functions, T::Hash[T.any(Symbol, Integer), T::Array[Idl::FunctionDefAst]]
+    end
+
+    sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
+    def initialize(data, data_path, arch)
+      super(data, data_path, arch)
+
+      @memo = MemoizedState.new(reachable_functions: {})
+    end
 
     sig { override.returns(String) }
     attr_reader :name
@@ -71,6 +83,7 @@ module Udb
 
       fields.reduce(0) { |val, f| val | (T.cast(f.reset_value, Integer) << f.location.begin) }
     end
+    alias reset_value value
 
     def writable
       @data["writable"]
@@ -78,20 +91,32 @@ module Udb
 
     # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in
     # @return [nil] if this CSR is defined in all bases
-    def base = @data["base"]
+    sig { returns(T.nilable(Integer)) }
+    def base
+      return @base if defined?(@base)
+
+      @base =
+        if defined_by_condition.rv32_only?
+          32
+        elsif defined_by_condition.rv64_only?
+          64
+        else
+          nil
+        end
+    end
 
     # @return [Boolean] true if this CSR is defined when XLEN is 32
-    def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
+    def defined_in_base32? = base != 64
 
     # @return [Boolean] true if this CSR is defined when XLEN is 64
-    def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+    def defined_in_base64? = base != 32
 
     # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
-    def defined_in_all_bases? = @data["base"].nil?
+    def defined_in_all_bases? = base.nil?
 
     # @return [Boolean] true if this CSR is defined when XLEN is xlen
     # @param xlen [32,64] base
-    def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
+    def defined_in_base?(xlen) = xlen == 32 ? defined_in_base32? : defined_in_base64?
 
     # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
     def format_changes_with_xlen?
@@ -102,9 +127,10 @@ module Udb
 
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
     # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
+    sig { params(effective_xlen: T.nilable(Integer)).returns(T::Array[Idl::FunctionDefAst]) }
     def reachable_functions(effective_xlen = nil)
-      raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
-      return @reachable_functions unless @reachable_functions.nil?
+      cache_key = effective_xlen.nil? ? :nil : effective_xlen
+      return @memo.reachable_functions[cache_key] unless @memo.reachable_functions[cache_key].nil?
 
       fns = []
 
@@ -136,7 +162,7 @@ module Udb
         end
       end
 
-      @reachable_functions = fns.uniq
+      @memo.reachable_functions[cache_key] = fns.uniq
     end
 
     # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
@@ -145,7 +171,7 @@ module Udb
       return false if @data["length"].is_a?(Integer)
 
       # when a CSR is only defined in one base, its length can't change
-      return false unless @data["base"].nil?
+      return false unless base.nil?
 
       case @data["length"]
       when "MXLEN"
@@ -192,8 +218,8 @@ module Udb
       when "MXLEN"
         return T.must(cfg_arch.mxlen) unless cfg_arch.mxlen.nil?
 
-        if !@data["base"].nil?
-          @data["base"]
+        if !base.nil?
+          base
         else
           # don't know MXLEN
           effective_xlen
@@ -205,9 +231,9 @@ module Udb
           else
             cfg_arch.param_values["SXLEN"][0]
           end
-        elsif !@data["base"].nil?
+        elsif !base.nil?
           # if this CSR is only available in one base, then we know its length
-          @data["base"]
+          base
         else
           # don't know SXLEN
           effective_xlen
@@ -219,9 +245,9 @@ module Udb
           else
             cfg_arch.param_values["VSXLEN"][0]
           end
-        elsif !@data["base"].nil?
+        elsif !base.nil?
           # if this CSR is only available in one base, then we know its length
-          @data["base"]
+          base
         else
           # don't know VSXLEN
           effective_xlen
@@ -239,7 +265,7 @@ module Udb
     # sig { override.returns(Integer) }    dhower: sorbet doesn't think this is an override??
     sig { override.returns(Integer) }
     def max_length
-      return @data["base"] unless @data["base"].nil?
+      return T.must(base) unless base.nil?
 
       case @data["length"]
       when "MXLEN"
@@ -396,6 +422,34 @@ module Udb
       Asciidoctor.convert description
     end
 
+    # return list of extension requirements that must be implemented for this Csr to be defined
+    #
+    # will not include any extension requirements that are conditionally required
+    # e.g., definedBy = Zblah if XLEN == 32; defining_extension_requirements will not include Zblah
+    sig { returns(T::Array[ExtensionRequirement]) }
+    def defining_extension_requirements
+      @defining_extension_requirements ||=
+        begin
+          pb =
+            Udb.create_progressbar(
+              "Determining defining extensions for CSR #{name} [:bar] :current/:total",
+              total: @cfg_arch.csrs.size,
+              clear: true
+            )
+          @cfg_arch.extensions.map do |ext|
+            pb.advance
+            vers = ext.versions.select do |ext_ver|
+              if defined_by_condition.mentions?(ext_ver)
+                (-defined_by_condition & ext_ver.to_condition).unsatisfiable?
+              end
+            end
+            unless vers.empty?
+              ExtensionRequirement.create_from_ext_vers(vers)
+            end
+          end.compact
+        end
+    end
+
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
     # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
     #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
@@ -474,8 +528,8 @@ module Udb
     end
 
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
+    sig { params(effective_xlen: T.nilable(Integer)).returns(Idl::FunctionBodyAst) }
     def type_checked_sw_read_ast(effective_xlen)
-      raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
       @type_checked_sw_read_asts ||= {}
       ast = @type_checked_sw_read_asts[effective_xlen.nil? ? :none : effective_xlen]
       return ast unless ast.nil?
@@ -541,6 +595,12 @@ module Udb
       symtab = @cfg_arch.symtab.global_clone
       symtab.push(ast)
       # all CSR instructions are 32-bit
+      if effective_xlen
+        symtab.add(
+          "__effective_xlen",
+          Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 6), effective_xlen)
+        )
+      end
       symtab.add(
         "__instruction_encoding_size",
         Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)

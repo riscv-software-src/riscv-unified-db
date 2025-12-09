@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Svnapot
-long_name: Naturally-aligned Power of Two Translation Contiguity
+long_name: Naturally Aligned Power-of-Two Translation Contiguity
 type: privileged
 description: |
   In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a
@@ -179,6 +179,6 @@ requirements:
   extension:
     allOf:
       - name: Sv39
-      # Svinval was defined with Sm 1.13
-      - name: Sm
+      # Svnapot was defined with Priv 1.13
+      - name: S
         version: ">= 1.13"

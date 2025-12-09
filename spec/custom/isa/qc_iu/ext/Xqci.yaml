@@ -200,7 +200,7 @@ versions:
   changes:
     - Fix typos in description of qc.shlsat and qc.shlusat instructions
     - Fix bug in qc.shlsat that caused wrong IDL code result
-    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
+    - Fix clobbering of saturation results in [add/addu/sub]sat instructions
     - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
     - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
@@ -459,8 +459,6 @@ versions:
   requirements:
     extension:
       allOf:
-        - name: Zca
-          version: ">= 1.0.0"
         - { name: Xqcia, version: "= 0.7.0" }
         - { name: Xqciac, version: "= 0.3.0" }
         - { name: Xqcibi, version: "= 0.2.0" }
