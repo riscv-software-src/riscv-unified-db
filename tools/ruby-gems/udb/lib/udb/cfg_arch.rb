@@ -456,7 +456,7 @@ module Udb
     # @api private
     sig { returns(Idl::SymbolTable) }
     def create_symtab
-      Udb.logger.info "Creating symbol table"
+      Udb.logger.debug "Creating symbol table"
       pb =
         Udb.create_progressbar(
           "Finding params for #{name} [:bar]",

@@ -7,7 +7,7 @@ name: rv32-riscv-tests
 description: A compliant full config for rv32 riscv-tests
 implemented_extensions:
   - [Sm, "1.11.0"]
-  - ["Smstateen", "1.0.0"]
+  - [Smstateen, "1.0.0"]
   - [I, "2.1"]
   - [C, "2.0"]
   - [Zca, "1.0.0"]

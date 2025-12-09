@@ -17,6 +17,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqcisim
+assembly: ""
 encoding:
   match: "0000000000000010"
 access:

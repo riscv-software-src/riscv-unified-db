@@ -16,6 +16,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqciint
+assembly: ""
 encoding:
   match: "0001101100010010"
 access:

@@ -213,10 +213,10 @@ module Udb
       ret << ""
 
       unless presence_ext_reqs.empty?
-        if (presence_type == Presence.optional) && uses_optional_types?
+        if (presence_type == "optional") && uses_optional_types?
           # Iterate through each optional type. Use object version (not string) to get
           # precise comparisons (i.e., presence string and optional type string).
-          Presence.optional_types_obj.each do |optional_type_obj|
+          [Presence::ExpansionOption, Presence::LocalizedOption, Presence::DevelopmentOption, Presence::TransitoryOption].each do |optional_type_obj|
             optional_type_ext_reqs = in_scope_ext_reqs(optional_type_obj)
             unless optional_type_ext_reqs.empty?
               ret << ""
@@ -244,7 +244,7 @@ module Udb
       # Add extra notes that just belong to this presence.
       # Use object version (not string) of presence to avoid adding extra notes
       # already added for optional types if they are in use.
-      extra_notes_for_presence(Presence.new(presence_type))&.each do |extra_note|
+      extra_notes_for_presence(Presence.from_yaml(presence_type))&.each do |extra_note|
         ret << "NOTE: #{extra_note.text}"
         ret << ""
       end # each extra_note

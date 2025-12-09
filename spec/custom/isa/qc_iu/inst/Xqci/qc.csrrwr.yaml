@@ -23,6 +23,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqcicsr
+assembly: xd, xs1, xs2
 encoding:
   match: 1000110----------000-----1110011
   variables:

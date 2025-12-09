@@ -12,6 +12,7 @@ description: |
   address formed by adding `rs1` to a signed offset `imm`.
   Zero extend the result.
   Instruction encoded in QC.EI instruction format.
+assembly: xd, imm(xs1)
 definedBy:
   allOf:
     - xlen: 32

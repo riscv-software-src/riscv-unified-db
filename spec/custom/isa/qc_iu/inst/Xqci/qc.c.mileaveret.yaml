@@ -17,6 +17,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqciint
+access:
   s: never
   u: never
   vs: never

@@ -183,11 +183,12 @@ module Udb
             param = cond_param.param
           end
 
-          next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
+          # next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes
 
           @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
         end
       end
+      @all_in_scope_params << InScopeParameter.new(@arch.param("MXLEN"), { "const" => @data["base"] }, "")
       @all_in_scope_params.sort!
     end
 
@@ -217,7 +218,7 @@ module Udb
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
 
-        next unless param.satisfied_by_cfg_arch?(to_cfg_arch)
+        next unless param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch)
 
         params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
       end
@@ -245,7 +246,7 @@ module Udb
     # @param ext_name [String] Extension name
     # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
     def out_of_scope_params(ext_name)
-      all_out_of_scope_params.select { |param| param.exts.any? { |ext| ext.name == ext_name } }.sort
+      all_out_of_scope_params.select { |param| param.defined_by_condition.mentions?(@arch.extension(ext_name)) && param.defined_by_condition.satisfied_by_cfg_arch?(to_cfg_arch) == SatisfiedResult::Yes }.sort
     end
 
     # @param param [Parameter]

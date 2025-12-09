@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -12,6 +12,7 @@ description: |
   address formed by adding `rs1` to a signed offset `imm`.
   Zero extend the result.
   Instruction encoded in QC.EI instruction format.
+assembly: xd, imm(xs1)
 definedBy:
   allOf:
     - xlen: 32

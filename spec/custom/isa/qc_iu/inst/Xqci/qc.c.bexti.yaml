@@ -16,6 +16,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqcibm
+assembly: xd, shamt
 encoding:
   match: 100100--------01
   variables:

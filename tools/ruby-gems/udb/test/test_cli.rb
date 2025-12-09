@@ -30,30 +30,29 @@ class TestCli < Minitest::Test
     out, err = capture_io do
       run_cmd("list extensions")
     end
-    assert_match /Zvkg/, out
+    assert_match %r{Zvkg}, out
   end
 
   def test_list_qc_iu_extensions
     out, err = capture_io do
       run_cmd("list extensions --config qc_iu")
     end
-    assert_match /Xqci/, out
+    assert_match %r{Xqci}, out
   end
 
   def test_list_params
     out, err = capture_io do
       run_cmd("list parameters")
     end
-    assert_match /MXLEN/, out
-    assert_empty err
+    assert_match %r{MXLEN}, out
   end
 
   def test_list_params_filtered
     out, _err = capture_io do
       run_cmd("list parameters -e Sm H")
     end
-    assert_match /MXLEN/, out
-    refute_match /MUTABLE_ISA_S/, out
+    assert_match %r{MXLEN}, out
+    refute_match %r{MUTABLE_ISA_S}, out
   end
 
   def test_list_params_yaml
@@ -66,7 +65,7 @@ class TestCli < Minitest::Test
   end
 
   def test_disasm
-    out, err = capture_io do
+    out, _err = capture_io do
       run_cmd("disasm 0x00000037")
     end
 

@@ -17,6 +17,7 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqciio
+assembly: xs2, imm(xs1)
 encoding:
   match: -----------------100-----0001011
   variables:
