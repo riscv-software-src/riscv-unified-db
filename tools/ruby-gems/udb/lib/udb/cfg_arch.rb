@@ -1216,7 +1216,7 @@ module Udb
               inst.reachable_functions(possible_xlens.fetch(0))
             end
           else
-            inst.reachable_functions(inst.base)
+            inst.reachable_functions(T.must(inst.base))
           end
       end
       @implemented_functions = @implemented_functions.flatten
@@ -1270,7 +1270,7 @@ module Udb
               inst.reachable_functions(possible_xlens.fetch(0))
             end
           else
-            inst.reachable_functions(inst.base)
+            inst.reachable_functions(T.must(inst.base))
           end
 
         @reachable_functions.concat(fns)
