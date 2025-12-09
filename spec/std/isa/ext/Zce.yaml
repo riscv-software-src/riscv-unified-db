@@ -81,7 +81,7 @@ versions:
                     version: "= 1.0.0"
                   - name: F
         - allOf:
-            - xlen: 32
+            - xlen: 64
             - extension:
                 allOf:
                   - name: Zca
