@@ -179,6 +179,6 @@ requirements:
   extension:
     allOf:
       - name: Sv39
-      # Svinval was defined with Sm 1.13
-      - name: Sm
+      # Svnapot was defined with Priv 1.13
+      - name: S
         version: ">= 1.13"
