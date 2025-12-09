@@ -14,11 +14,11 @@ definedBy:
 description: |
   Options:
 
-    read-only::
+    ro::
       `mtvec` is read-only.
 
-    read-write::
+    rw::
       `mtvec` is read-write, but may not accept all values.
 schema:
   type: string
-  enum: ["read-only", "read-write"]
+  enum: ["ro", "rw"]

@@ -18,7 +18,7 @@ definedBy:
             includes: 1
             reason: Only relevant when vectored mode is supported
           - name: MTVEC_ACCESS
-            equal: read-write
+            equal: rw
             reason: Base address is hard-coded when MTVEC_ACCESS is read-only
 description: |
   Because `mtvec` excludes the two least-significant bits of

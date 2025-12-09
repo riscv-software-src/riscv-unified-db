@@ -24,7 +24,7 @@ fields:
 
       The implementation physical memory map may resitrict which values are legal in this field.
     type(): |
-      return MTVEC_ACCESS == "read-only" ? CsrFieldType::RO : CsrFieldType::RWR;
+      return MTVEC_ACCESS == "ro" ? CsrFieldType::RO : CsrFieldType::RWR;
     sw_write(csr_value): |
       # Base spec says that BASE must be 4-byte aligned, which will always be the case
       # implementations may put further constraints on BASE when MODE != Direct
@@ -73,7 +73,7 @@ fields:
 
       When Vectored, asynchronous interrupts jump to (`mtvec.BASE` << 2 + `mcause.CAUSE`*4) while synchronous exceptions continue to jump to (`mtvec.BASE` << 2).
     type(): |
-      if (MTVEC_ACCESS == "read-only") {
+      if (MTVEC_ACCESS == "ro") {
         return CsrFieldType::RO;
       }
 
