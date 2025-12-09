@@ -103,6 +103,8 @@ mandatory_extensions:
   version: "= 2.0"
 - name: Zicond
   version: "~> 1.0"
+- name: Zicsr
+  version: ">= 0"
 - name: Zifencei
   version: "~> 1.0"
 - name: Zihintntl

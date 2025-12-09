@@ -36,6 +36,8 @@ extensions:
       U_MODE_ENDIANNESS:
         schema:
           const: little
+  Zicsr:
+    presence: mandatory
   Zicntr:
     presence: mandatory
   Ziccif:

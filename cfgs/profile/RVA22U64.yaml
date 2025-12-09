@@ -57,6 +57,8 @@ mandatory_extensions:
   version: "= 1.0"
 - name: Zicntr
   version: "= 2.0"
+- name: Zicsr
+  version: ">= 0"
 - name: Zihintpause
   version: "= 2.0"
 - name: Zihpm
