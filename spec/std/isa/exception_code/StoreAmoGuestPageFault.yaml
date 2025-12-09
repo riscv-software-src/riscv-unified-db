@@ -7,7 +7,7 @@ $schema: exception_code_schema.json#
 kind: exception_code
 name: StoreAmoGuestPageFault
 num: 23
-display_name: Store/AMO guest page fault
+display_name: Store/AMO guest-page fault
 definedBy:
   extension:
     name: H

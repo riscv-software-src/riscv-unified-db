@@ -7,7 +7,7 @@ $schema: exception_code_schema.json#
 kind: exception_code
 name: InstructionGuestPageFault
 num: 20
-display_name: Instruction guest page fault
+display_name: Instruction guest-page fault
 definedBy:
   extension:
     name: H
