@@ -82,8 +82,6 @@ versions:
     ratification_date: 2021-11
 requirements:
   extension:
-    allOf:
-      - name: S
-      # Svinval was defined with Sm 1.13
-      - name: Sm
-        version: ">= 1.13"
+    # Svinval was defined in Priv 1.13
+    name: S
+    version: ">= 1.13"
