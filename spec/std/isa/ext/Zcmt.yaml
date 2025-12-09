@@ -43,13 +43,11 @@ company:
   url: https://riscv.org
 requirements:
   allOf:
-    -
-      extension:
+    - extension:
         allOf:
           - name: Zca
           - name: Zicsr
-    -
-      not:
+    - not:
         extension:
           name: Zcd
 versions:
