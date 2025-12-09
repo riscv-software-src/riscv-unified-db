@@ -4,6 +4,7 @@ From: ubuntu:24.04
 %files
   requirements.txt /opt/requirements.txt
   package.json /opt/node/package.json
+  package-lock.json /opt/node/package-lock.json
 
 %post
   export DEBIAN_FRONTEND=noninteractive
