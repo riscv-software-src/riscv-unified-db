@@ -478,11 +478,14 @@ namespace :test do
     siTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}"
     end
+  end
+
+  task riscv_vector_tests: ["build_riscv_tests", "build:iss"] do
+    _, build_name = configs_build_name
 
     # These extensions to the riscv-tests suite have binaries under a different diretcory
-    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli"]
+    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli_rs1_eq_zero", "vsetvli_lt_vlmax"]
     rv32uvTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml tests/isa/rv32uv-p-#{t}"
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-vector.yaml tests/isa/rv32uv-p-#{t}"
     end
-  end
 end

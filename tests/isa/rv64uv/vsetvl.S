@@ -21,24 +21,24 @@ RVTEST_CODE_BEGIN
 # tests for VLEN=128bits, AVL < VLMAX
 
   # SEW=8, LMUL=1, VLMAX=16
-  TEST_CASE(2, x2, 0x2, \
-    li x3, 0x2; \
+  TEST_CASE(2, x5, 0x2, \
+    li x2, 0x2; \
     li x4, 0x2; \
-    vsetvl x2, x3, x4; \
+    vsetvl x5, x2, x4; \
   )
 
   # SEW=8, LMUL=2, VLMAX=32
-  TEST_CASE(3, x2, 0x2, \
-    li x3, 0x2; \
+  TEST_CASE(3, x5, 0x2, \
+    li x2, 0x2; \
     li x4, 0x23; \
-    vsetvl x2, x3, x4; \
+    vsetvl x5, x2, x4; \
   )
 
   # SEW=8, LMUL=1/2, VLMAX=8
-  TEST_CASE(4, x2, 0x2, \
-    li x3, 0x2; \
+  TEST_CASE(4, x5, 0x2, \
+    li x2, 0x2; \
     li x4, 0xeb; \
-    vsetvl x2, x3, x4; \
+    vsetvl x5, x2, x4; \
   )
 
   TEST_PASSFAIL
