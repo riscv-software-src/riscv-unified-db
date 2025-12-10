@@ -16,8 +16,8 @@ definedBy:
           - name: D
           - name: Zfhmin
       - allOf:
-          - name: Zhinx
           - name: Zdinx
+          - name: Zhinxmin
 assembly: fd, fs1, rm
 encoding:
   match: 010000100010-------------1010011

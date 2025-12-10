@@ -22,10 +22,10 @@ extensions:
     version: "~> 1.0"
   S:
     presence: mandatory
-    version: "= 1.11"
+    version: "~> 1.11"
   Zifencei:
     presence: mandatory
-    version: "= 2.0"
+    version: "~> 2.0"
     note: |
       Zifencei is mandated as it is the only standard way to support
       instruction-cache coherence in RVA20 application processors.  A new
@@ -33,12 +33,12 @@ extensions:
       be added as an option in the future.
   Svbare:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Svbare is a new extension name introduced with RVA20.
   Sv39:
     presence: mandatory
-    version: "= 1.11"
+    version: "~> 1.11"
   Svade:
     presence: mandatory
     version: "~> 1.0"
@@ -49,25 +49,25 @@ extensions:
       `Svadu`.
   Ssccptr:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Ssccptr is a new extension name introduced with RVA20.
   Sstvecd:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Sstvecd is a new extension name introduced with RVA20.
   Sstvala:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Sstvala is a new extension name introduced with RVA20.
   Sv48:
     presence: optional
-    version: "= 1.11"
+    version: "~> 1.11"
   Ssu64xl:
     presence: optional
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Ssu64xl is a new extension name introduced with RVA20.
 param_constraints:

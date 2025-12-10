@@ -43,7 +43,7 @@ namespace udb {
               else
                 []
               end
-            csr.fields.each do |f|
+            csr.possible_fields.each do |f|
               ast = f.pruned_reset_value_ast
               unless ast.nil?
                 defined_kids += ast.find_referenced_csrs

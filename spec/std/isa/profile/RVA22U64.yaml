@@ -25,10 +25,10 @@ extensions:
       Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes
   Zihpm:
     presence: mandatory
-    version: "= 2.0"
+    version: "~> 2.0"
   Zihintpause:
     presence: mandatory
-    version: "= 2.0"
+    version: "~> 2.0"
     note: |
       While the `pause` instruction is a HINT can be implemented as a
       NOP and hence trivially supported by hardware implementers, its

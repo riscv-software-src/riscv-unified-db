@@ -14,23 +14,23 @@ params:
   MXLEN: 64
 mandatory_extensions:
 - name: A
-  version: "= 2.1"
+  version: "~> 2.1"
 - name: B
   version: "~> 1.0.0"
 - name: C
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: D
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: F
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: I
   version: "~> 2.1"
 - name: M
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: U
   version: "~> 2.0"
 - name: Za128rs
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Za64rs
   version: "~> 1.0"
 - name: Zawrs
@@ -56,15 +56,15 @@ mandatory_extensions:
 - name: Zicboz
   version: "~> 1.0"
 - name: Ziccamoa
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Ziccif
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Zicclsm
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Ziccrse
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Zicntr
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zicond
   version: "~> 1.0"
 - name: Zicsr
@@ -72,9 +72,9 @@ mandatory_extensions:
 - name: Zihintntl
   version: "~> 1.0"
 - name: Zihintpause
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zihpm
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zimop
   version: "~> 1.0"
 - name: Zkt

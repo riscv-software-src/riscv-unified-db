@@ -14,54 +14,54 @@ params:
   MXLEN: 64
 mandatory_extensions:
 - name: A
-  version: "= 2.1"
+  version: "~> 2.1"
 - name: C
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: D
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: F
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: I
   version: "~> 2.1"
 - name: M
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: S
-  version: "= 1.11"
+  version: "~> 1.11"
 - name: Ssccptr
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Sstvala
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Sstvecd
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Sv39
-  version: "= 1.11"
+  version: "~> 1.11"
 - name: Svade
   version: "~> 1.0"
 - name: Svbare
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: U
   version: "~> 1.0"
 - name: Za128rs
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Ziccamoa
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Ziccif
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Zicclsm
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Ziccrse
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Zicntr
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zicsr
   version: ">= 0"
 - name: Zifencei
-  version: "= 2.0"
+  version: "~> 2.0"
 non_mandatory_extensions:
 - name: Ssu64xl
-  version: "= 1.0"
+  version: "~> 1.0"
 - name: Sv48
-  version: "= 1.11"
+  version: "~> 1.11"
 - name: Zihpm
-  version: "= 2.0"
+  version: "~> 2.0"
 additional_extensions: true

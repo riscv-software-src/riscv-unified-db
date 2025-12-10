@@ -46,7 +46,4 @@ versions:
     ratification_date: 2021-11
 requirements:
   extension:
-    allOf:
-      - name: Zfinx
-      - not:
-          name: D
+    name: Zfinx

@@ -16,10 +16,6 @@ description: |
   FCVT.S.H and FCVT.H.S. If the Zdinx extension is present, the FCVT.D.H and FCVT.H.D instructions
   are also included.
 
-  [NOTE]
-  In the future, an RV64Zqinx quad-precision extension could be defined analogously to RV32Zdinx.
-  An RV32Zqinx extension could also be defined but would require quad-register groups.
-
 type: unprivileged
 versions:
   - version: "1.0.0"

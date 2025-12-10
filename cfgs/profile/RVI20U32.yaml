@@ -17,19 +17,19 @@ mandatory_extensions:
   version: "~> 2.1"
 non_mandatory_extensions:
 - name: A
-  version: "= 2.1"
+  version: "~> 2.1"
 - name: C
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: D
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: F
-  version: "= 2.2"
+  version: "~> 2.2"
 - name: M
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zicntr
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zifencei
-  version: "= 2.0"
+  version: "~> 2.0"
 - name: Zihpm
-  version: "= 2.0"
+  version: "~> 2.0"
 additional_extensions: true

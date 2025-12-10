@@ -23,8 +23,8 @@ Base::
 |===
 | RV32 | RV64
 
-| <%= (inst.defined_by_condition & Udb::Condition::Xlen32).satisfiable? ? "&#x2713;" : "" %>
-| <%= (inst.defined_by_condition & Udb::Condition::Xlen64).satisfiable? ? "&#x2713;" : "" %>
+|<%= (inst.defined_by_condition & Udb::Condition::Xlen32).satisfiable? ? " &#x2713;" : "" %>
+|<%= (inst.defined_by_condition & Udb::Condition::Xlen64).satisfiable? ? " &#x2713;" : "" %>
 |===
 
 Assembly::
