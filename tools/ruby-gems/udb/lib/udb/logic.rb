@@ -302,11 +302,11 @@ module Udb
     class ParameterComparisonType < T::Enum
       enums do
         Equal = new("equal")
-        NotEqual = new("not_equal")
-        LessThan = new("less_than")
-        GreaterThan = new("greater_than")
-        LessThanOrEqual = new("less_than_or_equal")
-        GreaterThanOrEqual = new("greater_than_or_equal")
+        NotEqual = new("notEqual")
+        LessThan = new("lessThan")
+        GreaterThan = new("greaterThan")
+        LessThanOrEqual = new("lessThanOrEqual")
+        GreaterThanOrEqual = new("greaterThanOrEqual")
         Includes = new("includes")
         OneOf = new("oneOf")
       end
@@ -344,33 +344,33 @@ module Udb
     def negate
       if @yaml.key?("equal")
         new_yaml = @yaml.dup
-        new_yaml["not_equal"] = @yaml["equal"]
+        new_yaml["notEqual"] = @yaml["equal"]
         new_yaml.delete("equal")
         ParameterTerm.new(new_yaml)
-      elsif @yaml.key?("not_equal")
+      elsif @yaml.key?("notEqual")
         new_yaml = @yaml.dup
-        new_yaml["equal"] = @yaml["not_equal"]
-        new_yaml.delete("not_equal")
+        new_yaml["equal"] = @yaml["notEqual"]
+        new_yaml.delete("notEqual")
         ParameterTerm.new(new_yaml)
-      elsif @yaml.key?("less_than")
+      elsif @yaml.key?("lessThan")
         new_yaml = @yaml.dup
-        new_yaml["greater_than_or_equal"] = @yaml["less_than"]
-        new_yaml.delete("less_than")
+        new_yaml["greaterThanOrEqual"] = @yaml["lessThan"]
+        new_yaml.delete("lessThan")
         ParameterTerm.new(new_yaml)
-      elsif @yaml.key?("greater_than")
+      elsif @yaml.key?("greaterThan")
         new_yaml = @yaml.dup
-        new_yaml["less_than_or_equal"] = @yaml["greater_than"]
-        new_yaml.delete("greater_than")
+        new_yaml["lessThanOrEqual"] = @yaml["greaterThan"]
+        new_yaml.delete("greaterThan")
         ParameterTerm.new(new_yaml)
-      elsif @yaml.key?("less_than_or_equal")
+      elsif @yaml.key?("lessThanOrEqual")
         new_yaml = @yaml.dup
-        new_yaml["greater_than"] = @yaml["less_than_or_equal"]
-        new_yaml.delete("less_than_or_equal")
+        new_yaml["greaterThan"] = @yaml["lessThanOrEqual"]
+        new_yaml.delete("lessThanOrEqual")
         ParameterTerm.new(new_yaml)
-      elsif @yaml.key?("greater_than_or_equal")
+      elsif @yaml.key?("greaterThanOrEqual")
         new_yaml = @yaml.dup
-        new_yaml["less_than"] = @yaml["greater_than_or_equal"]
-        new_yaml.delete("greater_than_or_equal")
+        new_yaml["lessThan"] = @yaml["greaterThanOrEqual"]
+        new_yaml.delete("greaterThanOrEqual")
         ParameterTerm.new(new_yaml)
       elsif @yaml.key?("includes")
         nil
@@ -385,15 +385,15 @@ module Udb
     def comparison_type
       if @yaml.key?("equal")
         ParameterComparisonType::Equal
-      elsif @yaml.key?("not_equal")
+      elsif @yaml.key?("notEqual")
         ParameterComparisonType::NotEqual
-      elsif @yaml.key?("less_than")
+      elsif @yaml.key?("lessThan")
         ParameterComparisonType::LessThan
-      elsif @yaml.key?("greater_than")
+      elsif @yaml.key?("greaterThan")
         ParameterComparisonType::GreaterThan
-      elsif @yaml.key?("less_than_or_equal")
+      elsif @yaml.key?("lessThanOrEqual")
         ParameterComparisonType::LessThanOrEqual
-      elsif @yaml.key?("greater_than_or_equal")
+      elsif @yaml.key?("greaterThanOrEqual")
         ParameterComparisonType::GreaterThanOrEqual
       elsif @yaml.key?("includes")
         ParameterComparisonType::Includes
@@ -424,15 +424,15 @@ module Udb
       when ParameterComparisonType::Equal
         e == @yaml["equal"]
       when ParameterComparisonType::NotEqual
-        e != @yaml["not_equal"]
+        e != @yaml["notEqual"]
       when ParameterComparisonType::LessThan
-        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) < @yaml["less_than"]
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) < @yaml["lessThan"]
       when ParameterComparisonType::GreaterThan
-        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) > @yaml["greater_than"]
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) > @yaml["greaterThan"]
       when ParameterComparisonType::LessThanOrEqual
-        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) <= @yaml["less_than_or_equal"]
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) <= @yaml["lessThanOrEqual"]
       when ParameterComparisonType::GreaterThanOrEqual
-        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) >= @yaml["greater_than_or_equal"]
+        T.cast(e, T.any(Z3ParameterTerm, Z3::BitvecExpr, Z3::IntExpr)) >= @yaml["greaterThanOrEqual"]
       when ParameterComparisonType::Includes
         expr = T.cast(e, Z3ParameterTerm)[0] == @yaml["includes"]
         T.cast(e, Z3ParameterTerm).max_items.times do |i|
@@ -457,15 +457,15 @@ module Udb
       when ParameterComparisonType::Equal
         (value == @yaml["equal"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::NotEqual
-        (value != @yaml["not_equal"]) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value != @yaml["notEqual"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::LessThan
-        (value < @yaml["less_than"]) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value < @yaml["lessThan"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::GreaterThan
-        (value > @yaml["greater_than"]) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value > @yaml["greaterThan"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::LessThanOrEqual
-        (value <= @yaml["less_than_or_equal"]) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value <= @yaml["lessThanOrEqual"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::GreaterThanOrEqual
-        (value >= @yaml["greater_than_or_equal"]) ? SatisfiedResult::Yes : SatisfiedResult::No
+        (value >= @yaml["greaterThanOrEqual"]) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::Includes
         (value.include?(@yaml["includes"])) ? SatisfiedResult::Yes : SatisfiedResult::No
       when ParameterComparisonType::OneOf
@@ -535,7 +535,7 @@ module Udb
             { "param" => { "name" => @yaml["name"], "equal" => @yaml.fetch("oneOf").fetch(i) } }
           ]
           els += @yaml.fetch("oneOf").size.times.select { |j| j != i }.map do |j|
-            { "param" => { "name" => @yaml["name"], "not_equal" => @yaml.fetch("oneOf").fetch(j) } }
+            { "param" => { "name" => @yaml["name"], "notEqual" => @yaml.fetch("oneOf").fetch(j) } }
           end
           { "allOf" => els }
         end
@@ -717,9 +717,9 @@ module Udb
             self_implies_other
           elsif other_param.to_h.key?("size") && other_param.to_h.key?("equals") && (other_param.to_h.fetch("equals") == 0)
             self_implies_not_other
-          elsif other_param.to_h.key?("size") && other_param.to_h.key?("not_equal") && (other_param.to_h.fetch("not_equal") == 0)
+          elsif other_param.to_h.key?("size") && other_param.to_h.key?("notEqual") && (other_param.to_h.fetch("notEqual") == 0)
             self_implies_other
-          elsif other_param.to_h.key?("size") && other_param.to_h.key?("greater_than") && (other_param.to_h.fetch("greater_than") == 0)
+          elsif other_param.to_h.key?("size") && other_param.to_h.key?("greaterThan") && (other_param.to_h.fetch("greaterThan") == 0)
             self_implies_other
           end
         elsif @yaml.key?("size")

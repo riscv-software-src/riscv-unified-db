@@ -221,7 +221,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 4,
-      "not_equal" => true,
+      "notEqual" => true,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -245,7 +245,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 4,
-      "not_equal" => false,
+      "notEqual" => false,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -257,7 +257,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 10,
-      "less_than" => 5,
+      "lessThan" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -270,7 +270,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 10,
-      "greater_than" => 5,
+      "greaterThan" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -283,7 +283,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 10,
-      "less_than_or_equal" => 5,
+      "lessThanOrEqual" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -296,7 +296,7 @@ class TestLogic < Minitest::Test
     h = {
       "name" => "SCOUNTENABLE_EN",
       "index" => 10,
-      "greater_than_or_equal" => 5,
+      "greaterThanOrEqual" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -331,7 +331,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "not_equal" => true,
+      "notEqual" => true,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -351,7 +351,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "not_equal" => false,
+      "notEqual" => false,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -361,7 +361,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "less_than" => 5,
+      "lessThan" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -372,7 +372,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "greater_than" => 5,
+      "greaterThan" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -383,7 +383,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "less_than_or_equal" => 5,
+      "lessThanOrEqual" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)
@@ -394,7 +394,7 @@ class TestLogic < Minitest::Test
 
     h = {
       "name" => "SCOUNTENABLE_EN",
-      "greater_than_or_equal" => 5,
+      "greaterThanOrEqual" => 5,
       "reason" => "blah"
     }
     term = ParameterTerm.new(h)

@@ -75,12 +75,15 @@ requirements:  # requirements: takes a condition
 
 == Terms
 
-There are two types of terms in UDB conditions:
+There are three types of terms in UDB conditions:
 
 * an *extension requirement*
 ** For example, extension `Sm`, version `>= 1.12`
 * a *parameter requirement*
 ** For example, `MXLEN` equals `32`
+* an *xlen requirement*
+** For example, `xlen` equals '32' +
+   (`xlen` references the runtime xlen in the current mode, which may be different than `MXLEN`)
 
 Terms can combined using boolean operations (AND, OR, etc.) to form arbitrarily complex conditions,
 as described in <<bool_ops,boolean operators>>.
@@ -186,28 +189,64 @@ idl(): |
 === YAML Form
 
 A parameter requirement is identified by the key `param`.
-It expects a parameter `name`, a single comparison, a `reason` description, and an optional `index` when the parameter is an array and the comparison is for a single array element.
+It expects a parameter `name`, and a test.
 
-The comparison is one of:
+When the parameter is a scalar, the test must be one of the following:
 
-[cols="m,d,m"]
+[cols="1m,3d,2m"]
 |===
 | Key                   | Meaning                                     | Example
 
-| `equal`               | Parameter value equals                      | equal: 5 +
-                                                                        equal: "string value" +
-                                                                        equal: true
-| not_equal             | Parameter value is not equal to             | not_equal: 5 +
-                                                                        not_equal: "string value" +
-                                                                        not_equal: true
-| less_than             | Parameter value is less than                | less_than: 5
-| greater_than          | Parameter value is greater than             | greater_than: 5
-| less_than_or_equal    | Parameter value is less than or equal to    | less_than: 5
-| greater_than_or_equal | Parameter value is greater than or equal to | greater_than: 5
-| includes              | Array parameter includes a value            | includes: 5 +
-                                                                        includes: "string value" +
-                                                                        includes: true
+| equal                 | Parameter value equals
+a|
+
+[cols="m"]
+!===
+! equal: 5
+! equal: "string value"
+! equal: true
+!===
+
+| notEqual              | Parameter value is not equal to
+a|
+
+[cols="m"]
+!===
+! notEqual: 5
+! notEqual: "string value"
+!  notEqual: true
+!===
+
+| lessThan             | Parameter value is less than                 | lessThan: 5
+| greaterThan          | Parameter value is greater than              | greaterThan: 5
+| lessThanOrEqual    | Parameter value is less than or equal to       | lessThan: 5
+| greaterThanOrEqual | Parameter value is greater than or equal to    | greaterThan: 5
 | oneOf                 | Parameter value is equal to one element of an array | oneOf: [5, 7]
+|===
+
+When the parameter is an array, the test can either check a specific element, check for inclusion,
+or compare the overall size of the array.
+
+[cols="1m,3d,2m"]
+|===
+| Key                   | Meaning                                       | Example
+
+| index                 | Perform scalar comparison on element at index +
+                          Must be paired with a scalar comparison.      | index: 1 +
+                                                                          equal: 5
+| includes              | Array parameter includes a value
+a|
+
+[cols="m"]
+!===
+! includes: 5
+! includes: "string value"
+! includes: true
+!===
+
+| size                  | Use the array size as the comparison value +
+                          Must be paired with a scalar comparison       | size: true +
+                                                                          equal: 2
 |===
 
 For example:
@@ -450,6 +489,8 @@ The available functions are:
 ** True if ExtensionName::A is either listed as an implemented extension in the config, or if A is implied by an implemented extension.
 * `implemented_version?(ExtensionName::A, ">= 1.0")`
 ** True if ExtensionName::A, version greater than or equal to 1.0 is either listed as an implemented extension in the config, or if A, version greater than or equal to 1.0 is implied by an implemented extension.
+* `xlen()`
+** Runtime XLEN in the current mode (32 or 64)
 * `$array_includes?(ARY_PARAM, 1)`
 ** True if ARY_PARAM includes the value 1
 * `$ary_size(ARY_PARAM)`

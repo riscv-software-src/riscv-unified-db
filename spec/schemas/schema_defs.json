@@ -595,7 +595,7 @@
                     }
                   ]
                 },
-                "not_equal": {
+                "notEqual": {
                   "oneOf": [
                     {
                       "type": "integer"
@@ -608,16 +608,16 @@
                     }
                   ]
                 },
-                "greater_than": {
+                "greaterThan": {
                   "type": "integer"
                 },
-                "less_than": {
+                "lessThan": {
                   "type": "integer"
                 },
-                "greater_than_or_equal": {
+                "greaterThanOrEqual": {
                   "type": "integer"
                 },
-                "less_than_or_equal": {
+                "lessThanOrEqual": {
                   "type": "integer"
                 },
                 "includes": {

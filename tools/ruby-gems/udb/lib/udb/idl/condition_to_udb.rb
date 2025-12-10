@@ -191,11 +191,11 @@ module Idl
   class BinaryExpressionAst < AstNode
     OP_TO_KEY = {
       "==" => "equal",
-      "!=" => "not_equal",
-      ">" => "greater_than",
-      "<" => "less_than",
-      ">=" => "greater_than_or_equal",
-      "<=" => "less_than_or_equal"
+      "!=" => "notEqual",
+      ">" => "greaterThan",
+      "<" => "lessThan",
+      ">=" => "greaterThanOrEqual",
+      "<=" => "lessThanOrEqual"
     }
     sig { override.params(symtab: Idl::SymbolTable).returns(UdbHashType) }
     def to_udb_h(symtab)
