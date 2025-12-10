@@ -17438,10 +17438,10 @@ Included in::
 
 This instruction requires the following:
 
+++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
 ++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
-++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx])
-++(++!xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
-++(++!xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
+++(++!xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx] && xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
+++(++!xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx] && xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
 
 
 [#udb:doc:inst:fcvt_d_l]
@@ -17783,10 +17783,10 @@ Included in::
 
 This instruction requires the following:
 
+++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
 ++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
-++(++xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && !xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx])
-++(++!xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
-++(++!xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zhinx.adoc#udb:doc:ext:Zhinx[Zhinx] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx])
+++(++!xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx] && xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
+++(++!xref:exts:D.adoc#udb:doc:ext:D[D] && xref:exts:Zdinx.adoc#udb:doc:ext:Zdinx[Zdinx] && xref:exts:Zhinxmin.adoc#udb:doc:ext:Zhinxmin[Zhinxmin])
 
 
 [#udb:doc:inst:fcvt_h_l]
