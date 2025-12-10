@@ -70,18 +70,16 @@ module Udb
         end
         "(#{sum.join(" || ")})"
       else
-        raise "unexpected logic node type: #{type}"
+        raise "unexpected logic node type: #{type}  #{self}"
       end
     end
   end
 
   class Condition
 
-    sig { params(block: T.proc.params(arg0: T.any(Udb::ExtensionTerm, Udb::ParameterTerm, Udb::XlenTerm)).returns(String)).returns(String) }
-    def to_cxx(&block)
-      raise ArgumentError, "Missing block" unless block_given?
-
-      to_logic_tree(expand: false).to_cxx(&block)
+    sig { params(expand: T::Boolean, block: T.proc.params(arg0: T.any(Udb::ExtensionTerm, Udb::ParameterTerm, Udb::XlenTerm)).returns(String)).returns(String) }
+    def to_cxx(expand: false, &block)
+      to_logic_tree(expand:).to_cxx(&block)
     end
   end
 end

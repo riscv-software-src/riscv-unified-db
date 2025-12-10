@@ -145,7 +145,7 @@ module Udb
     def unsatisfiable?; end
 
     # is this condition in any way affected by term?
-    sig { params(term: T.any(Extension, ExtensionVersion, ExtensionRequirement, Parameter, ParameterWithValue), expand: T::Boolean).returns(T::Boolean) }
+    sig { params(term: T.any(Extension, ExtensionVersion, ExtensionRequirement, Parameter, ParameterWithValue, Symbol), expand: T::Boolean).returns(T::Boolean) }
     def mentions?(term, expand: true)
       to_logic_tree(expand:).terms.any? do |t|
         case t
@@ -159,46 +159,25 @@ module Udb
       end
     end
 
+    sig { params(expand: T::Boolean).returns(T::Boolean) }
+    def mentions_xlen?(expand: true)
+      to_logic_tree(expand:).terms.any? do |t|
+        t.is_a?(XlenTerm)
+      end
+    end
+
     # is this condition only satisfied when xlen == 32?
     sig { returns(T::Boolean) }
     def rv32_only?
-      cb32 = LogicNode.make_eval_cb do |term|
-        if term.is_a?(XlenTerm) && term.xlen == 32
-          SatisfiedResult::No
-        else
-          SatisfiedResult::Maybe
-        end
-      end
-      cb64 = LogicNode.make_eval_cb do |term|
-        if term.is_a?(XlenTerm) && term.xlen == 64
-          SatisfiedResult::No
-        else
-          SatisfiedResult::Maybe
-        end
-      end
-      to_logic_tree(expand: true).eval_cb(cb32) == SatisfiedResult::No && \
-        to_logic_tree(expand: true).eval_cb(cb64) != SatisfiedResult::No
+      (self & Condition.not(Condition::Xlen32, @cfg_arch)).unsatisfiable? & \
+      (self & Condition.not(Condition::Xlen64, @cfg_arch)).satisfiable?
     end
 
     # is this condition only satisfied when xlen == 64?
     sig { returns(T::Boolean) }
     def rv64_only?
-      cb32 = LogicNode.make_eval_cb do |term|
-        if term.is_a?(XlenTerm) && term.xlen == 32
-          SatisfiedResult::No
-        else
-          SatisfiedResult::Maybe
-        end
-      end
-      cb64 = LogicNode.make_eval_cb do |term|
-        if term.is_a?(XlenTerm) && term.xlen == 64
-          SatisfiedResult::No
-        else
-          SatisfiedResult::Maybe
-        end
-      end
-      to_logic_tree(expand: true).eval_cb(cb64) == SatisfiedResult::No && \
-        to_logic_tree(expand: true).eval_cb(cb32) != SatisfiedResult::No
+      (self & Condition.not(Condition::Xlen64, @cfg_arch)).unsatisfiable? & \
+      (self & Condition.not(Condition::Xlen32, @cfg_arch)).satisfiable?
     end
 
     # return list of all extension requirements in the condition
@@ -437,7 +416,7 @@ module Udb
     sig {
       params(
         yaml: T.any(T::Hash[String, T.untyped], T::Boolean),
-        cfg_arch: T.nilable(ConfiguredArchitecture),
+        cfg_arch: ConfiguredArchitecture,
         input_file: T.nilable(Pathname),
         input_line: T.nilable(Integer)
       )
@@ -660,6 +639,21 @@ module Udb
       end
 
       expansion_clauses
+    end
+
+    def to_expanded_logic_tree_shallow
+      @expanded_logic_tree_shallow ||=
+        begin
+          starting_tree = to_logic_tree_internal
+
+          expansion_clauses = expand_term_requirements(starting_tree)
+
+          if expansion_clauses.empty?
+            starting_tree
+          else
+            LogicNode.new(LogicNodeType::And, [starting_tree] + expansion_clauses)
+          end
+        end
     end
 
     sig { override.params(expand: T::Boolean).returns(LogicNode) }

@@ -132,7 +132,6 @@ namespace udb {
 
       void reset(uint64_t reset_pc) override {
         this->HartBase<SocType>::reset(reset_pc);
-        m_csrs.reset();
 
         m_pc = Bits<MXLEN>{reset_pc};
 
@@ -144,6 +143,8 @@ namespace udb {
         // <%= global.id %> = unknown;
         <%- end -%>
         <%- end -%>
+
+        m_csrs.reset();
       }
 
       bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const override

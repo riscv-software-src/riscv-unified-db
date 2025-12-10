@@ -32,6 +32,7 @@ RVA20S64:
 - Zicclsm = 1.0 mandatory
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
+- Zicsr any mandatory
 - Zifencei = 2.0 mandatory
 - Ssu64xl = 1.0 optional
 - Sv48 = 1.11 optional
@@ -50,9 +51,11 @@ RVA20U64:
 - Zicclsm = 1.0 mandatory
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
+- Zicsr any mandatory
 - Zihpm = 2.0 optional
 RVA22S64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -63,7 +66,7 @@ RVA22S64:
 - Sscounterenw = 1.0 mandatory
 - Sstvala = 1.0 mandatory
 - Sstvecd = 1.0 mandatory
-- Sv39 = 1.11 mandatory
+- Sv39 ~> 1.12 mandatory
 - Svade ~> 1.0 mandatory
 - Svbare = 1.0 mandatory
 - Svinval ~> 1.0 mandatory
@@ -84,6 +87,7 @@ RVA22S64:
 - Zicclsm = 1.0 mandatory
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
+- Zicsr any mandatory
 - Zifencei = 2.0 mandatory
 - Zihintpause = 2.0 mandatory
 - Zihpm = 2.0 mandatory
@@ -98,6 +102,7 @@ RVA22S64:
 - Zkr ~> 1.0 optional
 RVA22U64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -119,6 +124,7 @@ RVA22U64:
 - Zicclsm = 1.0 mandatory
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
+- Zicsr any mandatory
 - Zihintpause = 2.0 mandatory
 - Zihpm = 2.0 mandatory
 - Zkt ~> 1.0 mandatory
@@ -128,6 +134,7 @@ RVA22U64:
 - Zks ~> 1.0 optional
 RVA23M64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -174,6 +181,7 @@ RVA23M64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
@@ -196,6 +204,7 @@ RVA23M64:
 - Zks ~>1.0 {'optional': 'localized'}
 RVA23S64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -240,6 +249,7 @@ RVA23S64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
@@ -259,6 +269,7 @@ RVA23S64:
 - Zkr ~>1.0 {'optional': 'expansion'}
 RVA23U64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -287,6 +298,7 @@ RVA23U64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
 - Zihpm = 2.0 mandatory
@@ -300,7 +312,6 @@ RVA23U64:
 - Zama16b ~>1.0 {'optional': 'development'}
 - Ziccamoc ~>1.0 {'optional': 'development'}
 - Zvbc ~>1.0 {'optional': 'development'}
-- Ssstrict ~>1.0 {'optional': 'expansion'}
 - Zbc ~>1.0 {'optional': 'expansion'}
 - Zfbfmin ~>1.0 {'optional': 'expansion'}
 - Zfh ~>1.0 {'optional': 'expansion'}
@@ -313,6 +324,7 @@ RVA23U64:
 - Zvksg ~>1.0 {'optional': 'localized'}
 RVB23M64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -354,6 +366,7 @@ RVB23M64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
@@ -376,6 +389,7 @@ RVB23M64:
 - Zks ~>1.0 {'optional': 'localized'}
 RVB23S64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -415,6 +429,7 @@ RVB23S64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
@@ -437,6 +452,7 @@ RVB23S64:
 - Zks ~>1.0 {'optional': 'localized'}
 RVB23U64:
 - A = 2.1 mandatory
+- B ~> 1.0.0 mandatory
 - C = 2.0 mandatory
 - D = 2.2 mandatory
 - F = 2.2 mandatory
@@ -462,6 +478,7 @@ RVB23U64:
 - Ziccrse = 1.0 mandatory
 - Zicntr = 2.0 mandatory
 - Zicond ~>1.0 mandatory
+- Zicsr any mandatory
 - Zihintntl ~>1.0 mandatory
 - Zihintpause = 2.0 mandatory
 - Zihpm = 2.0 mandatory
@@ -471,7 +488,6 @@ RVB23U64:
 - Zacas ~>1.0 {'optional': 'development'}
 - Zama16b ~>1.0 {'optional': 'development'}
 - Ziccamoc ~>1.0 {'optional': 'development'}
-- Ssstrict ~>1.0 {'optional': 'expansion'}
 - Supm ~>1.0 {'optional': 'expansion'}
 - V ~> 1.0 {'optional': 'expansion'}
 - Zbc ~>1.0 {'optional': 'expansion'}

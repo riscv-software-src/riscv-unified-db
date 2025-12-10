@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
   s.add_dependency "terminal-table"
   s.add_dependency "thor"
   s.add_dependency "tilt"
+  s.add_dependency "tty-command"
   s.add_dependency "tty-logger"
   s.add_dependency "tty-progressbar"
   s.add_dependency "udb_helpers"

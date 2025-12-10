@@ -302,7 +302,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
-        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
+        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4 BUILD_TYPE=debug
   regress-riscv-tests:
     runs-on: ubuntu-latest
     env:
@@ -313,7 +313,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run RV32 riscv-tests
-        run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4
+        run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-riscv-tests-64:
     runs-on: ubuntu-latest
     env:
@@ -324,7 +324,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run RV64 riscv-tests
-        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4
+        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-xqci-doc:
     runs-on: ubuntu-latest
     env:

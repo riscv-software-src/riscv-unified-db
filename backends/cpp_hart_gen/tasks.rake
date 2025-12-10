@@ -2,6 +2,7 @@
 # typed: false
 require "active_support"
 require "active_support/core_ext/string/inflections"
+require "tty-command"
 
 require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
@@ -318,7 +319,13 @@ namespace :gen do
       end
     end
 
-    generated_files.each { |fn| Rake::Task["#{fn}.unformatted"].invoke }
+    pb =
+      Udb.create_progressbar(
+        "Generating ISS source files (:file) [:bar] :current/:total",
+        total: generated_files.size,
+        clear: true
+      )
+    generated_files.each { |fn| pb.advance(file: File.basename(fn)); Rake::Task["#{fn}.unformatted"].invoke }
 
     multitask "__generate_formatted_cpp_#{build_name}" => generated_files
     Rake::MultiTask["__generate_formatted_cpp_#{build_name}"].invoke
@@ -411,6 +418,11 @@ namespace :test do
     end
   end
 
+  def run_test(cmd, test_name)
+    @cmd_runner ||= TTY::Command.new
+    @cmd_runner.run(cmd, timeout: 10, only_output_on_error: true)
+  end
+
   task riscv_tests: ["build_riscv_tests", "build:iss"] do
     configs_name, build_name = configs_build_name
     rv32uiTests = ["simple", "add", "addi", "and",
@@ -464,19 +476,31 @@ namespace :test do
     end
 
     uiTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}ui-p-#{t}"
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}ui-p-#{t}",
+        "#{configs_name[0]}ui-p-#{t}"
+      )
     end
 
     umTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}um-p-#{t}"
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}um-p-#{t}",
+        "#{configs_name[0]}um-p-#{t}"
+      )
     end
 
     ucTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}uc-p-#{t}"
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}uc-p-#{t}",
+        "#{configs_name[0]}um-p-#{t}"
+      )
     end
 
     siTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}"
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}",
+        "#{configs_name[0]}si-p-#{t}"
+      )
     end
   end
 end
