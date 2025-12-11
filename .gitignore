@@ -27,6 +27,7 @@ __pycache__/
 sorbet
 !tools/ruby-gems/idlc/sorbet
 !tools/ruby-gems/udb/sorbet
+!tools/ruby-gems/udb/lib/sorbet
 coverage
 
 # emacs backup files
