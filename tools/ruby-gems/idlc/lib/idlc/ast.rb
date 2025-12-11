@@ -5674,12 +5674,35 @@ module Idl
   end
 
   class UnknownLiteral
+    attr_reader :known_value, :unknown_mask
     def initialize(known_value, unknown_mask)
       @known_value = known_value
       @unknown_mask = unknown_mask
     end
     def bit_length
       [@known_value.bit_length, @unknown_mask.bit_length].max
+    end
+    def zero? = false
+    def &(other)
+      if other.is_a?(Integer)
+        new_known_value = @known_value & other
+        new_unknown_mask = @unknown_mask & other
+        if new_unknown_mask.zero?
+          new_known_value
+        else
+          UnknownLiteral.new(new_known_value, new_unknown_mask)
+        end
+      elsif other.is_a?(UnknownLiteral)
+        new_known_value = @known_value & other.known_value
+        new_unknown_mask = (@unknown_mask | other.unknown_mask) & other.known_value
+        if new_unknown_mask.zero?
+          new_known_value
+        else
+          UnknownLiteral.new(new_known_value, new_unknown_mask)
+        end
+      else
+        raise "unexpected"
+      end
     end
     def to_s
       known_str = @known_value.to_s(2).reverse
@@ -5890,13 +5913,13 @@ module Idl
             known_value =
               case radix_id
               when "b"
-                value.gsub(/xX/, "0").to_i(2)
+                value.gsub(/[xX]/, "0").to_i(2)
               when "o"
-                value.gsub(/xX/, "0").to_i(8)
+                value.gsub(/[xX]/, "0").to_i(8)
               when "d"
                 raise "impossible"
               when "h"
-                value.gsub(/xX/, "0").to_i(16)
+                value.gsub(/[xX]/, "0").to_i(16)
               end
             unknown_mask =
               case radix_id
