@@ -258,6 +258,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: Generate HTML ISA manual
         run: ./do gen:html_manual
   regress-gen-instruction-appendix:
