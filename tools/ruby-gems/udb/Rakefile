@@ -54,7 +54,7 @@ namespace :chore do
       require "simplecov-cobertura"
 
       SimpleCov.collate Dir["#{args[:cov_dir]}/*.resultset.json"] do
-        coverage_dir (UDB_ROOT / "coverage").to_s
+        coverage_dir (RUBY_UDB_ROOT / "coverage").to_s
         formatter SimpleCov::Formatter::MultiFormatter.new([
           SimpleCov::Formatter::CoberturaFormatter,
           SimpleCov::Formatter::HTMLFormatter,
