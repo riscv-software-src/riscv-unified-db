@@ -29,7 +29,7 @@ jobs:
       - name: Get container SHA
         id: calc_sha
         run: |
-          SHA=$(sha256sum -z .devcontainer/Dockerfile | tr -d ' ' | tr -d '\0')
+          SHA=$(sha256sum -z < .devcontainer/Dockerfile | tr -d ' \0-')
           echo "SHA=$SHA" >> $GITHUB_ENV
           echo "container_sha=$SHA" >> $GITHUB_OUTPUT
 
