@@ -455,6 +455,34 @@ tests:
     =: 8'd4
     d: unknown value
 
+  - e: 8'hxf & 8'h84
+    =: 8'bx0000100
+    d: unknown value
+
+  - e: 8'hxf & 8'hfx
+    =: 8'hxx
+    d: unknown value
+
+  - e: 8'hxf & 8'bx010x000
+    =: 8'bx0x0x000
+    d: unknown value
+
+  - e: 8'hxf | 8'd4
+    =: 8'hxf
+    d: unknown value
+
+  - e: 8'hxf | 8'h84
+    =: 8'b1xxx1111
+    d: unknown value
+
+  - e: 8'hxf | 8'hfx
+    =: 8'hff
+    d: unknown value
+
+  - e: 8'hxf | 8'bx010x000
+    =: 8'bxx1x1111
+    d: unknown value
+
   ###########################################################
   # Logical
   ###########################################################

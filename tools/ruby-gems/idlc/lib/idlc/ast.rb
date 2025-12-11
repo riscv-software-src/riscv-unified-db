@@ -5694,7 +5694,37 @@ module Idl
         end
       elsif other.is_a?(UnknownLiteral)
         new_known_value = @known_value & other.known_value
-        new_unknown_mask = (@unknown_mask | other.unknown_mask) & other.known_value
+        new_unknown_mask = (@unknown_mask | other.unknown_mask) & ~(~@known_value & ~ @unknown_mask) & ~(~other.known_value & ~other.unknown_mask)
+        if new_unknown_mask.zero?
+          new_known_value
+        else
+          UnknownLiteral.new(new_known_value, new_unknown_mask)
+        end
+      else
+        raise "unexpected"
+      end
+    end
+    def ==(other)
+      if other.is_a?(Integer)
+        @known_value == other && @unknown_mask.zero?
+      elsif other.is_a?(UnknownLiteral)
+        (@known_value & ~@unknown_mask) == (other.known_value & ~other.unknown_mask) && @unknown_mask == other.unknown_mask
+      else
+        raise "unexpected"
+      end
+    end
+    def |(other)
+      if other.is_a?(Integer)
+        new_known_value = @known_value | other
+        new_unknown_mask = @unknown_mask & ~other
+        if new_unknown_mask.zero?
+          new_known_value
+        else
+          UnknownLiteral.new(new_known_value, new_unknown_mask)
+        end
+      elsif other.is_a?(UnknownLiteral)
+        new_known_value = @known_value | other.known_value
+        new_unknown_mask = (@unknown_mask | other.unknown_mask) & ~(@known_value & ~@unknown_mask) & ~(other.known_value & ~other.unknown_mask)
         if new_unknown_mask.zero?
           new_known_value
         else
@@ -5721,15 +5751,15 @@ module Idl
           end
         end
       end
-      "0b#{v.reverse.join("")}"
+      "#{[known_str.size, x.size].max}'b#{v.reverse.join("")}"
     end
   end
 
   # TODO: move this into a unit test
   tmp = UnknownLiteral.new(5, 4)
-  raise tmp.to_s unless tmp.to_s == "0bx01"
+  raise tmp.to_s unless tmp.to_s == "3'bx01"
   tmp = UnknownLiteral.new(0x7fff_ffff, 0b1000_0000_0000)
-  raise tmp.to_s unless tmp.to_s == "0b1111111111111111111x11111111111"
+  raise tmp.to_s unless tmp.to_s == "31'b1111111111111111111x11111111111"
 
   # represents an integer literal
   class IntLiteralAst < AstNode
