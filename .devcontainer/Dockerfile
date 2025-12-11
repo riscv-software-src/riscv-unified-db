@@ -15,6 +15,7 @@ RUN \
     clang-format \
     clang-tidy \
     cmake \
+    curl \
     ditaa \
     g++ \
     gcc-riscv64-linux-gnu \
@@ -22,6 +23,7 @@ RUN \
     gdb \
     gh \
     git \
+    gpg \
     less \
     libc6-dev-riscv64-cross \
     libelf-dev \

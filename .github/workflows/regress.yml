@@ -50,7 +50,7 @@ jobs:
         with:
           push: true
           file: ./.devcontainer/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: riscvintl/udb:${{ env.SHA }}
           cache-from: type=registry,ref=riscvintl/udb:${{ env.SHA }}
           cache-to: type=inline
