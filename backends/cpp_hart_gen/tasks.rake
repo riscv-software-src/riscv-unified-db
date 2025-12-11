@@ -484,8 +484,9 @@ namespace :test do
     _, build_name = configs_build_name
 
     # These extensions to the riscv-tests suite have binaries under a different diretcory
-    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli_rs1_eq_zero", "vsetvli_lt_vlmax"]
+    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli_rs1_eq_zero", "vsetvli_vl_lt_vlmax"]
     rv32uvTests.each do |t|
       sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-vector.yaml tests/isa/rv32uv-p-#{t}"
     end
+  end
 end
