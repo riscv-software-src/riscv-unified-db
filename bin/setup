@@ -9,6 +9,15 @@ CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 # Parse command line arguments
 PRESERVE_CONFIG=0
 
+CONTAINER_SETUP_CMD=()
+run() {
+  if [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+    CONTAINER_SETUP_CMD+=( "$*" )
+  else
+    ${RUN} "$@"
+  fi
+}
+
 # Only parse arguments if this script is being run directly (not sourced)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   for arg in "$@"; do
@@ -159,10 +168,8 @@ if [ -f $ROOT/.git ]; then
     HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
 fi
 
-if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
+if [ "${CONTAINER_TYPE}" == "devcontainer" -o "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
     RUN=""
-elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
-    RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     RUN="singularity run ${HOME_OPT} ${CONTAINER_PATH}"
 else
@@ -180,16 +187,16 @@ if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
     fi
     OLDDIR=$PWD
     cd $ROOT
-    ${RUN} bundle config set --local path ${ROOT}/.home/.gems
-    ${RUN} bundle config set --local cache_path ${ROOT}/.home/.cache
-    ${RUN} bundle config set --local with development
+    run bundle config set --local path ${ROOT}/.home/.gems
+    run bundle config set --local cache_path ${ROOT}/.home/.cache
+    run bundle config set --local with development
     cd $OLDDIR
 fi
 
 if [ ! -d $ROOT/.home/.gems ]; then
     OLDDIR=$PWD
     cd $ROOT
-    ${RUN} bundle install
+    run bundle install
     cd $OLDDIR
 fi
 
@@ -203,8 +210,8 @@ fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     if [ ! -d "${ROOT}/.home/.yard/gem_index" ]; then
-        ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
-        ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard gems
+        run bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
+        run bundle exec --gemfile ${ROOT}/Gemfile yard gems
         touch ${ROOT}/.stamps/dev_gems
     fi
 fi
