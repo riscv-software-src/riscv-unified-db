@@ -9,6 +9,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+
+# cancel any prior actions from the same PR that are still running (we only care about the final commit)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   regress-pre-commit:
     runs-on: ubuntu-latest

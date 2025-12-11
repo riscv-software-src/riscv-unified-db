@@ -12,67 +12,67 @@ MP-U-64:
 - Svade any mandatory
 - A = 2.1 optional
 RVA20S64:
-- A = 2.1 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- A ~> 2.1 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
-- S = 1.11 mandatory
-- Ssccptr = 1.0 mandatory
-- Sstvala = 1.0 mandatory
-- Sstvecd = 1.0 mandatory
-- Sv39 = 1.11 mandatory
+- M ~> 2.0 mandatory
+- S ~> 1.11 mandatory
+- Ssccptr ~> 1.0 mandatory
+- Sstvala ~> 1.0 mandatory
+- Sstvecd ~> 1.0 mandatory
+- Sv39 ~> 1.11 mandatory
 - Svade ~> 1.0 mandatory
-- Svbare = 1.0 mandatory
+- Svbare ~> 1.0 mandatory
 - U ~> 1.0 mandatory
-- Za128rs = 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
-- Zicsr any mandatory
-- Zifencei = 2.0 mandatory
-- Ssu64xl = 1.0 optional
-- Sv48 = 1.11 optional
-- Zihpm = 2.0 optional
+- Za128rs ~> 1.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zifencei ~> 2.0 mandatory
+- Ssu64xl ~> 1.0 optional
+- Sv48 ~> 1.11 optional
+- Zihpm ~> 2.0 optional
 RVA20U64:
-- A = 2.1 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- A ~> 2.1 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
-- Zicsr any mandatory
-- Zihpm = 2.0 optional
+- Za128rs ~> 1.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zihpm ~> 2.0 optional
 RVA22S64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
-- S = 1.12 mandatory
-- Ssccptr = 1.0 mandatory
-- Sscounterenw = 1.0 mandatory
-- Sstvala = 1.0 mandatory
-- Sstvecd = 1.0 mandatory
+- M ~> 2.0 mandatory
+- S ~> 1.12 mandatory
+- Ssccptr ~> 1.0 mandatory
+- Sscounterenw ~> 1.0 mandatory
+- Sstvala ~> 1.0 mandatory
+- Sstvecd ~> 1.0 mandatory
 - Sv39 ~> 1.12 mandatory
 - Svade ~> 1.0 mandatory
-- Svbare = 1.0 mandatory
+- Svbare ~> 1.0 mandatory
 - Svinval ~> 1.0 mandatory
 - Svpbmt ~> 1.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
 - Zbb ~> 1.0 mandatory
@@ -82,34 +82,38 @@ RVA22S64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
-- Zicsr any mandatory
-- Zifencei = 2.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zifencei ~> 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Sha ~>1.0 optional
 - Sscofpmf ~> 1.0 optional
 - Sstc ~> 1.0 optional
-- Ssu64xl = 1.0 optional
+- Ssu64xl ~> 1.0 optional
 - Sv48 ~> 1.12 optional
 - Sv57 ~> 1.12 optional
 - Svnapot ~> 1.0 optional
+- V ~> 1.0 optional
+- Zfh ~> 1.0 optional
+- Zkn ~> 1.0 optional
 - Zkr ~> 1.0 optional
+- Zks ~> 1.0 optional
 RVA22U64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
 - Zbb ~> 1.0 mandatory
@@ -119,27 +123,27 @@ RVA22U64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
-- Zicsr any mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zkt ~> 1.0 mandatory
 - V ~> 1.0 optional
 - Zfh ~> 1.0 optional
 - Zkn ~> 1.0 optional
 - Zks ~> 1.0 optional
 RVA23M64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - S ~>1.13 mandatory
 - Sha ~>1.0 mandatory
 - Sm ~> 1.13 mandatory
@@ -161,7 +165,7 @@ RVA23M64:
 - Svpbmt ~>1.0 mandatory
 - U ~> 2.0 mandatory
 - V ~> 1.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -175,17 +179,17 @@ RVA23M64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Zvbb ~>1.0 mandatory
@@ -203,13 +207,13 @@ RVA23M64:
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
 RVA23S64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - S ~>1.13 mandatory
 - Sha ~>1.0 mandatory
 - Ssccptr ~>1.0 mandatory
@@ -229,7 +233,7 @@ RVA23S64:
 - Svpbmt ~>1.0 mandatory
 - U ~> 2.0 mandatory
 - V ~> 1.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -243,17 +247,17 @@ RVA23S64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Zvbb ~>1.0 mandatory
@@ -268,17 +272,17 @@ RVA23S64:
 - Svvptc ~>1.0 {'optional': 'expansion'}
 - Zkr ~>1.0 {'optional': 'expansion'}
 RVA23U64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - Supm ~>1.0 mandatory
 - U ~> 2.0 mandatory
 - V ~> 1.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -292,16 +296,16 @@ RVA23U64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Zvbb ~>1.0 mandatory
@@ -323,13 +327,13 @@ RVA23U64:
 - Zvkng ~>1.0 {'optional': 'localized'}
 - Zvksg ~>1.0 {'optional': 'localized'}
 RVB23M64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - S ~>1.13 mandatory
 - Sm ~> 1.13 mandatory
 - Smpmp ~> 1.13 mandatory
@@ -347,7 +351,7 @@ RVB23M64:
 - Svnapot ~>1.0 mandatory
 - Svpbmt ~>1.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -360,17 +364,17 @@ RVB23M64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Sdtrig ~>1.0 {'optional': 'expansion'}
@@ -388,13 +392,13 @@ RVB23M64:
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
 RVB23S64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - S ~>1.13 mandatory
 - Ssccptr ~>1.0 mandatory
 - Sscofpmf ~>1.0 mandatory
@@ -410,7 +414,7 @@ RVB23S64:
 - Svnapot ~>1.0 mandatory
 - Svpbmt ~>1.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -423,17 +427,17 @@ RVB23S64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zifencei ~>1.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Sdtrig ~>1.0 {'optional': 'expansion'}
@@ -451,15 +455,15 @@ RVB23S64:
 - Zkn ~>1.0 {'optional': 'localized'}
 - Zks ~>1.0 {'optional': 'localized'}
 RVB23U64:
-- A = 2.1 mandatory
+- A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
-- C = 2.0 mandatory
-- D = 2.2 mandatory
-- F = 2.2 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2 mandatory
+- F ~> 2.2 mandatory
 - I ~> 2.1 mandatory
-- M = 2.0 mandatory
+- M ~> 2.0 mandatory
 - U ~> 2.0 mandatory
-- Za128rs = 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
 - Za64rs ~>1.0 mandatory
 - Zawrs ~>1.0 mandatory
 - Zba ~> 1.0 mandatory
@@ -472,16 +476,16 @@ RVB23U64:
 - Zicbom ~> 1.0 mandatory
 - Zicbop ~> 1.0 mandatory
 - Zicboz ~> 1.0 mandatory
-- Ziccamoa = 1.0 mandatory
-- Ziccif = 1.0 mandatory
-- Zicclsm = 1.0 mandatory
-- Ziccrse = 1.0 mandatory
-- Zicntr = 2.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
 - Zicond ~>1.0 mandatory
-- Zicsr any mandatory
+- Zicsr ~> 2.0 mandatory
 - Zihintntl ~>1.0 mandatory
-- Zihintpause = 2.0 mandatory
-- Zihpm = 2.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
 - Zabha ~>1.0 {'optional': 'development'}
@@ -512,21 +516,21 @@ RVB23U64:
 - Zvksg ~>1.0 {'optional': 'localized'}
 RVI20U32:
 - I ~> 2.1 mandatory
-- A = 2.1 optional
-- C = 2.0 optional
-- D = 2.2 optional
-- F = 2.2 optional
-- M = 2.0 optional
-- Zicntr = 2.0 optional
-- Zifencei = 2.0 optional
-- Zihpm = 2.0 optional
+- A ~> 2.1 optional
+- C ~> 2.0 optional
+- D ~> 2.2 optional
+- F ~> 2.2 optional
+- M ~> 2.0 optional
+- Zicntr ~> 2.0 optional
+- Zifencei ~> 2.0 optional
+- Zihpm ~> 2.0 optional
 RVI20U64:
 - I ~> 2.1 mandatory
-- A = 2.1 optional
-- C = 2.0 optional
-- D = 2.2 optional
-- F = 2.2 optional
-- M = 2.0 optional
-- Zicntr = 2.0 optional
-- Zifencei = 2.0 optional
-- Zihpm = 2.0 optional
+- A ~> 2.1 optional
+- C ~> 2.0 optional
+- D ~> 2.2 optional
+- F ~> 2.2 optional
+- M ~> 2.0 optional
+- Zicntr ~> 2.0 optional
+- Zifencei ~> 2.0 optional
+- Zihpm ~> 2.0 optional
