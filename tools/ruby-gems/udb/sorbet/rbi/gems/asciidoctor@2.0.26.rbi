@@ -3634,11 +3634,6 @@ class Hash
   include ::Enumerable
 end
 
-# source://asciidoctor//lib/asciidoctor/core_ext/nil_or_empty.rb#6
-class NilClass
-  include ::Treetop::Compiler::Metagrammar::LabeledExpressionSequenceBody0
-end
-
 # source://asciidoctor//lib/asciidoctor/core_ext/nil_or_empty.rb#22
 class Numeric
   include ::Comparable

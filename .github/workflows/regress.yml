@@ -19,7 +19,65 @@ jobs:
           submodules: "true"
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
-  regress-smoke:
+  regress-sorbet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem ${{ matrix.test }} unit tests
+        run: ./do test:sorbet
+  regress-idlc-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run udb gem ${{ matrix.test }} unit tests
+        run: ./do test:idlc:unit
+      - name: Upload idlc coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/idlc/coverage/coverage.xml
+          flags: idlc
+  regress-isa-explorer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate ISA Explorer browser artifacts
+        run: ./do gen:isa_explorer_browser
+  regress-idl-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Type check IDL for _
+        run: ./do test:idl CFG=_
+      - name: Type check IDL for rv32
+        run: ./do test:idl CFG=rv32
+      - name: Type check IDL for rv64
+        run: ./do test:idl CFG=rv64
+      - name: Type check IDL for qc_iu
+        run: ./do test:idl CFG=qc_iu
+  regress-test-inst-encodings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Checking for conflicts in instruction encodings
+        run: ./do test:inst_encodings
+  regress-llvm:
     needs: build-llvm
     runs-on: ubuntu-latest
     env:
@@ -38,15 +96,8 @@ jobs:
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Run smoke
-        run: ./do test:smoke
-      - name: Upload idlc coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          disable_search: true
-          files: tools/ruby-gems/idlc/coverage/coverage.xml
-          flags: idlc
+      - name: Test LLVM
+        run: ./do test:llvm
   regress-find-configs:
     runs-on: ubuntu-latest
 
@@ -96,6 +147,7 @@ jobs:
           - cli
           - yaml_loader
           - cfg_arch
+          # - cfg    # not run here since it is covered by regress-udb-validate-configs
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4

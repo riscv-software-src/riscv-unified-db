@@ -19,9 +19,9 @@ extend T::Sig
 def presence2char(presence)
   raise ArgumentError, "Expecting String but got class #{presence}" unless presence.is_a?(String)
 
-  if presence == Udb::Presence.mandatory
+  if presence == "mandatory"
     "m"
-  elsif presence == Udb::Presence.optional
+  elsif presence == "optional"
     "o"
   elsif presence == "-"
     "n"

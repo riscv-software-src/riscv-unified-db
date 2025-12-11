@@ -2571,8 +2571,6 @@ end
 
 # source://activesupport//lib/active_support/core_ext/object/to_query.rb#19
 class NilClass
-  include ::Treetop::Compiler::Metagrammar::LabeledExpressionSequenceBody0
-
   # source://activesupport//lib/active_support/core_ext/object/json.rb#93
   def as_json(options = T.unsafe(nil)); end
 

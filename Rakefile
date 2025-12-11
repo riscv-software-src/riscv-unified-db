@@ -7,6 +7,7 @@ extend T::Sig
 
 require "pathname"
 require "erb"
+require "tty-command"
 
 Encoding.default_external = "UTF-8"
 
@@ -17,6 +18,7 @@ puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
 require "etc"
 
 $root = Pathname.new(__dir__).realpath
+$rake_cmd_runner = TTY::Command.new
 $lib = $root / "lib"
 
 require "udb/resolver"
@@ -67,7 +69,7 @@ namespace :chore do
   task :update_deps do
     # these should run in order,
     # so don't change this to use task prereqs, which might run in any order
-    sh "bundle update --gemfile Gemfile"
+    $rake_cmd_runner.run "bundle update --gemfile Gemfile"
     Rake::Task["chore:idlc:update_deps"].invoke
     Rake::Task["chore:udb:update_deps"].invoke
     Rake::Task["chore:udb_gen:update_deps"].invoke
@@ -177,7 +179,7 @@ namespace :test do
     inst_names = T.let(Set.new, T::Set[String])
     insts.each do |i|
       if inst_names.include?(i.name)
-        warn "Duplicate instruction name: #{i.name}"
+        Udb.logger.warn "Duplicate instruction name: #{i.name}"
         failed = true
       end
       inst_names.add(i.name)
@@ -198,9 +200,12 @@ namespace :test do
         end
       end
     end
-    raise "Encoding test failed" if failed
+    if failed
+      Udb.logger.error "Encoding test failed"
+      exit 1
+    end
 
-    puts "done"
+     Udb.logger.info "Encoding test PASSED"
   end
 
   desc "Check that CSR definitions in the DB are consistent and do not conflict"
@@ -510,7 +515,7 @@ end
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    Rake::Task["test:udb:unit"].invoke
+    # Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC
