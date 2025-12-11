@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
-OLDWD=$PWD
-cd $ROOT
+ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
+cd "$ROOT" || exit
 
-CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
+CONTAINER_TAG=$(cat "${ROOT}/bin/.container-tag")
 
 # Parse command line arguments
 PRESERVE_CONFIG=0
@@ -73,8 +72,8 @@ CONTAINER_TYPE=devcontainer
 elif [ -v SINGULARITY_NAME ]; then
 # already in a container
 CONTAINER_TYPE=devcontainer
-elif [ -f ${ROOT}/.container-type ]; then
-CONTAINER_TYPE=`cat ${ROOT}/.container-type`
+elif [ -f "${ROOT}/.container-type" ]; then
+CONTAINER_TYPE=$(cat ${ROOT}/.container-type)
 elif [ -v DOCKER ]; then
 CONTAINER_TYPE=docker
 elif [ -v PODMAN ]; then
@@ -99,13 +98,13 @@ if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "podman" -a "${CO
   echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
 fi
 
-if [ ! -f ${ROOT}/.container-type ]; then
-  echo ${CONTAINER_TYPE} > ${ROOT}/.container-type
+if [ ! -f "${ROOT}/.container-type" ]; then
+  echo "${CONTAINER_TYPE}" > "${ROOT}/.container-type"
 fi
 
 echo "Using ${CONTAINER_TYPE} environment"
 
-if [ -v GITHUB_ACTIONS ]; then
+if [ -v GITHUB_ACTIONS ] && [ "${CONTAINER_TYPE}" == "singularity" ]; then
     echo "Running in a GitHub Action"
     CONTAINER_PATH=${ROOT}/.singularity/image.sif
     HOME_PATH=${GITHUB_WORKSPACE}
@@ -116,23 +115,23 @@ if [ -v GITHUB_ACTIONS ]; then
     # see https://github.com/lima-vm/lima/issues/2319
     sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
     sudo sysctl --system
-elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
-    if ! ${CONTAINER_TYPE} images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
+elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ]; then
+    if ! ${CONTAINER_TYPE} images "riscvintl/udb:${CONTAINER_TAG}" | grep -q udb ; then
         echo "Image not found locally. Attempting to pull from registry..."
-        if ${CONTAINER_TYPE} pull docker.io/riscvintl/udb:${CONTAINER_TAG} 2>/dev/null; then
+        if ${CONTAINER_TYPE} pull "docker.io/riscvintl/udb:${CONTAINER_TAG}" 2>/dev/null; then
             echo "Successfully pulled image from registry."
         else
             echo "Could not pull image from registry. Building locally..."
-            ${CONTAINER_TYPE} build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
+            ${CONTAINER_TYPE} build -t "riscvintl/udb:${CONTAINER_TAG}" -f .devcontainer/Dockerfile .
         fi
     fi
-    if [ ${CONTAINER_TYPE} == "podman" ]; then
+    if [ "${CONTAINER_TYPE}" == "podman" ]; then
       # Podman requires extra flags to handle SELinux
       SELINUX_LABEL=":z"
     else
       SELINUX_LABEL=""
     fi
-    if [ -t 1 -a -t 0 ]; then
+    if [ -t 1 ] && [ -t 0 ]; then
       CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else
       CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
@@ -141,13 +140,15 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}
     GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
+    export GEM_HOME
+    export GEM_PATH
     SINGULARITY_CACHE=
-    if [ ! -f ${CONTAINER_PATH} ]; then
+    if [ ! -f "${CONTAINER_PATH}" ]; then
       echo "Fetching container..."
       if [ ! -d "${ROOT}/.singularity" ]; then
-        mkdir -p ${ROOT}/.singularity
+        mkdir -p "${ROOT}/.singularity"
       fi
-      singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
+      singularity pull "${SINGULARITY_CACHE}" "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
     fi
 elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     HOME_PATH=${HOME}
@@ -156,9 +157,9 @@ else
     exit 1
 fi
 
-if [ -f $ROOT/.git ]; then
+if [ -f "$ROOT/.git" ]; then
     # if this is a worktree, need to add the parent git repo in, too
-    GIT_PATH=`git rev-parse --git-common-dir | tr -d '\n' | xargs dirname`
+    GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
     HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
 fi
 
@@ -173,27 +174,27 @@ else
     exit 1
 fi
 
-if [ ! -d $ROOT/.home ]; then
-    mkdir $ROOT/.home
+if [ ! -d "$ROOT/.home" ]; then
+    mkdir "$ROOT/.home"
 fi
 
 if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
     OLDDIR=$PWD
-    cd $ROOT
-    ${RUN} bundle config set --local path ${ROOT}/.home/.gems
-    ${RUN} bundle config set --local cache_path ${ROOT}/.home/.cache
+    cd "$ROOT" || exit
+    ${RUN} bundle config set --local path "${ROOT}/.home/.gems"
+    ${RUN} bundle config set --local cache_path "${ROOT}/.home/.cache"
     ${RUN} bundle config set --local with development
-    cd $OLDDIR
+    cd "$OLDDIR" || exit
 fi
 
-if [ ! -d $ROOT/.home/.gems ]; then
+if [ ! -d "$ROOT/.home/.gems" ]; then
     OLDDIR=$PWD
-    cd $ROOT
+    cd "$ROOT" || exit
     ${RUN} bundle install
-    cd $OLDDIR
+    cd "$OLDDIR" || exit
 fi
 
-if [ ! -f $ROOT/ext/rbi-central/README.md ]; then
+if [ ! -f "$ROOT/ext/rbi-central/README.md" ]; then
     git submodule update --init ext/rbi-central
 fi
 
@@ -203,9 +204,9 @@ fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
     if [ ! -d "${ROOT}/.home/.yard/gem_index" ]; then
-        ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
-        ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard gems
-        touch ${ROOT}/.stamps/dev_gems
+        ${RUN} bundle exec --gemfile "${ROOT}/Gemfile" yard config --gem-install-yri
+        ${RUN} bundle exec --gemfile "${ROOT}/Gemfile" yard gems
+        touch "${ROOT}/.stamps/dev_gems"
     fi
 fi
 
@@ -227,9 +228,9 @@ MAKE="${RUN} make"
 
 git config --local commit.template ${ROOT}/.gitmessage
 
-GIT_REPO_ROOT=`git rev-parse --path-format=absolute --git-common-dir | tr -d '\n'`
-if [ ! -f $GIT_REPO_ROOT/hooks/pre-commit ]; then
-  cat << HOOK > $GIT_REPO_ROOT/hooks/pre-commit
+GIT_REPO_ROOT=$(git rev-parse --path-format=absolute --git-common-dir | tr -d '\n')
+if [ ! -f "$GIT_REPO_ROOT/hooks/pre-commit" ]; then
+  cat << HOOK > "$GIT_REPO_ROOT/hooks/pre-commit"
 #!/usr/bin/env bash
 # File generated by pre-commit: https://pre-commit.com
 # ID: 138fd403232d2ddd5efb44317e38bf03
@@ -251,11 +252,11 @@ else
     exit 1
 fi
 HOOK
-  chmod +x $GIT_REPO_ROOT/hooks/pre-commit
+  chmod +x "$GIT_REPO_ROOT/hooks/pre-commit"
 fi
 
-if [ ! -f $GIT_REPO_ROOT/hooks/commit-msg ]; then
-  cat << HOOK > $GIT_REPO_ROOT/hooks/commit-msg
+if [ ! -f "$GIT_REPO_ROOT/hooks/commit-msg" ]; then
+  cat << HOOK > "$GIT_REPO_ROOT/hooks/commit-msg"
 #!/usr/bin/env bash
 # File generated by pre-commit: https://pre-commit.com
 # ID: 138fd403232d2ddd5efb44317e38bf03
@@ -277,5 +278,5 @@ else
     exit 1
 fi
 HOOK
-  chmod +x $GIT_REPO_ROOT/hooks/commit-msg
+  chmod +x "$GIT_REPO_ROOT/hooks/commit-msg"
 fi
