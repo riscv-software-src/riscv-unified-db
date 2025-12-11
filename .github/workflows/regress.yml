@@ -421,6 +421,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: Run RV32 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-riscv-tests-64:
@@ -432,6 +434,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: Run RV64 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-xqci-doc:
