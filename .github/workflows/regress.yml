@@ -293,14 +293,14 @@ jobs:
     needs: java-tests
     defaults:
       run:
-        working-directory: udb-vscode
+        working-directory: tools/eclipse/udb-vscode
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: udb-vscode/package-lock.json
+          cache-dependency-path: tools/eclipse/udb-vscode/package-lock.json
       - name: Setup Temurin JDK 21 (for LS)
         uses: actions/setup-java@v4
         with:
@@ -318,5 +318,5 @@ jobs:
         with:
           name: vscode-test-logs
           path: |
-            udb-vscode/.vscode-test/**/*
-            udb-vscode/out/test/**/*
+            tools/eclipse/udb-vscode/.vscode-test/**/*
+            tools/eclipse/udb-vscode/out/test/**/*
