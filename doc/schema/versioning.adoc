@@ -1,0 +1,57 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Versioning objects in UDB
+
+All extension releases, profile releases, etc. in UDB *must* have a version.
+This document describes how UDB specifies and orders versions of these objects.
+
+== Version schema
+
+Versions contain three parts: MAJOR, MINOR, and PATCH.
+They may also use an optional "-pre" suffix to indicate a pre-release.
+MAJOR must always be specified. If MINOR and/or PATCH are omitted, they are implied to be zero.
+This is similar to https://semver.org/[Semantic Versioning], though *UDB versions are _not_ semantic* since RISC-V International does use semantic versioning.
+
+.Examples of valid version strings
+[source]
+--
+# Three ways to specify version 1.0.0
+1
+1.0
+1.0.0
+
+2.1
+
+1.0.1-pre
+--
+
+.Examples of _invalid_ version strings
+[source]
+--
+# When -pre is used, MAJOR, MINOR, and PATCH must be specified
+1.0-pre
+--
+
+== Version compatibility
+
+By default, a version is compatible with another if it is numerically greater than or equal to another. For example, version 1.0.1 is compatible with version 1.0.0 as long as 1.0.1 is not breaking (see below). Version 2.0 is _never_ compatible with version 2.1, though version 2.1 is compatible with version 2.0 as long as 2.1 is not breaking.
+
+=== Breaking version changes
+
+When a version is "breaking", the version must be explictly marked as so.
+This is because RISC-V International does not follow Semantic Versioning.
+
+When a version is breaking, it is incompatible with any version with a numerically smaller version number.
+The breaking marker will be found in the YAML definition of the version.
+
+.Example of breaking version in Extension schema
+[source,yaml]
+--
+  versions:
+    - version: "1.0"
+      # ...
+    - version: "1.1"
+      breaking: true # this marks 1.1 as incompatible with any version < 1.1
+      # ...
+--

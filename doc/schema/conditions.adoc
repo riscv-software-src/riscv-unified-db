@@ -11,13 +11,13 @@ For example:
 * the `MTVEC_BASE_ALIGNMENT_DIRECT` parameter only applies when `MTVEC_MODES` indicates support for 'direct'.
 * ... and many more
 
-Boolean conditions are consistently represented using a common subschema throughout UDB, regardless of the context that they appear.
+Conditions are consistently represented using a common subschema throughout UDB, regardless of the context that they appear.
 
 Conditions can be represented in one of two, equivalent, forms.
 First, a condition can be specified using YAML as described in <<yaml_conditions, YAML Condition Schema>>.
 Second, a condition can be specified using a _subset_ of link:../idl.adoc[IDL] as described in <<idl_conditions, IDL Conditions>>.
 The two forms are interchangable; a YAML condition can be converted to an IDL condition and _vice versa_.
-Unresolved conditions (those appearing in the top-level specification, usually hand-written) can use either, but not both, condition forms.
+THe hand-written (unresolved) specification files can use either, but not both, condition forms in a given place.
 During resolution, both forms are generated and placed in the resolved file so that downstream users can exclusively use one form or the other.
 
 [NOTE]
@@ -129,8 +129,8 @@ extension:
     - ">= 1.0"
 ----
 
-Note that RISC-V does not follow semantic versioning, so `2.0` may be compatible with `1.0` for a given extension as long as `2.0` (or any version between `1.0` and `2.0`) is not marked as a breaking version
-when it was defined.
+Note that RISC-V does not follow semantic versioning, so `2.0` may be compatible with `1.0` for a given extension as long as `2.0` (or any version between `1.0` and `2.0`) is not marked as a breaking version when it was defined.
+See <<versioning.adoc#>> for more information on breaking changes.
 
 For example:
 
@@ -217,11 +217,11 @@ a|
 !  notEqual: true
 !===
 
-| lessThan             | Parameter value is less than                 | lessThan: 5
-| greaterThan          | Parameter value is greater than              | greaterThan: 5
-| lessThanOrEqual    | Parameter value is less than or equal to       | lessThan: 5
-| greaterThanOrEqual | Parameter value is greater than or equal to    | greaterThan: 5
-| oneOf                 | Parameter value is equal to one element of an array | oneOf: [5, 7]
+| lessThan             | Parameter value is less than                        | lessThan: 5
+| greaterThan          | Parameter value is greater than                     | greaterThan: 5
+| lessThanOrEqual      | Parameter value is less than or equal to            | lessThan: 5
+| greaterThanOrEqual   | Parameter value is greater than or equal to         | greaterThan: 5
+| oneOf                | Parameter value is equal to one element of an array | oneOf: [5, 7]
 |===
 
 When the parameter is an array, the test can either check a specific element, check for inclusion,
@@ -372,7 +372,7 @@ not:
 ----
 not: { name: C }
 ----
-| if, then   | Logical implicaiton +
+| if, then   | Logical implication +
 (satisfied unless `if` is true and `then` if false)   |
 [source,yaml]
 ----
