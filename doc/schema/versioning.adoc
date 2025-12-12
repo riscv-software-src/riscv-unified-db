@@ -11,7 +11,7 @@ This document describes how UDB specifies and orders versions of these objects.
 Versions contain three parts: MAJOR, MINOR, and PATCH.
 They may also use an optional "-pre" suffix to indicate a pre-release.
 MAJOR must always be specified. If MINOR and/or PATCH are omitted, they are implied to be zero.
-This is similar to https://semver.org/[Semantic Versioning], though *UDB versions are _not_ semantic* since RISC-V International does use semantic versioning.
+This is similar to https://semver.org/[Semantic Versioning], though *UDB versions are _not_ semantic* since RISC-V International does not use semantic versioning.
 
 .Examples of valid version strings
 [source]
