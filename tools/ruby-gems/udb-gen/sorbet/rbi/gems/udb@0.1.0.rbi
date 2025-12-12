@@ -827,28 +827,28 @@ end
 
 # source://udb//../../udb/lib/udb/idl/condition_to_udb.rb#86
 class Idl::ForLoopAst < ::Idl::AstNode
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6879
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6932
   def initialize(input, interval, init, condition, update, stmts); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6870
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6923
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def condition; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6859
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6912
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6997
+  # source://idlc/0.1.0/lib/idlc/ast.rb#7050
   def execute(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#7000
+  # source://idlc/0.1.0/lib/idlc/ast.rb#7053
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 
   # source://idlc/0.1.0/lib/idlc/passes/gen_adoc.rb#202
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6867
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6920
   sig { returns(::Idl::VariableDeclarationWithInitializationAst) }
   def init; end
 
@@ -861,27 +861,27 @@ class Idl::ForLoopAst < ::Idl::AstNode
   # source://idlc/0.1.0/lib/idlc/passes/reachable_functions.rb#174
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6946
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6999
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6913
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6966
   def return_value(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6952
+  # source://idlc/0.1.0/lib/idlc/ast.rb#7005
   def return_values(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6896
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6949
   sig { params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def satisfied?(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6877
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6930
   sig do
     returns(T::Array[T.any(::Idl::ForLoopAst, ::Idl::IfAst, ::Idl::ImplicationStatementAst, ::Idl::ReturnStatementAst, ::Idl::StatementAst)])
   end
   def stmts; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#7022
+  # source://idlc/0.1.0/lib/idlc/ast.rb#7075
   sig { override.returns(::String) }
   def to_idl; end
 
@@ -889,36 +889,36 @@ class Idl::ForLoopAst < ::Idl::AstNode
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6884
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6937
   def type_check(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6873
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6926
   sig { returns(T.all(::Idl::AstNode, ::Idl::Executable)) }
   def update; end
 end
 
 # source://udb//../../udb/lib/udb/idl/condition_to_udb.rb#161
 class Idl::FunctionCallExpressionAst < ::Idl::AstNode
-  # source://idlc/0.1.0/lib/idlc/ast.rb#5983
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6036
   def initialize(input, interval, function_name, targs, args); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6025
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6078
   def arg_nodes; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#5981
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6034
   def args; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#5974
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6027
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6181
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6234
   def execute(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6189
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6242
   def execute_unknown(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6029
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6082
   def func_type(symtab); end
 
   # source://idlc/0.1.0/lib/idlc/passes/gen_adoc.rb#289
@@ -927,7 +927,7 @@ class Idl::FunctionCallExpressionAst < ::Idl::AstNode
   # source://idlc/0.1.0/lib/idlc/passes/gen_option_adoc.rb#28
   def gen_option_adoc; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6183
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6236
   def name; end
 
   # source://idlc/0.1.0/lib/idlc/passes/prune.rb#82
@@ -939,19 +939,19 @@ class Idl::FunctionCallExpressionAst < ::Idl::AstNode
   # source://idlc/0.1.0/lib/idlc/passes/reachable_functions.rb#21
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#5980
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6033
   def targs; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#5996
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6049
   def template?; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6001
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6054
   def template_arg_nodes; end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6005
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6058
   def template_values(symtab, unknown_ok: T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6193
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6246
   sig { override.returns(::String) }
   def to_idl; end
 
@@ -959,13 +959,13 @@ class Idl::FunctionCallExpressionAst < ::Idl::AstNode
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
   def to_udb_h(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6095
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6148
   def type(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6044
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6097
   def type_check(symtab); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#6104
+  # source://idlc/0.1.0/lib/idlc/ast.rb#6157
   def value(symtab); end
 end
 
@@ -5736,13 +5736,13 @@ class Udb::LogicNode
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3314
+  # source://udb//../../udb/lib/udb/logic.rb#3315
   sig { params(subformulae: T::Array[::Udb::LogicNode]).void }
   def collect_tseytin(subformulae); end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3301
+  # source://udb//../../udb/lib/udb/logic.rb#3302
   sig { returns(::Udb::LogicNode) }
   def distribute_not; end
 
@@ -5760,7 +5760,7 @@ class Udb::LogicNode
   sig { returns(T::Boolean) }
   def dnf_disjunctive_term?; end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3222
+  # source://udb//../../udb/lib/udb/logic.rb#3223
   sig do
     params(
       tree: ::Udb::LogicNode,
@@ -5769,7 +5769,7 @@ class Udb::LogicNode
   end
   def do_to_eqntott(tree, term_map); end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3696
+  # source://udb//../../udb/lib/udb/logic.rb#3697
   sig { override.params(other: T.untyped).returns(T::Boolean) }
   def eql?(other); end
 
@@ -5780,7 +5780,7 @@ class Udb::LogicNode
   sig { returns(::Udb::LogicNode) }
   def equisat_cnf; end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3165
+  # source://udb//../../udb/lib/udb/logic.rb#3166
   sig { params(other: ::Udb::LogicNode).returns(T::Boolean) }
   def equisatisfiable?(other); end
 
@@ -5794,13 +5794,13 @@ class Udb::LogicNode
   sig { params(raise_on_explosion: T::Boolean).returns(::Udb::LogicNode) }
   def equiv_cnf(raise_on_explosion: T.unsafe(nil)); end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3175
+  # source://udb//../../udb/lib/udb/logic.rb#3176
   sig { params(other: ::Udb::LogicNode).returns(T::Boolean) }
   def equivalent?(other); end
 
   # minimize the function using espresso
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3549
+  # source://udb//../../udb/lib/udb/logic.rb#3550
   sig { params(result_type: ::Udb::LogicNode::CanonicalizationType, exact: T::Boolean).returns(::Udb::LogicNode) }
   def espresso(result_type, exact); end
 
@@ -5812,7 +5812,7 @@ class Udb::LogicNode
   end
   def eval_cb(callback); end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3460
+  # source://udb//../../udb/lib/udb/logic.rb#3461
   sig { params(dimacs: ::String).returns(::Udb::LogicNode) }
   def from_dimacs(dimacs); end
 
@@ -5831,7 +5831,7 @@ class Udb::LogicNode
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3693
+  # source://udb//../../udb/lib/udb/logic.rb#3694
   sig { override.returns(::Integer) }
   def hash; end
 
@@ -5855,7 +5855,7 @@ class Udb::LogicNode
 
   # return minimally unsatisfiable subsets of the unstatisfiable formula
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3506
+  # source://udb//../../udb/lib/udb/logic.rb#3507
   sig { returns(T::Array[::Udb::LogicNode]) }
   def minimal_unsat_subsets; end
 
@@ -5946,13 +5946,13 @@ class Udb::LogicNode
   sig { params(include_versions: T::Boolean).returns(::String) }
   def to_asciidoc(include_versions:); end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3419
+  # source://udb//../../udb/lib/udb/logic.rb#3420
   sig { returns(::String) }
   def to_dimacs; end
 
   # return equation suitable for `eqntott` input
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3255
+  # source://udb//../../udb/lib/udb/logic.rb#3256
   sig { returns(::Udb::LogicNode::EqntottResult) }
   def to_eqntott; end
 
@@ -5991,13 +5991,13 @@ class Udb::LogicNode
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3400
+  # source://udb//../../udb/lib/udb/logic.rb#3401
   sig { returns(::Udb::LogicNode) }
   def tseytin; end
 
   # a free variable representing this formula
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3388
+  # source://udb//../../udb/lib/udb/logic.rb#3389
   sig { returns(::Udb::LogicNode) }
   def tseytin_prop; end
 
@@ -6005,7 +6005,7 @@ class Udb::LogicNode
   sig { returns(::Udb::LogicNodeType) }
   def type; end
 
-  # source://udb//../../udb/lib/udb/logic.rb#3162
+  # source://udb//../../udb/lib/udb/logic.rb#3163
   sig { returns(T::Boolean) }
   def unsatisfiable?; end
 
@@ -6024,7 +6024,7 @@ class Udb::LogicNode
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/logic.rb#3271
+  # source://udb//../../udb/lib/udb/logic.rb#3272
   sig { params(node: ::Udb::LogicNode).returns(::Udb::LogicNode) }
   def distribute_not_helper(node); end
 
@@ -6182,7 +6182,7 @@ class Udb::LogicNode::ConditionalEndterm < ::T::Struct
   end
 end
 
-# source://udb//../../udb/lib/udb/logic.rb#3248
+# source://udb//../../udb/lib/udb/logic.rb#3249
 class Udb::LogicNode::EqntottResult < ::T::Struct
   const :eqn, ::String
   const :term_map, T::Hash[::String, T.any(::Udb::ExtensionTerm, ::Udb::FreeTerm, ::Udb::ParameterTerm, ::Udb::XlenTerm)]
