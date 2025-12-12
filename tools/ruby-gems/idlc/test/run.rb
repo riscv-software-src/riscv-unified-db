@@ -26,5 +26,7 @@ require "minitest/autorun"
 
 require_relative "test_expressions"
 require_relative "test_constraints"
+require_relative "test_functions"
+require_relative "test_variables"
 require_relative "test_cli"
 require_relative "test_loops"

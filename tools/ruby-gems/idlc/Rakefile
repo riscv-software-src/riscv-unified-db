@@ -36,6 +36,7 @@ namespace :test do
     desc "Type check the Ruby IDL source code"
     task :sorbet  do
       Dir.chdir(IDLC_ROOT) do
+        Udb.logger.info "Type checking udb gem"
         sh "bundle exec srb tc"
       end
     end

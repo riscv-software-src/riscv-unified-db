@@ -80,6 +80,7 @@ namespace :test do
     desc "Type check the Ruby UDB source code"
     task sorbet: "#{RUBY_UDB_ROOT}/sorbet/config" do
       Dir.chdir(RUBY_UDB_ROOT) do
+        Udb.logger.info "Type checking udb gem"
         sh "bundle exec srb tc"
       end
     end

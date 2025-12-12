@@ -5,6 +5,7 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
+require "concurrent/atomic/semaphore"
 
 require_relative "log"
 require_relative "type"

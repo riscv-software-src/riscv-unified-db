@@ -1,13 +1,14 @@
-# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: false
 # frozen_string_literal: true
+
+require "minitest/autorun"
 
 require "idlc"
 require "idlc/passes/reachable_exceptions"
-require_relative "test_helper"
-require "minitest/autorun"
+require_relative "helpers"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
 
@@ -79,10 +80,9 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path)
     ast.add_global_symbols(@symtab)
     @symtab.deep_freeze
-    @cfg_arch.global_ast = ast
     ast.freeze_tree(@symtab)
 
-    test_ast = ast.functions.select { |f| f.name == "test" }[0]
+    test_ast = ast.functions.find { |f| f.name == "test" }
 
     # should return (1 << BCode), also known as 2
     assert_equal (1 << 1), test_ast.body.prune(@symtab.deep_clone).reachable_exceptions(@symtab.deep_clone)
@@ -144,7 +144,6 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path)
     ast.add_global_symbols(@symtab)
     @symtab.deep_freeze
-    @cfg_arch.global_ast = ast
     ast.freeze_tree(@symtab)
 
     test_ast = ast.functions.find { |f| f.name == "test" }
