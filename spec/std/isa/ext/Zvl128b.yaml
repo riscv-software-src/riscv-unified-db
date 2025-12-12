@@ -5,17 +5,19 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: V
+name: Zvl128b
+long_name: Vector register length must be at least 128 bits
+description: |
+  TBD - See GitHub issue 616
 type: unprivileged
-long_name: Vector Operations
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-description: |
-  General support for data-parallel execution.
+    requirements:
+      extension:
+        name: F
 requirements:
-  extension:
-    allOf:
-      - name: Zve32f
-      - name: Zvl128b
+  param:
+    name: VXLEN
+    greaterThanOrEqual: 128

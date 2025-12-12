@@ -5,17 +5,17 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: V
+name: Zve32d
+long_name: Vector Extension for Minimal Double-Precision Embedded Floating-Point
+description: |
+  TBD - See GitHub issue 616
 type: unprivileged
-long_name: Vector Operations
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-description: |
-  General support for data-parallel execution.
 requirements:
   extension:
     allOf:
-      - name: Zve32f
-      - name: Zvl128b
+      - name: D
+      - name: Zve64f

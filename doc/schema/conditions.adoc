@@ -143,7 +143,7 @@ extension:
 
 [source,yaml]
 ----
-# require D, version == 1.0
+# require D, version == 1.0.0
 extension:
   name: D
   version: = 1.0
@@ -151,7 +151,7 @@ extension:
 
 [source,yaml]
 ----
-# require D, version _compatible with_ 1.0
+# require D, version _compatible with_ 1.0.0
 extension:
   name: D
   version: ~> 1.0
@@ -159,7 +159,7 @@ extension:
 
 [source,yaml]
 ----
-# require D, version greater than or equal to 1.0 and less than 2.0
+# require D, version greater than or equal to 1.0.0 and less than 2.0.0
 extension:
   name: D
   version: [">= 1.0", "< 2.0"]
@@ -257,6 +257,20 @@ param:
   name: MXLEN
   equal: 32
   reason: Extension is only defined in RV32
+----
+
+[source,yaml]
+----
+param:
+  name: PHYS_ADDR_WIDTH
+  greaterThanOrEqual: 34
+----
+
+[source,yaml]
+----
+param:
+  name: NUM_PMP_ENTRIES
+  oneOf: [16,64]
 ----
 
 [source,yaml]

@@ -20,6 +20,4 @@ versions:
     ratification_date: 2024-06
 requirements:
   extension:
-    oneOf:
-      - name: V
-      - name: Zve32f
+    name: Zve32f
