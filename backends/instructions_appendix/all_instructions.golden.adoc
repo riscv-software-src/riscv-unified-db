@@ -34498,7 +34498,7 @@ Included in::
 == vadd.vv
 
 Synopsis::
-No synopsis available
+Vector-vector integer addition
 
 Base::
 
@@ -34520,7 +34520,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+Add source vector register groups from vs1 and vs2 according to mask vm and store results in vd.
 
 
 Decode Variables::
@@ -58443,7 +58443,7 @@ Included in::
 == vsetivli
 
 Synopsis::
-No synopsis available
+Vector Set Vector Type Immediate and Vector Length Immediate
 
 Base::
 
@@ -58465,8 +58465,7 @@ Encoding::
 ....
 
 Description::
-No description available.
-
+Set the vtype and vl CSRs, and write the new value of vl into rd.
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
@@ -58495,7 +58494,7 @@ Included in::
 == vsetvl
 
 Synopsis::
-No synopsis available
+Vector Set Vector Type and Vector Length
 
 Base::
 
@@ -58517,8 +58516,7 @@ Encoding::
 ....
 
 Description::
-No description available.
-
+Set the vtype and vl CSRs, and write the new value of vl into rd.
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
@@ -58547,7 +58545,7 @@ Included in::
 == vsetvli
 
 Synopsis::
-No synopsis available
+Vector Set Vector Type and Vector Length Immediate
 
 Base::
 
@@ -58565,18 +58563,17 @@ vsetvli xd, xs1, vtypei
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "zimm","type":4},{"bits":1,"name": 0x0,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x7,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":11,"name": "vtypei","type":4},{"bits":1,"name": 0x0,"type":2}]}
 ....
 
 Description::
-No description available.
-
+Set the vtype and vl CSRs, and write the new value of vl into rd.
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|zimm |$encoding[30:20]
+|vtypei |$encoding[30:20]
 |xs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
