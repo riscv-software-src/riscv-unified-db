@@ -22,27 +22,6 @@ std::map<std::string, std::string> udb::DbData::SCHEMAS = {
       <%- end.join(", ") -%>
     };
 
-namespace udb {
-template <unsigned N, bool Signed>
-void to_json(const nlohmann::json& j, _Bits<N, Signed>& b) {
-  j = nlohmann::json { b.get() };
-}
-
-template <unsigned N, bool Signed>
-void to_json(const nlohmann::json& j, _PossiblyUnknownBits<N, Signed>& b) {
-  j = nlohmann::json { b.get() };
-}
-
-template <unsigned N, bool Signed>
-void from_json(const nlohmann::json& j, _Bits<N, Signed>& b) {
-  b = _Bits<N, Signed>{j.get<typename _Bits<N, Signed>::StorageType>()};
-}
-
-template <unsigned N, bool Signed>
-void from_json(const nlohmann::json& j, _PossiblyUnknownBits<N, Signed>& b) {
-  b = _PossiblyUnknownBits<N, Signed>{_Bits<N, Signed>{j.get<typename _Bits<N, Signed>::StorageType>()}, 0_b};
-}
-}
 
 static ExtensionName str_to_ext_name(const std::string& ext_name) {
   <%- i = 0 -%>
@@ -88,17 +67,6 @@ SatisfiedResult Config::ext_req_is_met(const ExtensionName& ext_name, const Vers
 }
 
 <%- cfg_arch.params.each do |param| -%>
-constexpr <%= name_of(:param, cfg_arch, param) %>::<%= name_of(:param, cfg_arch, param) %>(const nlohmann::json& value)
-  : Parameter("<%= param.name %>")
-    <%- unless cfg_arch.param_values.key?(param.name) -%>
-    , m_value(std::in_place, value.get<<%= param.idl_type.to_cxx_no_qualifiers %>>())
-    <%- end -%>
-{
-  <%- if cfg_arch.param_values.key?(param.name) -%>
-  bool same = value.get<<%= param.idl_type.to_cxx_no_qualifiers %>>() == m_value;
-  udb_assert(same, "Runtime parameter value must match compile-time value");
-  <%- end -%>
-}
 
 SatisfiedResult <%= name_of(:param, cfg_arch, param) %>::defined(const Config& cfg) const {
   return <%=
@@ -132,7 +100,7 @@ SatisfiedResult <%= name_of(:param, cfg_arch, param) %>::defined(const Config& c
         "cfg.ext_req_is_met(ExtensionName::#{term.name}, VersionRequirement(\"#{term.comparison.serialize}#{term.version}\"))"
       elsif term.is_a?(Udb::ParameterTerm)
         cxx_val =
-          "std::any_cast<#{cfg_arch.param(term.name).idl_type.to_cxx_no_qualifiers}>(cfg.param_value(\"#{term.name}\"))"
+          "std::any_cast<const #{cfg_arch.param(term.name).idl_type.to_cxx_no_qualifiers}&>(cfg.param_value(\"#{term.name}\"))"
         res =
           if term.array_comparison?
             if term.size

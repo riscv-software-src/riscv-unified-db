@@ -356,7 +356,7 @@ namespace :build do
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
-      sh "make -j #{$jobs}"
+      sh "make -j #{$jobs} iss"
     end
   end
 
@@ -392,8 +392,8 @@ end
 task checkout_riscv_tests: "#{$root}/ext/riscv-tests/env/LICENSE"
 
 task build_riscv_tests: "checkout_riscv_tests" do
-  Dir.chdir "#{$root}/ext/riscv-tests/isa" do
-    sh "make RISCV_GCC_OPTS='-static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -I/usr/include/newlib'"
+  Dir.chdir "#{$root}/tests/isa" do
+    sh "make"
   end
 end
 
@@ -501,6 +501,16 @@ namespace :test do
         "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}",
         "#{configs_name[0]}si-p-#{t}"
       )
+    end
+  end
+
+  task riscv_vector_tests: ["build_riscv_tests", "build:iss"] do
+    _, build_name = configs_build_name
+
+    # These extensions to the riscv-tests suite have binaries under a different diretcory
+    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli_rs1_eq_zero", "vsetvli_vl_lt_vlmax"]
+    rv32uvTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-vector.yaml tests/isa/rv32uv-p-#{t}"
     end
   end
 end

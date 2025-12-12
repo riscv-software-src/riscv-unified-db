@@ -325,6 +325,7 @@ GEM
       ffi (~> 1.17)
 
 PLATFORMS
+  aarch64-linux-gnu
   x86_64-linux-gnu
 
 DEPENDENCIES
