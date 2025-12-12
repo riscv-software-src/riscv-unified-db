@@ -5,7 +5,7 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: Zve32d
+name: Zve64d
 long_name: Vector Extension for Minimal Double-Precision Embedded Floating-Point
 description: |
   TBD - See GitHub issue 616
