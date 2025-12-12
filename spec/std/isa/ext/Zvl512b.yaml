@@ -5,7 +5,7 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: Zvl256b
+name: Zvl512b
 long_name: Vector register length must be at least 512 bits
 description: |
   TBD - See GitHub issue 616
