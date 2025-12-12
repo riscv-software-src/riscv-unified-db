@@ -15,9 +15,7 @@ versions:
     state: ratified
     ratification_date: 2021-11
 requirements:
-  allOf:
-    - extension:
-        name: Zicsr
-    - param:
-        name: VLEN
-        greaterThanOrEqual: 32
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: Zvl32b

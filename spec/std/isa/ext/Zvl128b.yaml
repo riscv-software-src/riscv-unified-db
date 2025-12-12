@@ -14,10 +14,7 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requirements:
-      extension:
-        name: F
 requirements:
   param:
-    name: VXLEN
+    name: VLEN
     greaterThanOrEqual: 128

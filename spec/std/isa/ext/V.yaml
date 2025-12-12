@@ -17,5 +17,5 @@ description: |
 requirements:
   extension:
     allOf:
-      - name: Zve32f
+      - name: Zve32d
       - name: Zvl128b

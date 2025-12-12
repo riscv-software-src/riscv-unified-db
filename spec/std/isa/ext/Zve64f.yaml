@@ -17,5 +17,5 @@ versions:
 requirements:
   extension:
     allOf:
-      - name: F
+      - name: Zve32f
       - name: Zve64x

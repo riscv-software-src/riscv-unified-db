@@ -15,9 +15,7 @@ versions:
     state: ratified
     ratification_date: 2021-11
 requirements:
-  allOf:
-    - extension:
-        name: Zve32x
-    - param:
-        name: VLEN
-        greaterThanOrEqual: 64
+  extension:
+    allOf:
+      - name: Zve32x
+      - name: Zvl64b
