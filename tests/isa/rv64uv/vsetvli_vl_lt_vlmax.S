@@ -18,17 +18,21 @@ RVTEST_CODE_BEGIN
 
 # tests for VLEN=128bits, AVL < VLMAX
 
-  TEST_CASE(2, x5, 0x2, \
+  TEST_CASE(1, x5, 0x2, \
     li x4, 0x2; \
     vsetvli x5, x4, 0x3; \
   )
 
-  TEST_CASE(3, x5, 0x2, \
+  # vtypei = 0x23 -> VMA_VTA_VSEW_VLMUL == 0_0_100_011 -> SEW=RESERVED, LMUL=8
+  # So vl should be zero
+  TEST_CASE(2, x5, 0x0, \
     li x4, 0x2; \
     vsetvli x5, x4, 0x23; \
   )
 
-  TEST_CASE(4, x5, 0x2, \
+  # vtypei = 0xeb-> VMA_VTA_VSEW_VLMUL == 1_1_101_011 -> SEW=RESERVED, LMUL=8
+  # So vl should be zero
+  TEST_CASE(3, x5, 0x0, \
     li x4, 0x2; \
     vsetvli x5, x4, 0xeb; \
   )
