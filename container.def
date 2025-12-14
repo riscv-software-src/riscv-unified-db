@@ -1,64 +1,79 @@
 Bootstrap: docker
 From: ubuntu:24.04
+Stage: spython-base
 
 %files
-  requirements.txt /opt/requirements.txt
-  package.json /opt/node/package.json
-  package-lock.json /opt/node/package-lock.json
-
+requirements.txt /tmp/requirements.txt
+package.json /opt/node/
+package-lock.json /opt/node/
 %post
-  export DEBIAN_FRONTEND=noninteractive
 
-  apt-get update
+DEBIAN_FRONTEND=noninteractive
 
-  # please keep pkgs sorted
-  apt-get install -y --no-install-recommends \
-    build-essential \
-    bundler \
-    clang-format \
-    clang-tidy \
-    cmake \
-    ditaa \
-    g++ \
-    gcc-riscv64-linux-gnu \
-    gcc-riscv64-unknown-elf \
-    gdb \
-    gh \
-    git \
-    less \
-    libc6-dev-riscv64-cross \
-    libelf-dev \
-    libgmp-dev \
-    libnewlib-dev \
-    libyaml-dev \
-    nodejs \
-    npm \
-    parallel \
-    python3 \
-    python3-pip \
-    python3.12-venv \
-    ruby \
-    ruby-dev \
-    shellcheck
+mkdir -p /workspace
+cd /workspace
 
-# cleanup
-  apt-get clean autoclean
-  apt-get autoremove -y
-  rm -rf /var/lib/{apt, dpkg, cache, log}
+export DEBIAN_FRONTEND=noninteractive
 
-  # Create Python virtual environment and install packages
-  /usr/bin/python3 -m venv /opt/venv
-  /opt/venv/bin/pip install -r /opt/requirements.txt
-  rm /opt/requirements.txt
+# please keep pkgs sorted
+\
+apt-get update && \
+apt-get install -y --no-install-recommends --fix-missing \
+build-essential \
+bundler \
+clang-format \
+clang-tidy \
+cmake \
+ditaa \
+g++ \
+gcc-riscv64-linux-gnu \
+gcc-riscv64-unknown-elf \
+gdb \
+gh \
+git \
+less \
+libc6-dev-riscv64-cross \
+libelf-dev \
+libgmp-dev \
+libnewlib-dev \
+libyaml-dev \
+nodejs \
+npm \
+parallel \
+python3 \
+python3-pip \
+python3.12-venv \
+ruby \
+ruby-dev \
+shellcheck
 
-  # Install npm packages globally in the container
-  cd /opt/node
-  /usr/bin/npm ci
-  rm /opt/node/package.json /opt/node/package-lock.json
+apt-get clean autoclean
+apt-get autoremove -y
+rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-  # cd $HOME
-  # bundle install
+# Create Python virtual environment and install packages
+/usr/bin/python3 -m venv /opt/venv && \
+/opt/venv/bin/pip install -r /tmp/requirements.txt && \
+rm /tmp/requirements.txt
+PATH="/opt/venv/bin:$PATH"
 
+# Install npm packages globally in the container
+cd /opt/node && \
+/usr/bin/npm ci && \
+rm /opt/node/package.json /opt/node/package-lock.json
+NODE_PATH="/opt/node/node_modules"
+PATH="/opt/node/node_modules/.bin:$PATH"
+
+mkdir -p /workspace
+cd /workspace
 %environment
-  export PATH="/opt/venv/bin:/opt/node/node_modules/.bin:$PATH"
-  export NODE_PATH="/opt/node/node_modules"
+export DEBIAN_FRONTEND=noninteractive
+export PATH="/opt/venv/bin:$PATH"
+export NODE_PATH="/opt/node/node_modules"
+export PATH="/opt/node/node_modules/.bin:$PATH"
+%runscript
+cd /workspace
+exec /bin/bash "$@"
+%startscript
+cd /workspace
+exec /bin/bash "$@"

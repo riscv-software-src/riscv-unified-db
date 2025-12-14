@@ -26,7 +26,7 @@ RUN \
     libc6-dev-riscv64-cross \
     libelf-dev \
     libgmp-dev \
-    libnewlib-dev\
+    libnewlib-dev \
     libyaml-dev \
     nodejs \
     npm \

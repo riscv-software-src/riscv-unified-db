@@ -5,8 +5,25 @@ on:
       - main
   workflow_dispatch:
 jobs:
+  check-container-def:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Check if container.def is up to date
+        run: |
+          uvx spython recipe .devcontainer/Dockerfile > container.def.check
+          if ! diff -q container.def container.def.check; then
+            echo "ERROR: container.def is not up to date with .devcontainer/Dockerfile."
+            exit 1
+          fi
   publish-singularity-container:
     runs-on: ubuntu-latest
+    needs: check-container-def
     env:
       SINGULARITY: 1
     steps:
@@ -50,6 +67,7 @@ jobs:
 
   publish-docker-container:
     runs-on: ubuntu-latest
+    needs: check-container-def
     env:
       DOCKER: 1
     steps:
