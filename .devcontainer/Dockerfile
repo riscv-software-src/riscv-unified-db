@@ -43,10 +43,10 @@ RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
 # Create Python virtual environment and install packages
-COPY requirements.txt /tmp/requirements.txt
+COPY requirements.txt /opt/requirements.txt
 RUN /usr/bin/python3 -m venv /opt/venv && \
-    /opt/venv/bin/pip install -r /tmp/requirements.txt && \
-    rm /tmp/requirements.txt
+    /opt/venv/bin/pip install -r /opt/requirements.txt && \
+    rm /opt/requirements.txt
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install npm packages globally in the container
