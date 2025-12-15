@@ -117,17 +117,19 @@ module Udb
             )
           cfg_arch.params.select do |p|
             pb.advance
-            param_defined = p.defined_by_condition
-            ext_implemented = to_condition
-            preconditions_met = requirements_condition
+            if p.defined_by_condition.mentions?(self)
+              param_defined = p.defined_by_condition
+              ext_implemented = to_condition
+              preconditions_met = requirements_condition
 
-            # inst is defined transitively by self if:
-            (
-              (-param_defined & ext_implemented) # it must be defined when preconditions are met, and
-            ).unsatisfiable? && \
-            (
-              (-param_defined & preconditions_met) # it may not be defined when only self's requirements are met
-            ).satisfiable?
+              # inst is defined transitively by self if:
+              (
+                (-param_defined & ext_implemented) # it must be defined when preconditions are met, and
+              ).unsatisfiable? && \
+              (
+                (-param_defined & preconditions_met) # it may not be defined when only self's requirements are met
+              ).satisfiable?
+            end
           end
         end
     end
