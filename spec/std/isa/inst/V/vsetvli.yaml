@@ -42,54 +42,62 @@ operation(): |
     CSR[vtype].VSEW = 0;
     CSR[vtype].VLMUL = 0;
     CSR[vl].VALUE = 0;
-  } else {
-    # valid, do the write
-    CSR[vtype].VILL = 0;
-    CSR[vtype].VMA = new_vtype[7];
-    CSR[vtype].VTA = new_vtype[6];
-    CSR[vtype].VSEW = new_vtype[5:3];
-    CSR[vtype].VLMUL = new_vtype[2:0];
+  } else
+    {
+      # valid, do the write
+      CSR[vtype].VILL = 0;
+      CSR[vtype].VMA = new_vtype[7];
+      CSR[vtype].VTA = new_vtype[6];
+      CSR[vtype].VSEW = new_vtype[5:3];
+      CSR[vtype].VLMUL = new_vtype[2:0];
 
-    VectorState state = vector_state();
-    XReg vlen = VLEN;
-    XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
-    XReg avl = X[xs1];
-    XReg ceil_avl_over_two = (avl + 1) / 2;
+      VectorState state = vector_state();
+      XReg vlen = VLEN;
+      XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+      XReg avl = X[xs1];
+      XReg ceil_avl_over_two = (avl + 1) / 2;
 
-    if (xs1 == 0 && xd != 0) {
-      CSR[vl].VALUE = vlmax;
-    }
-    if (xs1 == 0 && xd == 0) {
-      XReg vl = CSR[vl].VALUE;
-    }
-    # Sighting of a potential spec bug:
-    # Chapter 30, Section 6.2 says:
-    # "When rs1 is not x0, the AVL is an unsigned integer held in the
-    # x register specied by rs1, and the new vl value is also written
-    # to the x register specied by rd." (Below the table)
-    #
-    # Expected:
-    # Additional check for rd != 0 since for the case rd == x0 the new
-    # value should *not* be written because x0 is the zero register.
-    # The first row of the table should be split into two rows, one for
-    # rd == x0 and one for rd != x0.
+      if (xs1 == 0 && xd != 0) {
+        CSR[vl].VALUE = vlmax;
+      }
+      if (xs1 == 0 && xd == 0) {
+        XReg vl = CSR[vl].VALUE;
+      }
+      # Sighting of a potential spec bug:
+      # Chapter 30, Section 6.2 says:
+      # "When rs1 is not x0, the AVL is an unsigned integer held in the
+      # x register specied by rs1, and the new vl value is also written
+      # to the x register specied by rd." (Below the table)
+      #
+      # Expected:
+      # Additional check for rd != 0 since for the case rd == x0 the new
+      # value should *not* be written because x0 is the zero register.
+      # The first row of the table should be split into two rows, one for
+      # rd == x0 and one for rd != x0.
 
-    if (xs1 != 0) {
-      if (avl <= vlmax) {
-        CSR[vl].VALUE = avl;
-      } else if (avl < 2*vlmax) {
-          if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-            CSR[vl].VALUE = ceil_avl_over_two;
-          } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
-              CSR[vl].VALUE = vlmax;
-            } else {
-                unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+      if (xs1 != 0)
+      {
+        if (avl <= vlmax)
+        {
+          CSR[vl].VALUE = avl;
+        } else if (avl < 2*vlmax)
+            {
+              if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)")
+              {
+                CSR[vl].VALUE = ceil_avl_over_two;
+              } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX")
+                {
+                  CSR[vl].VALUE = vlmax;
+                } else
+                  {
+                    unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+                  }
+            } else
+              {
+                CSR[vl].VALUE = vlmax;
               }
-        } else {
-            CSR[vl].VALUE = vlmax;
-          }
+        }
     }
-  }
   # See comment above re destination register being x0
   if (xd != 0) { X[xd] = CSR[vl].VALUE; }
   CSR[vstart].VALUE = 0;
