@@ -97,7 +97,19 @@ namespace :gen do
     if cfg.nil?
       cfg = "_"
     end
-    $resolver.cfg_arch_for(cfg)
+    if ENV.key?("COMPILE_IDL")
+      resolver = Udb::Resolver.new($root, compile_idl: true)
+      resolver.cfg_arch_for(cfg)
+      Dir.glob(resolver.std_path / "isa" / "globals.isa") do |idl_file|
+        compiler = Idl::Compiler.new
+        ast = compiler.compile_file(Pathname.new(idl_file), {})
+        dst = resolver.cfg_info(cfg).resolved_spec_path / Pathname.new(idl_file).relative_path_from(resolver.std_path)
+        dst = dst.dirname / "#{dst.basename(".isa")}.yaml"
+        File.write dst, YAML.dump(ast.to_h)
+      end
+    else
+      $resolver.cfg_arch_for(cfg)
+    end
   end
 end
 
@@ -170,7 +182,7 @@ end
 namespace :test do
   desc "Check that instruction encodings in the DB are consistent and do not conflict"
   task :inst_encodings do
-    print "Checking for conflicts in instruction encodings.."
+    Udb.logger.info "Checking for conflicts in instruction encodings.."
 
     failed = T.let(false, T::Boolean)
 

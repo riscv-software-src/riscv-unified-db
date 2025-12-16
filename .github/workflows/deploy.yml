@@ -75,15 +75,15 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Resolve unconfig
-        run: ./do gen:resolved_arch
+        run: ./do gen:resolved_arch COMPILE_IDL=1
       - name: Tar unconfig
-        run: tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_ && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_/resolved_spec.tar.gz
+        run: tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/std && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/std/resolved_spec.tar.gz
       - name: Upload resolved spec
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
         with:
           name: resolved-spec
-          path: gen/resolved_spec/_
+          path: gen/resolved_spec/std
           include-hidden-files: true
           retention-days: 1
   build-isa-explorer-csr:

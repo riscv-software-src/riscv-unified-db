@@ -6,6 +6,8 @@ import argparse
 import shutil
 import json
 import sys
+import subprocess
+import tempfile
 
 from pathlib import Path
 
@@ -229,7 +231,9 @@ def dig(obj: dict, *keys):
 resolved_objs = {}
 
 
-def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dict:
+def resolve(
+    rel_path: str | Path, arch_root: str | Path, do_checks: bool, compile_idl: bool
+) -> dict:
     """Resolve the file at arch_root/rel_path by expanding operators and applying defaults
 
     Parameters
@@ -267,11 +271,12 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
             unresolved_arch_data,
             arch_root,
             do_checks,
+            compile_idl,
         )
         return resolved_objs[str(rel_path)]
 
 
-def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
+def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compile_idl):
     if not (isinstance(obj, list) or isinstance(obj, dict)):
         return obj
 
@@ -279,7 +284,13 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
         obj = list(
             map(
                 lambda o: _resolve(
-                    o, obj_path, obj_file_path, doc_obj, arch_root, do_checks
+                    o,
+                    obj_path,
+                    obj_file_path,
+                    doc_obj,
+                    arch_root,
+                    do_checks,
+                    compile_idl,
                 ),
                 obj,
             )
@@ -310,14 +321,20 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                 if ref_obj == None:
                     raise ValueError(f"{ref_obj_path} cannot be found in #{doc_obj}")
                 ref_obj = _resolve(
-                    ref_obj, ref_obj_path, ref_file_path, doc_obj, arch_root, do_checks
+                    ref_obj,
+                    ref_obj_path,
+                    ref_file_path,
+                    doc_obj,
+                    arch_root,
+                    do_checks,
+                    compile_idl,
                 )
             else:
                 # this is a reference to another doc
                 if not os.path.exists(os.path.join(arch_root, ref_file_path)):
                     raise ValueError(f"{ref_file_path} does not exist in {arch_root}/")
 
-                ref_doc_obj = resolve(ref_file_path, arch_root, do_checks)
+                ref_doc_obj = resolve(ref_file_path, arch_root, do_checks, compile_idl)
                 ref_obj = dig(ref_doc_obj, *ref_obj_path)
 
                 ref_obj = _resolve(
@@ -327,6 +344,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                     ref_doc_obj,
                     arch_root,
                     do_checks,
+                    compile_idl,
                 )
 
             for key in ref_obj:
@@ -371,6 +389,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                     doc_obj,
                     arch_root,
                     do_checks,
+                    compile_idl,
                 )
             else:
                 if isinstance(parent_obj[key], dict):
@@ -384,6 +403,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                             doc_obj,
                             arch_root,
                             do_checks,
+                            compile_idl,
                         ),
                         strategy=Strategy.REPLACE,
                     )
@@ -395,6 +415,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                         doc_obj,
                         arch_root,
                         do_checks,
+                        compile_idl,
                     )
 
         if "$remove" in final_obj:
@@ -411,7 +432,13 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
     else:
         for key in obj:
             obj[key] = _resolve(
-                obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks
+                obj[key],
+                obj_path + [key],
+                obj_file_path,
+                doc_obj,
+                arch_root,
+                do_checks,
+                compile_idl,
             )
 
         if "$remove" in obj:
@@ -423,6 +450,34 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                 if obj["$remove"] in obj:
                     del obj[obj["$remove"]]
             del obj["$remove"]
+
+        if compile_idl:
+            idl_keys = {key for key in obj.keys() if key.endswith("()")}
+            for key in idl_keys:
+                if key != "sail()" and key.endswith("()") and obj[key]:
+                    r = (
+                        "instruction_operation"
+                        if key == "operation()"
+                        else ("constraint_body" if key == "idl()" else "function_body")
+                    )
+                    with tempfile.NamedTemporaryFile(
+                        mode="w+t", delete=True, suffix=".idl"
+                    ) as temp_file:
+                        temp_file.write(obj[key] + "\n")
+                        temp_file.flush()
+                        result = subprocess.run(
+                            f"./bin/idlc compile --format yaml --root {r} {temp_file.name}",
+                            shell=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        if result.returncode != 0:
+                            print(
+                                f"ERROR: Failed to compile {obj_file_path}::{obj_path}::{key}: {result.stderr}",
+                                file=sys.stderr,
+                            )
+                            exit(1)
+                        obj[key[:-2] + "_ast"] = result.stdout
 
         return obj
 
@@ -525,6 +580,7 @@ def resolve_file(
     arch_dir: str | Path,
     resolved_dir: str | Path,
     do_checks: bool,
+    compile_idl: bool,
 ):
     """Read object at arch_dir/rel_path, resolve it, and write it as YAML to resolved_dir/rel_path
 
@@ -549,7 +605,7 @@ def resolve_file(
     ):
         if os.path.exists(resolved_path):
             os.remove(resolved_path)
-        resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+        resolved_obj = resolve(rel_path, args.arch_dir, do_checks, compile_idl)
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
         # since already-resolved objects may be updated later with inheritance breadcrumbs ($parent_of),
@@ -557,12 +613,10 @@ def resolve_file(
 
 
 def write_resolved_file_and_validate(
-    rel_path: str | Path,
-    resolved_dir: str | Path,
-    do_checks: bool,
+    rel_path: str | Path, resolved_dir: str | Path, do_checks: bool, compile_idl: bool
 ):
     resolved_path = os.path.join(resolved_dir, rel_path)
-    resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+    resolved_obj = resolve(rel_path, args.arch_dir, do_checks, compile_idl)
     resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
     write_yaml(resolved_path, resolved_obj)
 
@@ -613,6 +667,11 @@ if __name__ == "__main__":
     )
     all_parser.add_argument(
         "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
+    )
+    all_parser.add_argument(
+        "--compile_idl",
+        action="store_true",
+        help="Compile idl code and insert it in the resolved files",
     )
 
     args = cmdparser.parse_args()
@@ -675,7 +734,11 @@ if __name__ == "__main__":
             resolved_arch_path = f"{abs_resolved_dir}/{arch_path}"
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
             resolve_file(
-                arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
+                arch_path,
+                args.arch_dir,
+                args.resolved_dir,
+                not args.no_checks,
+                args.compile_idl,
             )
         iter = (
             arch_paths
@@ -689,7 +752,7 @@ if __name__ == "__main__":
         )
         for arch_path in iter:
             write_resolved_file_and_validate(
-                arch_path, args.resolved_dir, not args.no_checks
+                arch_path, args.resolved_dir, not args.no_checks, args.compile_idl
             )
 
         # create index
