@@ -139,3 +139,10 @@ repos:
     hooks:
       - id: reuse-lint-file
         exclude: COMMIT_EDITMSG|MERGE_MSG
+
+  - repo: local
+    hooks:
+      - id: singularity
+        name: generate container.def
+        language: system
+        entry: spython recipe .devcontainer/Dockerfile > container.def

@@ -256,20 +256,6 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Check profile_extensions
         run: ./do test:profile_extensions
-  regress-check-container-def:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-      - name: Check if container.def is up to date
-        run: |
-          uvx spython recipe .devcontainer/Dockerfile > container.def.check
-          if ! diff -q container.def container.def.check; then
-            echo "ERROR: container.def is not up to date with .devcontainer/Dockerfile."
-            exit 1
-          fi
   call-deploy:
     uses: ./.github/workflows/deploy.yml
     with:

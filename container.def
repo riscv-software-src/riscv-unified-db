@@ -71,9 +71,3 @@ export DEBIAN_FRONTEND=noninteractive
 export PATH="/opt/venv/bin:$PATH"
 export NODE_PATH="/opt/node/node_modules"
 export PATH="/opt/node/node_modules/.bin:$PATH"
-%runscript
-cd /workspace
-exec /bin/bash "$@"
-%startscript
-cd /workspace
-exec /bin/bash "$@"
