@@ -14,8 +14,7 @@
       "matchFileNames": [
         "package.json",
         "package-lock.json",
-        "requirements.txt",
-        ".devcontainer/Dockerfile"
+        "requirements.txt"
       ],
       "bumpVersions": [
         {
@@ -32,5 +31,8 @@
   },
   "pre-commit": {
     "enabled": true
+  },
+  "dockerfile": {
+    "enabled": false
   }
 }
