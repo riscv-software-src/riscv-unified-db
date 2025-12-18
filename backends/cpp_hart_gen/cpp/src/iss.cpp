@@ -13,6 +13,7 @@
 struct Options {
   std::string config_name;
   std::filesystem::path config_path;
+  std::filesystem::path memory_map_path;
   bool show_configs;
   std::string elf_file_path;
 
@@ -24,6 +25,7 @@ int parse_cmdline(int argc, char **argv, Options &options) {
   CLI::App app("Bare-bones ISS");
   app.add_option("-m,--model", options.config_name, "Hart model");
   app.add_option("-c,--cfg", options.config_path, "Hart configuration file");
+  app.add_option("--mm, --memory-map", options.memory_map_path, "Memory map file");
   app.add_flag("-l,--list-configs", options.show_configs,
                "List available configurations");
 
@@ -32,6 +34,15 @@ int parse_cmdline(int argc, char **argv, Options &options) {
   CLI11_PARSE(app, argc, argv);
   return PARSE_OK;
 }
+
+static const std::pair<uint64_t, uint64_t> get_memory_range(std::filesystem::path memmap, std::filesystem::path elf_file_path) {
+  nlohmann::json regions;
+  if(!memmap.empty()) {
+
+  }
+  return std::make_pair(0, 0);
+}
+
 
 int main(int argc, char **argv) {
   Options opts;
@@ -56,10 +67,10 @@ int main(int argc, char **argv) {
 
   // how much memory do we need?
   auto range = elf_reader.mem_range();
-  uint64_t memsz = range.second - range.first + 1;
+  uint64_t memsz = range.second - range.first;
 
   // round up to a page for good measure
-  memsz = (memsz & ~0xfffull) + 0x1000;
+  memsz = (memsz + 0xfff) & ~0xfffull;
 
   udb::IssSocModel soc(memsz, range.first);
 
