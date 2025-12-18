@@ -15,7 +15,7 @@
 #include "riscv_test.h"
 #include "test_macros.h"
 
-RVTEST_RV64U
+RVTEST_RV64UV
 RVTEST_CODE_BEGIN
 
 # tests for VLEN=128bits, AVL < VLMAX
