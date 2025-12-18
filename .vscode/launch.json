@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/gen/cpp_hart_gen/rv64_Debug/build/iss",
-      "args": ["-m", "rv64", "-c", "${workspaceFolder}/cfgs/rv64-riscv-tests.yaml", "${workspaceFolder}/ext/riscv-tests/isa/rv64ui-p-addi"],
+      "args": ["-m", "rv64", "-c", "${workspaceFolder}/cfgs/rv64-riscv-tests.yaml", "--mm", "${workspaceFolder}/backends/cpp_hart_gen/memmap.json", "${workspaceFolder}/ext/riscv-tests/isa/rv64ui-p-add"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],
