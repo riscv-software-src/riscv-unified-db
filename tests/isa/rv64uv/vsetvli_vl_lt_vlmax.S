@@ -13,11 +13,12 @@
 #include "riscv_test.h"
 #include "test_macros.h"
 
-RVTEST_RV64U
+RVTEST_RV64UV
 RVTEST_CODE_BEGIN
 
 # tests for VLEN=128bits, AVL < VLMAX
-
+  # vtypei = 0x03 -> VMA_VTA_VSEW_VLMUL == 0_0_000_011 -> SEW=8, LMUL=8
+  # VLMAX=LMUL*VLEN/SEW = 8*128/8 = 128
   TEST_CASE(1, x5, 0x2, \
     li x4, 0x2; \
     vsetvli x5, x4, 0x3; \
