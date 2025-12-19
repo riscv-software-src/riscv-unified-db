@@ -1,0 +1,45 @@
+# Copyright (c) Salil Mittal
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sie
+long_name: Supervisor interrupt-enable register
+address: 0x104
+priv_mode: S
+definedBy: S
+length: SXLEN
+description: Supervisor interrupt-enable register.
+writable: true
+fields:
+  SSIE:
+    location: 1
+    alias: mie.SSIE
+    description: |
+      Supervisor Software Interrupt Enable
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  STIE:
+    location: 5
+    alias: mie.STIE
+    description: |
+      Supervisor Timer Interrupt Enable
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  SEIE:
+    location: 9
+    alias: mie.SEIE
+    description: |
+      Supervisor External Interrupt Enable
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  LCOFIE:
+    location: 13
+    alias: mie.LCOFIE
+    description: |
+      Local Counter Overflow Interrupt Enable
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy: Sscofpmf
