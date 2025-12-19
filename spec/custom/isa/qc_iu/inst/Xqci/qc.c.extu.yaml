@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcibm
-assembly: " xd, width"
+assembly: xd, width
 base: 32
 encoding:
   match: 0001----------10

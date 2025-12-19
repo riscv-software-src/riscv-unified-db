@@ -20,7 +20,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcicsr
-assembly: " xd, imm, xs2"
+assembly: xd, imm, xs2
 base: 32
 encoding:
   match: 1000111----------000-----1110011

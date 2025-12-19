@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcisls
-assembly: " xs3, xs1, xs2, shamt"
+assembly: xs3, xs1, xs2, shamt
 base: 32
 encoding:
   match: 1110-------------110-----0101011
