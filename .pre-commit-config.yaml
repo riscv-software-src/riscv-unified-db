@@ -139,3 +139,12 @@ repos:
     hooks:
       - id: reuse-lint-file
         exclude: COMMIT_EDITMSG|MERGE_MSG
+
+  - repo: local
+    hooks:
+      - id: singularity
+        name: generate container.def
+        files: (bin/generate-container-def|\.devcontainer/Dockerfile|container\.def)$
+        pass_filenames: false
+        language: system
+        entry: ./bin/generate-container-def
