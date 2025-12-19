@@ -85,3 +85,8 @@ path = [
 ]
 SPDX-FileCopyrightText = "Copyright (c) 2025 Synopsys, Inc."
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+[[annotations]]
+path = "renovate.json"
+SPDX-FileCopyrightText = "Copyright (c) Jordan Carlin"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
