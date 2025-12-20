@@ -1,12 +1,14 @@
+# typed: false
 # frozen_string_literal: true
 
 require "udb/resolver"
-require 'json'
-require 'tempfile'
+require "json"
+require "tempfile"
 
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 directory "#{$root}/gen/sverilog"
+directory "#{$root}/gen/capstone"
 
 def with_resolved_exception_codes(cfg_arch)
   # Process ERB templates in exception codes using Ruby ERB processing
@@ -126,5 +128,29 @@ namespace :gen do
          "--resolved-codes=#{resolved_codes} " \
          "--output=#{output_dir}riscv_decode_package.svh --include-all"
     end
+  end
+
+  desc <<~DESC
+    Generate Capstone CSR switch from RISC-V CSR definitions
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated Capstone code (defaults to "#{$root}/gen/capstone")
+  DESC
+  task capstone: "#{$root}/gen/capstone" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/capstone/"
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
+
+    # Run the Capstone CSR switch generator Python script
+    sh "/opt/venv/bin/python3 #{$root}/tools/python-packages/udb-capstone/generate_csr_switch.py --csr-dir=#{csr_dir} --arch=BOTH --output=#{output_dir}csr_switch.c"
   end
 end
