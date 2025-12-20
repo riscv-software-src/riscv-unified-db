@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcibm
-assembly: " xd, shamt"
+assembly: xd, shamt
 base: 32
 encoding:
   match: 100101--------01

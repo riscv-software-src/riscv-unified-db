@@ -17,7 +17,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcisync
-assembly: " imm"
+assembly: imm
 base: 32
 encoding:
   match: 0010000-----00000011000000010011

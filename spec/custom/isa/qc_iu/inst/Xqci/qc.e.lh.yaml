@@ -16,7 +16,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcilo
-assembly: " xd, imm(xs1)"
+assembly: xd, imm(xs1)
 base: 32
 encoding:
   match: ----------------10---------------101-----0011111

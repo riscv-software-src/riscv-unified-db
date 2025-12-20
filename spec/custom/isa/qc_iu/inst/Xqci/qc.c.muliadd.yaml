@@ -24,7 +24,7 @@ encoding:
       location: 9-7
     - name: rd
       location: 4-2
-assembly: " xd, xs1, uimm"
+assembly: xd, xs1, uimm
 access:
   s: always
   u: always

@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcisim
-assembly: " imm"
+assembly: imm
 base: 32
 encoding:
   match: 0100--------00000010000000010011

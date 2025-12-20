@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - Xqci
     - Xqcisim
-assembly: " xs1"
+assembly: xs1
 base: 32
 encoding:
   match: 100000000000-----010000000010011
