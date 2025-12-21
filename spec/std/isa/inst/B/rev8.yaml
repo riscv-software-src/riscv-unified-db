@@ -20,21 +20,29 @@ description: |
 definedBy:
   anyOf: [Zbb, Zbkb]
 assembly: xd, xs1
-encoding:
+format:
   RV32:
-    match: 011010011000-----101-----0010011
-    variables:
-      - name: xs1
-        location: 19-15
-      - name: xd
-        location: 11-7
+    $inherits:
+      - inst_subtype/I/I-x-x.yaml#/data
+    opcodes:
+      funct12:
+        display_name: RV8
+        value: 0b011010011000
+      funct3:
+        display_name: REV8
+        value: 0b101
+      opcode: { $inherits: inst_opcode/OP-IMM.yaml#/data }
   RV64:
-    match: 011010111000-----101-----0010011
-    variables:
-      - name: xs1
-        location: 19-15
-      - name: xd
-        location: 11-7
+    $inherits:
+      - inst_subtype/I/I-x-x.yaml#/data
+    opcodes:
+      funct12:
+        display_name: RV8
+        value: 0b011010111000
+      funct3:
+        display_name: REV8
+        value: 0b101
+      opcode: { $inherits: inst_opcode/OP-IMM.yaml#/data }
 access:
   s: always
   u: always

@@ -133,6 +133,59 @@
       },
       "additionalProperties": false
     },
+    "base_format": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/fully_resolved_format"
+        },
+        {
+          "$comment": "Unresolved version",
+          "required": ["$inherits", "opcodes"],
+          "properties": {
+            "$inherits": {
+              "oneOf": [
+                {
+                  "$ref": "schema_defs.json#/$defs/reference"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/reference"
+                  }
+                }
+              ]
+            },
+            "opcodes": {
+              "type": "object",
+              "patternProperties": {
+                "$comment": "opcode names are lowercase with numbers",
+                "^[a-z][a-z0-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "$comment": "location must come from inheritance",
+                    "display_name": {
+                      "type": "string",
+                      "description": "field name, displayed in encoding drawings"
+                    },
+                    "value": {
+                      "$ref": "schema_defs.json#/$defs/integer"
+                    },
+                    "$inherits": {
+                      "type": "string",
+                      "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "old_encoding": {
       "type": "object",
       "properties": {
@@ -431,55 +484,16 @@
           "type": "string"
         },
         "format": {
-          "type": "object",
           "oneOf": [
+            { "$ref": "#/$defs/base_format" },
             {
-              "$ref": "#/$defs/fully_resolved_format"
-            },
-            {
-              "$comment": "Unresolved version",
-              "required": ["$inherits", "opcodes"],
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["RV32", "RV64"],
               "properties": {
-                "$inherits": {
-                  "oneOf": [
-                    {
-                      "$ref": "schema_defs.json#/$defs/reference"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "schema_defs.json#/$defs/reference"
-                      }
-                    }
-                  ]
-                },
-                "opcodes": {
-                  "type": "object",
-                  "patternProperties": {
-                    "$comment": "opcode names are lowercase with numbers",
-                    "^[a-z][a-z0-9]*$": {
-                      "type": "object",
-                      "properties": {
-                        "$comment": "location must come from inheritance",
-                        "display_name": {
-                          "type": "string",
-                          "description": "field name, displayed in encoding drawings"
-                        },
-                        "value": {
-                          "$ref": "schema_defs.json#/$defs/integer"
-                        },
-                        "$inherits": {
-                          "type": "string",
-                          "pattern": "inst_opcode/[^/]+\\.yaml#/data"
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false
+                "RV32": { "$ref": "#/$defs/base_format" },
+                "RV64": { "$ref": "#/$defs/base_format" }
+              }
             }
           ]
         },
