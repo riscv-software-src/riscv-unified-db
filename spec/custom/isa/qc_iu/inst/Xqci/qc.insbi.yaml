@@ -29,7 +29,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, imm, width, shamt"
+assembly: xd, imm, width, shamt
 access:
   s: always
   u: always

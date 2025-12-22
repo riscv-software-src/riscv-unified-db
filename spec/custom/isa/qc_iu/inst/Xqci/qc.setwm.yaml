@@ -29,7 +29,7 @@ encoding:
       not: 0
     - name: rs3
       location: 11-7
-assembly: " xs3, xs2, imm(xs1)"
+assembly: xs3, xs2, imm(xs1)
 access:
   s: always
   u: always

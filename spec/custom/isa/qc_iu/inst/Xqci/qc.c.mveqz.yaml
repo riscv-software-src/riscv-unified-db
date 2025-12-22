@@ -22,7 +22,7 @@ encoding:
       location: 9-7
     - name: rd
       location: 4-2
-assembly: " xd, xs1"
+assembly: xd, xs1
 access:
   s: always
   u: always
