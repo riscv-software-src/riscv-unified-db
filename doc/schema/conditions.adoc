@@ -490,7 +490,7 @@ The only allowed statements in a condition are:
 * link:../idl.adoc#implications[Implications]
 * For loops
 
-Notably, if/else statements are permitted. Implications should be used instead.
+Notably, if/else statements are not permitted. Implications should be used instead.
 
 ==== Expressions
 
