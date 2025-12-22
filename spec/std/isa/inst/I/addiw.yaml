@@ -7,12 +7,17 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: addiw
 long_name: Add immediate word
-description: Add an immediate to the 32-bit value in xs1, and store the sign extended result in xd
-definedBy: I
-base: 64
+description:
+  Add an immediate to the 32-bit value in xs1, and store the sign extended
+  result in xd
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------000-----0011011
+  match: "-----------------000-----0011011"
   variables:
     - name: imm
       location: 31-20

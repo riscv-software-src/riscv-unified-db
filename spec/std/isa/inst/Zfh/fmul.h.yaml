@@ -9,7 +9,11 @@ name: fmul.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy:
+  extension:
+    oneOf:
+      - name: Zfh
+      - name: Zhinx
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0001010------------------1010011

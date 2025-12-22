@@ -11,7 +11,10 @@ description: |
   Performs the bitwise logical AND operation between `xs1` and the
   bitwise inversion of `xs2`.
 definedBy:
-  anyOf: [Zbb, Zbkb]
+  extension:
+    anyOf:
+      - name: Zbb
+      - name: Zbkb
 assembly: xd, xs1, xs2
 format:
   $inherits:

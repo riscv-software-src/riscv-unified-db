@@ -11,9 +11,8 @@ description: |
   C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a &pm;256 B range. C.BEQZ takes the branch if the value in register xs1' is NOT zero.
   It expands to `beq` `xs1, x0, offset`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    name: Zca
 assembly: xs1, imm
 encoding:
   match: 111-----------01

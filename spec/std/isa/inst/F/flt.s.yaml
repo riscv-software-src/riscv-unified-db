@@ -11,7 +11,10 @@ description: |
   The `flt.s` instruction writes 1 to `xd` if `fs1` is less than `fs2`, and 0 otherwise.
   If either operand is NaN, the result is 0 (not equal). If either operand is a NaN
   (signaling or quiet), the invalid flag is set.
-definedBy: F
+
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------001-----1010011

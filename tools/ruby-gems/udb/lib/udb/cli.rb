@@ -6,6 +6,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "pastel"
 require "thor"
 require "terminal-table"
 
@@ -21,12 +22,53 @@ class SubCommandBase < Thor
       "-#{T.must(match[0]).downcase}"
     end
   end
+
+  no_commands do
+    def pastel
+      @pastel ||= Pastel.new(enabled: $stdout.tty?)
+    end
+  end
 end
 
 module Udb
   module CliCommands
     class Validate < SubCommandBase
       include Thor::Actions
+
+      desc "spec", "Validate that the spec follows the schema"
+      long_desc <<~DESC
+         Validate that all of the files in the spec conform to the data schema.
+
+         The specification is determined by --config.
+      DESC
+      method_option :std, aliases: "-a", type: :string, desc: "Path to standard specification database", default: Udb.default_std_isa_path.to_s
+      method_option :custom, type: :string, desc: "Path to custom specification directory, if needed", default: Udb.default_custom_isa_path.to_s
+      method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+      def spec
+
+        cfg_file =
+          if File.file?(options[:config])
+            Pathname.new(options[:config])
+          elsif File.file?("#{options[:config_dir]}/#{options[:config]}.yaml")
+            Pathname.new("#{options[:config_dir]}/#{options[:config]}.yaml")
+          else
+            raise ArgumentError, "Cannot find config: #{options[:config]}"
+          end
+
+        resolver =
+          Udb::Resolver.new(
+            std_path_override: Pathname.new(options[:std]),
+            gen_path_override: Pathname.new(options[:gen]),
+            custom_path_override: Pathname.new(options[:custom])
+          )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+
+        puts "Checking arch files against schema.."
+        cfg_arch.validate($resolver, show_progress: true)
+        puts "All files validate against their schema"
+      end
 
       desc "cfg NAME_OR_PATH", "Validate a configuration file"
       long_desc <<~DESC
@@ -50,13 +92,28 @@ module Udb
           else
             raise ArgumentError, "Cannot find config: #{name_or_path}"
           end
-        result = ConfiguredArchitecture.validate(cfg_file)
+        resolver =
+          Udb::Resolver.new(
+            std_path_override: Pathname.new(options[:std]),
+            gen_path_override: Pathname.new(options[:gen]),
+            custom_path_override: Pathname.new(options[:custom])
+          )
+        begin
+          cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
+        rescue InvalidConfigError
+          say "Config is #{pastel.red.bold("invalid")}"
+          exit 1
+        end
+        result = cfg_arch.valid?
 
-        cfg_spec = YAML.load_file(cfg_file)
-        if result
-          say "Config #{cfg_spec.fetch('name')} is valid"
+        if result.valid
+          say "Config #{pastel.bold(cfg_arch.name)} is #{pastel.green.bold("valid")}"
         else
-          say "Config #{cfg_spec.fetch('name')} is invalid"
+          say "Config #{pastel.bold(cfg_arch.name)} is #{pastel.red.bold("invalid")}"
+          say ""
+          result.reasons.each do |r|
+            say "  * #{pastel.yellow.bold(r.gsub("\n", "\n    "))}"
+          end
           exit 1
         end
       end
@@ -138,11 +195,11 @@ module Udb
           say <<~INFO
             #{param_name}
 
-              Defined by extension:
-              #{param.exts.map { |e| "    - #{e.name}" }.join("\n")}
+              Defined by:
+              #{param.defined_by_condition.to_s_pretty}
 
               Description:
-                #{param.desc.gsub("\n", "\n    ")}
+                #{param.description.gsub("\n", "\n    ")}
 
               Value:
                 #{param.schema.to_pretty_s}
@@ -198,7 +255,7 @@ module Udb
       method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :extensions, aliases: "-e", type: :array, desc: "Only list parameters from extensions"
-      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: 'ascii'
+      method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: "ascii"
       method_option :output, aliases: "-o", type: :string, desc: "Output file, or '-' for stdout", default: "-"
       def parameters
         raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
@@ -228,27 +285,27 @@ module Udb
         cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         params =
           if options[:extensions]
-            cfg_arch.possible_extensions.select{ |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
+            cfg_arch.possible_extensions.select { |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
           else
-            cfg_arch.possible_extensions.map(&:params).flatten.uniq(&:name).sort
+            cfg_arch.params_with_value + cfg_arch.params_without_value
           end
         if options[:output_format] == "ascii"
           table = ::Terminal::Table.new(
-            headings: ["Name", "Extension(s)", "description"],
-            rows: params.map { |p| [p.name, p.exts.map(&:name).join(", "), p.desc] },
+            headings: ["Name", "Defined By", "description"],
+            rows: params.map { |p| [p.name, p.defined_by_condition.to_s, p.description] },
           )
           table.style = { all_separators: true }
           out.puts table
         elsif options[:output_format] == "yaml"
           yaml = []
           params.each do |p|
-            yaml << { "name" => p.name, "exts" => p.exts.map(&:name), "description" => p.desc }
+            yaml << { "name" => p.name, "exts" => p.defined_by_condition.to_s, "description" => p.description }
           end
           out.puts YAML.dump(yaml)
         elsif options[:output_format] == "json"
           yaml = []
           params.each do |p|
-            yaml << { "name" => p.name, "exts" => p.exts.map(&:name), "description" => p.desc }
+            yaml << { "name" => p.name, "exts" => p.defined_by_condition.to_s, "description" => p.description }
           end
           out.puts JSON.dump(yaml)
         end

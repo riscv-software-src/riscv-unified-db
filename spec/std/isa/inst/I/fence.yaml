@@ -123,10 +123,12 @@ description: |
   !===
   <%- end -%>
 
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: pred, succ
 encoding:
-  match: -----------------000-----0001111
+  match: "-----------------000-----0001111"
   variables:
     - name: fm
       location: 31-28

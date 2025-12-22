@@ -10,8 +10,11 @@ long_name: Floating-Point Convert Single-Precision to Long
 description: |
   The `fcvt.l.s` instruction converts a floating-point number in floating-point register `fs1` to a signed
   64-bit integer, in integer register `xd`.
-definedBy: F
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: F
 assembly: xd, fs1, rm
 encoding:
   match: 110000000010-------------1010011

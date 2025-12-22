@@ -10,7 +10,9 @@ long_name: Integer add
 description: |
   Add the value in xs1 to xs2, and store the result in xd.
   Any overflow is thrown away.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------000-----0110011

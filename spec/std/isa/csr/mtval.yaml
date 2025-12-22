@@ -12,7 +12,9 @@ writable: true
 description: Holds trap-specific information
 priv_mode: M
 length: MXLEN
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   VALUE:
     location_rv32: 31-0

@@ -46,22 +46,24 @@ versions:
     - Rename extension and sub extensions to match toolchain guidelines
     - Rename mnemonics to match toolchain guidelines
     - Ensure every instruction belongs to at least one sub extension
-  implies:
-  - { name: Xqcia, version: "0.1.0" }
-  - { name: Xqciac, version: "0.1.0" }
-  - { name: Xqcibi, version: "0.1.0" }
-  - { name: Xqcibm, version: "0.1.0" }
-  - { name: Xqcicli, version: "0.1.0" }
-  - { name: Xqcicm, version: "0.1.0" }
-  - { name: Xqcics, version: "0.1.0" }
-  - { name: Xqcicsr, version: "0.1.0" }
-  - { name: Xqciint, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.1.0" }
-  - { name: Xqcili, version: "0.1.0" }
-  - { name: Xqcilia, version: "0.1.0" }
-  - { name: Xqcilo, version: "0.1.0" }
-  - { name: Xqcilsm, version: "0.1.0" }
-  - { name: Xqcisls, version: "0.1.0" }
+  requirements:
+    extension:
+      allOf:
+        - { name: Xqcia, version: "= 0.1.0" }
+        - { name: Xqciac, version: "= 0.1.0" }
+        - { name: Xqcibi, version: "= 0.1.0" }
+        - { name: Xqcibm, version: "= 0.1.0" }
+        - { name: Xqcicli, version: "= 0.1.0" }
+        - { name: Xqcicm, version: "= 0.1.0" }
+        - { name: Xqcics, version: "= 0.1.0" }
+        - { name: Xqcicsr, version: "= 0.1.0" }
+        - { name: Xqciint, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.1.0" }
+        - { name: Xqcili, version: "= 0.1.0" }
+        - { name: Xqcilia, version: "= 0.1.0" }
+        - { name: Xqcilo, version: "= 0.1.0" }
+        - { name: Xqcilsm, version: "= 0.1.0" }
+        - { name: Xqcisls, version: "= 0.1.0" }
 - version: "0.4.0"
   state: frozen
   ratification_date: null
@@ -76,25 +78,26 @@ versions:
     - Add information about instruction formats of each instruction
     - Fix description and functionality of qc.c.extu instruction
     - Fix description and functionality of qc.shladd instruction
-  implies:
-  - { name: Xqcia, version: "0.2.0" }
-  - { name: Xqciac, version: "0.2.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.2.0" }
-  - { name: Xqcicli, version: "0.2.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.2.0" }
-  - { name: Xqciint, version: "0.2.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.2.0" }
-  - { name: Xqcilsm, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.2.0" }
+        - { name: Xqciac, version: "= 0.2.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.2.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.2.0" }
+        - { name: Xqciint, version: "= 0.2.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
 - version: "0.5.0"
   state: frozen
   ratification_date: null
@@ -118,28 +121,29 @@ versions:
     - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
     - Fix description of qc.setinti and qc.clrinti instructions
     - Fix to make qc.c.mret and qc.c.mnret visible
-  implies:
-  - { name: Xqcia, version: "0.3.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.3.0" }
-  - { name: Xqcicli, version: "0.2.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.2.0" }
-  - { name: Xqciint, version: "0.3.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.2.0" }
-  - { name: Xqcilsm, version: "0.3.0" }
-  - { name: Xqcisim, version: "0.1.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.1.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.3.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.3.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.2.0" }
+        - { name: Xqciint, version: "= 0.3.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.3.0" }
+        - { name: Xqcisim, version: "= 0.1.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.1.0" }
 - version: "0.6.0"
   state: frozen
   ratification_date: null
@@ -160,28 +164,29 @@ versions:
     - Add requirement to include Zca extension for Xqcisim since it has 16-bit instructions
     - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
     - Remove qc.flags CSR
-  implies:
-  - { name: Xqcia, version: "0.4.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.4.0" }
-  - { name: Xqcicli, version: "0.2.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.3.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.2.0" }
-  - { name: Xqcilsm, version: "0.4.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.4.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.4.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.3.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.7.0"
   state: frozen
   ratification_date: null
@@ -195,7 +200,7 @@ versions:
   changes:
     - Fix typos in description of qc.shlsat and qc.shlusat instructions
     - Fix bug in qc.shlsat that caused wrong IDL code result
-    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
+    - Fix clobbering of saturation results in [add/addu/sub]sat instructions
     - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
     - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
@@ -209,28 +214,29 @@ versions:
     - Fix qc.cto instruction IDL code
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
-  implies:
-  - { name: Xqcia, version: "0.5.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.5.0" }
-  - { name: Xqcicli, version: "0.2.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.4.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.2.0" }
-  - { name: Xqcilsm, version: "0.4.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.5.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.5.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.4.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.8.0"
   state: frozen
   ratification_date: null
@@ -249,28 +255,29 @@ versions:
     - Fix Xqci extension description to reflect correct 48-bit format field names
     - Fix IDL code to to match description for qc.insbr instruction
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
-  implies:
-  - { name: Xqcia, version: "0.5.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.6.0" }
-  - { name: Xqcicli, version: "0.2.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.5.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.2.0" }
-  - { name: Xqcilsm, version: "0.4.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.5.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.6.0" }
+        - { name: Xqcicli, version: "= 0.2.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.5.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.2.0" }
+        - { name: Xqcilsm, version: "= 0.4.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.9.0"
   state: frozen
   ratification_date: null
@@ -293,28 +300,29 @@ versions:
     - Fix wrong exponent calculation in qc.normeu instruction
     - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
     - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
-  implies:
-  - { name: Xqcia, version: "0.6.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.7.0" }
-  - { name: Xqcicli, version: "0.3.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.6.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.5.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.6.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.7.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.6.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.10.0"
   state: frozen
   ratification_date: null
@@ -327,28 +335,29 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mileaveret instruction
-  implies:
-  - { name: Xqcia, version: "0.6.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.7.0" }
-  - { name: Xqcicli, version: "0.3.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.7.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.5.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.2.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.6.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.7.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.7.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.11.0"
   state: frozen
   ratification_date: null
@@ -373,28 +382,29 @@ versions:
     - Fix IDL code for qc.extdpr, qc.extdprh, qc.extdupr and qc.extduprh instructions because change in IDL '<<' operator
     - Fix IDL code for qc.insb, qc.insbi, qc.insbr and qc.insbri instructions because change in IDL '<<' operator
     - Fix IDL code for qc.insbh, qc.insbhr, qc.insbpr and qc.insbprh instructions because change in IDL '<<' operator
-  implies:
-  - { name: Xqcia, version: "0.7.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.8.0" }
-  - { name: Xqcicli, version: "0.3.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.8.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.5.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.3.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.8.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.5.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 - version: "0.12.0"
   state: frozen
   ratification_date: null
@@ -409,28 +419,29 @@ versions:
     - Fix desciption of qc.c.eir instruction to match IDL code and functionality
     - Fix encoding of qc.swm and qc.swmi instructions to state that rs3 cannot be x0
     - Fix description and IDL code of qc.swm and qc.lwm instructions to state that length is in rs2[4:0]
-  implies:
-  - { name: Xqcia, version: "0.7.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.8.0" }
-  - { name: Xqcicli, version: "0.3.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.9.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.6.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.3.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - name: Zca
+          version: ">= 1.0.0"
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.3.0" }
+        - { name: Xqciint, version: "= 0.9.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.6.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 - version: "0.13.0"
   state: frozen
   ratification_date: null
@@ -445,28 +456,27 @@ versions:
     - Fix version history of releases v0.11.0 and v0.12.0
     - Fix description and IDL code of qc.csrrwr instruction to allow just read CSR
     - Fix IDL code of qc.c.mileaveret instruction to avoid restoring from stack NMIP and EXCP bits
-  implies:
-  - { name: Xqcia, version: "0.7.0" }
-  - { name: Xqciac, version: "0.3.0" }
-  - { name: Xqcibi, version: "0.2.0" }
-  - { name: Xqcibm, version: "0.8.0" }
-  - { name: Xqcicli, version: "0.3.0" }
-  - { name: Xqcicm, version: "0.2.0" }
-  - { name: Xqcics, version: "0.2.0" }
-  - { name: Xqcicsr, version: "0.4.0" }
-  - { name: Xqciint, version: "0.10.0" }
-  - { name: Xqciio, version: "0.1.0" }
-  - { name: Xqcilb, version: "0.2.0" }
-  - { name: Xqcili, version: "0.2.0" }
-  - { name: Xqcilia, version: "0.2.0" }
-  - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.6.0" }
-  - { name: Xqcisim, version: "0.2.0" }
-  - { name: Xqcisls, version: "0.2.0" }
-  - { name: Xqcisync, version: "0.3.0" }
-  requires:
-    name: Zca
-    version: ">= 1.0.0"
+  requirements:
+    extension:
+      allOf:
+        - { name: Xqcia, version: "= 0.7.0" }
+        - { name: Xqciac, version: "= 0.3.0" }
+        - { name: Xqcibi, version: "= 0.2.0" }
+        - { name: Xqcibm, version: "= 0.8.0" }
+        - { name: Xqcicli, version: "= 0.3.0" }
+        - { name: Xqcicm, version: "= 0.2.0" }
+        - { name: Xqcics, version: "= 0.2.0" }
+        - { name: Xqcicsr, version: "= 0.4.0" }
+        - { name: Xqciint, version: "= 0.10.0" }
+        - { name: Xqciio, version: "= 0.1.0" }
+        - { name: Xqcilb, version: "= 0.2.0" }
+        - { name: Xqcili, version: "= 0.2.0" }
+        - { name: Xqcilia, version: "= 0.2.0" }
+        - { name: Xqcilo, version: "= 0.3.0" }
+        - { name: Xqcilsm, version: "= 0.6.0" }
+        - { name: Xqcisim, version: "= 0.2.0" }
+        - { name: Xqcisls, version: "= 0.2.0" }
+        - { name: Xqcisync, version: "= 0.3.0" }
 description: |
   The Xqci extension includes a set of instructions that improve RISC-V code density and
   performance in microcontrollers. It fills several gaps:
@@ -762,4 +772,7 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
-conflicts: D
+requirements:
+  not:
+    extension:
+      name: D

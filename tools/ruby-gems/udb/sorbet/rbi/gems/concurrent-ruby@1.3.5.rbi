@@ -5,7 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem concurrent-ruby`.
 
 
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/constants.rb#1
+# source://concurrent-ruby//lib/concurrent-ruby/concurrent/utility/engine.rb#1
 module Concurrent
   extend ::Concurrent::Utility::EngineDetector
   extend ::Concurrent::Utility::NativeExtensionLoader

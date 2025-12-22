@@ -12,7 +12,9 @@ description: |
   instruction copies the contents of xs1 to xd.
   This instruction carries a syntactic dependency from both xs1 and xs2 to xd. Furthermore, if the Zkt
   extension is implemented, this instruction's timing is independent of the data values in xs1 and xs2.
-definedBy: Zicond
+definedBy:
+  extension:
+    name: Zicond
 assembly: xd, xs1, xs2
 encoding:
   match: 0000111----------111-----0110011

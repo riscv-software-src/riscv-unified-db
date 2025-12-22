@@ -8,7 +8,9 @@ long_name: Machine-mode Return from Trap
 description: |
   Return from machine mode after handling a trap.
 assembly: ""
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 access:
   s: never
   u: never

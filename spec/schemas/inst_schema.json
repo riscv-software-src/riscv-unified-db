@@ -330,7 +330,7 @@
           "description": "Detailed description of the instruction"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
+          "$ref": "schema_defs.json#/$defs/condition",
           "description": "Extension(s) that defines the instruction"
         },
 
@@ -350,10 +350,6 @@
             "additionalProperties": false
           },
           "description": "List of HINTs that use this instruction's codepoints"
-        },
-        "base": {
-          "enum": [32, 64],
-          "description": "When present, instruction is only defined for RV32 or RV64 base"
         },
         "access": {
           "type": "object",

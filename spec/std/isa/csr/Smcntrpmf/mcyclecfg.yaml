@@ -10,7 +10,9 @@ address: 0x321
 writable: true
 priv_mode: M
 length: 64
-definedBy: Smcntrpmf
+definedBy:
+  extension:
+    name: Smcntrpmf
 description: |
   The `mcyclecfg` CSR is a 64-bit machine-level register that configures privilege
   mode filtering for the cycle counter. Each inhibit bit (xINH) suppresses
@@ -41,40 +43,55 @@ description: |
 fields:
   MINH:
     location: 62
-    base: 64
     type: RW
-    definedBy: M
+    definedBy:
+      allOf:
+        - xlen: 64
+        - extension:
+            name: M
     description: If set, then counting of events in M-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   SINH:
     location: 61
-    base: 64
     type: RW
-    definedBy: S
+    definedBy:
+      allOf:
+        - xlen: 64
+        - extension:
+            name: S
     description: If set, then counting of events in S/HS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   UINH:
     location: 60
-    base: 64
     type: RW
-    definedBy: U
+    definedBy:
+      allOf:
+        - xlen: 64
+        - extension:
+            name: U
     description: If set, then counting of events in U-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   VSINH:
     location: 59
-    base: 64
     type: RW
-    definedBy: H
+    definedBy:
+      allOf:
+        - xlen: 64
+        - extension:
+            name: H
     description: If set, then counting of events in VS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   VUINH:
     location: 58
-    base: 64
     type: RW
-    definedBy: H
+    definedBy:
+      allOf:
+        - xlen: 64
+        - extension:
+            name: H
     description: If set, then counting of events in VU-mode is inhibited.
     reset_value: UNDEFINED_LEGAL

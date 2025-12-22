@@ -18,10 +18,10 @@ description: |
   In case when width + offset < 33, the destination register is left unchanged.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 10---------------001-----0001011
   variables:

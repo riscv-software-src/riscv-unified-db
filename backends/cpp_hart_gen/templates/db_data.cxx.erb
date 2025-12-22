@@ -1,4 +1,11 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+
+#include <utility>
+
 #include "udb/db_data.hxx"
+
+using namespace udb;
 
 std::map<std::string, std::string> udb::DbData::SCHEMAS = {
       { "schema_defs.json",
@@ -14,3 +21,109 @@ std::map<std::string, std::string> udb::DbData::SCHEMAS = {
         }
       <%- end.join(", ") -%>
     };
+
+
+static ExtensionName str_to_ext_name(const std::string& ext_name) {
+  <%- i = 0 -%>
+  <%- cfg_arch.extensions.each do |ext| -%>
+  <%= i.zero? ? "" : "else" %> if (ext_name == "<%= ext.name %>") {
+    return ExtensionName::<%= ext.name %>;
+  }
+  <%- i += 1 -%>
+  <%- end -%>
+  else {
+    udb_assert(false, fmt::format("'{}' is not a known extension", ext_name));
+  }
+}
+
+Config::Config(const nlohmann::json& implemented_exts, const nlohmann::json& param_values)
+{
+  for (auto e : implemented_exts) {
+    ExtensionVersion ext_ver(e[0].get<std::string>(), e[1].get<std::string>());
+    m_implemented_exts.push_back(ext_ver);
+    ExtensionName name(str_to_ext_name(ext_ver.name));
+    m_implemented_exts_hash.insert(std::pair{name, ext_ver});
+  }
+
+  <%- cfg_arch.params.each do |param| -%>
+  if (param_values.contains("<%= param.name %>")) {
+    std::any v(param_values["<%= param.name %>"].get<<%= param.idl_type.to_cxx_no_qualifiers %>>());
+    m_param_values.emplace("<%= param.name %>", std::move(v));
+  }
+  <%- end -%>
+}
+
+SatisfiedResult Config::ext_req_is_met(const ExtensionName& ext_name, const VersionRequirement& req) const {
+  auto it = m_implemented_exts_hash.find(ext_name);
+  if (it == m_implemented_exts_hash.end()) {
+    return No;
+  }
+
+  if (req.satisfied_by(it->second.version)) {
+    return Yes;
+  } else {
+    return No;
+  }
+}
+
+<%- cfg_arch.params.each do |param| -%>
+
+SatisfiedResult <%= name_of(:param, cfg_arch, param) %>::defined(const Config& cfg) const {
+  return <%=
+    param_cxx_eval = lambda { |term, cxx_val|
+      type = term.comparison_type
+
+      case type
+      when Udb::ParameterTerm::ParameterComparisonType::Equal
+        "#{cxx_val} == #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::NotEqual
+        "#{cxx_val} != #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::LessThan
+        "#{cxx_val} < #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::GreaterThan
+        "#{cxx_val} > #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::LessThanOrEqual
+        "#{cxx_val} <= #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
+        "#{cxx_val} >= #{quot_str(term.comparison_value)}"
+      when Udb::ParameterTerm::ParameterComparisonType::Includes
+        "std::find(#{cxx_val}.begin(), #{cxx_val}.end(), #{quot_str(term.comparison_value)}) != #{cxx_val}.end()"
+      when Udb::ParameterTerm::ParameterComparisonType::OneOf
+        "(#{T.cast(term.comparison_value, T::Array[T.any(Integer, String)]).map { |v| "#{cxx_val}==#{quot_str(v)}" }.join("||")})"
+      else
+        T.absurd(type)
+      end
+    }
+
+    param.defined_by_condition.to_cxx do |term|
+      if term.is_a?(Udb::ExtensionTerm)
+        "cfg.ext_req_is_met(ExtensionName::#{term.name}, VersionRequirement(\"#{term.comparison.serialize}#{term.version}\"))"
+      elsif term.is_a?(Udb::ParameterTerm)
+        cxx_val =
+          "std::any_cast<const #{cfg_arch.param(term.name).idl_type.to_cxx_no_qualifiers}&>(cfg.param_value(\"#{term.name}\"))"
+        res =
+          if term.array_comparison?
+            if term.size
+              param_cxx_eval.call(term, "#{cxx_val}.size()")
+            elsif term.index
+              param_cxx_eval.call(term, "#{cxx_val}.at(#{term.index})")
+            elsif term.comparison_type == Udb::ParameterTerm::ParameterComparisonType::Includes
+              param_cxx_eval.call(term, cxx_val)
+            else
+              raise "unexpected array operation"
+            end
+          else
+            param_cxx_eval.call(term, cxx_val)
+
+          end
+
+        "(cfg.has_param_value(\"#{term.name}\") ? ((#{res}) ? Yes : No) : Maybe)"
+      elsif term.is_a?(XlenTerm)
+        raise "XlenTerm is unexpected in a parameter definition condition"
+      else
+        T.absurd(term)
+      end
+    end
+  %>;
+}
+<%- end -%>

@@ -11,11 +11,14 @@ description: |
   Load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
   Zero extend the result.
-definedBy: I
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 assembly: xd, imm(xs1)
 encoding:
-  match: -----------------110-----0000011
+  match: "-----------------110-----0000011"
   variables:
     - name: imm
       location: 31-20

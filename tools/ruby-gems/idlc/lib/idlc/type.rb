@@ -79,7 +79,7 @@ module Idl
     sig { returns(Symbol) }
     attr_reader :kind
 
-    sig { returns(T::Array[Symbol])}
+    sig { returns(T::Array[Symbol]) }
     attr_reader :qualifiers
 
     sig { returns(T.any(Integer, Symbol)) }
@@ -105,11 +105,11 @@ module Idl
 
     def self.from_typename(type_name, cfg_arch)
       case type_name
-      when 'XReg'
+      when "XReg"
         return Type.new(:bits, width: cfg_arch.param_values["MXLEN"])
-      when 'FReg'
+      when "FReg"
         return Type.new(:freg, width: 32)
-      when 'DReg'
+      when "DReg"
         return Type.new(:dreg, width: 64)
       when /Bits<((?:0x)?[0-9a-fA-F]+)>/
         Type.new(:bits, width: $1.to_i)
@@ -138,7 +138,7 @@ module Idl
       @name = name
       if kind == :bits
         raise "Bits type must have width" unless @width
-        raise "Bits type must have positive width" unless @width == :unknown || T.cast(@width, Integer).positive?
+        raise "Bits type must have positive width (has #{@width})" unless @width == :unknown || T.cast(@width, Integer).positive?
       end
       if kind == :enum
         raise "Enum type must have width" unless @width
@@ -147,7 +147,7 @@ module Idl
         raise "Array must have a subtype" unless @sub_type
       end
       if kind == :csr
-        raise 'CSR type must have a csr argument' if csr.nil?
+        raise "CSR type must have a csr argument" if csr.nil?
 
         @csr = csr
         raise "CSR types must have a width" if width.nil?
@@ -332,7 +332,7 @@ module Idl
     end
 
     def to_s
-      ((@qualifiers.nil? || @qualifiers.empty?) ? '' : "#{@qualifiers.map(&:to_s).join(' ')} ") + \
+      ((@qualifiers.nil? || @qualifiers.empty?) ? "" : "#{@qualifiers.map(&:to_s).join(' ')} ") + \
         if @kind == :bits
           "Bits<#{@width}>"
         elsif @kind == :enum
@@ -342,7 +342,7 @@ module Idl
         elsif @kind == :enum_ref
           "enum #{@enum_class.name}"
         elsif @kind == :tuple
-          "(#{@tuple_types.map{ |t| t.to_s }.join(',')})"
+          "(#{@tuple_types.map { |t| t.to_s }.join(',')})"
         elsif @kind == :bitfield
           "bitfield #{@name}"
         elsif @kind == :array
@@ -438,6 +438,7 @@ module Idl
 
     # @return [Idl::Type] Type of a scalar
     # @param schema [Hash] JSON Schema description of a scalar
+    sig { params(schema: T::Hash[String, T.untyped]).returns(T.nilable(Type)) }
     def self.from_json_schema_scalar_type(schema)
       if schema.key?("type")
         case schema["type"]
@@ -471,14 +472,60 @@ module Idl
         else
           raise "Unhandled const type"
         end
+      elsif schema.key?("enum")
+        raise "Mixed types in enum" unless schema["enum"].all? { |e| e.class == schema["enum"].fetch(0).class }
+
+        case schema["enum"].fetch(0)
+        when TrueClass, FalseClass
+          Type.new(:boolean)
+        when Integer
+          Type.new(:bits, width: schema["enum"].map { |e| e.bit_length }.max)
+        when String
+          Type.new(:string, width: schema["enum"].map { |e| e.length }.max)
+        else
+          raise "unhandled enum type"
+        end
+      elsif schema.key?("allOf")
+        subschema_types = schema.fetch("allOf").map { |subschema| from_json_schema_scalar_type(subschema) }.compact
+        raise "No subschema has a defined type" if subschema_types.empty?
+
+        if subschema_types.fetch(0).kind == :string
+          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t.kind == :string }
+
+          subschema_types.fetch(0)
+        elsif subschema_types.fetch(0).kind == :boolean
+          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t.kind == :boolean }
+
+          subschema_types.fetch(0)
+        elsif subschema_types.fetch(0).kind == :bits
+          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t.kind == :bits }
+
+          unknown_width_type = subschema_types.find { |t| t.width == :unknown }
+          return unknown_width_type unless unknown_width_type.nil?
+
+          subschema_types.max { |t1, t2| t1.width <=> t2.width }
+        else
+          raise "unhandled subschema type"
+        end
+      elsif schema.key?("$ref")
+        if schema.fetch("$ref") == "schema_defs.json#/$defs/uint32"
+          Type.new(:bits, width: 32)
+        elsif schema.fetch("$ref") == "schema_defs.json#/$defs/uint64"
+          Type.new(:bits, width: 64)
+        else
+          raise "unhandled ref: #{schema.fetch("$ref")}"
+        end
+      elsif schema.key?("not")
+        nil
       else
-        raise "unhandled scalar schema"
+        raise "unhandled scalar schema:\n#{schema}"
       end
     end
     private_class_method :from_json_schema_scalar_type
 
     # @return [Idl::Type] Type of array
     # @param schema [Hash] JSON Schema description of an array
+    sig { params(schema: T::Hash[String, T.untyped]).returns(Type) }
     def self.from_json_schema_array_type(schema)
       width = schema["minItems"]
       if !schema.key?("minItems") || !schema.key?("maxItems") || (schema["minItems"] != schema["maxItems"])
@@ -486,13 +533,10 @@ module Idl
       end
 
       if schema["items"].is_a?(Hash)
-        case schema["items"]["type"]
-        when "boolean", "integer", "string"
-          Type.new(:array, width:, sub_type: from_json_schema_scalar_type(schema["items"]))
-        when "array"
-          Type.new(:array, width:, sub_type: from_json_schema_array_type(schema["items"]))
-        end
-      elsif schema["items"].is_a?(Array)
+        Type.new(:array, width:, sub_type: from_json_schema(schema["items"]))
+      else
+        raise "unexpected #{schema}" unless schema["items"].is_a?(Array)
+
         # this ia an array with each element specified
         sub_type = T.let(nil, T.nilable(Type))
         schema["items"].each do |item_schema|
@@ -519,13 +563,20 @@ module Idl
     private_class_method :from_json_schema_array_type
 
     # @returns [Idl::Type] Type described by JSON +schema+
+    sig { params(schema: T::Hash[String, T.untyped]).returns(T.nilable(Type)) }
     def self.from_json_schema(schema)
       hsh = schema.to_h
-      case hsh["type"]
-      when "boolean", "integer", "string"
+      if hsh.key?("type")
+        case hsh["type"]
+        when "boolean", "integer", "string"
+          from_json_schema_scalar_type(hsh)
+        when "array"
+          from_json_schema_array_type(hsh)
+        else
+          raise "unexpected"
+        end
+      else
         from_json_schema_scalar_type(hsh)
-      when "array"
-        from_json_schema_array_type(hsh)
       end
     end
   end
@@ -918,11 +969,11 @@ module Idl
     end
 
     def to_s
-      'XReg'
+      "XReg"
     end
 
     def to_cxx
-      'XReg'
+      "XReg"
     end
   end
 

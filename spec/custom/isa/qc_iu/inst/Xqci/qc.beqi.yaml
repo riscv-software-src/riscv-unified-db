@@ -11,10 +11,10 @@ description: |
   Branches to `PC` + `offset` if the value in `rs1` is equal to the signed immediate
   Instruction encoded in BI instruction format
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibi
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibi
 encoding:
   match: -----------------000-----1111011
   variables:

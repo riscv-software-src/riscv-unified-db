@@ -10,7 +10,9 @@ long_name: Single-Bit extract (Register)
 description: |
   Returns a single bit extracted from xs1 at the index specified in xs2.
   The index is read from the lower log2(XLEN) bits of xs2.
-definedBy: Zbs
+definedBy:
+  extension:
+    name: Zbs
 assembly: xd, xs1, xs2
 encoding:
   match: 0100100----------101-----0110011

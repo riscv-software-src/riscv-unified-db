@@ -1,0 +1,79 @@
+# SPDX-License-Identifier: CC0-1.0
+
+# AUTO-GENERATED FILE. DO NOT EDIT
+# To regenerate, run `./do gen:cfg` in the UDB root directory
+# The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+---
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: RVA22U64
+description:
+params:
+  MXLEN: 64
+mandatory_extensions:
+- name: A
+  version: "~> 2.1"
+- name: B
+  version: "~> 1.0.0"
+- name: C
+  version: "~> 2.0"
+- name: D
+  version: "~> 2.2"
+- name: F
+  version: "~> 2.2"
+- name: I
+  version: "~> 2.1"
+- name: M
+  version: "~> 2.0"
+- name: U
+  version: "~> 2.0"
+- name: Za128rs
+  version: "~> 1.0"
+- name: Za64rs
+  version: "~> 1.0"
+- name: Zba
+  version: "~> 1.0"
+- name: Zbb
+  version: "~> 1.0"
+- name: Zbs
+  version: "~> 1.0"
+- name: Zfhmin
+  version: "~> 1.0"
+- name: Zic64b
+  version: "= 1.0"
+- name: Zicbom
+  version: "~> 1.0"
+- name: Zicbop
+  version: "~> 1.0"
+- name: Zicboz
+  version: "~> 1.0"
+- name: Ziccamoa
+  version: "~> 1.0"
+- name: Ziccif
+  version: "~> 1.0"
+- name: Zicclsm
+  version: "~> 1.0"
+- name: Ziccrse
+  version: "~> 1.0"
+- name: Zicntr
+  version: "~> 2.0"
+- name: Zicsr
+  version: "~> 2.0"
+- name: Zihintpause
+  version: "~> 2.0"
+- name: Zihpm
+  version: "~> 2.0"
+- name: Zkt
+  version: "~> 1.0"
+non_mandatory_extensions:
+- name: V
+  version: "~> 1.0"
+- name: Zfh
+  version: "~> 1.0"
+- name: Zkn
+  version: "~> 1.0"
+- name: Zks
+  version: "~> 1.0"
+additional_extensions: true

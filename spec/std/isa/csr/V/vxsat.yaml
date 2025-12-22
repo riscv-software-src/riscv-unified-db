@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vxsat
+long_name: Vector Fixed-Point Saturate Flag
+address: 0x009
+writable: true
+priv_mode: U
+length: MXLEN
+description: Indicates if a fixed-point instruction has had to saturate an output value to fit into a destination format
+definedBy:
+  extension:
+    name: V
+sw_read(): |
+  return CSR[vcsr].VXSAT;
+fields:
+  VALUE:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      The vxsat CSR has a single read-write least-significant bit (vxsat[0]) that indicates if a fixed-point
+      instruction has had to saturate an output value to fit into a destination format. Bits vxsat[XLEN-1:1]
+      should be written as zeros.
+
+      The vxsat bit is mirrored in vcsr.
+    sw_write(csr_value): |
+      return csr_value.VALUE & 1;
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL

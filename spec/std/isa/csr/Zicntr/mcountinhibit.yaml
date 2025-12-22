@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/Zicntr/mcountinhibit.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zicntr/mcountinhibit.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -45,13 +47,14 @@ description: |
   ====
 
 definedBy:
-  anyOf:
-    - name: Sm
-    - name: Smhpm
+  extension:
+    name: Sm
 fields:
   CY:
     location: 0
-    definedBy: Sm
+    definedBy:
+      extension:
+        name: Sm
     description: When set, `mcycle.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -59,7 +62,9 @@ fields:
       return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
   IR:
     location: 2
-    definedBy: Sm
+    definedBy:
+      extension:
+        name: Sm
     description: When set, `minstret.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -67,7 +72,9 @@ fields:
       return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
   HPM3:
     location: 3
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[3] == true"]
       When set, `hpmcounter3.COUNT` stops counting in all privilege modes.
@@ -80,7 +87,9 @@ fields:
       return COUNTINHIBIT_EN[3] ? UNDEFINED_LEGAL : 0;
   HPM4:
     location: 4
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[4] == true"]
       When set, `hpmcounter4.COUNT` stops counting in all privilege modes.
@@ -93,7 +102,9 @@ fields:
       return COUNTINHIBIT_EN[4] ? UNDEFINED_LEGAL : 0;
   HPM5:
     location: 5
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[5] == true"]
       When set, `hpmcounter5.COUNT` stops counting in all privilege modes.
@@ -106,7 +117,9 @@ fields:
       return COUNTINHIBIT_EN[5] ? UNDEFINED_LEGAL : 0;
   HPM6:
     location: 6
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[6] == true"]
       When set, `hpmcounter6.COUNT` stops counting in all privilege modes.
@@ -119,7 +132,9 @@ fields:
       return COUNTINHIBIT_EN[6] ? UNDEFINED_LEGAL : 0;
   HPM7:
     location: 7
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[7] == true"]
       When set, `hpmcounter7.COUNT` stops counting in all privilege modes.
@@ -132,7 +147,9 @@ fields:
       return COUNTINHIBIT_EN[7] ? UNDEFINED_LEGAL : 0;
   HPM8:
     location: 8
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[8] == true"]
       When set, `hpmcounter8.COUNT` stops counting in all privilege modes.
@@ -145,7 +162,9 @@ fields:
       return COUNTINHIBIT_EN[8] ? UNDEFINED_LEGAL : 0;
   HPM9:
     location: 9
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[9] == true"]
       When set, `hpmcounter9.COUNT` stops counting in all privilege modes.
@@ -158,7 +177,9 @@ fields:
       return COUNTINHIBIT_EN[9] ? UNDEFINED_LEGAL : 0;
   HPM10:
     location: 10
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[10] == true"]
       When set, `hpmcounter10.COUNT` stops counting in all privilege modes.
@@ -171,7 +192,9 @@ fields:
       return COUNTINHIBIT_EN[10] ? UNDEFINED_LEGAL : 0;
   HPM11:
     location: 11
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[11] == true"]
       When set, `hpmcounter11.COUNT` stops counting in all privilege modes.
@@ -184,7 +207,9 @@ fields:
       return COUNTINHIBIT_EN[11] ? UNDEFINED_LEGAL : 0;
   HPM12:
     location: 12
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[12] == true"]
       When set, `hpmcounter12.COUNT` stops counting in all privilege modes.
@@ -197,7 +222,9 @@ fields:
       return COUNTINHIBIT_EN[12] ? UNDEFINED_LEGAL : 0;
   HPM13:
     location: 13
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[13] == true"]
       When set, `hpmcounter13.COUNT` stops counting in all privilege modes.
@@ -210,7 +237,9 @@ fields:
       return COUNTINHIBIT_EN[13] ? UNDEFINED_LEGAL : 0;
   HPM14:
     location: 14
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[14] == true"]
       When set, `hpmcounter14.COUNT` stops counting in all privilege modes.
@@ -223,7 +252,9 @@ fields:
       return COUNTINHIBIT_EN[14] ? UNDEFINED_LEGAL : 0;
   HPM15:
     location: 15
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[15] == true"]
       When set, `hpmcounter15.COUNT` stops counting in all privilege modes.
@@ -236,7 +267,9 @@ fields:
       return COUNTINHIBIT_EN[15] ? UNDEFINED_LEGAL : 0;
   HPM16:
     location: 16
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[16] == true"]
       When set, `hpmcounter16.COUNT` stops counting in all privilege modes.
@@ -249,7 +282,9 @@ fields:
       return COUNTINHIBIT_EN[16] ? UNDEFINED_LEGAL : 0;
   HPM17:
     location: 17
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[17] == true"]
       When set, `hpmcounter17.COUNT` stops counting in all privilege modes.
@@ -262,7 +297,9 @@ fields:
       return COUNTINHIBIT_EN[17] ? UNDEFINED_LEGAL : 0;
   HPM18:
     location: 18
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[18] == true"]
       When set, `hpmcounter18.COUNT` stops counting in all privilege modes.
@@ -275,7 +312,9 @@ fields:
       return COUNTINHIBIT_EN[18] ? UNDEFINED_LEGAL : 0;
   HPM19:
     location: 19
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[19] == true"]
       When set, `hpmcounter19.COUNT` stops counting in all privilege modes.
@@ -288,7 +327,9 @@ fields:
       return COUNTINHIBIT_EN[19] ? UNDEFINED_LEGAL : 0;
   HPM20:
     location: 20
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[20] == true"]
       When set, `hpmcounter20.COUNT` stops counting in all privilege modes.
@@ -301,7 +342,9 @@ fields:
       return COUNTINHIBIT_EN[20] ? UNDEFINED_LEGAL : 0;
   HPM21:
     location: 21
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[21] == true"]
       When set, `hpmcounter21.COUNT` stops counting in all privilege modes.
@@ -314,7 +357,9 @@ fields:
       return COUNTINHIBIT_EN[21] ? UNDEFINED_LEGAL : 0;
   HPM22:
     location: 22
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[22] == true"]
       When set, `hpmcounter22.COUNT` stops counting in all privilege modes.
@@ -327,7 +372,9 @@ fields:
       return COUNTINHIBIT_EN[22] ? UNDEFINED_LEGAL : 0;
   HPM23:
     location: 23
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[23] == true"]
       When set, `hpmcounter23.COUNT` stops counting in all privilege modes.
@@ -340,7 +387,9 @@ fields:
       return COUNTINHIBIT_EN[23] ? UNDEFINED_LEGAL : 0;
   HPM24:
     location: 24
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[24] == true"]
       When set, `hpmcounter24.COUNT` stops counting in all privilege modes.
@@ -353,7 +402,9 @@ fields:
       return COUNTINHIBIT_EN[24] ? UNDEFINED_LEGAL : 0;
   HPM25:
     location: 25
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[25] == true"]
       When set, `hpmcounter25.COUNT` stops counting in all privilege modes.
@@ -366,7 +417,9 @@ fields:
       return COUNTINHIBIT_EN[25] ? UNDEFINED_LEGAL : 0;
   HPM26:
     location: 26
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[26] == true"]
       When set, `hpmcounter26.COUNT` stops counting in all privilege modes.
@@ -379,7 +432,9 @@ fields:
       return COUNTINHIBIT_EN[26] ? UNDEFINED_LEGAL : 0;
   HPM27:
     location: 27
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[27] == true"]
       When set, `hpmcounter27.COUNT` stops counting in all privilege modes.
@@ -392,7 +447,9 @@ fields:
       return COUNTINHIBIT_EN[27] ? UNDEFINED_LEGAL : 0;
   HPM28:
     location: 28
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[28] == true"]
       When set, `hpmcounter28.COUNT` stops counting in all privilege modes.
@@ -405,7 +462,9 @@ fields:
       return COUNTINHIBIT_EN[28] ? UNDEFINED_LEGAL : 0;
   HPM29:
     location: 29
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[29] == true"]
       When set, `hpmcounter29.COUNT` stops counting in all privilege modes.
@@ -418,7 +477,9 @@ fields:
       return COUNTINHIBIT_EN[29] ? UNDEFINED_LEGAL : 0;
   HPM30:
     location: 30
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[30] == true"]
       When set, `hpmcounter30.COUNT` stops counting in all privilege modes.
@@ -431,7 +492,9 @@ fields:
       return COUNTINHIBIT_EN[30] ? UNDEFINED_LEGAL : 0;
   HPM31:
     location: 31
-    definedBy: Smhpm
+    definedBy:
+      extension:
+        name: Smhpm
     description: |
       [when="COUNTINHIBIT_EN[31] == true"]
       When set, `hpmcounter31.COUNT` stops counting in all privilege modes.

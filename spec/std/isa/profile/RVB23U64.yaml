@@ -264,21 +264,6 @@ extensions:
     version: "~>1.0"
     note: Vector carryless multiplication
 
-  #--------------------------------------------
-  # Ssstrict is an expansion option in RVB23U64 and RVA23U64
-  # (but is not intended to be made mandatory in future RVB or RVA Profiles)
-  #--------------------------------------------
-  Ssstrict:
-    presence:
-      optional: expansion
-    version: "~>1.0"
-    note: |
-      All opcodes in the Standard and Reserved opcode spaces (SROS),
-      other than those identified in a Profile as Mandatory or Optional,
-      cause a trap.
-    # should the above say "current or subsequent Profile" rather than just "Profile"?
-    # (where is the official definition of Ssstrict?)
-
   #########################################################################
   # TRANSITORY EXPANSION extensions in RVB23
   #########################################################################

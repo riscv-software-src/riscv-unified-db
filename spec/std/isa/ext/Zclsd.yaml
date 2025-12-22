@@ -6,7 +6,6 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zclsd
-conflicts: Zcf
 long_name: Compressed Load/Store Pair for RV32
 description: |
   This extension adds load and store instructions using register pairs. It does so by reusing existing instruction encodings which are RV64-only. The specification defines 16-bit encodings.
@@ -17,5 +16,13 @@ versions:
   - version: "1.0"
     state: ratified
     ratification_date: "2025-02"
-    requires:
-      allOf: [ Zilsd, Zca ]
+requirements:
+  allOf:
+    - xlen: 32
+    - not:
+        extension:
+          name: Zcf
+    - extension:
+        allOf:
+          - name: Zilsd
+          - name: Zca

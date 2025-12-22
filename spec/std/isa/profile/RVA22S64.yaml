@@ -20,17 +20,12 @@ extensions:
   $inherits:
     - "profile/RVA20S64.yaml#/extensions"
     - "profile/RVA22U64.yaml#/extensions"
-  $remove:
-    - Zfh
-    - V
-    - Zkn
-    - Zks
   S:
     presence: mandatory
-    version: "= 1.12"
+    version: "~> 1.12"
   Sscounterenw:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Sstvala is a new extension name introduced with RVA22.
   Svpbmt:
@@ -39,6 +34,9 @@ extensions:
   Svinval:
     presence: mandatory
     version: "~> 1.0"
+  Sv39:
+    presence: mandatory
+    version: "~> 1.12"
   Sv48:
     presence: optional
     version: "~> 1.12"

@@ -11,7 +11,11 @@ description: |
   Scatters all of the odd and even bits of a source word into the high and low halves
   of a destination word. It is the inverse of the unzip instruction. This instruction is available only on
   RV32.
-definedBy: Zbkb
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zbkb
 assembly: xd, xs1
 encoding:
   match: 000010001111-----001-----0010011
@@ -26,7 +30,6 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 32
 operation(): |
   XReg input = X[xs1];
   XReg output = 0;

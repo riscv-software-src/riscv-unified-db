@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zhinxmin
+long_name: Minimal support for half-precision floating-point instructions using integer registers
+description: |
+  The Zhinxmin extension provides minimal support for 16-bit half-precision floating-point
+  instructions that operate on the x registers.
+  The Zhinxmin extension depends upon the Zfinx extension.
+
+  The Zhinxmin extension includes the following instructions from the Zhinx extension:
+  FCVT.S.H and FCVT.H.S. If the Zdinx extension is present, the FCVT.D.H and FCVT.H.D instructions
+  are also included.
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+requirements:
+  extension:
+    allOf:
+      - name: Zfinx
+      - not:
+          name: Zfhmin

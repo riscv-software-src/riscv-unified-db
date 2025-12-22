@@ -44,9 +44,15 @@ description: |
     * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
     * Compare the loaded value with the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_
     * If equal, write the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2+1_ to the address in _xs1_
-definedBy: <%= current_size[:extension] %>
-<%- if %w[d q].include?(size) -%>
-base: 64
+definedBy:
+<%- if size == "q" -%>
+  allOf:
+    - extension:
+        name: <%= current_size[:extension] %>
+    - xlen: 64
+<%- else -%>
+  extension:
+    name: <%= current_size[:extension] %>
 <%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:

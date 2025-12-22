@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: CC0-1.0
+
+# AUTO-GENERATED FILE. DO NOT EDIT
+# To regenerate, run `./do gen:cfg` in the UDB root directory
+# The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+---
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: MP-S-64
+description: This is the Mock Profile Supervisor Mode description.
+params:
+  MXLEN: 64
+mandatory_extensions:
+- name: A
+  version: "= 2.1"
+- name: I
+  version: "~> 2.1"
+- name: Svade
+  version: ">= 0"
+- name: Xmock
+  version: "~> 0.9.9"
+non_mandatory_extensions:
+- name: S
+  version: "= 1.12"
+- name: Sv48
+  version: "= 1.12"
+- name: Zifencei
+  version: "= 2.0"
+- name: Zihpm
+  version: "= 2.0"
+additional_extensions: true

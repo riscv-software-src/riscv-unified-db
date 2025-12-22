@@ -38,9 +38,10 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
-    requires:
-      allOf:
-        - anyOf:
-          - { name: Zca, version: "= 1.0.0" }
-          - { name: C, version: "~> 2.0.0" }
-        - { name: D, version: "~> 2.2.0" }
+
+requirements:
+  # if Zcd is implemented, then Zca and D must also be implemented
+  extension:
+    allOf:
+      - name: Zca
+      - name: D

@@ -10,7 +10,8 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  anyOf: [Zvks, Zvksed]
+  extension:
+    name: Zvksed
 assembly: vd, vs2, imm
 encoding:
   match: 1000011----------010-----1110111

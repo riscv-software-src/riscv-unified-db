@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -13,11 +13,11 @@ description: |
   Sign extend the result.
   Instruction encoded in QC.EI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilo
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilo
 assembly: xd, imm(xs1)
-base: 32
 encoding:
   match: ----------------00---------------110-----0011111
   variables:

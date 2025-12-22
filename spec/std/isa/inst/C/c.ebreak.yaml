@@ -21,9 +21,8 @@ description: |
   As EBREAK causes a synchronous exception, it is not considered to retire,
   and should not increment the `minstret` CSR.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    name: Zca
 assembly: ""
 encoding:
   match: "1001000000000010"

@@ -138,8 +138,10 @@ end
 
 module Idl
   class AstNode
-    sig { abstract.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
-    def gen_cpp(symtab, indent = 0, indent_spaces: 2); end
+    sig { overridable.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      raise "Need to implement #{self.class.name}#gen_cpp"
+    end
   end
 
   class NoopAst < AstNode
@@ -147,16 +149,24 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2) = ";"
   end
 
+  class ArrayIncludesAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      "#{' ' * indent}_array_includes(#{ary.gen_cpp(symtab, 0, indent_spaces:)}, #{expr.gen_cpp(symtab, 0, indent_spaces:)})"
+    end
+  end
+
   class AryRangeAssignmentAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression = nil
       value_result = value_try do
-        # see if msb, lsb is compile-time-known
-        _ = msb.value(symtab)
-        _ = lsb.value(symtab)
-        expression = "bit_insert<#{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
+        # see if msb and lsb are compile-time-known
+        msb_val = msb.value(symtab)
+        lsb_val = lsb.value(symtab)
+        expression = "#{variable.gen_cpp(symtab, 0, indent_spaces:)} = bit_insert<#{msb_val}, #{lsb_val}, #{variable.type(symtab).width}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
+
       value_else(value_result) do
         expression = "bit_insert(#{variable.gen_cpp(symtab)}, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
@@ -575,6 +585,20 @@ module Idl
     end
   end
 
+  class TrueExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      "#{' ' * indent}true"
+    end
+  end
+
+  class FalseExpressionAst < AstNode
+    sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      "#{' ' * indent}false"
+    end
+  end
+
   class IdAst < AstNode
     sig { params(symtab: SymbolTable).returns(String) }
     def gen_c(symtab)
@@ -945,7 +969,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = <<~IF
         if (#{condition.gen_cpp(symtab, 0, indent_spaces:)}) {
-        #{action.gen_cpp(symtab, indent_spaces, indent_spaces:)};
+          #{action.gen_cpp(symtab, indent_spaces, indent_spaces:)};
         }
       IF
       cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join("")
@@ -962,16 +986,7 @@ module Idl
   class FunctionCallExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      if name == "ary_includes?"
-        # special case
-        if arg_nodes[0].type(symtab).width == :unknown
-          # vector
-          "__UDB_FUNC_CALL ary_includes_Q_(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
-        else
-          # array
-          "__UDB_CONSTEXPR_FUNC_CALL template ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
-        end
-      elsif name == "implemented?"
+      if name == "implemented?"
         "__UDB_FUNC_CALL template _implemented_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}>()"
       elsif name == "implemented_version?"
         "__UDB_FUNC_CALL template _implemented_version_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].text_value}>()"
@@ -999,7 +1014,13 @@ module Idl
   class ArraySizeAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}(#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size()"
+      value_try do
+        sz = expression.value(symtab).size
+        return "#{sz}_b"
+      end
+
+      # size isn't known at compile time.
+      "#{' ' * indent}_Bits<sizeof(std::size_t)*8, false>((#{expression.gen_cpp(symtab, 0, indent_spaces:)}).size())"
     end
   end
 

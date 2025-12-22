@@ -8,6 +8,7 @@ include "interrupts.idl"
 include "fetch.idl"
 include "util.idl"
 include "fp.idl"
+include "vec.idl"
 
 # global state
 
@@ -370,7 +371,7 @@ function creg2reg {
     !`x8` !`x9` !`x10` !`x11` !`x12` !`x13` !`x14`!`x15`
     !`s0` !`s1` !`a0` !`a1` !`a2` !`a3` !`a4`!`a5`
     !`f8` !`f9` !`f10` !`f11` !`f12` !`f13`!`f14` !`f15`
-    !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5`
+    !`fs0` !`fs1` !`fa0` !`fa1` !`fa2` !`fa3` !`fa4` !`fa5`
     !===
     |===
   }
@@ -841,7 +842,7 @@ function valid_interrupt_code? {
       # code is too large
       return false;
     }
-    if (ary_includes?<$enum_size(InterruptCode), $enum_element_size(InterruptCode)>($enum_to_a(InterruptCode), code)) {
+    if ($array_includes?($enum_to_a(InterruptCode), code)) {
       return true;
     } else {
       return false;
@@ -860,7 +861,7 @@ function valid_exception_code? {
       # code is too large
       return false;
     }
-    if (ary_includes?<$enum_size(InterruptCode), $enum_element_size(InterruptCode)>($enum_to_a(InterruptCode), code)) {
+    if ($array_includes?($enum_to_a(ExceptionCode), code)) {
       return true;
     } else {
       return false;
@@ -882,30 +883,40 @@ function xlen {
           return 32;
         } else if (CSR[misa].MXL == $bits(XRegWidth::XLEN64)) {
           return 64;
+        } else {
+          unreachable();
         }
       } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
         if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32)) {
           return 32;
         } else if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) {
           return 64;
+        } else {
+          unreachable();
         }
       } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
         if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN32)) {
           return 32;
         } else if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN64)) {
           return 64;
+        } else {
+          unreachable();
         }
       } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
         if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)) {
           return 32;
         } else if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)) {
           return 64;
+        } else {
+          unreachable();
         }
       } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU) {
         if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN32)) {
           return 32;
         } else if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN64)) {
           return 64;
+        } else {
+          unreachable();
         }
       }
     }
@@ -1564,7 +1575,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002000;
           } else {
             return 0x00003000;
@@ -1578,7 +1589,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002020;
           } else {
             return 0x00003020;
@@ -1592,9 +1603,9 @@ function tinst_value_for_guest_page_fault {
     } else {
       if (REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT) {
         # spec states hardware must write the pseduo-instruction values to *tinst
-        if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+        if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
           return 0x00002000;
-        } else if ((VSXLEN == 64) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
+        } else if (($array_size(VSXLEN) == 1 && VSXLEN[0] == 64) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
           return 0x00003000;
         }
       }
@@ -1811,8 +1822,8 @@ function gstage_page_walk {
             ExceptionCode::StoreAmoGuestPageFault );
 
     Boolean mxr = for_final_vs_pte && (CSR[mstatus].MXR == 1);
-    Boolean pbmte = CSR[menvcfg].PBMTE == 1;
-    Boolean adue = CSR[menvcfg].ADUE == 1;
+    Boolean pbmte = implemented?(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
+    Boolean adue = implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 1;
 
     # set up the value that will be written into mtinst/htinst, if required
     Bits<32> tinst = tinst_value_for_guest_page_fault(op, encoding, for_final_vs_pte);
@@ -2058,9 +2069,9 @@ function stage1_page_walk {
     # access/dirty bit hardware update enable?
     Boolean adue;
     if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
-      adue = CSR[henvcfg].ADUE == 1;
+      adue = implemented?(ExtensionName::Svadu) && CSR[henvcfg].ADUE == 1;
     } else {
-      adue = CSR[menvcfg].ADUE == 1;
+      adue = implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 1;
     }
 
     # Page-based memory type enable?
@@ -2070,9 +2081,9 @@ function stage1_page_walk {
       pbmte = false;
     } else {
       if (CSR[misa].H == 1 && (effective_mode == PrivilegeMode::VS || effective_mode == PrivilegeMode::VU)) {
-        pbmte = CSR[henvcfg].PBMTE == 1;
+        pbmte = implemented?(ExtensionName::Svpbmt) && CSR[henvcfg].PBMTE == 1;
       } else {
-        pbmte = CSR[menvcfg].PBMTE == 1;
+        pbmte = implemented?(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 1;
       }
     }
 
@@ -2597,7 +2608,7 @@ function read_memory {
     } else {
 
       # misaligned, must break into multiple reads
-      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+      if (MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
         Bits<LEN> result = 0;
         for (U32 I = 0; I < (LEN/8); I++) {
           result = result | (read_memory_aligned<8>(virtual_address + I, encoding) `<< (8*I));
@@ -2984,7 +2995,7 @@ function write_memory {
       raise (ExceptionCode::StoreAmoAddressMisaligned, mode(), virtual_address);
     } else {
       # misaligned, must break into multiple reads
-      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+      if (MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
         for (U32 I = 0; I < (LEN/8); I++) {
           write_memory_aligned<8>(virtual_address + I, (value >> (8*I))[7:0], encoding);
         }

@@ -9,7 +9,9 @@ name: remu
 long_name: Unsigned remainder
 description: |
   Calculate the remainder of unsigned division of xs1 by xs2, and store the result in xd.
-definedBy: M
+definedBy:
+  extension:
+    name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------111-----0110011

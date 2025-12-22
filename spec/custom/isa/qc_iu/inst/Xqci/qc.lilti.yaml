@@ -11,10 +11,10 @@ description: |
   Move `simm` to `rd` if the value in `rs1` is less than value `imm`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicli
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicli
 encoding:
   match: -----11----------100-----1011011
   variables:

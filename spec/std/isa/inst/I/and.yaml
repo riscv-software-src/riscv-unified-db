@@ -8,7 +8,9 @@ kind: instruction
 name: and
 long_name: And
 description: And xs1 with xs2, and store the result in xd
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------111-----0110011

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # Define the instructions manual generation directory constant.
@@ -23,6 +24,7 @@ file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
   erb = ERB.new(File.read(TEMPLATE_FILE), trim_mode: "-")
   erb.filename = TEMPLATE_FILE.to_s
 
+  Udb.logger.info "Generating asciidoc for instruction appendix"
   FileUtils.mkdir_p(File.dirname(t.name))
   File.write(
     t.name,

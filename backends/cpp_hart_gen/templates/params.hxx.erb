@@ -1,3 +1,7 @@
+<%-
+  require 'tsort'
+-%>
+
 #pragma once
 
 #include <filesystem>
@@ -12,6 +16,8 @@
 
 #include "udb/bits-yaml.hpp"
 
+#include "udb/db_data.hxx"
+
 namespace udb {
   struct <%= name_of(:params, cfg_arch) %>
   {
@@ -21,30 +27,48 @@ namespace udb {
       explicit Error(const char* msg) : std::runtime_error(msg) {}
     };
 
-    // all the compile-time-known parameters
-    <%- cfg_arch.params_with_value.each do |param| -%>
-    static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>_VALUE = <%= param.value.to_cxx %>;
+    <%- cfg_arch.params.each do |param| -%>
+
+    // <%= param.description.gsub("\n", "\n  // ") %>
+    <%- if cfg_arch.param_values.key?(param.name) -%>
+    static constexpr <%= name_of(:param, cfg_arch, param) %> <%= param.name %> = {};
+    <%- else -%>
+    <%= name_of(:param, cfg_arch, param) %> <%= param.name %>;
+    <%- end -%>
+
     <%- end -%>
 
     // read parameters out of a YAML (or JSON) config file
-    <%= name_of(:params, cfg_arch) %>(const nlohmann::json& cfg)
+    <%= name_of(:params, cfg_arch) %>(const Config& cfg)
     {
-      init(cfg);
+      <%# params need to be topologically sorted to avoid inialization problems -%>
+      <%- class ParamSorter < Hash
+            include TSort
+            def initialize(params)
+              params.each { |p| store(p.name, p) }
+            end
+            alias tsort_each_node each_key
+            def tsort_each_child(param_name, &blk)
+              fetch(param_name).defined_by_condition.param_terms(expand: true).map(&:name).each(&blk)
+            end
+          end
+      -%>
+      <%- sorted_params = ParamSorter.new(cfg_arch.params).tsort -%>
+      <%- sorted_params.each do |param_name| -%>
+      <%- if cfg_arch.param_values.key?(param_name) -%>
+      udb_assert(
+        (std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")) == <%= param_name %>.value()),
+        fmt::format("Parameter '<%= param_name %>' has built-in value '<%= cfg_arch.param_values.fetch(param_name) %>', but was given a run-time value of '{}'", std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")))
+      );
+      <%- else -%>
+      if (<%= param_name %>.defined(cfg) == Yes) {
+        udb_assert(cfg.has_param_value("<%= param_name %>"), "Required parameter value for '<%= param_name %>' is missing");
+        <%= param_name %>.set_value(std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")));
+      } else {
+        udb_assert(!cfg.has_param_value("<%= param_name %>"), "'<%= param_name %>' is given a value in the config, but should not be defined");
+      }
+      <%- end -%>
+      <%- end -%>
     }
-
-    void init(const nlohmann::json& params);
-
-    <%- declared_params = Set.new -%>
-    <%- cfg_arch.params_without_value.each do |param| -%>
-    <%- next if declared_params.include?(param.name) -%>
-    <%- declared_params << param.name -%>
-
-    // <%= param.desc.gsub("\n", "\n  // ") %>
-    <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>;
-    <%- end -%>
-
-    private:
-    void set_param(const std::string& param_name, const nlohmann::json& json);
-    void set_param_default(const std::string& param_name);
   };
 }

@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventN.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -15,7 +17,9 @@ length: 64
 description: |
   Programmable hardware performance counter event selector
   <% if ext?(:Sscofpmf) %> and overflow/filtering control<% end %>
-definedBy: Smhpm
+definedBy:
+  extension:
+    name: Smhpm
 fields:
   OF:
     location: 63
@@ -42,7 +46,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   MINH:
     location: 62
     description: When set, mhpmcounter11 does not increment while the hart in operating in M-mode.
@@ -58,7 +64,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   SINH:
     location: 61
     description: When set, mhpmcounter11 does not increment while the hart in operating in (H)S-mode.
@@ -75,7 +83,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [S, Sscofpmf]
+      extension:
+        allOf:
+          - name: S
+          - name: Sscofpmf
   UINH:
     location: 60
     description: When set, mhpmcounter11 does not increment while the hart in operating in U-mode.
@@ -92,7 +103,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [U, Sscofpmf]
+      extension:
+        allOf:
+          - name: U
+          - name: Sscofpmf
   VSINH:
     location: 59
     description: When set, mhpmcounter11 does not increment while the hart in operating in VS-mode.
@@ -109,7 +123,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [H, Sscofpmf]
+      extension:
+        allOf:
+          - name: H
+          - name: Sscofpmf
   VUINH:
     location: 58
     description: When set, mhpmcounter11 does not increment while the hart in operating in VU-mode.
@@ -126,7 +143,10 @@ fields:
         return 0;
       }
     definedBy:
-      allOf: [H, Sscofpmf]
+      extension:
+        allOf:
+          - name: H
+          - name: Sscofpmf
   EVENT:
     location: 57-0
     description: Event selector for performance counter `mhpmcounter11`.
@@ -143,7 +163,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if (ary_includes?<$array_size(HPM_EVENTS), 58>(HPM_EVENTS, csr_value.EVENT)) {
+      if ($array_includes?(HPM_EVENTS, csr_value.EVENT)) {
         return csr_value.EVENT;
       } else {
         return UNDEFINED_LEGAL_DETERMINISTIC;

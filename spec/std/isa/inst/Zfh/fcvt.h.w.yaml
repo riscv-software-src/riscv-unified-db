@@ -7,9 +7,13 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.w
 long_name: Floating-point Convert Word to Half-precision
+definedBy:
+  extension:
+    oneOf:
+      - name: Zfh
+      - name: Zhinx
 description: |
   `fcvt.h.w` converts a 32-bit signed integer to a half-precision floating-point number.
-definedBy: Zfh
 assembly: fd, xs1, rm
 encoding:
   match: 110101000000-------------1010011

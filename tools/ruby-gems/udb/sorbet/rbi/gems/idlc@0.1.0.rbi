@@ -9,952 +9,1588 @@
 module Idl
   include ::Treetop::Runtime
 
+  # source://idlc//lib/idlc/idl_parser.rb#6275
   def _nt_ary_access; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6173
   def _nt_ary_eligible_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11858
   def _nt_ary_size_decl; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11104
   def _nt_assignment; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#889
   def _nt_bitfield_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6576
   def _nt_bits_cast; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9614
   def _nt_body_function_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10378
   def _nt_builtin_function_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16350
   def _nt_builtin_read_only_var; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16374
   def _nt_builtin_read_write_var; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#14711
   def _nt_builtin_type_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15960
   def _nt_comment; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5747
   def _nt_concatenation_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8614
+  def _nt_constraint_body; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5888
   def _nt_csr_field_access_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16456
   def _nt_csr_field_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16401
   def _nt_csr_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5962
   def _nt_csr_register_access_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12210
   def _nt_declaration; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12650
   def _nt_dontcare_lvalue; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12674
   def _nt_dontcare_return; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#468
   def _nt_enum_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#780
   def _nt_enum_ref; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6699
+  def _nt_enum_to_a; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13759
   def _nt_execute_if_block; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8704
   def _nt_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10833
   def _nt_fetch; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6058
   def _nt_field_access_eligible_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6106
   def _nt_field_access_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15834
   def _nt_field_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#14368
   def _nt_for_loop; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12078
+  def _nt_for_loop_iteration_variable_declaration; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9432
   def _nt_function_arg_list; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16108
   def _nt_function_body; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8917
   def _nt_function_call; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8784
   def _nt_function_call_template_arguments; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10929
   def _nt_function_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13101
   def _nt_function_if_block; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9337
   def _nt_function_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16051
   def _nt_function_statement; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#290
   def _nt_global_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16286
   def _nt_id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8031
+  def _nt_implication_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8248
+  def _nt_implication_for_loop; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8551
+  def _nt_implication_statement; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#196
   def _nt_include_statement; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16192
   def _nt_instruction_operation; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#1529
   def _nt_int; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#26
   def _nt_isa; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15088
   def _nt_keyword; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3517
   def _nt_p0_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#2897
   def _nt_p0_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3635
   def _nt_p1_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#2965
   def _nt_p1_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3753
   def _nt_p2_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3033
   def _nt_p2_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3871
   def _nt_p3_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3101
   def _nt_p3_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3169
   def _nt_p3_template_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4107
   def _nt_p4_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3213
   def _nt_p4_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4343
   def _nt_p5_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3260
   def _nt_p5_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4579
   def _nt_p6_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3313
   def _nt_p6_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4815
   def _nt_p7_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3340
   def _nt_p7_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5051
   def _nt_p8_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3393
   def _nt_p8_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5287
   def _nt_p9_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3417
   def _nt_p9_binary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5510
   def _nt_paren_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6462
   def _nt_post_dec; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6519
   def _nt_post_inc; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5594
   def _nt_replication_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15918
   def _nt_reserved; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12726
   def _nt_return_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12908
   def _nt_return_statement; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10961
   def _nt_rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12382
   def _nt_single_declaration; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11949
   def _nt_single_declaration_with_initialization; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16726
   def _nt_space; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12480
   def _nt_statement; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16631
   def _nt_string; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#1213
   def _nt_struct_definition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8736
   def _nt_template_safe_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3989
   def _nt_template_safe_p3_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4225
   def _nt_template_safe_p4_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4461
   def _nt_template_safe_p5_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4697
   def _nt_template_safe_p6_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4933
   def _nt_template_safe_p7_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5169
   def _nt_template_safe_p8_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5405
   def _nt_template_safe_p9_binary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7903
   def _nt_template_safe_ternary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7782
   def _nt_ternary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15886
   def _nt_type_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6866
   def _nt_unary_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3441
   def _nt_unary_operator; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#15767
   def _nt_user_type_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#16515
   def _nt_var_write; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#1397
   def _nt_version_string; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12
   def root; end
+
+  class << self
+    # source://idlc//lib/idlc/log.rb#15
+    sig { returns(::Logger) }
+    def logger; end
+
+    # source://idlc//lib/idlc/log.rb#20
+    sig { params(logger: ::Logger).returns(::Logger) }
+    def set_logger(logger); end
+  end
 end
 
-# source://idlc//lib/idlc/ast.rb#3935
+# source://idlc//lib/idlc/ast.rb#1125
+class Idl::ArrayIncludesAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#1135
+  sig do
+    params(
+      input: ::String,
+      interval: T::Range[::Integer],
+      ary: T.all(::Idl::AstNode, ::Idl::Rvalue),
+      value: T.all(::Idl::AstNode, ::Idl::Rvalue)
+    ).void
+  end
+  def initialize(input, interval, ary, value); end
+
+  # source://idlc//lib/idlc/ast.rb#1129
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
+  def ary; end
+
+  # source://idlc//lib/idlc/ast.rb#1163
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1132
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
+  def expr; end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#305
+  def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/ast.rb#1166
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#142
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1153
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1140
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1158
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#1119
+class Idl::ArrayIncludesSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#1120
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4298
 class Idl::ArrayLiteralAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3939
+  # source://idlc//lib/idlc/ast.rb#4302
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3943
+  # source://idlc//lib/idlc/ast.rb#4306
   def element_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#3941
+  # source://idlc//lib/idlc/ast.rb#4304
   def entries; end
 
-  # source://idlc//lib/idlc/ast.rb#3967
+  # source://idlc//lib/idlc/ast.rb#4330
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3958
+  # source://idlc//lib/idlc/ast.rb#4321
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3948
+  # source://idlc//lib/idlc/ast.rb#4311
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3962
+  # source://idlc//lib/idlc/ast.rb#4325
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3929
+# source://idlc//lib/idlc/ast.rb#4292
 class Idl::ArrayLiteralSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#3930
+  # source://idlc//lib/idlc/ast.rb#4293
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1055
+# source://idlc//lib/idlc/ast.rb#1175
 class Idl::ArraySizeAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#1062
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#1184
   def initialize(input, interval, expression); end
 
-  # source://idlc//lib/idlc/ast.rb#1060
+  # source://idlc//lib/idlc/ast.rb#1182
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1057
+  # source://idlc//lib/idlc/ast.rb#1179
   def expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#287
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#299
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1088
+  # source://idlc//lib/idlc/ast.rb#1213
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1073
+  # source://idlc//lib/idlc/ast.rb#1195
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1066
+  # source://idlc//lib/idlc/ast.rb#1188
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1083
+  # source://idlc//lib/idlc/ast.rb#1206
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::Integer) }
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1049
+# source://idlc//lib/idlc/ast.rb#1169
 class Idl::ArraySizeSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1050
+  # source://idlc//lib/idlc/ast.rb#1170
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1740
+# source://idlc//lib/idlc/idl_parser.rb#6247
+module Idl::AryAccess0
+  # source://idlc//lib/idlc/idl_parser.rb#6248
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6254
+module Idl::AryAccess1
+  # source://idlc//lib/idlc/idl_parser.rb#6259
+  def lsb; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6255
+  def msb; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6265
+module Idl::AryAccess2
+  # source://idlc//lib/idlc/idl_parser.rb#6266
+  def a; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6270
+  def brackets; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1867
 class Idl::AryAccessSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1744
+  # source://idlc//lib/idlc/ast.rb#1871
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1760
+# source://idlc//lib/idlc/ast.rb#1887
 class Idl::AryElementAccessAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#1775
+  # source://idlc//lib/idlc/ast.rb#1902
   def initialize(input, interval, var, index); end
 
-  # source://idlc//lib/idlc/ast.rb#1764
+  # source://idlc//lib/idlc/ast.rb#1891
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#218
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#229
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1773
+  # source://idlc//lib/idlc/ast.rb#1900
   def index; end
 
-  # source://idlc//lib/idlc/ast.rb#1841
+  # source://idlc//lib/idlc/ast.rb#1972
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1810
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#113
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1937
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1780
+  # source://idlc//lib/idlc/ast.rb#1907
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1821
+  # source://idlc//lib/idlc/ast.rb#1952
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1772
+  # source://idlc//lib/idlc/ast.rb#1899
   def var; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2059
+# source://idlc//lib/idlc/ast.rb#2204
 class Idl::AryElementAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#2081
+  # source://idlc//lib/idlc/ast.rb#2226
   def initialize(input, interval, lhs, idx, rhs); end
 
-  # source://idlc//lib/idlc/ast.rb#2063
+  # source://idlc//lib/idlc/ast.rb#2208
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2120
+  # source://idlc//lib/idlc/ast.rb#2265
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2150
+  # source://idlc//lib/idlc/ast.rb#2295
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#242
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#253
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2078
+  # source://idlc//lib/idlc/ast.rb#2223
   def idx; end
 
-  # source://idlc//lib/idlc/ast.rb#2077
+  # source://idlc//lib/idlc/ast.rb#2222
   def lhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2079
+  # source://idlc//lib/idlc/ast.rb#2224
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2185
+  # source://idlc//lib/idlc/ast.rb#2330
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2086
+  # source://idlc//lib/idlc/ast.rb#2231
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#2049
+# source://idlc//lib/idlc/ast.rb#2194
 class Idl::AryElementAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2050
+  # source://idlc//lib/idlc/ast.rb#2195
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1844
+# source://idlc//lib/idlc/ast.rb#1975
 class Idl::AryRangeAccessAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#1860
+  # source://idlc//lib/idlc/ast.rb#1993
   def initialize(input, interval, var, msb, lsb); end
 
-  # source://idlc//lib/idlc/ast.rb#1848
+  # source://idlc//lib/idlc/ast.rb#1979
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#157
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#168
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1858
+  # source://idlc//lib/idlc/ast.rb#1991
   def lsb; end
 
-  # source://idlc//lib/idlc/ast.rb#1857
+  # source://idlc//lib/idlc/ast.rb#1990
   def msb; end
 
-  # source://idlc//lib/idlc/ast.rb#1909
+  # source://idlc//lib/idlc/ast.rb#2046
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1890
+  # source://idlc//lib/idlc/ast.rb#2023
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1865
+  # source://idlc//lib/idlc/ast.rb#1998
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1902
+  # source://idlc//lib/idlc/ast.rb#2039
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1856
+  # source://idlc//lib/idlc/ast.rb#1989
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def var; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2198
+# source://idlc//lib/idlc/ast.rb#2343
 class Idl::AryRangeAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#2221
+  # source://idlc//lib/idlc/ast.rb#2366
   def initialize(input, interval, variable, msb, lsb, write_value); end
 
-  # source://idlc//lib/idlc/ast.rb#2202
+  # source://idlc//lib/idlc/ast.rb#2347
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2258
+  # source://idlc//lib/idlc/ast.rb#2403
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2286
+  # source://idlc//lib/idlc/ast.rb#2431
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#19
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#20
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2218
+  # source://idlc//lib/idlc/ast.rb#2363
   def lsb; end
 
-  # source://idlc//lib/idlc/ast.rb#2217
+  # source://idlc//lib/idlc/ast.rb#2362
   def msb; end
 
-  # source://idlc//lib/idlc/ast.rb#2253
+  # source://idlc//lib/idlc/ast.rb#2398
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2292
+  # source://idlc//lib/idlc/ast.rb#2437
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2226
+  # source://idlc//lib/idlc/ast.rb#2371
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2216
+  # source://idlc//lib/idlc/ast.rb#2361
   def variable; end
 
-  # source://idlc//lib/idlc/ast.rb#2219
+  # source://idlc//lib/idlc/ast.rb#2364
   def write_value; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2188
+# source://idlc//lib/idlc/ast.rb#2333
 class Idl::AryRangeAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2189
+  # source://idlc//lib/idlc/ast.rb#2334
   def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11851
+module Idl::ArySizeDecl0
+  # source://idlc//lib/idlc/idl_parser.rb#11852
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11011
+module Idl::Assignment0
+  # source://idlc//lib/idlc/idl_parser.rb#11012
+  def var; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11018
+module Idl::Assignment1
+  # source://idlc//lib/idlc/idl_parser.rb#11019
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11027
+  def function_call; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11023
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11032
+module Idl::Assignment2
+  # source://idlc//lib/idlc/idl_parser.rb#11033
+  def rval; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11038
+module Idl::Assignment3
+  # source://idlc//lib/idlc/idl_parser.rb#11043
+  def rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11039
+  def var; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11048
+module Idl::Assignment4
+  # source://idlc//lib/idlc/idl_parser.rb#11049
+  def csr_field_access_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11053
+  def rval; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11058
+module Idl::Assignment5
+  # source://idlc//lib/idlc/idl_parser.rb#11063
+  def field_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11059
+  def id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11067
+  def rval; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11072
+module Idl::Assignment6
+  # source://idlc//lib/idlc/idl_parser.rb#11081
+  def lsb; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11077
+  def msb; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11085
+  def rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11073
+  def var; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11090
+module Idl::Assignment7
+  # source://idlc//lib/idlc/idl_parser.rb#11095
+  def idx; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11099
+  def rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11091
+  def var; end
 end
 
 # source://idlc//lib/idlc/type.rb#11
 class Idl::AstNode
   abstract!
 
-  # source://idlc//lib/idlc/ast.rb#193
+  # source://idlc//lib/idlc/ast.rb#205
   sig { params(input: ::String, interval: T::Range[T.untyped], children: T::Array[::Idl::AstNode]).void }
   def initialize(input, interval, children); end
 
-  # source://idlc//lib/idlc/ast.rb#70
+  # source://idlc//lib/idlc/ast.rb#81
   sig { returns(T::Array[::Idl::AstNode]) }
   def children; end
 
-  # source://idlc//lib/idlc/ast.rb#187
+  # source://idlc//lib/idlc/ast.rb#199
   sig { abstract.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#245
+  # source://idlc//lib/idlc/ast.rb#257
   sig { params(klass: ::Class).returns(T.nilable(::Idl::AstNode)) }
   def find_ancestor(klass); end
 
-  # source://idlc//lib/idlc/ast.rb#422
+  # source://idlc//lib/idlc/ast.rb#434
   sig { params(global_symtab: ::Idl::SymbolTable).returns(::Idl::AstNode) }
   def freeze_tree(global_symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#9
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#10
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#15
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#16
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#53
+  # source://idlc//lib/idlc/ast.rb#64
   sig { returns(::String) }
   def input; end
 
-  # source://idlc//lib/idlc/ast.rb#45
+  # source://idlc//lib/idlc/ast.rb#56
   sig { returns(::Pathname) }
   def input_file; end
 
-  # source://idlc//lib/idlc/ast.rb#469
+  # source://idlc//lib/idlc/ast.rb#481
   sig { returns(::String) }
   def inspect; end
 
-  # source://idlc//lib/idlc/ast.rb#356
+  # source://idlc//lib/idlc/ast.rb#368
   sig { params(reason: ::String).returns(T.noreturn) }
   def internal_error(reason); end
 
-  # source://idlc//lib/idlc/ast.rb#57
+  # source://idlc//lib/idlc/ast.rb#68
   sig { returns(T::Range[T.untyped]) }
   def interval; end
 
-  # source://idlc//lib/idlc/ast.rb#238
+  # source://idlc//lib/idlc/ast.rb#250
   sig { returns(::Integer) }
   def lineno; end
 
-  # source://idlc//lib/idlc/ast.rb#263
+  # source://idlc//lib/idlc/ast.rb#275
   sig { returns(::Idl::AstNode::LinesDescriptor) }
   def lines_around; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#63
+  # source://idlc//lib/idlc/passes/prune.rb#64
   def nullify_assignments(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#66
+  # source://idlc//lib/idlc/ast.rb#77
   sig { returns(T.nilable(::Idl::AstNode)) }
   def parent; end
 
   # source://idlc//lib/idlc/passes/find_return_values.rb#11
   def pass_find_return_values(values, current_conditions); end
 
-  # source://idlc//lib/idlc/ast.rb#431
+  # source://idlc//lib/idlc/ast.rb#443
   sig { returns(::String) }
   def path; end
 
-  # source://idlc//lib/idlc/ast.rb#405
+  # source://idlc//lib/idlc/ast.rb#417
   sig { params(indent: ::Integer, indent_size: ::Integer, io: ::IO).void }
   def print_ast(indent = T.unsafe(nil), indent_size: T.unsafe(nil), io: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#44
+  # source://idlc//lib/idlc/passes/prune.rb#45
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#13
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#11
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#12
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#227
+  # source://idlc//lib/idlc/ast.rb#239
   sig { params(filename: T.any(::Pathname, ::String), starting_line: ::Integer).void }
   def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#211
+  # source://idlc//lib/idlc/ast.rb#223
   sig { params(filename: T.any(::Pathname, ::String), starting_line: ::Integer).void }
   def set_input_file_unless_already_set(filename, starting_line = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#49
+  # source://idlc//lib/idlc/ast.rb#60
   sig { returns(::Integer) }
   def starting_line; end
 
-  # source://idlc//lib/idlc/ast.rb#61
+  # source://idlc//lib/idlc/ast.rb#72
   sig { returns(::String) }
   def text_value; end
 
-  # source://idlc//lib/idlc/ast.rb#463
+  # source://idlc//lib/idlc/ast.rb#475
   sig { abstract.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#466
+  # source://idlc//lib/idlc/ast.rb#478
   sig { overridable.returns(::String) }
   def to_idl_verbose; end
 
-  # source://idlc//lib/idlc/ast.rb#291
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#18
+  sig { overridable.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#303
   sig { params(reason: ::String).void }
   def truncation_warn(reason); end
 
-  # source://idlc//lib/idlc/ast.rb#453
+  # source://idlc//lib/idlc/ast.rb#465
   sig { abstract.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#307
+  # source://idlc//lib/idlc/ast.rb#319
   sig { params(reason: ::String).returns(T.noreturn) }
   def type_error(reason); end
 
-  # source://idlc//lib/idlc/ast.rb#395
+  # source://idlc//lib/idlc/ast.rb#407
   sig { params(s: ::String).returns(::String) }
   def unindent(s); end
 
-  # source://idlc//lib/idlc/ast.rb#181
+  # source://idlc//lib/idlc/ast.rb#193
   sig { params(value_result: T.untyped, block: T.proc.returns(T.untyped)).returns(T.untyped) }
   def value_else(value_result, &block); end
 
-  # source://idlc//lib/idlc/ast.rb#386
+  # source://idlc//lib/idlc/ast.rb#398
   sig { params(reason: ::String).returns(T.noreturn) }
   def value_error(reason); end
 
-  # source://idlc//lib/idlc/ast.rb#172
+  # source://idlc//lib/idlc/ast.rb#183
   sig { params(block: T.proc.params(arg0: ::Object).returns(T.untyped)).returns(T.untyped) }
   def value_try(&block); end
 
   class << self
-    # source://idlc//lib/idlc/ast.rb#175
+    # source://idlc//lib/idlc/ast.rb#186
     sig { params(value_result: T.untyped, _block: T.proc.returns(T.untyped)).returns(T.untyped) }
     def value_else(value_result, &_block); end
 
-    # source://idlc//lib/idlc/ast.rb#377
+    # source://idlc//lib/idlc/ast.rb#389
     sig { params(reason: ::String, ast: T.nilable(::Idl::AstNode)).returns(T.noreturn) }
     def value_error(reason, ast = T.unsafe(nil)); end
 
-    # source://idlc//lib/idlc/ast.rb#369
+    # source://idlc//lib/idlc/ast.rb#381
     def value_error_ast; end
 
-    # source://idlc//lib/idlc/ast.rb#369
+    # source://idlc//lib/idlc/ast.rb#381
     def value_error_ast=(_arg0); end
 
-    # source://idlc//lib/idlc/ast.rb#369
+    # source://idlc//lib/idlc/ast.rb#381
     def value_error_reason; end
 
-    # source://idlc//lib/idlc/ast.rb#369
+    # source://idlc//lib/idlc/ast.rb#381
     def value_error_reason=(_arg0); end
 
-    # source://idlc//lib/idlc/ast.rb#168
+    # source://idlc//lib/idlc/ast.rb#179
     sig { params(block: T.proc.params(arg0: ::Object).returns(T.untyped)).returns(T.untyped) }
     def value_try(&block); end
   end
 end
 
-# source://idlc//lib/idlc/ast.rb#103
+# source://idlc//lib/idlc/ast.rb#43
+Idl::AstNode::Bits1Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#45
+Idl::AstNode::Bits32Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#47
+Idl::AstNode::Bits64Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#50
+Idl::AstNode::BoolType = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#49
+Idl::AstNode::ConstBoolType = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#114
 class Idl::AstNode::InternalError < ::StandardError
-  # source://idlc//lib/idlc/ast.rb#119
+  # source://idlc//lib/idlc/ast.rb#130
   sig { params(what: ::String).void }
   def initialize(what); end
 
-  # source://idlc//lib/idlc/ast.rb#116
+  # source://idlc//lib/idlc/ast.rb#127
   sig { returns(T::Array[::String]) }
   def bt; end
 
-  # source://idlc//lib/idlc/ast.rb#108
+  # source://idlc//lib/idlc/ast.rb#119
   sig { returns(::String) }
   def what; end
 end
 
-# source://idlc//lib/idlc/ast.rb#255
+# source://idlc//lib/idlc/ast.rb#267
 class Idl::AstNode::LinesDescriptor < ::T::Struct
   const :lines, ::String
   const :problem_interval, T::Range[T.untyped]
   const :lines_interval, T::Range[T.untyped]
 
   class << self
-    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
 
-# source://idlc//lib/idlc/ast.rb#73
+# source://idlc//lib/idlc/ast.rb#44
+Idl::AstNode::PossiblyUnknownBits1Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#46
+Idl::AstNode::PossiblyUnknownBits32Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#48
+Idl::AstNode::PossiblyUnknownBits64Type = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#52
+Idl::AstNode::StringType = T.let(T.unsafe(nil), Idl::Type)
+
+# source://idlc//lib/idlc/ast.rb#84
 class Idl::AstNode::TypeError < ::StandardError
-  # source://idlc//lib/idlc/ast.rb#90
+  # source://idlc//lib/idlc/ast.rb#101
   sig { params(what: ::String).void }
   def initialize(what); end
 
-  # source://idlc//lib/idlc/ast.rb#86
+  # source://idlc//lib/idlc/ast.rb#97
   sig { returns(T::Array[::String]) }
   def bt; end
 
-  # source://idlc//lib/idlc/ast.rb#78
+  # source://idlc//lib/idlc/ast.rb#89
   sig { returns(::String) }
   def what; end
 end
 
-# source://idlc//lib/idlc/ast.rb#133
+# source://idlc//lib/idlc/ast.rb#144
 class Idl::AstNode::ValueError < ::StandardError
-  # source://idlc//lib/idlc/ast.rb#146
+  # source://idlc//lib/idlc/ast.rb#157
   sig { params(lineno: ::Integer, file: ::String, reason: ::String).void }
   def initialize(lineno, file, reason); end
 
-  # source://idlc//lib/idlc/ast.rb#140
+  # source://idlc//lib/idlc/ast.rb#151
   sig { returns(::String) }
   def file; end
 
-  # source://idlc//lib/idlc/ast.rb#137
+  # source://idlc//lib/idlc/ast.rb#148
   sig { returns(::Integer) }
   def lineno; end
 
-  # source://idlc//lib/idlc/ast.rb#157
+  # source://idlc//lib/idlc/ast.rb#168
   sig { returns(::String) }
   def message; end
 
-  # source://idlc//lib/idlc/ast.rb#143
+  # source://idlc//lib/idlc/ast.rb#154
   sig { returns(::String) }
   def reason; end
 
-  # source://idlc//lib/idlc/ast.rb#154
+  # source://idlc//lib/idlc/ast.rb#165
   sig { returns(::String) }
   def what; end
 end
+
+# source://idlc//lib/idlc/ast.rb#51
+Idl::AstNode::VoidType = T.let(T.unsafe(nil), Idl::Type)
 
 # source://idlc//lib/idlc/ast.rb#16
 Idl::BasicValueRbType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean) }
 
-# source://idlc//lib/idlc/ast.rb#3167
+# source://idlc//lib/idlc/ast.rb#3473
 class Idl::BinaryExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3186
+  # source://idlc//lib/idlc/ast.rb#3492
   def initialize(input, interval, lhs, op, rhs); end
 
-  # source://idlc//lib/idlc/ast.rb#3376
+  # source://idlc//lib/idlc/ast.rb#3739
   def bits_needed(value, signed); end
 
-  # source://idlc//lib/idlc/ast.rb#3176
+  # source://idlc//lib/idlc/ast.rb#3482
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#224
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#235
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#3193
+  # source://idlc//lib/idlc/ast.rb#3499
   def invert(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3182
+  # source://idlc//lib/idlc/ast.rb#3488
   def lhs; end
 
-  # source://idlc//lib/idlc/ast.rb#3403
+  # source://idlc//lib/idlc/ast.rb#3766
   def max_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3546
+  # source://idlc//lib/idlc/ast.rb#3909
   def min_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3890
+  # source://idlc//lib/idlc/ast.rb#4253
   def op; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#237
+  # source://idlc//lib/idlc/passes/prune.rb#239
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3183
+  # source://idlc//lib/idlc/ast.rb#3489
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#3224
+  # source://idlc//lib/idlc/ast.rb#3530
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3229
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#201
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3535
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3297
+  # source://idlc//lib/idlc/ast.rb#3635
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3696
+  # source://idlc//lib/idlc/ast.rb#4059
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3172
+# source://idlc//lib/idlc/ast.rb#3478
 Idl::BinaryExpressionAst::ARITH_OPS = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/ast.rb#3171
+# source://idlc//lib/idlc/ast.rb#3477
 Idl::BinaryExpressionAst::BIT_OPS = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/ast.rb#3170
+# source://idlc//lib/idlc/ast.rb#3476
 Idl::BinaryExpressionAst::LOGICAL_OPS = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/ast.rb#3173
+# source://idlc//lib/idlc/ast.rb#3479
 Idl::BinaryExpressionAst::OPS = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/ast.rb#2970
+# source://idlc//lib/idlc/ast.rb#3134
 class Idl::BinaryExpressionRightSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2974
+  # source://idlc//lib/idlc/ast.rb#3138
   def to_ast; end
 
-  # source://idlc//lib/idlc/ast.rb#2991
+  # source://idlc//lib/idlc/ast.rb#3155
   def type_check(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1522
+# source://idlc//lib/idlc/idl_parser.rb#847
+module Idl::BitfieldDefinition0
+  # source://idlc//lib/idlc/idl_parser.rb#848
+  def int; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#853
+module Idl::BitfieldDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#854
+  def int; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#858
+  def lsb; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#863
+module Idl::BitfieldDefinition2
+  # source://idlc//lib/idlc/idl_parser.rb#864
+  def field_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#868
+  def range; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#874
+module Idl::BitfieldDefinition3
+  # source://idlc//lib/idlc/idl_parser.rb#883
+  def e; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#875
+  def int; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#879
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1649
 class Idl::BitfieldDefinitionAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#1528
+  # source://idlc//lib/idlc/ast.rb#1655
   def initialize(input, interval, name, size, fields); end
 
-  # source://idlc//lib/idlc/ast.rb#1581
+  # source://idlc//lib/idlc/ast.rb#1708
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1526
+  # source://idlc//lib/idlc/ast.rb#1653
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1553
+  # source://idlc//lib/idlc/ast.rb#1680
   def element_names; end
 
-  # source://idlc//lib/idlc/ast.rb#1561
+  # source://idlc//lib/idlc/ast.rb#1688
   def element_ranges(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1537
+  # source://idlc//lib/idlc/ast.rb#1664
   def freeze_tree(global_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1603
+  # source://idlc//lib/idlc/ast.rb#1730
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#1548
+  # source://idlc//lib/idlc/ast.rb#1675
   def size(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1610
+  # source://idlc//lib/idlc/ast.rb#1737
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1591
+  # source://idlc//lib/idlc/ast.rb#1718
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1568
+  # source://idlc//lib/idlc/ast.rb#1695
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1606
+  # source://idlc//lib/idlc/ast.rb#1733
   def value(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1491
+# source://idlc//lib/idlc/ast.rb#1618
 class Idl::BitfieldDefinitionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1492
+  # source://idlc//lib/idlc/ast.rb#1619
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1431
+# source://idlc//lib/idlc/ast.rb#1558
 class Idl::BitfieldFieldDefinitionAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#1438
+  # source://idlc//lib/idlc/ast.rb#1565
   def initialize(input, interval, name, msb, lsb); end
 
-  # source://idlc//lib/idlc/ast.rb#1436
+  # source://idlc//lib/idlc/ast.rb#1563
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1433
+  # source://idlc//lib/idlc/ast.rb#1560
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#1473
+  # source://idlc//lib/idlc/ast.rb#1600
   def range(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1482
+  # source://idlc//lib/idlc/ast.rb#1609
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1451
+  # source://idlc//lib/idlc/ast.rb#1578
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/type.rb#617
+# source://idlc//lib/idlc/type.rb#696
 class Idl::BitfieldType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#618
+  # source://idlc//lib/idlc/type.rb#697
   def initialize(type_name, width, field_names, field_ranges); end
 
-  # source://idlc//lib/idlc/type.rb#638
+  # source://idlc//lib/idlc/type.rb#717
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#634
+  # source://idlc//lib/idlc/type.rb#713
   def field_names; end
 
-  # source://idlc//lib/idlc/type.rb#627
+  # source://idlc//lib/idlc/type.rb#706
   def range(field_name); end
 end
 
-# source://idlc//lib/idlc/type.rb#902
+# source://idlc//lib/idlc/type.rb#981
 Idl::Bits1Type = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#903
+# source://idlc//lib/idlc/type.rb#982
 Idl::Bits32Type = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#904
+# source://idlc//lib/idlc/type.rb#983
 Idl::Bits64Type = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/ast.rb#3098
+# source://idlc//lib/idlc/idl_parser.rb#6569
+module Idl::BitsCast0
+  # source://idlc//lib/idlc/idl_parser.rb#6570
+  def expr; end
+end
+
+# source://idlc//lib/idlc/ast.rb#3403
 class Idl::BitsCastAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3109
+  # source://idlc//lib/idlc/ast.rb#3414
   def initialize(input, interval, exp); end
 
-  # source://idlc//lib/idlc/ast.rb#3102
+  # source://idlc//lib/idlc/ast.rb#3407
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3107
+  # source://idlc//lib/idlc/ast.rb#3412
   def expr; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#101
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#102
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#3164
+  # source://idlc//lib/idlc/ast.rb#3470
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3121
+  # source://idlc//lib/idlc/ast.rb#3426
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3112
+  # source://idlc//lib/idlc/ast.rb#3417
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3141
+  # source://idlc//lib/idlc/ast.rb#3447
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3087
+# source://idlc//lib/idlc/ast.rb#3392
 class Idl::BitsCastSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#3088
+  # source://idlc//lib/idlc/ast.rb#3393
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#905
+# source://idlc//lib/idlc/type.rb#984
 Idl::BitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#908
+# source://idlc//lib/idlc/idl_parser.rb#9522
+module Idl::BodyFunctionDefinition0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#9525
+module Idl::BodyFunctionDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#9526
+  def single_declaration; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9531
+module Idl::BodyFunctionDefinition2
+  # source://idlc//lib/idlc/idl_parser.rb#9532
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9536
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9542
+module Idl::BodyFunctionDefinition3
+  # source://idlc//lib/idlc/idl_parser.rb#9543
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9548
+module Idl::BodyFunctionDefinition4
+  # source://idlc//lib/idlc/idl_parser.rb#9549
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9553
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9559
+module Idl::BodyFunctionDefinition5
+  # source://idlc//lib/idlc/idl_parser.rb#9560
+  def single_declaration; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9565
+module Idl::BodyFunctionDefinition6
+  # source://idlc//lib/idlc/idl_parser.rb#9566
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9570
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9576
+module Idl::BodyFunctionDefinition7
+  # source://idlc//lib/idlc/idl_parser.rb#9577
+  def function_body; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9583
+module Idl::BodyFunctionDefinition8
+  # source://idlc//lib/idlc/idl_parser.rb#9600
+  def args; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9608
+  def body_block; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9604
+  def desc; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9588
+  def function_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9596
+  def ret; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9592
+  def targs; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9584
+  def type; end
+end
+
+# source://idlc//lib/idlc/type.rb#987
 Idl::BoolType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/ast.rb#1386
+# source://idlc//lib/idlc/ast.rb#1513
 class Idl::BuiltinEnumDefinitionAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#1392
+  # source://idlc//lib/idlc/ast.rb#1519
   def initialize(input, interval, user_type); end
 
-  # source://idlc//lib/idlc/ast.rb#1419
+  # source://idlc//lib/idlc/ast.rb#1546
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1390
+  # source://idlc//lib/idlc/ast.rb#1517
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1405
+  # source://idlc//lib/idlc/ast.rb#1532
   def element_names(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1409
+  # source://idlc//lib/idlc/ast.rb#1536
   def element_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1424
+  # source://idlc//lib/idlc/ast.rb#1551
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#1428
+  # source://idlc//lib/idlc/ast.rb#1555
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1414
+  # source://idlc//lib/idlc/ast.rb#1541
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1398
+  # source://idlc//lib/idlc/ast.rb#1525
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1375
+# source://idlc//lib/idlc/ast.rb#1502
 class Idl::BuiltinEnumDefinitionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1376
+  # source://idlc//lib/idlc/ast.rb#1503
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5132
+# source://idlc//lib/idlc/idl_parser.rb#10331
+module Idl::BuiltinFunctionDefinition0
+  # source://idlc//lib/idlc/idl_parser.rb#10332
+  def first; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#10338
+module Idl::BuiltinFunctionDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#10339
+  def single_declaration; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#10344
+module Idl::BuiltinFunctionDefinition2
+  # source://idlc//lib/idlc/idl_parser.rb#10345
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10349
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#10355
+module Idl::BuiltinFunctionDefinition3
+  # source://idlc//lib/idlc/idl_parser.rb#10368
+  def args; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10372
+  def desc; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10360
+  def function_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10364
+  def ret; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#10356
+  def type; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#14689
+module Idl::BuiltinTypeName0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#14692
+module Idl::BuiltinTypeName1
+  # source://idlc//lib/idlc/idl_parser.rb#14693
+  def i; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#14699
+module Idl::BuiltinTypeName2; end
+
+# source://idlc//lib/idlc/idl_parser.rb#14702
+module Idl::BuiltinTypeName3; end
+
+# source://idlc//lib/idlc/idl_parser.rb#14705
+module Idl::BuiltinTypeName4; end
+
+# source://idlc//lib/idlc/idl_parser.rb#14708
+module Idl::BuiltinTypeName5; end
+
+# source://idlc//lib/idlc/ast.rb#5534
 class Idl::BuiltinTypeNameAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#5139
+  # source://idlc//lib/idlc/ast.rb#5541
   def initialize(input, interval, type_name, bits_expression); end
 
-  # source://idlc//lib/idlc/ast.rb#5137
+  # source://idlc//lib/idlc/ast.rb#5539
   def bits_expression; end
 
-  # source://idlc//lib/idlc/ast.rb#5135
+  # source://idlc//lib/idlc/ast.rb#5537
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5164
+  # source://idlc//lib/idlc/ast.rb#5568
   def freeze_tree(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#181
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#192
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5215
+  # source://idlc//lib/idlc/ast.rb#5621
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5183
+  # source://idlc//lib/idlc/ast.rb#5587
   sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5149
+  # source://idlc//lib/idlc/ast.rb#5551
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5111
+# source://idlc//lib/idlc/ast.rb#5513
 class Idl::BuiltinTypeNameSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5112
+  # source://idlc//lib/idlc/ast.rb#5514
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4152
+# source://idlc//lib/idlc/ast.rb#4542
 class Idl::BuiltinVariableAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#4168
+  # source://idlc//lib/idlc/ast.rb#4558
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#4155
+  # source://idlc//lib/idlc/ast.rb#4545
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#202
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#213
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4166
+  # source://idlc//lib/idlc/ast.rb#4556
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#4196
+  # source://idlc//lib/idlc/ast.rb#4586
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4176
+  # source://idlc//lib/idlc/ast.rb#4566
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4172
+  # source://idlc//lib/idlc/ast.rb#4562
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4191
+  # source://idlc//lib/idlc/ast.rb#4581
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4146
+# source://idlc//lib/idlc/ast.rb#4536
 class Idl::BuiltinVariableSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4147
+  # source://idlc//lib/idlc/ast.rb#4537
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5090
+# source://idlc//lib/idlc/idl_parser.rb#15950
+module Idl::Comment0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15953
+module Idl::Comment1
+  # source://idlc//lib/idlc/idl_parser.rb#15954
+  def content; end
+end
+
+# source://idlc//lib/idlc/ast.rb#5492
 class Idl::CommentAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#5094
+  # source://idlc//lib/idlc/ast.rb#5496
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#5092
+  # source://idlc//lib/idlc/ast.rb#5494
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5104
+  # source://idlc//lib/idlc/ast.rb#5506
   def content; end
 
-  # source://idlc//lib/idlc/ast.rb#5107
+  # source://idlc//lib/idlc/ast.rb#5509
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5099
+  # source://idlc//lib/idlc/ast.rb#5501
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5085
+# source://idlc//lib/idlc/ast.rb#5487
 class Idl::CommentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5086
+  # source://idlc//lib/idlc/ast.rb#5488
   def to_ast; end
 end
 
-# source://idlc//lib/idlc.rb#46
+# source://idlc//lib/idlc.rb#63
 class Idl::Compiler
-  # source://idlc//lib/idlc.rb#49
+  # source://idlc//lib/idlc.rb#68
   def initialize; end
 
-  # source://idlc//lib/idlc.rb#244
+  # source://idlc//lib/idlc.rb#372
+  sig { params(body: ::String, symtab: ::Idl::SymbolTable, pass_error: T::Boolean).returns(::Idl::ConstraintBodyAst) }
+  def compile_constraint(body, symtab, pass_error: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc.rb#328
   def compile_expression(expression, symtab, pass_error: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#53
+  # source://idlc//lib/idlc.rb#84
   def compile_file(path); end
 
-  # source://idlc//lib/idlc.rb#124
+  # source://idlc//lib/idlc.rb#147
+  sig { params(loop: ::String, symtab: ::Idl::SymbolTable, pass_error: T::Boolean).returns(::Idl::ForLoopAst) }
+  def compile_for_loop(loop, symtab, pass_error: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc.rb#200
   def compile_func_body(body, return_type: T.unsafe(nil), symtab: T.unsafe(nil), name: T.unsafe(nil), input_file: T.unsafe(nil), input_line: T.unsafe(nil), no_rescue: T.unsafe(nil), extra_syms: T.unsafe(nil), type_check: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#205
+  # source://idlc//lib/idlc.rb#289
   def compile_inst_operation(inst, symtab:, input_file: T.unsafe(nil), input_line: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#178
+  # source://idlc//lib/idlc.rb#262
   def compile_inst_scope(idl, symtab:, input_file:, input_line: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc.rb#47
+  # source://idlc//lib/idlc.rb#66
   def parser; end
 
-  # source://idlc//lib/idlc.rb#216
+  # source://idlc//lib/idlc.rb#73
+  def pb=(pb); end
+
+  # source://idlc//lib/idlc.rb#300
   def type_check(ast, symtab, what); end
+
+  # source://idlc//lib/idlc.rb#79
+  def unset_pb; end
 
   class << self
     # source://idlc//lib/idlc/version.rb#8
@@ -962,646 +1598,1045 @@ class Idl::Compiler
   end
 end
 
-# source://idlc//lib/idlc/ast.rb#3980
+# source://idlc//lib/idlc/idl_parser.rb#5730
+module Idl::ConcatenationExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5731
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5736
+module Idl::ConcatenationExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#5737
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5741
+  def rest; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4343
 class Idl::ConcatenationExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3984
+  # source://idlc//lib/idlc/ast.rb#4347
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3986
+  # source://idlc//lib/idlc/ast.rb#4349
   def expressions; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#96
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#97
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4026
+  # source://idlc//lib/idlc/ast.rb#4412
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4002
+  # source://idlc//lib/idlc/ast.rb#4365
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3989
+  # source://idlc//lib/idlc/ast.rb#4352
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4014
+  # source://idlc//lib/idlc/ast.rb#4400
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3970
+# source://idlc//lib/idlc/ast.rb#4333
 class Idl::ConcatenationExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#3971
+  # source://idlc//lib/idlc/ast.rb#4334
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5026
+# source://idlc//lib/idlc/ast.rb#5428
 class Idl::ConditionalReturnStatementAst < ::Idl::AstNode
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#5035
+  # source://idlc//lib/idlc/ast.rb#5437
   def initialize(input, interval, return_expression, condition); end
 
-  # source://idlc//lib/idlc/ast.rb#5033
+  # source://idlc//lib/idlc/ast.rb#5435
   def condition; end
 
-  # source://idlc//lib/idlc/ast.rb#5030
+  # source://idlc//lib/idlc/ast.rb#5432
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#24
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#25
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#411
+  # source://idlc//lib/idlc/passes/prune.rb#413
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#150
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#130
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#137
   def reachable_functions(symtab, cache); end
 
-  # source://idlc//lib/idlc/ast.rb#5032
+  # source://idlc//lib/idlc/ast.rb#5434
   def return_expression; end
 
-  # source://idlc//lib/idlc/ast.rb#5047
+  # source://idlc//lib/idlc/ast.rb#5449
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5052
+  # source://idlc//lib/idlc/ast.rb#5454
   def return_types(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5058
+  # source://idlc//lib/idlc/ast.rb#5460
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5067
+  # source://idlc//lib/idlc/ast.rb#5469
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5081
+  # source://idlc//lib/idlc/ast.rb#5483
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5040
+  # source://idlc//lib/idlc/ast.rb#5442
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5020
+# source://idlc//lib/idlc/ast.rb#5422
 class Idl::ConditionalReturnStatementSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5021
+  # source://idlc//lib/idlc/ast.rb#5423
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4728
+# source://idlc//lib/idlc/ast.rb#5130
 class Idl::ConditionalStatementAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#4735
+  # source://idlc//lib/idlc/ast.rb#5137
   def initialize(input, interval, action, condition); end
 
-  # source://idlc//lib/idlc/ast.rb#4729
+  # source://idlc//lib/idlc/ast.rb#5131
   def action; end
 
-  # source://idlc//lib/idlc/ast.rb#4730
+  # source://idlc//lib/idlc/ast.rb#5132
   def condition; end
 
-  # source://idlc//lib/idlc/ast.rb#4733
+  # source://idlc//lib/idlc/ast.rb#5135
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4749
+  # source://idlc//lib/idlc/ast.rb#5151
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4765
+  # source://idlc//lib/idlc/ast.rb#5167
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#272
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#283
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#426
+  # source://idlc//lib/idlc/passes/prune.rb#428
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#166
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#147
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#154
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4771
+  # source://idlc//lib/idlc/ast.rb#5173
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4740
+  # source://idlc//lib/idlc/ast.rb#5142
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4718
+# source://idlc//lib/idlc/ast.rb#5120
 class Idl::ConditionalStatementSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4719
+  # source://idlc//lib/idlc/ast.rb#5121
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#906
+# source://idlc//lib/idlc/type.rb#985
 Idl::ConstBitsUnknownType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/type.rb#907
+# source://idlc//lib/idlc/type.rb#986
 Idl::ConstBoolType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/interfaces.rb#96
+# source://idlc//lib/idlc/idl_parser.rb#8601
+module Idl::ConstraintBody0
+  # source://idlc//lib/idlc/idl_parser.rb#8602
+  def i; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8608
+module Idl::ConstraintBody1
+  # source://idlc//lib/idlc/idl_parser.rb#8609
+  def b; end
+end
+
+# source://idlc//lib/idlc/ast.rb#3263
+class Idl::ConstraintBodyAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#3271
+  sig do
+    params(
+      input: ::String,
+      interval: T::Range[::Integer],
+      stmts: T::Array[T.any(::Idl::ForLoopAst, ::Idl::ImplicationStatementAst)]
+    ).void
+  end
+  def initialize(input, interval, stmts); end
+
+  # source://idlc//lib/idlc/ast.rb#3276
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3289
+  sig { params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def satisfied?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3279
+  sig { returns(T::Array[T.any(::Idl::ForLoopAst, ::Idl::ImplicationStatementAst)]) }
+  def stmts; end
+
+  # source://idlc//lib/idlc/ast.rb#3296
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#53
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3282
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
+  def type_check(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#3252
+class Idl::ConstraintBodySyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#3254
+  sig { override.returns(::Idl::ConstraintBodyAst) }
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/interfaces.rb#119
 module Idl::Csr
   interface!
 
-  # source://idlc//lib/idlc/interfaces.rb#111
+  # source://idlc//lib/idlc/interfaces.rb#134
   sig { abstract.returns(T::Boolean) }
   def dynamic_length?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#114
+  # source://idlc//lib/idlc/interfaces.rb#137
   sig { abstract.returns(T::Array[::Idl::CsrField]) }
   def fields; end
 
-  # source://idlc//lib/idlc/interfaces.rb#123
-  sig { abstract.params(ext_name: ::String).returns(T::Boolean) }
-  def implemented_without?(ext_name); end
-
-  # source://idlc//lib/idlc/interfaces.rb#105
+  # source://idlc//lib/idlc/interfaces.rb#128
   sig { abstract.params(base: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
   def length(base); end
 
-  # source://idlc//lib/idlc/interfaces.rb#108
+  # source://idlc//lib/idlc/interfaces.rb#131
   sig { abstract.returns(::Integer) }
   def max_length; end
 
-  # source://idlc//lib/idlc/interfaces.rb#102
+  # source://idlc//lib/idlc/interfaces.rb#125
   sig { abstract.returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/interfaces.rb#119
+  # source://idlc//lib/idlc/interfaces.rb#142
   sig { abstract.returns(T.nilable(::Integer)) }
   def value; end
 end
 
-# source://idlc//lib/idlc/interfaces.rb#59
+# source://idlc//lib/idlc/interfaces.rb#73
 module Idl::CsrField
   interface!
 
-  # source://idlc//lib/idlc/interfaces.rb#83
+  # source://idlc//lib/idlc/interfaces.rb#97
   sig { abstract.returns(T::Boolean) }
   def base32_only?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#79
+  # source://idlc//lib/idlc/interfaces.rb#93
   sig { abstract.returns(T::Boolean) }
   def base64_only?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#69
+  # source://idlc//lib/idlc/interfaces.rb#83
   sig { abstract.returns(T::Boolean) }
   def defined_in_all_bases?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#72
+  # source://idlc//lib/idlc/interfaces.rb#86
   sig { abstract.returns(T::Boolean) }
   def defined_in_base32?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#75
+  # source://idlc//lib/idlc/interfaces.rb#89
   sig { abstract.returns(T::Boolean) }
   def defined_in_base64?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#93
+  # source://idlc//lib/idlc/interfaces.rb#113
   sig { abstract.returns(T::Boolean) }
   def exists?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#88
+  # source://idlc//lib/idlc/interfaces.rb#102
   sig { abstract.params(base: T.nilable(::Integer)).returns(T::Range[::Integer]) }
   def location(base); end
 
-  # source://idlc//lib/idlc/interfaces.rb#65
+  # source://idlc//lib/idlc/interfaces.rb#79
   sig { abstract.returns(::String) }
   def name; end
+
+  # source://idlc//lib/idlc/interfaces.rb#116
+  sig do
+    abstract
+      .returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean, T::Hash[::String, T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean)]))
+  end
+  def reset_value; end
+
+  # source://idlc//lib/idlc/interfaces.rb#108
+  sig { abstract.params(base: T.nilable(::Integer)).returns(T.nilable(::String)) }
+  def type(base); end
+
+  # source://idlc//lib/idlc/interfaces.rb#105
+  sig { abstract.params(base: T.nilable(::Integer)).returns(::Integer) }
+  def width(base); end
 end
 
-# source://idlc//lib/idlc/ast.rb#2419
+# source://idlc//lib/idlc/idl_parser.rb#5878
+module Idl::CsrFieldAccessExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5879
+  def csr; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5883
+  def csr_field_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#2564
 class Idl::CsrFieldAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#2428
+  # source://idlc//lib/idlc/ast.rb#2573
   def initialize(input, interval, csr_field, write_value); end
 
-  # source://idlc//lib/idlc/ast.rb#2423
+  # source://idlc//lib/idlc/ast.rb#2568
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2425
+  # source://idlc//lib/idlc/ast.rb#2570
   def csr_field; end
 
-  # source://idlc//lib/idlc/ast.rb#2460
+  # source://idlc//lib/idlc/ast.rb#2605
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2465
+  # source://idlc//lib/idlc/ast.rb#2610
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2448
+  # source://idlc//lib/idlc/ast.rb#2593
   def field(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#111
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#112
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2468
+  # source://idlc//lib/idlc/ast.rb#2613
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2432
+  # source://idlc//lib/idlc/ast.rb#2577
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2452
+  # source://idlc//lib/idlc/ast.rb#2597
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2426
+  # source://idlc//lib/idlc/ast.rb#2571
   def write_value; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2413
+# source://idlc//lib/idlc/ast.rb#2558
 class Idl::CsrFieldAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2414
+  # source://idlc//lib/idlc/ast.rb#2559
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#7038
+# source://idlc//lib/idlc/idl_parser.rb#16453
+module Idl::CsrFieldName0; end
+
+# source://idlc//lib/idlc/ast.rb#7577
 class Idl::CsrFieldReadExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#7044
+  # source://idlc//lib/idlc/ast.rb#7591
+  sig do
+    params(
+      input: ::String,
+      interval: T::Range[::Integer],
+      csr: ::Idl::CsrReadExpressionAst,
+      field_name: ::String
+    ).void
+  end
   def initialize(input, interval, csr, field_name); end
 
-  # source://idlc//lib/idlc/ast.rb#7105
+  # source://idlc//lib/idlc/ast.rb#7651
+  sig { params(symtab: ::Idl::SymbolTable).returns(T.nilable(::Idl::Type)) }
   def calc_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7133
+  # source://idlc//lib/idlc/ast.rb#7695
+  sig { params(symtab: ::Idl::SymbolTable).void }
   def calc_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7042
+  # source://idlc//lib/idlc/ast.rb#7588
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7080
+  # source://idlc//lib/idlc/ast.rb#7620
+  sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::Csr) }
   def csr_def(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7084
+  # source://idlc//lib/idlc/ast.rb#7625
+  sig { returns(::String) }
   def csr_name; end
 
-  # source://idlc//lib/idlc/ast.rb#7086
+  # source://idlc//lib/idlc/ast.rb#7600
+  sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::Csr) }
+  def csr_obj(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#7628
+  sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::CsrField) }
   def field_def(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7090
+  # source://idlc//lib/idlc/ast.rb#7633
+  sig { params(symtab: ::Idl::SymbolTable).returns(::String) }
   def field_name(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7051
-  def freeze_tree(symtab); end
-
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#299
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#317
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#7096
+  # source://idlc//lib/idlc/ast.rb#7639
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#7101
+  # source://idlc//lib/idlc/ast.rb#7645
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7072
+  # source://idlc//lib/idlc/ast.rb#7612
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7125
+  # source://idlc//lib/idlc/ast.rb#7683
+  sig do
+    override
+      .params(
+        symtab: ::Idl::SymbolTable
+      ).returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean, T::Hash[::String, T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean)]))
+  end
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#7154
+# source://idlc//lib/idlc/ast.rb#7580
+class Idl::CsrFieldReadExpressionAst::MemoizedState < ::T::Struct
+  prop :csr, T.nilable(::Idl::Csr)
+  prop :type, T.nilable(::Idl::Type)
+  prop :value_calculated, T::Boolean
+  prop :value, T.nilable(::Integer)
+
+  class << self
+    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+    def inherited(s); end
+  end
+end
+
+# source://idlc//lib/idlc/ast.rb#7716
 class Idl::CsrFieldReadExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#7155
+  # source://idlc//lib/idlc/ast.rb#7717
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#7283
+# source://idlc//lib/idlc/ast.rb#7845
 class Idl::CsrFunctionCallAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#7301
+  # source://idlc//lib/idlc/ast.rb#7863
   def initialize(input, interval, function_name, csr, args); end
 
-  # source://idlc//lib/idlc/ast.rb#7299
+  # source://idlc//lib/idlc/ast.rb#7861
   def args; end
 
-  # source://idlc//lib/idlc/ast.rb#7287
+  # source://idlc//lib/idlc/ast.rb#7849
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7298
+  # source://idlc//lib/idlc/ast.rb#7860
   def csr; end
 
-  # source://idlc//lib/idlc/ast.rb#7344
+  # source://idlc//lib/idlc/ast.rb#7901
   def csr_def(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7338
+  # source://idlc//lib/idlc/ast.rb#7895
   def csr_known?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7342
+  # source://idlc//lib/idlc/ast.rb#7899
   def csr_name; end
 
-  # source://idlc//lib/idlc/ast.rb#7296
+  # source://idlc//lib/idlc/ast.rb#7858
   def function_name; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#75
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#76
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#7377
+  # source://idlc//lib/idlc/ast.rb#7925
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#7319
+  # source://idlc//lib/idlc/ast.rb#7878
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7306
+  # source://idlc//lib/idlc/ast.rb#7868
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7349
+  # source://idlc//lib/idlc/ast.rb#7906
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#7268
+# source://idlc//lib/idlc/ast.rb#7830
 class Idl::CsrFunctionCallSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#7269
+  # source://idlc//lib/idlc/ast.rb#7831
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#7160
+# source://idlc//lib/idlc/idl_parser.rb#16398
+module Idl::CsrName0; end
+
+# source://idlc//lib/idlc/ast.rb#7722
 class Idl::CsrReadExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#7168
+  # source://idlc//lib/idlc/ast.rb#7730
   def initialize(input, interval, csr_name); end
 
-  # source://idlc//lib/idlc/ast.rb#7164
+  # source://idlc//lib/idlc/ast.rb#7726
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7194
+  # source://idlc//lib/idlc/ast.rb#7756
   def csr_def(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7198
+  # source://idlc//lib/idlc/ast.rb#7760
   def csr_known?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7166
+  # source://idlc//lib/idlc/ast.rb#7728
   def csr_name; end
 
-  # source://idlc//lib/idlc/ast.rb#7174
+  # source://idlc//lib/idlc/ast.rb#7736
   def freeze_tree(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#305
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#325
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#7213
+  # source://idlc//lib/idlc/ast.rb#7775
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#7187
+  # source://idlc//lib/idlc/ast.rb#7749
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7190
+  # source://idlc//lib/idlc/ast.rb#7752
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7203
+  # source://idlc//lib/idlc/ast.rb#7765
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#7148
+# source://idlc//lib/idlc/ast.rb#7710
 class Idl::CsrReadExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#7149
+  # source://idlc//lib/idlc/ast.rb#7711
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#7222
+# source://idlc//lib/idlc/idl_parser.rb#5955
+module Idl::CsrRegisterAccessExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5956
+  def csr_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#7784
 class Idl::CsrSoftwareWriteAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#7231
+  # source://idlc//lib/idlc/ast.rb#7793
   def initialize(input, interval, csr, expression); end
 
-  # source://idlc//lib/idlc/ast.rb#7226
+  # source://idlc//lib/idlc/ast.rb#7788
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7228
+  # source://idlc//lib/idlc/ast.rb#7790
   def csr; end
 
-  # source://idlc//lib/idlc/ast.rb#7245
+  # source://idlc//lib/idlc/ast.rb#7807
   def csr_known?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7249
+  # source://idlc//lib/idlc/ast.rb#7811
   def csr_name; end
 
-  # source://idlc//lib/idlc/ast.rb#7257
+  # source://idlc//lib/idlc/ast.rb#7819
   def execute(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7260
+  # source://idlc//lib/idlc/ast.rb#7822
   def execute_unknown(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7229
+  # source://idlc//lib/idlc/ast.rb#7791
   def expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#81
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#82
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#7264
+  # source://idlc//lib/idlc/ast.rb#7826
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#7235
+  # source://idlc//lib/idlc/ast.rb#7797
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7252
+  # source://idlc//lib/idlc/ast.rb#7814
   def value(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#7216
+# source://idlc//lib/idlc/ast.rb#7778
 class Idl::CsrSoftwareWriteSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#7217
+  # source://idlc//lib/idlc/ast.rb#7779
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#650
+# source://idlc//lib/idlc/type.rb#729
 class Idl::CsrType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#657
+  # source://idlc//lib/idlc/type.rb#736
   sig { params(csr: ::Idl::Csr, qualifiers: T::Array[::Symbol]).void }
   def initialize(csr, qualifiers: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#654
+  # source://idlc//lib/idlc/type.rb#733
   sig { returns(::Idl::Csr) }
   def csr; end
 
-  # source://idlc//lib/idlc/type.rb#662
+  # source://idlc//lib/idlc/type.rb#741
   sig { returns(T::Array[::Idl::CsrField]) }
   def fields; end
 end
 
-# source://idlc//lib/idlc/ast.rb#7386
+# source://idlc//lib/idlc/ast.rb#7934
 class Idl::CsrWriteAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#7394
+  # source://idlc//lib/idlc/ast.rb#7942
   def initialize(input, interval, idx); end
 
-  # source://idlc//lib/idlc/ast.rb#7390
+  # source://idlc//lib/idlc/ast.rb#7938
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7410
+  # source://idlc//lib/idlc/ast.rb#7958
   def csr_def(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7429
+  # source://idlc//lib/idlc/ast.rb#7977
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7434
+  # source://idlc//lib/idlc/ast.rb#7982
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7392
+  # source://idlc//lib/idlc/ast.rb#7940
   def idx; end
 
-  # source://idlc//lib/idlc/ast.rb#7424
+  # source://idlc//lib/idlc/ast.rb#7972
   def name(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7438
+  # source://idlc//lib/idlc/ast.rb#7986
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#7420
+  # source://idlc//lib/idlc/ast.rb#7968
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7399
+  # source://idlc//lib/idlc/ast.rb#7947
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#7382
+# source://idlc//lib/idlc/ast.rb#7930
 class Idl::CsrWriteSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#7383
+  # source://idlc//lib/idlc/ast.rb#7931
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#700
+# source://idlc//lib/idlc/ast.rb#714
 module Idl::Declaration
   interface!
 
-  # source://idlc//lib/idlc/ast.rb#710
+  # source://idlc//lib/idlc/ast.rb#724
   sig { abstract.params(symtab: ::Idl::SymbolTable).void }
   def add_symbol(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4832
+# source://idlc//lib/idlc/idl_parser.rb#12189
+module Idl::Declaration0
+  # source://idlc//lib/idlc/idl_parser.rb#12190
+  def id; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12195
+module Idl::Declaration1
+  # source://idlc//lib/idlc/idl_parser.rb#12200
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12204
+  def rest; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12196
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#5234
 class Idl::DontCareLvalueAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4838
+  # source://idlc//lib/idlc/ast.rb#5240
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#4836
+  # source://idlc//lib/idlc/ast.rb#5238
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4854
+  # source://idlc//lib/idlc/ast.rb#5256
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4846
+  # source://idlc//lib/idlc/ast.rb#5248
   def type(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4841
+  # source://idlc//lib/idlc/ast.rb#5243
   def type_check(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4851
+  # source://idlc//lib/idlc/ast.rb#5253
   def value(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4828
+# source://idlc//lib/idlc/ast.rb#5230
 class Idl::DontCareLvalueSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4829
+  # source://idlc//lib/idlc/ast.rb#5231
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4786
+# source://idlc//lib/idlc/ast.rb#5188
 class Idl::DontCareReturnAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4792
+  # source://idlc//lib/idlc/ast.rb#5194
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#4790
+  # source://idlc//lib/idlc/ast.rb#5192
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#60
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#61
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4820
+  # source://idlc//lib/idlc/ast.rb#5222
   def set_expected_type(t); end
 
-  # source://idlc//lib/idlc/ast.rb#4825
+  # source://idlc//lib/idlc/ast.rb#5227
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4802
+  # source://idlc//lib/idlc/ast.rb#5204
   def type(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4797
+  # source://idlc//lib/idlc/ast.rb#5199
   def type_check(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4807
+  # source://idlc//lib/idlc/ast.rb#5209
   def value(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4776
+# source://idlc//lib/idlc/ast.rb#5178
 class Idl::DontCareReturnSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4777
+  # source://idlc//lib/idlc/ast.rb#5179
   def to_ast; end
 end
 
 # source://idlc//lib/idlc/ast.rb#34
 Idl::EMPTY_ARRAY = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/ast.rb#6674
+# source://idlc//lib/idlc/ast.rb#7213
 class Idl::ElseIfAst < ::Idl::AstNode
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#6688
+  # source://idlc//lib/idlc/ast.rb#7227
   def initialize(input, interval, body_interval, cond, body_stmts); end
 
-  # source://idlc//lib/idlc/ast.rb#6686
+  # source://idlc//lib/idlc/ast.rb#7225
   sig { returns(::Idl::IfBodyAst) }
   def body; end
 
-  # source://idlc//lib/idlc/ast.rb#6683
+  # source://idlc//lib/idlc/ast.rb#7222
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def cond; end
 
-  # source://idlc//lib/idlc/ast.rb#6678
+  # source://idlc//lib/idlc/ast.rb#7217
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#341
+  # source://idlc//lib/idlc/passes/prune.rb#343
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6709
+  # source://idlc//lib/idlc/ast.rb#7248
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6714
+  # source://idlc//lib/idlc/ast.rb#7253
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6725
+  # source://idlc//lib/idlc/ast.rb#7264
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6737
+  # source://idlc//lib/idlc/ast.rb#7276
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#6693
+  # source://idlc//lib/idlc/ast.rb#7232
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1226
+# source://idlc//lib/idlc/ast.rb#1351
 class Idl::EnumArrayCastAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#1359
+  def initialize(input, interval, enum_class_name); end
+
+  # source://idlc//lib/idlc/ast.rb#1357
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1354
+  def enum_class; end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#132
+  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/ast.rb#1381
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#1367
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1363
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1376
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#1342
+class Idl::EnumArrayCastSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#1343
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1297
+class Idl::EnumCastAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#1309
+  def initialize(input, interval, user_type_name, expression); end
+
+  # source://idlc//lib/idlc/ast.rb#1301
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1304
+  def enum_name; end
+
+  # source://idlc//lib/idlc/ast.rb#1307
+  def expression; end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#107
+  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/ast.rb#1339
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#1331
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1313
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1336
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#1291
+class Idl::EnumCastSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#1292
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#433
+module Idl::EnumDefinition0
+  # source://idlc//lib/idlc/idl_parser.rb#434
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#440
+module Idl::EnumDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#441
+  def int; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#447
+module Idl::EnumDefinition2
+  # source://idlc//lib/idlc/idl_parser.rb#452
+  def i; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#448
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#457
+module Idl::EnumDefinition3
+  # source://idlc//lib/idlc/idl_parser.rb#462
+  def e; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#458
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/type.rb#12
+class Idl::EnumDefinitionAst < ::Idl::AstNode
+  include ::Idl::Declaration
+
+  # source://idlc//lib/idlc/ast.rb#1423
+  def initialize(input, interval, user_type, element_names, element_values); end
+
+  # source://idlc//lib/idlc/ast.rb#1472
+  def add_symbol(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1421
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1447
+  sig { returns(T::Array[::String]) }
+  def element_names; end
+
+  # source://idlc//lib/idlc/ast.rb#1457
+  sig { returns(T::Array[::Integer]) }
+  def element_values; end
+
+  # source://idlc//lib/idlc/ast.rb#1488
+  def name; end
+
+  # source://idlc//lib/idlc/ast.rb#1492
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#1480
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1460
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1485
+  def value(_symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#1384
+class Idl::EnumDefinitionSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#1385
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1265
+class Idl::EnumElementSizeAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#1271
+  def initialize(input, interval, enum_class_name); end
+
+  # source://idlc//lib/idlc/ast.rb#1269
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1266
+  def enum_class; end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#127
+  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/ast.rb#1288
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#1279
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1275
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#1283
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#1256
+class Idl::EnumElementSizeSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#1257
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#770
+module Idl::EnumRef0
+  # source://idlc//lib/idlc/idl_parser.rb#771
+  def enum_class; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#775
+  def member; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4740
+class Idl::EnumRefAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#4749
+  def initialize(input, interval, class_name, member_name); end
+
+  # source://idlc//lib/idlc/ast.rb#4746
+  def class_name; end
+
+  # source://idlc//lib/idlc/ast.rb#4744
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4758
+  def freeze_tree(global_symtab); end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#117
+  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#148
+  def gen_option_adoc; end
+
+  # source://idlc//lib/idlc/ast.rb#4747
+  def member_name; end
+
+  # source://idlc//lib/idlc/ast.rb#4805
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#4781
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4771
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4789
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#4729
+class Idl::EnumRefSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#4730
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1226
+class Idl::EnumSizeAst < ::Idl::AstNode
   # source://idlc//lib/idlc/ast.rb#1232
   def initialize(input, interval, enum_class_name); end
 
@@ -1612,10 +2647,10 @@ class Idl::EnumArrayCastAst < ::Idl::AstNode
   # source://idlc//lib/idlc/ast.rb#1227
   def enum_class; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#131
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#122
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1254
+  # source://idlc//lib/idlc/ast.rb#1253
   sig { override.returns(::String) }
   def to_idl; end
 
@@ -1625,220 +2660,25 @@ class Idl::EnumArrayCastAst < ::Idl::AstNode
   # source://idlc//lib/idlc/ast.rb#1236
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1249
+  # source://idlc//lib/idlc/ast.rb#1248
   def value(symtab); end
 end
 
 # source://idlc//lib/idlc/ast.rb#1217
-class Idl::EnumArrayCastSyntaxNode < ::Idl::SyntaxNode
+class Idl::EnumSizeSyntaxNode < ::Idl::SyntaxNode
   # source://idlc//lib/idlc/ast.rb#1218
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1172
-class Idl::EnumCastAst < ::Idl::AstNode
-  include ::Idl::Rvalue
-
-  # source://idlc//lib/idlc/ast.rb#1184
-  def initialize(input, interval, user_type_name, expression); end
-
-  # source://idlc//lib/idlc/ast.rb#1176
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1179
-  def enum_name; end
-
-  # source://idlc//lib/idlc/ast.rb#1182
-  def expression; end
-
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#106
-  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
-
-  # source://idlc//lib/idlc/ast.rb#1214
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#1206
-  def type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1188
-  def type_check(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1211
-  def value(symtab); end
+# source://idlc//lib/idlc/idl_parser.rb#6692
+module Idl::EnumToA0
+  # source://idlc//lib/idlc/idl_parser.rb#6693
+  def user_type_name; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1166
-class Idl::EnumCastSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1167
-  def to_ast; end
-end
-
-# source://idlc//lib/idlc/type.rb#12
-class Idl::EnumDefinitionAst < ::Idl::AstNode
-  include ::Idl::Declaration
-
-  # source://idlc//lib/idlc/ast.rb#1296
-  def initialize(input, interval, user_type, element_names, element_values); end
-
-  # source://idlc//lib/idlc/ast.rb#1345
-  def add_symbol(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1294
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1320
-  sig { returns(T::Array[::String]) }
-  def element_names; end
-
-  # source://idlc//lib/idlc/ast.rb#1330
-  sig { returns(T::Array[::Integer]) }
-  def element_values; end
-
-  # source://idlc//lib/idlc/ast.rb#1361
-  def name; end
-
-  # source://idlc//lib/idlc/ast.rb#1365
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#1353
-  def type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1333
-  def type_check(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1358
-  def value(_symtab); end
-end
-
-# source://idlc//lib/idlc/ast.rb#1257
-class Idl::EnumDefinitionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1258
-  def to_ast; end
-end
-
-# source://idlc//lib/idlc/ast.rb#1140
-class Idl::EnumElementSizeAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#1146
-  def initialize(input, interval, enum_class_name); end
-
-  # source://idlc//lib/idlc/ast.rb#1144
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1141
-  def enum_class; end
-
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#126
-  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
-
-  # source://idlc//lib/idlc/ast.rb#1163
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#1154
-  def type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1150
-  def type_check(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1158
-  def value(symtab); end
-end
-
-# source://idlc//lib/idlc/ast.rb#1131
-class Idl::EnumElementSizeSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1132
-  def to_ast; end
-end
-
-# source://idlc//lib/idlc/ast.rb#4347
-class Idl::EnumRefAst < ::Idl::AstNode
-  include ::Idl::Rvalue
-
-  # source://idlc//lib/idlc/ast.rb#4356
-  def initialize(input, interval, class_name, member_name); end
-
-  # source://idlc//lib/idlc/ast.rb#4353
-  def class_name; end
-
-  # source://idlc//lib/idlc/ast.rb#4351
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#4365
-  def freeze_tree(global_symtab); end
-
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#116
-  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
-
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#139
-  def gen_option_adoc; end
-
-  # source://idlc//lib/idlc/ast.rb#4354
-  def member_name; end
-
-  # source://idlc//lib/idlc/ast.rb#4412
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#4388
-  def type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#4378
-  def type_check(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#4396
-  def value(symtab); end
-end
-
-# source://idlc//lib/idlc/ast.rb#4336
-class Idl::EnumRefSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4337
-  def to_ast; end
-end
-
-# source://idlc//lib/idlc/ast.rb#1101
-class Idl::EnumSizeAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#1107
-  def initialize(input, interval, enum_class_name); end
-
-  # source://idlc//lib/idlc/ast.rb#1105
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1102
-  def enum_class; end
-
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#121
-  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
-
-  # source://idlc//lib/idlc/ast.rb#1128
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#1115
-  def type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1111
-  def type_check(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#1123
-  def value(symtab); end
-end
-
-# source://idlc//lib/idlc/ast.rb#1092
-class Idl::EnumSizeSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1093
-  def to_ast; end
-end
-
-# source://idlc//lib/idlc/type.rb#547
+# source://idlc//lib/idlc/type.rb#626
 class Idl::EnumerationType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#577
+  # source://idlc//lib/idlc/type.rb#656
   sig do
     params(
       type_name: ::String,
@@ -1849,127 +2689,238 @@ class Idl::EnumerationType < ::Idl::Type
   end
   def initialize(type_name, element_names, element_values, builtin: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#592
+  # source://idlc//lib/idlc/type.rb#671
   sig { returns(T::Boolean) }
   def builtin?; end
 
-  # source://idlc//lib/idlc/type.rb#595
+  # source://idlc//lib/idlc/type.rb#674
   sig { returns(::Idl::EnumerationType) }
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#608
+  # source://idlc//lib/idlc/type.rb#687
   sig { params(element_value: ::Integer).returns(T.nilable(::String)) }
   def element_name(element_value); end
 
-  # source://idlc//lib/idlc/type.rb#556
+  # source://idlc//lib/idlc/type.rb#635
   sig { returns(T::Array[::String]) }
   def element_names; end
 
-  # source://idlc//lib/idlc/type.rb#560
+  # source://idlc//lib/idlc/type.rb#639
   sig { returns(T::Array[::Integer]) }
   def element_values; end
 
-  # source://idlc//lib/idlc/type.rb#564
+  # source://idlc//lib/idlc/type.rb#643
   sig { returns(::Idl::Type) }
   def ref_type; end
 
-  # source://idlc//lib/idlc/type.rb#600
+  # source://idlc//lib/idlc/type.rb#679
   sig { params(element_name: ::String).returns(T.nilable(::Integer)) }
   def value(element_name); end
 
-  # source://idlc//lib/idlc/type.rb#552
+  # source://idlc//lib/idlc/type.rb#631
   sig { returns(::Integer) }
   def width; end
 end
 
-# source://idlc//lib/idlc/ast.rb#473
+# source://idlc//lib/idlc/ast.rb#485
 module Idl::Executable
   interface!
 
-  # source://idlc//lib/idlc/ast.rb#495
+  # source://idlc//lib/idlc/ast.rb#507
   sig { abstract.params(symtab: ::Idl::SymbolTable).void }
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#499
+  # source://idlc//lib/idlc/ast.rb#511
   sig { abstract.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5940
-class Idl::FetchAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#5946
-  def initialize(input, interval, body); end
+# source://idlc//lib/idlc/ast.rb#514
+Idl::ExecutableAst = T.type_alias { T.all(::Idl::AstNode, ::Idl::Executable) }
 
-  # source://idlc//lib/idlc/ast.rb#5944
+# source://idlc//lib/idlc/idl_parser.rb#13702
+module Idl::ExecuteIfBlock0
+  # source://idlc//lib/idlc/idl_parser.rb#13703
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13709
+module Idl::ExecuteIfBlock1
+  # source://idlc//lib/idlc/idl_parser.rb#13710
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13716
+module Idl::ExecuteIfBlock2
+  # source://idlc//lib/idlc/idl_parser.rb#13721
   def body; end
 
-  # source://idlc//lib/idlc/ast.rb#5942
-  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
-  def const_eval?(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#5954
-  def return_type(symtab); end
-
-  # source://idlc//lib/idlc/ast.rb#5959
-  sig { override.returns(::String) }
-  def to_idl; end
-
-  # source://idlc//lib/idlc/ast.rb#5950
-  def type_check(symtab); end
+  # source://idlc//lib/idlc/idl_parser.rb#13717
+  def expression; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5934
-class Idl::FetchSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5935
-  def to_ast; end
+# source://idlc//lib/idlc/idl_parser.rb#13727
+module Idl::ExecuteIfBlock3
+  # source://idlc//lib/idlc/idl_parser.rb#13728
+  def e; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4270
-class Idl::FieldAccessExpressionAst < ::Idl::AstNode
+# source://idlc//lib/idlc/idl_parser.rb#13734
+module Idl::ExecuteIfBlock4
+  # source://idlc//lib/idlc/idl_parser.rb#13735
+  def body; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13741
+module Idl::ExecuteIfBlock5
+  # source://idlc//lib/idlc/idl_parser.rb#13750
+  def elseifs; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13754
+  def final_else; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13746
+  def if_body; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13742
+  def if_cond; end
+end
+
+# source://idlc//lib/idlc/ast.rb#787
+class Idl::FalseExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4279
-  def initialize(input, interval, bitfield, field_name); end
+  # source://idlc//lib/idlc/ast.rb#791
+  sig { params(input: ::String, interval: T::Range[::Integer]).void }
+  def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#4274
+  # source://idlc//lib/idlc/ast.rb#796
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#86
-  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#153
+  def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4285
-  def kind(symtab); end
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#93
+  def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#4277
-  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
-  def obj; end
-
-  # source://idlc//lib/idlc/ast.rb#4333
+  # source://idlc//lib/idlc/ast.rb#808
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4290
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#71
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#802
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4302
+  # source://idlc//lib/idlc/ast.rb#799
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4320
+  # source://idlc//lib/idlc/ast.rb#805
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::FalseClass) }
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4260
-class Idl::FieldAccessExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4261
+# source://idlc//lib/idlc/ast.rb#783
+class Idl::FalseExpressionSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#784
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2307
+# source://idlc//lib/idlc/idl_parser.rb#10826
+module Idl::Fetch0
+  # source://idlc//lib/idlc/idl_parser.rb#10827
+  def function_body; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6432
+class Idl::FetchAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#6438
+  def initialize(input, interval, body); end
+
+  # source://idlc//lib/idlc/ast.rb#6436
+  def body; end
+
+  # source://idlc//lib/idlc/ast.rb#6434
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#6446
+  def return_type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#6451
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#6442
+  def type_check(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#6426
+class Idl::FetchSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#6427
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6096
+module Idl::FieldAccessExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#6097
+  def field_access_eligible_expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6101
+  def field_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4663
+class Idl::FieldAccessExpressionAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#4672
+  def initialize(input, interval, bitfield, field_name); end
+
+  # source://idlc//lib/idlc/ast.rb#4667
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#87
+  def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/ast.rb#4678
+  def kind(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4670
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
+  def obj; end
+
+  # source://idlc//lib/idlc/ast.rb#4726
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#4683
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4695
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4713
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#4653
+class Idl::FieldAccessExpressionSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#4654
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#2452
 class Idl::FieldAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#2335
+  # source://idlc//lib/idlc/ast.rb#2480
   sig do
     params(
       input: ::String,
@@ -1981,361 +2932,568 @@ class Idl::FieldAssignmentAst < ::Idl::AstNode
   end
   def initialize(input, interval, id, field_name, rhs); end
 
-  # source://idlc//lib/idlc/ast.rb#2320
+  # source://idlc//lib/idlc/ast.rb#2465
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2380
+  # source://idlc//lib/idlc/ast.rb#2525
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2403
+  # source://idlc//lib/idlc/ast.rb#2548
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2317
+  # source://idlc//lib/idlc/ast.rb#2462
   sig { returns(::String) }
   def field_name; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#91
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#92
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2311
+  # source://idlc//lib/idlc/ast.rb#2456
   sig { returns(::Idl::IdAst) }
   def id; end
 
-  # source://idlc//lib/idlc/ast.rb#2314
+  # source://idlc//lib/idlc/ast.rb#2459
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2410
+  # source://idlc//lib/idlc/ast.rb#2555
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2341
+  # source://idlc//lib/idlc/ast.rb#2486
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2355
+  # source://idlc//lib/idlc/ast.rb#2500
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#2295
+# source://idlc//lib/idlc/ast.rb#2440
 class Idl::FieldAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2296
+  # source://idlc//lib/idlc/ast.rb#2441
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#6399
+# source://idlc//lib/idlc/idl_parser.rb#15831
+module Idl::FieldName0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#14342
+module Idl::ForLoop0
+  # source://idlc//lib/idlc/idl_parser.rb#14343
+  def s; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#14349
+module Idl::ForLoop1
+  # source://idlc//lib/idlc/idl_parser.rb#14358
+  def action; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#14354
+  def condition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#14350
+  def for_loop_iteration_variable_declaration; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#14362
+  def stmts; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6907
 class Idl::ForLoopAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#6416
+  # source://idlc//lib/idlc/ast.rb#6932
   def initialize(input, interval, init, condition, update, stmts); end
 
-  # source://idlc//lib/idlc/ast.rb#6412
+  # source://idlc//lib/idlc/ast.rb#6923
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def condition; end
 
-  # source://idlc//lib/idlc/ast.rb#6404
+  # source://idlc//lib/idlc/ast.rb#6912
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6433
+  # source://idlc//lib/idlc/ast.rb#7050
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6516
+  # source://idlc//lib/idlc/ast.rb#7053
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#191
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#202
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#6411
+  # source://idlc//lib/idlc/ast.rb#6920
+  sig { returns(::Idl::VariableDeclarationWithInitializationAst) }
   def init; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#116
+  # source://idlc//lib/idlc/passes/prune.rb#118
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#197
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#167
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#174
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#6464
+  # source://idlc//lib/idlc/ast.rb#6999
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6433
+  # source://idlc//lib/idlc/ast.rb#6966
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6470
+  # source://idlc//lib/idlc/ast.rb#7005
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6414
+  # source://idlc//lib/idlc/ast.rb#6949
+  sig { params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def satisfied?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#6930
+  sig do
+    returns(T::Array[T.any(::Idl::ForLoopAst, ::Idl::IfAst, ::Idl::ImplicationStatementAst, ::Idl::ReturnStatementAst, ::Idl::StatementAst)])
+  end
   def stmts; end
 
-  # source://idlc//lib/idlc/ast.rb#6536
+  # source://idlc//lib/idlc/ast.rb#7075
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#6421
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#88
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#6937
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6413
+  # source://idlc//lib/idlc/ast.rb#6926
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Executable)) }
   def update; end
 end
 
-# source://idlc//lib/idlc/ast.rb#6387
-class Idl::ForLoopSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#6388
+# source://idlc//lib/idlc/ast.rb#6928
+Idl::ForLoopAst::StmtType = T.type_alias { T.any(::Idl::ForLoopAst, ::Idl::IfAst, ::Idl::ImplicationStatementAst, ::Idl::ReturnStatementAst, ::Idl::StatementAst) }
+
+# source://idlc//lib/idlc/idl_parser.rb#12060
+module Idl::ForLoopIterationVariableDeclaration0
+  # source://idlc//lib/idlc/idl_parser.rb#12069
+  def ary_size; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12065
+  def id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12073
+  def rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12061
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#2941
+class Idl::ForLoopIterationVariableDeclarationSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#2942
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5816
+# source://idlc//lib/idlc/ast.rb#6895
+class Idl::ForLoopSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#6896
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9416
+module Idl::FunctionArgList0
+  # source://idlc//lib/idlc/idl_parser.rb#9417
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9422
+module Idl::FunctionArgList1
+  # source://idlc//lib/idlc/idl_parser.rb#9423
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#9427
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#16095
+module Idl::FunctionBody0
+  # source://idlc//lib/idlc/idl_parser.rb#16096
+  def choice; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#16102
+module Idl::FunctionBody1
+  # source://idlc//lib/idlc/idl_parser.rb#16103
+  def func_stmt_list; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6307
 class Idl::FunctionBodyAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#5827
+  # source://idlc//lib/idlc/ast.rb#6318
   def initialize(input, interval, stmts); end
 
-  # source://idlc//lib/idlc/ast.rb#5821
+  # source://idlc//lib/idlc/ast.rb#6312
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5874
+  # source://idlc//lib/idlc/ast.rb#6381
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5892
+  # source://idlc//lib/idlc/ast.rb#6384
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#293
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#311
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#21
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#22
   def gen_option_adoc; end
 
   # source://idlc//lib/idlc/passes/find_return_values.rb#67
   def pass_find_return_values(symtab); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#159
+  # source://idlc//lib/idlc/passes/prune.rb#161
   def prune(symtab, args_already_applied: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5859
+  # source://idlc//lib/idlc/ast.rb#6350
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5874
+  # source://idlc//lib/idlc/ast.rb#6365
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5899
+  # source://idlc//lib/idlc/ast.rb#6391
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5831
+  # source://idlc//lib/idlc/ast.rb#6322
   def statements; end
 
-  # source://idlc//lib/idlc/ast.rb#5833
+  # source://idlc//lib/idlc/ast.rb#6324
   def stmts; end
 
-  # source://idlc//lib/idlc/ast.rb#5929
+  # source://idlc//lib/idlc/ast.rb#6421
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5836
+  # source://idlc//lib/idlc/ast.rb#6327
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5809
+# source://idlc//lib/idlc/ast.rb#6300
 class Idl::FunctionBodySyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5811
+  # source://idlc//lib/idlc/ast.rb#6302
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5531
+# source://idlc//lib/idlc/idl_parser.rb#8869
+module Idl::FunctionCall0
+  # source://idlc//lib/idlc/idl_parser.rb#8870
+  def csr; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8874
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8880
+module Idl::FunctionCall1
+  # source://idlc//lib/idlc/idl_parser.rb#8881
+  def csr; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8889
+  def function_arg_list; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8885
+  def function_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8895
+module Idl::FunctionCall2
+  # source://idlc//lib/idlc/idl_parser.rb#8896
+  def targs; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8902
+module Idl::FunctionCall3
+  # source://idlc//lib/idlc/idl_parser.rb#8911
+  def function_arg_list; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8903
+  def function_name; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8907
+  def t; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6021
 class Idl::FunctionCallExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#5546
+  # source://idlc//lib/idlc/ast.rb#6036
   def initialize(input, interval, function_name, targs, args); end
 
-  # source://idlc//lib/idlc/ast.rb#5588
+  # source://idlc//lib/idlc/ast.rb#6078
   def arg_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#5544
+  # source://idlc//lib/idlc/ast.rb#6034
   def args; end
 
-  # source://idlc//lib/idlc/ast.rb#5537
+  # source://idlc//lib/idlc/ast.rb#6027
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5667
+  # source://idlc//lib/idlc/ast.rb#6234
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5751
+  # source://idlc//lib/idlc/ast.rb#6242
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5592
+  # source://idlc//lib/idlc/ast.rb#6082
   def func_type(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#278
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#289
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#27
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#28
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#5745
+  # source://idlc//lib/idlc/ast.rb#6236
   def name; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#81
+  # source://idlc//lib/idlc/passes/prune.rb#82
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#25
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#20
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#21
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5543
+  # source://idlc//lib/idlc/ast.rb#6033
   def targs; end
 
-  # source://idlc//lib/idlc/ast.rb#5559
+  # source://idlc//lib/idlc/ast.rb#6049
   def template?; end
 
-  # source://idlc//lib/idlc/ast.rb#5564
+  # source://idlc//lib/idlc/ast.rb#6054
   def template_arg_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#5568
+  # source://idlc//lib/idlc/ast.rb#6058
   def template_values(symtab, unknown_ok: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5755
+  # source://idlc//lib/idlc/ast.rb#6246
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5658
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#163
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#6148
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5607
+  # source://idlc//lib/idlc/ast.rb#6097
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5667
+  # source://idlc//lib/idlc/ast.rb#6157
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5521
+# source://idlc//lib/idlc/ast.rb#6011
 class Idl::FunctionCallExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5522
+  # source://idlc//lib/idlc/ast.rb#6012
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5984
+# source://idlc//lib/idlc/idl_parser.rb#8768
+module Idl::FunctionCallTemplateArguments0
+  # source://idlc//lib/idlc/idl_parser.rb#8769
+  def arg; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8774
+module Idl::FunctionCallTemplateArguments1
+  # source://idlc//lib/idlc/idl_parser.rb#8775
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8779
+  def rest; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6480
 class Idl::FunctionDefAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#5998
+  # source://idlc//lib/idlc/ast.rb#6504
   def initialize(input, interval, name, targs, return_types, arguments, desc, type, body); end
 
-  # source://idlc//lib/idlc/ast.rb#6264
+  # source://idlc//lib/idlc/ast.rb#6485
+  def <=>(other); end
+
+  # source://idlc//lib/idlc/ast.rb#6772
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6226
+  # source://idlc//lib/idlc/ast.rb#6734
   def apply_template_and_arg_syms(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6049
+  # source://idlc//lib/idlc/ast.rb#6525
+  def argument_nodes; end
+
+  # source://idlc//lib/idlc/ast.rb#6555
   def arguments(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6080
+  # source://idlc//lib/idlc/ast.rb#6586
   def arguments_list_str; end
 
-  # source://idlc//lib/idlc/ast.rb#6316
+  # source://idlc//lib/idlc/ast.rb#6824
   def body; end
 
-  # source://idlc//lib/idlc/ast.rb#6322
+  # source://idlc//lib/idlc/ast.rb#6830
   def builtin?; end
 
-  # source://idlc//lib/idlc/ast.rb#6160
+  # source://idlc//lib/idlc/ast.rb#6666
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6034
+  # source://idlc//lib/idlc/ast.rb#6540
   def description; end
 
-  # source://idlc//lib/idlc/ast.rb#6330
+  # source://idlc//lib/idlc/ast.rb#6491
+  def eql?(other); end
+
+  # source://idlc//lib/idlc/ast.rb#6838
   def external?; end
 
-  # source://idlc//lib/idlc/ast.rb#6022
+  # source://idlc//lib/idlc/ast.rb#6528
   def freeze_tree(global_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6326
+  # source://idlc//lib/idlc/ast.rb#6834
   def generated?; end
 
-  # source://idlc//lib/idlc/ast.rb#6187
+  # source://idlc//lib/idlc/ast.rb#6695
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#6044
+  # source://idlc//lib/idlc/ast.rb#6550
   def num_args; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#139
+  # source://idlc//lib/idlc/passes/prune.rb#141
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6019
+  # source://idlc//lib/idlc/ast.rb#6525
   def reachable_functions_cache; end
 
-  # source://idlc//lib/idlc/ast.rb#6085
+  # source://idlc//lib/idlc/ast.rb#6591
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6148
+  # source://idlc//lib/idlc/ast.rb#6654
   def return_type_list_str; end
 
-  # source://idlc//lib/idlc/ast.rb#5987
+  # source://idlc//lib/idlc/ast.rb#6483
   def return_type_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#6278
+  # source://idlc//lib/idlc/ast.rb#6786
   def template_names; end
 
-  # source://idlc//lib/idlc/ast.rb#6284
+  # source://idlc//lib/idlc/ast.rb#6792
   def template_types(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6039
+  # source://idlc//lib/idlc/ast.rb#6545
   def templated?; end
 
-  # source://idlc//lib/idlc/ast.rb#6335
+  # source://idlc//lib/idlc/ast.rb#6843
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#6237
+  # source://idlc//lib/idlc/ast.rb#6745
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6306
+  # source://idlc//lib/idlc/ast.rb#6814
   def type_check_args(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6310
+  # source://idlc//lib/idlc/ast.rb#6818
   def type_check_body(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6210
+  # source://idlc//lib/idlc/ast.rb#6718
   def type_check_from_call(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6302
+  # source://idlc//lib/idlc/ast.rb#6810
   def type_check_return(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6297
+  # source://idlc//lib/idlc/ast.rb#6805
   def type_check_targs(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6192
+  # source://idlc//lib/idlc/ast.rb#6700
   def type_check_template_instance(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5968
+# source://idlc//lib/idlc/ast.rb#6460
 class Idl::FunctionDefSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5969
+  # source://idlc//lib/idlc/ast.rb#6461
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#669
+# source://idlc//lib/idlc/idl_parser.rb#13044
+module Idl::FunctionIfBlock0
+  # source://idlc//lib/idlc/idl_parser.rb#13045
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13051
+module Idl::FunctionIfBlock1
+  # source://idlc//lib/idlc/idl_parser.rb#13052
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13058
+module Idl::FunctionIfBlock2
+  # source://idlc//lib/idlc/idl_parser.rb#13063
+  def body; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13059
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13069
+module Idl::FunctionIfBlock3
+  # source://idlc//lib/idlc/idl_parser.rb#13070
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13076
+module Idl::FunctionIfBlock4
+  # source://idlc//lib/idlc/idl_parser.rb#13077
+  def body; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#13083
+module Idl::FunctionIfBlock5
+  # source://idlc//lib/idlc/idl_parser.rb#13092
+  def elseifs; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13096
+  def final_else; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13088
+  def if_body; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#13084
+  def if_cond; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#9334
+module Idl::FunctionName0; end
+
+# source://idlc//lib/idlc/type.rb#748
 class Idl::FunctionType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#672
+  # source://idlc//lib/idlc/type.rb#751
   def initialize(func_name, func_def_ast, symtab); end
 
-  # source://idlc//lib/idlc/type.rb#751
+  # source://idlc//lib/idlc/type.rb#830
   sig do
     params(
       symtab: ::Idl::SymbolTable,
@@ -2346,40 +3504,40 @@ class Idl::FunctionType < ::Idl::Type
   end
   def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#722
+  # source://idlc//lib/idlc/type.rb#801
   def apply_template_values(template_values, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#855
+  # source://idlc//lib/idlc/type.rb#934
   def argument_name(index, template_values = T.unsafe(nil), func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#840
+  # source://idlc//lib/idlc/type.rb#919
   def argument_type(index, template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#772
+  # source://idlc//lib/idlc/type.rb#851
   def argument_values(symtab, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#870
+  # source://idlc//lib/idlc/type.rb#949
   def body; end
 
-  # source://idlc//lib/idlc/type.rb#684
+  # source://idlc//lib/idlc/type.rb#763
   def builtin?; end
 
-  # source://idlc//lib/idlc/type.rb#680
+  # source://idlc//lib/idlc/type.rb#759
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#688
+  # source://idlc//lib/idlc/type.rb#767
   def external?; end
 
-  # source://idlc//lib/idlc/type.rb#670
+  # source://idlc//lib/idlc/type.rb#749
   def func_def_ast; end
 
-  # source://idlc//lib/idlc/type.rb#686
+  # source://idlc//lib/idlc/type.rb#765
   def generated?; end
 
-  # source://idlc//lib/idlc/type.rb#690
+  # source://idlc//lib/idlc/type.rb#769
   def num_args; end
 
-  # source://idlc//lib/idlc/type.rb#798
+  # source://idlc//lib/idlc/type.rb#877
   sig do
     params(
       template_values: T::Array[::Integer],
@@ -2389,881 +3547,1430 @@ class Idl::FunctionType < ::Idl::Type
   end
   def return_type(template_values, argument_nodes, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#827
+  # source://idlc//lib/idlc/type.rb#906
   def return_types(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#811
+  # source://idlc//lib/idlc/type.rb#890
   def return_value(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 
-  # source://idlc//lib/idlc/type.rb#716
+  # source://idlc//lib/idlc/type.rb#795
   def template_names; end
 
-  # source://idlc//lib/idlc/type.rb#718
+  # source://idlc//lib/idlc/type.rb#797
   def template_types(symtab); end
 
-  # source://idlc//lib/idlc/type.rb#720
+  # source://idlc//lib/idlc/type.rb#799
   def templated?; end
 
-  # source://idlc//lib/idlc/type.rb#692
+  # source://idlc//lib/idlc/type.rb#771
   def type_check_call(template_values, argument_nodes, call_site_symtab, func_call_ast); end
 end
 
-# source://idlc//lib/idlc/ast.rb#922
+# source://idlc//lib/idlc/ast.rb#992
 class Idl::GlobalAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#937
+  # source://idlc//lib/idlc/ast.rb#1007
   def initialize(input, interval, declaration); end
 
-  # source://idlc//lib/idlc/ast.rb#950
+  # source://idlc//lib/idlc/ast.rb#1020
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#926
+  # source://idlc//lib/idlc/ast.rb#996
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#933
+  # source://idlc//lib/idlc/ast.rb#1003
   def declaration; end
 
-  # source://idlc//lib/idlc/ast.rb#928
+  # source://idlc//lib/idlc/ast.rb#998
   def id; end
 
-  # source://idlc//lib/idlc/ast.rb#957
+  # source://idlc//lib/idlc/ast.rb#1027
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#946
+  # source://idlc//lib/idlc/ast.rb#1016
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#942
+  # source://idlc//lib/idlc/ast.rb#1012
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#916
+# source://idlc//lib/idlc/idl_parser.rb#269
+module Idl::GlobalDefinition0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#272
+module Idl::GlobalDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#273
+  def const; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#277
+  def single_declaration_with_initialization; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#283
+module Idl::GlobalDefinition2
+  # source://idlc//lib/idlc/idl_parser.rb#284
+  def declaration; end
+end
+
+# source://idlc//lib/idlc/ast.rb#986
 class Idl::GlobalSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#917
+  # source://idlc//lib/idlc/ast.rb#987
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#860
+# source://idlc//lib/idlc/ast.rb#930
 class Idl::GlobalWithInitializationAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#875
+  # source://idlc//lib/idlc/ast.rb#945
   def initialize(input, interval, var_decl_with_init); end
 
-  # source://idlc//lib/idlc/ast.rb#902
+  # source://idlc//lib/idlc/ast.rb#972
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#868
+  # source://idlc//lib/idlc/ast.rb#938
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#896
+  # source://idlc//lib/idlc/ast.rb#966
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#899
+  # source://idlc//lib/idlc/ast.rb#969
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#864
+  # source://idlc//lib/idlc/ast.rb#934
   def id; end
 
-  # source://idlc//lib/idlc/ast.rb#865
+  # source://idlc//lib/idlc/ast.rb#935
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#911
+  # source://idlc//lib/idlc/ast.rb#981
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#886
+  # source://idlc//lib/idlc/ast.rb#956
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#881
+  # source://idlc//lib/idlc/ast.rb#951
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#891
+  # source://idlc//lib/idlc/ast.rb#961
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#871
+  # source://idlc//lib/idlc/ast.rb#941
   def var_decl_with_init; end
 end
 
-# source://idlc//lib/idlc/ast.rb#845
+# source://idlc//lib/idlc/ast.rb#915
 class Idl::GlobalWithInitializationSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#846
+  # source://idlc//lib/idlc/ast.rb#916
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#748
+# source://idlc//lib/idlc/idl_parser.rb#16283
+module Idl::Id0; end
+
+# source://idlc//lib/idlc/ast.rb#818
 class Idl::IdAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#759
+  # source://idlc//lib/idlc/ast.rb#829
   sig { params(input: ::String, interval: T::Range[::Integer]).void }
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#789
+  # source://idlc//lib/idlc/ast.rb#859
   sig { returns(T::Boolean) }
   def const?; end
 
-  # source://idlc//lib/idlc/ast.rb#752
+  # source://idlc//lib/idlc/ast.rb#822
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#147
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#158
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#88
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#97
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#805
+  # source://idlc//lib/idlc/ast.rb#875
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(::Integer, ::Symbol)) }
   def max_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#823
+  # source://idlc//lib/idlc/ast.rb#893
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(::Integer, ::Symbol)) }
   def min_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#756
+  # source://idlc//lib/idlc/ast.rb#826
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#842
+  # source://idlc//lib/idlc/ast.rb#912
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#771
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#76
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#841
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#765
+  # source://idlc//lib/idlc/ast.rb#835
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#792
+  # source://idlc//lib/idlc/ast.rb#862
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#741
+# source://idlc//lib/idlc/ast.rb#811
 class Idl::IdSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#742
+  # source://idlc//lib/idlc/ast.rb#812
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#6776
+# source://idlc//lib/idlc/ast.rb#7315
 class Idl::IfAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#6800
+  # source://idlc//lib/idlc/ast.rb#7339
   def initialize(input, interval, if_cond, if_body, elseifs, final_else_body); end
 
-  # source://idlc//lib/idlc/ast.rb#6781
+  # source://idlc//lib/idlc/ast.rb#7320
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6795
+  # source://idlc//lib/idlc/ast.rb#7334
   sig { returns(T::Array[::Idl::ElseIfAst]) }
   def elseifs; end
 
-  # source://idlc//lib/idlc/ast.rb#6969
+  # source://idlc//lib/idlc/ast.rb#7508
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7015
+  # source://idlc//lib/idlc/ast.rb#7554
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6798
+  # source://idlc//lib/idlc/ast.rb#7337
   sig { returns(::Idl::IfBodyAst) }
   def final_else_body; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#311
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#331
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#33
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#34
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#6792
+  # source://idlc//lib/idlc/ast.rb#7331
   sig { returns(::Idl::IfBodyAst) }
   def if_body; end
 
-  # source://idlc//lib/idlc/ast.rb#6789
+  # source://idlc//lib/idlc/ast.rb#7328
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def if_cond; end
 
   # source://idlc//lib/idlc/passes/find_return_values.rb#35
   def pass_find_return_values(values, current_conditions, symtab); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#353
+  # source://idlc//lib/idlc/passes/prune.rb#355
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#101
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#77
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#84
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#6862
+  # source://idlc//lib/idlc/ast.rb#7401
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6871
+  # source://idlc//lib/idlc/ast.rb#7410
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6912
+  # source://idlc//lib/idlc/ast.rb#7451
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6849
+  # source://idlc//lib/idlc/ast.rb#7388
   def taken_body(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7022
+  # source://idlc//lib/idlc/ast.rb#7561
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#6811
+  # source://idlc//lib/idlc/ast.rb#7350
   def type_check(symtab); end
 
   private
 
-  # source://idlc//lib/idlc/ast.rb#6930
+  # source://idlc//lib/idlc/ast.rb#7469
   def execute_after_if(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#7006
+  # source://idlc//lib/idlc/ast.rb#7545
   def execute_unknown_after_if(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6880
+  # source://idlc//lib/idlc/ast.rb#7419
   def return_values_after_if(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#6546
+# source://idlc//lib/idlc/ast.rb#7085
 class Idl::IfBodyAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#6557
+  # source://idlc//lib/idlc/ast.rb#7096
   def initialize(input, interval, body_stmts); end
 
-  # source://idlc//lib/idlc/ast.rb#6551
+  # source://idlc//lib/idlc/ast.rb#7090
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6634
+  # source://idlc//lib/idlc/ast.rb#7173
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6660
+  # source://idlc//lib/idlc/ast.rb#7199
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#34
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#35
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#70
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#71
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#329
+  # source://idlc//lib/idlc/passes/prune.rb#331
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6579
+  # source://idlc//lib/idlc/ast.rb#7118
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6585
+  # source://idlc//lib/idlc/ast.rb#7124
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6606
+  # source://idlc//lib/idlc/ast.rb#7145
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#6555
+  # source://idlc//lib/idlc/ast.rb#7094
   def stmts; end
 
-  # source://idlc//lib/idlc/ast.rb#6668
+  # source://idlc//lib/idlc/ast.rb#7207
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#6566
+  # source://idlc//lib/idlc/ast.rb#7105
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#6742
+# source://idlc//lib/idlc/ast.rb#7281
 class Idl::IfSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#6743
+  # source://idlc//lib/idlc/ast.rb#7282
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#721
-class Idl::IncludeStatementAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#730
-  sig { params(input: ::String, interval: T::Range[T.untyped], filename: ::Idl::AstNode).void }
-  def initialize(input, interval, filename); end
+# source://idlc//lib/idlc/idl_parser.rb#8010
+module Idl::ImplicationExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#8011
+  def antecedent; end
 
-  # source://idlc//lib/idlc/ast.rb#723
+  # source://idlc//lib/idlc/idl_parser.rb#8015
+  def consequent; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8021
+module Idl::ImplicationExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#8022
+  def antecedent; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8026
+  def consequent; end
+end
+
+# source://idlc//lib/idlc/ast.rb#3171
+class Idl::ImplicationExpressionAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#3180
+  sig do
+    params(
+      input: ::String,
+      interval: T::Range[::Integer],
+      antecedent: T.all(::Idl::AstNode, ::Idl::Rvalue),
+      consequent: T.all(::Idl::AstNode, ::Idl::Rvalue)
+    ).void
+  end
+  def initialize(input, interval, antecedent, consequent); end
+
+  # source://idlc//lib/idlc/ast.rb#3191
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
+  def antecedent; end
+
+  # source://idlc//lib/idlc/ast.rb#3194
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
+  def consequent; end
+
+  # source://idlc//lib/idlc/ast.rb#3186
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#727
-  sig { returns(::String) }
-  def filename; end
+  # source://idlc//lib/idlc/ast.rb#3203
+  sig { params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def satisfied?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#735
+  # source://idlc//lib/idlc/ast.rb#3209
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#738
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#25
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3197
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#713
+# source://idlc//lib/idlc/ast.rb#3160
+class Idl::ImplicationExpressionSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#3162
+  sig { override.returns(::Idl::ImplicationExpressionAst) }
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8222
+module Idl::ImplicationForLoop0
+  # source://idlc//lib/idlc/idl_parser.rb#8223
+  def s; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8229
+module Idl::ImplicationForLoop1
+  # source://idlc//lib/idlc/idl_parser.rb#8238
+  def action; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8234
+  def condition; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8230
+  def for_loop_iteration_variable_declaration; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#8242
+  def stmts; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#8544
+module Idl::ImplicationStatement0
+  # source://idlc//lib/idlc/idl_parser.rb#8545
+  def implication_expression; end
+end
+
+# source://idlc//lib/idlc/ast.rb#3220
+class Idl::ImplicationStatementAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#3228
+  sig do
+    params(
+      input: ::String,
+      interval: T::Range[::Integer],
+      implication_expression: ::Idl::ImplicationExpressionAst
+    ).void
+  end
+  def initialize(input, interval, implication_expression); end
+
+  # source://idlc//lib/idlc/ast.rb#3233
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3236
+  sig { returns(::Idl::ImplicationExpressionAst) }
+  def expression; end
+
+  # source://idlc//lib/idlc/ast.rb#3244
+  sig { params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def satisfied?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3249
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#46
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#3239
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
+  def type_check(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#3213
+class Idl::ImplicationStatementSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#3215
+  sig { override.returns(::Idl::ImplicationStatementAst) }
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#189
+module Idl::IncludeStatement0
+  # source://idlc//lib/idlc/idl_parser.rb#190
+  def string; end
+end
+
+# source://idlc//lib/idlc/ast.rb#735
+class Idl::IncludeStatementAst < ::Idl::AstNode
+  # source://idlc//lib/idlc/ast.rb#744
+  sig { params(input: ::String, interval: T::Range[T.untyped], filename: ::Idl::AstNode).void }
+  def initialize(input, interval, filename); end
+
+  # source://idlc//lib/idlc/ast.rb#737
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#741
+  sig { returns(::String) }
+  def filename; end
+
+  # source://idlc//lib/idlc/ast.rb#749
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://idlc//lib/idlc/ast.rb#752
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
+  def type_check(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#727
 class Idl::IncludeStatementSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#715
+  # source://idlc//lib/idlc/ast.rb#729
   sig { override.returns(::Idl::IncludeStatementAst) }
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5803
+# source://idlc//lib/idlc/idl_parser.rb#16179
+module Idl::InstructionOperation0
+  # source://idlc//lib/idlc/idl_parser.rb#16180
+  def choice; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#16186
+module Idl::InstructionOperation1
+  # source://idlc//lib/idlc/idl_parser.rb#16187
+  def op_stmt_list; end
+end
+
+# source://idlc//lib/idlc/ast.rb#6294
 class Idl::InstructionOperationSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5804
+  # source://idlc//lib/idlc/ast.rb#6295
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5278
+# source://idlc//lib/idlc/idl_parser.rb#1478
+module Idl::Int0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1481
+module Idl::Int1; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1508
+module Idl::Int10; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1511
+module Idl::Int11; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1514
+module Idl::Int12; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1517
+module Idl::Int13; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1520
+module Idl::Int14; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1523
+module Idl::Int15; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1526
+module Idl::Int16; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1484
+module Idl::Int2; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1487
+module Idl::Int3; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1490
+module Idl::Int4; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1493
+module Idl::Int5; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1496
+module Idl::Int6; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1499
+module Idl::Int7; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1502
+module Idl::Int8; end
+
+# source://idlc//lib/idlc/idl_parser.rb#1505
+module Idl::Int9; end
+
+# source://idlc//lib/idlc/ast.rb#5765
 class Idl::IntLiteralAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#5284
+  # source://idlc//lib/idlc/ast.rb#5771
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#5282
+  # source://idlc//lib/idlc/ast.rb#5769
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5288
+  # source://idlc//lib/idlc/ast.rb#5775
   def freeze_tree(global_symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#141
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#142
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#94
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#103
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#5509
+  # source://idlc//lib/idlc/ast.rb#5999
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5512
+  # source://idlc//lib/idlc/ast.rb#6002
   sig { override.returns(::String) }
   def to_idl_verbose; end
 
-  # source://idlc//lib/idlc/ast.rb#5314
+  # source://idlc//lib/idlc/ast.rb#5801
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5298
+  # source://idlc//lib/idlc/ast.rb#5785
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5428
+  # source://idlc//lib/idlc/ast.rb#5918
   def unsigned_value; end
 
-  # source://idlc//lib/idlc/ast.rb#5381
+  # source://idlc//lib/idlc/ast.rb#5871
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5346
+  # source://idlc//lib/idlc/ast.rb#5836
   def width(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5263
+# source://idlc//lib/idlc/ast.rb#5669
 module Idl::IntLiteralSyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5264
+  # source://idlc//lib/idlc/ast.rb#5670
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#974
+# source://idlc//lib/idlc/idl_parser.rb#16
+module Idl::Isa0
+  # source://idlc//lib/idlc/idl_parser.rb#21
+  def definitions; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#17
+  def version_string; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1044
 class Idl::IsaAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#1001
+  # source://idlc//lib/idlc/ast.rb#1071
   def add_global_symbols(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#987
+  # source://idlc//lib/idlc/ast.rb#1057
   def bitfields; end
 
-  # source://idlc//lib/idlc/ast.rb#978
+  # source://idlc//lib/idlc/ast.rb#1048
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#975
+  # source://idlc//lib/idlc/ast.rb#1045
   def definitions; end
 
-  # source://idlc//lib/idlc/ast.rb#984
+  # source://idlc//lib/idlc/ast.rb#1054
   def enums; end
 
-  # source://idlc//lib/idlc/ast.rb#996
+  # source://idlc//lib/idlc/ast.rb#1066
   def fetch; end
 
-  # source://idlc//lib/idlc/ast.rb#993
+  # source://idlc//lib/idlc/ast.rb#1063
   def functions; end
 
-  # source://idlc//lib/idlc/ast.rb#981
+  # source://idlc//lib/idlc/ast.rb#1051
   def globals; end
 
-  # source://idlc//lib/idlc/ast.rb#1016
+  # source://idlc//lib/idlc/ast.rb#1086
   def replace_include!(include_ast, isa_ast); end
 
-  # source://idlc//lib/idlc/ast.rb#990
+  # source://idlc//lib/idlc/ast.rb#1060
   def structs; end
 
-  # source://idlc//lib/idlc/ast.rb#1035
+  # source://idlc//lib/idlc/ast.rb#1105
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1026
+  # source://idlc//lib/idlc/ast.rb#1096
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#961
+# source://idlc//lib/idlc/ast.rb#1031
 class Idl::IsaSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#962
+  # source://idlc//lib/idlc/ast.rb#1032
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2481
+# source://idlc//lib/idlc/idl_parser.rb#15040
+module Idl::Keyword0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15043
+module Idl::Keyword1; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15070
+module Idl::Keyword10; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15073
+module Idl::Keyword11; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15076
+module Idl::Keyword12; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15079
+module Idl::Keyword13; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15082
+module Idl::Keyword14; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15085
+module Idl::Keyword15; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15046
+module Idl::Keyword2; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15049
+module Idl::Keyword3; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15052
+module Idl::Keyword4; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15055
+module Idl::Keyword5; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15058
+module Idl::Keyword6; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15061
+module Idl::Keyword7; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15064
+module Idl::Keyword8; end
+
+# source://idlc//lib/idlc/idl_parser.rb#15067
+module Idl::Keyword9; end
+
+# source://idlc//lib/idlc/ast.rb#2626
 class Idl::MultiVariableAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#2503
+  # source://idlc//lib/idlc/ast.rb#2648
   def initialize(input, interval, variables, function_call); end
 
-  # source://idlc//lib/idlc/ast.rb#2485
+  # source://idlc//lib/idlc/ast.rb#2630
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2548
+  # source://idlc//lib/idlc/ast.rb#2693
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2572
+  # source://idlc//lib/idlc/ast.rb#2717
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2501
+  # source://idlc//lib/idlc/ast.rb#2646
   def function_call; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#70
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#71
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2512
+  # source://idlc//lib/idlc/ast.rb#2657
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2580
+  # source://idlc//lib/idlc/ast.rb#2725
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2517
+  # source://idlc//lib/idlc/ast.rb#2662
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2500
+  # source://idlc//lib/idlc/ast.rb#2645
   def variables; end
 
-  # source://idlc//lib/idlc/ast.rb#2508
+  # source://idlc//lib/idlc/ast.rb#2653
   def vars; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2471
+# source://idlc//lib/idlc/ast.rb#2616
 class Idl::MultiVariableAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2472
+  # source://idlc//lib/idlc/ast.rb#2617
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2594
+# source://idlc//lib/idlc/ast.rb#2739
 class Idl::MultiVariableDeclarationAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#2609
+  # source://idlc//lib/idlc/ast.rb#2754
   def initialize(input, interval, type_name, var_names); end
 
-  # source://idlc//lib/idlc/ast.rb#2642
+  # source://idlc//lib/idlc/ast.rb#2787
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2598
+  # source://idlc//lib/idlc/ast.rb#2743
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#169
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#180
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2616
+  # source://idlc//lib/idlc/ast.rb#2761
   def make_global; end
 
-  # source://idlc//lib/idlc/ast.rb#2650
+  # source://idlc//lib/idlc/ast.rb#2795
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2633
+  # source://idlc//lib/idlc/ast.rb#2778
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2626
+  # source://idlc//lib/idlc/ast.rb#2771
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2604
+  # source://idlc//lib/idlc/ast.rb#2749
   def type_name; end
 
-  # source://idlc//lib/idlc/ast.rb#2607
+  # source://idlc//lib/idlc/ast.rb#2752
   def var_name_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#2621
+  # source://idlc//lib/idlc/ast.rb#2766
   def var_names; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2583
+# source://idlc//lib/idlc/ast.rb#2728
 class Idl::MultiVariableDeclarationSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2584
+  # source://idlc//lib/idlc/ast.rb#2729
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4648
+# source://idlc//lib/idlc/ast.rb#5050
 class Idl::NoopAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#4652
+  # source://idlc//lib/idlc/ast.rb#5054
   def initialize; end
 
-  # source://idlc//lib/idlc/ast.rb#4650
+  # source://idlc//lib/idlc/ast.rb#5052
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4660
+  # source://idlc//lib/idlc/ast.rb#5062
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4663
+  # source://idlc//lib/idlc/ast.rb#5065
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#16
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#17
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4667
+  # source://idlc//lib/idlc/ast.rb#5069
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4657
+  # source://idlc//lib/idlc/ast.rb#5059
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3903
+# source://idlc//lib/idlc/idl_parser.rb#3497
+module Idl::P0BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#3498
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3502
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3507
+module Idl::P0BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#3508
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3512
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3615
+module Idl::P1BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#3616
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3620
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3625
+module Idl::P1BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#3626
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3630
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3733
+module Idl::P2BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#3734
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3738
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3743
+module Idl::P2BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#3744
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3748
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3851
+module Idl::P3BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#3852
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3856
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3861
+module Idl::P3BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#3862
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3866
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4087
+module Idl::P4BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4088
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4092
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4097
+module Idl::P4BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4098
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4102
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4323
+module Idl::P5BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4324
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4328
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4333
+module Idl::P5BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4334
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4338
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3257
+module Idl::P5BinaryOperator0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#4559
+module Idl::P6BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4560
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4564
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4569
+module Idl::P6BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4570
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4574
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4795
+module Idl::P7BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4796
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4800
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4805
+module Idl::P7BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4806
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4810
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3337
+module Idl::P7BinaryOperator0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#5031
+module Idl::P8BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5032
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5036
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5041
+module Idl::P8BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#5042
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5046
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5267
+module Idl::P9BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5268
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5272
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5277
+module Idl::P9BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#5278
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5282
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5503
+module Idl::ParenExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5504
+  def e; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4266
 class Idl::ParenExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3909
+  # source://idlc//lib/idlc/ast.rb#4272
   def initialize(input, interval, exp); end
 
-  # source://idlc//lib/idlc/ast.rb#3907
+  # source://idlc//lib/idlc/ast.rb#4270
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3911
+  # source://idlc//lib/idlc/ast.rb#4274
   def expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#136
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#137
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#3913
+  # source://idlc//lib/idlc/ast.rb#4276
   def invert(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3926
+  # source://idlc//lib/idlc/ast.rb#4289
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3919
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#39
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4282
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3916
+  # source://idlc//lib/idlc/ast.rb#4279
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3922
+  # source://idlc//lib/idlc/ast.rb#4285
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3893
+# source://idlc//lib/idlc/ast.rb#4256
 class Idl::ParenExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#3894
+  # source://idlc//lib/idlc/ast.rb#4257
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#1919
+# source://idlc//lib/idlc/ast.rb#2056
 class Idl::PcAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#1930
+  # source://idlc//lib/idlc/ast.rb#2067
   sig { params(input: ::String, interval: T::Range[::Integer], rval: T.all(::Idl::AstNode, ::Idl::Rvalue)).void }
   def initialize(input, interval, rval); end
 
-  # source://idlc//lib/idlc/ast.rb#1923
+  # source://idlc//lib/idlc/ast.rb#2060
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1936
+  # source://idlc//lib/idlc/ast.rb#2073
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1940
+  # source://idlc//lib/idlc/ast.rb#2077
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#236
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#247
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1927
+  # source://idlc//lib/idlc/ast.rb#2064
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#1950
+  # source://idlc//lib/idlc/ast.rb#2087
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1944
+  # source://idlc//lib/idlc/ast.rb#2081
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1913
+# source://idlc//lib/idlc/ast.rb#2050
 class Idl::PcAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1914
+  # source://idlc//lib/idlc/ast.rb#2051
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4100
+# source://idlc//lib/idlc/idl_parser.rb#6455
+module Idl::PostDec0
+  # source://idlc//lib/idlc/idl_parser.rb#6456
+  def rval; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4486
 class Idl::PostDecrementExpressionAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#4108
+  # source://idlc//lib/idlc/ast.rb#4495
   def initialize(input, interval, rval); end
 
-  # source://idlc//lib/idlc/ast.rb#4104
+  # source://idlc//lib/idlc/ast.rb#4490
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4122
+  # source://idlc//lib/idlc/ast.rb#4512
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4138
+  # source://idlc//lib/idlc/ast.rb#4528
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#49
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#50
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4106
+  # source://idlc//lib/idlc/ast.rb#4493
+  sig { returns(T.any(::Idl::BuiltinVariableAst, ::Idl::IdAst, ::Idl::IntLiteralAst, ::Idl::StringLiteralAst)) }
   def rval; end
 
-  # source://idlc//lib/idlc/ast.rb#4143
+  # source://idlc//lib/idlc/ast.rb#4533
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4117
+  # source://idlc//lib/idlc/ast.rb#4507
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4112
+  # source://idlc//lib/idlc/ast.rb#4499
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4090
+# source://idlc//lib/idlc/ast.rb#4476
 class Idl::PostDecrementExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4091
+  # source://idlc//lib/idlc/ast.rb#4477
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4209
+# source://idlc//lib/idlc/idl_parser.rb#6512
+module Idl::PostInc0
+  # source://idlc//lib/idlc/idl_parser.rb#6513
+  def rval; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4599
 class Idl::PostIncrementExpressionAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#4217
+  # source://idlc//lib/idlc/ast.rb#4607
   def initialize(input, interval, rval); end
 
-  # source://idlc//lib/idlc/ast.rb#4213
+  # source://idlc//lib/idlc/ast.rb#4603
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4234
+  # source://idlc//lib/idlc/ast.rb#4627
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4251
+  # source://idlc//lib/idlc/ast.rb#4644
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#44
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#45
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4215
+  # source://idlc//lib/idlc/ast.rb#4605
   def rval; end
 
-  # source://idlc//lib/idlc/ast.rb#4257
+  # source://idlc//lib/idlc/ast.rb#4650
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4229
+  # source://idlc//lib/idlc/ast.rb#4622
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4222
+  # source://idlc//lib/idlc/ast.rb#4612
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4199
+# source://idlc//lib/idlc/ast.rb#4589
 class Idl::PostIncrementExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4200
+  # source://idlc//lib/idlc/ast.rb#4590
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4039
+# source://idlc//lib/idlc/idl_parser.rb#5583
+module Idl::ReplicationExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5584
+  def n; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5588
+  def v; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4425
 class Idl::ReplicationExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4049
+  # source://idlc//lib/idlc/ast.rb#4435
   def initialize(input, interval, n, v); end
 
-  # source://idlc//lib/idlc/ast.rb#4043
+  # source://idlc//lib/idlc/ast.rb#4429
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#266
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#277
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4046
+  # source://idlc//lib/idlc/ast.rb#4432
   def n; end
 
-  # source://idlc//lib/idlc/ast.rb#4087
+  # source://idlc//lib/idlc/ast.rb#4473
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4075
+  # source://idlc//lib/idlc/ast.rb#4461
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4054
+  # source://idlc//lib/idlc/ast.rb#4440
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4047
+  # source://idlc//lib/idlc/ast.rb#4433
   def v; end
 
-  # source://idlc//lib/idlc/ast.rb#4066
+  # source://idlc//lib/idlc/ast.rb#4452
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4029
+# source://idlc//lib/idlc/ast.rb#4415
 class Idl::ReplicationExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4030
+  # source://idlc//lib/idlc/ast.rb#4416
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4938
+# source://idlc//lib/idlc/idl_parser.rb#12698
+module Idl::ReturnExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#12699
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12704
+module Idl::ReturnExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#12705
+  def e; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12710
+module Idl::ReturnExpression2
+  # source://idlc//lib/idlc/idl_parser.rb#12711
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12715
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12720
+module Idl::ReturnExpression3
+  # source://idlc//lib/idlc/idl_parser.rb#12721
+  def vals; end
+end
+
+# source://idlc//lib/idlc/ast.rb#5340
 class Idl::ReturnExpressionAst < ::Idl::AstNode
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#4946
+  # source://idlc//lib/idlc/ast.rb#5348
   def initialize(input, interval, return_nodes); end
 
-  # source://idlc//lib/idlc/ast.rb#4942
+  # source://idlc//lib/idlc/ast.rb#5344
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4990
+  # source://idlc//lib/idlc/ast.rb#5392
   def enclosing_function; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#29
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#30
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#106
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#115
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/ast.rb#4963
+  # source://idlc//lib/idlc/ast.rb#5365
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4952
+  # source://idlc//lib/idlc/ast.rb#5354
   def return_types(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4995
+  # source://idlc//lib/idlc/ast.rb#5397
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4944
+  # source://idlc//lib/idlc/ast.rb#5346
   def return_value_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#5006
+  # source://idlc//lib/idlc/ast.rb#5408
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5017
+  # source://idlc//lib/idlc/ast.rb#5419
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4975
+  # source://idlc//lib/idlc/ast.rb#5377
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4925
+# source://idlc//lib/idlc/ast.rb#5327
 class Idl::ReturnExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4926
+  # source://idlc//lib/idlc/ast.rb#5328
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4868
+# source://idlc//lib/idlc/idl_parser.rb#12890
+module Idl::ReturnStatement0
+  # source://idlc//lib/idlc/idl_parser.rb#12895
+  def expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12891
+  def return_expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12901
+module Idl::ReturnStatement1
+  # source://idlc//lib/idlc/idl_parser.rb#12902
+  def return_expression; end
+end
+
+# source://idlc//lib/idlc/ast.rb#5270
 class Idl::ReturnStatementAst < ::Idl::AstNode
   include ::Idl::Returns
 
-  # source://idlc//lib/idlc/ast.rb#4878
+  # source://idlc//lib/idlc/ast.rb#5280
   def initialize(input, interval, return_expression); end
 
-  # source://idlc//lib/idlc/ast.rb#4872
+  # source://idlc//lib/idlc/ast.rb#5274
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4907
+  # source://idlc//lib/idlc/ast.rb#5309
   def enclosing_function; end
 
-  # source://idlc//lib/idlc/ast.rb#4893
+  # source://idlc//lib/idlc/ast.rb#5295
   def expected_return_type(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#260
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#271
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#76
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#77
   def gen_option_adoc; end
 
   # source://idlc//lib/idlc/passes/find_return_values.rb#19
   def pass_find_return_values(values, current_conditions, symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4874
+  # source://idlc//lib/idlc/ast.rb#5276
   def return_expression; end
 
-  # source://idlc//lib/idlc/ast.rb#4888
+  # source://idlc//lib/idlc/ast.rb#5290
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4883
+  # source://idlc//lib/idlc/ast.rb#5285
   def return_types(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4912
+  # source://idlc//lib/idlc/ast.rb#5314
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4903
+  # source://idlc//lib/idlc/ast.rb#5305
   def return_value_nodes; end
 
-  # source://idlc//lib/idlc/ast.rb#4917
+  # source://idlc//lib/idlc/ast.rb#5319
   def return_values(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4922
+  # source://idlc//lib/idlc/ast.rb#5324
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4898
+  # source://idlc//lib/idlc/ast.rb#5300
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4857
+# source://idlc//lib/idlc/ast.rb#5259
 class Idl::ReturnStatementSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4858
+  # source://idlc//lib/idlc/ast.rb#5260
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#503
+# source://idlc//lib/idlc/ast.rb#517
 module Idl::Returns
   abstract!
 
-  # source://idlc//lib/idlc/ast.rb#544
+  # source://idlc//lib/idlc/ast.rb#558
   sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def expected_return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#521
+  # source://idlc//lib/idlc/ast.rb#535
   sig { abstract.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def return_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#526
+  # source://idlc//lib/idlc/ast.rb#540
   sig do
     abstract
       .params(
@@ -3272,7 +4979,7 @@ module Idl::Returns
   end
   def return_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#540
+  # source://idlc//lib/idlc/ast.rb#554
   sig do
     abstract
       .params(
@@ -3284,57 +4991,74 @@ end
 
 # source://idlc//lib/idlc/interfaces.rb#13
 module Idl::RuntimeParam
+  include ::Kernel
+
   interface!
 
-  # source://idlc//lib/idlc/interfaces.rb#25
-  sig { abstract.returns(::String) }
-  def desc; end
+  # source://idlc//lib/idlc/interfaces.rb#39
+  sig { abstract.returns(T::Array[::Idl::Schema]) }
+  def all_schemas; end
 
-  # source://idlc//lib/idlc/interfaces.rb#37
+  # source://idlc//lib/idlc/interfaces.rb#27
+  sig { abstract.returns(::String) }
+  def description; end
+
+  # source://idlc//lib/idlc/interfaces.rb#48
   sig { abstract.returns(::Idl::Type) }
   def idl_type; end
 
-  # source://idlc//lib/idlc/interfaces.rb#22
+  # source://idlc//lib/idlc/interfaces.rb#24
   sig { abstract.returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/interfaces.rb#28
+  # source://idlc//lib/idlc/interfaces.rb#36
+  sig { abstract.returns(T::Array[::Idl::Schema]) }
+  def possible_schemas; end
+
+  # source://idlc//lib/idlc/interfaces.rb#33
   sig { abstract.returns(::Idl::Schema) }
   def schema; end
 
-  # source://idlc//lib/idlc/interfaces.rb#34
-  sig { abstract.returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[T::Boolean], T::Boolean)) }
+  # source://idlc//lib/idlc/interfaces.rb#30
+  sig { abstract.returns(T::Boolean) }
+  def schema_known?; end
+
+  # source://idlc//lib/idlc/interfaces.rb#45
+  sig do
+    abstract
+      .returns(T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean))
+  end
   def value; end
 
-  # source://idlc//lib/idlc/interfaces.rb#31
+  # source://idlc//lib/idlc/interfaces.rb#42
   sig { abstract.returns(T::Boolean) }
   def value_known?; end
 end
 
-# source://idlc//lib/idlc/interfaces.rb#18
-Idl::RuntimeParam::ValueType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[T::Boolean], T::Boolean) }
+# source://idlc//lib/idlc/interfaces.rb#20
+Idl::RuntimeParam::ValueType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean) }
 
-# source://idlc//lib/idlc/ast.rb#595
+# source://idlc//lib/idlc/ast.rb#609
 module Idl::Rvalue
   abstract!
 
-  # source://idlc//lib/idlc/ast.rb#645
+  # source://idlc//lib/idlc/ast.rb#659
   sig { params(symtab: ::Idl::SymbolTable).returns(T.any(::Integer, ::Symbol)) }
   def max_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#655
+  # source://idlc//lib/idlc/ast.rb#669
   sig { params(symtab: ::Idl::SymbolTable).returns(T.any(::Integer, ::Symbol)) }
   def min_value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#680
+  # source://idlc//lib/idlc/ast.rb#694
   sig { params(value: ::Integer, width: ::Integer, signed: T::Boolean).returns(::Integer) }
   def truncate(value, width, signed); end
 
-  # source://idlc//lib/idlc/ast.rb#618
+  # source://idlc//lib/idlc/ast.rb#632
   sig { abstract.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#642
+  # source://idlc//lib/idlc/ast.rb#656
   sig do
     abstract
       .params(
@@ -3343,7 +5067,7 @@ module Idl::Rvalue
   end
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#677
+  # source://idlc//lib/idlc/ast.rb#691
   sig do
     params(
       symtab: ::Idl::SymbolTable
@@ -3352,353 +5076,443 @@ module Idl::Rvalue
   def values(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#697
+# source://idlc//lib/idlc/ast.rb#711
 Idl::RvalueAst = T.type_alias { T.all(::Idl::AstNode, ::Idl::Rvalue) }
 
-# source://idlc//lib/idlc/interfaces.rb#41
+# source://idlc//lib/idlc/interfaces.rb#52
 module Idl::Schema
   interface!
 
-  # source://idlc//lib/idlc/interfaces.rb#50
+  # source://idlc//lib/idlc/interfaces.rb#61
   sig { abstract.returns(::Integer) }
   def max_val; end
 
-  # source://idlc//lib/idlc/interfaces.rb#47
+  # source://idlc//lib/idlc/interfaces.rb#58
   sig { abstract.returns(T::Boolean) }
   def max_val_known?; end
 
-  # source://idlc//lib/idlc/interfaces.rb#56
+  # source://idlc//lib/idlc/interfaces.rb#67
   sig { abstract.returns(::Integer) }
   def min_val; end
 
-  # source://idlc//lib/idlc/interfaces.rb#53
+  # source://idlc//lib/idlc/interfaces.rb#64
   sig { abstract.returns(T::Boolean) }
   def min_val_known?; end
+
+  # source://idlc//lib/idlc/interfaces.rb#70
+  sig { abstract.returns(::Idl::Type) }
+  def to_idl_type; end
 end
 
-# source://idlc//lib/idlc/ast.rb#3050
+# source://idlc//lib/idlc/ast.rb#3355
 class Idl::SignCastAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3058
+  # source://idlc//lib/idlc/ast.rb#3363
   def initialize(input, interval, exp); end
 
-  # source://idlc//lib/idlc/ast.rb#3054
+  # source://idlc//lib/idlc/ast.rb#3359
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3056
+  # source://idlc//lib/idlc/ast.rb#3361
   def expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#152
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#163
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#3084
+  # source://idlc//lib/idlc/ast.rb#3389
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3066
+  # source://idlc//lib/idlc/ast.rb#3371
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3061
+  # source://idlc//lib/idlc/ast.rb#3366
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3069
+  # source://idlc//lib/idlc/ast.rb#3374
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#3044
+# source://idlc//lib/idlc/ast.rb#3349
 class Idl::SignCastSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#3045
+  # source://idlc//lib/idlc/ast.rb#3350
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4676
+# source://idlc//lib/idlc/idl_parser.rb#12362
+module Idl::SingleDeclaration0
+  # source://idlc//lib/idlc/idl_parser.rb#12363
+  def ary_size_decl; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12368
+module Idl::SingleDeclaration1
+  # source://idlc//lib/idlc/idl_parser.rb#12377
+  def ary_size; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12373
+  def id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12369
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#11931
+module Idl::SingleDeclarationWithInitialization0
+  # source://idlc//lib/idlc/idl_parser.rb#11940
+  def ary_size; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11936
+  def id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11944
+  def rval; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#11932
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#16722
+module Idl::Space0
+  # source://idlc//lib/idlc/idl_parser.rb#16723
+  def space?; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12462
+module Idl::Statement0
+  # source://idlc//lib/idlc/idl_parser.rb#12463
+  def a; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#12467
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#12473
+module Idl::Statement1
+  # source://idlc//lib/idlc/idl_parser.rb#12474
+  def a; end
+end
+
+# source://idlc//lib/idlc/ast.rb#5078
 class Idl::StatementAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#4684
+  # source://idlc//lib/idlc/ast.rb#5086
   def initialize(input, interval, action); end
 
-  # source://idlc//lib/idlc/ast.rb#4682
+  # source://idlc//lib/idlc/ast.rb#5084
   def action; end
 
-  # source://idlc//lib/idlc/ast.rb#4680
+  # source://idlc//lib/idlc/ast.rb#5082
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4694
+  # source://idlc//lib/idlc/ast.rb#5096
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4704
+  # source://idlc//lib/idlc/ast.rb#5106
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#248
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#259
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#82
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#83
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#220
+  # source://idlc//lib/idlc/passes/prune.rb#222
   def prune(symtab); end
 
   # source://idlc//lib/idlc/passes/reachable_exceptions.rb#82
   def reachable_exceptions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/reachable_functions.rb#62
+  # source://idlc//lib/idlc/passes/reachable_functions.rb#69
   def reachable_functions(symtab, cache = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4715
+  # source://idlc//lib/idlc/ast.rb#5117
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4689
+  # source://idlc//lib/idlc/ast.rb#5091
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4642
+# source://idlc//lib/idlc/ast.rb#5044
 class Idl::StatementSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4643
+  # source://idlc//lib/idlc/ast.rb#5045
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5236
+# source://idlc//lib/idlc/idl_parser.rb#16625
+module Idl::String0; end
+
+# source://idlc//lib/idlc/idl_parser.rb#16628
+module Idl::String1; end
+
+# source://idlc//lib/idlc/ast.rb#5642
 class Idl::StringLiteralAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#5242
+  # source://idlc//lib/idlc/ast.rb#5648
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#5240
+  # source://idlc//lib/idlc/ast.rb#5646
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#54
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#55
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5260
+  # source://idlc//lib/idlc/ast.rb#5666
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5250
+  # source://idlc//lib/idlc/ast.rb#5656
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5248
+  # source://idlc//lib/idlc/ast.rb#5654
   def type_check(_symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5255
+  # source://idlc//lib/idlc/ast.rb#5661
   def value(_symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5224
+# source://idlc//lib/idlc/ast.rb#5630
 module Idl::StringLiteralSyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5225
+  # source://idlc//lib/idlc/ast.rb#5631
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#910
+# source://idlc//lib/idlc/type.rb#989
 Idl::StringType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/ast.rb#1641
+# source://idlc//lib/idlc/idl_parser.rb#1191
+module Idl::StructDefinition0
+  # source://idlc//lib/idlc/idl_parser.rb#1196
+  def id; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#1192
+  def type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#1202
+module Idl::StructDefinition1
+  # source://idlc//lib/idlc/idl_parser.rb#1207
+  def member; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#1203
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#1768
 class Idl::StructDefinitionAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#1656
+  # source://idlc//lib/idlc/ast.rb#1783
   def initialize(input, interval, name, member_types, member_names); end
 
-  # source://idlc//lib/idlc/ast.rb#1684
+  # source://idlc//lib/idlc/ast.rb#1811
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1654
+  # source://idlc//lib/idlc/ast.rb#1781
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1651
+  # source://idlc//lib/idlc/ast.rb#1778
   def member_names; end
 
-  # source://idlc//lib/idlc/ast.rb#1695
+  # source://idlc//lib/idlc/ast.rb#1822
   def member_type(name, symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1648
+  # source://idlc//lib/idlc/ast.rb#1775
   def member_types; end
 
-  # source://idlc//lib/idlc/ast.rb#1645
+  # source://idlc//lib/idlc/ast.rb#1772
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#1702
+  # source://idlc//lib/idlc/ast.rb#1829
   def num_members; end
 
-  # source://idlc//lib/idlc/ast.rb#1705
+  # source://idlc//lib/idlc/ast.rb#1832
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1673
+  # source://idlc//lib/idlc/ast.rb#1800
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1665
+  # source://idlc//lib/idlc/ast.rb#1792
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1620
+# source://idlc//lib/idlc/ast.rb#1747
 class Idl::StructDefinitionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1621
+  # source://idlc//lib/idlc/ast.rb#1748
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#510
+# source://idlc//lib/idlc/type.rb#584
 class Idl::StructType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#515
+  # source://idlc//lib/idlc/type.rb#589
   sig { params(type_name: ::String, member_types: T::Array[::Idl::Type], member_names: T::Array[::String]).void }
   def initialize(type_name, member_types, member_names); end
 
-  # source://idlc//lib/idlc/type.rb#525
+  # source://idlc//lib/idlc/type.rb#599
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#529
+  # source://idlc//lib/idlc/type.rb#603
   def default; end
 
-  # source://idlc//lib/idlc/type.rb#537
+  # source://idlc//lib/idlc/type.rb#611
   def member?(name); end
 
-  # source://idlc//lib/idlc/type.rb#539
+  # source://idlc//lib/idlc/type.rb#613
   def member_type(member_name); end
 
-  # source://idlc//lib/idlc/type.rb#523
+  # source://idlc//lib/idlc/type.rb#597
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/type.rb#512
+  # source://idlc//lib/idlc/type.rb#621
+  def runtime?; end
+
+  # source://idlc//lib/idlc/type.rb#586
   sig { returns(::String) }
   def type_name; end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#114
+# source://idlc//lib/idlc/symbol_table.rb#122
 class Idl::SymbolTable
-  # source://idlc//lib/idlc/symbol_table.rb#207
+  # source://idlc//lib/idlc/symbol_table.rb#237
   sig do
     params(
       mxlen: T.nilable(::Integer),
-      possible_xlens: T::Array[::Integer],
-      params: T::Array[::Idl::RuntimeParam],
+      possible_xlens_cb: T.nilable(T.proc.returns(T::Array[::Integer])),
+      builtin_global_vars: T::Array[::Idl::Var],
       builtin_enums: T::Array[::Idl::SymbolTable::EnumDef],
       builtin_funcs: T.nilable(::Idl::SymbolTable::BuiltinFunctionCallbacks),
       csrs: T::Array[::Idl::Csr],
+      params: T::Array[::Idl::RuntimeParam],
       name: ::String
     ).void
   end
-  def initialize(mxlen: T.unsafe(nil), possible_xlens: T.unsafe(nil), params: T.unsafe(nil), builtin_enums: T.unsafe(nil), builtin_funcs: T.unsafe(nil), csrs: T.unsafe(nil), name: T.unsafe(nil)); end
+  def initialize(mxlen: T.unsafe(nil), possible_xlens_cb: T.unsafe(nil), builtin_global_vars: T.unsafe(nil), builtin_enums: T.unsafe(nil), builtin_funcs: T.unsafe(nil), csrs: T.unsafe(nil), params: T.unsafe(nil), name: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#381
+  # source://idlc//lib/idlc/symbol_table.rb#409
   def add(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#390
+  # source://idlc//lib/idlc/symbol_table.rb#418
   def add!(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#407
+  # source://idlc//lib/idlc/symbol_table.rb#435
   def add_above!(name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#416
+  # source://idlc//lib/idlc/symbol_table.rb#444
   def add_at!(level, name, var); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#439
+  # source://idlc//lib/idlc/symbol_table.rb#468
   def at_global_scope?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#315
+  # source://idlc//lib/idlc/symbol_table.rb#206
+  def builtin_funcs; end
+
+  # source://idlc//lib/idlc/symbol_table.rb#343
   def callstack; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#188
+  # source://idlc//lib/idlc/symbol_table.rb#215
   sig { params(csr_name: ::String).returns(T.nilable(::Idl::Csr)) }
   def csr(csr_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#182
+  # source://idlc//lib/idlc/symbol_table.rb#209
   sig { params(csr_name: ::String).returns(T::Boolean) }
   def csr?(csr_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#185
+  # source://idlc//lib/idlc/symbol_table.rb#212
   sig { returns(T::Hash[::String, ::Idl::Csr]) }
   def csr_hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#488
+  # source://idlc//lib/idlc/symbol_table.rb#518
   def deep_clone(clone_values: T.unsafe(nil), freeze_global: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#257
+  # source://idlc//lib/idlc/symbol_table.rb#287
   def deep_freeze; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#400
+  # source://idlc//lib/idlc/symbol_table.rb#428
   def del(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#361
+  # source://idlc//lib/idlc/symbol_table.rb#389
   def find_all(single_scope: T.unsafe(nil), &block); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#331
+  # source://idlc//lib/idlc/symbol_table.rb#359
   def get(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#339
+  # source://idlc//lib/idlc/symbol_table.rb#367
   def get_from(name, level); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#351
+  # source://idlc//lib/idlc/symbol_table.rb#379
   def get_global(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#444
+  # source://idlc//lib/idlc/symbol_table.rb#473
   def global_clone; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#128
+  # source://idlc//lib/idlc/symbol_table.rb#136
   def hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#485
+  # source://idlc//lib/idlc/symbol_table.rb#515
   def in_use?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#252
+  # source://idlc//lib/idlc/symbol_table.rb#282
   sig { returns(::String) }
   def inspect; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#320
+  # source://idlc//lib/idlc/symbol_table.rb#348
   def key?(name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#324
+  # source://idlc//lib/idlc/symbol_table.rb#352
   def keys_pretty; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#425
+  # source://idlc//lib/idlc/symbol_table.rb#453
   def levels; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#149
+  # source://idlc//lib/idlc/symbol_table.rb#159
   sig { returns(T::Boolean) }
   def multi_xlen?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#120
+  # source://idlc//lib/idlc/symbol_table.rb#128
   sig { returns(T.nilable(::Integer)) }
   def mxlen; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#123
+  # source://idlc//lib/idlc/symbol_table.rb#131
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#191
+  # source://idlc//lib/idlc/symbol_table.rb#218
   sig { params(param_name: ::String).returns(T.nilable(::Idl::RuntimeParam)) }
   def param(param_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#194
+  # source://idlc//lib/idlc/symbol_table.rb#221
   sig { returns(T::Hash[::String, ::Idl::RuntimeParam]) }
   def params_hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#305
+  # source://idlc//lib/idlc/symbol_table.rb#333
   def pop; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#152
+  # source://idlc//lib/idlc/symbol_table.rb#167
   sig { returns(T::Array[::Integer]) }
   def possible_xlens; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#430
+  # source://idlc//lib/idlc/symbol_table.rb#459
+  sig { void }
   def print; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#293
+  # source://idlc//lib/idlc/symbol_table.rb#321
   def push(ast); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#474
+  # source://idlc//lib/idlc/symbol_table.rb#504
   def release; end
 
   class << self
-    # source://idlc//lib/idlc/symbol_table.rb#159
+    # source://idlc//lib/idlc/symbol_table.rb#184
     sig do
       params(
         blk: T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean))
@@ -3706,7 +5520,7 @@ class Idl::SymbolTable
     end
     def make_implemented_callback(&blk); end
 
-    # source://idlc//lib/idlc/symbol_table.rb#173
+    # source://idlc//lib/idlc/symbol_table.rb#198
     sig do
       params(
         blk: T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
@@ -3714,7 +5528,7 @@ class Idl::SymbolTable
     end
     def make_implemented_csr_callback(&blk); end
 
-    # source://idlc//lib/idlc/symbol_table.rb#166
+    # source://idlc//lib/idlc/symbol_table.rb#191
     sig do
       params(
         blk: T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean))
@@ -3724,45 +5538,59 @@ class Idl::SymbolTable
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#175
+# source://idlc//lib/idlc/symbol_table.rb#200
 class Idl::SymbolTable::BuiltinFunctionCallbacks < ::T::Struct
   prop :implemented, T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean))
   prop :implemented_version, T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean))
   prop :implemented_csr, T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean))
 
   class << self
-    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#125
+# source://idlc//lib/idlc/symbol_table.rb#133
 class Idl::SymbolTable::DuplicateSymError < ::StandardError; end
 
-# source://idlc//lib/idlc/symbol_table.rb#134
+# source://idlc//lib/idlc/symbol_table.rb#142
 class Idl::SymbolTable::EnumDef < ::T::Struct
   prop :name, ::String
   prop :element_values, T::Array[::Integer]
   prop :element_names, T::Array[::String]
 
-  # source://idlc//lib/idlc/symbol_table.rb#142
+  # source://idlc//lib/idlc/symbol_table.rb#150
   sig { params(name: ::String, element_values: T::Array[::Integer], element_names: T::Array[::String]).void }
   def initialize(name:, element_values:, element_names:); end
 
   class << self
-    # source://sorbet-runtime/0.5.12189/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
 
-# source://idlc//lib/idlc/symbol_table.rb#154
+# source://idlc//lib/idlc/symbol_table.rb#179
 Idl::SymbolTable::ImplementedCallbackType = T.type_alias { T.proc.params(arg0: ::String).returns(T.nilable(T::Boolean)) }
 
-# source://idlc//lib/idlc/symbol_table.rb#168
+# source://idlc//lib/idlc/symbol_table.rb#193
 Idl::SymbolTable::ImplementedCsrCallbackType = T.type_alias { T.proc.params(arg0: ::Integer).returns(T.nilable(T::Boolean)) }
 
-# source://idlc//lib/idlc/symbol_table.rb#161
+# source://idlc//lib/idlc/symbol_table.rb#186
 Idl::SymbolTable::ImplementedVersionCallbackType = T.type_alias { T.proc.params(arg0: ::String, arg1: ::String).returns(T.nilable(T::Boolean)) }
+
+# source://idlc//lib/idlc/symbol_table.rb#161
+class Idl::SymbolTable::MemoizedState < ::T::Struct
+  prop :possible_xlens, T.nilable(T::Array[::Integer])
+  prop :params_hash, T.nilable(T::Hash[::String, ::Idl::RuntimeParam])
+
+  class << self
+    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+    def inherited(s); end
+  end
+end
+
+# source://idlc//lib/idlc/symbol_table.rb#156
+Idl::SymbolTable::PossibleXlensCallbackType = T.type_alias { T.proc.returns(T::Array[::Integer]) }
 
 # source://idlc//lib/idlc/syntax_node.rb#49
 class Idl::SyntaxNode < ::Treetop::Runtime::SyntaxNode
@@ -3771,170 +5599,381 @@ class Idl::SyntaxNode < ::Treetop::Runtime::SyntaxNode
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#4549
+# source://idlc//lib/idlc/idl_parser.rb#3969
+module Idl::TemplateSafeP3BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#3970
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3974
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#3979
+module Idl::TemplateSafeP3BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#3980
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#3984
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4205
+module Idl::TemplateSafeP4BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4206
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4210
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4215
+module Idl::TemplateSafeP4BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4216
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4220
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4441
+module Idl::TemplateSafeP5BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4442
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4446
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4451
+module Idl::TemplateSafeP5BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4452
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4456
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4677
+module Idl::TemplateSafeP6BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4678
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4682
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4687
+module Idl::TemplateSafeP6BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4688
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4692
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4913
+module Idl::TemplateSafeP7BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#4914
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4918
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#4923
+module Idl::TemplateSafeP7BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#4924
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#4928
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5149
+module Idl::TemplateSafeP8BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5150
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5154
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5159
+module Idl::TemplateSafeP8BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#5160
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5164
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5385
+module Idl::TemplateSafeP9BinaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#5386
+  def op; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5390
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#5395
+module Idl::TemplateSafeP9BinaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#5396
+  def l; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#5400
+  def r; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#7889
+module Idl::TemplateSafeTernaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#7890
+  def e; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7898
+  def f; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7894
+  def t; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#7768
+module Idl::TernaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#7769
+  def e; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7777
+  def f; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#7773
+  def t; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4942
 class Idl::TernaryOperatorExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4559
+  # source://idlc//lib/idlc/ast.rb#4952
   def initialize(input, interval, condition, true_expression, false_expression); end
 
-  # source://idlc//lib/idlc/ast.rb#4555
+  # source://idlc//lib/idlc/ast.rb#4948
   def condition; end
 
-  # source://idlc//lib/idlc/ast.rb#4553
+  # source://idlc//lib/idlc/ast.rb#4946
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4557
+  # source://idlc//lib/idlc/ast.rb#4950
   def false_expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#175
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#186
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#114
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#123
   def gen_option_adoc; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#454
+  # source://idlc//lib/idlc/passes/prune.rb#456
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4639
+  # source://idlc//lib/idlc/ast.rb#5041
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4556
+  # source://idlc//lib/idlc/ast.rb#4949
   def true_expression; end
 
-  # source://idlc//lib/idlc/ast.rb#4591
+  # source://idlc//lib/idlc/ast.rb#4984
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4564
+  # source://idlc//lib/idlc/ast.rb#4957
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4623
+  # source://idlc//lib/idlc/ast.rb#5025
   def value(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4628
+  # source://idlc//lib/idlc/ast.rb#5030
   def values(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4538
+# source://idlc//lib/idlc/ast.rb#4931
 class Idl::TernaryOperatorExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4539
+  # source://idlc//lib/idlc/ast.rb#4932
+  def to_ast; end
+end
+
+# source://idlc//lib/idlc/ast.rb#759
+class Idl::TrueExpressionAst < ::Idl::AstNode
+  include ::Idl::Rvalue
+
+  # source://idlc//lib/idlc/ast.rb#763
+  sig { params(input: ::String, interval: T::Range[::Integer]).void }
+  def initialize(input, interval); end
+
+  # source://idlc//lib/idlc/ast.rb#768
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
+  def const_eval?(symtab); end
+
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#148
+  def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc/passes/gen_option_adoc.rb#89
+  def gen_option_adoc; end
+
+  # source://idlc//lib/idlc/ast.rb#780
+  sig { override.returns(::String) }
+  def to_idl; end
+
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#66
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#774
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
+  def type(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#771
+  sig { override.params(symtab: ::Idl::SymbolTable).void }
+  def type_check(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#777
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(::TrueClass) }
+  def value(symtab); end
+end
+
+# source://idlc//lib/idlc/ast.rb#755
+class Idl::TrueExpressionSyntaxNode < ::Idl::SyntaxNode
+  # source://idlc//lib/idlc/ast.rb#756
   def to_ast; end
 end
 
 # source://idlc//lib/idlc/type.rb#15
 class Idl::Type
-  # source://idlc//lib/idlc/type.rb#107
-  def initialize(kind, qualifiers: T.unsafe(nil), width: T.unsafe(nil), sub_type: T.unsafe(nil), name: T.unsafe(nil), tuple_types: T.unsafe(nil), enum_class: T.unsafe(nil), csr: T.unsafe(nil)); end
+  # source://idlc//lib/idlc/type.rb#119
+  def initialize(kind, qualifiers: T.unsafe(nil), width: T.unsafe(nil), width_ast: T.unsafe(nil), max_width: T.unsafe(nil), sub_type: T.unsafe(nil), name: T.unsafe(nil), tuple_types: T.unsafe(nil), return_type: T.unsafe(nil), arguments: T.unsafe(nil), enum_class: T.unsafe(nil), csr: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/type.rb#368
+  # source://idlc//lib/idlc/type.rb#382
   def ary?; end
 
-  # source://idlc//lib/idlc/type.rb#221
+  # source://idlc//lib/idlc/type.rb#235
   def ary_type(ary); end
 
-  # source://idlc//lib/idlc/type.rb#146
+  # source://idlc//lib/idlc/type.rb#160
   def clone; end
 
-  # source://idlc//lib/idlc/type.rb#161
+  # source://idlc//lib/idlc/type.rb#175
   def comparable_to?(type); end
 
-  # source://idlc//lib/idlc/type.rb#372
+  # source://idlc//lib/idlc/type.rb#386
   def const?; end
 
-  # source://idlc//lib/idlc/type.rb#231
+  # source://idlc//lib/idlc/type.rb#245
   def convertable_to?(type); end
 
-  # source://idlc//lib/idlc/type.rb#47
+  # source://idlc//lib/idlc/type.rb#56
   def default; end
 
-  # source://idlc//lib/idlc/type.rb#86
+  # source://idlc//lib/idlc/type.rb#98
   sig { returns(::Idl::EnumerationType) }
   def enum_class; end
 
-  # source://idlc//lib/idlc/type.rb#193
+  # source://idlc//lib/idlc/type.rb#207
   def equal_to?(type); end
 
-  # source://idlc//lib/idlc/type.rb#320
+  # source://idlc//lib/idlc/type.rb#334
   def fully_qualified_name; end
 
-  # source://idlc//lib/idlc/type.rb#384
+  # source://idlc//lib/idlc/type.rb#398
   def global?; end
 
-  # source://idlc//lib/idlc/type.rb#43
+  # source://idlc//lib/idlc/type.rb#44
   sig { returns(T::Boolean) }
   def integral?; end
 
-  # source://idlc//lib/idlc/type.rb#71
+  # source://idlc//lib/idlc/type.rb#80
   sig { returns(::Symbol) }
   def kind; end
 
   # source://idlc//lib/idlc/type.rb#406
+  def known?; end
+
+  # source://idlc//lib/idlc/type.rb#424
   sig { returns(::Idl::Type) }
   def make_const; end
 
-  # source://idlc//lib/idlc/type.rb#399
+  # source://idlc//lib/idlc/type.rb#417
   sig { returns(::Idl::Type) }
   def make_const!; end
 
-  # source://idlc//lib/idlc/type.rb#411
+  # source://idlc//lib/idlc/type.rb#429
   def make_global; end
 
-  # source://idlc//lib/idlc/type.rb#392
+  # source://idlc//lib/idlc/type.rb#434
+  def make_known; end
+
+  # source://idlc//lib/idlc/type.rb#410
   def make_signed; end
 
-  # source://idlc//lib/idlc/type.rb#376
+  # source://idlc//lib/idlc/type.rb#390
   def mutable?; end
 
-  # source://idlc//lib/idlc/type.rb#350
+  # source://idlc//lib/idlc/type.rb#364
   def name; end
 
-  # source://idlc//lib/idlc/type.rb#74
+  # source://idlc//lib/idlc/type.rb#83
   sig { returns(T::Array[::Symbol]) }
   def qualifiers; end
 
-  # source://idlc//lib/idlc/type.rb#88
+  # source://idlc//lib/idlc/type.rb#100
   def qualify(qualifier); end
 
-  # source://idlc//lib/idlc/type.rb#380
+  # source://idlc//lib/idlc/type.rb#48
+  def runtime?; end
+
+  # source://idlc//lib/idlc/type.rb#394
   def signed?; end
 
-  # source://idlc//lib/idlc/type.rb#80
+  # source://idlc//lib/idlc/type.rb#92
   sig { returns(::Idl::Type) }
   def sub_type; end
 
-  # source://idlc//lib/idlc/type.rb#388
+  # source://idlc//lib/idlc/type.rb#402
   def template_var?; end
 
-  # source://idlc//lib/idlc/type.rb#300
+  # source://idlc//lib/idlc/type.rb#314
   sig { returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/type.rb#320
+  # source://idlc//lib/idlc/type.rb#334
   def to_s; end
 
-  # source://idlc//lib/idlc/type.rb#83
+  # source://idlc//lib/idlc/type.rb#95
   sig { returns(T::Array[::Idl::Type]) }
   def tuple_types; end
 
-  # source://idlc//lib/idlc/type.rb#77
+  # source://idlc//lib/idlc/type.rb#86
   sig { returns(T.any(::Integer, ::Symbol)) }
   def width; end
 
+  # source://idlc//lib/idlc/type.rb#89
+  sig { returns(T.nilable(::Idl::AstNode)) }
+  def width_ast; end
+
   class << self
-    # source://idlc//lib/idlc/type.rb#499
+    # source://idlc//lib/idlc/type.rb#567
+    sig { params(schema: T::Hash[::String, T.untyped]).returns(T.nilable(::Idl::Type)) }
     def from_json_schema(schema); end
 
-    # source://idlc//lib/idlc/type.rb#94
+    # source://idlc//lib/idlc/type.rb#106
     def from_typename(type_name, cfg_arch); end
 
     private
 
-    # source://idlc//lib/idlc/type.rb#459
+    # source://idlc//lib/idlc/type.rb#529
+    sig { params(schema: T::Hash[::String, T.untyped]).returns(::Idl::Type) }
     def from_json_schema_array_type(schema); end
 
-    # source://idlc//lib/idlc/type.rb#418
+    # source://idlc//lib/idlc/type.rb#442
+    sig { params(schema: T::Hash[::String, T.untyped]).returns(T.nilable(::Idl::Type)) }
     def from_json_schema_scalar_type(schema); end
   end
 end
@@ -3945,210 +5984,325 @@ Idl::Type::KINDS = T.let(T.unsafe(nil), Array)
 # source://idlc//lib/idlc/type.rb#34
 Idl::Type::QUALIFIERS = T.let(T.unsafe(nil), Array)
 
-# source://idlc//lib/idlc/type.rb#144
+# source://idlc//lib/idlc/type.rb#158
 Idl::Type::TYPE_FROM_KIND = T.let(T.unsafe(nil), Hash)
 
-# source://idlc//lib/idlc/ast.rb#5801
+# source://idlc//lib/idlc/ast.rb#6292
 Idl::TypeNameAst = T.type_alias { T.any(::Idl::BuiltinTypeNameAst, ::Idl::UserTypeNameAst) }
 
-# source://idlc//lib/idlc/ast.rb#4427
+# source://idlc//lib/idlc/idl_parser.rb#6782
+module Idl::UnaryExpression0
+  # source://idlc//lib/idlc/idl_parser.rb#6783
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6788
+module Idl::UnaryExpression1
+  # source://idlc//lib/idlc/idl_parser.rb#6789
+  def first; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6793
+  def rest; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6799
+module Idl::UnaryExpression2
+  # source://idlc//lib/idlc/idl_parser.rb#6800
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6806
+module Idl::UnaryExpression3
+  # source://idlc//lib/idlc/idl_parser.rb#6807
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6813
+module Idl::UnaryExpression4
+  # source://idlc//lib/idlc/idl_parser.rb#6814
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6820
+module Idl::UnaryExpression5
+  # source://idlc//lib/idlc/idl_parser.rb#6821
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6827
+module Idl::UnaryExpression6
+  # source://idlc//lib/idlc/idl_parser.rb#6832
+  def expression; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6828
+  def user_type_name; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6838
+module Idl::UnaryExpression7
+  # source://idlc//lib/idlc/idl_parser.rb#6839
+  def expression; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6845
+module Idl::UnaryExpression8
+  # source://idlc//lib/idlc/idl_parser.rb#6846
+  def ary; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6850
+  def value; end
+end
+
+# source://idlc//lib/idlc/idl_parser.rb#6856
+module Idl::UnaryExpression9
+  # source://idlc//lib/idlc/idl_parser.rb#6861
+  def e; end
+
+  # source://idlc//lib/idlc/idl_parser.rb#6857
+  def o; end
+end
+
+# source://idlc//lib/idlc/ast.rb#4820
 class Idl::UnaryOperatorExpressionAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#4435
+  # source://idlc//lib/idlc/ast.rb#4828
   def initialize(input, interval, op, expression); end
 
-  # source://idlc//lib/idlc/ast.rb#4431
+  # source://idlc//lib/idlc/ast.rb#4824
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4524
+  # source://idlc//lib/idlc/ast.rb#4917
   def exp; end
 
-  # source://idlc//lib/idlc/ast.rb#4433
+  # source://idlc//lib/idlc/ast.rb#4826
   def expression; end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#254
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#265
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#4441
+  # source://idlc//lib/idlc/ast.rb#4834
   def invert(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4529
+  # source://idlc//lib/idlc/ast.rb#4922
   def op; end
 
-  # source://idlc//lib/idlc/ast.rb#4535
+  # source://idlc//lib/idlc/ast.rb#4928
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#4452
+  # source://udb/0.1.0/../../udb/lib/udb/idl/condition_to_udb.rb#126
+  sig { override.params(symtab: ::Idl::SymbolTable).returns(T.any(T::Boolean, T::Hash[::String, T.untyped])) }
+  def to_udb_h(symtab); end
+
+  # source://idlc//lib/idlc/ast.rb#4845
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4468
+  # source://idlc//lib/idlc/ast.rb#4861
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#4496
+  # source://idlc//lib/idlc/ast.rb#4889
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#4415
+# source://idlc//lib/idlc/ast.rb#4808
 class Idl::UnaryOperatorExpressionSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#4416
+  # source://idlc//lib/idlc/ast.rb#4809
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#5270
+# source://idlc//lib/idlc/ast.rb#5676
 class Idl::UnknownLiteral
-  # source://idlc//lib/idlc/ast.rb#5271
+  # source://idlc//lib/idlc/ast.rb#5678
   def initialize(known_value, unknown_mask); end
+
+  # source://idlc//lib/idlc/ast.rb#5686
+  def &(other); end
+
+  # source://idlc//lib/idlc/ast.rb#5707
+  def ==(other); end
+
+  # source://idlc//lib/idlc/ast.rb#5682
+  def bit_length; end
+
+  # source://idlc//lib/idlc/ast.rb#5677
+  def known_value; end
+
+  # source://idlc//lib/idlc/ast.rb#5737
+  def to_s; end
+
+  # source://idlc//lib/idlc/ast.rb#5677
+  def unknown_mask; end
+
+  # source://idlc//lib/idlc/ast.rb#5685
+  def zero?; end
+
+  # source://idlc//lib/idlc/ast.rb#5716
+  def |(other); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5771
+# source://idlc//lib/idlc/idl_parser.rb#15764
+module Idl::UserTypeName0; end
+
+# source://idlc//lib/idlc/ast.rb#6262
 class Idl::UserTypeNameAst < ::Idl::AstNode
-  # source://idlc//lib/idlc/ast.rb#5775
+  # source://idlc//lib/idlc/ast.rb#6266
   def initialize(input, interval); end
 
-  # source://idlc//lib/idlc/ast.rb#5773
+  # source://idlc//lib/idlc/ast.rb#6264
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#65
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#66
   def gen_adoc(indent, indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#5798
+  # source://idlc//lib/idlc/ast.rb#6289
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#5789
+  # source://idlc//lib/idlc/ast.rb#6280
   sig { params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#5781
+  # source://idlc//lib/idlc/ast.rb#6272
   def type_check(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#5765
+# source://idlc//lib/idlc/ast.rb#6256
 class Idl::UserTypeNameSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#5766
+  # source://idlc//lib/idlc/ast.rb#6257
   def to_ast; end
 end
 
 # source://idlc//lib/idlc/ast.rb#27
 Idl::ValueRbType = T.type_alias { T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean, T::Hash[::String, T.any(::Integer, ::String, T::Array[::Integer], T::Array[::String], T::Array[T::Boolean], T::Boolean)]) }
 
-# source://idlc//lib/idlc/symbol_table.rb#15
+# source://idlc//lib/idlc/symbol_table.rb#17
 class Idl::Var
-  # source://idlc//lib/idlc/symbol_table.rb#20
-  def initialize(name, type, value = T.unsafe(nil), decode_var: T.unsafe(nil), template_index: T.unsafe(nil), function_name: T.unsafe(nil), param: T.unsafe(nil)); end
+  # source://idlc//lib/idlc/symbol_table.rb#22
+  def initialize(name, type, value = T.unsafe(nil), decode_var: T.unsafe(nil), template_index: T.unsafe(nil), function_name: T.unsafe(nil), param: T.unsafe(nil), for_loop_iter: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#60
+  # source://idlc//lib/idlc/symbol_table.rb#68
   def clone; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#72
+  # source://idlc//lib/idlc/symbol_table.rb#80
   def const?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#44
+  # source://idlc//lib/idlc/symbol_table.rb#47
   sig { returns(T::Boolean) }
   def const_eval?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#39
+  # source://idlc//lib/idlc/symbol_table.rb#42
   sig { void }
   def const_incompatible!; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#76
+  # source://idlc//lib/idlc/symbol_table.rb#84
   def decode_var?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#52
+  # source://idlc//lib/idlc/symbol_table.rb#56
+  sig { returns(T::Boolean) }
+  def for_loop_iter?; end
+
+  # source://idlc//lib/idlc/symbol_table.rb#60
   def hash; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#18
+  # source://idlc//lib/idlc/symbol_table.rb#20
   def name; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#80
+  # source://idlc//lib/idlc/symbol_table.rb#88
   def param?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#94
+  # source://idlc//lib/idlc/symbol_table.rb#102
   def template_index; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#100
+  # source://idlc//lib/idlc/symbol_table.rb#108
   def template_val?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#90
+  # source://idlc//lib/idlc/symbol_table.rb#98
   def template_value?; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#86
+  # source://idlc//lib/idlc/symbol_table.rb#94
   def template_value_for?(function_name); end
 
-  # source://idlc//lib/idlc/symbol_table.rb#104
+  # source://idlc//lib/idlc/symbol_table.rb#112
   def to_cxx; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#56
+  # source://idlc//lib/idlc/symbol_table.rb#64
   def to_s; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#18
+  # source://idlc//lib/idlc/symbol_table.rb#20
   def type; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#18
+  # source://idlc//lib/idlc/symbol_table.rb#20
   def value; end
 
-  # source://idlc//lib/idlc/symbol_table.rb#108
+  # source://idlc//lib/idlc/symbol_table.rb#116
   def value=(new_value); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1964
+# source://idlc//lib/idlc/idl_parser.rb#16508
+module Idl::VarWrite0
+  # source://idlc//lib/idlc/idl_parser.rb#16509
+  def csr_name; end
+end
+
+# source://idlc//lib/idlc/ast.rb#2101
 class Idl::VariableAssignmentAst < ::Idl::AstNode
   include ::Idl::Executable
 
-  # source://idlc//lib/idlc/ast.rb#1985
+  # source://idlc//lib/idlc/ast.rb#2125
   def initialize(input, interval, lhs_ast, rhs_ast); end
 
-  # source://idlc//lib/idlc/ast.rb#1968
+  # source://idlc//lib/idlc/ast.rb#2105
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2011
+  # source://idlc//lib/idlc/ast.rb#2156
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2032
+  # source://idlc//lib/idlc/ast.rb#2177
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#230
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#241
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#1982
+  # source://idlc//lib/idlc/ast.rb#2120
+  sig { returns(::Idl::IdAst) }
   def lhs; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#73
+  # source://idlc//lib/idlc/passes/prune.rb#74
   def nullify_assignments(symtab); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#68
+  # source://idlc//lib/idlc/passes/prune.rb#69
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#1983
+  # source://idlc//lib/idlc/ast.rb#2123
+  sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2046
+  # source://idlc//lib/idlc/ast.rb#2191
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#1991
+  # source://idlc//lib/idlc/ast.rb#2131
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2001
+  # source://idlc//lib/idlc/ast.rb#2146
   def var(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#1953
+# source://idlc//lib/idlc/ast.rb#2090
 class Idl::VariableAssignmentSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#1954
+  # source://idlc//lib/idlc/ast.rb#2091
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2664
+# source://idlc//lib/idlc/ast.rb#2809
 class Idl::VariableDeclarationAst < ::Idl::AstNode
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#2694
+  # source://idlc//lib/idlc/ast.rb#2839
   sig do
     params(
       input: ::String,
@@ -4160,64 +6314,64 @@ class Idl::VariableDeclarationAst < ::Idl::AstNode
   end
   def initialize(input, interval, type_name, id, ary_size); end
 
-  # source://idlc//lib/idlc/ast.rb#2764
+  # source://idlc//lib/idlc/ast.rb#2909
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2680
+  # source://idlc//lib/idlc/ast.rb#2825
   sig { returns(T.nilable(T.all(::Idl::AstNode, ::Idl::Rvalue))) }
   def ary_size; end
 
-  # source://idlc//lib/idlc/ast.rb#2668
+  # source://idlc//lib/idlc/ast.rb#2813
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2710
+  # source://idlc//lib/idlc/ast.rb#2855
   sig { params(symtab: ::Idl::SymbolTable).returns(T.nilable(::Idl::Type)) }
   def decl_type(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#163
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#174
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2677
+  # source://idlc//lib/idlc/ast.rb#2822
   sig { returns(::Idl::IdAst) }
   def id; end
 
-  # source://idlc//lib/idlc/ast.rb#2705
+  # source://idlc//lib/idlc/ast.rb#2850
   sig { void }
   def make_global; end
 
-  # source://idlc//lib/idlc/ast.rb#2683
+  # source://idlc//lib/idlc/ast.rb#2828
   sig { returns(::String) }
   def name; end
 
-  # source://idlc//lib/idlc/ast.rb#2776
+  # source://idlc//lib/idlc/ast.rb#2921
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2735
+  # source://idlc//lib/idlc/ast.rb#2880
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2738
+  # source://idlc//lib/idlc/ast.rb#2883
   def type_check(symtab, add_sym = T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2674
+  # source://idlc//lib/idlc/ast.rb#2819
   sig { returns(T.any(::Idl::BuiltinTypeNameAst, ::Idl::UserTypeNameAst)) }
   def type_name; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2653
+# source://idlc//lib/idlc/ast.rb#2798
 class Idl::VariableDeclarationSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2654
+  # source://idlc//lib/idlc/ast.rb#2799
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2800
+# source://idlc//lib/idlc/ast.rb#2957
 class Idl::VariableDeclarationWithInitializationAst < ::Idl::AstNode
   include ::Idl::Executable
   include ::Idl::Declaration
 
-  # source://idlc//lib/idlc/ast.rb#2841
+  # source://idlc//lib/idlc/ast.rb#2999
   sig do
     params(
       input: ::String,
@@ -4225,142 +6379,167 @@ class Idl::VariableDeclarationWithInitializationAst < ::Idl::AstNode
       type_name_ast: T.any(::Idl::BuiltinTypeNameAst, ::Idl::UserTypeNameAst),
       var_write_ast: ::Idl::IdAst,
       ary_size: T.nilable(T.all(::Idl::AstNode, ::Idl::Rvalue)),
-      rval_ast: T.all(::Idl::AstNode, ::Idl::Rvalue)
+      rval_ast: T.all(::Idl::AstNode, ::Idl::Rvalue),
+      is_for_loop_iteration_var: T::Boolean
     ).void
   end
-  def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast); end
+  def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast, is_for_loop_iteration_var); end
 
-  # source://idlc//lib/idlc/ast.rb#2914
+  # source://idlc//lib/idlc/ast.rb#3073
   def add_symbol(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2823
+  # source://idlc//lib/idlc/ast.rb#2980
   sig { returns(T.nilable(T.all(::Idl::AstNode, ::Idl::Rvalue))) }
   def ary_size; end
 
-  # source://idlc//lib/idlc/ast.rb#2805
+  # source://idlc//lib/idlc/ast.rb#2962
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2939
+  # source://idlc//lib/idlc/ast.rb#3103
   def execute(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2955
+  # source://idlc//lib/idlc/ast.rb#3119
   def execute_unknown(symtab); end
 
-  # source://idlc//lib/idlc/passes/gen_adoc.rb#208
+  # source://idlc//lib/idlc/passes/gen_adoc.rb#219
   def gen_adoc(indent = T.unsafe(nil), indent_spaces: T.unsafe(nil)); end
 
-  # source://idlc//lib/idlc/ast.rb#2829
+  # source://idlc//lib/idlc/ast.rb#2986
   sig { returns(::String) }
   def id; end
 
-  # source://idlc//lib/idlc/ast.rb#2820
+  # source://idlc//lib/idlc/ast.rb#2977
   sig { returns(::Idl::IdAst) }
   def lhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2854
+  # source://idlc//lib/idlc/ast.rb#3013
   def lhs_type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2850
+  # source://idlc//lib/idlc/ast.rb#3009
   def make_global; end
 
-  # source://idlc//lib/idlc/passes/prune.rb#92
+  # source://idlc//lib/idlc/passes/prune.rb#93
   def prune(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2826
+  # source://idlc//lib/idlc/ast.rb#2983
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def rhs; end
 
-  # source://idlc//lib/idlc/ast.rb#2961
+  # source://idlc//lib/idlc/ast.rb#3125
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#2881
+  # source://idlc//lib/idlc/ast.rb#3040
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#2817
+  # source://idlc//lib/idlc/ast.rb#2974
   sig { returns(T.any(::Idl::BuiltinTypeNameAst, ::Idl::UserTypeNameAst)) }
   def type_name; end
 end
 
-# source://idlc//lib/idlc/ast.rb#2785
+# source://idlc//lib/idlc/ast.rb#2930
 class Idl::VariableDeclarationWithInitializationSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2786
+  # source://idlc//lib/idlc/ast.rb#2931
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#909
+# source://idlc//lib/idlc/idl_parser.rb#1394
+module Idl::VersionString0; end
+
+# source://idlc//lib/idlc/type.rb#988
 Idl::VoidType = T.let(T.unsafe(nil), Idl::Type)
 
-# source://idlc//lib/idlc/ast.rb#3002
+# source://idlc//lib/idlc/ast.rb#3307
 class Idl::WidthRevealAst < ::Idl::AstNode
   include ::Idl::Rvalue
 
-  # source://idlc//lib/idlc/ast.rb#3012
+  # source://idlc//lib/idlc/ast.rb#3317
   sig { params(input: ::String, interval: T::Range[::Integer], e: ::Idl::AstNode).void }
   def initialize(input, interval, e); end
 
-  # source://idlc//lib/idlc/ast.rb#3006
+  # source://idlc//lib/idlc/ast.rb#3311
   sig { override.params(symtab: ::Idl::SymbolTable).returns(T::Boolean) }
   def const_eval?(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3009
+  # source://idlc//lib/idlc/ast.rb#3314
   sig { returns(T.all(::Idl::AstNode, ::Idl::Rvalue)) }
   def expression; end
 
-  # source://idlc//lib/idlc/ast.rb#3041
+  # source://idlc//lib/idlc/ast.rb#3346
   sig { override.returns(::String) }
   def to_idl; end
 
-  # source://idlc//lib/idlc/ast.rb#3025
+  # source://idlc//lib/idlc/ast.rb#3330
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Idl::Type) }
   def type(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3017
+  # source://idlc//lib/idlc/ast.rb#3322
   sig { override.params(symtab: ::Idl::SymbolTable).void }
   def type_check(symtab); end
 
-  # source://idlc//lib/idlc/ast.rb#3034
+  # source://idlc//lib/idlc/ast.rb#3339
   sig { override.params(symtab: ::Idl::SymbolTable).returns(::Integer) }
   def value(symtab); end
 end
 
-# source://idlc//lib/idlc/ast.rb#2996
+# source://idlc//lib/idlc/ast.rb#3301
 class Idl::WidthRevealSyntaxNode < ::Idl::SyntaxNode
-  # source://idlc//lib/idlc/ast.rb#2997
+  # source://idlc//lib/idlc/ast.rb#3302
   def to_ast; end
 end
 
-# source://idlc//lib/idlc/type.rb#887
+# source://idlc//lib/idlc/type.rb#966
 class Idl::XregType < ::Idl::Type
-  # source://idlc//lib/idlc/type.rb#888
+  # source://idlc//lib/idlc/type.rb#967
   def initialize(xlen); end
 
-  # source://idlc//lib/idlc/type.rb#896
+  # source://idlc//lib/idlc/type.rb#975
   def to_cxx; end
 
-  # source://idlc//lib/idlc/type.rb#892
+  # source://idlc//lib/idlc/type.rb#971
   def to_s; end
 end
 
-# source://idlc//lib/idlc.rb#41
+# source://idlc//lib/idlc.rb#13
 class IdlParser < ::Treetop::Runtime::CompiledParser
   include ::Idl
+
+  # source://idlc//lib/idlc.rb#14
+  def input_file; end
+
+  # source://idlc//lib/idlc.rb#35
+  def instantiate_node(node_type, *args); end
+
+  # source://idlc//lib/idlc.rb#16
+  def set_input_file(filename, starting_line = T.unsafe(nil)); end
+
+  # source://idlc//lib/idlc.rb#21
+  def set_pb(pb); end
+
+  # source://idlc//lib/idlc.rb#27
+  def unset_pb; end
+
+  protected
+
+  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
+  def idlc_instantiate_node(node_type, *args); end
 end
 
 class Object < ::BasicObject
   include ::Kernel
   include ::PP::ObjectMixin
+  include ::Udb::Helpers::WavedromUtil
 
   private
 
-  # source://idlc//lib/idlc/passes/prune.rb#18
+  # source://idlc//lib/idlc/passes/prune.rb#19
   def create_bool_literal(value); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#13
+  # source://idlc//lib/idlc/passes/prune.rb#14
   def create_int_literal(value); end
 
-  # source://idlc//lib/idlc/passes/prune.rb#26
+  # source://idlc//lib/idlc/passes/prune.rb#27
   def create_literal(symtab, value, type); end
 end
 
@@ -4377,92 +6556,6 @@ end
 
 # source://idlc//lib/idlc/syntax_node.rb#12
 module Treetop::Runtime; end
-
-# source://idlc//lib/idlc.rb#16
-class Treetop::Runtime::CompiledParser
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#11
-  def initialize; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input=(_arg0); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#8
-  def consume_all_input?; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#38
-  def failure_column; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#30
-  def failure_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#34
-  def failure_line; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#43
-  def failure_reason; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def input; end
-
-  # source://idlc//lib/idlc.rb#17
-  def input_file; end
-
-  # source://idlc//lib/idlc.rb#28
-  def instantiate_node(node_type, *args); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#6
-  def max_terminal_failure_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#15
-  def parse(input, options = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#7
-  def root=(_arg0); end
-
-  # source://idlc//lib/idlc.rb#19
-  def set_input_file(filename, starting_line = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#54
-  def terminal_failures; end
-
-  protected
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#78
-  def forget_failures_to_here; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#106
-  def has_terminal?(terminal, mode, index); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#98
-  def idlc_instantiate_node(node_type, *args); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#66
-  def index=(_arg0); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#65
-  def input_length; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#65
-  def node_cache; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#87
-  def parse_anything(node_class = T.unsafe(nil), inline_module = T.unsafe(nil)); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#68
-  def prepare_to_parse(input); end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#83
-  def reset_index; end
-
-  # source://treetop/1.6.12/lib/treetop/runtime/compiled_parser.rb#120
-  def terminal_parse_failure(expected_string, unexpected = T.unsafe(nil)); end
-end
 
 # source://idlc//lib/idlc/syntax_node.rb#13
 class Treetop::Runtime::SyntaxNode
@@ -4532,3 +6625,5 @@ class Treetop::Runtime::SyntaxNode
   # source://treetop/1.6.12/lib/treetop/runtime/syntax_node.rb#113
   def write_dot_file(fname); end
 end
+
+module UdbGems; end

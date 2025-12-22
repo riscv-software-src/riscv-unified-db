@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: "ext_schema.json#"
 kind: extension
@@ -14,9 +14,10 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-11
-    requires:
-      allOf:
-        - name: S
-          version: ~> 1.13 # The latest ratified version of S when Sscntr was ratified
-        - name: Sscsrind
-          version: ~> 1.0
+requirements:
+  extension:
+    allOf:
+      - name: S
+        version: ~> 1.13 # The latest ratified version of S when Sscntr was ratified
+      - name: Sscsrind
+        version: ~> 1.0

@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zve32x
+long_name: Vector Extension for Minimal Vector Register Length of 32 Bits
+description: |
+  TBD - See GitHub issue 616
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+requirements:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: Zvl32b

@@ -13,11 +13,8 @@ description: |
   to the base address in register xs1.
   It expands to `fld` `fd, offset(xs1)`.
 definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - D
-    - Zcd
+  extension:
+    name: Zcd
 assembly: fd, imm(xs1)
 encoding:
   match: 001-----------00

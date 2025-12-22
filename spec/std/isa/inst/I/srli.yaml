@@ -7,7 +7,9 @@ kind: instruction
 name: srli
 long_name: Shift right logical immediate
 description: Shift the value in xs1 right by shamt, and store the result in xd
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, shamt
 encoding:
   RV32:

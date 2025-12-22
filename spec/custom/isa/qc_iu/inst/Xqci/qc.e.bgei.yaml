@@ -11,10 +11,10 @@ description: |
   Branches to `PC` + `offset` if the value in `rs1` is greater than or equal to the immediate `imm`.
   Instruction encoded in QC.EB instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibi
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibi
 encoding:
   match: -----------------------11101-----100-----0011111
   variables:

@@ -15,7 +15,10 @@ description: |
   exception flag to be set; no other exception flags are set. `fround.q` is encoded like `fcvt.q.s`, but with
   `rs2`=4.
 definedBy:
-  allOf: [Q, Zfa]
+  extension:
+    allOf:
+      - name: Q
+      - name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010001100100-------------1010011

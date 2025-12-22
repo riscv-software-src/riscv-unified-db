@@ -15,10 +15,10 @@ description: |
   Output written to `rd`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 000010100000-----011-----0001011
   variables:

@@ -1,0 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/exception_code_schema.json
+
+$schema: exception_code_schema.json#
+kind: exception_code
+name: LoadGuestPageFault
+num: 21
+display_name: Load guest-page fault
+definedBy:
+  extension:
+    name: H

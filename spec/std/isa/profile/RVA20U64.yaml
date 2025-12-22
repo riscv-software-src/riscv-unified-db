@@ -32,37 +32,37 @@ extensions:
   U:
     presence: mandatory
     version: "~> 2.0"
-    param_constraints:
-      U_MODE_ENDIANNESS:
-        schema:
-          const: little
+  Zicsr:
+    presence: mandatory
+    version: "~> 2.0"
   Zicntr:
     presence: mandatory
+    version: "~> 2.0"
   Ziccif:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Ziccif is a profile-defined extension introduced with RVA20.
       The fetch atomicity requirement facilitates runtime patching
       of aligned instructions.
   Ziccrse:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: Ziccrse is a profile-defined extension introduced with RVA20.
   Ziccamoa:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: Ziccamo is a profile-defined extension introduced with RVA20.
   Za128rs:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Za128rs is a profile-defined extension introduced with RVA20.
       The minimum reservation set size is effectively determined by the
       size of atomic accesses in the `A` extension.
   Zicclsm:
     presence: mandatory
-    version: "= 1.0"
+    version: "~> 1.0"
     note: |
       Zicclsm is a profile-defined extension introduced with RVA20.
       This requires misaligned support for all regular load and store
@@ -102,3 +102,7 @@ recommendations:
   - text: |
       Implementations are strongly recommended to raise illegal-instruction
       exceptions on attempts to execute unimplemented opcodes.
+param_constraints:
+  U_MODE_ENDIANNESS:
+    schema:
+      const: little

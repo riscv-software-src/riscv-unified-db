@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -11,10 +11,10 @@ description: |
   Move `rs1` to `rd` if `rd` == 0, keep `rd` value otherwise
   Instruction encoded in CL instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicm
 encoding:
   match: 101011---00---10
   variables:

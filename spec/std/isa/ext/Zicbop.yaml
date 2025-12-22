@@ -13,12 +13,3 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2022-05
-params:
-  CACHE_BLOCK_SIZE:
-    description: |
-      The observable size of a cache block, in bytes
-    also_defined_in: [Zicboz, Zicbom]
-    schema:
-      type: integer
-      minimum: 1
-      maximum: 0xFFFFFFFFFFFFFFFF

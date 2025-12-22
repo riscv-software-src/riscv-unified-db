@@ -12,9 +12,8 @@ description: |
   It computes an effective address by adding the zero-extended offset, to the base address in register xs1.
   It expands to `lh` `xd, offset(xs1)`.
 definedBy:
-  anyOf:
-    - Zcb
-    - Zce
+  extension:
+    name: Zcb
 assembly: xd, imm(xs1)
 encoding:
   match: 100001---1----00

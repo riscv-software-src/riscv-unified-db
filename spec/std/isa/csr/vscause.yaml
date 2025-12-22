@@ -13,7 +13,9 @@ virtual_address: 0x142
 priv_mode: VS
 length: VSXLEN
 description: Reports the cause of the latest exception taken in VS-mode.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   INT:
     location_rv64: 63
@@ -65,7 +67,7 @@ fields:
       Valid interrupt codes are:
       [separator="!"]
       !===
-      <%- interrupt_codes.sort_by { |code| code.num }.each do |code| -%>
+      <%- implemented_interrupt_codes.sort_by { |code| code.num }.each do |code| -%>
       ! <%= code.num %> ! <%= code.name %>
       <%- end -%>
       !===
@@ -73,7 +75,7 @@ fields:
       Valid exception codes are:
       [separator="!"]
       !===
-      <%- exception_codes.sort_by { |code| code.num }.each do |code| -%>
+      <%- implemented_exception_codes.sort_by { |code| code.num }.each do |code| -%>
       ! <%= code.num %> ! <%= code.name %>
       <%- end -%>
       !===

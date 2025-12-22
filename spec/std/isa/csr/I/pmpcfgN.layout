@@ -7,22 +7,29 @@
 $schema: csr_schema.json#
 kind: csr
 name: pmpcfg<%= pmpcfg_num %>
-<%- if pmpcfg_num.odd? -%>
-base: 32 # odd numbered pmpcfg registers do not exist in RV64
-<%- end -%>
 long_name: PMP Configuration Register <%= pmpcfg_num %>
 address: 0x<%= (0x3A0 + pmpcfg_num).to_s(16).upcase %>
 writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
-definedBy: Smpmp
+definedBy:
+<%- if pmpcfg_num.odd? -%>
+  allOf:
+    - xlen: 32 # odd numbered pmpcfg registers do not exist in RV64
+    - extension:
+        name: Smpmp
+<%- else -%>
+  extension:
+    name: Smpmp
+<%- end -%>
 fields:
   <%- (pmpcfg_num.odd? ? 4 : 8).times do |i| -%>
   pmp<%= pmpcfg_num*4 + i %>cfg:
     location: <%= ((i+1)*8)-1 %>-<%= i*8 %>
     <%- if i >= 4 -%>
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     <%- end -%>
     description: |
       *PMP configuration for entry <%= pmpcfg_num*4 + i %>*

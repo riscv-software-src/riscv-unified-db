@@ -7,9 +7,15 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.l
 long_name: Floating-point Convert Long to Half-precision
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        oneOf:
+          - name: Zfh
+          - name: Zhinx
 description: |
   `fcvt.h.l` converts a 64-bit signed integer to a half-precision floating-point number.
-definedBy: Zfh
 assembly: fd, xs1, rm
 encoding:
   match: 110101000010-------------1010011
@@ -26,5 +32,4 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 64
 operation(): |

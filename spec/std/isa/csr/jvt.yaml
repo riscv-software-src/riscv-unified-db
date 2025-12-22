@@ -17,7 +17,9 @@ description: |
   must be saved/restored on context switches.
 priv_mode: U
 length: XLEN
-definedBy: Zcmt
+definedBy:
+  extension:
+    name: Zcmt
 fields:
   BASE:
     location_rv64: 63-6
@@ -84,3 +86,5 @@ fields:
       return 0;
 sw_read(): |
   check_zcmt_enabled($encoding);
+
+  return $bits(CSR[jvt]);

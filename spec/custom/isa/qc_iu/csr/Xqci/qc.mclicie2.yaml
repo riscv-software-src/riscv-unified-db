@@ -9,12 +9,12 @@ name: qc.mclicie2
 long_name: IRQ Enable 2
 address: 0x7fa
 length: 32
-base: 32
 priv_mode: M
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 writable: true
 description: |
   Enable bits for IRQs 64-95

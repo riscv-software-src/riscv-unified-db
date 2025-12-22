@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HSTATEEN_ENVCFG_TYPE
+description: |
+  Behavior of the hstateen0.ENVCFG bit:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+long_name: TODO
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+requirements:
+  idl(): |
+    MSTATEEN_ENVCFG_TYPE == "read-only-0" -> HSTATEEN_ENVCFG_TYPE == "read-only-0";
+    MSTATEEN_ENVCFG_TYPE == "read-only-1" -> HSTATEEN_ENVCFG_TYPE == "read-only-1";
+  reason: |
+    When mstateen0.ENVCFG is read-only-0, hstateen0.ENVCFG must also be read-only-0
+
+    When mstateen1.ENVCFG is read-only-1, hstateen0.ENVCFG must also be read-only-1
+definedBy:
+  extension:
+    allOf:
+      - name: H
+        version: "~> 1.0"
+      - name: Ssstateen
+        version: "~> 1.0"

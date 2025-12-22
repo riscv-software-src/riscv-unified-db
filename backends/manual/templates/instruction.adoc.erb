@@ -173,25 +173,5 @@ RV64::
 
 == Containing profiles
 
-<%- inst_mandatory_ext = [] -%>
-<%- inst_optional_ext = [] -%>
-<%- cfg_arch.profiles.each do |profile| -%>
-<%-
-  in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
-  end
-  in_profile_optional = !in_profile_mandatory && profile.optional_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
-  end
-  if in_profile_mandatory
--%>
-<%- inst_mandatory_ext.push(profile.marketing_name) -%>
-<%- elsif in_profile_optional -%>
-<%- inst_optional_ext.push(profile.marketing_name) -%>
-<%- end -%>
-<%- end -%>
-
-* Mandatory: <%= inst_mandatory_ext.join(", ") %>
-* Optional: <%= inst_optional_ext.join(", ") %>
+* Mandatory: <%= inst.profiles_mandating_inst.empty? ? 'None' : inst.profiles_mandating_inst.map(&:marketing_name).join(", ") %>
+* Optional: <%= inst.profiles_optioning_inst.empty? ? 'None' : inst.profiles_optioning_inst.map(&:marketing_name).join(", ") %>

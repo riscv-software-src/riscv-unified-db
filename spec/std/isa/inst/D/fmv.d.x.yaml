@@ -6,11 +6,15 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fmv.d.x
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: D
 long_name: Floating-Point Move Double-Precision from Integer Register
 description: |
   The `fmv.d.x` instruction moves the double-precision value encoded in `IEEE 754-2008` standard encoding from the integer
   register `xs1` to the floating-point register `fd`.
-definedBy: D
 assembly: fd, xs1
 encoding:
   match: 111100100000-----000-----1010011
@@ -25,5 +29,4 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-base: 64
 operation(): |

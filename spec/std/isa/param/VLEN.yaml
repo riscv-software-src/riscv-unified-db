@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VLEN
+description: |
+  The number of bits in a single vector register.
+long_name: TODO
+schema:
+  type: integer
+#    requirements:
+#      idl(): |
+#        -> (VLEN >= ELEN) && (VLEN <='h10000) && (popcount(VLEN) == 1);
+#      reason: VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
+definedBy:
+  extension:
+    name: V

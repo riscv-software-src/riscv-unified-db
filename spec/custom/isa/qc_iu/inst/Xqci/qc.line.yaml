@@ -11,10 +11,10 @@ description: |
   Move `simm` to `rd` if the value in `rs1` is not equal to value `rs2`.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicli
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicli
 encoding:
   match: -----01----------001-----1011011
   variables:
