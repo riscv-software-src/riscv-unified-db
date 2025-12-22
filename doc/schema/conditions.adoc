@@ -219,8 +219,8 @@ a|
 
 | lessThan             | Parameter value is less than                        | lessThan: 5
 | greaterThan          | Parameter value is greater than                     | greaterThan: 5
-| lessThanOrEqual      | Parameter value is less than or equal to            | lessThan: 5
-| greaterThanOrEqual   | Parameter value is greater than or equal to         | greaterThan: 5
+| lessThanOrEqual      | Parameter value is less than or equal to            | lessThanOrEqual: 5
+| greaterThanOrEqual   | Parameter value is greater than or equal to         | greaterThanOrEqual: 5
 | oneOf                | Parameter value is equal to one element of an array | oneOf: [5, 7]
 |===
 
