@@ -205,7 +205,7 @@ namespace :test do
       exit 1
     end
 
-     Udb.logger.info "Encoding test PASSED"
+    Udb.logger.info "Encoding test PASSED"
   end
 
   desc "Check that CSR definitions in the DB are consistent and do not conflict"
@@ -515,7 +515,7 @@ end
 namespace :test do
   task :unit do
     Rake::Task["test:idlc:unit"].invoke
-    # Rake::Task["test:udb:unit"].invoke
+    Rake::Task["test:udb:unit"].invoke
     Rake::Task["test:udb_helpers:unit"].invoke
   end
   desc <<~DESC

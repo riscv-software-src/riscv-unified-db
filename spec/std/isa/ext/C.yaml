@@ -30,7 +30,7 @@ requirements:
       - xlen: 64
       - extension:
           name: Zcf
-    - anyOf:
+    - oneOf:
       - not:
           extension:
             name: D
