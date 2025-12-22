@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -61,6 +62,46 @@ module Idl
       end
     end
 
+    def do_compile(args, options)
+      if args.size != 1
+        if args.empty?
+          warn "Missing file to compile"
+        else
+          warn "Unexpected arguments: #{args[1..]}"
+        end
+        @runner.commands["help"].run
+        exit 1
+      end
+
+      compiler = Compiler.new
+
+      io =
+        if options.output == "-"
+          $stdout
+        else
+          File.open(options.output, "w")
+        end
+
+      compiler.parser.set_input_file(args[0], 0)
+      m = compiler.parser.parse(File.read(args[0]), root: options.root)
+      if m.nil?
+        raise SyntaxError, <<~MSG
+          While parsing #{args[0]}:#{compiler.parser.failure_line}
+
+          #{compiler.parser.failure_reason}
+        MSG
+      end
+
+      ast = m.to_ast
+      ast.set_input_file(args[0], 0)
+
+      if options.format == "yaml"
+        io.puts YAML.dump(ast.to_h)
+      else
+        raise "Unknown format: #{options.format}"
+      end
+    end
+
     def do_tc_inst(args, options, vars)
       compiler = Compiler.new
       symtab = SymbolTable.new
@@ -110,6 +151,24 @@ module Idl
 
           var, val = varandval.split("=")
           @defines[var] = val
+        end
+      end
+
+      command :compile do |c|
+        c.syntax = "idlc compile [options] PATH"
+        c.summary = "Compile idl, and return the result"
+        c.example "Convert to AST", "idlc compiler -f yaml PATH"
+        c.example "Convert operation() to AST", "idlc compiler -f yaml -r instruction_operation PATH"
+
+        c.option "--format FORMAT", String, "Output format"
+        c.option "--root ROOT_RULE", String, "Root rule to begin parsing"
+        c.option "--output OUTPUT", String, "Output file (- for STDOUT)"
+
+        c.action do |args, options|
+          options.default format: "yaml"
+          options.default root: "isa"
+          options.default output: "-"
+          do_compile(args, options)
         end
       end
 
