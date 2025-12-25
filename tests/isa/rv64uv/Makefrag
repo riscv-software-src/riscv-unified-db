@@ -2,7 +2,7 @@
 # Makefrag for rv64uv tests
 #-----------------------------------------------------------------------
 
-rv64uv_sc_tests = \
+rv64uv_sc_tests = vle8 \
     vsetivli \
     vsetvl \
     vsetvli_vl_lt_vlmax \
