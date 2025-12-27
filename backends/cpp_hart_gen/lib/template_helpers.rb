@@ -9,6 +9,9 @@ end
 module Udb
 class Instruction
   def assembly_fmt(xlen)
+    if name == "c.nop"
+      return (imm() == 0) ? "c.nop" : "c.nop {}"
+    end
     fmt = assembly.dup
     dvs = encoding(xlen).decode_variables
     dvs.each do |dv|
@@ -18,6 +21,9 @@ class Instruction
   end
 
   def assembly_fmt_args(xlen)
+    if name == "c.nop"
+      return (imm() == 0) ? "" : ", imm()"
+    end
     args = []
     dvs = encoding(xlen).decode_variables
     dvs.each do |dv|
