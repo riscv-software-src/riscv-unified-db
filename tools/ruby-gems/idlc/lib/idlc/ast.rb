@@ -3879,9 +3879,9 @@ module Idl
         elsif op == "|"
           # if one side is all ones, we don't need to know the other side
           rhs_type = rhs.type(symtab)
-          value_error("Unknown width") if rhs_type.width == :unknown
+          value_error("Unknown width") if rhs_type.width == :unknown || rhs_type.width.nil?
           lhs_type = lhs.type(symtab)
-          value_error("unknown width") if lhs_type.width == :unknown
+          value_error("unknown width") if lhs_type.width == :unknown || lhs_type.width.nil?
 
           value_result = value_try do
             rhs_mask = ((1 << rhs_type.width) - 1)
