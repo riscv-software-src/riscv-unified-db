@@ -31,6 +31,44 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  XReg narrow_vs2_lmul;
+  XReg lmul_inc;
+
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  for (U32 i = CSR[vstart].VALUE; i < vlmax; i++) {
+    U32 start_bit_pos   = i * state.sew;
+    U32 end_bit_pos     = start_bit_pos + state.sew - 1;
+    U32 n_start_bit_pos = (i * state.sew *2) % vlen;
+    U32 n_end_bit_pos   = n_start_bit_pos + (state.sew*2) - 1;
+    narrow_vs2_lmul = (i * state.sew *2) / vlen;
+    lmul_inc = (i * state.sew) / vlen;
+    U32 shift_amount = (((v[vs1+lmul_inc])[end_bit_pos:start_bit_pos])%(state.sew*2));
+    if (CSR[vl].VALUE > i){
+      v[vd+lmul_inc] = {
+        v[vd+lmul_inc][VLEN-1:end_bit_pos + 1],
+        mask_elements(vm,(v[vs2+narrow_vs2_lmul])
+        [n_end_bit_pos:n_start_bit_pos] >>> shift_amount)[end_bit_pos:start_bit_pos],
+        v[vd+lmul_inc][start_bit_pos-1:0]
+      };
+    } else {
+        v[vd+lmul_inc] = {
+        v[vd+lmul_inc][VLEN-1:end_bit_pos + 1],
+        tail_elements((v[vd+lmul_inc])[end_bit_pos:start_bit_pos])[end_bit_pos:start_bit_pos],
+        v[vd+lmul_inc][start_bit_pos-1:0]
+      };
+    }
+  }
+  CSR[vstart].VALUE = 0;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
