@@ -53,3 +53,39 @@ function vector_state {
     return state;
   }
 }
+
+function mask_elements {
+    returns Bits<64>
+    arguments
+        Bits<1> ins_mask_bit,
+        Bits<64> result
+    description {
+        Determines the value for masked elements based on mask policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+    }
+    body {
+        if (CSR[vtype].VMA == 0 || ins_mask_bit==1) {
+            return result;
+        } else {
+            return 64'hffff_ffff_ffff_ffff;
+        }
+    }
+}
+
+function tail_elements {
+    returns Bits<64>
+    arguments
+        Bits<64> result
+    description {
+        Determines the value for tail elements based on the selected tail policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+        Apply the tail policy when v[vstart] > VL.
+    }
+    body {
+        if (CSR[vtype].VTA==1) {
+            return 64'hffff_ffff_ffff_ffff;
+        } else {
+            return result;
+        }
+    }
+}
