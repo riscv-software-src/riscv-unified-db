@@ -6,11 +6,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: ssamoswap.d
-long_name: No synopsis available
+long_name: Atomic Swap Doubleword from a Shadow Stack Location
 description: |
-  No description available.
+  The `ssamoswap.w` atomically loads a 64-bit data value from address of a shadow
+  stack location in xs1, puts the loaded value into register xd, and stores the
+  64-bit value held in xs2 to the original address in xs1.
 definedBy: Zicfiss
 assembly: xd, xs2, xs1
+base: 64
 encoding:
   match: 01001------------011-----0101111
   variables:
@@ -31,3 +34,17 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (!implemented?(ExtensionName::S)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() < PrivilegeMode::M && CSR[menvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::U && CSR[senvcfg].SSE == 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].SSE == 0) ||
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].SSE == 0 || CSR[senvcfg].SSE == 0))) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+
+  if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
+    XReg addr_in_ssp = X[xs1];
+    X[xd] = amo<64>(addr_in_ssp, X[xs2], AmoOperation::Swap, aq, rl, $encoding);
+  }

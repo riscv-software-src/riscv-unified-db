@@ -5,15 +5,16 @@
 
 $schema: inst_schema.json#
 kind: instruction
-name: sspopchk.x1
-long_name: Pop from the Shadow Stack
+name: c.sspush.x1
+long_name: Push to the Shadow Stack from register x1, 16 bit version of sspush
 description: |
-  A shadow stack pop operation is defined as an XLEN wide read from the current top
-  of the shadow stack followed by an increment of the ssp by XLEN/8.
+  The c.sspush x1 expands to sspush x1, which is defined for decrement of the ssp by XLEN/8
+  followed by a store of the value in the link register x1 to memory at the new top of the
+  shadow stack.
 definedBy: Zicfiss
-assembly: sspopchk_x1
+assembly: c.sspush_x1
 encoding:
-  match: "11001101110000001100000001110011"
+  match: "0110000010000001"
   variables: []
 access:
   s: always
@@ -35,11 +36,8 @@ operation(): |
     raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
   }
 
-  if ((CSR[menvcfg].SSE == 1) || (CSR[henvcfg].SSE == 1) || (CSR[senvcfg].SSE == 1)) {
-    Bits<XLEN> ssp = csr_sw_read(csr_handle);
-    XReg temp = read_memory<XLEN>(ssp, $encoding);
-    if (temp != X[1]) {
-      raise(ExceptionCode::SoftwareCheck, mode(), $encoding);
-    }
-    csr_sw_write(csr_handle, (ssp + (XLEN/8)));
+  if ((CSR[menvcfg].SSE == 1'b1) || (CSR[henvcfg].SSE == 1'b1) || (CSR[senvcfg].SSE == 1'b1)) {
+    Bits<XLEN> ssp = csr_sw_read(csr_handle) - (XLEN/8);
+    write_memory<XLEN>(ssp, X[1], $encoding);
+    csr_sw_write(csr_handle, ssp);
   }
