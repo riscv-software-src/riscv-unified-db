@@ -2,7 +2,7 @@
 # Makefrag for rv32uv tests
 #-----------------------------------------------------------------------
 
-rv32uv_sc_tests = vle8 \
+rv32uv_sc_tests = vadd.vv vle8 \
     vsetivli \
     vsetvl \
     vsetvli_vl_lt_vlmax \
