@@ -44,7 +44,7 @@ operation(): |
     vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
   }
 
-  for (U32 i = CSR[vstart].VALUE; i < vlmax; i++) {
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
     U32 start_bit_pos = i * state.sew;
     U32 end_bit_pos = start_bit_pos + state.sew - 1;
     v[vd] = {
