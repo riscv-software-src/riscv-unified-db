@@ -1,0 +1,49 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hip
+long_name: Hypervisor Interrupt Pending Register
+description: |
+  The `hip` register is an HSXLEN-bit read/write register that indicates pending interrupts at the hypervisor level.
+  It contains interrupt-pending bits for both VS-level and hypervisor-specific interrupts.
+address: 0x608
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  SGEIP:
+    location: 12
+    type: RO
+    reset_value: 0
+    description: |
+      Pending interrupt bit for supervisor guest external interrupts (SGEI).
+      This bit is 1 if and only if the logical AND of `hgeip` and `hgeie` is nonzero.
+
+  VSEIP:
+    location: 10
+    type: RO
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level external interrupts (VSEI).
+      This bit is the logical OR of `vseip` from `hvip`, the interrupt from `hgeip` selected by `hstatus.VGEIN`,
+      and any other external interrupt signal directed to VS-level.
+
+  VSTIP:
+    location: 6
+    type: RO
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level timer interrupts (VSTI).
+      This bit is the logical OR of `vstip` from `hvip` and any other timer interrupt directed to VS-level.
+
+  VSSIP:
+    location: 2
+    type: RO
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level software interrupts (VSSI).
+      This bit is an alias of the `vssip` bit in `hvip`.
