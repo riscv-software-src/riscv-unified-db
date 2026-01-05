@@ -30,7 +30,7 @@ description: |
   !===
 priv_mode: U
 length: 32
-definedBy: Sscofpmf
+definedBy: Zihpm
 fields:
   COUNT:
     location: 31-0
