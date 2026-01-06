@@ -14,6 +14,12 @@ length: 64
 description: Machine Security Configuration
 definedBy:
   extension:
-    name: Sm
-    version: ">= 1.12"
+    allOf:
+      - name: Sm
+        version: ">= 1.12"
+      - anyOf:
+          - name: Zkr
+          - name: Smmpm
+          - name: Zicfilp
+          - name: Zicfilp
 fields: {}
