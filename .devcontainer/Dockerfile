@@ -11,7 +11,7 @@ RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
-    bundler \
+    cargo \
     clang-format \
     clang-tidy \
     cmake \
@@ -38,10 +38,20 @@ RUN \
     python3 \
     python3-pip \
     python3.12-venv \
-    ruby \
-    ruby-dev \
+    rustc \
     shellcheck \
     zlib1g-dev
+
+# build / install ruby
+COPY .ruby-version /opt/.ruby-version
+RUN <<CMDS
+  git clone https://github.com/rbenv/rbenv.git /opt/rbenv
+  export RBENV_ROOT=/opt/.rbenv
+  git clone https://github.com/rbenv/ruby-build.git "$(/opt/rbenv/bin/rbenv root)"/plugins/ruby-build
+  /opt/rbenv/bin/rbenv install $(cat /opt/.ruby-version | tr -d "\n")
+  /opt/rbenv/bin/rbenv global $(cat /opt/.ruby-version | tr -d "\n")
+  /opt/rbenv/bin/rbenv init - > /opt/.rbenv-init
+CMDS
 
 # build/install eqntott
 RUN  <<CMDS
@@ -94,5 +104,11 @@ RUN cd /opt/node && \
     rm /opt/node/package.json /opt/node/package-lock.json
 ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"
+ENV RBENV_ROOT=/opt/.rbenv
+ENV RUBY_YJIT_ENABLE=1
 
 WORKDIR /workspace
+
+COPY .devcontainer/docker-entrypoint.sh /
+RUN chmod a+x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
