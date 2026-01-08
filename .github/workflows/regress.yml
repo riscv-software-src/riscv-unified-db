@@ -48,10 +48,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          registry: ${{ env.REGISTRY }}
           file: ./.devcontainer/Dockerfile
           platforms: linux/amd64
-          tags: ${{ github.repository_owner }}/udb:${{ env.SHA }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/udb:${{ env.SHA }}
           cache-from: type=registry,ref=${{ github.repository_owner }}/udb:${{ env.SHA }}
           cache-to: type=inline
 
