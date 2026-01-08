@@ -7,7 +7,9 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sinval.vma
 long_name: Invalidate cached address translations
-definedBy: Svinval
+definedBy:
+  extension:
+    name: Svinval
 encoding:
   match: 0001011----------000000001110011
   variables:

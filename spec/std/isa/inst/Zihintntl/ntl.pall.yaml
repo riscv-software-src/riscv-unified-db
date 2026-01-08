@@ -11,7 +11,9 @@ description: |
   The NTL.PALL instruction indicates that the immediately subsequent instruction
   does not exhibit temporal locality within the capacity of any level of private
   cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.
-definedBy: Zihintntl
+definedBy:
+  extension:
+    name: Zihintntl
 assembly: ""
 encoding:
   match: "00000000001100000000000000110011"

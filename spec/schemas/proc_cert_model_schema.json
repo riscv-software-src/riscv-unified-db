@@ -206,19 +206,19 @@
             "presence": {
               "$ref": "schema_defs.json#/$defs/extension_presence"
             },
-            "param_constraints": {
-              "type": "object",
-              "patternProperties": {
-                "^[A-Z][A-Z0-9_]+$": {
-                  "$ref": "schema_defs.json#/$defs/parameter_constraint"
-                }
-              }
-            },
             "note": {
               "type": "string"
             }
           },
           "additionalProperties": false
+        }
+      }
+    },
+    "param_constraints": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z][A-Z0-9_]+$": {
+          "$ref": "schema_defs.json#/$defs/parameter_constraint"
         }
       }
     },

@@ -14,10 +14,12 @@ description: |
 
   `fsq` does not modify the bits being transferred; in particular, the payloads of non-canonical
   _NaNs_ are preserved.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
 assembly: fs2, imm(xs1)
 encoding:
-  match: -----------------100-----0100111
+  match: "-----------------100-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

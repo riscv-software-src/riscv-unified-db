@@ -12,8 +12,12 @@ description: |
   block cipher Key Schedule.
   `rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.
 definedBy:
-  anyOf: [Zknd, Zkne]
-base: 64
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: Zknd
+          - name: Zkne
 assembly: xd, xs1, rnum
 encoding:
   match: 00110001---------001-----0010011

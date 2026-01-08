@@ -14,9 +14,12 @@ description: |
   It expands to `sd` `xs2, offset(x2)`.
 definedBy:
   anyOf:
-    - C
-    - Zca
-    - Zclsd
+    - allOf:
+        - xlen: 64
+        - extension:
+            name: Zca
+    - extension:
+        name: Zclsd
 assembly: xs2, imm(sp)
 encoding:
   RV32:

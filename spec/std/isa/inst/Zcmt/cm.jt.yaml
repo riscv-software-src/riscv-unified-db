@@ -9,7 +9,9 @@ name: cm.jt
 long_name: Jump Via Table
 description: |
   Read an address from the Jump Vector Table and jump to it.
-definedBy: Zcmt
+definedBy:
+  extension:
+    name: Zcmt
 assembly: index
 encoding:
   match: 101000000-----10

@@ -1,3 +1,8 @@
+<%-
+  require 'tsort'
+  require "idlc/passes/find_referenced_csrs"
+-%>
+
 #pragma once
 
 #include "udb/cfgs/<%= cfg_arch.name %>/csrs.hxx"
@@ -20,8 +25,37 @@ namespace udb {
     {}
 
     void reset() {
-      <%- csrs.each do |csr| -%>
-      <%= csr.name %>.reset();
+      <%# to avoid initialization issues, csrs must be topologically sorted according to their defined/reset functions %>
+      <%-
+        class CsrSorter < Hash
+          include TSort
+          def initialize(csrs, cfg_arch)
+            csrs.each { |csr| store(csr.name, csr) }
+            @cfg_arch = cfg_arch
+          end
+          alias tsort_each_node each_key
+          def tsort_each_child(csr_name, &blk)
+            csr = fetch(csr_name)
+            # children are any csrs that reference csr in defined() or reset()
+            defined_kids =
+              if csr.defined_by_condition.mentions_xlen?(expand: true) || (@cfg_arch.multi_xlen? && csr.fields.any? { |field| field.dynamic_location? })
+                ["misa", "mstatus"]
+              else
+                []
+              end
+            csr.possible_fields.each do |f|
+              ast = f.pruned_reset_value_ast
+              unless ast.nil?
+                defined_kids += ast.find_referenced_csrs
+              end
+            end
+            defined_kids.uniq.each(&blk)
+          end
+        end
+        sorted_csrs = CsrSorter.new(csrs, cfg_arch).tsort
+      -%>
+      <%- sorted_csrs.each do |csr| -%>
+      <%= csr %>.reset();
       <%- end -%>
     }
   };

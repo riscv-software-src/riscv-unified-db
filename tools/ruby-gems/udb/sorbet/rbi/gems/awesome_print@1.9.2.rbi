@@ -63,6 +63,23 @@ module AwesomePrint
   end
 end
 
+# source://awesome_print//lib/awesome_print/ext/active_support.rb#7
+module AwesomePrint::ActiveSupport
+  # source://awesome_print//lib/awesome_print/ext/active_support.rb#28
+  def awesome_active_support_time(object); end
+
+  # source://awesome_print//lib/awesome_print/ext/active_support.rb#34
+  def awesome_hash_with_indifferent_access(object); end
+
+  # source://awesome_print//lib/awesome_print/ext/active_support.rb#14
+  def cast_with_active_support(object, type); end
+
+  class << self
+    # source://awesome_print//lib/awesome_print/ext/active_support.rb#9
+    def included(base); end
+  end
+end
+
 # source://awesome_print//lib/awesome_print/colorize.rb#4
 module AwesomePrint::Colorize
   # source://awesome_print//lib/awesome_print/colorize.rb#8
@@ -72,6 +89,7 @@ end
 # source://awesome_print//lib/awesome_print/formatter.rb#9
 class AwesomePrint::Formatter
   include ::AwesomePrint::Colorize
+  include ::AwesomePrint::ActiveSupport
   include ::AwesomePrint::OpenStruct
 
   # source://awesome_print//lib/awesome_print/formatter.rb#16
@@ -81,6 +99,9 @@ class AwesomePrint::Formatter
   def cast(object, type); end
 
   # source://awesome_print//lib/awesome_print/formatter.rb#36
+  def cast_without_active_support(object, type); end
+
+  # source://awesome_print//lib/awesome_print/ext/active_support.rb#14
   def cast_without_ostruct(object, type); end
 
   # source://awesome_print//lib/awesome_print/formatter.rb#23

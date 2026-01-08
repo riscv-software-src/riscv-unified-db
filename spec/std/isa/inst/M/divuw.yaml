@@ -13,8 +13,11 @@ description: |
   The remainder is discarded.
 
   If the value in xs2 is zero, xd is written with all 1s.
-definedBy: M
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------101-----0111011

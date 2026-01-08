@@ -71,7 +71,7 @@ volumes:
       - src/index.adoc
     extensions:
       - { name: I, version: "2.1.0" }
-      - { name: U, version: "1.12.0" }
+      - { name: U, version: "1.0.0" }
       # - { name: E, version: "2.0" }
       # - { name: RVI64, version: "2.1" }
       # - { name: RVI128, version: "1.7" }
@@ -81,7 +81,7 @@ volumes:
       - { name: Zihpm, version: "2.0.0" }
       - { name: Zihintntl, version: "1.0.0" }
       - { name: Zihintpause, version: "2.0.0" }
-      - { name: Zimop, version: "2.0.0" }
+      - { name: Zimop, version: "1.0.0" }
       - { name: Zicond, version: "1.0.0" }
       - { name: M, version: "2.0.0" }
       - { name: A, version: "2.1.0" }
@@ -203,7 +203,7 @@ volumes:
       - { name: Sscsrind, version: "1.0.0" }
       - { name: Smepmp, version: "1.0.0" }
       - { name: Smcntrpmf, version: "1.0.0" }
-      - { name: Smrnmi, version: "0.5.0" }
+      - { name: Smrnmi, version: "1.0.0" }
       - { name: Smcdeleg, version: "1.0.0" }
       - { name: S, version: "1.12.0" }
       - { name: Sm, version: "1.12.0" }

@@ -7,9 +7,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: subw
 long_name: Subtract word
-description: Subtract the 32-bit values in xs2 from xs1, and store the sign-extended result in xd
-definedBy: I
-base: 64
+description:
+  Subtract the 32-bit values in xs2 from xs1, and store the sign-extended
+  result in xd
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------000-----0111011

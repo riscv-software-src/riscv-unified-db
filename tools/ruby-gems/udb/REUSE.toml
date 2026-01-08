@@ -15,6 +15,7 @@ SPDX-License-Identifier = "BSD-3-Clause-Clear"
 [[annotations]]
 path = [
     "sorbet/**",
+    "test/boolean_expressions.json",
     "Gemfile.lock"
 ]
 SPDX-FileCopyrightText = "NONE"

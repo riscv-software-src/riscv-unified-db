@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
@@ -31,7 +32,7 @@ class TestCli < CliTest
   end
 
   def test_operation_tc
-    Tempfile.open('idl') do |f|
+    Tempfile.open("idl") do |f|
       f.write <<~YAML
         operation(): |
           XReg src1 = X[xs1];
@@ -42,7 +43,6 @@ class TestCli < CliTest
       f.flush
 
       run_cmd("idlc tc inst -k 'operation()' -d xs1=5 -d xs2=5 -d xd=5 #{f.path}")
-      puts result.out
       assert_equal 0, result.status
       assert_empty result.err, "nothing should be written to STDERR"
       assert_empty result.out, "nothing should be written to STDOUT"

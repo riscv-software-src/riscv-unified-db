@@ -1,0 +1,8 @@
+version = 1
+
+[[annotations]]
+path = ["**/.gitattributes", "**.gitignore", "**.gitreview"]
+comment = "version control system. Infrastructure"
+precedence = "closest"
+SPDX-FileCopyrightText = "Qualcomm Technologies, Inc. and/or its subsidiaries."
+SPDX-License-Identifier = "CC0-1.0"

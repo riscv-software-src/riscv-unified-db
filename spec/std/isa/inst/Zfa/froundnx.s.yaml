@@ -9,7 +9,9 @@ name: froundnx.s
 long_name: Floating-point Round Single-precision to Integer with Inexact
 description: |
   No description available.
-definedBy: Zfa
+definedBy:
+  extension:
+    name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010000000101-------------1010011

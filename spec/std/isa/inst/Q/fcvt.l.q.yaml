@@ -7,10 +7,13 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.l.q
 long_name: Floating-Point Convert Quad-Precision to Long
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Q
 description: |
   `fcvt.l.q` converts a quad-precision floating-point number to a signed 64-bit integer.
-definedBy: Q
-base: 64
 assembly: xd, fs1, rm
 encoding:
   match: 110001100010-------------1010011

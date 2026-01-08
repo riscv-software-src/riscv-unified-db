@@ -107,7 +107,9 @@ description: |
 address: 0x680
 writable: true
 priv_mode: S
-definedBy: H
+definedBy:
+  extension:
+    name: H
 length: SXLEN
 fields:
   MODE:

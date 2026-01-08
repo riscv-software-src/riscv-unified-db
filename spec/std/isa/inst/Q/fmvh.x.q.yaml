@@ -14,8 +14,12 @@ description: |
   `fmvh.x.q` is used in conjunction with the existing `fmv.x.d` instruction to move a quad-precision floating-point
   number to a pair of x-registers.
 definedBy:
-  allOf: [Q, Zfa]
-base: 64
+  allOf:
+    - xlen: 64
+    - extension:
+        allOf:
+          - name: Q
+          - name: Zfa
 assembly: xd, fs1
 encoding:
   match: 111001100001-----000-----1010011

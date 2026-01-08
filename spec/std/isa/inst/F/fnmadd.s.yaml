@@ -10,10 +10,12 @@ long_name: Floating-Point Negate-Multiply-Add Single-Precision
 description: |
   The `fnmadd.s` multiplies the values in `fs1` and `fs2`, negates the product, subtracts the value in `fs3`, and
   writes the final result to `fd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2, fs3, rm
 encoding:
-  match: -----00------------------1001111
+  match: "-----00------------------1001111"
   variables:
     - name: fs3
       location: 31-27

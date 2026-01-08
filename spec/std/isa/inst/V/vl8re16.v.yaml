@@ -9,7 +9,9 @@ name: vl8re16.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, (xs1)
 encoding:
   match: 111000101000-----101-----0000111

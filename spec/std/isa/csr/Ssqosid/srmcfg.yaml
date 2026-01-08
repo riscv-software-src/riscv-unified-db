@@ -10,7 +10,9 @@ address: 0x181
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Ssqosid
+definedBy:
+  extension:
+    name: Ssqosid
 description: |
   The `srmcfg` register is used to configure a Resource Control ID (`RCID`) and a Monitoring Counter ID (`MCID`).
   Both `RCID` and `MCID` are WARL fields.

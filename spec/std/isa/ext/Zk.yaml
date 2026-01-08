@@ -19,20 +19,24 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-12
-    implies:
-      - name: "Zkn"
-        version: "1.0.0"
-      - name: "Zkr"
-        version: "1.0.0"
-      - name: "Zkt"
-        version: "1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zkn
+            version: "= 1.0.0"
+          - name: Zkr
+            version: "= 1.0.0"
+          - name: Zkt
+            version: "= 1.0.0"
   - version: "1.0.1"
     state: ratified
     ratification_date: 2022-02
-    implies:
-      - name: "Zkn"
-        version: "1.0.1"
-      - name: "Zkr"
-        version: "1.0.1"
-      - name: "Zkt"
-        version: "1.0.1"
+    requirements:
+      extension:
+        allOf:
+          - name: Zkn
+            version: "= 1.0.1"
+          - name: Zkr
+            version: "= 1.0.1"
+          - name: Zkt
+            version: "= 1.0.1"

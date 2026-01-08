@@ -9,7 +9,9 @@ name: sspopchk.x5
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zicfiss
+definedBy:
+  extension:
+    name: Zicfiss
 assembly: sspopchk_x5
 encoding:
   match: "11001101110000101100000001110011"

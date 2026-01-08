@@ -12,9 +12,8 @@ description: |
   The xd register index should be used as xd+8 (registers x8-x15).
   C.ANDI expands into `andi xd, xd, imm`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    name: Zca
 assembly: xd, imm
 encoding:
   match: 100-10--------01

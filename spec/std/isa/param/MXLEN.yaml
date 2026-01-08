@@ -1,0 +1,54 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MXLEN
+long_name: XLEN in machine mode
+definedBy:
+  extension:
+    name: Sm
+description: XLEN in machine mode, specified in bits
+schema:
+  type: integer
+  enum: [32, 64]
+requirements:
+  idl(): |
+    # if M-mode is rv32, then every mode must be rv32
+    MXLEN == 32 -> xlen() == 32;
+
+    # can't get in to rv64 anywhere unless MXLEN is 64
+    xlen() == 64 -> MXLEN == 64;
+
+    # if it's just M-mode, then xlen is always MXLEN
+    (MXLEN == 64) && !implemented?(ExtensionName::U) -> xlen() == 64;
+
+    # if MXLEN is 64, and none of (V)UXLEN, (V)SXLEN can be 32, then xlen is always 64
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::H) &&
+      !$array_includes?(VUXLEN, 32) &&
+      !$array_includes?(VSXLEN, 32) &&
+      !$array_includes?(UXLEN, 32) &&
+      !$array_includes?(SXLEN, 32)
+    ) -> xlen() == 64;
+
+    # if it's just M-mode, S-mode, and U-mode, MXLEN is 64, and neither UXLEN nor SXLEN can be 32, then xlen is always 64
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::S) &&
+      !implemented?(ExtensionName::H) &&
+      !$array_includes?(UXLEN, 32) &&
+      !$array_includes?(SXLEN, 32)
+    ) -> xlen() == 64;
+
+    # if it's just M-mode and U-mode, MXLEN is 64, and UXLEN can't be 32, then xlen is always 64
+    (
+      MXLEN == 64 &&
+      implemented?(ExtensionName::U) &&
+      !implemented?(ExtensionName::S) &&
+      !implemented?(ExtensionName::H) &&
+      !$array_includes?(UXLEN, 32)
+    ) -> xlen() == 64;
