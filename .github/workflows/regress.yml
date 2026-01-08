@@ -50,8 +50,8 @@ jobs:
           push: true
           file: ./.devcontainer/Dockerfile
           platforms: linux/amd64
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/udb:${{ env.SHA }}
-          cache-from: type=registry,ref=${{ github.repository_owner }}/udb:${{ env.SHA }}
+          tags: ${{ env.REGISTRY }}/${{ github.actor}}/udb:${{ env.SHA }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ github.actor }}/udb:${{ env.SHA }}
           cache-to: type=inline
 
   regress-pre-commit:
