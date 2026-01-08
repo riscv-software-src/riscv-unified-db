@@ -205,6 +205,8 @@ jobs:
         run: docker load --input ${{ runner.temp }}/docker_image.tar
       - name: Run udb gem test_${{ matrix.config }} unit test
         run: ./bin/ruby tools/ruby-gems/udb/test/test_cfg.rb -n test_cfg_${{ matrix.config }}_valid
+      - name: Update ownership of coverage files # TODO: Remove when Docker image uses non-root user
+        run: sudo chown -R $USER:$USER tools/ruby-gems/udb/coverage
       - name: Rename coverage file
         run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.config }}.resultset.json
       - name: Save coverage report
@@ -236,6 +238,8 @@ jobs:
         run: docker load --input ${{ runner.temp }}/docker_image.tar
       - name: Run udb gem ${{ matrix.test }} unit tests
         run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
+      - name: Update ownership of coverage files # TODO: Remove when Docker image uses non-root user
+        run: sudo chown -R $USER:$USER tools/ruby-gems/udb/coverage
       - name: Rename coverage file
         run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
       - name: Save coverage report
