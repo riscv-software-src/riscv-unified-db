@@ -11,7 +11,6 @@ RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
-    cargo \
     clang-format \
     clang-tidy \
     cmake \
