@@ -486,7 +486,7 @@ jobs:
     needs: build-container
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: "true"
       - name: Download docker image
@@ -496,6 +496,8 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
+      - name: Fix git ownership
+        run: git config --global --add safe.directory ${{ github.workspace }}
       - name: Run RV32 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-riscv-tests-64:
@@ -503,7 +505,7 @@ jobs:
     needs: build-container
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: "true"
       - name: Download docker image
@@ -513,6 +515,8 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
+      - name: Fix git ownership
+        run: git config --global --add safe.directory ${{ github.workspace }}
       - name: Run RV64 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-xqci-doc:
