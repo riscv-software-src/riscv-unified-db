@@ -286,7 +286,7 @@ jobs:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: "recursive"
           fetch-depth: 0 # needed to get full history of ISA manual
       - name: Download docker image
         uses: actions/download-artifact@v4
@@ -296,7 +296,7 @@ jobs:
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
       - name: Generate HTML ISA manual
-        run: ./do gen:html_manual
+        run: ./do gen:html_manual MANUAL_NAME=${MANUAL_NAME} VERSIONS=${VERSIONS}
   regress-gen-instruction-appendix:
     runs-on: ubuntu-latest
     needs: build-container
@@ -492,7 +492,7 @@ jobs:
       - name: Clone Github Repo Action
         uses: actions/checkout@v6
         with:
-          submodules: "true"
+          submodules: "recursive"
       - name: Download docker image
         uses: actions/download-artifact@v4
         with:
@@ -500,8 +500,6 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
-      - name: Fix git ownership
-        run: git config --global --add safe.directory ${{ github.workspace }}
       - name: Run RV32 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-riscv-tests-64:
@@ -511,7 +509,7 @@ jobs:
       - name: Clone Github Repo Action
         uses: actions/checkout@v6
         with:
-          submodules: "true"
+          submodules: "recursive"
       - name: Download docker image
         uses: actions/download-artifact@v4
         with:
@@ -519,8 +517,6 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
-      - name: Fix git ownership
-        run: git config --global --add safe.directory ${{ github.workspace }}
       - name: Run RV64 riscv-tests
         run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
   regress-xqci-doc:
