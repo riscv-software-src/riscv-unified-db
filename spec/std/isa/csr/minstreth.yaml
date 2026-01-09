@@ -15,7 +15,6 @@ description: |
   See `minstret` for details.
 priv_mode: M
 length: 32
-base: 32
 fields:
   COUNT:
     alias:
@@ -31,6 +30,10 @@ fields:
     sw_write(csr_value): |
       CSR[mcycle].COUNT = {csr_value.COUNT[31:0], CSR[minstret].COUNT[31:0]};
       return csr_value.COUNT;
-definedBy: Zicntr
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zicntr
 sw_read(): |
   return CSR[minstret].COUNT[63:32];

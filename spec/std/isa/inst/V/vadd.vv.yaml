@@ -1,4 +1,5 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
@@ -6,10 +7,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vadd.vv
-long_name: No synopsis available
+long_name: Vector-vector integer addition
 description: |
-  No description available.
-definedBy: V
+  Add source vector register groups from vs1 and vs2 according to mask vm and store results in vd.
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 000000-----------000-----1010111
@@ -29,6 +32,29 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    # (lmul_type == VectorLmulType::Divide)
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  for (U32 i = CSR[vstart].VALUE; i < vlmax; i++) {
+    U32 start_bit_pos = i * state.sew;
+    U32 end_bit_pos = start_bit_pos + state.sew - 1;
+    v[vd] = {
+      v[vd][VLEN-1:end_bit_pos + 1],
+      (v[vs2])[end_bit_pos:start_bit_pos] + (v[vs1])[end_bit_pos:start_bit_pos],
+      v[vd][start_bit_pos-1:0]
+      };
+  }
+
+  CSR[vstart].VALUE = 0;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

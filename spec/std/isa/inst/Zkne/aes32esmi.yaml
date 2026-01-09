@@ -9,8 +9,11 @@ name: aes32esmi
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zkne
-base: 32
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zkne
 assembly: xd, xs1, xs2, bs
 encoding:
   match: --10011----------000-----0110011

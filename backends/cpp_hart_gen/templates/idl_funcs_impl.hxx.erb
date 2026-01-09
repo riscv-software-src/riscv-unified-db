@@ -14,8 +14,8 @@
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %><SocType>::global_name
 #define __UDB_MUTABLE_GLOBAL(global_name) global_name
 #define __UDB_STRUCT(struct_name) <%= name_of(:cfg, cfg_arch) %>_ ## struct_name ## _Struct
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
-#define __UDB_RUNTIME_PARAM(param_name) m_params.param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
+#define __UDB_RUNTIME_PARAM(param_name) m_params.param_name.value()
 #define __UDB_CSR_BY_NAME(csr_name) m_csrs.csr_name
 #define __UDB_CSR_BY_ADDR(csr_addr) (*csr(csr_addr))
 #define __UDB_FUNC_CALL this->
@@ -32,18 +32,6 @@ namespace udb {
 <%# next unless func.templated? || func.constexpr?(cfg_arch.symtab) # non-templated functions come next -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(func) -%>
 
-<%- if func.name == "ary_includes?" -%>
-template <SocModel SocType>
-template <unsigned ARY_SIZE, typename ElementType, typename ValueType>
-constexpr bool <%= name_of(:hart, cfg_arch) %><SocType>::ary_includes_Q_(const std::array<ElementType, ARY_SIZE>& ary, const ValueType& value) {
-  return std::ranges::find(ary, static_cast<ElementType>(value)) != std::ranges::end(ary);
-}
-template <SocModel SocType>
-template <typename ElementType, typename ValueType>
-bool <%= name_of(:hart, cfg_arch) %><SocType>::ary_includes_Q_(const std::vector<ElementType>& ary, const ValueType& value) {
-  return std::ranges::find(ary, static_cast<ElementType>(value)) != std::ranges::end(ary);
-}
-<%- else -%>
 //
 // <%= func.description.gsub("\n", "\n// ") %>
 template <SocModel SocType>
@@ -73,7 +61,6 @@ template <SocModel SocType>
   <%- pruned_func = func.prune(symtab).freeze_tree(symtab) -%>
   <%= pruned_func.body.gen_cpp(symtab) %>
 }
-<%- end -%>
 <%- symtab.release -%>
 <%- end -%>
 

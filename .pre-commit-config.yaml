@@ -19,7 +19,8 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        exclude: \.((golden\.adoc)|svg)$
+        # Exclude reference and generated files
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml$)
       - id: trailing-whitespace
         stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]
@@ -40,7 +41,7 @@ repos:
       - id: prettier
         stages: [pre-commit]
         files: \.(json|toml|yml|yaml)$
-        exclude: schemas/json-schema-draft-07.json
+        exclude: schemas/json-schema-draft-07.json|cfgs/profile/.*
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.33.0
@@ -139,3 +140,8 @@ repos:
     hooks:
       - id: reuse-lint-file
         exclude: COMMIT_EDITMSG|MERGE_MSG
+
+  - repo: https://github.com/renovatebot/pre-commit-hooks
+    rev: 42.52.2
+    hooks:
+      - id: renovate-config-validator

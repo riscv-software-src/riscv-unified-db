@@ -7,8 +7,14 @@ $schema: inst_schema.json#
 kind: instruction
 name: c.mop.n
 long_name: Compressed May-Be-Operation
-description: C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI xn, 0. Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions are defined to not write any register. Their encoding allows future extensions to define them to read register x[n].
-definedBy: Zcmop
+description:
+  C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI
+  xn, 0. Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions
+  are defined to not write any register. Their encoding allows future extensions to
+  define them to read register x[n].
+definedBy:
+  extension:
+    name: Zcmop
 assembly: ""
 encoding:
   match: 01100---10000001

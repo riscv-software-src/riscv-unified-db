@@ -149,7 +149,8 @@ namespace udb {
     VersionRequirement() : m_op(OpKind::GTE), m_version(0, 0, 0, false) {}
 
     constexpr VersionRequirement(const std::string_view& req)
-        : m_op(op_from_str(req)) {
+      : m_op(op_from_str(req))
+    {
       set(req);
     }
     constexpr VersionRequirement(const OpKind& op_kind, unsigned major,

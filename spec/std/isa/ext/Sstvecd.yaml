@@ -23,7 +23,7 @@ versions:
     contributors:
       - name: Krste Asanovic
         company: SiFive, Inc.
-    param_constraints:
-      STVEC_MODE_DIRECT:
-        schema:
-          const: true
+requirements:
+  param:
+    name: STVEC_MODE_DIRECT
+    equal: true

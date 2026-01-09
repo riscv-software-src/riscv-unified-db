@@ -30,7 +30,10 @@ description: |
   * The instruction is executed in VS-mode and `hstateen0.CTR`=0
   * The instruction is executed in VU-mode
 definedBy:
-  anyOf: [Smctr, Ssctr]
+  extension:
+    anyOf:
+      - name: Smctr
+      - name: Ssctr
 assembly: ""
 encoding:
   match: "00010000010000000000000001110011"

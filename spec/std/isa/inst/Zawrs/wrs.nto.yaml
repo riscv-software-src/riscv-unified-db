@@ -39,7 +39,9 @@ description: |
   may promptly cause an illegal instruction exception if used at U-mode.
   Unlike WFI, `wrs.nto` is expected to be used by software in U-mode when waiting on memory but without
   a deadline for that wait.
-definedBy: Zawrs
+definedBy:
+  extension:
+    name: Zawrs
 assembly: ""
 encoding:
   match: "00000000110100000000000001110011"

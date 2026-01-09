@@ -11,10 +11,10 @@ description: |
   Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcia
 encoding:
   match: 0001100----------011-----0001011
   variables:

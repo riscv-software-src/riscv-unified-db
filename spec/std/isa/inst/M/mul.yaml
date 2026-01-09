@@ -21,7 +21,10 @@ description: |
   performing two separate multiplies.
 
 definedBy:
-  anyOf: [M, Zmmul]
+  extension:
+    anyOf:
+      - name: M
+      - name: Zmmul
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------000-----0110011

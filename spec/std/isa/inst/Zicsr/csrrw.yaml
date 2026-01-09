@@ -15,10 +15,12 @@ description: |
   The initial value in xs1 is written to the CSR.
   If `xd=x0`, then the instruction shall not read the CSR and shall not
   cause any of the side effects that might occur on a CSR read.
-definedBy: Zicsr
+definedBy:
+  extension:
+    name: Zicsr
 assembly: xd, csr, xs1
 encoding:
-  match: -----------------001-----1110011
+  match: "-----------------001-----1110011"
   variables:
     - name: csr
       location: 31-20

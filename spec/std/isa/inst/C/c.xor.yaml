@@ -12,9 +12,8 @@ description: |
   The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
   C.XOR expands into `xor xd, xd, xs2`.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    name: Zca
 assembly: xd, xs2
 encoding:
   match: 100011---01---01

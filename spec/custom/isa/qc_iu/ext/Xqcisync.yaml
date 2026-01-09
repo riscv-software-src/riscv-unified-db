@@ -32,7 +32,8 @@ versions:
   changes:
     - Fix decoding of qc.c.delay instruction (state that immediate cannot be 0)
     - Add requirement to include Zca extension since has 16-bit instructions
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 - version: "0.3.0"
   state: frozen
   ratification_date: null
@@ -45,7 +46,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix IDL code for qc.c.sync, qc.c.syncr, qc.c.syncwf and qc.c.syncwl instructions because change in IDL '<<' operator
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcisync extension includes nine instructions, eight for non-memory-mapped devices synchronization and delay instruction.
   Synchronization instructions are kind of IO fences that work with special devices synchronization signals.
@@ -56,3 +58,5 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+requirements:
+  xlen: 32

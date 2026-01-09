@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HCONTEXT_AVAILABLE
+description: |
+  Specifies if HCONTEXT is available
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Sdtrig
+requirements:
+  idl(): HCONTEXT_AVAILABLE -> MCONTEXT_AVAILABLE;
+  reason: HCONTEXT cannot exist without MCONTEXT

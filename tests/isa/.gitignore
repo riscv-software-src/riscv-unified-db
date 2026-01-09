@@ -1,0 +1,5 @@
+#SPDX-FileCopyrightText = "Qualcomm Technologies, Inc. and/or its subsidiaries."
+#SPDX-License-Identifier = "CC0-1.0"
+
+# Ignore all compiled tests and dump files
+rv??uv-?-*

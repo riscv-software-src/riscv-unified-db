@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: ASID_WIDTH
+description:
+  "Number of implemented ASID bits. Maximum is 16 for XLEN==64, and 9 for
+  XLEN==32
+
+  "
+long_name: TODO
+schema:
+  oneOf:
+    - when:
+        param:
+          name: MXLEN
+          equal: 32
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 9
+    - when:
+        param:
+          name: MXLEN
+          equal: 64
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 16
+definedBy:
+  extension:
+    name: S

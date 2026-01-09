@@ -10,13 +10,12 @@ long_name: IRQ Level 26
 address: 0xbda
 length: 32
 priv_mode: M
-base: 32
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">=0.7"
-    - name: Xqciint
-      version: ">=0.4"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+        version: ">=0.4"
 writable: true
 description: |
   Level bits for IRQs 208-215

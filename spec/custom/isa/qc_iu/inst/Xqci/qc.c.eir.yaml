@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -11,11 +11,11 @@ description: |
   Globally restore interrupts, write bit 3 of rs1 to `mstatus.MIE` and `qc.mcause.MIE`.
   Instruction encoded in CI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 assembly: xs1
-base: 32
 encoding:
   match: 0001-----0000110
   variables:

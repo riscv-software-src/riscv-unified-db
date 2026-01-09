@@ -16,10 +16,12 @@ description: |
   to be set in the CSR. Any bit that is high in `xs1` will cause the
   corresponding bit to be set in the CSR, if that CSR bit is writable.
   Other bits in the CSR are not explicitly written.
-definedBy: Zicsr
+definedBy:
+  extension:
+    name: Zicsr
 assembly: xd, csr, xs1
 encoding:
-  match: -----------------010-----1110011
+  match: "-----------------010-----1110011"
   variables:
     - name: csr
       location: 31-20

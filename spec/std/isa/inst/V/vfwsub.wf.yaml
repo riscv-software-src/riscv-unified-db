@@ -9,7 +9,9 @@ name: vfwsub.wf
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, fs1, vm
 encoding:
   match: 110110-----------101-----1010111

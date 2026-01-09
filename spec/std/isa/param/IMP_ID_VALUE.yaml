@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: IMP_ID_VALUE
+long_name: Vendor-specific implementation ID in `mimpid`
+definedBy:
+  allOf:
+    - extension:
+        name: Sm
+    - param:
+        name: MIMPID_IMPLEMENTED
+        equal: true
+        reason: IMP_ID_VALUE is not needed if `mimpid` is not implemented.
+description: |
+  A unique encoding of the version of the processor implementation.
+schema:
+  oneOf:
+    - when:
+        param:
+          name: MXLEN
+          equal: 32
+      schema:
+        $ref: schema_defs.json#/$defs/uint32
+    - when:
+        param:
+          name: MXLEN
+          equal: 64
+      schema:
+        $ref: schema_defs.json#/$defs/uint64

@@ -97,7 +97,9 @@ description: |
 
 priv_mode: U
 length: 32
-definedBy: F
+definedBy:
+  extension:
+    name: F
 fields:
   FRM:
     location: 7-5

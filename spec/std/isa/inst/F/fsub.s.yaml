@@ -9,7 +9,9 @@ name: fsub.s
 long_name: Floating-Point Subtract Single-Precision
 description: |
   The `fsub.s` instruction performs the single-precision floating-point subtraction of `fs2` from `fs1` and writes the result in `fd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000100------------------1010011

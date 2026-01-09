@@ -11,10 +11,10 @@ description: |
   Move `rs3` to `rd` if the value in `rs1` is great or equal than value of `imm`.
   Instruction encoded in R4 instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicm
 encoding:
   match: -----10----------101-----1011011
   variables:

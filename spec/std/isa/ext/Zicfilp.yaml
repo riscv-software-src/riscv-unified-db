@@ -14,25 +14,3 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-07
-params:
-  REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK:
-    description: |
-      When true, `mtval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into M-mode due to a landing pad error.
-
-      When false, `mtval` is written with 0.
-    schema:
-      type: boolean
-  REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK:
-    description: |
-      When true, `stval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into S-mode due to a landing pad error.
-
-      When false, `stval` is written with 0.
-    schema:
-      type: boolean
-  REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK:
-    description: |
-      When true, `vstval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into VS-mode due to a landing pad error.
-
-      When false, `vstval` is written with 0.
-    schema:
-      type: boolean

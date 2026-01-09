@@ -18,6 +18,7 @@ From: ubuntu:24.04
     clang-format \
     clang-tidy \
     cmake \
+    curl \
     ditaa \
     g++ \
     gcc-riscv64-linux-gnu \
@@ -25,12 +26,15 @@ From: ubuntu:24.04
     gdb \
     gh \
     git \
+    gpg \
     less \
     libc6-dev-riscv64-cross \
     libelf-dev \
     libgmp-dev \
     libnewlib-dev \
     libyaml-dev \
+    libz3-dev \
+    minisat \
     nodejs \
     npm \
     parallel \
@@ -39,12 +43,35 @@ From: ubuntu:24.04
     python3.12-venv \
     ruby \
     ruby-dev \
-    shellcheck
+    shellcheck \
+    zlib1g-dev
 
-# cleanup
-  apt-get clean autoclean
-  apt-get autoremove -y
-  rm -rf /var/lib/{apt, dpkg, cache, log}
+  # build/install eqntott
+  git clone --depth=1 https://github.com/TheProjecter/eqntott.git
+  cd eqntott
+  ./configure
+  make && make install
+  cd ..
+  rm -rf eqntott
+
+  # build/install espresso
+  git clone --depth=1 https://github.com/psksvp/espresso-ab-1.0.git
+  cd espresso-ab-1.0
+  ./configure
+  make && make install
+  cd ..
+  rm -rf espresso-ab-1.0
+
+  # build / install must
+  git clone https://github.com/jar-ben/mustool.git
+  cd mustool
+  git checkout 17fa9f9542a9ce05328dfccd1cd410f05f741ab3
+  # mcsmus/mcsmus/control.cc is missing #include <cstdio>
+  sed -i -e 's/#include <signal.h>/#include <signal.h>\n#include <cstdio>/' mcsmus/mcsmus/control.cc
+  make -j
+  install must -m 0777 /usr/bin/must
+  cd ..
+  rm -rf mustool
 
   # Create Python virtual environment and install packages
   /usr/bin/python3 -m venv /opt/venv
@@ -55,6 +82,11 @@ From: ubuntu:24.04
   cd /opt/node
   /usr/bin/npm ci
   rm /opt/node/package.json /opt/node/package-lock.json
+
+  # cleanup
+  apt-get clean autoclean
+  apt-get autoremove -y
+  rm -rf /var/lib/{apt,dpkg,cache,log}
 
   # cd $HOME
   # bundle install
