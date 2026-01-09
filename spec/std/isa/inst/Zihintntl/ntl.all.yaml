@@ -11,7 +11,9 @@ description: |
   The NTL.ALL instruction indicates that the immediately subsequent instruction
   does not exhibit temporal locality within the capacity of any level of cache
   in the memory hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.
-definedBy: Zihintntl
+definedBy:
+  extension:
+    name: Zihintntl
 assembly: ""
 encoding:
   match: "00000000010100000000000000110011"

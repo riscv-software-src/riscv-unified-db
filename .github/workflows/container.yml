@@ -6,9 +6,12 @@ on:
   workflow_dispatch:
 jobs:
   publish-singularity-container:
-    runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
+    strategy:
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -52,6 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER: 1
+    strategy:
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -78,5 +84,4 @@ jobs:
         with:
           push: true
           file: ./.devcontainer/Dockerfile
-          platforms: linux/amd64,linux/arm64
           tags: riscvintl/udb:${{ env.TAG }}

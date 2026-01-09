@@ -21,9 +21,10 @@ description: |
   This register is an alias of the `mcontext` register, providing access to the HCONTEXT field from HS-Mode.
 
 definedBy:
-  allOf:
-    - Sdtrig
-    - H
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: H
 fields:
   HCONTEXT:
     alias: mcontext.HCONTEXT

@@ -15,10 +15,10 @@ description: |
   In case when width == 0, to the destination register written 0.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 0000110----------011-----0001011
   variables:

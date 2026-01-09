@@ -15,9 +15,7 @@ $inherits: "proc_cert_model/MC100-32.yaml#"
 # MXLEN used by rakefile
 base: 64
 
-extensions:
-  Sm:
-    param_constraints:
-      MXLEN:
-        schema:
-          const: 64
+param_constraints:
+  MXLEN:
+    schema:
+      const: 64

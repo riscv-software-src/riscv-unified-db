@@ -13,8 +13,11 @@ description: |
 
   [NOTE]
   This instruction is the same as `slli` with `zext.w` performed on xs1 before shifting.
-definedBy: Zba
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zba
 encoding:
   match: 000010-----------001-----0011011
   variables:

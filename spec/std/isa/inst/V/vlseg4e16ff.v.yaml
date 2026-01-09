@@ -9,7 +9,9 @@ name: vlseg4e16ff.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, (xs1), vm
 encoding:
   match: 011000-10000-----101-----0000111

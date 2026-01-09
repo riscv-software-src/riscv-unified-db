@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TIME_CSR_IMPLEMENTED
+description: |
+  Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
+  CSR or emulate access at M-mode.
+
+  Possible values:
+
+  true::
+    `time`/`timeh` exists, and accessing it will not cause an IllegalInstruction trap
+
+  false::
+    `time`/`timeh` does not exist.
+    Accessing the CSR will cause an IllegalInstruction trap or enter an unpredictable state,
+    depending on TRAP_ON_UNIMPLEMENTED_CSR.
+    Privileged software may emulate the `time` CSR, or may pass the exception to a lower level.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Zicntr

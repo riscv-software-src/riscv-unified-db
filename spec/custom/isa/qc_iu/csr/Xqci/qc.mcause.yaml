@@ -8,18 +8,20 @@ kind: csr
 name: qc.mcause
 long_name: Machine Mode Custom Cause Register
 address: 0x7c9
-base: 32
 priv_mode: M
 length: MXLEN
 writable: true
 description: |
   Machine Mode Custom Cause Register / Interrupt context register.
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">=0.7"
-    - name: Xqciint
-      version: ">=0.4"
+  allOf:
+    - xlen: 32
+    - extension:
+        anyOf:
+          - name: Xqci
+            version: ">=0.7"
+          - name: Xqciint
+            version: ">=0.4"
 fields:
   INT:
     location: 31

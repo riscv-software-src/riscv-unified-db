@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: PMP_GRANULARITY
+description: |
+  log2 of the smallest supported PMP region.
+
+  Generally, for systems with an MMU, should not be smaller than 12,
+  as that would preclude caching PMP results in the TLB along with
+  virtual memory translations
+
+  Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
+  the privileged architecture.
+long_name: TODO
+schema:
+  type: integer
+  minimum: 2
+  maximum: 66
+definedBy:
+  extension:
+    name: Smpmp

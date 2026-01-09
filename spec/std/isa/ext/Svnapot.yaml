@@ -175,5 +175,9 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires:
-      name: Sv39
+requirements:
+  extension:
+    allOf:
+      - name: Sv39
+      - name: S
+        version: ">= 1.12"

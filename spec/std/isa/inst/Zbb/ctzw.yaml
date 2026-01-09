@@ -13,8 +13,11 @@ description: |
   to the most-significant bit of the least-significant word (i.e., 31). Accordingly, if the
   least-significant word is 0, the output is 32, and if the least-significant bit
   of the input is a 1, the output is 0.
-definedBy: Zbb
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbb
 assembly: xd, xs1
 encoding:
   match: 011000000001-----001-----0011011

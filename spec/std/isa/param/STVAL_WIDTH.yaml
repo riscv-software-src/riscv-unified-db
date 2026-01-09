@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: STVAL_WIDTH
+description: |
+  The number of implemented bits in `stval`.
+
+  Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
+long_name: TODO
+schema:
+  type: integer
+  maximum: 18446744073709551615
+definedBy:
+  extension:
+    name: S

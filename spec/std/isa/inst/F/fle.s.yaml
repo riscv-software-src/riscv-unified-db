@@ -11,7 +11,10 @@ description: |
   The `fle.s` instruction writes 1 to `xd` if `fs1` is less than or equal to `fs2`, and 0 otherwise.
   If either operand is NaN, the result is 0 (not equal). If either operand is a NaN (signaling or quiet),
   the invalid flag is set. Positive zero and negative zero are considered equal.
-definedBy: F
+
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------000-----1010011

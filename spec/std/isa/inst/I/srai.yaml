@@ -10,7 +10,9 @@ long_name: Shift right arithmetic immediate
 description: |
   Arithmetic shift (the original sign bit is copied into the vacated upper bits) the
   value in xs1 right by shamt, and store the result in xd.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, shamt
 encoding:
   RV32:

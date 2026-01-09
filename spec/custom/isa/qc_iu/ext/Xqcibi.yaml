@@ -31,7 +31,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requirements:
+    extension: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcibi extension includes twelve conditional branch instructions that use an immediate
   operand for a source.
@@ -45,3 +46,5 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+requirements:
+  xlen: 32

@@ -14,7 +14,9 @@ versions:
     ratification_date: 2019-12
     changes:
       - Define NaN-boxing scheme, changed definition of FMAX and FMIN
-    requires: Zicsr
+requirements:
+  extension:
+    name: Zicsr
 description: |
   This chapter describes the standard instruction-set extension for
   single-precision floating-point, which is named "F" and adds
@@ -239,39 +241,3 @@ description: |
   Detecting tininess after rounding results in fewer spurious underflow
   signals.
   ====
-params:
-  MUTABLE_MISA_F:
-    description: |
-      Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
-    schema:
-      type: boolean
-  HW_MSTATUS_FS_DIRTY_UPDATE:
-    description: |
-      Indicates whether or not hardware will write to `mstatus.FS`
-
-      Values are:
-      [separator="!"]
-      !===
-      h! never  ! Hardware never writes `mstatus.FS`
-      h! precise  ! Hardware writes `mstatus.FS` to the Dirty (3) state precisely when F registers are modified
-      h! imprecise ! Hardware writes `mstatus.FS` imprecisely. This will result in a call to unpredictable() on any attempt to read `mstatus` or write FP state.
-      !===
-    schema:
-      type: string
-      enum: ["never", "precise", "imprecise"]
-  MSTATUS_FS_LEGAL_VALUES:
-    description: |
-      The set of values that mstatus.FS will accept from a software write.
-    schema:
-      type: array
-      items:
-        type: integer
-        enum: [0, 1, 2, 3]
-      maxItems: 4
-      uniqueItems: true
-    also_defined_in: S
-    extra_validation: |
-      assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)
-
-      # if HW is writing FS, then Dirty (3) better be a supported value
-      assert MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F) && (HW_MSTATUS_FS_DIRTY_UPDATE != "never")

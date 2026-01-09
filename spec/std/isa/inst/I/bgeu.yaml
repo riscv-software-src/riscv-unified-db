@@ -12,10 +12,12 @@ description: |
   the unsigned value in register xs1 is greater than or equal to the unsigned value in register xs2.
 
   Raise a `MisalignedAddress` exception if PC + imm is misaligned.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xs1, xs2, imm
 encoding:
-  match: -----------------111-----1100011
+  match: "-----------------111-----1100011"
   variables:
     - name: imm
       location: 31|7|30-25|11-8

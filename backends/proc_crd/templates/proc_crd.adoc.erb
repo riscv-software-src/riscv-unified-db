@@ -145,7 +145,7 @@ verification test suites anyways.
 Any RISC-V extensions not listed in this section are OUT-OF-SCOPE.
 The <%= proc_cert_model.name %> certificate doesn't cover their behaviors.
 
-<% Udb::Presence.presence_types_obj.each do |presence_obj| -%>
+<% [Udb::Presence::Mandatory, Udb::Presence::Option].each do |presence_obj| -%>
 
 === <%= presence_obj.to_s.capitalize %> Extensions
 
@@ -246,31 +246,6 @@ The <%= proc_cert_model.name %> certificate has <%= portfolio_design.all_out_of_
 |===
 <% end # if table -%>
 
-== Traps
-
-RISC-V supports both synchronous exceptions and asynchronous interrupts.
-TODO: List only traps that exist in this processor certificate model (currently lists all possible in present extensions).
-See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
-TODO: Show traps per privilege mode
-
-=== Synchronous Exceptions
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% portfolio_design.in_scope_exception_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
-=== Asynchronous Interrupts
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% portfolio_design.in_scope_interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
 == Instruction Summary
 
 The <%= proc_cert_model.name %> certificate has up to <%= portfolio_design.in_scope_instructions.size %> instructions
@@ -295,14 +270,14 @@ The <%= proc_cert_model.name %> certificate has up to <%= portfolio_design.in_sc
 
 [%autowidth]
 |===
-| Name | Long Name | Address | Mode | Primary Extension
+| Name | Long Name | Address | Mode | Defining Extension(s)
 
 <% portfolio_design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
 | <%= link_to_udb_doc_csr(csr.name) %>
 | <%= csr.long_name %>
 | <%= "0x#{csr.address.to_s(16)}" %>
 | <%= csr.priv_mode %>
-| <%= csr.primary_defined_by %>
+| <%= csr.defining_extension_requirements.map(&:to_s).join(", ") %>
 <% end # do -%>
 |===
 
@@ -317,7 +292,7 @@ The <%= proc_cert_model.name %> certificate has up to <%= portfolio_design.in_sc
 | <%= csr.priv_mode %>
 | <%= link_to_udb_doc_csr(csr.name) %>
 | <%= csr.long_name %>
-| <%= csr.primary_defined_by %>
+| <%= csr.defining_extension_requirements.map(&:to_s).join(", ") %>
 <% end # do -%>
 |===
 

@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: LRSC_FAIL_ON_NON_EXACT_LRSC
+description: |
+  Whether or not a Store Conditional fails if its physical address and size do not
+  exactly match the physical address and size of the last Load Reserved in program order
+  (independent of whether or not the SC is in the current reservation set)
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Zalrsc

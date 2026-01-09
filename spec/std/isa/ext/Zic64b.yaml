@@ -24,12 +24,8 @@ versions:
     contributors:
       - name: Krste Asanovic
         company: SiFive, Inc.
-    requires:
-      anyOf:
-        - name: Zicbom
-        - name: Zicboz
-        - name: Zicbop
-    param_constraints:
-      CACHE_BLOCK_SIZE:
-        schema:
-          const: 64
+requirements:
+  param:
+    name: CACHE_BLOCK_SIZE
+    equal: 64
+    reason: Zic64b mandates 64-byte cache block sizes

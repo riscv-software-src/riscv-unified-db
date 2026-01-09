@@ -1,0 +1,511 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= Expressing Conditions in UDB Data
+
+There are many instances where there is a conditional relation among data in UDB.
+For example:
+
+* the `Zfinx` extension is only allowed if the `F` extension is not implemented.
+* the `C` extension only implies the `Zcd` extension if the `D` extension is also implemented.
+* the `MTVEC_BASE_ALIGNMENT_DIRECT` parameter only applies when `MTVEC_MODES` indicates support for 'direct'.
+* ... and many more
+
+Conditions are consistently represented using a common subschema throughout UDB, regardless of the context that they appear.
+
+Conditions can be represented in one of two, equivalent, forms.
+First, a condition can be specified using YAML as described in <<yaml_conditions, YAML Condition Schema>>.
+Second, a condition can be specified using a _subset_ of link:../idl.adoc[IDL] as described in <<idl_conditions, IDL Conditions>>.
+The two forms are interchangable; a YAML condition can be converted to an IDL condition and _vice versa_.
+THe hand-written (unresolved) specification files can use either, but not both, condition forms in a given place.
+During resolution, both forms are generated and placed in the resolved file so that downstream users can exclusively use one form or the other.
+
+[NOTE]
+UDB supports mixing and matching conditions so that hand-written data can use whichever form is easiest to produce by hand.
+By generating both forms in the resolved data, downstream users only need to interpret one form for
+machine-driven use of the data.
+
+== Examples
+
+The following are real examples from the database:
+
+.mstatus CSR is defined by the Sm extension
+[source,yaml]
+----
+# mstatus.yaml
+# the mstatus CSR is defined whenever any version of the `Sm` extension is implemented
+definedBy: # definedBy: takes a condition
+  extension:
+    name: Sm
+----
+
+.C implies Zcf/d only if F/D are implemented
+[source,yaml]
+----
+# C.yaml
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    requirements:
+      idl(): |
+        -> implemented_version?(ExtensionName::Zca, "= 1.0.0") &&
+           (!implemented?(ExtensionName::F) || implemented_version?(ExtensionName::Zcf, "= 1.0.0")) &&
+           (!implemented?(ExtensionName::D) || implemented_version?(ExtensionName::Zcd, "= 1.0.0"));
+      reason: |
+        Zca is the non-FP subset of C. "C" + "F" implies Zcf. "C" + "D" implies Zcd.
+        C@2.0.0 requires Zca@1.0.0, Zcf@1.0.0, and/or Zcd@1.0.0
+----
+
+
+.Specifying a condition using IDL
+[source,yaml]
+----
+# Shcounterenw.yaml
+# if Shcounterenw is implemented, `requirements` must evaluate to true or else the configuration is invalid
+requirements:  # requirements: takes a condition
+  idl(): |
+    # HPM_COUNTER_EN and HCOUNTENALE_EN are both parameters that are a 32-entry array of booleans
+    for (U32 i = 3; i < 32; i++){
+      HPM_COUNTER_EN[i] -> HCOUNTENABLE_EN[i];
+    }
+  reason:
+    Shcounterenw requires that all non-read-only-0 counters can enabled with hcounteren.
+----
+
+== Terms
+
+There are three types of terms in UDB conditions:
+
+* an *extension requirement*
+** For example, extension `Sm`, version `>= 1.12`
+* a *parameter requirement*
+** For example, `MXLEN` equals `32`
+* an *xlen requirement*
+** For example, `xlen` equals '32' +
+   (`xlen` references the runtime xlen in the current mode, which may be different than `MXLEN`)
+
+Terms can combined using boolean operations (AND, OR, etc.) to form arbitrarily complex conditions,
+as described in <<bool_ops,boolean operators>>.
+
+[#ext_reqs]
+=== Extension Requirements
+
+==== YAML Form
+
+In YAML, an extension requirement is identified by the key `extension`.
+It expects an extension `name` and an optional `version`.
+If no `version` is given, then it defaults to all versions (`>= 0`).
+
+The `version` is a list of one or more range specifiers, using the following operators:
+
+.Version specifiers
+[cols="l,d,l"]
+|===
+| op   | Meaning               | Example
+
+| =  | Exactly equals        | = 1.0
+| >  | Greater than          | > 1.0
+| <  | Less than             | < 1.0
+| >= | Greater than or equal | >= 1.0
+| <= | Less than or equal    | <= 1.0
+| ~> | Compatible with       | ~> 1.0
+|===
+
+When only one range specifier is needed (common), the version key can be a string instead of an array:
+
+
+[[a-ext-req]]
+[source,yaml]
+----
+# the following are interpreted equivalently
+extension:
+  name: A
+  version: ">= 1.0"
+
+extension:
+  name: A
+  version:
+    - ">= 1.0"
+----
+
+Note that RISC-V does not follow semantic versioning, so `2.0` may be compatible with `1.0` for a given extension as long as `2.0` (or any version between `1.0` and `2.0`) is not marked as a breaking version when it was defined.
+See <<versioning.adoc#>> for more information on breaking changes.
+
+For example:
+
+[source,yaml]
+----
+# require C, version >= 0
+extension:
+  name: C
+----
+
+[source,yaml]
+----
+# require D, version == 1.0.0
+extension:
+  name: D
+  version: = 1.0
+----
+
+[source,yaml]
+----
+# require D, version _compatible with_ 1.0.0
+extension:
+  name: D
+  version: ~> 1.0
+----
+
+[source,yaml]
+----
+# require D, version greater than or equal to 1.0.0 and less than 2.0.0
+extension:
+  name: D
+  version: [">= 1.0", "< 2.0"]
+----
+
+Extension requirements can also take logic expression of multiple requrements using the `allOf`, `anyOf`, `noneOf`, or `not` operators. See <<bool_ops,Boolean Operators>> and <<Examples>>.
+
+==== IDL Form
+
+Extension requirements in IDL are expressed using one of two functions, depending on whether or not
+a version restriction is required.
+
+The following is equivalent to <<a-ext-req,the examples above>>.
+
+[source,yaml]
+----
+idl(): |
+  -> implemented?(ExtensionName::A);
+
+idl(): |
+  -> implemented_version?(ExtensionName::A, ">= 1.0");
+----
+
+[#param_reqs]
+=== Parameter Requirements
+
+=== YAML Form
+
+A parameter requirement is identified by the key `param`.
+It expects a parameter `name`, and a test.
+
+When the parameter is a scalar, the test must be one of the following:
+
+[cols="1m,3d,2m"]
+|===
+| Key                   | Meaning                                     | Example
+
+| equal                 | Parameter value equals
+a|
+
+[cols="m"]
+!===
+! equal: 5
+! equal: "string value"
+! equal: true
+!===
+
+| notEqual              | Parameter value is not equal to
+a|
+
+[cols="m"]
+!===
+! notEqual: 5
+! notEqual: "string value"
+!  notEqual: true
+!===
+
+| lessThan             | Parameter value is less than                        | lessThan: 5
+| greaterThan          | Parameter value is greater than                     | greaterThan: 5
+| lessThanOrEqual      | Parameter value is less than or equal to            | lessThanOrEqual: 5
+| greaterThanOrEqual   | Parameter value is greater than or equal to         | greaterThanOrEqual: 5
+| oneOf                | Parameter value is equal to one element of an array | oneOf: [5, 7]
+|===
+
+When the parameter is an array, the test can either check a specific element, check for inclusion,
+or compare the overall size of the array.
+
+[cols="1m,3d,2m"]
+|===
+| Key                   | Meaning                                       | Example
+
+| index                 | Perform scalar comparison on element at index +
+                          Must be paired with a scalar comparison.      | index: 1 +
+                                                                          equal: 5
+| includes              | Array parameter includes a value
+a|
+
+[cols="m"]
+!===
+! includes: 5
+! includes: "string value"
+! includes: true
+!===
+
+| size                  | Use the array size as the comparison value +
+                          Must be paired with a scalar comparison       | size: true +
+                                                                          equal: 2
+|===
+
+For example:
+
+[source,yaml]
+----
+param:
+  name: MXLEN
+  equal: 32
+  reason: Extension is only defined in RV32
+----
+
+[source,yaml]
+----
+param:
+  name: PHYS_ADDR_WIDTH
+  greaterThanOrEqual: 34
+----
+
+[source,yaml]
+----
+param:
+  name: NUM_PMP_ENTRIES
+  oneOf: [16,64]
+----
+
+[source,yaml]
+----
+param:
+  name: MTVEC_MODES
+  includes: 0
+  reason: Only relevant when direct mode is supported
+----
+
+Like <<Extension Requirements>>, parameter requirements can be combined aribtrarily using boolean logic operations. See <<bool_ops,Boolean Operators>> and <<Examples>>
+
+==== IDL Form
+
+All parameters are in global scope when evaluating an IDL condition, and any legal operator or function as described in <<idl-subset>> can be used.
+
+Examples:
+
+[source,yaml]
+----
+idl(): |
+  -> MXLEN == 32;
+reason: Extension is only defined in RV32
+----
+
+[source,yaml]
+----
+idl(): |
+  -> $array_includes?(MTVEC_MODES, 0);
+reason: Only relevant when direct mode is supported
+----
+
+[#bool_ops]
+== Boolean Operators
+
+UDB is inspired by the schema used by link:https://json-schema.org[JSON Schema] for boolean logic.
+The logic can be applied either at the top level of a condition (before an `extension` or `param` key) or within a particular term type (after an `extension` or `param` key).
+
+The following operators are supported:
+
+[cols="m,d,a,a"]
+|===
+| Op         | Meaning | Example (Block style) | Example (Flow style)
+
+| allOf      | Logical AND           |
+[source,yaml]
+----
+allOf:
+  - name: C
+  - name: D
+----
+|
+[source,yaml]
+----
+allOf: [
+  { name: C },
+  { name: D }
+]
+----
+| anyOf      | Logical OR            |
+[source,yaml]
+----
+anyOf:
+  - name: C
+  - name: D
+----
+|
+[source,yaml]
+----
+anyOf: [
+  { name: C },
+  { name: D }
+]
+----
+| noneOf     | Logical NOR           |
+[source,yaml]
+----
+noneOf:
+  - name: C
+  - name: D
+----
+|
+[source,yaml]
+----
+noneOf: [
+  { name: C },
+  { name: D }
+]
+----
+| oneOf     | Logical XOR           |
+[source,yaml]
+----
+oneOf:
+  - name: C
+  - name: D
+----
+|
+[source,yaml]
+----
+oneOf: [
+  { name: C },
+  { name: D }
+]
+----
+| not        | Logical NOT           |
+[source,yaml]
+----
+not:
+  name: C
+----
+|
+[source,yaml]
+----
+not: { name: C }
+----
+| if, then   | Logical implication +
+(satisfied unless `if` is true and `then` if false)   |
+[source,yaml]
+----
+if:
+  extension:
+    name: C
+then:
+  name: D
+----
+|
+[source,yaml]
+----
+if: { name: C }, then: { name: D }
+----
+|===
+
+Note that the target of an `if` takes a new condition, and so one or more term specifiers
+(`extension` or `param`) _must_ appear within it.
+The `then` target continues the context already established, so, for example, both `then` targets
+below specify the `D` extension.
+
+[cols="a,a"]
+|===
+|
+[source,yaml]
+----
+# targets the D extension
+extension:
+  if:
+    extension:
+      name: C
+  then:
+    name: D
+----
+|
+[source,yaml]
+----
+# also targets D extension
+extension:
+  if:
+    param:
+      name: MXLEN
+      equal: 32
+      reason: because 64 bits is too big
+  then:
+    name: D
+----
+|===
+
+For example:
+
+.Require C and D extensions
+[source,yaml]
+----
+extension:
+  allOf:
+    - name: C
+    - name: D
+----
+
+.Require the C extension and MXLEN == 32
+[source,yaml]
+----
+allOf:
+  - extension:
+      name: C
+  - param:
+      name: MXLEN
+      equal: 32
+      reason: Only applies with RV32
+----
+
+.Require Zcf, version 1.0.0 if F is implemented
+[source,yaml]
+----
+extension:
+  if:
+    extension:
+      name: F
+      version: ~> 2.2
+  then:
+    name: Zcf
+    version: = 1.0.0
+----
+
+[[idl-subset]]
+=== IDL Subset for Conditions
+
+Only a subset of IDL is available for use in conditions.
+
+==== In-scope variables
+
+All parameters are in scope.
+Globals defined in IDL files that are normally in scope in other contexts (_e.g._, current_mode) are not in scope for conditions.
+This is true whether or not the global is constant.
+
+==== Statements
+
+The only allowed statements in a condition are:
+
+* link:../idl.adoc#implications[Implications]
+* For loops
+
+Notably, if/else statements are not permitted. Implications should be used instead.
+
+==== Expressions
+
+In the limited set of statements available in a condition, expressions appear on either side of an implication or in the bounds of a for loop.
+Generally, expressions are only limited by the fact that only a small set of built-in functions are available, and no user-defined functions are available.
+
+The available functions are:
+
+* `implemented?(ExtensionName::A)`
+** True if ExtensionName::A is either listed as an implemented extension in the config, or if A is implied by an implemented extension.
+* `implemented_version?(ExtensionName::A, ">= 1.0")`
+** True if ExtensionName::A, version greater than or equal to 1.0 is either listed as an implemented extension in the config, or if A, version greater than or equal to 1.0 is implied by an implemented extension.
+* `xlen()`
+** Runtime XLEN in the current mode (32 or 64)
+* `$array_includes?(ARY_PARAM, 1)`
+** True if ARY_PARAM includes the value 1
+* `$ary_size(ARY_PARAM)`
+** Returns the number of elements in ARY_PARAM

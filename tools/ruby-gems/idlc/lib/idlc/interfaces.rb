@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: strict
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -15,17 +15,28 @@ module Idl
     extend T::Helpers
     interface!
 
+    include Kernel
+
     ValueType =
-      T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[T::Boolean]) }
+      T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[Integer], T::Array[T::Boolean], T::Array[String]) }
 
     sig { abstract.returns(String) }
     def name; end
 
     sig { abstract.returns(String) }
-    def desc; end
+    def description; end
+
+    sig { abstract.returns(T::Boolean) }
+    def schema_known?; end
 
     sig { abstract.returns(Schema) }
     def schema; end
+
+    sig { abstract.returns(T::Array[Schema]) }
+    def possible_schemas; end
+
+    sig { abstract.returns(T::Array[Schema]) }
+    def all_schemas; end
 
     sig { abstract.returns(T::Boolean) }
     def value_known?; end
@@ -54,6 +65,9 @@ module Idl
 
     sig { abstract.returns(Integer) }
     def min_val; end
+
+    sig { abstract.returns(Type) }
+    def to_idl_type; end
   end
 
   module CsrField
@@ -87,10 +101,19 @@ module Idl
     sig { abstract.params(base: T.nilable(Integer)).returns(T::Range[Integer]) }
     def location(base); end
 
+    sig { abstract.params(base: T.nilable(Integer)).returns(Integer) }
+    def width(base); end
+
+    sig { abstract.params(base: T.nilable(Integer)).returns(T.nilable(String)) }
+    def type(base); end
+
     # whether or not the field is supposed to exist/be implemented in the
     # execution context
     sig { abstract.returns(T::Boolean) }
     def exists?; end
+
+    sig { abstract.returns(ValueRbType) }
+    def reset_value; end
   end
 
   module Csr
@@ -117,9 +140,5 @@ module Idl
     # otherwise, returns nil
     sig { abstract.returns(T.nilable(Integer)) }
     def value; end
-
-    # whether or not the CSR can exist if ext_name is not implemented
-    sig { abstract.params(ext_name: String).returns(T::Boolean) }
-    def implemented_without?(ext_name); end
   end
 end

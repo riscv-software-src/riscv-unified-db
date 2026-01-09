@@ -10,7 +10,9 @@ long_name: Floating-Point Add Single-Precision
 description: |
   The `fadd.s` instruction performs single-precision floating-point addition of `fs1` and `fs2`
   and writes the final result to `fd`.
-definedBy: F
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000000------------------1010011

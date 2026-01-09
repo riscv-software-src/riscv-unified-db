@@ -11,8 +11,11 @@ description: |
   Counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.
   Accordingly, if the least-significant word is 0, the output is 32, and if the most-significant
   bit of the word (_i.e._, bit 31) is a 1, the output is 0.
-base: 64
-definedBy: Zbb
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbb
 assembly: xd, xs1
 encoding:
   match: 011000000000-----001-----0011011

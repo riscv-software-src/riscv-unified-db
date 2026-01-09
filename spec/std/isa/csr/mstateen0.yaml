@@ -52,7 +52,9 @@ description: |
   the same bit is read-only one in the matching `mstateen` CSR. Bit 63 of each `mstateen` CSR may be read-only zero only if
   the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
 
-definedBy: Smstateen
+definedBy:
+  extension:
+    name: Smstateen
 fields:
   SE0:
     long_name: hstateen0, hstateen0h, and sstateen0 access control
@@ -65,8 +67,9 @@ fields:
     long_name: henvcfg, henvcfgh, and senvcfg access control
     location: 62
     definedBy:
-      name: S
-      version: ">= 1.11"
+      extension:
+        name: S
+        version: ">= 1.11"
     description: |
       The ENVCFG bit in `mstateen0` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.
     type: RW
@@ -74,7 +77,9 @@ fields:
   CSRIND:
     long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 60
-    definedBy: Sscsrind
+    definedBy:
+      extension:
+        name: Sscsrind
     description: |
       The CSRIND bit in `mstateen0` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vsireg*`
       CSRs provided by the Sscsrind extensions.
@@ -83,7 +88,9 @@ fields:
   AIA:
     long_name: Ssaia state access control
     location: 59
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     description: |
       The AIA bit in `mstateen0` controls access to all state introduced by the Ssaia extension and is not
       controlled by either the CSRIND or the IMSIC bits.
@@ -92,7 +99,9 @@ fields:
   IMSIC:
     long_name: IMSIC state access control
     location: 58
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     description: |
       The IMSIC bit in `mstateen0` controls access to the IMSIC state, including CSRs `stopei` and `vstopei`,
       provided by the Ssaia extension.
@@ -101,7 +110,9 @@ fields:
   CONTEXT:
     long_name: scontext and hcontext access control
     location: 57
-    definedBy: Sdtrig
+    definedBy:
+      extension:
+        name: Sdtrig
     description: |
       The CONTEXT bit in `mstateen0` controls access to the `scontext` and `hcontext` CSRs provided by the
       Sdtrig extension.
@@ -118,7 +129,9 @@ fields:
   SRMCFG:
     long_name: srmcfg access control
     location: 55
-    definedBy: Ssqosid
+    definedBy:
+      extension:
+        name: Ssqosid
     description: |
       The SRMCFG bit in `mstateen0` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter 18
       extension.
@@ -135,7 +148,9 @@ fields:
   JVT:
     long_name: jvt access control
     location: 2
-    definedBy: Zcmt
+    definedBy:
+      extension:
+        name: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW

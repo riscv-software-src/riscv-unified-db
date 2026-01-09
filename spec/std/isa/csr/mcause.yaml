@@ -12,7 +12,9 @@ writable: true
 priv_mode: M
 length: MXLEN
 description: Reports the cause of the latest exception.
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   INT:
     location_rv32: 31
@@ -63,7 +65,7 @@ fields:
       Valid interrupt codes are:
       [separator="!"]
       !===
-      <%- interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
+      <%- implemented_interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
       ! <%= code.num %> ! <%= code.name %>
       <%- end -%>
       !===
@@ -71,7 +73,7 @@ fields:
       Valid exception codes are:
       [separator="!"]
       !===
-      <%- exception_codes.sort_by{ |code| code.num }.each do |code| -%>
+      <%- implemented_exception_codes.sort_by{ |code| code.num }.each do |code| -%>
       ! <%= code.num %> ! <%= code.name %>
       <%- end -%>
       !===

@@ -9,7 +9,9 @@ name: srl
 long_name: Shift right logical
 description: |
   Logical shift the value in `xs1` right by the value in the lower bits of `xs2`, and store the result in `xd`.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------101-----0110011

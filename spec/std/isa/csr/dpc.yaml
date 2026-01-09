@@ -33,7 +33,9 @@ description: |
   dpc to change where the hart resumes.
 
   This CSR is read/write.
-definedBy: Sdext
+definedBy:
+  extension:
+    name: Sdext
 fields:
   DPC:
     location_rv32: 31-0

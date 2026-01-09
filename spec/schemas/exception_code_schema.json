@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "kind", "num", "name", "display_name", "definedBy"],
+  "properties": {
+    "$schema": { "const": "exception_code_schema.json#" },
+    "kind": { "const": "exception_code" },
+    "name": {
+      "type": "string",
+      "description": "Name of the exception, as a legal IDL variable name"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Pretty display version of the name"
+    },
+    "num": {
+      "type": "integer",
+      "description": "Exception number, as reported in the `*cause` CSRs"
+    },
+    "definedBy": { "$ref": "schema_defs.json#/$defs/condition" },
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
+    }
+  }
+}

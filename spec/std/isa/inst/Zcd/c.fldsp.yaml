@@ -13,11 +13,8 @@ description: |
   to the stack pointer, x2.
   It expands to `fld` `fd, offset(x2)`.
 definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - D
-    - Zcd
+  extension:
+    name: Zcd
 assembly: fd, imm(sp)
 encoding:
   match: 001-----------10

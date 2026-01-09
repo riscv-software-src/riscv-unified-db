@@ -10,10 +10,12 @@ long_name: Set on less than immediate
 description: |
   Places the value 1 in register `xd` if register `xs1` is less than the sign-extended immediate
   when both are treated as signed numbers, else 0 is written to `xd`.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------010-----0010011
+  match: "-----------------010-----0010011"
   variables:
     - name: imm
       location: 31-20

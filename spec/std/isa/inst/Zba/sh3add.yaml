@@ -9,7 +9,9 @@ name: sh3add
 long_name: Shift left by 3 and add
 description: |
   Shifts `xs1` to the left by 3 places and adds it to `xs2`.
-definedBy: Zba
+definedBy:
+  extension:
+    name: Zba
 assembly: xd, xs1, xs2
 encoding:
   match: 0010000----------110-----0110011

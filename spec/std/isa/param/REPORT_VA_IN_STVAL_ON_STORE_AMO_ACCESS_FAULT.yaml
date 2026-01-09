@@ -1,0 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT
+description: |
+  When true, `stval` is written with the virtual address of a store when it causes a
+  `StoreAmoAccessFault`.
+
+  WHen false, `stval` is written with 0 when a store causes a `StoreAmoAccessFault`.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: S

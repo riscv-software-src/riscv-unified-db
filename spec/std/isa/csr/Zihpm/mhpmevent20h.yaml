@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventNh.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/Zihpm/mhpmeventNh.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -12,13 +14,16 @@ address: 0x734
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Alias of `mhpmevent20`[63:32].
 
   Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
   32-bits of `mhpmevent#{hpm_num}`.
-definedBy: Sscofpmf
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31
@@ -37,7 +42,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   MINH:
     location: 30
     alias: mhpmevent20.MINH
@@ -55,7 +62,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   SINH:
     location: 29
     alias: mhpmevent20.SINH
@@ -73,7 +82,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   UINH:
     location: 28
     alias: mhpmevent20.UINH
@@ -91,7 +102,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   VSINH:
     location: 27
     alias: mhpmevent20.VSINH
@@ -109,7 +122,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   VUINH:
     location: 26
     alias: mhpmevent20.VUINH
@@ -127,7 +142,9 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf
   EVENT:
     location: 25-0
     description: High part of event selector for performance counter `mhpmcounter20`.
