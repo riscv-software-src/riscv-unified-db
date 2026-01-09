@@ -302,8 +302,8 @@ jobs:
       - name: Generate HTML ISA manual
         run: | # Manually run in docker to get git config set correctly for submodules
           docker run --rm -v ${{ github.workspace }}:/workdir -w /workdir riscvintl/udb:${{ env.TAG }} \
-          git config --global --add safe.directory '*' && \
-          ./do gen:html_manual MANUAL_NAME=${MANUAL_NAME} VERSIONS=${VERSIONS}
+          /bin/bash -c "git config --global --add safe.directory '*' && \
+          env DEVCONTAINER_ENV=1 ./do gen:html_manual MANUAL_NAME=${MANUAL_NAME} VERSIONS=${VERSIONS}"
   regress-gen-instruction-appendix:
     runs-on: ubuntu-latest
     needs: build-container
