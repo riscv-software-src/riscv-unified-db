@@ -56,7 +56,7 @@ jobs:
           context: .
           file: ./.devcontainer/Dockerfile
           push: true
-          tags: ${{ github.actor }}/udb:${{ steps.calc_sha.outputs.container_sha }}
+          tags: ghcr.io/${{ github.actor }}/udb:${{ steps.calc_sha.outputs.container_sha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
