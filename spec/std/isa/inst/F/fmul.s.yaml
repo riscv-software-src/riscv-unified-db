@@ -32,6 +32,10 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
+  check_f_ok($encoding);
+  RoundingMode mode = rm_to_mode(rm, $encoding);
+  f[fd] = f32_mul(f[fs1], f[fs2], mode);
+  mark_f_state_dirty();
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
