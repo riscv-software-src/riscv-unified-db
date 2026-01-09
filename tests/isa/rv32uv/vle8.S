@@ -6,4 +6,4 @@
 #undef RVTEST_RV64UV
 #define RVTEST_RV64UV RVTEST_RV32UV
 
-#include "../rv64uv/vsetvl.S"
+#include "../rv64uv/vle8.S"

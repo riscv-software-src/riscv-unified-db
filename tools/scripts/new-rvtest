@@ -1,0 +1,73 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+help() {
+    echo "Usage: $0 <new-test-name>"
+    echo "This script copies new-rvtest-{64,32}-template.S files "
+    echo "and updates Makefrag files for RV64 and RV32."
+    echo
+    echo "Please provide the new test name as the first argument."
+    exit 1
+}
+
+# Check if the first argument is provided
+if [ -z "$1" ]; then
+    help
+fi
+
+# Validate that $1 only contains letters, numbers and punctuation '.', '-' and '_'
+if [[ ! "$1" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "Error: test name must contain only letters, numbers, '.', '-' or '_'"
+    exit 1
+fi
+
+source_dir="tools/scripts"
+dest_dir="tests/isa"
+
+# Copy new-rvtest-{64,32}-template.S from tests/isa/rv64uv directory
+
+source_file="$source_dir/new-rvtest-64-template.S"
+dest_file="$dest_dir/rv64uv/$1.S"
+
+if [ -f "$source_file" ]; then
+    cp "$source_file" "$dest_file"
+    echo "Copied $source_file to $dest_file"
+    # replace __INSTR__ with the provided test name (escape sed delimiters)
+    sed -i "s/__INSTR__/$1/g" "$dest_file"
+else
+    echo "Error: $source_file not found"
+    exit 1
+fi
+
+source_file="$source_dir/new-rvtest-32-template.S"
+dest_file="$dest_dir/rv32uv/$1.S"
+
+if [ -f "$source_file" ]; then
+    cp "$source_file" "$dest_file"
+    echo "Copied $source_file to $dest_file"
+    # replace __INSTR__ with the provided test name (escape sed delimiters)
+    sed -i "s/__INSTR__/$1/g" "$dest_file"
+else
+    echo "Error: $source_file not found"
+    exit 1
+fi
+
+# Append to Makefrag
+makefrag_file="tests/isa/rv64uv/Makefrag"
+if [ -f "$makefrag_file" ]; then
+    sed -i "s/rv64uv_sc_tests =/rv64uv_sc_tests = $1/" "$makefrag_file"
+    echo "Updated $makefrag_file"
+else
+    echo "Error: $makefrag_file not found"
+    exit 1
+fi
+
+makefrag_file="tests/isa/rv32uv/Makefrag"
+if [ -f "$makefrag_file" ]; then
+    sed -i "s/rv32uv_sc_tests =/rv32uv_sc_tests = $1/" "$makefrag_file"
+    echo "Updated $makefrag_file"
+else
+    echo "Error: $makefrag_file not found"
+    exit 1
+fi
