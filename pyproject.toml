@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "riscv-unified-db"
+description = "RISC-V Unified Database"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    ".devcontainer",
+    "ext/rbi-central",
+    "tools/ruby-gems/*/ext/rbi-central",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes - various basic rules
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "I",    # isort - import related rules
+    "UP",   # pyupgrade - suggest upgrades for newer Python
+    "B",    # flake8-bugbear - bugbear rules
+    "A",    # flake8-builtins - shadow builtins
+    "EXE",  # flake8-executable - executable file shebangs
+    "ANN",  # type annotation rules
+    "RUF",  # ruff specific rules
+    "PTH",  # flake8-use-pathlib - pathlib usage
+    "SIM",  # flake8-simplify - simplifications
+]
+ignore = [
+    "E501",   # line too long (ruff has line-length setting, but doesn't check by default)
+    "ANN002", # missing type annotation for *args
+    "ANN003", # missing type annotation for **kwargs
+    "ANN401", # dynamically typed expressions are disallowed
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["udb", "idlc"]
+
+[tool.ruff.lint.pylint]
+max-args = 5

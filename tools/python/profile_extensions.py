@@ -11,10 +11,11 @@ $ ./profile_extensions [--profiles P1[,P2]] $UDB_ROOT/gen/resolved_spec/_
 """
 
 import argparse
+
 import udb
 
 
-def main():
+def main() -> None:
     """List extensions associated with profiles."""
 
     parser = argparse.ArgumentParser(
