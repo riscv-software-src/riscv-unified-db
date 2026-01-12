@@ -7,6 +7,7 @@ require 'tempfile'
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 directory "#{$root}/gen/sverilog"
+directory "#{$root}/gen/qemu"
 
 def with_resolved_exception_codes(cfg_arch)
   # Process ERB templates in exception codes using Ruby ERB processing
@@ -126,5 +127,43 @@ namespace :gen do
          "--resolved-codes=#{resolved_codes} " \
          "--output=#{output_dir}riscv_decode_package.svh --include-all"
     end
+  end
+
+  desc <<~DESC
+    Generate QEMU RISC-V files from instruction and CSR definitions
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated QEMU files (defaults to "#{$root}/gen/qemu")
+     * EXTENSIONS - Comma-separated list of extensions (defaults to all)
+     * ARCH - Target architecture: RV32, RV64, or BOTH (defaults to "RV64")
+  DESC
+  task qemu: "#{$root}/gen/qemu" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/qemu/"
+    extensions = ENV["EXTENSIONS"] || ""
+    arch = ENV["ARCH"] || "RV64"
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
+
+    # Build command with optional extensions
+    cmd = "/opt/venv/bin/python3 #{$root}/backends/generators/qemu/qemu_generator.py " \
+          "--inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output-dir=#{output_dir} " \
+          "--arch=#{arch}"
+
+    if extensions.empty?
+      cmd += " --include-all"
+    else
+      cmd += " --extensions=#{extensions}"
+    end
+
+    sh cmd
   end
 end
