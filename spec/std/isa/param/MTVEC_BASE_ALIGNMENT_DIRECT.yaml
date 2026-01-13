@@ -21,7 +21,7 @@ definedBy:
             equal: rw
             reason: Base address is hard-coded when MTVEC_ACCESS is read-only
 description: |
-  Minimum alignement of the base pointer. Because `mtvec` excludes the two least-significant bits of
+  Minimum alignment of the base pointer. Because `mtvec` excludes the two least-significant bits of
   the base, the minimum alignment cannot be less than 4.
 schema:
   oneOf:
