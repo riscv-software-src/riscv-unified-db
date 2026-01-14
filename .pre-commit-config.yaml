@@ -105,26 +105,14 @@ repos:
         # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
         exclude: backends/cpp_hart_gen
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.9
+    rev: v0.14.11
     hooks:
-      - id: ruff-check
+      - id: ruff
         stages: [pre-commit]
         files: ^tools/python/
       - id: ruff-format
         stages: [pre-commit]
         files: ^tools/python/
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.1.0
-    hooks:
-      - id: black
-        stages: [pre-commit]
-
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
-    hooks:
-      - id: pyupgrade
-        stages: [pre-commit]
 
   - repo: local
     hooks:
