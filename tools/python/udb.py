@@ -9,9 +9,7 @@ from pathlib import Path
 import yaml
 
 
-def find_and_load_yaml(
-    path: str | Path, kinds: Iterable[str] | None = None
-) -> list[dict]:
+def find_and_load_yaml(path: str | Path, kinds: Iterable[str] | None = None) -> list[dict]:
     """Load the YAML files in a directory hierarchy into an array of dictionaries.
 
     Optionally, restrict to specific "kinds" of YAML files.

@@ -18,9 +18,7 @@ import udb
 def main() -> None:
     """List extensions associated with profiles."""
 
-    parser = argparse.ArgumentParser(
-        description="List extensions associated with profiles"
-    )
+    parser = argparse.ArgumentParser(description="List extensions associated with profiles")
     parser.add_argument("-p", "--profiles")
     parser.add_argument("paths", nargs="*", default=".")
     params = parser.parse_args()
@@ -50,9 +48,7 @@ def main() -> None:
                 profile["extensions"][extension]["name"] = extension
                 extensions.append(profile["extensions"][extension])
 
-            for extension in sorted(
-                extensions, key=lambda x: f"{x['presence']},{x['name']}"
-            ):
+            for extension in sorted(extensions, key=lambda x: f"{x['presence']},{x['name']}"):
                 version = "any"
                 if "version" in extension:
                     version = extension["version"]
