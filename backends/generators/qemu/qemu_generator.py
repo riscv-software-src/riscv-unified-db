@@ -213,35 +213,6 @@ class QemuDisassemblerTable:
         logging.info(f"  Total entries: {len(self.disasm_entries)}")
 
 
-class QemuExtensionMapper:
-    """Map RISC-V extensions to QEMU extension definitions"""
-
-    def __init__(self):
-        self.extension_map = {}
-        self.unsupported_extensions = set()
-
-    def map_extension(self, defined_by) -> str:
-        """Map extension definition to QEMU extension name"""
-        if isinstance(defined_by, str):
-            return defined_by.upper()
-        elif isinstance(defined_by, dict):
-            if "allOf" in defined_by:
-                extensions = defined_by["allOf"]
-                if isinstance(extensions, list):
-                    return "_AND_".join(
-                        ext.upper() if isinstance(ext, str) else str(ext)
-                        for ext in extensions
-                    )
-            elif "anyOf" in defined_by:
-                extensions = defined_by["anyOf"]
-                if isinstance(extensions, list):
-                    return "_OR_".join(
-                        ext.upper() if isinstance(ext, str) else str(ext)
-                        for ext in extensions
-                    )
-        return "UNKNOWN"
-
-
 def load_instructions_for_qemu(
     inst_dir: str,
     enabled_extensions: List[str] = None,
