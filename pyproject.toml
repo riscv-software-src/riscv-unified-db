@@ -1,14 +1,6 @@
 # SPDX-FileCopyrightText: 2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "riscv-unified-db"
-description = "RISC-V Unified Database"
-
 [tool.ruff]
 line-length = 100
 target-version = "py312"
