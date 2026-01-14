@@ -14,31 +14,31 @@ module RuboCop::Cop; end
 module RuboCop::Cop::Lint; end
 
 class RuboCop::Cop::Lint::UnusedMethodArgument < ::RuboCop::Cop::Base
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#75
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#75
   def not_implemented?(param0 = T.unsafe(nil)); end
 
   private
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#128
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#128
   def allowed_exception_class?(node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#90
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#90
   def autocorrect(corrector, node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#94
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#94
   def check_argument(variable); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#102
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#102
   def ignored_method?(body); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#107
+  # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#107
   def message(variable); end
 
   class << self
     # source://rubocop-performance//lib/rubocop-performance.rb#11
     def autocorrect_incompatible_with; end
 
-    # source://rubocop/1.81.7/lib/rubocop/cop/lint/unused_method_argument.rb#84
+    # source://rubocop/1.82.1/lib/rubocop/cop/lint/unused_method_argument.rb#84
     def joining_forces; end
   end
 end
@@ -46,39 +46,39 @@ end
 module RuboCop::Cop::Naming; end
 
 class RuboCop::Cop::Naming::BlockForwarding < ::RuboCop::Cop::Base
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#68
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#68
   def on_def(node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#68
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#68
   def on_defs(node); end
 
   private
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#118
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#118
   def anonymous_block_argument?(node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#101
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#101
   def block_argument_name_matched?(block_pass_node, last_argument); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#150
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#150
   def block_forwarding_name; end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#91
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#91
   def expected_block_forwarding_style?(node, last_argument); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#122
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#122
   def explicit_block_argument?(node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#110
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#110
   def invalidates_syntax?(block_pass_node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#126
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#126
   def register_offense(block_argument, node); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#142
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#142
   def use_block_argument_as_local_variable?(node, last_argument); end
 
-  # source://rubocop/1.81.7/lib/rubocop/cop/naming/block_forwarding.rb#114
+  # source://rubocop/1.82.1/lib/rubocop/cop/naming/block_forwarding.rb#114
   def use_kwarg_in_method_definition?(node); end
 
   class << self

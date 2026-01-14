@@ -5,6 +5,9 @@ cd "$ROOT" || exit
 
 CONTAINER_TAG=$(cat "${ROOT}/bin/.container-tag")
 
+# shellcheck disable=SC1091
+source "${ROOT}/bin/.functions.sh"
+
 # Parse command line arguments
 PRESERVE_CONFIG=0
 
@@ -57,42 +60,7 @@ fi
 # ALL THREE CONTAINERS ARE (in theory) IDENTICAL. Which one you use is a preference of your setup and installed
 # software.
 
-
-# get the container type
-#
-# use, in priority order:
-#  1. devcontainer, if DEVCONTAINER_ENV is set in the environment
-#  2. the type stored in .container-type
-#  3. Docker, if DOCKER is set in the environment
-#  4. Podman, if PODMAN is set in the environment
-#  5. Singularity, if SINGULARITY is set in the environment
-#  6. The choice made by the user, which will be cached in .container-type
-if [ -v DEVCONTAINER_ENV ]; then
-CONTAINER_TYPE=devcontainer
-elif [ -v SINGULARITY_NAME ]; then
-# already in a container
-CONTAINER_TYPE=devcontainer
-elif [ -f "${ROOT}/.container-type" ]; then
-CONTAINER_TYPE=$(cat ${ROOT}/.container-type)
-elif [ -v DOCKER ]; then
-CONTAINER_TYPE=docker
-elif [ -v PODMAN ]; then
-CONTAINER_TYPE=podman
-elif [ -v SINGULARITY ]; then
-CONTAINER_TYPE=singularity
-else
-  echo -e "UDB tools run in a container. Docker, Podman, and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Podman\\n3. Singularity\\n"
-  while true; do
-    echo "Which would you like to use? (1/2/3) "
-    read ans
-    case $ans in
-        [1]* ) CONTAINER_TYPE=docker; break;;
-        [2]* ) CONTAINER_TYPE=podman; break;;
-        [3]* ) CONTAINER_TYPE=singularity; break;;
-        * ) echo -e "\\nPlease answer 1, 2, or 3.";;
-    esac
-  done
-fi
+CONTAINER_TYPE=$(get_container_type)
 
 if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "podman" -a "${CONTAINER_TYPE}" != "singularity" -a "${CONTAINER_TYPE}" != "devcontainer" ]; then
   echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
@@ -107,9 +75,6 @@ echo "Using ${CONTAINER_TYPE} environment"
 if [ -v GITHUB_ACTIONS ] && [ "${CONTAINER_TYPE}" == "singularity" ]; then
     echo "Running in a GitHub Action"
     CONTAINER_PATH=${ROOT}/.singularity/image.sif
-    HOME_PATH=${GITHUB_WORKSPACE}
-    GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
-    SINGULARITY_CACHE=--disable-cache
 
     # needed to get singularity working on Ubuntu 24.04
     # see https://github.com/lima-vm/lima/issues/2319
@@ -141,10 +106,6 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
-    HOME_PATH=${HOME}
-    GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
-    export GEM_HOME
-    export GEM_PATH
     if [ ! -f "${CONTAINER_PATH}" ]; then
       echo "Fetching container..."
       if [ ! -d "${ROOT}/.singularity" ]; then
@@ -155,9 +116,7 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     if [ -v UDB_CONTAINER_BIND ]; then
       EXTRA_BIND="--bind ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}"
     fi
-elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
-    HOME_PATH=${HOME}
-else
+elif [ "${CONTAINER_TYPE}" != "devcontainer" ]; then
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
 fi
@@ -173,46 +132,14 @@ if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
 elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
     RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    RUN="singularity run ${HOME_OPT} ${EXTRA_BIND} ${CONTAINER_PATH}"
+    RUN="singularity run --no-home ${HOME_OPT} ${EXTRA_BIND} ${CONTAINER_PATH}"
 else
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
 fi
 
-if [ ! -d "$ROOT/.home" ]; then
-    mkdir "$ROOT/.home"
-fi
-
-if [ $PRESERVE_CONFIG -eq 0 ] || [ ! -f $ROOT/.bundle/config ]; then
-    OLDDIR=$PWD
-    cd "$ROOT" || exit
-    ${RUN} bundle config set --local path "${ROOT}/.home/.gems"
-    ${RUN} bundle config set --local cache_path "${ROOT}/.home/.cache"
-    ${RUN} bundle config set --local with development
-    cd "$OLDDIR" || exit
-fi
-
-if [ ! -d "$ROOT/.home/.gems" ]; then
-    OLDDIR=$PWD
-    cd "$ROOT" || exit
-    ${RUN} bundle install
-    cd "$OLDDIR" || exit
-fi
-
 if [ ! -f "$ROOT/ext/rbi-central/README.md" ]; then
     git submodule update --init ext/rbi-central
-fi
-
-# if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
-#   git submodule update --init ext/riscv-opcodes
-# fi
-
-if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
-    if [ ! -d "${ROOT}/.home/.yard/gem_index" ]; then
-        ${RUN} bundle exec --gemfile "${ROOT}/Gemfile" yard config --gem-install-yri
-        ${RUN} bundle exec --gemfile "${ROOT}/Gemfile" yard gems
-        touch "${ROOT}/.stamps/dev_gems"
-    fi
 fi
 
 # Set executables

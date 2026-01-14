@@ -6,6 +6,22 @@ From: ubuntu:24.04
   package.json /opt/node/package.json
   package-lock.json /opt/node/package-lock.json
   .ruby-version /opt/.ruby-version
+  Gemfile /opt/Gemfile
+  Gemfile.lock /opt/Gemfile.lock
+  tools/ruby-gems/idlc/idlc.gemspec /opt/tools/ruby-gems/idlc/
+  tools/ruby-gems/idlc/lib/gem_versions.rb /opt/tools/ruby-gems/idlc/lib/
+  tools/ruby-gems/idlc/lib/gem_versions.rb /opt/tools/ruby-gems/idlc/lib/
+  tools/ruby-gems/idlc/lib/idlc/version.rb /opt/tools/ruby-gems/idlc/lib/idlc/
+  tools/ruby-gems/idl_highlighter/idl_highlighter.gemspec /opt/tools/ruby-gems/idl_highlighter/
+  tools/ruby-gems/idl_highlighter/lib/idl_highlighter/version.rb /opt/tools/ruby-gems/idl_highlighter/lib/idl_highlighter/
+  tools/ruby-gems/udb/udb.gemspec /opt/tools/ruby-gems/udb/
+  tools/ruby-gems/udb/lib/gem_versions.rb /opt/tools/ruby-gems/udb/lib/
+  tools/ruby-gems/udb/lib/udb/version.rb /opt/tools/ruby-gems/udb/lib/udb/
+  tools/ruby-gems/udb-gen/udb-gen.gemspec /opt/tools/ruby-gems/udb-gen/
+  tools/ruby-gems/udb-gen/lib/gem_versions.rb /opt/tools/ruby-gems/udb-gen/lib/
+  tools/ruby-gems/udb-gen/lib/udb-gen/version.rb /opt/tools/ruby-gems/udb-gen/lib/udb-gen/
+  tools/ruby-gems/udb_helpers/udb_helpers.gemspec /opt/tools/ruby-gems/udb_helpers/
+  tools/ruby-gems/udb_helpers/lib/udb_helpers/version.rb /opt/tools/ruby-gems/udb_helpers/lib/udb_helpers/
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -52,6 +68,9 @@ From: ubuntu:24.04
   /opt/rbenv/bin/rbenv install $(cat /opt/.ruby-version | tr -d "\n")
   /opt/rbenv/bin/rbenv global $(cat /opt/.ruby-version | tr -d "\n")
   /opt/rbenv/bin/rbenv init - > /opt/.rbenv-init
+  # install gems
+  eval "$(/opt/rbenv/bin/rbenv init -)"
+  bundle install --gemfile /opt/Gemfile
 
   # build/install eqntott
   git clone --depth=1 https://github.com/TheProjecter/eqntott.git

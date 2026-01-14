@@ -1,0 +1,40 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
+= FAQ
+
+== Update Ruby gems
+
+This will run natively, so you either need to be in the container already (e.g., in the devcontainer), or you need to have rbenv installed on the host.
+
+(If needed) Make sure you have the correct version of Ruby installed:
+
+```bash
+rbenv install
+```
+
+Then, update the gems on the host. This will update the Gemfile.lock files and sorbet definitions.
+
+```bash
+./bin/update_gems
+```
+
+Then rebuild the container:
+
+```bash
+./bin/build_container
+```
+
+Then `git add` all updated/new files and make a PR.
+
+== Add a new Ruby gem
+
+Add the gem in the appropriate Gemfile (top, or one of the sub-project gems under tools/ruby-gems).
+
+Install it on the host:
+
+```bash
+bundle install
+```
+
+Then follow the proceedure in <<Update Ruby gems>>.
