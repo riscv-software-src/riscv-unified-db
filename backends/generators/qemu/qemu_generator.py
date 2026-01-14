@@ -17,7 +17,7 @@ import logging
 import yaml
 import glob
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List
 
 # Add parent directory to path to find generator.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
