@@ -1,0 +1,288 @@
+version: "1.0"
+description: |
+  This file establishes conventions for naming and tagging parameters in instruction
+  and CSR specifications. It serves as the reference for automated tagging tools.
+
+register_operands:
+  destination:
+    names: [xd, rd, fd, vd]
+    tag_suffix: "dest_reg"
+    description: "Destination register (where result is written)"
+    examples:
+      - instruction: "add"
+        name: "rd"
+        tag: "inst-add-dest_reg"
+
+  source_primary:
+    names: [xs1, rs1, fs1, vs1]
+    tag_suffix: "src_reg_1"
+    description: "Primary source register"
+    examples:
+      - instruction: "add"
+        name: "rs1"
+        tag: "inst-add-src_reg_1"
+
+  source_secondary:
+    names: [xs2, rs2, fs2, vs2]
+    tag_suffix: "src_reg_2"
+    description: "Secondary source register"
+    examples:
+      - instruction: "add"
+        name: "rs2"
+        tag: "inst-add-src_reg_2"
+
+  source_tertiary:
+    names: [xs3, rs3, fs3, vs3]
+    tag_suffix: "src_reg_3"
+    description: "Tertiary source register (rarely used)"
+
+  source_csr:
+    names: [csr_index]
+    tag_suffix: "csr_operand"
+    description: "CSR index operand"
+
+immediate_operands:
+  i_type:
+    names: [imm_i, imm]
+    tag_suffix: "imm_i_type"
+    description: "I-type immediate (12-bit signed)"
+    examples:
+      - instruction: "addi"
+        name: "imm"
+        tag: "inst-addi-imm_i_type"
+
+  s_type:
+    names: [imm_s]
+    tag_suffix: "imm_s_type"
+    description: "S-type immediate (12-bit signed, split encoding)"
+    examples:
+      - instruction: "sw"
+        name: "imm"
+        tag: "inst-sw-imm_s_type"
+
+  b_type:
+    names: [imm_b]
+    tag_suffix: "imm_b_type"
+    description: "B-type immediate (12-bit signed, branch)"
+    examples:
+      - instruction: "beq"
+        name: "imm"
+        tag: "inst-beq-imm_b_type"
+
+  u_type:
+    names: [imm_u]
+    tag_suffix: "imm_u_type"
+    description: "U-type immediate (20-bit)"
+    examples:
+      - instruction: "lui"
+        name: "imm"
+        tag: "inst-lui-imm_u_type"
+
+  j_type:
+    names: [imm_j]
+    tag_suffix: "imm_j_type"
+    description: "J-type immediate (20-bit signed, jump)"
+    examples:
+      - instruction: "jal"
+        name: "imm"
+        tag: "inst-jal-imm_j_type"
+
+  shift_amount:
+    names: [shamt, imm_shamt]
+    tag_suffix: "shift_amount"
+    description: "Shift amount immediate"
+    examples:
+      - instruction: "slli"
+        name: "shamt"
+        tag: "inst-slli-shift_amount"
+
+  custom_immediate:
+    names: [imm]
+    tag_suffix: "immediate"
+    description: "Generic immediate (used when type not clear)"
+
+# Function/operation code fields
+function_codes:
+  funct3:
+    names: [funct3]
+    tag_suffix: "funct3"
+    description: "3-bit function code"
+    examples:
+      - instruction: "add"
+        name: "funct3"
+        tag: "inst-add-funct3"
+
+  funct7:
+    names: [funct7]
+    tag_suffix: "funct7"
+    description: "7-bit function code"
+    examples:
+      - instruction: "add"
+        name: "funct7"
+        tag: "inst-add-funct7"
+
+  funct2:
+    names: [funct2]
+    tag_suffix: "funct2"
+    description: "2-bit function code"
+
+  funct4:
+    names: [funct4]
+    tag_suffix: "funct4"
+    description: "4-bit function code"
+
+  funct5:
+    names: [funct5]
+    tag_suffix: "funct5"
+    description: "5-bit function code"
+
+  funct6:
+    names: [funct6]
+    tag_suffix: "funct6"
+    description: "6-bit function code"
+
+# Standard RISC-V opcode field
+opcode:
+  names: [opcode]
+  tag_suffix: "opcode"
+  description: "7-bit primary opcode"
+  examples:
+    - instruction: "add"
+      name: "opcode"
+      tag: "inst-add-opcode"
+
+# Compressed instruction fields
+compressed_fields:
+  register_immediate:
+    names: [imm]
+    tag_suffix: "imm_compressed"
+    description: "Immediate in compressed instruction format"
+
+  function_compressed:
+    names: [funct3, funct2]
+    tag_suffix: "funct_compressed"
+    description: "Function code in compressed instruction"
+
+# Vector instruction fields
+vector_fields:
+  vector_register:
+    names: [vd, vs1, vs2, vs3]
+    tag_suffix: "vreg"
+    description: "Vector register operand"
+
+  element_width:
+    names: [sew]
+    tag_suffix: "element_width"
+    description: "SEW (Selected Element Width) field"
+
+  mask_register:
+    names: [vm]
+    tag_suffix: "mask_enable"
+    description: "Vector mask enable bit"
+
+# Floating-point fields
+fp_fields:
+  floating_point_reg:
+    names: [fd, fs1, fs2, fs3]
+    tag_suffix: "freg"
+    description: "Floating-point register"
+
+  rounding_mode:
+    names: [rm]
+    tag_suffix: "rounding_mode"
+    description: "Floating-point rounding mode"
+
+# CSR-specific conventions
+csr_conventions:
+  field_value:
+    tag_format: "csr-<csr_name>-<field_name>-value"
+    description: "Value of a CSR field"
+    example: "csr-mstatus-mie-value"
+
+  field_type:
+    tag_format: "csr-<csr_name>-<field_name>-type"
+    description: "Type/accessibility of a CSR field"
+    example: "csr-mstatus-mie-type"
+
+  field_behavior:
+    tag_format: "csr-<csr_name>-<field_name>-behavior"
+    description: "Behavior of a CSR field"
+    example: "csr-mstatus-mie-behavior"
+
+# Tagging rules
+tagging_rules:
+  - rule: "Every parameter MUST have a tag"
+    priority: "HIGH"
+    
+  - rule: "Tags must follow the format: <scope>-<item>-<descriptor>"
+    priority: "HIGH"
+    
+  - rule: "For instructions: inst-<mnemonic>-<descriptor>"
+    priority: "HIGH"
+    
+  - rule: "For CSR fields: csr-<csr_name>-<field_name>-<descriptor>"
+    priority: "HIGH"
+    
+  - rule: "Tags must be globally unique and immutable"
+    priority: "HIGH"
+    
+  - rule: "If a parameter has no name, assign it based on conventions and then tag it"
+    priority: "MEDIUM"
+    
+  - rule: "Prefer existing parameter names from RISC-V spec as examples"
+    priority: "MEDIUM"
+    
+  - rule: "Document non-standard naming in comments"
+    priority: "LOW"
+
+# Examples of properly tagged instructions
+examples:
+  add_instruction:
+    instruction: "add"
+    parameters:
+      - name: rd
+        tag: "inst-add-dest_reg"
+        description: "Destination register"
+      - name: rs1
+        tag: "inst-add-src_reg_1"
+        description: "First source register"
+      - name: rs2
+        tag: "inst-add-src_reg_2"
+        description: "Second source register"
+      - name: funct3
+        tag: "inst-add-funct3"
+        description: "Function code 3"
+      - name: funct7
+        tag: "inst-add-funct7"
+        description: "Function code 7"
+      - name: opcode
+        tag: "inst-add-opcode"
+        description: "Primary opcode"
+
+  addi_instruction:
+    instruction: "addi"
+    parameters:
+      - name: rd
+        tag: "inst-addi-dest_reg"
+      - name: rs1
+        tag: "inst-addi-src_reg_1"
+      - name: imm
+        tag: "inst-addi-imm_i_type"
+      - name: funct3
+        tag: "inst-addi-funct3"
+      - name: opcode
+        tag: "inst-addi-opcode"
+
+  beq_instruction:
+    instruction: "beq"
+    parameters:
+      - name: rs1
+        tag: "inst-beq-src_reg_1"
+      - name: rs2
+        tag: "inst-beq-src_reg_2"
+      - name: imm
+        tag: "inst-beq-imm_b_type"
+      - name: funct3
+        tag: "inst-beq-funct3"
+      - name: opcode
+        tag: "inst-beq-opcode"
