@@ -1214,6 +1214,21 @@ class Idl::UnaryOperatorExpressionAst < ::Idl::AstNode
   def value(symtab); end
 end
 
+class MiniSat::Solver
+  def <<(_arg0); end
+  def [](_arg0); end
+  def add_clause(*_arg0); end
+  def clause_size; end
+  def new_var; end
+  def satisfied?; end
+  def simplify; end
+  def simplify_db; end
+  def solve(*_arg0); end
+  def solved?; end
+  def to_s; end
+  def var_size; end
+end
+
 # Custom error classes for non-ISA specification processing
 #
 # source://udb//../../udb/lib/udb/obj/non_isa_specification.rb#15
@@ -3973,11 +3988,11 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
   include ::Udb::CertifiableObject
   include ::Comparable
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#383
+  # source://udb//../../udb/lib/udb/obj/extension.rb#385
   sig { override.params(other_ext: ::Object).returns(T.nilable(::Integer)) }
   def <=>(other_ext); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#186
+  # source://udb//../../udb/lib/udb/obj/extension.rb#188
   sig { returns(T::Array[::Udb::Parameter]) }
   def all_params_that_must_be_implemented; end
 
@@ -3989,22 +4004,22 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
   sig { returns(T.nilable(::Udb::Company)) }
   def company; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#141
+  # source://udb//../../udb/lib/udb/obj/extension.rb#143
   sig { returns(T::Array[::Udb::Extension::ConditionallyApplicableParameter]) }
   def conditional_params; end
 
   # @return list of extensions that conflict with self
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#212
+  # source://udb//../../udb/lib/udb/obj/extension.rb#214
   def conflicting_extensions; end
 
   # not including those defined by requirements of this extension
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#298
+  # source://udb//../../udb/lib/udb/obj/extension.rb#300
   sig { returns(T::Array[::Udb::Csr]) }
   def csrs; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#355
+  # source://udb//../../udb/lib/udb/obj/extension.rb#357
   sig { returns(T::Array[::Udb::Csr]) }
   def csrs_that_must_be_implemented; end
 
@@ -4014,11 +4029,11 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
 
   # returns list of exception codes that are defined by any version of this extension
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#390
+  # source://udb//../../udb/lib/udb/obj/extension.rb#392
   sig { returns(T::Array[::Udb::ExceptionCode]) }
   def exception_codes; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#198
+  # source://udb//../../udb/lib/udb/obj/extension.rb#200
   sig { returns(::Udb::AbstractCondition) }
   def general_extension_requirements_condition; end
 
@@ -4026,7 +4041,7 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
   #
   # This list may be empty
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#330
+  # source://udb//../../udb/lib/udb/obj/extension.rb#332
   sig { returns(T::Array[::Udb::Csr]) }
   def implied_csrs; end
 
@@ -4037,33 +4052,33 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
   #
   # This list may be empty
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#265
+  # source://udb//../../udb/lib/udb/obj/extension.rb#267
   sig { returns(T::Array[::Udb::Instruction]) }
   def implied_instructions; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#291
+  # source://udb//../../udb/lib/udb/obj/extension.rb#293
   sig { returns(T::Set[::Udb::Instruction]) }
   def implied_instructions_set; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#165
+  # source://udb//../../udb/lib/udb/obj/extension.rb#167
   sig { returns(T::Array[::Udb::Parameter]) }
   def implied_params; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#224
+  # source://udb//../../udb/lib/udb/obj/extension.rb#226
   sig { returns(T::Array[::Udb::Instruction]) }
   def instructions; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#253
+  # source://udb//../../udb/lib/udb/obj/extension.rb#255
   sig { returns(T::Set[::Udb::Instruction]) }
   def instructions_set; end
 
   # returns list of interrupt codes that are defined by any version of this extension
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#404
+  # source://udb//../../udb/lib/udb/obj/extension.rb#406
   sig { returns(T::Array[::Udb::InterruptCode]) }
   def interrupt_codes; end
 
@@ -4101,23 +4116,23 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
 
   # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#363
+  # source://udb//../../udb/lib/udb/obj/extension.rb#365
   sig { returns(T::Array[::Idl::FunctionDefAst]) }
   def reachable_functions; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#207
+  # source://udb//../../udb/lib/udb/obj/extension.rb#209
   sig { returns(::Udb::AbstractCondition) }
   def requirements_condition; end
 
   # returns a condition representing *any* version of this extension being implemented
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#192
+  # source://udb//../../udb/lib/udb/obj/extension.rb#194
   sig { returns(::Udb::Condition) }
   def to_condition; end
 
   # returns an ext req that will be satisfied by any known version of this extension
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#418
+  # source://udb//../../udb/lib/udb/obj/extension.rb#420
   sig { returns(::Udb::ExtensionRequirement) }
   def to_ext_req; end
 
@@ -4126,7 +4141,7 @@ class Udb::Extension < ::Udb::TopLevelDatabaseObject
   def versions; end
 end
 
-# source://udb//../../udb/lib/udb/obj/extension.rb#135
+# source://udb//../../udb/lib/udb/obj/extension.rb#137
 class Udb::Extension::ConditionallyApplicableParameter < ::T::Struct
   prop :cond, ::Udb::AbstractCondition
   prop :param, ::Udb::Parameter
@@ -4165,7 +4180,7 @@ end
 #
 # source://udb//../../udb/lib/udb/condition.rb#23
 class Udb::ExtensionRequirement
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1382
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1384
   sig do
     params(
       name: ::String,
@@ -4177,53 +4192,53 @@ class Udb::ExtensionRequirement
 
   # sorts by name
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1778
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1780
   sig { override.params(other: T.untyped).returns(T.nilable(::Integer)) }
   def <=>(other); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1769
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1771
   sig { params(other: ::Object).returns(T::Boolean) }
   def ==(other); end
 
   # return all instructions that must be implemented when self is satisfied. This includes
   # instructions implied through a requirement of self (transitively)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1606
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1608
   sig { returns(T::Array[::Udb::Instruction]) }
   def all_instructions_that_must_be_implemented; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1258
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1260
   sig { returns(::Udb::ConfiguredArchitecture) }
   def cfg_arch; end
 
   # returns true if either this extension requirement is a superset of other_ext_req
   # or other_ext_req is a superset of this extension requirement
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1712
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1714
   sig { params(other_ext_req: ::Udb::ExtensionRequirement).returns(T::Boolean) }
   def compatible?(other_ext_req); end
 
   # return the UDB YAML representation of a Condition representing this ExtensionRequirement
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1467
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1469
   sig { returns(T.any(::FalseClass, T::Hash[::String, T.untyped])) }
   def condition_hash; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1612
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1614
   sig { returns(T::Array[::Udb::Csr]) }
   def csrs; end
 
   # hash equality
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1786
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1788
   sig { override.params(other: ::BasicObject).returns(T::Boolean) }
   def eql?(other); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1298
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1300
   sig { returns(::Udb::Extension) }
   def extension; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1793
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1795
   sig { override.returns(::Integer) }
   def hash; end
 
@@ -4234,77 +4249,77 @@ class Udb::ExtensionRequirement
   #
   # This list may be empty
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1578
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1580
   sig { returns(T::Array[::Udb::Instruction]) }
   def implied_instructions; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1599
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1601
   sig { returns(T::Set[::Udb::Instruction]) }
   def implied_instructions_set; end
 
   # return the list of parameters that are defined when preconditions of the ExtensionRequirement are met (and nothing else)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1530
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1532
   def implied_params; end
 
   # list of instructions directly implemented by *any* satisfying version
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1541
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1543
   sig { returns(T::Array[::Udb::Instruction]) }
   def instructions; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1566
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1568
   sig { returns(T::Set[::Udb::Instruction]) }
   def instructions_set; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1414
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1416
   def invert!; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1362
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1364
   sig { returns(T::Boolean) }
   def is_ext_ver?; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1676
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1678
   sig { returns(::Udb::ExtensionVersion) }
   def max_satisfying_ext_ver; end
 
   # given a compatible other_ext_req, return a single extension requirement that
   # covers both this and other_ext_req
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1719
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1721
   sig { params(other_ext_req: ::Udb::ExtensionRequirement).returns(::Udb::ExtensionRequirement) }
   def merge(other_ext_req); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1656
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1658
   sig { returns(::Udb::ExtensionVersion) }
   def min_satisfying_ext_ver; end
 
   # @return [String] Extension name
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1246
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1248
   def name; end
 
   # return the list of parameters that are defined when ExtensionRequirement is met (and nothing else)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1503
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1505
   sig { returns(T::Array[T.any(::Udb::Parameter, ::Udb::ParameterWithValue)]) }
   def params; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1632
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1634
   sig { returns(T::Array[::Idl::FunctionDefAst]) }
   def reachable_functions; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1270
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1272
   sig { returns(T::Array[::Udb::RequirementSpec]) }
   def requirement_specs; end
 
   # pretty display of requirements, with special case that ">= 0" is "any"
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1273
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1275
   def requirement_specs_to_s_pretty; end
 
   # if self is met, then the requirements of the implemented (and satisfying) version
@@ -4312,13 +4327,13 @@ class Udb::ExtensionRequirement
   #
   # thus, the requirements condition for self overall is exactly one of the version requirements
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1438
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1440
   sig { returns(::Udb::AbstractCondition) }
   def requirements_condition; end
 
   # returns true when the version requirement is ">= 0"
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1262
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1264
   sig { returns(T::Boolean) }
   def satified_by_any_version?; end
 
@@ -4326,57 +4341,57 @@ class Udb::ExtensionRequirement
   # @overload
   # @overload
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1739
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1741
   def satisfied_by?(*args); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1425
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1427
   sig { returns(T::Array[::Udb::ExtensionVersion]) }
   def satisfying_versions; end
 
   # returns true if this extension requirement is a subset of other_ext_req
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1703
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1705
   sig { params(other_ext_req: ::Udb::ExtensionRequirement).returns(T::Boolean) }
   def subset?(other_ext_req); end
 
   # returns true if this extension requirement is a superset of other_ext_req
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1695
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1697
   sig { params(other_ext_req: ::Udb::ExtensionRequirement).returns(T::Boolean) }
   def superset?(other_ext_req); end
 
   # return a Condition representing this ExtensionRequirement
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1460
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1462
   sig { returns(::Udb::Condition) }
   def to_condition; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1367
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1369
   sig { returns(::Udb::ExtensionVersion) }
   def to_ext_ver; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1798
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1800
   sig { returns(T::Hash[::String, T.untyped]) }
   def to_h; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1282
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1284
   sig { override.returns(::String) }
   def to_s; end
 
   # like to_s, but omits the requirement if the requirement is ">= 0"
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1288
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1290
   sig { returns(::String) }
   def to_s_pretty; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1249
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1251
   sig { returns(::Udb::ExtensionTerm) }
   def to_term; end
 
   # true if there is at least one matching extension version defined in the database
   # false otherwise (meaning there is no definition)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1421
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1423
   sig { returns(T::Boolean) }
   def valid?; end
 
@@ -4384,13 +4399,13 @@ class Udb::ExtensionRequirement
     # given a list of extension versions, return a single extension requirement that covers them
     # if the list is all known versions of an extension, will return the open-ended match ">= 0"
     #
-    # source://udb//../../udb/lib/udb/obj/extension.rb#1326
+    # source://udb//../../udb/lib/udb/obj/extension.rb#1328
     sig { params(ext_vers: T::Array[::Udb::ExtensionVersion]).returns(::Udb::ExtensionRequirement) }
     def create_from_ext_vers(ext_vers); end
 
     # create an ExtensionRequirement from YAML
     #
-    # source://udb//../../udb/lib/udb/obj/extension.rb#1309
+    # source://udb//../../udb/lib/udb/obj/extension.rb#1311
     sig do
       params(
         yaml: T::Hash[::String, T.untyped],
@@ -4561,7 +4576,7 @@ end
 class Udb::ExtensionVersion
   include ::Comparable
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#496
+  # source://udb//../../udb/lib/udb/obj/extension.rb#498
   sig do
     params(
       name: ::String,
@@ -4574,11 +4589,11 @@ class Udb::ExtensionVersion
 
   # sorts extension by name, then by version
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1164
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1166
   sig { override.params(other: T.untyped).returns(T.nilable(::Integer)) }
   def <=>(other); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#769
+  # source://udb//../../udb/lib/udb/obj/extension.rb#771
   sig { returns(T::Array[::Udb::Csr]) }
   def all_csrs_that_must_be_implemented; end
 
@@ -4586,107 +4601,107 @@ class Udb::ExtensionVersion
   # includes both those instructions directly defined by the extension plus any instruction
   # that must exist because of a dependence
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#719
+  # source://udb//../../udb/lib/udb/obj/extension.rb#721
   sig { returns(T::Array[::Udb::Instruction]) }
   def all_instructions_that_must_be_implemented; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#445
+  # source://udb//../../udb/lib/udb/obj/extension.rb#447
   sig { returns(::Udb::ConfiguredArchitecture) }
   def arch; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#597
+  # source://udb//../../udb/lib/udb/obj/extension.rb#599
   sig { returns(T::Boolean) }
   def breaking?; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#603
+  # source://udb//../../udb/lib/udb/obj/extension.rb#605
   sig { returns(::String) }
   def canonical_version; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#627
+  # source://udb//../../udb/lib/udb/obj/extension.rb#629
   sig { returns(T.nilable(T::Array[::String])) }
   def changes; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#593
+  # source://udb//../../udb/lib/udb/obj/extension.rb#595
   sig { params(other: ::Udb::ExtensionVersion).returns(T::Boolean) }
   def compatible?(other); end
 
   # the list is inclsive (this version is present)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#577
+  # source://udb//../../udb/lib/udb/obj/extension.rb#579
   sig { returns(T::Array[::Udb::ExtensionVersion]) }
   def compatible_versions; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#565
+  # source://udb//../../udb/lib/udb/obj/extension.rb#567
   sig { returns(T.any(::FalseClass, T::Hash[::String, T.untyped])) }
   def condition_hash; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#963
+  # source://udb//../../udb/lib/udb/obj/extension.rb#965
   sig { params(expand: T::Boolean).returns(T::Array[::Udb::ConditionalExtensionRequirement]) }
   def conditional_extension_requirements(expand:); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#634
+  # source://udb//../../udb/lib/udb/obj/extension.rb#636
   sig { returns(T::Array[::Udb::Person]) }
   def contributors; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#730
+  # source://udb//../../udb/lib/udb/obj/extension.rb#732
   sig { returns(T::Array[::Udb::Csr]) }
   def csrs; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#824
+  # source://udb//../../udb/lib/udb/obj/extension.rb#826
   sig { returns(T::Array[::Udb::ConditionalExtensionRequirement]) }
   def defining_extension_requirements; end
 
   # excluding instructions required by a dependence
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#666
+  # source://udb//../../udb/lib/udb/obj/extension.rb#668
   sig { returns(T::Array[::Udb::Instruction]) }
   def directly_defined_instructions; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#691
+  # source://udb//../../udb/lib/udb/obj/extension.rb#693
   sig { returns(T::Set[::Udb::Instruction]) }
   def directly_defined_instructions_set; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#606
+  # source://udb//../../udb/lib/udb/obj/extension.rb#608
   sig { override.params(other: T.untyped).returns(T::Boolean) }
   def eql?(other); end
 
   # the list of exception codes that require this extension version (or a compatible version)
   # in order to be defined
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1177
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1179
   sig { returns(T::Array[::Udb::ExceptionCode]) }
   def exception_codes; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#434
+  # source://udb//../../udb/lib/udb/obj/extension.rb#436
   sig { returns(::Udb::Extension) }
   def ext; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1151
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1153
   sig { params(expand: T::Boolean).returns(T::Array[::Udb::ConditionalExtensionRequirement]) }
   def ext_conflicts(expand:); end
 
   # list of requirements that must be met to implement this ExtensionVersion
   # If conditional, the requirement only applies when the condition is true
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1137
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1139
   sig { params(expand: T::Boolean).returns(T::Array[::Udb::ConditionalExtensionRequirement]) }
   def ext_requirements(expand:); end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#615
+  # source://udb//../../udb/lib/udb/obj/extension.rb#617
   sig { override.returns(::Integer) }
   def hash; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#750
+  # source://udb//../../udb/lib/udb/obj/extension.rb#752
   sig { returns(T::Array[::Udb::Csr]) }
   def implied_csrs; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#696
+  # source://udb//../../udb/lib/udb/obj/extension.rb#698
   sig { returns(T::Array[::Udb::Instruction]) }
   def implied_instructions; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#725
+  # source://udb//../../udb/lib/udb/obj/extension.rb#727
   sig { returns(T::Set[::Udb::Instruction]) }
   def implied_instructions_set; end
 
@@ -4695,7 +4710,7 @@ class Udb::ExtensionVersion
   # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
   #   Factors in effect of design's xlen in the appropriate mode for the CSR.
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1201
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1203
   def in_scope_csrs(design); end
 
   # @param design [Design] The design
@@ -4703,69 +4718,69 @@ class Udb::ExtensionVersion
   # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty).
   #   Factors in effect of design's xlen in the appropriate mode for the instruction.
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1215
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1217
   def in_scope_instructions(design); end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#528
+  # source://udb//../../udb/lib/udb/obj/extension.rb#530
   def inspect; end
 
   # the list of interrupt codes that require this extension version (or a compatible version)
   # in order to be defined
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1190
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1192
   sig { returns(T::Array[::Udb::InterruptCode]) }
   def interrupt_codes; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#430
+  # source://udb//../../udb/lib/udb/obj/extension.rb#432
   sig { returns(::String) }
   def name; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#646
+  # source://udb//../../udb/lib/udb/obj/extension.rb#648
   sig { returns(T::Array[T.any(::Udb::Parameter, ::Udb::ParameterWithValue)]) }
   def params; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#624
+  # source://udb//../../udb/lib/udb/obj/extension.rb#626
   sig { returns(T.nilable(::String)) }
   def ratification_date; end
 
   # the combination of this extension version requirement along with the overall extension requirements
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#804
+  # source://udb//../../udb/lib/udb/obj/extension.rb#806
   sig { returns(::Udb::AbstractCondition) }
   def requirements_condition; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#621
+  # source://udb//../../udb/lib/udb/obj/extension.rb#623
   sig { returns(::String) }
   def state; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#559
+  # source://udb//../../udb/lib/udb/obj/extension.rb#561
   sig { returns(::Udb::AbstractCondition) }
   def to_condition; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1227
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1229
   sig { returns(::Udb::ExtensionRequirement) }
   def to_ext_req; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#1232
+  # source://udb//../../udb/lib/udb/obj/extension.rb#1234
   sig { returns(T::Hash[::String, T.untyped]) }
   def to_h; end
 
   # @example
   #   ExtensionVersion.new("A", "2.2").to_rvi_s #=> "A2p2"
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#778
+  # source://udb//../../udb/lib/udb/obj/extension.rb#780
   sig { returns(::String) }
   def to_rvi_s; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#784
+  # source://udb//../../udb/lib/udb/obj/extension.rb#786
   sig { returns(::String) }
   def to_s; end
 
   # @api private
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#554
+  # source://udb//../../udb/lib/udb/obj/extension.rb#556
   sig { returns(::Udb::ExtensionTerm) }
   def to_term; end
 
@@ -4774,7 +4789,7 @@ class Udb::ExtensionVersion
   # When expand is true, also include ExtensionRequirements that are required by those directly mentioned by the extension
   #                      (i.e., collect the list from the transitive closure of requirements)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#907
+  # source://udb//../../udb/lib/udb/obj/extension.rb#909
   sig { params(expand: T::Boolean).returns(T::Array[::Udb::ExtensionRequirement]) }
   def unconditional_extension_conflicts(expand:); end
 
@@ -4783,44 +4798,44 @@ class Udb::ExtensionVersion
   # When expand is true, also include ExtensionRequirements that are required by those directly mentioned by the extension
   #                      (i.e., collect the list from the transitive closure of requirements)
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#834
+  # source://udb//../../udb/lib/udb/obj/extension.rb#836
   sig { params(expand: T::Boolean).returns(T::Array[::Udb::ExtensionRequirement]) }
   def unconditional_extension_requirements(expand:); end
 
   # return the exhaustive, transitive list of all known extension versions that unconditionally
   # conflict with self
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#892
+  # source://udb//../../udb/lib/udb/obj/extension.rb#894
   sig { returns(T::Array[::Udb::ExtensionVersion]) }
   def unconditional_extension_version_conflicts; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#630
+  # source://udb//../../udb/lib/udb/obj/extension.rb#632
   sig { returns(T.nilable(::String)) }
   def url; end
 
   # true if the extension {name, version} is defined in the database, regardless of config
   # false otherwise
   #
-  # source://udb//../../udb/lib/udb/obj/extension.rb#535
+  # source://udb//../../udb/lib/udb/obj/extension.rb#537
   sig { returns(T::Boolean) }
   def valid?; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#438
+  # source://udb//../../udb/lib/udb/obj/extension.rb#440
   sig { returns(::Udb::VersionSpec) }
   def version_spec; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#790
+  # source://udb//../../udb/lib/udb/obj/extension.rb#792
   sig { returns(::Udb::AbstractCondition) }
   def version_specific_requirements_condition; end
 
-  # source://udb//../../udb/lib/udb/obj/extension.rb#442
+  # source://udb//../../udb/lib/udb/obj/extension.rb#444
   sig { returns(::String) }
   def version_str; end
 
   class << self
     # create an ExtensionVersion from YAML
     #
-    # source://udb//../../udb/lib/udb/obj/extension.rb#454
+    # source://udb//../../udb/lib/udb/obj/extension.rb#456
     sig do
       params(
         yaml: T::Hash[::String, T.untyped],
@@ -4832,7 +4847,7 @@ class Udb::ExtensionVersion
     # given a set of extension versions from the *same* extension, return the minimal set of
     # extension requirements that would cover then all
     #
-    # source://udb//../../udb/lib/udb/obj/extension.rb#540
+    # source://udb//../../udb/lib/udb/obj/extension.rb#542
     sig { params(ext_vers: T::Array[::Udb::ExtensionVersion]).returns(::Udb::ExtensionRequirement) }
     def to_ext_req(ext_vers); end
 
@@ -4844,7 +4859,7 @@ end
 
 # @api private
 #
-# source://udb//../../udb/lib/udb/obj/extension.rb#475
+# source://udb//../../udb/lib/udb/obj/extension.rb#477
 class Udb::ExtensionVersion::MemomizedState < ::T::Struct
   prop :unconditional_expanded_ext_reqs, T.nilable(T::Array[::Udb::ExtensionRequirement])
   prop :unconditional_unexpanded_ext_reqs, T.nilable(T::Array[::Udb::ExtensionRequirement])
