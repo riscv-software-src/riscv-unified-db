@@ -133,7 +133,6 @@ class QemuCsrTable:
 
     def __init__(self):
         self.csr_definitions = {}
-        self.csr_groups = {}
 
     def add_csr(self, name: str, address: int, info: dict):
         """Add a CSR definition"""
