@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-import os
-import yaml
-import logging
-import pprint
 import json
+import logging
+import os
+import pprint
+
+import yaml
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
@@ -37,25 +38,17 @@ def build_match_from_format(format_field):
                     location = field_data["location"]
                     split_location = location.split("|")
                     high = max(
-                        (
-                            int(location.split("-")[0])
-                            if "-" in location
-                            else int(location)
-                        )
+                        (int(location.split("-")[0]) if "-" in location else int(location))
                         for location in split_location
                     )
                     valid_locations.append(high)
                 except (ValueError, IndexError):
-                    raise ValueError(
-                        f"Invalid location format: {field_data['location']}"
-                    )
+                    raise ValueError(f"Invalid location format: {field_data['location']}")
             elif isinstance(field_data["location"], int):
                 try:
                     valid_locations.append(field_data["location"])
                 except (ValueError, IndexError):
-                    raise ValueError(
-                        f"Invalid location format: {field_data['location']}"
-                    )
+                    raise ValueError(f"Invalid location format: {field_data['location']}")
             else:
                 raise ValueError(f"Unknown location format: {field_data['location']}")
 
@@ -73,16 +66,12 @@ def build_match_from_format(format_field):
                             high = int(location)
                         valid_locations.append(high)
                     except (ValueError, IndexError):
-                        raise ValueError(
-                            f"Invalid location format: {var_data['location']}"
-                        )
+                        raise ValueError(f"Invalid location format: {var_data['location']}")
                 elif isinstance(var_data["location"], int):
                     try:
                         valid_locations.append(var_data["location"])
                     except (ValueError, IndexError):
-                        raise ValueError(
-                            f"Invalid location format: {var_data['location']}"
-                        )
+                        raise ValueError(f"Invalid location format: {var_data['location']}")
                 else:
                     raise ValueError(f"Invalid location format: {var_data['location']}")
 
@@ -125,7 +114,7 @@ def parse_extension_requirements(extensions_spec):
     """
     if extensions_spec is None:
         # If definedBy is None, we should never match
-        logging.error(f"Missing 'definedBy' field")
+        logging.error("Missing 'definedBy' field")
         return lambda exts: False
 
     if isinstance(extensions_spec, str):
@@ -138,9 +127,7 @@ def parse_extension_requirements(extensions_spec):
             else:
                 ext_parts = extension[2:]
             # Check if any part matches enabled extensions
-            return lambda enabled_exts: any(
-                ext_part in enabled_exts for ext_part in ext_parts
-            )
+            return lambda enabled_exts: any(ext_part in enabled_exts for ext_part in ext_parts)
         return lambda exts: extension in exts
 
     # Handle complex cases with allOf/oneOf/anyOf
@@ -165,9 +152,7 @@ def parse_extension_requirements(extensions_spec):
                 return alt["name"] in exts
             return False
 
-        return lambda exts: any(
-            check_alternative_one_of(alt, exts) for alt in alternatives
-        )
+        return lambda exts: any(check_alternative_one_of(alt, exts) for alt in alternatives)
 
     # Handle anyOf case (most common in the error output)
     if "anyOf" in extensions_spec:
@@ -204,9 +189,7 @@ def parse_extension_requirements(extensions_spec):
     return lambda exts: True
 
 
-def load_instructions(
-    root_dir, enabled_extensions, include_all=False, target_arch="RV64"
-):
+def load_instructions(root_dir, enabled_extensions, include_all=False, target_arch="RV64"):
     """
     Recursively walk through root_dir, load YAML files that define an instruction,
     filter by enabled extensions, and collect them into a dictionary keyed by the instruction name.
@@ -251,9 +234,7 @@ def load_instructions(
                 # Check if this instruction is defined by an enabled extension
                 definedBy = data.get("definedBy")
                 if definedBy is None:
-                    logging.error(
-                        f"Missing 'definedBy' field in instruction {name} in {path}"
-                    )
+                    logging.error(f"Missing 'definedBy' field in instruction {name} in {path}")
                     extension_filtered += 1
                     continue
 
@@ -280,9 +261,7 @@ def load_instructions(
                 # Check if this instruction uses the new schema with a 'format' field
                 format_field = data.get("format")
                 if not format_field:
-                    logging.error(
-                        f"Missing 'encoding' field in instruction {name} in {path}"
-                    )
+                    logging.error(f"Missing 'encoding' field in instruction {name} in {path}")
                     encoding_filtered += 1
                     continue
 
@@ -330,9 +309,7 @@ def load_instructions(
                         rv32_match = rv32_encoding.get("match")
 
                         if rv64_match:
-                            instr_dict[name] = {
-                                "match": rv64_match
-                            }  # RV64 gets the default name
+                            instr_dict[name] = {"match": rv64_match}  # RV64 gets the default name
 
                         if rv32_match and rv32_match != rv64_match:
                             # Process RV32 encoding with a _rv32 suffix
@@ -382,15 +359,11 @@ def load_instructions(
             instr_dict[instr_key] = {"match": match_str}
 
     if found_instructions > 0:
-        logging.info(
-            f"Found {found_instructions} instruction definitions in {found_files} files"
-        )
+        logging.info(f"Found {found_instructions} instruction definitions in {found_files} files")
         if extension_filtered > 0:
             logging.info(f"Filtered out {extension_filtered} instructions by extension")
         if encoding_filtered > 0:
-            logging.info(
-                f"Filtered out {encoding_filtered} instructions due to encoding issues"
-            )
+            logging.info(f"Filtered out {encoding_filtered} instructions due to encoding issues")
         logging.info(f"Added {len(instr_dict)} instruction encodings to the output")
     else:
         logging.warning(f"No instruction definitions found in {root_dir}")
@@ -414,9 +387,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
     arch_filtered = 0
     address_errors = 0
 
-    logging.info(
-        f"Searching for CSR files in {csr_root} for target architecture {target_arch}"
-    )
+    logging.info(f"Searching for CSR files in {csr_root} for target architecture {target_arch}")
 
     for dirpath, _, filenames in os.walk(csr_root):
         for fname in filenames:
@@ -477,9 +448,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                     logging.debug(f"CSR {name} definedBy: {definedBy}")
                     meets_extension_req = parse_extension_requirements(definedBy)
                     if not meets_extension_req(enabled_extensions):
-                        msg = (
-                            f"Skipping CSR {name} because its extension is not enabled"
-                        )
+                        msg = f"Skipping CSR {name} because its extension is not enabled"
                         logging.debug(msg)
                         extension_filtered += 1
                         continue
@@ -504,9 +473,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
         if extension_filtered > 0:
             logging.info(f"Filtered out {extension_filtered} CSRs by extension")
         if arch_filtered > 0:
-            logging.info(
-                f"Filtered out {arch_filtered} CSRs by architecture constraints"
-            )
+            logging.info(f"Filtered out {arch_filtered} CSRs by architecture constraints")
         if address_errors > 0:
             logging.info(f"Filtered out {address_errors} CSRs due to address issues")
         logging.info(f"Added {len(csrs)} CSRs to the output")
@@ -537,10 +504,7 @@ def load_exception_codes(
                 name = code.get("name")
                 if num is not None and name is not None:
                     sanitized_name = (
-                        name.lower()
-                        .replace(" ", "_")
-                        .replace("/", "_")
-                        .replace("-", "_")
+                        name.lower().replace(" ", "_").replace("/", "_").replace("-", "_")
                     )
                     exception_codes.append((num, sanitized_name))
 
@@ -559,18 +523,14 @@ def load_exception_codes(
             return unique_codes
 
         except Exception as e:
-            logging.error(
-                f"Error loading resolved codes file {resolved_codes_file}: {e}"
-            )
+            logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
     # Logging an error and skipping the exception cause generation if no resolved codes file found
     else:
-        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
+        logging.error(f"Resolved codes file not found: {resolved_codes_file}")
         return
 
     if found_extensions > 0:
-        logging.info(
-            f"Found {found_extensions} extension definitions in {found_files} files"
-        )
+        logging.info(f"Found {found_extensions} extension definitions in {found_files} files")
         logging.info(f"Added {len(exception_codes)} exception codes to the output")
     else:
         logging.warning(f"No extension definitions found in {ext_dir}")

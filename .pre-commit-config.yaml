@@ -107,12 +107,10 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.11
     hooks:
-      - id: ruff
+      - id: ruff-check
         stages: [pre-commit]
-        files: ^tools/python/
       - id: ruff-format
         stages: [pre-commit]
-        files: ^tools/python/
 
   - repo: local
     hooks:

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-import os
-import sys
 import argparse
 import logging
+import os
+import sys
 
 # Add parent directory to path to find generator.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generator import load_instructions, load_csrs, parse_match, signed
+from generator import load_csrs, load_instructions, parse_match, signed
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
@@ -47,9 +47,9 @@ func encode(a obj.As) *inst {
         csr_val = (enc_match >> 20) & ((1 << 12) - 1)
         funct7 = (enc_match >> 25) & ((1 << 7) - 1)
         # Create the instruction case name. For example, "bclri" becomes "ABCLRI"
-        instr_case = f"A{name.upper().replace('.','')}"
+        instr_case = f"A{name.upper().replace('.', '')}"
         instr_str += f"""  case {instr_case}:
-    return &inst{{ {hex(opcode)}, {hex(funct3)}, {hex(rs1)}, {hex(rs2)}, {signed(csr_val,12)}, {hex(funct7)} }}
+    return &inst{{ {hex(opcode)}, {hex(funct3)}, {hex(rs1)}, {hex(rs2)}, {signed(csr_val, 12)}, {hex(funct7)} }}
 """
     instructions_end = """  }
 	return nil
@@ -99,9 +99,7 @@ def parse_args():
         choices=["RV32", "RV64", "BOTH"],
         help="Target architecture (RV32, RV64, or BOTH). Default is RV64.",
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose logging"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
     parser.add_argument(
         "--include-all",
         "-a",
@@ -123,14 +121,10 @@ def main():
     # Parse enabled extensions
     if include_all:
         enabled_extensions = []
-        logging.info(
-            "Including all instructions and CSRs (extension filtering disabled)"
-        )
+        logging.info("Including all instructions and CSRs (extension filtering disabled)")
     else:
         # Get extensions from the command line
-        enabled_extensions = [
-            ext.strip() for ext in args.extensions.split(",") if ext.strip()
-        ]
+        enabled_extensions = [ext.strip() for ext in args.extensions.split(",") if ext.strip()]
         logging.info(f"Enabled extensions: {', '.join(enabled_extensions)}")
 
     # Log target architecture
@@ -144,14 +138,10 @@ def main():
         logging.warning(f"CSR directory not found: {args.csr_dir}")
 
     # Load instructions filtered by extensions or all instructions
-    instr_dict = load_instructions(
-        args.inst_dir, enabled_extensions, include_all, args.arch
-    )
+    instr_dict = load_instructions(args.inst_dir, enabled_extensions, include_all, args.arch)
     if not instr_dict:
         logging.error("No instructions found or all were filtered out.")
-        logging.error(
-            "Try using --verbose to see more details about the filtering process."
-        )
+        logging.error("Try using --verbose to see more details about the filtering process.")
         sys.exit(1)
     logging.info(f"Loaded {len(instr_dict)} instructions")
 
