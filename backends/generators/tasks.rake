@@ -153,17 +153,22 @@ namespace :gen do
     inst_dir = cfg_arch.path / "inst"
     csr_dir = cfg_arch.path / "csr"
 
-    # Build command with optional extensions
-    cmd = "/opt/venv/bin/python3 #{$root}/backends/generators/qemu/qemu_generator.py " \
-          "--inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output-dir=#{output_dir} " \
-          "--arch=#{arch}"
+    # Build command with optional extensions, using argument array to avoid shell interpolation
+    cmd = [
+      "/opt/venv/bin/python3",
+      "#{$root}/backends/generators/qemu/qemu_generator.py",
+      "--inst-dir=#{inst_dir}",
+      "--csr-dir=#{csr_dir}",
+      "--output-dir=#{output_dir}",
+      "--arch=#{arch}"
+    ]
 
     if extensions.empty?
-      cmd += " --include-all"
+      cmd << "--include-all"
     else
-      cmd += " --extensions=#{extensions}"
+      cmd << "--extensions=#{extensions}"
     end
 
-    sh cmd
+    sh(*cmd)
   end
 end
