@@ -34,8 +34,5 @@ ignore = [
     "ANN401", # dynamically typed expressions are disallowed
 ]
 
-[tool.ruff.lint.isort]
-known-first-party = ["udb", "idlc"]
-
 [tool.ruff.lint.pylint]
 max-args = 5
