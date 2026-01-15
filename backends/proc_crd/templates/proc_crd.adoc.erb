@@ -246,31 +246,6 @@ The <%= proc_cert_model.name %> certificate has <%= portfolio_design.all_out_of_
 |===
 <% end # if table -%>
 
-== Traps
-
-RISC-V supports both synchronous exceptions and asynchronous interrupts.
-TODO: List only traps that exist in this processor certificate model (currently lists all possible in present extensions).
-See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
-TODO: Show traps per privilege mode
-
-=== Synchronous Exceptions
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% portfolio_design.in_scope_exception_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
-=== Asynchronous Interrupts
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% portfolio_design.in_scope_interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
 == Instruction Summary
 
 The <%= proc_cert_model.name %> certificate has up to <%= portfolio_design.in_scope_instructions.size %> instructions
