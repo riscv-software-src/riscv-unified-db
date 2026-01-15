@@ -1,0 +1,39 @@
+section_1_isa_overview:
+  chapter: 2
+  title: ISA Overview
+  pages: 8-30
+  key_topics:
+  - Base ISA
+  - Registers
+  - Instruction Formats
+section_2_floating_point:
+  chapter: 5
+  title: Single-Precision Floating-Point
+  pages: 60-80
+  key_topics:
+  - FLEN
+  - Floating-point Extensions
+  - Rounding
+section_3_atomic:
+  chapter: 8
+  title: Atomic Instructions
+  pages: 110-125
+  key_topics:
+  - Atomic Memory Operations
+  - A Extension
+section_4_vector_part1:
+  chapter: 13
+  title: Vector Extension (Part 1)
+  pages: 200-250
+  key_topics:
+  - VLEN
+  - Vector Configuration
+  - Basic Operations
+section_5_vector_part2:
+  chapter: 13
+  title: Vector Extension (Part 2)
+  pages: 250-300
+  key_topics:
+  - Advanced Vector Operations
+  - ELEN
+  - SEW

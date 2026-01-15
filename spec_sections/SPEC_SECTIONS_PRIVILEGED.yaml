@@ -1,0 +1,40 @@
+section_1_privilege_levels:
+  chapter: 2
+  title: Privilege Levels
+  pages: 8-30
+  key_topics:
+  - Machine Mode
+  - Supervisor Mode
+  - User Mode
+section_2_csrs:
+  chapter: 2
+  title: Control and Status Registers
+  pages: 30-80
+  key_topics:
+  - MSTATUS
+  - MISA
+  - CSR Architecture
+section_3_machine_isa:
+  chapter: 3
+  title: Machine-Level ISA
+  pages: 80-130
+  key_topics:
+  - Machine Instructions
+  - MTVEC
+  - Exception Handling
+section_4_supervisor_isa:
+  chapter: 4
+  title: Supervisor-Level ISA
+  pages: 130-170
+  key_topics:
+  - Supervisor Mode
+  - Virtual Memory
+  - SATP
+section_5_pmp:
+  chapter: 7
+  title: Physical Memory Protection
+  pages: 200-230
+  key_topics:
+  - PMP Entries
+  - NUM_PMP_ENTRIES
+  - Memory Protection
