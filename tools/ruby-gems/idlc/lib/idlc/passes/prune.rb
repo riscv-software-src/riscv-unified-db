@@ -282,13 +282,13 @@ module Idl
         if lhs_value == 0
           # 0 & anything == 0
           create_literal(symtab, 0, type(symtab))
-        elsif (rhs.type(symtab).width != :unknown) && lhs_value == ((1 << rhs.type(symtab).width) - 1)
+        elsif (rhs.type(symtab).width.is_a?(Integer)) && lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # rhs idenntity
           rhs.prune(symtab)
         elsif rhs_value == 0
           # anything & 0 == 0
           create_literal(symtab, 0, type(symtab))
-        elsif (lhs.type(symtab).width != :unknown) && rhs_value == ((1 << lhs.type(symtab).width) - 1)
+        elsif (lhs.type(symtab).width.is_a?(Integer)) && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # lhs identity
           lhs.prune(symtab)
         else
@@ -302,13 +302,13 @@ module Idl
         if lhs_value == 0
           # rhs idenntity
           rhs.prune(symtab)
-        elsif rhs_type.width != :unknown && lhs_value == ((1 << rhs.type(symtab).width) - 1)
+        elsif rhs_type.width.is_a?(Integer) && lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # ~0 | anything == ~0
           create_literal(symtab, lhs_value, type(symtab))
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
-        elsif lhs_type.width != :unknown && rhs_value == ((1 << lhs.type(symtab).width) - 1)
+        elsif lhs_type.width.is_a?(Integer) && rhs_value == ((1 << lhs.type(symtab).width) - 1)
           # anything | ~0 == ~0
           create_literal(symtab, rhs_value, type(symtab))
         else
