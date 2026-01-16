@@ -152,6 +152,9 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
       fi
       singularity pull "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
     fi
+    if [ -v UDB_CONTAINER_BIND ]; then
+      EXTRA_BIND="--bind ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}"
+    fi
 elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     HOME_PATH=${HOME}
 else
@@ -170,9 +173,6 @@ if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
 elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
     RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    if [ -v UDB_CONTAINER_BIND ]; then
-      EXTRA_BIND="--bind ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}"
-    fi
     RUN="singularity run ${HOME_OPT} ${EXTRA_BIND} ${CONTAINER_PATH}"
 else
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
