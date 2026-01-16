@@ -13,7 +13,7 @@ module TZInfo
   end
 end
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#129
+# source://tzinfo//lib/tzinfo/transition_rule.rb#120
 class TZInfo::AbsoluteDayOfYearTransitionRule < ::TZInfo::DayOfYearTransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#130
   def initialize(day, transition_at = T.unsafe(nil)); end
@@ -649,7 +649,7 @@ class TZInfo::DateTimeWithOffset < ::DateTime
   def clear_timezone_offset; end
 end
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#339
+# source://tzinfo//lib/tzinfo/transition_rule.rb#323
 class TZInfo::DayOfMonthTransitionRule < ::TZInfo::DayOfWeekTransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#340
   def initialize(month, week, day_of_week, transition_at = T.unsafe(nil)); end
@@ -672,7 +672,7 @@ class TZInfo::DayOfMonthTransitionRule < ::TZInfo::DayOfWeekTransitionRule
   def offset_start; end
 end
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#273
+# source://tzinfo//lib/tzinfo/transition_rule.rb#261
 class TZInfo::DayOfWeekTransitionRule < ::TZInfo::TransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#274
   def initialize(month, day_of_week, transition_at); end
@@ -701,7 +701,7 @@ class TZInfo::DayOfWeekTransitionRule < ::TZInfo::TransitionRule
   def month; end
 end
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#81
+# source://tzinfo//lib/tzinfo/transition_rule.rb#73
 class TZInfo::DayOfYearTransitionRule < ::TZInfo::TransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#82
   def initialize(day, transition_at); end
@@ -724,7 +724,7 @@ end
 # source://tzinfo//lib/tzinfo/format1.rb#7
 module TZInfo::Format1; end
 
-# source://tzinfo//lib/tzinfo/format1/country_definer.rb#11
+# source://tzinfo//lib/tzinfo/format1/country_definer.rb#10
 class TZInfo::Format1::CountryDefiner < ::TZInfo::Format2::CountryDefiner
   # source://tzinfo//lib/tzinfo/format1/country_definer.rb#12
   def initialize(identifier_deduper, description_deduper); end
@@ -968,7 +968,7 @@ class TZInfo::InvalidDataSource < ::StandardError; end
 # source://tzinfo//lib/tzinfo/timezone.rb#26
 class TZInfo::InvalidTimezoneIdentifier < ::StandardError; end
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#185
+# source://tzinfo//lib/tzinfo/transition_rule.rb#184
 class TZInfo::JulianDayOfYearTransitionRule < ::TZInfo::DayOfYearTransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#202
   def initialize(day, transition_at = T.unsafe(nil)); end
@@ -1000,7 +1000,7 @@ TZInfo::JulianDayOfYearTransitionRule::LEAP = T.let(T.unsafe(nil), Integer)
 # source://tzinfo//lib/tzinfo/transition_rule.rb#190
 TZInfo::JulianDayOfYearTransitionRule::YEAR = T.let(T.unsafe(nil), Integer)
 
-# source://tzinfo//lib/tzinfo/transition_rule.rb#408
+# source://tzinfo//lib/tzinfo/transition_rule.rb#396
 class TZInfo::LastDayOfMonthTransitionRule < ::TZInfo::DayOfWeekTransitionRule
   # source://tzinfo//lib/tzinfo/transition_rule.rb#409
   def initialize(month, day_of_week, transition_at = T.unsafe(nil)); end

@@ -104,11 +104,31 @@ RUN cd /opt/node && \
 ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"
 
+# install gems
+COPY Gemfile /opt/Gemfile
+COPY Gemfile.lock /opt/Gemfile.lock
+COPY tools/ruby-gems/idlc/idlc.gemspec /opt/tools/ruby-gems/idlc/
+COPY tools/ruby-gems/idlc/lib/gem_versions.rb /opt/tools/ruby-gems/idlc/lib/
+COPY tools/ruby-gems/idlc/lib/idlc/version.rb /opt/tools/ruby-gems/idlc/lib/idlc/
+COPY tools/ruby-gems/idl_highlighter/idl_highlighter.gemspec /opt/tools/ruby-gems/idl_highlighter/
+COPY tools/ruby-gems/idl_highlighter/lib/idl_highlighter/version.rb /opt/tools/ruby-gems/idl_highlighter/lib/idl_highlighter/
+COPY tools/ruby-gems/udb/udb.gemspec /opt/tools/ruby-gems/udb/
+COPY tools/ruby-gems/udb/lib/gem_versions.rb /opt/tools/ruby-gems/udb/lib/
+COPY tools/ruby-gems/udb/lib/udb/version.rb /opt/tools/ruby-gems/udb/lib/udb/
+COPY tools/ruby-gems/udb-gen/udb-gen.gemspec /opt/tools/ruby-gems/udb-gen/
+COPY tools/ruby-gems/udb-gen/lib/gem_versions.rb /opt/tools/ruby-gems/udb-gen/lib/
+COPY tools/ruby-gems/udb-gen/lib/udb-gen/version.rb /opt/tools/ruby-gems/udb-gen/lib/udb-gen/
+COPY tools/ruby-gems/udb_helpers/udb_helpers.gemspec /opt/tools/ruby-gems/udb_helpers/
+COPY tools/ruby-gems/udb_helpers/lib/udb_helpers/version.rb /opt/tools/ruby-gems/udb_helpers/lib/udb_helpers/
 # Add rbenv initialization to all shells (login and interactive)
 RUN echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' >> /etc/bash.bashrc && \
     echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' > /etc/profile.d/rbenv.sh
-ENV RBENV_ROOT=/opt/.rbenv
-ENV RUBY_YJIT_ENABLE=1
+RUN <<CMDS
+  export RBENV_ROOT=/opt/.rbenv
+  eval "$(/opt/rbenv/bin/rbenv init -)"
+  bundle install --gemfile /opt/Gemfile
+CMDS
+
 
 WORKDIR /workspace
 

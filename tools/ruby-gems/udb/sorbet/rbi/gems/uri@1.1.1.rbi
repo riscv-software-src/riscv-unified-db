@@ -5,6 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem uri`.
 
 
+# source://uri//lib/uri/common.rb#895
 module Kernel
   private
 
@@ -17,6 +18,7 @@ module Kernel
   end
 end
 
+# source://uri//lib/uri.rb#90
 module URI
   class << self
     # source://uri//lib/uri/common.rb#50
@@ -80,6 +82,7 @@ module URI
   end
 end
 
+# source://uri//lib/uri/ftp.rb#22
 class URI::FTP < ::URI::Generic
   # source://uri//lib/uri/ftp.rb#133
   def initialize(scheme, userinfo, host, port, registry, path, opaque, query, fragment, parser = T.unsafe(nil), arg_check = T.unsafe(nil)); end
@@ -121,6 +124,7 @@ class URI::FTP < ::URI::Generic
   end
 end
 
+# source://uri//lib/uri/file.rb#10
 class URI::File < ::URI::Generic
   # source://uri//lib/uri/file.rb#82
   def check_password(user); end
@@ -158,6 +162,7 @@ URI::File::COMPONENT = T.let(T.unsafe(nil), Array)
 # source://uri//lib/uri/file.rb#12
 URI::File::DEFAULT_PORT = T.let(T.unsafe(nil), T.untyped)
 
+# source://uri//lib/uri/generic.rb#21
 class URI::Generic
   include ::URI
 
@@ -423,6 +428,7 @@ class URI::Generic
   end
 end
 
+# source://uri//lib/uri/http.rb#22
 class URI::HTTP < ::URI::Generic
   # source://uri//lib/uri/http.rb#109
   def authority; end
@@ -445,6 +451,7 @@ end
 # source://uri//lib/uri/common.rb#166
 URI::INITIAL_SCHEMES = T.let(T.unsafe(nil), Hash)
 
+# source://uri//lib/uri/ldap.rb#23
 class URI::LDAP < ::URI::Generic
   # source://uri//lib/uri/ldap.rb#108
   def initialize(*arg); end
@@ -516,6 +523,7 @@ class URI::LDAP < ::URI::Generic
   end
 end
 
+# source://uri//lib/uri/mailto.rb#17
 class URI::MailTo < ::URI::Generic
   include ::URI::RFC2396_REGEXP
 
@@ -568,6 +576,7 @@ end
 # source://uri//lib/uri/common.rb#34
 URI::PARSER = T.let(T.unsafe(nil), URI::RFC3986_Parser)
 
+# source://uri//lib/uri/rfc2396_parser.rb#64
 class URI::RFC2396_Parser
   include ::URI::RFC2396_REGEXP
 
@@ -619,6 +628,7 @@ end
 # source://uri//lib/uri/rfc2396_parser.rb#323
 URI::RFC2396_Parser::TO_S = T.let(T.unsafe(nil), UnboundMethod)
 
+# source://uri//lib/uri/rfc3986_parser.rb#3
 class URI::RFC3986_Parser
   # source://uri//lib/uri/rfc3986_parser.rb#73
   def initialize; end
@@ -680,6 +690,7 @@ URI::RFC3986_Parser::SEG_NC = T.let(T.unsafe(nil), String)
 # source://uri//lib/uri/rfc3986_parser.rb#28
 URI::RFC3986_Parser::USERINFO = T.let(T.unsafe(nil), Regexp)
 
+# source://uri//lib/uri/common.rb#97
 module URI::Schemes
   class << self
     # source://uri//lib/uri/common.rb#104
@@ -732,6 +743,7 @@ URI::Schemes::WSS = URI::WSS
 # source://uri//lib/uri/common.rb#347
 URI::TBLENCURICOMP_ = T.let(T.unsafe(nil), Hash)
 
+# source://uri//lib/uri/common.rb#65
 module URI::Util
   private
 
@@ -744,6 +756,7 @@ module URI::Util
   end
 end
 
+# source://uri//lib/uri/ws.rb#22
 class URI::WS < ::URI::Generic
   # source://uri//lib/uri/ws.rb#74
   def request_uri; end
@@ -754,6 +767,7 @@ class URI::WS < ::URI::Generic
   end
 end
 
+# source://uri//lib/uri/wss.rb#17
 class URI::WSS < ::URI::WS; end
 
 # source://uri//lib/uri/wss.rb#19

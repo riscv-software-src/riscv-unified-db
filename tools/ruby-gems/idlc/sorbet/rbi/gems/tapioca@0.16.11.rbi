@@ -55,16 +55,16 @@ module RBI; end
 
 # source://tapioca//lib/tapioca/rbi_ext/model.rb#5
 class RBI::Tree < ::RBI::NodeWithComments
-  # source://rbi/0.3.8/lib/rbi/model.rb#113
+  # source://rbi/0.3.9/lib/rbi/model.rb#113
   def initialize(loc: T.unsafe(nil), comments: T.unsafe(nil), &block); end
 
-  # source://rbi/0.3.8/lib/rbi/model.rb#120
+  # source://rbi/0.3.9/lib/rbi/model.rb#120
   def <<(node); end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/add_sig_templates.rb#63
+  # source://rbi/0.3.9/lib/rbi/rewriters/add_sig_templates.rb#63
   def add_sig_templates!(with_todo_comment: T.unsafe(nil)); end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/annotate.rb#46
+  # source://rbi/0.3.9/lib/rbi/rewriters/annotate.rb#46
   def annotate!(annotation, annotate_scopes: T.unsafe(nil), annotate_properties: T.unsafe(nil)); end
 
   # source://tapioca//lib/tapioca/rbi_ext/model.rb#38
@@ -128,49 +128,49 @@ class RBI::Tree < ::RBI::NodeWithComments
   end
   def create_type_variable(name, type:, variance: T.unsafe(nil), fixed: T.unsafe(nil), upper: T.unsafe(nil), lower: T.unsafe(nil)); end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/deannotate.rb#38
+  # source://rbi/0.3.9/lib/rbi/rewriters/deannotate.rb#38
   def deannotate!(annotation); end
 
-  # source://rbi/0.3.8/lib/rbi/model.rb#126
+  # source://rbi/0.3.9/lib/rbi/model.rb#126
   def empty?; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/filter_versions.rb#113
+  # source://rbi/0.3.9/lib/rbi/rewriters/filter_versions.rb#113
   def filter_versions!(version); end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/flatten_singleton_methods.rb#58
+  # source://rbi/0.3.9/lib/rbi/rewriters/flatten_singleton_methods.rb#58
   def flatten_singleton_methods!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/flatten_visibilities.rb#57
+  # source://rbi/0.3.9/lib/rbi/rewriters/flatten_visibilities.rb#57
   def flatten_visibilities!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/group_nodes.rb#78
+  # source://rbi/0.3.9/lib/rbi/rewriters/group_nodes.rb#78
   def group_nodes!; end
 
-  # source://rbi/0.3.8/lib/rbi/index.rb#62
+  # source://rbi/0.3.9/lib/rbi/index.rb#62
   def index; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/merge_trees.rb#323
+  # source://rbi/0.3.9/lib/rbi/rewriters/merge_trees.rb#336
   def merge(other, left_name: T.unsafe(nil), right_name: T.unsafe(nil), keep: T.unsafe(nil)); end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/nest_non_public_members.rb#43
+  # source://rbi/0.3.9/lib/rbi/rewriters/nest_non_public_members.rb#43
   def nest_non_public_members!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/nest_singleton_methods.rb#33
+  # source://rbi/0.3.9/lib/rbi/rewriters/nest_singleton_methods.rb#33
   def nest_singleton_methods!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/nest_top_level_members.rb#60
+  # source://rbi/0.3.9/lib/rbi/rewriters/nest_top_level_members.rb#60
   def nest_top_level_members!; end
 
-  # source://rbi/0.3.8/lib/rbi/model.rb#110
+  # source://rbi/0.3.9/lib/rbi/model.rb#110
   def nodes; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/attr_to_methods.rb#50
+  # source://rbi/0.3.9/lib/rbi/rewriters/attr_to_methods.rb#50
   def replace_attributes_with_methods!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/sort_nodes.rb#118
+  # source://rbi/0.3.9/lib/rbi/rewriters/sort_nodes.rb#118
   def sort_nodes!; end
 
-  # source://rbi/0.3.8/lib/rbi/rewriters/translate_rbs_sigs.rb#82
+  # source://rbi/0.3.9/lib/rbi/rewriters/translate_rbs_sigs.rb#82
   def translate_rbs_sigs!; end
 
   private
@@ -876,7 +876,7 @@ class Tapioca::Commands::Command
   sig { void }
   def initialize; end
 
-  # source://thor/1.4.0/lib/thor/base.rb#155
+  # source://thor/1.5.0/lib/thor/base.rb#156
   sig { returns(::Thor::Actions) }
   def file_writer; end
 

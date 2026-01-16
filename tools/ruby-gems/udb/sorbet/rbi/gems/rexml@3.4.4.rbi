@@ -1259,7 +1259,7 @@ class REXML::Parsers::BaseParser
   # source://rexml//lib/rexml/parsers/baseparser.rb#639
   def record_entity_expansion(delta = T.unsafe(nil)); end
 
-  # source://rexml//lib/rexml/parsers/baseparser.rb#831
+  # source://rexml//lib/rexml/parsers/baseparser.rb#835
   def scan_quote; end
 
   # source://rexml//lib/rexml/parsers/baseparser.rb#769
@@ -1343,9 +1343,6 @@ class REXML::Parsers::StreamParser
   # source://rexml//lib/rexml/parsers/streamparser.rb#29
   def parse; end
 end
-
-# source://rexml//lib/rexml/parsers/baseparser.rb#28
-module REXML::Parsers::StringScannerCaptures; end
 
 # source://rexml//lib/rexml/parsers/treeparser.rb#7
 class REXML::Parsers::TreeParser
