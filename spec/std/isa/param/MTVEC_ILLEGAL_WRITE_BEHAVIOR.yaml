@@ -15,7 +15,7 @@ description: |
   Options:
 
     retain::
-      When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain its curent value
+      When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain its current value
 
     custom::
       When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will obtain an unpredictable value
