@@ -103,6 +103,10 @@ RUN cd /opt/node && \
     rm /opt/node/package.json /opt/node/package-lock.json
 ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"
+
+# Add rbenv initialization to all shells (login and interactive)
+RUN echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' >> /etc/bash.bashrc && \
+    echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' > /etc/profile.d/rbenv.sh
 ENV RBENV_ROOT=/opt/.rbenv
 ENV RUBY_YJIT_ENABLE=1
 
