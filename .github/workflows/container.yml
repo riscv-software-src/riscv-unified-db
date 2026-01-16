@@ -10,7 +10,7 @@ jobs:
       SINGULARITY: 1
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [ubuntu-24.04] # , ubuntu-24.04-arm]   eWaterCycle/setup-apptainer does not have ARM64 support
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Clone Github Repo Action
