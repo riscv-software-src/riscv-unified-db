@@ -4,9 +4,11 @@ From: ubuntu:24.04
 Stage: spython-base
 
 %files
-requirements.txt /opt/requirements.txt
-package.json /opt/node/
-package-lock.json /opt/node/
+  requirements.txt /opt/requirements.txt
+  package.json /opt/node/package.json
+  package-lock.json /opt/node/package-lock.json
+  .ruby-version /opt/.ruby-version
+
 %post
 
 DEBIAN_FRONTEND=noninteractive

@@ -18,9 +18,11 @@ description: |
   The *zext.h* instruction is a pseudo-op for `packw` when `Zbkb` is implemented and XLEN == 64.
 definedBy:
   # When The Bit-manipulation for Cryptography extension (Zbkb) is implemented, then zext.h is an alias of pack.
-  allOf:
-    - Zbb
-    - not: Zbkb
+  extension:
+    allOf:
+      - name: Zbb
+      - not:
+          name: Zbkb
 encoding:
   RV32:
     match: 000010000000-----100-----0110011

@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: JVT_BASE_TYPE
+long_name: Type of the jvt.BASE CSR field
+definedBy:
+  extension:
+    name: Zcmt
+description: |
+  Type of the jvt.BASE CSR field. One of:
+
+  * mask: jvt.BASE contains one or more implemented bits, which are indicated by JVT_BASE_MASK.
+  * custom: Custom behavior. Will cause hart to enter 'unpredictable' state on a write to jvt.BASE.
+schema:
+  type: string
+  enum: [mask, custom]

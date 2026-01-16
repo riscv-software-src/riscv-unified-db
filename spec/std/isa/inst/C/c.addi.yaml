@@ -13,9 +13,8 @@ description: |
   C.ADDI is only valid when xd &ne; x0 and imm &ne; 0.
   The code points with xd=x0 encode the C.NOP instruction; the remaining code points with imm=0 encode HINTs.
 definedBy:
-  anyOf:
-    - C
-    - Zca
+  extension:
+    name: Zca
 assembly: xd, imm
 encoding:
   match: 000-----------01

@@ -10,7 +10,8 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy:
-  anyOf: [Zks, Zksed]
+  extension:
+    name: Zksed
 assembly: xd, xs1, xs2, bs
 encoding:
   match: --11010----------000-----0110011

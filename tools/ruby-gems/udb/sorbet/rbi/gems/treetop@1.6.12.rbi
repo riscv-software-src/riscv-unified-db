@@ -1629,12 +1629,6 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
   def input; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#17
-  def input_file; end
-
-  # source://idlc/0.1.0/lib/idlc.rb#28
-  def instantiate_node(node_type, *args); end
-
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
   def max_terminal_failure_index; end
 
@@ -1643,9 +1637,6 @@ class Treetop::Runtime::CompiledParser
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#7
   def root=(_arg0); end
-
-  # source://idlc/0.1.0/lib/idlc.rb#19
-  def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#54
   def terminal_failures; end
@@ -1658,14 +1649,14 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#106
   def has_terminal?(terminal, mode, index); end
 
-  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
-  def idlc_instantiate_node(node_type, *args); end
-
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#66
   def index=(_arg0); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#65
   def input_length; end
+
+  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
+  def instantiate_node(node_type, *args); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#65
   def node_cache; end

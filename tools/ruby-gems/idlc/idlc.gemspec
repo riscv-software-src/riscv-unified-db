@@ -3,6 +3,7 @@
 
 # frozen_string_literal: true
 
+require_relative "lib/gem_versions.rb"
 require_relative "lib/idlc/version"
 
 Gem::Specification.new do |s|
@@ -26,7 +27,7 @@ Gem::Specification.new do |s|
     "mailing_list_uri" => "https://lists.riscv.org/g/tech-unifieddb",
     "bug_tracker_uri" => "https://github.com/riscv-software-src/riscv-unified-db/issues"
   }
-  s.required_ruby_version = "~> 3.2" # only supported in UDB container
+  s.required_ruby_version = "~> 3.2"
 
   s.require_paths = ["lib"]
   s.bindir = "bin"
@@ -45,8 +46,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rubocop-sorbet"
   s.add_development_dependency "simplecov"
   s.add_development_dependency "simplecov-cobertura"
-  s.add_development_dependency "sorbet"
-  s.add_development_dependency "tapioca"
+  s.add_development_dependency "sorbet", "= #{UdbGems::SORBET_VERSION}"
+  s.add_development_dependency "spoom"
+  s.add_development_dependency "tapioca", "= #{UdbGems::TAPIOCA_VERSION}"
   s.add_development_dependency "yard"
   s.add_development_dependency "yard-sorbet"
 end

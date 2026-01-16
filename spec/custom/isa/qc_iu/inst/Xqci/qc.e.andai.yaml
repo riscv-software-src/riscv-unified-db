@@ -11,10 +11,10 @@ description: |
   And a 32-bit immediate `imm` to the value in `rd`, and store the result back in `rd`.
   Instruction encoded in QC.EAI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilia
 encoding:
   match: --------------------------------1010-----0011111
   variables:
@@ -23,7 +23,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, imm"
+assembly: xd, imm
 access:
   s: always
   u: always

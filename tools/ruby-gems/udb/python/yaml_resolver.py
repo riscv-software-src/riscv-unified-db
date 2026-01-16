@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from copy import deepcopy
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from ruamel.yaml import YAML
 from mergedeep import merge, Strategy
 from jsonschema import Draft7Validator, validators

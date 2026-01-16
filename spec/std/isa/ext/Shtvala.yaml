@@ -8,12 +8,8 @@ kind: extension
 name: Shtvala
 long_name: Hypervisor Trap Value provides all needed values
 description: |
-  htval must be written with the faulting virtual address
-  for load, store, and instruction page-fault, access-fault, and
-  misaligned exceptions, and for breakpoint exceptions other than
-  those caused by execution of the `ebreak` or `c.ebreak` instructions.
-  For virtual-instruction and illegal-instruction exceptions, htval must be written with the
-  faulting instruction.
+  htval must be written with the faulting guest physical address in all circumstances permitted by
+  the ISA.
 
   [NOTE]
   This extension was ratified with the RVA22 profiles.
@@ -22,7 +18,12 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2023-03
-    param_constraints:
-      REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
-        schema:
-          const: true
+requirements:
+  # When Shtvala is implemented, htval must be written with the faulting guest physical address in all circumstances permitted by
+  # the ISA.
+  allOf:
+    - extension:
+        name: H
+    - param:
+        name: REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        equal: true

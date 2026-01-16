@@ -10,7 +10,9 @@ address: 0x352
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
+definedBy:
+  extension:
+    name: Smcsrind
 description: |
   The `mireg2` machine indirect alias CSR is used to access register state indirectly
   upon a read or write, as determined by the value of `miselect`.

@@ -37,7 +37,10 @@ description: |
 
   All floating-point conversion instructions set the Inexact exception flag if the rounded
   result differs from the operand value and the Invalid exception flag is not set.
-definedBy: F
+
+definedBy:
+  extension:
+    name: F
 assembly: xd, fs1, rm
 encoding:
   match: 110000000000-------------1010011

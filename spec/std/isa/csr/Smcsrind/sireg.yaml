@@ -10,7 +10,9 @@ address: 0x151
 writable: true
 priv_mode: S
 length: SXLEN
-definedBy: Sscsrind
+definedBy:
+  extension:
+    name: Sscsrind
 description: |
   Access to `sireg` from M-mode or S-mode while `siselect` holds a number in a
   standard-defined and implemented range results in specific behavior that, for each combination of

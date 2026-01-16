@@ -12,9 +12,10 @@ description: |
   does not exhibit temporal locality within the capacity of any level of cache in
   the memory hierarchy. C.NTL.ALL is encoded as C.ADD x0, x5.
 definedBy:
-  allOf:
-    - Zca
-    - Zihintntl
+  extension:
+    allOf:
+      - name: Zca
+      - name: Zihintntl
 assembly: ""
 encoding:
   match: "1001000000010110"

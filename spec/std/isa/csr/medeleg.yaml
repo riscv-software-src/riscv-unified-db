@@ -37,7 +37,9 @@ description: |
   Otherwise, an exception cause is handled by M-mode.
 
   See xref:prose:interrupts.adoc[interrupt documentation] for more details.
-definedBy: S # medeleg does not exist when S-mode is not implemented
+definedBy: # medeleg does not exist when S-mode is not implemented
+  extension:
+    name: S
 fields:
   IAM:
     location: 0
@@ -433,7 +435,9 @@ fields:
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   EM:
     location: 11
     description: |
@@ -580,7 +584,9 @@ fields:
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   LGPF:
     location: 21
     description: |
@@ -606,7 +612,9 @@ fields:
 
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   VI:
     location: 22
     description: |
@@ -632,7 +640,9 @@ fields:
 
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   SGPF:
     location: 23
     description: |
@@ -657,4 +667,6 @@ fields:
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
-    definedBy: H
+    definedBy:
+      extension:
+        name: H

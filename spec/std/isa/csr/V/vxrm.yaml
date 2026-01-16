@@ -1,0 +1,48 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vxrm
+long_name: Vector Fixed-Point Rounding Mode
+address: 0x00A
+writable: true
+priv_mode: U
+length: MXLEN
+description: Holds a 2-bit read-write rounding-mode field in the least-significant bits
+definedBy:
+  extension:
+    name: V
+sw_read(): |
+  return CSR[vcsr].VXRM;
+fields:
+  VALUE:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      The vector fixed-point rounding-mode register holds a two-bit read-write rounding-mode field in the
+      least-significant bits (vxrm[1:0]). The upper bits, vxrm[XLEN-1:2], should be written as zeros.
+      The vector fixed-point rounding-mode is given a separate CSR address to allow independent access,
+      but is also reflected as a field in vcsr.
+
+      [NOTE]
+      A new rounding mode can be set while saving the original rounding mode using a single csrwi instruction.
+
+      The fixed-point rounding algorithm is specified as follows. Suppose the pre-rounding result is v, and d
+      bits of that result are to be rounded off. Then the rounded result is (v >> d) + r, where r depends on
+      the rounding mode as specified in the following table of vxrm[1:0] values.
+
+      [separator="!"]
+      !===
+      ! vxrm[1:0] ! Abbreviation ! Rounding Mode ! Rounding increment, r
+      ! 00 ! rnu ! round-to-nearest-up (add +0.5 LSB) ! v[d-1]
+      ! 01 ! rne ! round-to-nearest-even ! v[d-1] & (v[d-2:0]\!=0 | v[d])
+      ! 10 ! rdn ! round-down (truncate) ! 0
+      ! 11 ! rod ! round-to-odd (OR bits into LSB, aka "jam") ! \!v[d] & v[d-1:0]\!=0
+
+    sw_write(csr_value): |
+      return csr_value.VALUE & 3;
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL

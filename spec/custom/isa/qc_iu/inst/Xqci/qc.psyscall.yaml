@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -13,11 +13,11 @@ description: |
   Instruction is used to call simulator to execute function according to the argument.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcisim
-assembly: " xs1"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcisim
+assembly: xs1
 encoding:
   match: 110000000000-----010000000010011
   variables:

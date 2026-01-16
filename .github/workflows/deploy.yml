@@ -194,6 +194,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate instruction appendix

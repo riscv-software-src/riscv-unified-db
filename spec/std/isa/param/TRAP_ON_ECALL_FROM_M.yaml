@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TRAP_ON_ECALL_FROM_M
+long_name: Whether or not an ECALL-from-M-mode causes a synchronous exception.
+definedBy:
+  extension:
+    name: Sm
+description: |
+  The spec states that implementations may handle ECALLs transparently
+  without raising a trap, in which case the EEI must provide a builtin.
+schema:
+  type: boolean

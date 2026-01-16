@@ -3,12 +3,29 @@
 :wavedrom: /opt/node/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
+<%- pb = Udb.create_progressbar(
+              "Generating instruction pages [:bar] :current/:total",
+              total: instructions.size,
+              clear: true
+            )
+-%>
 <% instructions.sort_by(&:name).each do |inst| %>
+<%- pb.advance -%>
 <%= anchor_for_udb_doc_inst(inst.name) %>
 == <%= inst.name %>
 
 Synopsis::
 <%= inst.long_name %>
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|<%= (inst.defined_by_condition & Udb::Condition::Xlen32).satisfiable? ? " &#x2713;" : "" %>
+|<%= (inst.defined_by_condition & Udb::Condition::Xlen64).satisfiable? ? " &#x2713;" : "" %>
+|===
 
 Assembly::
 <%= inst.fix_entities("#{inst.name.downcase}#{inst.assembly.to_s.strip == '' ? '' : ' ' + inst.assembly}") %>
@@ -79,16 +96,25 @@ Decode Variables::
 <%- end -%>
 
 Included in::
-<%- if inst.defined_by_condition.flat? -%>
-[options="autowrap,autowidth"]
+
+<%- unless inst.unconditional_extension_requirements.empty? -%>
+
+[width="100%",cols="1,2",options="header"]
 |===
 | Extension | Version
-<% inst.defined_by_condition.flat_versions.each do |r| %>
-| *<%= r.name %>* | <%= inst.fix_entities(r.requirement_specs_to_s) %>
-<% end %>
+
+<%-   inst.unconditional_extension_requirements.each do |ext_req| -%>
+| *<%= ext_req.name %>*
+| <%= inst.fix_entities(ext_req.requirement_specs_to_s_pretty) %>
+<%-   end -%>
 |===
-<%- else -%>
-<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
+
 <%- end -%>
 
-<% end %>
+<%- unless inst.other_requirements.empty? -%>
+<%- if inst.unconditional_extension_requirements.empty? -%>This<%- else -%>Additionally, this<%- end -%> instruction requires the following:
+
+<%= inst.other_requirements.map(&:to_asciidoc).join("\n") %>
+<%- end -%>
+
+<%- end -%>

@@ -25,7 +25,7 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2023-03
-    param_constraints:
-      MISALIGNED_LDST:
-        schema:
-          const: true
+requirements:
+  param:
+    name: MISALIGNED_LDST
+    equal: true

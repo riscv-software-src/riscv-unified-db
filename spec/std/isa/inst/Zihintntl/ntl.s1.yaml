@@ -11,7 +11,9 @@ description: |
   The NTL.S1 instruction indicates that the immediately subsequent instruction
   does not exhibit temporal locality within the capacity of the innermost level
   of shared cache in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.
-definedBy: Zihintntl
+definedBy:
+  extension:
+    name: Zihintntl
 assembly: ""
 encoding:
   match: "00000000010000000000000000110011"

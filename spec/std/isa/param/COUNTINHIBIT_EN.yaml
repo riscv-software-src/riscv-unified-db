@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: COUNTINHIBIT_EN
+description: |
+  Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
+
+  An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false,
+  it would be illegal to set COUNTINHIBIT_EN[3] to true.
+
+  COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,
+  which is always read-only-0.
+
+  COUNTINHIBIT_EN[3:31] must all be false if `Zihpm` is not implemented.
+long_name: TODO
+schema:
+  type: array
+  items:
+    - type: boolean
+    - const: false
+    - type: boolean
+  additionalItems:
+    type: boolean
+  maxItems: 32
+  minItems: 32
+definedBy:
+  extension:
+    name: Sm

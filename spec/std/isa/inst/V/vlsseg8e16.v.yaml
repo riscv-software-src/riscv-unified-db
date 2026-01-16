@@ -9,7 +9,9 @@ name: vlsseg8e16.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, (xs1), xs2, vm
 encoding:
   match: 111010-----------101-----0000111

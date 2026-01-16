@@ -12,7 +12,10 @@ description: |
   The result's sign bit is taken from `fs2`'s sign bit, and the result is written to the destination
   register `fd`. Sign-injection instructions do not set floating-point exception flags, nor do they
   canonicalize NaNs.
-definedBy: F
+
+definedBy:
+  extension:
+    name: F
 assembly: fd, fs1, fs2
 encoding:
   match: 0010000----------000-----1010011

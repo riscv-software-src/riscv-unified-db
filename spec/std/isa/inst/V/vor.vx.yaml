@@ -9,7 +9,9 @@ name: vor.vx
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, xs1, vm
 encoding:
   match: 001010-----------100-----1010111

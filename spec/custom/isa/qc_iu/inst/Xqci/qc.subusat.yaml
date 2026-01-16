@@ -11,10 +11,10 @@ description: |
   Subtract unsigned values `rs1` and `rs2`, saturate the unsigned result, and write to `rd`.
   Instruction encoded in R instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcia
 encoding:
   match: 0010001----------011-----0001011
   variables:
@@ -27,7 +27,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, xs2"
+assembly: xd, xs1, xs2
 access:
   s: always
   u: always

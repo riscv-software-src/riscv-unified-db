@@ -12,10 +12,10 @@ description: |
   and store the result in `rd`.
   Instruction encoded in QC.EI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcilia
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcilia
 encoding:
   match: ----------------10---------------011-----0011111
   variables:
@@ -27,7 +27,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, imm"
+assembly: xd, xs1, imm
 access:
   s: always
   u: always

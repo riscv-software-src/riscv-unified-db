@@ -512,6 +512,32 @@ The result of a binary operation is signed if both operands are signed; otherwis
                                                              `c` must be boolean, and `t` and `f` must be identical types.
 |===
 
+=== Implications
+
+Implications are used to specify dependencies that must hold among data.
+Implications cannot appear in general IDL code, and are used in specific contexts, for example when expressing link:schema/conditions.adoc#_generic_constraints[generic constraints] in RISC-V Unified Database.
+
+An implication takes the form:
+
+[source,idl]
+----
+ANTECEDENT -> CONSEQUENT
+----
+
+The antecedent and consequent can be any expression with a boolean type.
+
+The implication passes whenever (1) the antecedent is false or (2) both the antecedent and consequent are true.
+
+For example:
+
+[source,idl]
+----
+false -> true;  # passes
+false -> false; # passes
+true -> true;   # passes
+true -> false;  # fails
+----
+
 == Variables and constants
 
 === Mutable variables

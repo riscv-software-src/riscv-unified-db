@@ -43,9 +43,15 @@ description: |
     * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
     * Unsigned compare the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value, and select the minimum value
     * Write the minimum to the address in _xs1_
-definedBy: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+definedBy:
 <%- if size == "d" -%>
-base: 64
+  allOf:
+    - extension:
+        name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+    - xlen: 64
+<%- else -%>
+  extension:
+    name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
 <%- end -%>
 assembly: xd, xs2, (xs1)
 encoding:
