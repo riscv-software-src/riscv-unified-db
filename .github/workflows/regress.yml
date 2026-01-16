@@ -281,7 +281,8 @@ jobs:
     needs: build-container
     env:
       MANUAL_NAME: isa
-      VERSIONS: all
+      VERSIONS: isa_regress
+      CFG: regress
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
