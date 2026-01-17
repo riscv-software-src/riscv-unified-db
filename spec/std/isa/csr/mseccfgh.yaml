@@ -22,6 +22,7 @@ definedBy:
           - anyOf:
               - name: Zkr
               - name: Smmpm
-              - name: Smepmp
               - name: Zicfilp
+              # - name: Smepmp # TODO: Uncomment when Smepmp is implemented in UDB
+
 fields: {}
