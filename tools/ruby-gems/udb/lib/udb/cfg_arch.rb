@@ -1474,25 +1474,6 @@ module Udb
     # @param adoc [String] Asciidoc source
     # @return [String] Asciidoc source, with link placeholders
     sig { params(adoc: String).returns(String) }
-    def convert_monospace_to_links(adoc)
-      h = Class.new do include Udb::Helpers::TemplateHelpers end.new
-      adoc.gsub(/`([\w.]+)`/) do |match|
-        name = Regexp.last_match(1)
-        csr_name, field_name = T.must(name).split(".")
-        csr = not_prohibited_csrs.find { |c| c.name == csr_name }
-        if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-          h.link_to_udb_doc_csr_field(csr_name, field_name)
-        elsif !csr.nil?
-          h.link_to_udb_doc_csr(csr_name)
-        elsif not_prohibited_instructions.any? { |inst| inst.name == name }
-          h.link_to_udb_doc_inst(name)
-        elsif not_prohibited_extensions.any? { |ext| ext.name == name }
-          h.link_to_udb_doc_ext(name)
-        else
-          match
-        end
-      end
-    end
 
   end
 end
