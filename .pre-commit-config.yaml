@@ -104,16 +104,12 @@ repos:
         # TEMPORARILY DISABLE CLANG-FORMAT IN LIBHART
         # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
         exclude: backends/cpp_hart_gen
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.1.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.11
     hooks:
-      - id: black
+      - id: ruff-check
         stages: [pre-commit]
-
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
-    hooks:
-      - id: pyupgrade
+      - id: ruff-format
         stages: [pre-commit]
 
   - repo: local

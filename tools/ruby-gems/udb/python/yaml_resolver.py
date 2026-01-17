@@ -1,31 +1,30 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-import glob, os
 import argparse
-import shutil
+import glob
 import json
+import os
+import shutil
 import sys
-
+from copy import deepcopy
 from pathlib import Path
 
-from copy import deepcopy
-from tqdm.auto import tqdm
-from ruamel.yaml import YAML
-from mergedeep import merge, Strategy
 from jsonschema import Draft7Validator, validators
-from jsonschema.exceptions import best_match
-from jsonschema.exceptions import ValidationError
-
+from jsonschema.exceptions import ValidationError, best_match
+from mergedeep import Strategy, merge
 from referencing import Registry, Resource
-from referencing.exceptions import NoSuchResource
+from ruamel.yaml import YAML
+from tqdm.auto import tqdm
 
 # cache of Schema validators
 schemas = {}
 
-udb_root = lambda d: (
-    d if os.path.exists(os.path.join(d, "do")) else udb_root(os.path.dirname(d))
-)
+
+def udb_root(d):
+    return d if os.path.exists(os.path.join(d, "do")) else udb_root(os.path.dirname(d))
+
+
 UDB_ROOT = (
     udb_root(os.path.dirname(os.path.realpath(__file__)))
     if os.getenv("UDB_ROOT") == None
@@ -63,11 +62,11 @@ def extend_with_default(validator_class):
     validate_properties = validator_class.VALIDATORS["properties"]
 
     def set_defaults(validator, properties, instance, schema):
-        for property, subschema in properties.items():
+        for prop, subschema in properties.items():
             if not isinstance(subschema, dict):
                 continue
             if "default" in subschema:
-                instance.setdefault(property, subschema["default"])
+                instance.setdefault(prop, subschema["default"])
 
         yield from validate_properties(
             validator,
@@ -89,7 +88,7 @@ yaml.default_flow_style = False
 yaml.preserve_quotes = True
 
 
-def _merge_patch(base: dict, patch: dict, path_so_far=[]) -> None:
+def _merge_patch(base: dict, patch: dict, path_so_far=None) -> None:
     """merges patch into base according to JSON Merge Patch (RFC 7386)
 
     Parameters
@@ -101,6 +100,8 @@ def _merge_patch(base: dict, patch: dict, path_so_far=[]) -> None:
     path_so_far : list
       The current dict key path within patch
     """
+    if path_so_far is None:
+        path_so_far = []
 
     patch_obj = patch if len(path_so_far) == 0 else dig(patch, *path_so_far)
     for key, patch_value in patch_obj.items():
@@ -119,7 +120,7 @@ def _merge_patch(base: dict, patch: dict, path_so_far=[]) -> None:
                     # add or overwrite value in base
                     base_ptr = base
                     for k in path_so_far:
-                        if not k in base_ptr:
+                        if k not in base_ptr:
                             base_ptr[k] = {}
                         base_ptr = base_ptr[k]
                     base_ptr = dig(base, *path_so_far)
@@ -248,10 +249,8 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
         return resolved_objs[str(rel_path)]
     else:
         unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
-        if do_checks and (not "name" in unresolved_arch_data):
-            print(
-                f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr
-            )
+        if do_checks and ("name" not in unresolved_arch_data):
+            print(f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr)
             exit(1)
         fn_name = Path(rel_path).stem
         if do_checks and (fn_name != unresolved_arch_data["name"]):
@@ -272,15 +271,13 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
 
 
 def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
-    if not (isinstance(obj, list) or isinstance(obj, dict)):
+    if not isinstance(obj, (list, dict)):
         return obj
 
     if isinstance(obj, list):
         obj = list(
             map(
-                lambda o: _resolve(
-                    o, obj_path, obj_file_path, doc_obj, arch_root, do_checks
-                ),
+                lambda o: _resolve(o, obj_path, obj_file_path, doc_obj, arch_root, do_checks),
                 obj,
             )
         )
@@ -289,9 +286,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
     if "$inherits" in obj:
         # handle the inherits key first so that any override will have priority
         inherits_targets = (
-            [obj["$inherits"]]
-            if isinstance(obj["$inherits"], str)
-            else obj["$inherits"]
+            [obj["$inherits"]] if isinstance(obj["$inherits"], str) else obj["$inherits"]
         )
         obj["$child_of"] = obj["$inherits"]
         del obj["$inherits"]
@@ -339,9 +334,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
             if "$parent_of" in ref_obj:
                 if isinstance(ref_obj["$parent_of"], list):
-                    ref_obj["$parent_of"].append(
-                        f"{obj_file_path}#/{'/'.join(obj_path)}"
-                    )
+                    ref_obj["$parent_of"].append(f"{obj_file_path}#/{'/'.join(obj_path)}")
                 else:
                     ref_obj["$parent_of"] = [
                         ref_obj["$parent_of"],
@@ -361,9 +354,9 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
         final_obj = yaml.load("{}")
         for key in keys:
-            if not key in obj:
+            if key not in obj:
                 final_obj[key] = parent_obj[key]
-            elif not key in parent_obj:
+            elif key not in parent_obj:
                 final_obj[key] = _resolve(
                     obj[key],
                     obj_path + [key],
@@ -453,9 +446,7 @@ def merge_file(
     if overlay_dir != None:
         overlay_path = os.path.join(overlay_dir, rel_path)
     merge_path = os.path.join(merge_dir, rel_path)
-    if not os.path.exists(arch_path) and (
-        overlay_path == None or not os.path.exists(overlay_path)
-    ):
+    if not os.path.exists(arch_path) and (overlay_path == None or not os.path.exists(overlay_path)):
         # neither exist
         if not os.path.exists(merge_path):
             raise "Script error: no path exists"
@@ -570,7 +561,7 @@ def write_resolved_file_and_validate(
         schema = _get_schema(resolved_obj["$schema"])
         try:
             schema.validate(instance=resolved_obj)
-        except ValidationError as e:
+        except ValidationError:
             print(f"JSON Schema Validation Error for {rel_path}:")
             print(best_match(schema.iter_errors(resolved_obj)).message)
             exit(1)
@@ -584,48 +575,32 @@ if __name__ == "__main__":
         description="Resolves/overlays UDB architecture YAML files",
     )
     subparsers = cmdparser.add_subparsers(dest="command", help="sub-command help")
-    merge_parser = subparsers.add_parser(
-        "merge", help="Merge overlay on top of architecture files"
-    )
+    merge_parser = subparsers.add_parser("merge", help="Merge overlay on top of architecture files")
     merge_parser.add_argument(
         "arch_dir", type=str, help="Unresolved architecture (input) directory"
     )
     merge_parser.add_argument("overlay_dir", type=str, help="Overlay directory")
-    merge_parser.add_argument(
-        "merged_dir", type=str, help="Merged architecture (output) directory"
-    )
-    merge_parser.add_argument(
-        "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
-    )
+    merge_parser.add_argument("merged_dir", type=str, help="Merged architecture (output) directory")
+    merge_parser.add_argument("--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT)
 
     all_parser = subparsers.add_parser("resolve", help="Resolve all architecture files")
-    all_parser.add_argument(
-        "arch_dir", type=str, help="Unresolved architecture (input) directory"
-    )
+    all_parser.add_argument("arch_dir", type=str, help="Unresolved architecture (input) directory")
     all_parser.add_argument(
         "resolved_dir", type=str, help="Resolved architecture (output) directory"
     )
-    all_parser.add_argument(
-        "--no-progress", action="store_true", help="Don't display progress bar"
-    )
-    all_parser.add_argument(
-        "--no-checks", action="store_true", help="Don't verify schema"
-    )
-    all_parser.add_argument(
-        "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
-    )
+    all_parser.add_argument("--no-progress", action="store_true", help="Don't display progress bar")
+    all_parser.add_argument("--no-checks", action="store_true", help="Don't verify schema")
+    all_parser.add_argument("--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT)
 
     args = cmdparser.parse_args()
 
     if args.command == "merge":
-        arch_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob("**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if args.overlay_dir != None:
-            overlay_paths = glob.glob(
-                f"**/*.yaml", recursive=True, root_dir=args.overlay_dir
-            )
+            overlay_paths = glob.glob("**/*.yaml", recursive=True, root_dir=args.overlay_dir)
             arch_paths.extend(overlay_paths)
             arch_paths = list(set(arch_paths))
-        merged_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.merged_dir)
+        merged_paths = glob.glob("**/*.yaml", recursive=True, root_dir=args.merged_dir)
         arch_paths.extend(merged_paths)
         arch_paths = list(set(arch_paths))
 
@@ -649,14 +624,12 @@ if __name__ == "__main__":
         )
 
     elif args.command == "resolve":
-        arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob("*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if os.path.exists(args.resolved_dir):
-            resolved_paths = glob.glob(
-                f"*/**/*.yaml", recursive=True, root_dir=args.resolved_dir
-            )
+            resolved_paths = glob.glob("*/**/*.yaml", recursive=True, root_dir=args.resolved_dir)
             arch_paths.extend(resolved_paths)
             arch_paths = list(set(arch_paths))
-        iter = (
+        path_iter = (
             arch_paths
             if args.no_progress
             else tqdm(
@@ -671,13 +644,11 @@ if __name__ == "__main__":
             if not os.path.isabs(args.resolved_dir)
             else f"{args.resolved_dir}"
         )
-        for arch_path in iter:
+        for arch_path in path_iter:
             resolved_arch_path = f"{abs_resolved_dir}/{arch_path}"
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
-            resolve_file(
-                arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
-            )
-        iter = (
+            resolve_file(arch_path, args.arch_dir, args.resolved_dir, not args.no_checks)
+        path_iter = (
             arch_paths
             if args.no_progress
             else tqdm(
@@ -687,10 +658,8 @@ if __name__ == "__main__":
                 file=sys.stderr,
             )
         )
-        for arch_path in iter:
-            write_resolved_file_and_validate(
-                arch_path, args.resolved_dir, not args.no_checks
-            )
+        for arch_path in path_iter:
+            write_resolved_file_and_validate(arch_path, args.resolved_dir, not args.no_checks)
 
         # create index
         write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
