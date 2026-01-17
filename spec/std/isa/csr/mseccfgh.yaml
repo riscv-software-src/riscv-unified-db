@@ -16,6 +16,13 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        name: Sm
-        version: ">= 1.12"
+        allOf:
+          - name: Sm
+            version: ">= 1.12"
+          - anyOf:
+              - name: Zkr
+              - name: Smmpm
+              - name: Zicfilp
+              # - name: Smepmp # TODO: Uncomment when Smepmp is implemented in UDB
+
 fields: {}
