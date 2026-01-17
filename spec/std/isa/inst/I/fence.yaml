@@ -146,15 +146,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  Boolean is_pause;
-
-  if (implemented?(ExtensionName::Zihintpause)) {
-    if ((pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)) {
-      # this is a PAUSE instruction
-      is_pause = true;
-    }
-  }
-
   Boolean pred_i = pred[3] == 1;
   Boolean pred_o = pred[2] == 1;
   Boolean pred_r = pred[1] == 1;
@@ -165,44 +156,38 @@ operation(): |
   Boolean succ_r = succ[1] == 1;
   Boolean succ_w = succ[0] == 1;
 
-  if (is_pause) {
-    pause();
-  } else {
-
-    # apply FIOM overrides
-    if (mode() == PrivilegeMode::S) {
-      if (CSR[menvcfg].FIOM == 1) {
-        if (pred_i) { pred_r = true; }
-        if (pred_o) { pred_w = true; }
-        if (succ_i) { succ_r = true; }
-        if (succ_o) { succ_w = true; }
-      }
-    } else if (mode() == PrivilegeMode::U) {
-      if ((CSR[menvcfg].FIOM | CSR[senvcfg].FIOM) == 1) {
-        if (pred_i) { pred_r = true; }
-        if (pred_o) { pred_w = true; }
-        if (succ_i) { succ_r = true; }
-        if (succ_o) { succ_w = true; }
-      }
-    } else if (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) {
-      if ((CSR[menvcfg].FIOM | CSR[henvcfg].FIOM) == 1) {
-        if (pred_i) { pred_r = true; }
-        if (pred_o) { pred_w = true; }
-        if (succ_i) { succ_r = true; }
-        if (succ_o) { succ_w = true; }
-      }
+  # apply FIOM overrides
+  if (mode() == PrivilegeMode::S) {
+    if (CSR[menvcfg].FIOM == 1) {
+      if (pred_i) { pred_r = true; }
+      if (pred_o) { pred_w = true; }
+      if (succ_i) { succ_r = true; }
+      if (succ_o) { succ_w = true; }
     }
-
-    fence(
-      pred_i, pred_o, pred_r, pred_w,
-      succ_i, succ_o, succ_r, succ_w
-    );
+  } else if (mode() == PrivilegeMode::U) {
+    if ((CSR[menvcfg].FIOM | CSR[senvcfg].FIOM) == 1) {
+      if (pred_i) { pred_r = true; }
+      if (pred_o) { pred_w = true; }
+      if (succ_i) { succ_r = true; }
+      if (succ_o) { succ_w = true; }
+    }
+  } else if (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) {
+    if ((CSR[menvcfg].FIOM | CSR[henvcfg].FIOM) == 1) {
+      if (pred_i) { pred_r = true; }
+      if (pred_o) { pred_w = true; }
+      if (succ_i) { succ_r = true; }
+      if (succ_o) { succ_w = true; }
+    }
   }
+
+  fence(
+    pred_i, pred_o, pred_r, pred_w,
+    succ_i, succ_o, succ_r, succ_w
+  );
 hints:
   - { $ref: inst/I/fence.tso.yaml# }
+  - { $ref: inst/Zihintpause/pause.yaml# }
 pseudoinstructions:
-  - when: (pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)
-    to: pause
   - when: (pred == 4'b1111) && (succ == 4'b1111)
     to: fence # fence => fence iorw,iorw
 
