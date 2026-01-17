@@ -29,6 +29,3 @@ ignore = [
     "SIM118", # use key in dict instead of key in dict.keys()
     "RUF005", # consider list unpacking instead of concatenation
 ]
-
-[tool.ruff.lint.pylint]
-max-args = 5
