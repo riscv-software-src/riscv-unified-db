@@ -20,6 +20,7 @@ select = [
     "SIM",  # flake8-simplify - simplifications
 ]
 ignore = [
+    "E402",   # module import not at top (needed for sys.path modifications)
     "E501",   # line too long (handled by formatter)
     "E711",   # comparison to None (too many to fix now)
     "B016",   # cannot raise a literal (legacy code)
