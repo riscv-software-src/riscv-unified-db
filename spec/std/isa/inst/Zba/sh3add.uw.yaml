@@ -21,10 +21,13 @@ encoding:
   match: 0010000----------110-----0111011
   variables:
     - name: xs2
+      tag: inst-sh3add.uw-src_reg_2
       location: 24-20
     - name: xs1
+      tag: inst-sh3add.uw-src_reg_1
       location: 19-15
     - name: xd
+      tag: inst-sh3add.uw-dest_reg
       location: 11-7
 access:
   s: always
