@@ -1467,13 +1467,6 @@ module Udb
     # @deprecated in favor of #implemented_non_isa_specs
     def transitive_implemented_non_isa_specs = implemented_non_isa_specs
 
-    # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-    # and replace them with links to the relevant object page.
-    # See backend_helpers.rb for a definition of the proprietary link format.
-    #
-    # @param adoc [String] Asciidoc source
-    # @return [String] Asciidoc source, with link placeholders
-    sig { params(adoc: String).returns(String) }
 
   end
 end
