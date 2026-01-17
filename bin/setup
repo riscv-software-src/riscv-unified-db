@@ -131,10 +131,13 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
     else
       SELINUX_LABEL=""
     fi
+    if [ -v UDB_CONTAINER_BIND ]; then
+      EXTRA_BIND="-v ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}${SELINUX_LABEL}"
+    fi
     if [ -t 1 ] && [ -t 0 ]; then
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
@@ -142,13 +145,15 @@ elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
     export GEM_HOME
     export GEM_PATH
-    SINGULARITY_CACHE=
     if [ ! -f "${CONTAINER_PATH}" ]; then
       echo "Fetching container..."
       if [ ! -d "${ROOT}/.singularity" ]; then
         mkdir -p "${ROOT}/.singularity"
       fi
-      singularity pull "${SINGULARITY_CACHE}" "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
+      singularity pull "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
+    fi
+    if [ -v UDB_CONTAINER_BIND ]; then
+      EXTRA_BIND="--bind ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}"
     fi
 elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     HOME_PATH=${HOME}
@@ -168,7 +173,7 @@ if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
 elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
     RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    RUN="singularity run ${HOME_OPT} ${CONTAINER_PATH}"
+    RUN="singularity run ${HOME_OPT} ${EXTRA_BIND} ${CONTAINER_PATH}"
 else
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
