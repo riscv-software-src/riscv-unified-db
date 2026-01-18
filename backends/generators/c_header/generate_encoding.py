@@ -44,10 +44,6 @@ def extract_instruction_fields(instructions):
         "fs1": "rs1",
         "fs2": "rs2",
         "fd": "rd",
-        # Vector register names
-        "vs1": "rs1",
-        "vs2": "rs2",
-        "vd": "rd",
         # Keep standard names as-is
         "rs1": "rs1",
         "rs2": "rs2",
@@ -72,16 +68,115 @@ def extract_instruction_fields(instructions):
         "funct3": (14, 12),
         "funct5": (31, 27),
         "funct7": (31, 25),
-        "imm_i": (31, 20),
-        "imm_s": (31, 25),
-        "imm_b": (31, 25),
-        "imm_u": (31, 12),
-        "imm_j": (31, 12),
+        "funct2": (26, 25),
+        "imm12": (31, 20),
+        "imm12hi": (31, 25),
+        "imm12lo": (11, 7),
+        "imm20": (31, 12),
+        "jimm20": (31, 12),
+        "bimm12hi": (31, 25),
+        "bimm12lo": (11, 7),
         "zimm": (19, 15),
+        "zimm5": (19, 15),
+        "zimm6hi": (26, 26),
+        "zimm6lo": (19, 15),
+        "zimm10": (29, 20),
+        "zimm11": (30, 20),
         "pred": (27, 24),
         "succ": (23, 20),
         "rm": (14, 12),
         "csr": (31, 20),
+        "fm": (31, 28),
+        "aq": (26, 26),
+        "rl": (25, 25),
+        "aqrl": (26, 25),
+        "amoop": (31, 27),
+        "bs": (31, 30),
+        "rnum": (23, 20),
+        "rc": (31, 30),
+        "nf": (31, 29),
+        "vm": (25, 25),
+        "vd": (11, 7),
+        "vs1": (19, 15),
+        "vs2": (24, 20),
+        "vs3": (11, 7),
+        "wd": (26, 26),
+        "shamtw": (24, 20),
+        "shamtd": (25, 20),
+        "shamtq": (26, 20),
+        "shamtw4": (23, 20),
+        "simm5": (19, 15),
+        "imm2": (21, 20),
+        "imm3": (22, 20),
+        "imm4": (23, 20),
+        "imm5": (24, 20),
+        "imm6": (25, 20),
+        # Compressed instruction fields
+        "c_rs2": (6, 2),
+        "c_rs2_n0": (6, 2),
+        "c_rs1_n0": (11, 7),
+        "c_rs2_e": (6, 2),
+        "c_index": (9, 2),
+        "c_rlist": (7, 4),
+        "c_spimm": (5, 2),
+        "c_sreg1": (9, 7),
+        "c_sreg2": (4, 2),
+        "c_uimm1": (6, 6),
+        "c_uimm2": (6, 5),
+        "c_nzuimm5": (6, 2),
+        "c_nzuimm6hi": (12, 12),
+        "c_nzuimm6lo": (6, 2),
+        "c_nzuimm10": (12, 5),
+        "c_nzimm6hi": (12, 12),
+        "c_nzimm6lo": (6, 2),
+        "c_nzimm10hi": (12, 12),
+        "c_nzimm10lo": (6, 2),
+        "c_nzimm18hi": (12, 12),
+        "c_nzimm18lo": (6, 2),
+        "c_imm6hi": (12, 12),
+        "c_imm6lo": (6, 2),
+        "c_imm12": (12, 2),
+        "c_bimm9hi": (12, 10),
+        "c_bimm9lo": (6, 2),
+        "c_uimm7hi": (6, 5),
+        "c_uimm7lo": (12, 10),
+        "c_uimm8hi": (6, 5),
+        "c_uimm8lo": (12, 10),
+        "c_uimm8sphi": (4, 2),
+        "c_uimm8splo": (12, 7),
+        "c_uimm8sp_s": (12, 7),
+        "c_uimm9hi": (6, 5),
+        "c_uimm9lo": (12, 10),
+        "c_uimm9sphi": (4, 2),
+        "c_uimm9splo": (12, 7),
+        "c_uimm9sp_s": (12, 7),
+        "c_uimm10sphi": (5, 2),
+        "c_uimm10splo": (12, 7),
+        "c_uimm10sp_s": (12, 7),
+        "c_mop_t": (10, 8),
+        # MOP instruction fields
+        "mop_r_t_30": (30, 30),
+        "mop_r_t_27_26": (27, 26),
+        "mop_r_t_21_20": (21, 20),
+        "mop_rr_t_30": (30, 30),
+        "mop_rr_t_27_26": (27, 26),
+        # Other fields
+        "rd_n0": (11, 7),
+        "rd_n2": (11, 7),
+        "rd_n0_e": (11, 7),
+        "rd_e": (11, 7),
+        "rd_p": (9, 7),
+        "rd_p_e": (9, 7),
+        "rd_rs1": (11, 7),
+        "rd_rs1_n0": (11, 7),
+        "rd_rs1_p": (9, 7),
+        "rs1_n0": (19, 15),
+        "rs1_p": (9, 7),
+        "rs2_e": (24, 20),
+        "rs2_p": (4, 2),
+        "rs2_p_e": (4, 2),
+        "rs2_eq_rs1": (24, 20),
+        "rt": (24, 20),
     }
 
     # First add all common fields
@@ -97,20 +192,20 @@ def extract_instruction_fields(instructions):
     for name, instr_data in instructions.items():
         # Get variables from the instruction structure
         variables = []
-        if "encoding" in instr_data:
-            encoding = instr_data["encoding"]
+        encoding = instr_data.get("encoding", {})
 
-            if isinstance(encoding, dict):
-                if "variables" in encoding:
-                    variables = encoding.get("variables", [])
-                elif "RV64" in encoding:
-                    rv64_encoding = encoding.get("RV64", {})
-                    if isinstance(rv64_encoding, dict):
-                        variables = rv64_encoding.get("variables", [])
-                elif "RV32" in encoding:
-                    rv32_encoding = encoding.get("RV32", {})
-                    if isinstance(rv32_encoding, dict):
-                        variables = rv32_encoding.get("variables", [])
+        if isinstance(encoding, dict):
+            vars_data = encoding.get("variables", [])
+            # Handle both list format (old style) and dict format (new style from resolved format)
+            if isinstance(vars_data, list):
+                variables = vars_data
+            elif isinstance(vars_data, dict):
+                # Convert dict to list format
+                for var_name, var_info in vars_data.items():
+                    if isinstance(var_info, dict) and "location" in var_info:
+                        variables.append(
+                            {"name": var_name, "location": var_info["location"]}
+                        )
 
         # Process each field
         for var in variables:
@@ -133,14 +228,21 @@ def extract_instruction_fields(instructions):
             ):
                 continue
 
-            # Process location format
-            if isinstance(location, str) and "-" in location:
-                try:
-                    high, low = map(int, location.split("-"))
-                    mask = ((1 << (high - low + 1)) - 1) << low
+            # Process location format - handle pipe-separated locations (e.g., "30|27-26|21-20")
+            if isinstance(location, str):
+                if "|" in location:
+                    # Split location has multiple parts, compute combined mask
+                    parts = location.split("|")
+                    total_mask = 0
+                    for part in parts:
+                        if "-" in part:
+                            high, low = map(int, part.split("-"))
+                        else:
+                            high = low = int(part)
+                        total_mask |= ((1 << (high - low + 1)) - 1) << low
                     field_dict[std_field_name] = {
-                        "location": f"{high}-{low}",
-                        "mask": f"0x{mask:x}",
+                        "location": location,
+                        "mask": f"0x{total_mask:x}",
                         "source": "instruction",
                         "original_name": (
                             orig_field_name
@@ -148,28 +250,52 @@ def extract_instruction_fields(instructions):
                             else None
                         ),
                     }
-                except ValueError:
-                    logging.warning(
-                        f"Invalid location format: {location} for field {orig_field_name}"
-                    )
-            elif isinstance(location, (int, str)):
-                try:
-                    pos = int(location)
-                    mask = 1 << pos
-                    field_dict[std_field_name] = {
-                        "location": str(pos),
-                        "mask": f"0x{mask:x}",
-                        "source": "instruction",
-                        "original_name": (
-                            orig_field_name
-                            if orig_field_name != std_field_name
-                            else None
-                        ),
-                    }
-                except ValueError:
-                    logging.warning(
-                        f"Invalid location format: {location} for field {orig_field_name}"
-                    )
+                elif "-" in location:
+                    try:
+                        high, low = map(int, location.split("-"))
+                        mask = ((1 << (high - low + 1)) - 1) << low
+                        field_dict[std_field_name] = {
+                            "location": f"{high}-{low}",
+                            "mask": f"0x{mask:x}",
+                            "source": "instruction",
+                            "original_name": (
+                                orig_field_name
+                                if orig_field_name != std_field_name
+                                else None
+                            ),
+                        }
+                    except ValueError:
+                        logging.warning(
+                            f"Invalid location format: {location} for field {orig_field_name}"
+                        )
+                else:
+                    try:
+                        pos = int(location)
+                        mask = 1 << pos
+                        field_dict[std_field_name] = {
+                            "location": str(pos),
+                            "mask": f"0x{mask:x}",
+                            "source": "instruction",
+                            "original_name": (
+                                orig_field_name
+                                if orig_field_name != std_field_name
+                                else None
+                            ),
+                        }
+                    except ValueError:
+                        logging.warning(
+                            f"Invalid location format: {location} for field {orig_field_name}"
+                        )
+            elif isinstance(location, int):
+                mask = 1 << location
+                field_dict[std_field_name] = {
+                    "location": str(location),
+                    "mask": f"0x{mask:x}",
+                    "source": "instruction",
+                    "original_name": (
+                        orig_field_name if orig_field_name != std_field_name else None
+                    ),
+                }
 
     logging.info(f"Extracted {len(field_dict)} unique instruction field names")
     return field_dict

@@ -4,9 +4,141 @@ import yaml
 import logging
 import pprint
 import json
+from copy import deepcopy
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
+
+# Cache for resolved references
+_resolved_refs_cache = {}
+
+
+def _dig(obj, *keys):
+    """Navigate through nested dictionaries using a sequence of keys."""
+    if obj is None:
+        return None
+    if len(keys) == 0:
+        return obj
+    try:
+        next_obj = obj[keys[0]]
+        if len(keys) == 1:
+            return next_obj
+        if not isinstance(next_obj, dict):
+            return None
+        return _dig(next_obj, *keys[1:])
+    except (KeyError, TypeError):
+        return None
+
+
+def _deep_merge(base, override):
+    """Deep merge override into base, with override taking priority."""
+    if not isinstance(base, dict) or not isinstance(override, dict):
+        return deepcopy(override) if override is not None else deepcopy(base)
+
+    result = deepcopy(base)
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = _deep_merge(result[key], value)
+        else:
+            result[key] = deepcopy(value)
+    return result
+
+
+def resolve_inherits(obj, arch_root, current_file_path=None, doc_obj=None):
+    """
+    Resolve $inherits references in an object.
+
+    Parameters
+    ----------
+    obj : dict, list, or other
+        The object to resolve
+    arch_root : str
+        The root directory of the architecture files
+    current_file_path : str, optional
+        The path of the current file being processed (for self-references)
+    doc_obj : dict, optional
+        The root document object (for self-references)
+
+    Returns
+    -------
+    The resolved object with $inherits expanded
+    """
+    if not isinstance(obj, (dict, list)):
+        return obj
+
+    if isinstance(obj, list):
+        return [
+            resolve_inherits(item, arch_root, current_file_path, doc_obj)
+            for item in obj
+        ]
+
+    # Handle $inherits
+    if "$inherits" in obj:
+        inherits_targets = obj["$inherits"]
+        if isinstance(inherits_targets, str):
+            inherits_targets = [inherits_targets]
+
+        # Start with empty parent object
+        parent_obj = {}
+
+        for inherits_target in inherits_targets:
+            parts = inherits_target.split("#")
+            ref_file_path = parts[0] if len(parts) > 0 else ""
+            ref_obj_path = (
+                parts[1].split("/")[1:] if len(parts) > 1 and parts[1] else []
+            )
+
+            ref_obj = None
+            if ref_file_path == "":
+                # Self-reference within the same document
+                if doc_obj is not None:
+                    ref_obj = _dig(doc_obj, *ref_obj_path)
+                    if ref_obj is not None:
+                        ref_obj = resolve_inherits(
+                            ref_obj, arch_root, current_file_path, doc_obj
+                        )
+            else:
+                # Reference to another file
+                cache_key = f"{arch_root}/{ref_file_path}#{'/'.join(ref_obj_path)}"
+                if cache_key in _resolved_refs_cache:
+                    ref_obj = _resolved_refs_cache[cache_key]
+                else:
+                    full_path = os.path.join(arch_root, ref_file_path)
+                    if os.path.exists(full_path):
+                        try:
+                            with open(full_path, encoding="utf-8") as f:
+                                ref_doc = yaml.safe_load(f)
+                            ref_obj = _dig(ref_doc, *ref_obj_path)
+                            if ref_obj is not None:
+                                ref_obj = resolve_inherits(
+                                    ref_obj, arch_root, ref_file_path, ref_doc
+                                )
+                            _resolved_refs_cache[cache_key] = ref_obj
+                        except Exception as e:
+                            logging.warning(
+                                f"Error loading reference {inherits_target}: {e}"
+                            )
+
+            if ref_obj is not None:
+                parent_obj = _deep_merge(parent_obj, ref_obj)
+
+        # Now merge the current object (excluding $inherits) on top of parent
+        child_obj = {k: v for k, v in obj.items() if k != "$inherits"}
+        result = _deep_merge(parent_obj, child_obj)
+
+        # Recursively resolve any remaining $inherits in the merged result
+        for key in result:
+            result[key] = resolve_inherits(
+                result[key], arch_root, current_file_path, doc_obj
+            )
+
+        return result
+
+    # No $inherits, just recursively process children
+    result = {}
+    for key, value in obj.items():
+        result[key] = resolve_inherits(value, arch_root, current_file_path, doc_obj)
+    return result
 
 
 def check_requirement(req, exts):
@@ -204,6 +336,97 @@ def parse_extension_requirements(extensions_spec):
     return lambda exts: True
 
 
+def expand_pseudoinstructions(base_match, variables, pseudoinstructions):
+    """
+    Expand pseudoinstructions by substituting variable values into the match pattern.
+
+    Parameters
+    ----------
+    base_match : str
+        The base match pattern (e.g., "1-00--0111-------100-----1110011")
+    variables : list
+        List of variable definitions with name and location
+    pseudoinstructions : list
+        List of pseudoinstruction definitions with "when" and "to" fields
+
+    Returns
+    -------
+    dict
+        Dictionary mapping pseudoinstruction name to its match pattern
+    """
+    expanded = {}
+
+    # Build a mapping of variable names to their locations
+    var_locations = {}
+    for var in variables:
+        if isinstance(var, dict):
+            var_name = var.get("name")
+            location = var.get("location")
+            if var_name and location:
+                var_locations[var_name] = location
+
+    for pseudo in pseudoinstructions:
+        if not isinstance(pseudo, dict):
+            continue
+
+        when = pseudo.get("when")
+        to_name = pseudo.get("to")
+
+        if not when or not to_name:
+            continue
+
+        # Parse the "when" condition (e.g., "n == 0" or "(n == 0)")
+        import re
+
+        match = re.match(r"\(?(\w+)\s*==\s*(\d+)\)?", when)
+        if not match:
+            continue
+
+        var_name = match.group(1)
+        var_value = int(match.group(2))
+
+        if var_name not in var_locations:
+            continue
+
+        location = var_locations[var_name]
+
+        # Convert match pattern to a list for manipulation
+        match_bits = list(base_match)
+
+        # Parse the location (can be "30|27-26|21-20" format)
+        location_parts = location.split("|")
+
+        # Calculate the total number of bits and the value
+        total_bits = 0
+        bit_ranges = []
+        for part in location_parts:
+            if "-" in part:
+                high, low = map(int, part.split("-"))
+            else:
+                high = low = int(part)
+            bit_count = high - low + 1
+            total_bits += bit_count
+            bit_ranges.append((high, low, bit_count))
+
+        # Convert the value to binary
+        binary_value = format(var_value, f"0{total_bits}b")
+
+        # Fill in the bits from MSB to LSB
+        bit_idx = 0
+        for high, low, bit_count in bit_ranges:
+            for bit_pos in range(high, low - 1, -1):
+                if bit_idx < len(binary_value):
+                    # Convert bit position to index in match string (MSB first)
+                    match_idx = len(match_bits) - 1 - bit_pos
+                    if 0 <= match_idx < len(match_bits):
+                        match_bits[match_idx] = binary_value[bit_idx]
+                    bit_idx += 1
+
+        expanded[to_name] = "".join(match_bits)
+
+    return expanded
+
+
 def load_instructions(
     root_dir, enabled_extensions, include_all=False, target_arch="RV64"
 ):
@@ -286,8 +509,31 @@ def load_instructions(
                     encoding_filtered += 1
                     continue
 
-                # Try to build a match string from the format field
-                match_string = build_match_from_format(format_field)
+                # Resolve $inherits in the format field before processing
+                try:
+                    # Get the relative path from the isa directory
+                    # root_dir is like spec/std/isa/inst, so we need to go up one level to get isa dir
+                    arch_root = os.path.dirname(root_dir)  # This gives us spec/std/isa
+                    # rel_path should be relative to arch_root and include the inst/ prefix
+                    rel_path = os.path.relpath(
+                        path, arch_root
+                    )  # e.g., inst/B/andn.yaml
+                    resolved_format = resolve_inherits(
+                        format_field, arch_root, rel_path, data
+                    )
+                    logging.debug(f"Resolved format for {name}: {resolved_format}")
+                except Exception as e:
+                    logging.warning(f"Error resolving $inherits in {name}: {e}")
+                    resolved_format = format_field
+
+                # Try to build a match string from the resolved format field
+                try:
+                    match_string = build_match_from_format(resolved_format)
+                except ValueError as e:
+                    logging.error(f"Error building match for {name} in {path}: {e}")
+                    logging.debug(f"Format field was: {resolved_format}")
+                    encoding_filtered += 1
+                    continue
                 if not match_string:
                     logging.error(
                         f"Could not build encoding from format field in instruction {name} in {path}"
@@ -297,6 +543,9 @@ def load_instructions(
 
                 # Create a synthetic encoding compatible with existing logic
                 encoding = {"match": match_string, "variables": []}
+                # Also store the resolved variables for field extraction
+                if "variables" in resolved_format:
+                    encoding["variables"] = resolved_format.get("variables", {})
                 logging.debug(f"Built encoding from format field for {name}")
 
             # Check if the instruction specifies a base architecture constraint
@@ -379,7 +628,23 @@ def load_instructions(
                 encoding_filtered += 1
                 continue
 
-            instr_dict[instr_key] = {"match": match_str}
+            # Include variables in the instruction dict for field extraction
+            instr_dict[instr_key] = {"match": match_str, "encoding": encoding_to_use}
+
+            # Check for pseudoinstructions and expand them
+            pseudoinstructions = data.get("pseudoinstructions", [])
+            if pseudoinstructions and isinstance(pseudoinstructions, list):
+                variables = encoding_to_use.get("variables", [])
+                expanded = expand_pseudoinstructions(
+                    match_str, variables, pseudoinstructions
+                )
+                for pseudo_name, pseudo_match in expanded.items():
+                    # Add each expanded pseudoinstruction
+                    instr_dict[pseudo_name] = {
+                        "match": pseudo_match,
+                        "encoding": {"match": pseudo_match, "variables": variables},
+                    }
+                logging.debug(f"Expanded {len(expanded)} pseudoinstructions for {name}")
 
     if found_instructions > 0:
         logging.info(
@@ -562,10 +827,11 @@ def load_exception_codes(
             logging.error(
                 f"Error loading resolved codes file {resolved_codes_file}: {e}"
             )
+            return []
     # Logging an error and skipping the exception cause generation if no resolved codes file found
     else:
-        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
-        return
+        logging.warning(f"No resolved codes file provided, skipping exception codes")
+        return []
 
     if found_extensions > 0:
         logging.info(
