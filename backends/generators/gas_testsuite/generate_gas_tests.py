@@ -489,6 +489,9 @@ def load_instructions_with_metadata(
                 logging.error(f"Error parsing {path}: {e}")
                 continue
 
+            if data is None:
+                logging.warning(f"Empty YAML file skipped: {path}")
+                continue
             if data.get("kind") != "instruction":
                 continue
 
