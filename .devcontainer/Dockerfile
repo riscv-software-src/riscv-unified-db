@@ -39,6 +39,7 @@ RUN \
     python3.12-venv \
     rustc \
     shellcheck \
+    sudo \
     zlib1g-dev
 
 # build / install ruby
@@ -110,8 +111,15 @@ RUN echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' >> /etc/bash.bashrc && \
 ENV RBENV_ROOT=/opt/.rbenv
 ENV RUBY_YJIT_ENABLE=1
 
+# Grant the default ubuntu user sudo access
+RUN echo ubuntu ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/ubuntu \
+    && chmod 0440 /etc/sudoers.d/ubuntu
+
 WORKDIR /workspace
 
 COPY .devcontainer/docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# Switch to non-root user
+USER ubuntu
