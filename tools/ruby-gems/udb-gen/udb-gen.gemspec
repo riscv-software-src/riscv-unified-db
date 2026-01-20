@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-progressbar"
   s.add_dependency "tty-table"
   s.add_dependency "udb"
+  s.add_dependency "write_xlsx"
 
   s.add_development_dependency "sorbet", "= #{UdbGems::SORBET_VERSION}"
   s.add_development_dependency "tapioca", "= #{UdbGems::TAPIOCA_VERSION}"

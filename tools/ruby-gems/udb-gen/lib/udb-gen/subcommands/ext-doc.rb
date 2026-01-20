@@ -17,29 +17,31 @@ module UdbGen
     include TTY::Exit
     include TemplateHelpers
 
+    NAME="ext-doc"
+
     sig { void }
     def initialize
-      super(name: "ext-doc", desc: "Create documentation for an extension")
+      super(name: NAME, desc: "Create documentation for an extension")
     end
 
     usage \
-      command: name,
+      command: NAME,
       desc:   "Generate documentation for an extension defined in UDB",
       example: <<~EXAMPLE
         Generate documentation for the Zba extension
-          $ #{$PROGRAM_NAME} #{name} -o Zba.pdf Zba
+          $ #{File.basename($PROGRAM_NAME)} #{NAME} -o Zba.pdf Zba
 
         Generate documentation for the B extension and all it's subextensions
-          $ #{$PROGRAM_NAME} #{name} -o B.pdf B Zba Zbb Zbss
+          $ #{File.basename($PROGRAM_NAME)} #{NAME} -o B.pdf B Zba Zbb Zbss
 
         Generate documentation for the A extension version 2.1.0
-          $ #{$PROGRAM_NAME} #{name} -o A.pdf A@2.1.0
+          $ #{File.basename($PROGRAM_NAME)} #{NAME} -o A.pdf A@2.1.0
 
         Generate documentation for the A extension latest version
-          $ #{$PROGRAM_NAME} #{name} -o A.pdf A@latest
+          $ #{File.basename($PROGRAM_NAME)} #{NAME} -o A.pdf A@latest
 
         Generate documentation for the A extension, all versions >= 2.1.0
-          $ #{$PROGRAM_NAME} #{name} -o A.pdf "A@>=2.1.0"
+          $ #{File.basename($PROGRAM_NAME)} #{NAME} -o A.pdf "A@>=2.1.0"
       EXAMPLE
 
     argument :extension do
