@@ -429,13 +429,14 @@ module Idl
 
   class << self
     # source://idlc/0.1.0/lib/idlc/log.rb#15
-    sig { returns(::Logger) }
-    def logger; end
-
     # source://idlc/0.1.0/lib/idlc/log.rb#20
+    sig { returns(::Logger) }
     sig { params(logger: ::Logger).returns(::Logger) }
-    def set_logger(logger); end
   end
+
+  def self.logger; end
+
+  def self.set_logger(logger); end
 end
 
 # source://udb//../../udb/lib/udb/idl/condition_to_udb.rb#140
@@ -666,29 +667,30 @@ class Idl::AstNode
 
   class << self
     # source://idlc/0.1.0/lib/idlc/ast.rb#186
-    sig { params(value_result: T.untyped, _block: T.proc.returns(T.untyped)).returns(T.untyped) }
-    def value_else(value_result, &_block); end
-
     # source://idlc/0.1.0/lib/idlc/ast.rb#389
-    sig { params(reason: ::String, ast: T.nilable(::Idl::AstNode)).returns(T.noreturn) }
-    def value_error(reason, ast = T.unsafe(nil)); end
-
-    # source://idlc/0.1.0/lib/idlc/ast.rb#381
-    def value_error_ast; end
-
-    # source://idlc/0.1.0/lib/idlc/ast.rb#381
-    def value_error_ast=(_arg0); end
-
-    # source://idlc/0.1.0/lib/idlc/ast.rb#381
-    def value_error_reason; end
-
-    # source://idlc/0.1.0/lib/idlc/ast.rb#381
-    def value_error_reason=(_arg0); end
-
     # source://idlc/0.1.0/lib/idlc/ast.rb#179
+    sig { params(value_result: T.untyped, _block: T.proc.returns(T.untyped)).returns(T.untyped) }
+    sig { params(reason: ::String, ast: T.nilable(::Idl::AstNode)).returns(T.noreturn) }
     sig { params(block: T.proc.params(arg0: ::Object).returns(T.untyped)).returns(T.untyped) }
-    def value_try(&block); end
   end
+
+  def self.value_else(value_result, &_block); end
+
+  def self.value_error(reason, ast = T.unsafe(nil)); end
+
+  # source://idlc/0.1.0/lib/idlc/ast.rb#381
+  def self.value_error_ast; end
+
+  # source://idlc/0.1.0/lib/idlc/ast.rb#381
+  def self.value_error_ast=(_arg0); end
+
+  # source://idlc/0.1.0/lib/idlc/ast.rb#381
+  def self.value_error_reason; end
+
+  # source://idlc/0.1.0/lib/idlc/ast.rb#381
+  def self.value_error_reason=(_arg0); end
+
+  def self.value_try(&block); end
 end
 
 # source://udb//../../udb/lib/udb/idl/condition_to_udb.rb#15
@@ -1212,21 +1214,6 @@ class Idl::UnaryOperatorExpressionAst < ::Idl::AstNode
 
   # source://idlc/0.1.0/lib/idlc/ast.rb#4889
   def value(symtab); end
-end
-
-class MiniSat::Solver
-  def <<(_arg0); end
-  def [](_arg0); end
-  def add_clause(*_arg0); end
-  def clause_size; end
-  def new_var; end
-  def satisfied?; end
-  def simplify; end
-  def simplify_db; end
-  def solve(*_arg0); end
-  def solved?; end
-  def to_s; end
-  def var_size; end
 end
 
 # Custom error classes for non-ISA specification processing
@@ -2422,43 +2409,11 @@ class Udb::Condition < ::Udb::AbstractCondition
     # return a new Condition that the logical AND of conditions
     #
     # source://udb//../../udb/lib/udb/condition.rb#1259
-    sig do
-      params(
-        conditions: T::Array[::Udb::AbstractCondition],
-        cfg_arch: ::Udb::ConfiguredArchitecture
-      ).returns(::Udb::AbstractCondition)
-    end
-    def conjunction(conditions, cfg_arch); end
-
     # return a new Condition that the logical OR of conditions
     #
     # source://udb//../../udb/lib/udb/condition.rb#1283
-    sig do
-      params(
-        conditions: T::Array[::Udb::AbstractCondition],
-        cfg_arch: ::Udb::ConfiguredArchitecture
-      ).returns(::Udb::AbstractCondition)
-    end
-    def disjunction(conditions, cfg_arch); end
-
     # source://udb//../../udb/lib/udb/condition.rb#402
-    sig do
-      params(
-        cfg_arch: ::Udb::ConfiguredArchitecture,
-        conds: T::Array[T.all(::Object, ::Udb::AbstractCondition)]
-      ).returns(::Udb::AbstractCondition)
-    end
-    def join(cfg_arch, conds); end
-
     # source://udb//../../udb/lib/udb/condition.rb#1330
-    sig do
-      params(
-        condition: ::Udb::AbstractCondition,
-        cfg_arch: ::Udb::ConfiguredArchitecture
-      ).returns(::Udb::AbstractCondition)
-    end
-    def not(condition, cfg_arch); end
-
     # return a new Condition that the logical XOR of conditions
     #
     # source://udb//../../udb/lib/udb/condition.rb#1307
@@ -2468,11 +2423,45 @@ class Udb::Condition < ::Udb::AbstractCondition
         cfg_arch: ::Udb::ConfiguredArchitecture
       ).returns(::Udb::AbstractCondition)
     end
-    def one_of(conditions, cfg_arch); end
+    sig do
+      params(
+        conditions: T::Array[::Udb::AbstractCondition],
+        cfg_arch: ::Udb::ConfiguredArchitecture
+      ).returns(::Udb::AbstractCondition)
+    end
+    sig do
+      params(
+        cfg_arch: ::Udb::ConfiguredArchitecture,
+        conds: T::Array[T.all(::Object, ::Udb::AbstractCondition)]
+      ).returns(::Udb::AbstractCondition)
+    end
+    sig do
+      params(
+        condition: ::Udb::AbstractCondition,
+        cfg_arch: ::Udb::ConfiguredArchitecture
+      ).returns(::Udb::AbstractCondition)
+    end
+    sig do
+      params(
+        conditions: T::Array[::Udb::AbstractCondition],
+        cfg_arch: ::Udb::ConfiguredArchitecture
+      ).returns(::Udb::AbstractCondition)
+    end
 
-    # source://udb//../../udb/lib/udb/condition.rb#696
-    def solver; end
   end
+
+  def self.conjunction(conditions, cfg_arch); end
+
+  def self.disjunction(conditions, cfg_arch); end
+
+  def self.join(cfg_arch, conds); end
+
+  def self.not(condition, cfg_arch); end
+
+  def self.one_of(conditions, cfg_arch); end
+
+  # source://udb//../../udb/lib/udb/condition.rb#696
+  def self.solver; end
 end
 
 # source://udb//../../udb/lib/udb/condition.rb#809
@@ -2482,10 +2471,8 @@ Udb::Condition::EvalCallbackType = T.type_alias { T.proc.params(term: T.any(::Ud
 class Udb::Condition::MemoizedState < ::T::Struct
   prop :satisfied_by_cfg_arch, T::Hash[::Udb::ConfiguredArchitecture, ::Udb::SatisfiedResult]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/condition.rb#1745
@@ -2501,10 +2488,8 @@ class Udb::ConditionalExtensionRequirement < ::T::Struct
   prop :ext_req, ::Udb::ExtensionRequirement
   prop :cond, ::Udb::AbstractCondition
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # an ExtensionVersion that only applies when cond is true
@@ -2514,10 +2499,8 @@ class Udb::ConditionalExtensionVersion < ::T::Struct
   prop :ext_ver, ::Udb::ExtensionVersion
   prop :cond, ::Udb::AbstractCondition
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/config.rb#15
@@ -3058,8 +3041,9 @@ class Udb::ConfiguredArchitecture < ::Udb::Architecture
     #
     # source://udb//../../udb/lib/udb/cfg_arch.rb#600
     sig { params(fn_name: ::String, arch_dir: ::String, obj_class: T.class_of(Udb::TopLevelDatabaseObject)).void }
-    def generate_obj_methods(fn_name, arch_dir, obj_class); end
   end
+
+  def self.generate_obj_methods(fn_name, arch_dir, obj_class); end
 end
 
 # source://udb//../../udb/lib/udb/cfg_arch.rb#530
@@ -3074,10 +3058,8 @@ class Udb::ConfiguredArchitecture::MemoizedState < ::T::Struct
   prop :extension_requirements_hash, T::Hash[::String, ::Udb::ExtensionRequirement]
   prop :extension_versions_hash, T::Hash[::String, ::Udb::ExtensionVersion]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # return type for #valid?
@@ -3087,10 +3069,8 @@ class Udb::ConfiguredArchitecture::ValidationResult < ::T::Struct
   const :valid, T::Boolean
   const :reasons, T::Array[::String]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # wrapper around an IDL function containing constraints
@@ -3408,10 +3388,8 @@ end
 class Udb::Csr::MemoizedState < ::T::Struct
   prop :reachable_functions, T::Hash[T.any(::Integer, ::Symbol), T::Array[::Idl::FunctionDefAst]]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # A CSR field object
@@ -3629,23 +3607,23 @@ class Udb::CsrField::Alias < ::Struct
   # @return [Range] Range of the aliased field that is being pointed to
   def range=(_); end
 
-  class << self
-    def [](*_arg0); end
-    def inspect; end
-    def keyword_init?; end
-    def members; end
-    def new(*_arg0); end
-  end
+  def self.[](*_arg0); end
+
+  def self.inspect; end
+
+  def self.keyword_init?; end
+
+  def self.members; end
+
+  def self.new(*_arg0); end
 end
 
 # source://udb//../../udb/lib/udb/obj/csr_field.rb#50
 class Udb::CsrField::MemoizedState < ::T::Struct
   prop :reachable_functions, T::Hash[T.any(::Integer, ::Symbol), T::Array[::Idl::FunctionDefAst]]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/obj/csr_field.rb#801
@@ -4146,10 +4124,8 @@ class Udb::Extension::ConditionallyApplicableParameter < ::T::Struct
   prop :cond, ::Udb::AbstractCondition
   prop :param, ::Udb::Parameter
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/condition.rb#1643
@@ -4876,10 +4852,8 @@ class Udb::ExtensionVersion::MemomizedState < ::T::Struct
   prop :compatible_versions, T.nilable(T::Array[::Udb::ExtensionVersion])
   prop :key, T.nilable(::Integer)
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # represents a "free" term, i.e., one that is not bound to the problem at hand
@@ -5264,16 +5238,19 @@ class Udb::Instruction < ::Udb::TopLevelDatabaseObject
   def load_encoding; end
 
   class << self
-    # source://udb//../../udb/lib/udb/obj/instruction.rb#262
-    def ary_from_location(location_str_or_int); end
 
-    # source://udb//../../udb/lib/udb/obj/instruction.rb#299
-    def deprecated_validate_encoding(encoding, inst_name); end
 
     # source://udb//../../udb/lib/udb/obj/instruction.rb#279
     sig { params(inst: ::Udb::Instruction, base: ::Integer).void }
-    def validate_encoding(inst, base); end
   end
+
+  # source://udb//../../udb/lib/udb/obj/instruction.rb#262
+  def self.ary_from_location(location_str_or_int); end
+
+  # source://udb//../../udb/lib/udb/obj/instruction.rb#299
+  def self.deprecated_validate_encoding(encoding, inst_name); end
+
+  def self.validate_encoding(inst, base); end
 end
 
 # decode field constructions from YAML file, rather than riscv-opcodes
@@ -5450,12 +5427,10 @@ class Udb::Instruction::Encoding
   # source://udb//../../udb/lib/udb/obj/instruction.rb#991
   def size; end
 
-  class << self
-    # @return [Boolean]
-    #
-    # source://udb//../../udb/lib/udb/obj/instruction.rb#903
-    def overlapping_format?(format1, format2); end
-  end
+  # @return [Boolean]
+  #
+  # source://udb//../../udb/lib/udb/obj/instruction.rb#903
+  def self.overlapping_format?(format1, format2); end
 end
 
 # represents an encoding field (contiguous set of bits that form an opcode or decode variable slot)
@@ -5539,10 +5514,8 @@ end
 class Udb::Instruction::MemoizedState < ::T::Struct
   prop :reachable_functions, T.nilable(T::Hash[::Integer, ::Idl::FunctionDefAst])
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/obj/instruction.rb#174
@@ -6113,66 +6086,69 @@ class Udb::LogicNode
     # return the prime implicants, represented by a string of "0", "1", and "-"
     #
     # source://udb//../../udb/lib/udb/logic.rb#1442
-    sig { params(mterms: T::Array[::String], group_by: ::String).returns(::Udb::LogicNode::PrimeImplicantsResult) }
-    def find_prime_implicants(mterms, group_by); end
-
     # source://udb//../../udb/lib/udb/logic.rb#1384
-    sig { params(mterms: T::Array[::String], group_by: ::String).returns(T::Hash[::Integer, T::Array[::String]]) }
-    def group_mterms(mterms, group_by); end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1190
-    def inc_brute_force_sat_solves; end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1206
-    def inc_minisat_cache_hits; end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1198
-    def inc_minisat_sat_solves; end
-
     # source://udb//../../udb/lib/udb/logic.rb#1657
+    # source://udb//../../udb/lib/udb/logic.rb#1663
+    # source://udb//../../udb/lib/udb/logic.rb#1400
+    sig { params(mterms: T::Array[::String], group_by: ::String).returns(::Udb::LogicNode::PrimeImplicantsResult) }
+    sig { params(mterms: T::Array[::String], group_by: ::String).returns(T::Hash[::Integer, T::Array[::String]]) }
     sig do
       params(
         blk: T.proc.params(arg0: T.any(::Udb::ExtensionTerm, ::Udb::FreeTerm, ::Udb::ParameterTerm, ::Udb::XlenTerm)).returns(::Udb::SatisfiedResult)
       ).returns(T.proc.params(arg0: T.any(::Udb::ExtensionTerm, ::Udb::FreeTerm, ::Udb::ParameterTerm, ::Udb::XlenTerm)).returns(::Udb::SatisfiedResult))
     end
-    def make_eval_cb(&blk); end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1663
     sig do
       params(
         blk: T.proc.params(arg0: ::Udb::LogicNode).returns(::Udb::LogicNode)
       ).returns(T.proc.params(arg0: ::Udb::LogicNode).returns(::Udb::LogicNode))
     end
-    def make_replace_cb(&blk); end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1186
-    def num_brute_force_sat_solves; end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1202
-    def num_minisat_cache_hits; end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1194
-    def num_minisat_sat_solves; end
-
-    # source://udb//../../udb/lib/udb/logic.rb#1400
     sig do
       params(
         group1: T::Array[::String],
         group2: T::Array[::String]
       ).returns(::Udb::LogicNode::PairMintermsResult)
     end
-    def pair_mterms(group1, group2); end
 
-    # @return [Boolean]
-    #
-    # source://udb//../../udb/lib/udb/logic.rb#1428
-    def prime_implicant_covers_mterm?(implicant, minterm); end
 
-    # statistics counters
-    #
-    # source://udb//../../udb/lib/udb/logic.rb#1176
-    def reset_stats; end
   end
+
+  def self.find_prime_implicants(mterms, group_by); end
+
+  def self.group_mterms(mterms, group_by); end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1190
+  def self.inc_brute_force_sat_solves; end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1206
+  def self.inc_minisat_cache_hits; end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1198
+  def self.inc_minisat_sat_solves; end
+
+  def self.make_eval_cb(&blk); end
+
+  def self.make_replace_cb(&blk); end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1186
+  def self.num_brute_force_sat_solves; end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1202
+  def self.num_minisat_cache_hits; end
+
+  # source://udb//../../udb/lib/udb/logic.rb#1194
+  def self.num_minisat_sat_solves; end
+
+  def self.pair_mterms(group1, group2); end
+
+  # @return [Boolean]
+  #
+  # source://udb//../../udb/lib/udb/logic.rb#1428
+  def self.prime_implicant_covers_mterm?(implicant, minterm); end
+
+  # statistics counters
+  #
+  # source://udb//../../udb/lib/udb/logic.rb#1176
+  def self.reset_stats; end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#1505
@@ -6191,10 +6167,8 @@ class Udb::LogicNode::ConditionalEndterm < ::T::Struct
   const :term, T.any(::Udb::ExtensionTerm, ::Udb::FreeTerm, ::Udb::ParameterTerm, ::Udb::XlenTerm)
   const :cond, ::Udb::LogicNode
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#3249
@@ -6202,10 +6176,8 @@ class Udb::LogicNode::EqntottResult < ::T::Struct
   const :eqn, ::String
   const :term_map, T::Hash[::String, T.any(::Udb::ExtensionTerm, ::Udb::FreeTerm, ::Udb::ParameterTerm, ::Udb::XlenTerm)]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#1655
@@ -6243,10 +6215,8 @@ class Udb::LogicNode::MemoizedState < ::T::Struct
   prop :equisat_cnf, T.nilable(::Udb::LogicNode)
   prop :equiv_cnf, T.nilable(::Udb::LogicNode)
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#1394
@@ -6254,10 +6224,8 @@ class Udb::LogicNode::PairMintermsResult < ::T::Struct
   const :new_group, T::Array[::String]
   const :matched_mterms, T::Set[::String]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#1434
@@ -6265,10 +6233,8 @@ class Udb::LogicNode::PrimeImplicantsResult < ::T::Struct
   const :essential, T::Array[::String]
   const :minimal, T::Array[::String]
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/logic.rb#1661
@@ -6731,10 +6697,8 @@ class Udb::Parameter::ConditionalSchema < ::T::Struct
   const :cond, ::Udb::AbstractCondition
   const :schema, ::Udb::Schema
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/obj/parameter.rb#115
@@ -7630,8 +7594,9 @@ class Udb::Presence < ::T::Enum
   class << self
     # source://udb//../../udb/lib/udb/presence.rb#24
     sig { params(yaml: T.any(::String, T::Hash[::String, ::String])).returns(::Udb::Presence) }
-    def from_yaml(yaml); end
   end
+
+  def self.from_yaml(yaml); end
 end
 
 # Represents a Programmer's Reference Manual specification
@@ -8173,10 +8138,8 @@ class Udb::Resolver::ConfigInfo < ::T::Struct
   const :resolved_spec_path, ::Pathname
   const :resolver, ::Udb::Resolver
 
-  class << self
-    # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
-    def inherited(s); end
-  end
+  # source://sorbet-runtime/0.6.12690/lib/types/struct.rb#13
+  def self.inherited(s); end
 end
 
 # source://udb//../../udb/lib/udb/condition.rb#100
@@ -8319,8 +8282,9 @@ class Udb::TopLevelDatabaseObject < ::Udb::DatabaseObject
   class << self
     # source://udb//../../udb/lib/udb/obj/database_obj.rb#383
     sig { params(udb_resolver: ::Udb::Resolver).returns(T.proc.params(pattern: ::Regexp).returns(T.untyped)) }
-    def create_json_schemer_resolver(udb_resolver); end
   end
+
+  def self.create_json_schemer_resolver(udb_resolver); end
 end
 
 # Exception raised when there is a problem with a schema file
@@ -8716,6 +8680,14 @@ class Udb::Z3ParameterTerm
     # assert all constraints for an array parameter
     #
     # source://udb//../../udb/lib/udb/z3.rb#179
+    # assert all constraints for a boolean parameter
+    #
+    # source://udb//../../udb/lib/udb/z3.rb#114
+    # assert all constraints for an integer parameter
+    #
+    # source://udb//../../udb/lib/udb/z3.rb#58
+    # source://udb//../../udb/lib/udb/z3.rb#318
+    # source://udb//../../udb/lib/udb/z3.rb#246
     sig do
       params(
         solver: ::Udb::Z3Solver,
@@ -8724,31 +8696,24 @@ class Udb::Z3ParameterTerm
         subtype_constrain: ::Method
       ).void
     end
-    def constrain_array(solver, term, schema_hsh, subtype_constrain); end
-
-    # assert all constraints for a boolean parameter
-    #
-    # source://udb//../../udb/lib/udb/z3.rb#114
     sig { params(solver: ::Udb::Z3Solver, term: ::Z3::BoolExpr, schema_hsh: T::Hash[::String, T.untyped]).void }
-    def constrain_bool(solver, term, schema_hsh); end
-
-    # assert all constraints for an integer parameter
-    #
-    # source://udb//../../udb/lib/udb/z3.rb#58
     sig { params(solver: ::Udb::Z3Solver, term: ::Z3::BitvecExpr, schema_hsh: T::Hash[::String, T.untyped]).void }
-    def constrain_int(solver, term, schema_hsh); end
-
-    # source://udb//../../udb/lib/udb/z3.rb#140
-    def constrain_string(solver, term, schema_hsh); end
-
-    # source://udb//../../udb/lib/udb/z3.rb#318
     sig { params(schema_hsh: T::Hash[::String, T.untyped]).returns(::Symbol) }
-    def detect_array_subtype(schema_hsh); end
-
-    # source://udb//../../udb/lib/udb/z3.rb#246
     sig { params(schema_hsh: T::Hash[::String, T.untyped]).returns(::Symbol) }
-    def detect_type(schema_hsh); end
   end
+
+  def self.constrain_array(solver, term, schema_hsh, subtype_constrain); end
+
+  def self.constrain_bool(solver, term, schema_hsh); end
+
+  def self.constrain_int(solver, term, schema_hsh); end
+
+  # source://udb//../../udb/lib/udb/z3.rb#140
+  def self.constrain_string(solver, term, schema_hsh); end
+
+  def self.detect_array_subtype(schema_hsh); end
+
+  def self.detect_type(schema_hsh); end
 end
 
 # source://udb//../../udb/lib/udb/z3.rb#555
