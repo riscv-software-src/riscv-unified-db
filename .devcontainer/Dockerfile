@@ -134,4 +134,5 @@ WORKDIR /workspace
 
 COPY .devcontainer/docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
+ENV RBENV_ROOT="/opt/.rbenv"
 ENTRYPOINT ["/docker-entrypoint.sh"]

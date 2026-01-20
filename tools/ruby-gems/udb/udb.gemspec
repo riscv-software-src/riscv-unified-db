@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
   s.add_dependency "numbers_and_words"
+  s.add_dependency "ostruct"
   s.add_dependency "pastel"
   s.add_dependency "ruby-minisat", ">= 2.2.0.3"
   s.add_dependency "sorbet-runtime", "= #{UdbGems::SORBET_VERSION}"

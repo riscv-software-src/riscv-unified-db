@@ -23,6 +23,7 @@ PATH
       idlc
       json_schemer
       numbers_and_words
+      ostruct
       pastel
       ruby-minisat (>= 2.2.0.3)
       sorbet-runtime (= 0.6.12690)
@@ -84,6 +85,7 @@ GEM
     netrc (0.11.0)
     numbers_and_words (1.0.3)
       i18n (<= 2)
+    ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.1)
       ast (~> 2.4.1)
