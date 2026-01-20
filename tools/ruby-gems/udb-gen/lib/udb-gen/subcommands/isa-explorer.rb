@@ -273,13 +273,13 @@ module UdbGen
         formatter = column.fetch(:formatter)
         fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
 
-        if column.fetch(:headerFilter) == true
+        if column[:headerFilter] == true
           fp.write ", headerFilter: true"
         end
-        if column.fetch(:headerVertical) == true
+        if column[:headerVertical] == true
           fp.write ", headerVertical: true"
         end
-        if column.fetch(:frozen) == true
+        if column[:frozen] == true
           fp.write ", frozen: true"
         end
 
