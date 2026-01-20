@@ -4,7 +4,7 @@
     "config:best-practices",
     ":automergeAll",
     "helpers:pinGitHubActionDigestsToSemver",
-    "schedule:automergeNonOfficeHours"
+    "schedule:nonOfficeHours"
   ],
   "labels": ["dependencies"],
   "lockFileMaintenance": {
