@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>RISC-V ISA Extension Explorer</title>
+    <link href="https://unpkg.com/tabulator-tables@6.3.1/dist/css/tabulator.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="ext_table"></div>
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.3.1/dist/js/tabulator.min.js"></script>
+  <script type="text/javascript">
+    // Chunked data loading for better performance
+function loadDataInChunks(data, chunkSize = 500, delay = 50) {
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const totalChunks = Math.ceil(data.length / chunkSize);
+    let currentChunk = 0;
+
+    function loadNextChunk() {
+        const startIndex = currentChunk * chunkSize;
+        const endIndex = Math.min(startIndex + chunkSize, data.length);
+        const chunk = data.slice(startIndex, endIndex);
+
+        try {
+            if (currentChunk === 0) {
+                table.clearData();
+                table.setData(chunk);
+            } else {
+                table.addData(chunk);
+            }
+
+            currentChunk++;
+            console.log(`Chunk ${currentChunk}/${totalChunks}: ${endIndex}/${data.length} items`);
+
+            if (currentChunk < totalChunks) {
+                setTimeout(loadNextChunk, delay);
+            } else {
+                console.log('All data loaded successfully.');
+            }
+        } catch (error) {
+            console.error('Error loading chunk:', error);
+            if (currentChunk < totalChunks) setTimeout(loadNextChunk, delay);
+        }
+    }
+
+    loadNextChunk();
+}
+
+
+    // Define data array
+
+var tabledata = [
+  {"Extension Name":"A", "Description":"Atomic instructions", "IC":"unpriv", "Requires (Exts)":"Zaamo\nZalrsc", "Transitive Requires (Ext)":"Zaamo\nZalrsc", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2019-12", "RVI20":"o", "RVA20":"m", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"I", "Description":"Base integer ISA (RV32I or RV64I)", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2019-06", "RVI20":"m", "RVA20":"m", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Sha", "Description":"Augmented hypervisor", "IC":"priv", "Requires (Exts)":"H\nSsstateen\nShcounterenw\nShvstvala\nShtvala\nShvstvecd\nShvsatpa\nShgatpa", "Transitive Requires (Ext)":"H\nSsstateen\nShcounterenw\nShvstvala\nShtvala\nShvstvecd\nShvsatpa\nShgatpa\nS\nU", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-10", "RVI20":"n", "RVA20":"n", "RVA22":"o", "RVA23":"m", "RVB23":"o"},
+  {"Extension Name":"Shvstvecd", "Description":"Virtual Supervisor Trap Vector Base Address supports Direct mode", "IC":"priv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-03", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Smctr", "Description":"Control Transfer Records", "IC":"priv", "Requires (Exts)":"S\nSmcsrind\nSsctr", "Transitive Requires (Ext)":"S\nSmcsrind\nSsctr\nU\nSscsrind", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-11", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Smrnmi", "Description":"Resumable Non-Maskable Interrupts", "IC":"priv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-06", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Sscounterenw", "Description":"Support writeable enables for any supported counter", "IC":"priv", "Requires (Exts)":"Zihpm\nS", "Transitive Requires (Ext)":"Zihpm\nS\nSmhpm\nU", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-08", "RVI20":"n", "RVA20":"n", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Ssqosid", "Description":"Quality-of-Service Identifiers", "IC":"priv", "Requires (Exts)":"S", "Transitive Requires (Ext)":"S\nU", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-06", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Ssu64xl", "Description":"64-bit UXLEN", "IC":"priv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-03", "RVI20":"n", "RVA20":"o", "RVA22":"o", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Svade", "Description":"Exception on PTE A/D Bits", "IC":"priv", "Requires (Exts)":"Sm", "Transitive Requires (Ext)":"Sm", "Incompatible (Ext Reqs)":"Svadu", "Ratified":true, "Ratification Date":"2023-11", "RVI20":"n", "RVA20":"m", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Svrsw60t59b", "Description":"PTE Reserved-for-Software Bits 60-59", "IC":"priv", "Requires (Exts)":"Sv39", "Transitive Requires (Ext)":"Sv39", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2025-08", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Za64rs", "Description":"Reservation set size of at most 64 bytes", "IC":"unpriv", "Requires (Exts)":"Za128rs", "Transitive Requires (Ext)":"Za128rs", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-03", "RVI20":"n", "RVA20":"n", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Zama16b", "Description":"Misaligned load/store/AMO within aligned 16-byte boundaries are atomic", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-10", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"o", "RVB23":"o"},
+  {"Extension Name":"Zbkc", "Description":"Carry-less multiplication for Cryptography", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-12", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zce", "Description":"Compressed instructions for microcontrollers", "IC":"unpriv", "Requires (Exts)":"Zca\nZcb\nZcmp\nZcmt", "Transitive Requires (Ext)":"Zca\nZcb\nZcmp\nZcmt\nZicsr", "Incompatible (Ext Reqs)":"Zcd", "Ratified":true, "Ratification Date":"2023-04", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zdinx", "Description":"Double-precision floating-point instructions using integer registers", "IC":"unpriv", "Requires (Exts)":"Zfinx", "Transitive Requires (Ext)":"Zfinx\nZicsr", "Incompatible (Ext Reqs)":"D\nF\nQ\nV\nZcd\nZcf\nZfa\nZfbfmin\nZfh\nZfhmin\nZve32f\nZve64d\nZve64f\nZvfbfmin\nZvfbfwma\nZvfh\nZvfhmin", "Ratified":true, "Ratification Date":"2021-11", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zhinx", "Description":"Half-precision floating-point instructions using integer registers", "IC":"unpriv", "Requires (Exts)":"Zhinxmin", "Transitive Requires (Ext)":"Zhinxmin\nZfinx\nZicsr", "Incompatible (Ext Reqs)":"D\nF\nQ\nV\nZcd\nZcf\nZfa\nZfbfmin\nZfh\nZfhmin\nZve32f\nZve64d\nZve64f\nZvfbfmin\nZvfbfwma\nZvfh\nZvfhmin", "Ratified":true, "Ratification Date":"2021-11", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Ziccamoa", "Description":"Main memory supports all atomics in A extension", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-03", "RVI20":"n", "RVA20":"m", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Zicfiss", "Description":"Shadow Stack", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2024-07", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"o", "RVB23":"o"},
+  {"Extension Name":"Zihintpause", "Description":"Pause Hint", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-02", "RVI20":"n", "RVA20":"n", "RVA22":"m", "RVA23":"m", "RVB23":"m"},
+  {"Extension Name":"Zknd", "Description":"NIST Suite: AES Decryption", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-12", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zksh", "Description":"ShangMi Suite: SM3 Hash Function Instructions", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-12", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zve32x", "Description":"Vector Extension for Minimal Vector Register Length of 32 Bits", "IC":"unpriv", "Requires (Exts)":"Zicsr\nZvl32b", "Transitive Requires (Ext)":"Zicsr\nZvl32b", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-11", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zvfh", "Description":"Vector Extension for Half-Precision Floating-Point", "IC":"unpriv", "Requires (Exts)":"Zve32f\nZfhmin", "Transitive Requires (Ext)":"Zve32f\nZfhmin\nF\nZve32x\nZicsr\nZvl32b", "Incompatible (Ext Reqs)":"Zdinx\nZfinx\nZhinx\nZhinxmin", "Ratified":true, "Ratification Date":"2023-06", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"o", "RVB23":"o"},
+  {"Extension Name":"Zvkned", "Description":"NIST Suite: Vector AES Block Cipher", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-09", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zvksed", "Description":"ShangMi Suite: SM4 Block Cipher", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2023-09", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+  {"Extension Name":"Zvl256b", "Description":"Vector register length must be at least 256 bits", "IC":"unpriv", "Requires (Exts)":"", "Transitive Requires (Ext)":"", "Incompatible (Ext Reqs)":"", "Ratified":true, "Ratification Date":"2021-11", "RVI20":"n", "RVA20":"n", "RVA22":"n", "RVA23":"n", "RVB23":"n"},
+];
+
+// Initialize table
+var table = new Tabulator("#ext_table", {
+  height: window.innerHeight-25, // Set height to window less 25 pixels for horz scrollbar
+  data: tabledata, // Assign data to table
+  columns:[
+    {title: "Extension Name", field: "Extension Name", sorter: "alphanum", formatter: "link", headerFilter: true, frozen: true, formatterParams:{
+      labelField:"Extension Name",
+      urlPrefix:"https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
+      }
+    },
+    {title: "Description", field: "Description", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "IC", field: "IC", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "Requires (Exts)", field: "Requires (Exts)", sorter: "alphanum", formatter: "textarea"    },
+    {title: "Transitive Requires (Ext)", field: "Transitive Requires (Ext)", sorter: "alphanum", formatter: "textarea"    },
+    {title: "Incompatible (Ext Reqs)", field: "Incompatible (Ext Reqs)", sorter: "alphanum", formatter: "textarea"    },
+    {title: "Ratified", field: "Ratified", sorter: "boolean", formatter: "textarea", headerFilter: true    },
+    {title: "Ratification Date", field: "Ratification Date", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "RVI20", field: "RVI20", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "RVA20", field: "RVA20", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "RVA22", field: "RVA22", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "RVA23", field: "RVA23", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+    {title: "RVB23", field: "RVB23", sorter: "alphanum", formatter: "textarea", headerFilter: true    },
+  ]
+});
+
+// Load data in chunks after table is built
+table.on("tableBuilt", function() {
+    loadDataInChunks(tabledata);
+});
+
+
+  </script>
+</body>
+</html>
