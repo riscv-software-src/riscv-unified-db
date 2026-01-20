@@ -10,16 +10,14 @@ jobs:
       SINGULARITY: 1
     strategy:
       matrix:
-        runner: [ubuntu-24.04] # , ubuntu-24.04-arm]   eWaterCycle/setup-apptainer does not have ARM64 support
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
 
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-        with:
-          apptainer-version: 1.4.0
+      - name: Install singularity
+        run: sudo apt-get install -y singularity-container
 
       - name: Get container tag
         run: |
