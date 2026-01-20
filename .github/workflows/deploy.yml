@@ -95,7 +95,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer CSR
-        run: ./do gen:isa_explorer_browser_csr
+        run: ./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer/browser --skip 6
       - name: Upload ISA Explorer CSR
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
@@ -112,7 +112,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Extension
-        run: ./do gen:isa_explorer_browser_ext
+        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer/browser --skip 6
       - name: Upload ISA Explorer Extension
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
@@ -129,7 +129,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Instructions
-        run: ./do gen:isa_explorer_browser_inst
+        run: ./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer/browser --skip 6
       - name: Upload ISA Explorer Instructions
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
@@ -146,7 +146,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Spreadsheet
-        run: ./do gen:isa_explorer_spreadsheet
+        run: ./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer/spreadsheet --skip 6
       - name: Upload ISA Explorer Spreadsheet
         uses: actions/upload-artifact@v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')
