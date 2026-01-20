@@ -27,7 +27,7 @@ namespace :chore do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(UDB_GEN_ROOT) do
         sh "bundle install --gemfile #{UDB_GEN_ROOT}/Gemfile"
-        sh "bundle update --gemfile #{UDB_GEN_ROOT}/Gemfile"
+        # sh "bundle update --gemfile #{UDB_GEN_ROOT}/Gemfile"
         Rake::Task["chore:udb_gen:tapioca"].invoke
       end
     end
