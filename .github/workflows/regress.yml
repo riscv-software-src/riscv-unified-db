@@ -306,7 +306,7 @@ jobs:
           -e MANUAL_NAME -e VERSIONS -e CFG \
           riscvintl/udb:${{ env.TAG }} \
           /bin/bash -c "git config --global --add safe.directory '*' && \
-          env DEVCONTAINER_ENV=1 ./do gen:html_manual MANUAL_NAME=${MANUAL_NAME} VERSIONS=${VERSIONS}"
+          env DEVCONTAINER_ENV=1 ./do gen:html_manual"
   regress-gen-instruction-appendix:
     runs-on: ubuntu-latest
     needs: build-container
