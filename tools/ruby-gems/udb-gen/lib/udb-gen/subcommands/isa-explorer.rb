@@ -37,7 +37,7 @@ module UdbGen
 
     # @param arch The entire RISC-V architecture
     # @return Extension table data
-    sig { params(arch: Udb::ConfiguredArchitecture, skip: Integer).returns(T::Hash[String, T::Array[String]]) }
+    sig { params(arch: Udb::ConfiguredArchitecture, skip: Integer).returns(T::Hash[String, T::Array[T.untyped]]) }
     def self.arch2ext_table(arch, skip)
 
       sorted_profile_releases = get_sorted_profile_releases(arch)
@@ -121,9 +121,9 @@ module UdbGen
       return ext_table
     end
 
-    # @param arch [Udb::Architecture] The entire RISC-V architecture
-    # @return [Hash<String,Array<String>] Instruction table data
-    sig { params(arch: Udb::Architecture, skip: Integer).returns(T::Hash[String, T::Array[String]]) }
+    # @param arch The entire RISC-V architecture
+    # @return Instruction table data
+    sig { params(arch: Udb::ConfiguredArchitecture, skip: Integer).returns(T::Hash[String, T::Array[T.untyped]]) }
     def self.arch2inst_table(arch, skip)
       sorted_profile_releases = get_sorted_profile_releases(arch)
 
@@ -172,9 +172,9 @@ module UdbGen
       return inst_table
     end
 
-    # @param arch [Udb::Architecture] The entire RISC-V architecture
-    # @return [Hash<String,Array<String>] CSR table data
-    sig { params(arch: Udb::Architecture, skip: Integer).returns(T::Hash[String, T::Array[String]]) }
+    # @param arch The entire RISC-V architecture
+    # @return CSR table data
+    sig { params(arch: Udb::ConfiguredArchitecture, skip: Integer).returns(T::Hash[String, T::Array[T.untyped]]) }
     def self.arch2csr_table(arch, skip)
       sorted_profile_releases = get_sorted_profile_releases(arch)
 
@@ -230,10 +230,10 @@ module UdbGen
     #
     # @param table Table data
     # @param div_name Name of div element in HTML
-    sig { params(table: T::Hash[String, T::Array[String]], div_name: String).returns(String) }
+    sig { params(table: T::Hash[String, T::Array[T.untyped]], div_name: String).returns(String) }
     def self.gen_js_table(table, div_name)
-      columns = table["columns"]
-      rows = table["rows"]
+      columns = table.fetch("columns")
+      rows = table.fetch("rows")
 
       fp = StringIO.new
       fp.write "// Define data array\n"
@@ -243,11 +243,11 @@ module UdbGen
       rows.each do |row|
         items = []
         columns.each_index do |i|
-          column = columns[i]
-          column_name = column[:name].gsub("\n", " ")
-          cell = row[i]
+          column = columns.fetch(i)
+          column_name = column.fetch(:name).gsub("\n", " ")
+          cell = row.fetch(i)
           if cell.is_a?(String)
-            cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
+            cell_fmt = '"' + row.fetch(i).gsub("\n", "\\n") + '"'
           elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
             cell_fmt = "#{cell}"
           elsif cell.is_a?(Array)
@@ -268,24 +268,24 @@ module UdbGen
       fp.write "  data: tabledata, // Assign data to table\n"
       fp.write "  columns:[\n"
       columns.each do |column|
-        column_name = column[:name].gsub("\n", " ")
-        sorter = column[:sorter]
-        formatter = column[:formatter]
+        column_name = column.fetch(:name).gsub("\n", " ")
+        sorter = column.fetch(:sorter)
+        formatter = column.fetch(:formatter)
         fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
 
-        if column[:headerFilter] == true
+        if column.fetch(:headerFilter) == true
           fp.write ", headerFilter: true"
         end
-        if column[:headerVertical] == true
+        if column.fetch(:headerVertical) == true
           fp.write ", headerVertical: true"
         end
-        if column[:frozen] == true
+        if column.fetch(:frozen) == true
           fp.write ", frozen: true"
         end
 
         if formatter == "link"
-          formatterParams = column[:formatterParams]
-          urlPrefix = formatterParams[:urlPrefix]
+          formatterParams = column.fetch(:formatterParams)
+          urlPrefix = formatterParams.fetch(:urlPrefix)
           fp.write ", formatterParams:{\n"
           fp.write "      labelField:\"#{column_name}\",\n"
           fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
@@ -303,12 +303,12 @@ module UdbGen
       fp.write "});\n"
       fp.write "\n"
       fp.rewind
-      fp.read
+      T.must(fp.read)
     end
 
     # Create ISA Explorer extension table as JavaScript file.
     #
-    # @param arch [Udb::Architecture] The entire RISC-V architecture
+    # @param arch The entire RISC-V architecture
     sig { params(arch: Udb::ConfiguredArchitecture, skip: Integer).returns(String) }
     def self.gen_js_ext_table(arch, skip)
 
@@ -346,8 +346,6 @@ module UdbGen
     # return Nice list of profile release to use in a nice order
     sig { params(arch: Udb::ConfiguredArchitecture).returns(T::Array[Udb::ProfileRelease]) }
     def self.get_sorted_profile_releases(arch)
-      raise ArgumentError, "arch is a #{arch.class} class but needs to be Udb::Architecture" unless arch.is_a?(Udb::Architecture)
-
       # Get array of profile releases and sort by name
       sorted_profile_releases = arch.profile_releases.sort_by(&:name)
 
@@ -369,7 +367,7 @@ module UdbGen
     # @param table [Hash<String,Array<String>] Table data
     # @param workbook
     # @param worksheet
-    sig { params(table: T::Hash[String, T::Array[String]], workbook: WriteXLSX, worksheet: Writexlsx::Worksheet).void }
+    sig { params(table: T::Hash[String, T::Array[T.untyped]], workbook: WriteXLSX, worksheet: Writexlsx::Worksheet).void }
     def self.gen_xlsx_table(table, workbook, worksheet)
       # Add and define a header format
       header_format = workbook.add_format
@@ -378,14 +376,14 @@ module UdbGen
 
       # Add column names in 1st row (row 0).
       col_num = 0
-      table["columns"].each do |column|
-        worksheet.write(0, col_num, column[:name], header_format)
+      table.fetch("columns").each do |column|
+        worksheet.write(0, col_num, column.fetch(:name), header_format)
         col_num += 1
       end
 
       # Add table information in rows
       row_num = 1
-      table["rows"].each do |row_cells|
+      table.fetch("rows").each do |row_cells|
         col_num = 0
         row_cells.each do |cell|
           if cell.is_a?(String) || cell.is_a?(Integer)
