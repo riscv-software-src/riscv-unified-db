@@ -95,7 +95,7 @@ jobs:
           disable_search: true
           files: tools/ruby-gems/idlc/coverage/coverage.xml
           flags: idlc
-  regress-isa-explorer:
+  regress-ext-explorer:
     runs-on: ubuntu-latest
     needs: build-container
     steps:

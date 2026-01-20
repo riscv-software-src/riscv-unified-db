@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>RISC-V ISA Extension Explorer</title>
+    <title>RISC-V ISA Instruction Explorer</title>
     <link href="https://unpkg.com/tabulator-tables@6.3.1/dist/css/tabulator.min.css" rel="stylesheet">
 </head>
 <body>
-  <div id="ext_table"></div>
+  <div id="inst_table"></div>
   <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.3.1/dist/js/tabulator.min.js"></script>
   <script type="text/javascript">
-    <%= File.read("#{__dir__}/load_table.js" ) %>
+      <%= File.read("#{__dir__}/load_table.js" ) %>
 
-    <%= js_table %>
+      <%= js_table %>
   </script>
 </body>
 </html>
