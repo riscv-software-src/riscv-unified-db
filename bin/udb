@@ -3,4 +3,4 @@
 ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
 source $ROOT/setup
 
-$BUNDLE exec udb "$@"
+$RUN ${ROOT}/bin/container/udb

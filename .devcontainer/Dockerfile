@@ -121,7 +121,8 @@ COPY tools/ruby-gems/udb-gen/lib/udb-gen/version.rb /opt/tools/ruby-gems/udb-gen
 COPY tools/ruby-gems/udb_helpers/udb_helpers.gemspec /opt/tools/ruby-gems/udb_helpers/
 COPY tools/ruby-gems/udb_helpers/lib/udb_helpers/version.rb /opt/tools/ruby-gems/udb_helpers/lib/udb_helpers/
 # Add rbenv initialization to all shells (login and interactive)
-RUN echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' >> /etc/bash.bashrc && \
+RUN export RBENV_ROOT=/opt/.rbenv && \
+    echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' >> /etc/bash.bashrc && \
     echo 'eval "$(/opt/rbenv/bin/rbenv init -)"' > /etc/profile.d/rbenv.sh
 RUN <<CMDS
   export RBENV_ROOT=/opt/.rbenv
@@ -129,10 +130,17 @@ RUN <<CMDS
   bundle install --gemfile /opt/Gemfile
 CMDS
 
-
 WORKDIR /workspace
 
 COPY .devcontainer/docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
+
+# the binaries for gems need to be copied in
+RUN mkdir -p /workspace/bin/container
+COPY tools/ruby-gems/idlc/bin/idlc /workspace/bin/container
+COPY tools/ruby-gems/udb/bin/udb /workspace/bin/container
+COPY tools/ruby-gems/udb-gen/bin/udb-gen /workspace/bin/container
+ENV PATH="/workspace/bin/container:$PATH"
+
 ENV RBENV_ROOT="/opt/.rbenv"
 ENTRYPOINT ["/docker-entrypoint.sh"]
