@@ -6,9 +6,9 @@ content:
   sources:
   - url: <%= $root %>
     start_path: gen/manual/<%= manual.name %>/top/<%= output_hash %>/antora/landing
-  <%- manual.versions.each do |version| -%>
+  <%- versions.each do |version_name| -%>
   - url: <%= $root %>
-    start_path: gen/manual/<%= manual.name %>/<%= version.name %>/antora
+    start_path: gen/manual/<%= manual.name %>/<%= version_name %>/antora
   <%- end -%>
 antora:
   extensions:
