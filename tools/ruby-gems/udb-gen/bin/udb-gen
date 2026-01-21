@@ -9,6 +9,7 @@ require "sorbet-runtime"
 require "tty-table"
 
 require_relative "../lib/udb-gen/subcommands/ext-doc"
+require_relative "../lib/udb-gen/subcommands/isa-explorer"
 
 include TTY::Exit
 

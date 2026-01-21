@@ -1121,7 +1121,7 @@ namespace udb {
       udb_assert(msb >= lsb, "Negative range is not allowed");
       udb_assert(lsb.get() <= N, "Extract out of range");
 
-      _Bits<N, false> mask = (_Bits<N, false>{1} << (msb - lsb)) - _Bits<N, false>{1};
+      _Bits<N, false> mask = (_Bits<N, false>{1} << (msb - lsb + _Bits<N, false>{1})) - _Bits<N, false>{1};
       return _Bits<N, false>{(m_val >> lsb.get()) & mask.get()};
     }
 
