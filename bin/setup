@@ -67,7 +67,7 @@ fi
 #  4. Podman, if PODMAN is set in the environment
 #  5. Singularity, if SINGULARITY is set in the environment
 #  6. The choice made by the user, which will be cached in .container-type
-if [ -v DEVCONTAINER_ENV ]; then
+if [ -v DEVCONTAINER_ENV ] || [ -v IN_UDB_CONTAINER ]; then
 CONTAINER_TYPE=devcontainer
 elif [ -v SINGULARITY_NAME ]; then
 # already in a container
@@ -135,9 +135,9 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
       EXTRA_BIND="-v ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}${SELINUX_LABEL}"
     fi
     if [ -t 1 ] && [ -t 0 ]; then
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} --user $(id -u):$(id -g) riscvintl/udb:${CONTAINER_TAG}"
     else
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} ${EXTRA_BIND} -w ${ROOT} --user $(id -u):$(id -g) riscvintl/udb:${CONTAINER_TAG}"
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
@@ -165,15 +165,15 @@ fi
 if [ -f "$ROOT/.git" ]; then
     # if this is a worktree, need to add the parent git repo in, too
     GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
-    HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
+    GIT_BIND="--bind ${GIT_PATH}:${GIT_PATH}"
 fi
 
 if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
     RUN=""
-elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ]; then
     RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    RUN="singularity run ${HOME_OPT} ${EXTRA_BIND} ${CONTAINER_PATH}"
+    RUN="singularity run --no-home ${GIT_BIND} ${EXTRA_BIND} ${CONTAINER_PATH}"
 else
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
