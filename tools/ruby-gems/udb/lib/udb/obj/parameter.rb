@@ -152,7 +152,7 @@ module Udb
         else
           idl_types = possible_schemas.map(&:to_idl_type)
           unless idl_types.all? { |t| t.kind == :bit }
-            raise "TODO: paramter has multiple schemas that are not Bits"
+            raise "TODO: parameter has multiple schemas that are not Bits"
           end
           max_width = idl_types.map(&:width).max do |a, b|
             if [a, b].include?(:unknown)
@@ -174,7 +174,7 @@ module Udb
         else
           idl_types = possible_schemas.map(&:to_idl_type)
           unless idl_types.all? { |t| t.kind == :bits }
-            raise "TODO: paramter has multiple schemas that are not Bits (#{idl_types.map(&:kind)})"
+            raise "TODO: parameter has multiple schemas that are not Bits (#{idl_types.map(&:kind)})"
           end
           possible_schemas.max do |a, b|
             at = a.to_idl_type
