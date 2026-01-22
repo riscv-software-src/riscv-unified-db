@@ -3,7 +3,8 @@
   "extends": [
     "config:best-practices",
     ":automergeAll",
-    "helpers:pinGitHubActionDigestsToSemver"
+    "helpers:pinGitHubActionDigestsToSemver",
+    "schedule:nonOfficeHours"
   ],
   "labels": ["dependencies"],
   "lockFileMaintenance": {
@@ -34,5 +35,7 @@
   },
   "dockerfile": {
     "enabled": false
-  }
+  },
+
+  "timezone": "America/Los_Angeles"
 }
