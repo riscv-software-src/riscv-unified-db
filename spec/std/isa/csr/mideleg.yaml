@@ -15,14 +15,15 @@ definedBy:
   # "In harts without S-mode, the medeleg and mideleg registers should not exist." -- priv
   # after 1.9.1, mideleg does not exist when S-mode is not implemented
   # we can represent that by making mideleg an S extension CSR post 1.9.1
-  oneOf:
-    - name: Sm
-      version: "<= 1.9.1"
-    - allOf:
-        - name: S
-          version: "> 1.9.1"
-        - name: Sm
-          version: "> 1.9.1"
+  extension:
+    anyOf:
+      - name: Sm
+        version: "<= 1.9.1"
+      - allOf:
+          - name: S
+            version: "> 1.9.1"
+          - name: Sm
+            version: "> 1.9.1"
 description: |
   Controls exception delegation from M-mode to HS/S-mode
 
@@ -112,7 +113,9 @@ fields:
       Virtual Supervisor Software Interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   MSI:
     location: 3
     description: |
@@ -139,7 +142,9 @@ fields:
       Virtual Supervisor Time Interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   MTI:
     location: 7
     description: |
@@ -164,7 +169,9 @@ fields:
       Virtual Supervisor External Interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   MEI:
     location: 11
     description: |
@@ -181,7 +188,9 @@ fields:
       Supervisor Guest External interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
-    definedBy: H
+    definedBy:
+      extension:
+        name: H
   LCOFI:
     location: 13
     description: |
@@ -190,4 +199,6 @@ fields:
       When 1, local counter overflow interrupts are delegated to (H)S-mode.
     type: RW
     reset_value: 0
-    definedBy: Sscofpmf
+    definedBy:
+      extension:
+        name: Sscofpmf

@@ -1,0 +1,452 @@
+<%#
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+-%>
+[[header]]
+:description: <%= primary_ext.long_name %> (<%= ext_reqs[0].name %>)
+:revdate: <%= ext_reqs[0].satisfying_versions.max.ratification_date.nil? ? Date.today : ext_reqs[0].satisfying_versions.max.ratification_date %>
+:revnumber: <%= ext_reqs[0].satisfying_versions.max.version_spec %>
+:revmark: <%=
+  case ext_reqs[0].satisfying_versions.max.state
+  when "ratified"
+    <<~STATE
+      This document is in the http://riscv.org/spec-state[Ratified state] + \\
+      + \\
+      No changes are allowed. + \\
+      Any desired or needed changes can be the subject of a follow-on new extension. + \\
+      Ratified extensions are never revised. + \\
+    STATE
+  when "frozen"
+    <<~FROZEN_STATE
+      This document is in the http://riscv.org/spec-state[Frozen state]. + \\
+      + \\
+      Change is extremely unlikely. + \\
+      A high threshold will be used, and a change will only occur because of some truly + \\
+      critical issue being identified during the public review cycle. + \\
+      Any other desired or needed changes can be the subject of a follow-on new extension. + \\
+    FROZEN_STATE
+  when "development"
+    <<~DEV_STATE
+      This document is in the http://riscv.org/spec-state[Development state]. + \\
+      + \\
+      Change should be expected + \\
+    DEV_STATE
+  else
+    raise "TODO: #{max_version.state} description"
+  end
+%>
+:company: <%= primary_ext.company.nil? ? "unknown" : primary_ext.company.name %>
+:url-riscv: https://riscv.org
+:doctype: book
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+<%- if !primary_ext.company.nil? && (primary_ext.company.name =~ /RISCV/) -%>
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
+<%- end -%>
+<%- if ext_reqs[0].satisfying_versions.max.state == "development" -%>
+:page-background-image: image:draft.png[opacity=20%]
+<%- end -%>
+// Settings
+:experimental:
+:reproducible:
+// needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+:toc: left
+:toclevels: 2
+:source-highlighter: pygments
+ifdef::backend-pdf[]
+:source-highlighter: rouge
+endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+
+= <%= primary_ext.long_name %>
+
+// Preamble
+<%=
+  case ext_reqs[0].satisfying_versions.max.state
+  when "ratified"
+    <<~RATIFIED_STATE
+      [WARNING]
+      .This document is in the link:http://riscv.org/spec-state[Ratified state]
+      ====
+      No changes are allowed. Any desired or needed changes can be the subject of a
+      follow-on new extension. Ratified extensions are never revised
+      ====
+    RATIFIED_STATE
+  when "frozen"
+    <<~FROZEN_STATE
+      [WARNING]
+      This document is in the http://riscv.org/spec-state[Frozen state].
+      ====
+      Change is extremely unlikely.
+      A high threshold will be used, and a change will only occur because of some truly
+      critical issue being identified during the public review cycle.
+      Any other desired or needed changes can be the subject of a follow-on new extension.
+      ====
+    FROZEN_STATE
+  when "development"
+    <<~DEV_STATE
+      [WARNING]
+      This document is in the http://riscv.org/spec-state[Development state].
+      ====
+      Change should be expected
+      ====
+    DEV_STATE
+  else
+    raise "TODO: #{ext_reqs[0].satisfying_versions.max.state} description"
+  end
+%>
+
+[preface]
+== Copyright and license information
+This document is released under the <%= primary_ext.doc_license.nil? ? "unknown" : primary_ext.doc_license["url"] %>[<%= primary_ext.doc_license.nil? ? "unknown" : primary_ext.doc_license["name"] %>].
+
+Copyright <%= ext_reqs[0].satisfying_versions.max.ratification_date.nil? ? Date.today.year : ext_reqs[0].satisfying_versions.max.ratification_date.split("-")[0] %> by <%= primary_ext.company.nil? ? "unknown" : primary_ext.company.name %>.
+
+This document was created using the http://github.org/riscv-software-src/riscv-unified-db[RISC-V Unified Database] at commit <%= `git rev-parse HEAD` %>.
+
+[preface]
+== Acknowledgements
+
+<%- ext_reqs.each do |ext_req| -%>
+<%-   ext_req.satisfying_versions.each do |version| -%>
+Contributors to version <%= version.version_spec %> of the <%= version.name %> specification (in alphabetical order) include: +
+
+<%-     unless version.contributors.empty? -%>
+<%-       version.contributors.sort { |a, b| a.name.split(" ").last <=> b.name.split(" ").last }.each do |c| -%>
+  * <%= c.name %> <<%= c.email %>> (<%= c.company %>)
+
+<%-       end -%>
+<%-     end -%>
+<%-   end -%>
+<%- end -%>
+
+We express our gratitude to everyone that contributed to, reviewed or
+improved this specification through their comments and questions.
+
+[preface]
+== Versions
+
+<%- versions = ext_reqs.map(&:satisfying_versions).flatten %>
+
+<%- if versions.size > 1 -%>
+This specification documents the following extension versions:
+
+<%-   versions.each do |version| -%>
+* <%= version.to_s %>
+<%-   end -%>
+
+<%- else -%>
+This specification documents version <%= versions[0].version_spec %> of <%= versions[0].name %>.
+<%- end -%>
+
+=== Version History
+
+<%- ext_reqs.each do |ext_req| -%>
+[frame="none",grid="none",cols="1,4"]
+|===
+2+^| <%= ext_req.name %>
+
+<%-   cfg_arch.extension_requirement(ext_req.name, "<= #{ext_req.satisfying_versions.max.version_str}").satisfying_versions.reverse.each do |v| -%>
+h| <%= v.canonical_version %>
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! <%= v.state %>
+<%      if v.state == "ratified" && !v.ratification_date.nil? -%>
+h! Ratification date ! <%= v.ratification_date %>
+<%      end # if %>
+<%      unless v.changes.empty? -%>
+h! Changes a!
+
+    <% v.changes.each do |c| -%>
+    * <%= c %>
+    <% end -%>
+
+<%      end -%>
+<%      unless v.url.nil? -%>
+h! Ratification document ! <%= v.url %>
+<%      end -%>
+
+!===
+<%    end -%>
+
+|===
+
+<%- end -%>
+
+<<<
+== Conventions
+
+Version requirements are specified as conditions using the following operators:
+
+[cols="1,2"]
+|===
+| Operator | Meaning
+
+| `~> VERSION` | Accepts any version that is _compatible_ with `VERSION`. By default, a version A is compatible with a version B if A's version number is greater than or equal to version B. If that default assumption is ever broken, it will be noted in the list of extension versions.
+| `= VERSION` | Accepts only version `VERSION`.
+| `>= VERSION` | Accepts any version greater than or equal to `VERSION`.
+| `\<= VERSION` | Accepts any version less than or equal to `VERSION`.
+| `> VERSION` | Accepts any version greater than `VERSION`.
+| `< VERSION` | Accepts any version less than `VERSION`.
+|===
+
+<<<
+== Extension description
+
+<%- ext_reqs.each do |ext_req| -%>
+
+:leveloffset: +2
+<%=   ext_req.extension.description %>
+:leveloffset: -2
+
+<%-   has_requirements = ext_req.satisfying_versions.any? { |v| !v.defining_extension_requirements.empty? } -%>
+<%-   if has_requirements -%>
+=== Requirements
+<%-     ext_req.satisfying_versions.each do |version| -%>
+<%-       unless version.defining_extension_requirements.empty? -%>
+
+<%= version.name %> has the following requirements:
+
+|===
+| Extension | Version | When
+
+<%-         version.defining_extension_requirements.sort { |a, b| a.ext_req <=> b.ext_req }.each do |cond_ext_req| -%>
+| <%= cond_ext_req.ext_req.name %>
+| <%= cond_ext_req.ext_req.requirement_specs_to_s_pretty %>
+| <%= cond_ext_req.cond.empty? ? "always" : cond_ext_req.cond.to_asciidoc %>
+<%-         end -%>
+
+|===
+<%-       end -%>
+<%-     end -%>
+<%-   end-%>
+<%- end-%>
+
+<%- Udb.logger.info "Determining relevant instructions" -%>
+<%- Udb::LogicNode.reset_stats -%>
+<%- Udb.create_top_level_progressbar(clear: true) -%>
+<%- bar = Udb.create_progressbar("Finding instructions for extension(s) [:bar] :current/:total", total: ext_reqs.size, clear: true) -%>
+<%- all_instructions = ext_reqs.map { |ext_req| bar.advance; ext_req.instructions }.flatten.uniq -%>
+<%- Udb.delete_top_level_progressbar -%>
+<%- Udb.logger.info "Found #{all_instructions.size} relevant instructions" -%>
+
+
+<%- unless all_instructions.empty? -%>
+<<<
+== Instruction list
+
+<%-   ext_reqs.each do |ext_req| -%>
+<%-     Udb.logger.info "Creating instruction summary for #{ext_req}" -%>
+<%-     unless ext_reqs.size == 1 -%>
+=== <%= ext_req.name %>
+<%-     end -%>
+
+<%-     versions = ext_req.satisfying_versions -%>
+<%-     insts = versions.map(&:directly_defined_instructions).flatten.uniq -%>
+
+<%-     unless insts.empty? -%>
+The following <%= insts.size %> instructions must be implemented when <%= ext_req.name %> is implemented:
+
+.Instructions defined by <%= ext_req.to_s_pretty %>
+[cols="1,1,5,5"]
+|===
+| RV32 | RV64 | Mnemonic | Instruction <%- if versions.size > 1 -%> | <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
+
+<%-       insts.each do |i| -%>
+| <%= i.rv32? ? "&#x2713;" : "" %>
+| <%= i.rv64? ? "&#x2713;" : "" %>
+| `<%= [i.name, i.assembly.gsub("x", "r").strip].join(" ").strip %>`
+| <%= link_to(i, i.long_name) %>
+<%-         if versions.size > 1 -%>
+| <%= versions.map { |v| v.instructions.include?(i) ? "&#x2713;" : "" }.join(" | ") %>
+<%-         end -%>
+<%-       end -%>
+|===
+<%-     end # insts.empty? -%>
+
+
+<%-     if params[:include_implies] -%>
+<%-       implied_insts = ext_req.implied_instructions.select { |i| ext_reqs.any? { |e| i.defined_by_condition.mentions?(e) } } -%>
+<%-       unless implied_insts.empty? -%>
+<%= insts.empty? ? "The" : "Additionally, the" %> following <%= implied_insts.size %> instructions are implied by the requirements
+of this extension.
+
+.<%= ext_req %> requirements
+--
+<%= ext_req.satisfying_versions.size == 1 ? ext_req.satisfying_versions.fetch(0).requirements_condition.to_asciidoc : ext_req.requirements_condition.to_asciidoc %>
+--
+
+.Instructions implied by <%= ext_req.to_s_pretty %>
+[cols="4,4,1",separator="^"]
+|===
+^ Mnemonic ^ Instruction ^ Defined by
+
+<%-         implied_insts.sort.each do |i| -%>
+^ `<%= [i.name, i.assembly.gsub("x", "r").strip].join(" ").strip %>`
+^ <%= link_to(i, i.long_name) %>
+a^ <%= i.defined_by_condition.to_asciidoc %>
+<%-         end -%>
+|===
+
+<%-       end # unless implied_insts.empty? -%>
+<%-     end # if params[:include_implies] -%>
+
+<%-   end # ext_reqs.each -%>
+<%- end # all_instructions.empty? -%>
+
+<%- if ext_reqs.size > 1 -%>
+[.landscape]
+<<<
+== Instruction Summary
+<%- Udb.logger.info "Creating instruction summary" -%>
+
+[%autowidth]
+|===
+| Mnemonic | <%= ext_reqs.map { |e| "`#{e.name}`" }.join(" | ") %>
+
+<%-   all_instructions.each do |i| -%>
+| `<%= i.name %>`
+| <%= ext_reqs.map { |e| e.all_instructions_that_must_be_implemented.include?(i) ? "&#x2713;" : "" }.join(" | ") %>
+<%-   end -%>
+|===
+
+<%- end -%>
+
+<%- Udb.logger.info "Determining relevant CSRs" -%>
+
+<%- all_csrs = ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq -%>
+<%- Udb.logger.info "Found #{all_csrs.size} relevant CSRs" -%>
+<%- unless all_csrs.empty? -%>
+
+[.portrait]
+<<<
+== CSR summary
+
+<%-   ext_reqs.each do |ext_req| -%>
+<%-     unless ext_req.csrs.empty? -%>
+<%-       unless ext_reqs.size == 1 -%>
+=== <%= ext_req.name %>
+<%-       end -%>
+
+<%- Udb.logger.info "Creating CSR summary for #{ext_req}" -%>
+
+<%-       csr_list = ext_req.csrs -%>
+The following <%= csr_list.size %> CSRs are affected by this extension.
+
+[%autowidth]
+|===
+| RV32 | RV64 | CSR | Name <%- if ext_req.satisfying_versions.size > 1 -%>| <%= ext_req.satisfying_versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
+
+<%-       csr_list.each do |csr| -%>
+| <%= csr.defined_in_base32? ? "&#x2713;" : "" %>
+| <%= csr.defined_in_base64? ? "&#x2713;" : "" %>
+| <%= link_to(csr) %>
+| <%= csr.long_name %>
+<%-         if versions.size > 1 -%>
+| <%= ext.versions.map { |v| csr.affected_by?(v) ? "&#x2713;" : "" }.join(" | ") %>
+<%-         end -%>
+<%-       end -%>
+
+|===
+<%-     end -%>
+<%-   end -%>
+
+<<<
+[#csrs,reftext="CSRs (in alphabetical order)"]
+== Csrs (in alphabetical order)
+
+<%-   all_csrs.each do |csr| -%>
+<<<
+:leveloffset: +2
+<%= partial "common/csr.adoc.erb", { csr:, cfg_arch:, params: } %>
+:leveloffset: -2
+<%-   end -%>
+
+<%- end # unless all_csrs.empty? -%>
+
+<%- unless all_instructions.empty? -%>
+[.portrait]
+<<<
+[#insns,reftext="Instructions (in alphabetical order)"]
+== Instructions (in alphabetical order)
+
+<%- bar = Udb.create_progressbar("Creating instruction defintions [:bar] :current/:total", total: all_instructions.size) -%>
+<%-   all_instructions.sort.each do |i| -%>
+:leveloffset: +2
+<%- bar.advance -%>
+<%= partial "common/inst.adoc.erb", { inst: i, cfg_arch:, ext_reqs: } %>
+:leveloffset: -2
+
+<<<
+<%-   end -%>
+<%- end -%>
+
+<<<
+== IDL Functions
+
+<%- reachable_functions = ext_reqs.map(&:reachable_functions).flatten.uniq -%>
+<%- reachable_functions.sort { |a,b| a.name <=> b.name }.each do |f| -%>
+<%= anchor_for(f) %>
+=== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%><%- if f.generated? -%> (generated)<%- end -%>
+
+<%= f.description %>
+
+[cols="1,4"]
+|===
+h| Return Type h| `<%= f.return_type_list_str.join(', ') %>`
+h| Arguments
+a|
+
+<%- if f.argument_nodes.empty? -%>
+None
+<%- else -%>
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+<%-   f.argument_nodes.each_with_index do |arg, idx| -%>
+! <%= idx %>
+h! `<%= arg.type_name.gen_adoc(0) %>`
+! <%= arg.id.gen_adoc(0) %>
+<%-   end -%>
+!===
+<%- end -%>
+
+|===
+
+<%- unless f.builtin? || f.generated? -%>
+<%- body_ast = f.body -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= body_ast.gen_adoc(0) %>
+----
+<%- end -%>
+
+<%- end -%>

@@ -10,47 +10,31 @@ address: 0x353
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
-description:
-  - id: csr-mireg3-purpose
-    normative: true
-    text: |
-      The `mireg3` machine indirect alias CSR is used to access register state indirectly
-      upon a read or write, as determined by the value of `miselect`.
+definedBy:
+  extension:
+    name: Smcsrind
+description: |
+  The `mireg3` machine indirect alias CSR is used to access register state indirectly
+  upon a read or write, as determined by the value of `miselect`.
 
-  - id: csr-mireg3-unimplemented-miselect
-    normative: true
-    text: |
-      The behavior upon accessing `mireg3` from M-mode, while `miselect` holds a value
-      that is not implemented, is UNSPECIFIED.
+  The behavior upon accessing `mireg3` from M-mode, while `miselect` holds a value
+  that is not implemented, is UNSPECIFIED.
 
-  - id: csr-mireg3-unimplemented-miselect-note
-    normative: false
-    text: |
-      It is expected that implementations will typically raise an illegal instruction exception for
-      such accesses, so that, for example, they can be identified as software bugs. Platform
-      specs, profile specs, and/or the Privileged ISA spec may place more restrictions on
-      behavior for such accesses.
+  It is expected that implementations will typically raise an illegal instruction exception for
+  such accesses, so that, for example, they can be identified as software bugs. Platform
+  specs, profile specs, and/or the Privileged ISA spec may place more restrictions on
+  behavior for such accesses.
 
-  - id: csr-mireg3-implemented-miselect
-    normative: true
-    text: |
-      Attempts to access `mireg3` while `miselect` holds a number in an allocated and implemented
-      range results in a specific behavior that, for each combination of `miselect` and `mireg3`, is
-      defined by the extension to which the `miselect` value is allocated.
+  Attempts to access `mireg3` while `miselect` holds a number in an allocated and implemented
+  range results in a specific behavior that, for each combination of `miselect` and `mireg3`, is
+  defined by the extension to which the `miselect` value is allocated.
 
-  - id: csr-mireg3-implemented-miselect-note
-    normative: false
-    text: |
-      Ordinarily, `mireg3` will access register state, access read-only 0 state, or raise an
-      illegal instruction exception.
+  Ordinarily, `mireg3` will access register state, access read-only 0 state, or raise an
+  illegal instruction exception.
 
-  - id: csr-mireg3-rv32-64bit-access
-    normative: false
-    text: |
-      For RV32, if an extension defines an indirectly accessed register as 64 bits wide, it is
-      recommended that the lower 32 bits of the register are accessed through `mireg3`,
-      while the upper 32 bits are accessed through `mireg6`.
+  For RV32, if an extension defines an indirectly accessed register as 64 bits wide, it is
+  recommended that the lower 32 bits of the register are accessed through `mireg3`,
+  while the upper 32 bits are accessed through `mireg6`.
 
 fields:
   VALUE:
@@ -58,10 +42,8 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description:
-      - id: csr-mireg3-value-purpose
-        normative: true
-        text: Register state of the CSR selected by the current `miselect` value
+    description: |
+      Register state of the CSR selected by the current `miselect` value
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
       Csr handle = indirect_csr_lookup(CSR[miselect].VALUE, 3);

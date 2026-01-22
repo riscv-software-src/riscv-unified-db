@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSSTAGE_MODE_BARE
+description: Whether or not writing mode=Bare is supported in the `vsatp` register.
+long_name: TODO
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    # if guest is 32 bit, then one of Bare or SV32_VSMODE_TRANSLATION must be supported
+    $array_includes?(VSXLEN, 32) && !SV32_VSMODE_TRANSLATION
+      -> VSSTAGE_MODE_BARE;
+
+    # if guest is 64 bit, then one of Bare, Sv39, Sv48, or Sv57 must be supported
+    $array_includes?(VSXLEN, 64) && !SV39_VSMODE_TRANSLATION && !SV48_VSMODE_TRANSLATION && !SV57_VSMODE_TRANSLATION
+      -> VSSTAGE_MODE_BARE;
+definedBy:
+  extension:
+    name: H

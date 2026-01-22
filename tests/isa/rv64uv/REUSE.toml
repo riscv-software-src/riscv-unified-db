@@ -1,0 +1,7 @@
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = "Qualcomm Technologies, Inc. and/or its subsidiaries."
+SPDX-License-Identifier = "CC0-1.0"

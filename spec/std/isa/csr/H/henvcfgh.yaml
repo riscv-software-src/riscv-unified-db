@@ -8,7 +8,6 @@ kind: csr
 name: henvcfgh
 address: 0x61A
 writable: true
-base: 32
 long_name: most-significant 32 bits of Hypervisor Environment Configuration
 description: |
   The henvcfgh CSR is a 32-bit read/write register for the most-significant 32 bits of `henvcfg`.
@@ -16,9 +15,12 @@ priv_mode: S
 length: 32
 definedBy:
   allOf:
-    - name: Sm
-      version: ">=1.12"
-    - name: H
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: Sm
+            version: ">=1.12"
+          - name: H
 fields:
   STCE:
     location: 31
@@ -39,7 +41,9 @@ fields:
        * `hip.VSTIP` reverts to its defined behavior as if Sstc is not implemented.
        * VS-mode timer interrupts will not be generated
 
-    definedBy: Sstc
+    definedBy:
+      extension:
+        name: Sstc
     type(): |
       return (implemented?(ExtensionName::Sstc)) ? CsrFieldType::RO : CsrFieldType::RW;
     reset_value(): |
@@ -80,7 +84,9 @@ fields:
       `vsatp` but before writing the new `vsatp` value, obviating the need to execute an
       `hfence.vvma` instruction.
       --
-    definedBy: Svpbmt
+    definedBy:
+      extension:
+        name: Svpbmt
     type(): |
       return (implemented?(ExtensionName::Svpbmt)) ? CsrFieldType::RO : CsrFieldType::RW;
     reset_value(): |
@@ -103,7 +109,9 @@ fields:
 
       Furthermore, for implementations with the hypervisor extension, henvcfg.ADUE is read-only
       zero if menvcfg.ADUE is zero.
-    definedBy: Svadu
+    definedBy:
+      extension:
+        name: Svadu
     type(): |
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

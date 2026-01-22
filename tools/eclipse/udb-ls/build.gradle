@@ -1,0 +1,39 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+repositories { mavenCentral() }
+
+ext {
+  xtextVersion = '2.40.0'   // matches your workspace
+}
+
+dependencies {
+
+  implementation fileTree(dir: 'lib', include: ['org.xtext.udb*.jar'])
+
+
+  implementation "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
+
+
+  implementation "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
+
+
+  implementation "io.github.classgraph:classgraph:4.8.180"
+  implementation "aopalliance:aopalliance:1.0"
+}
+
+application {
+  mainClass = "org.eclipse.xtext.ide.server.ServerLauncher"
+}
+
+java {
+  toolchain { languageVersion = JavaLanguageVersion.of(17) } // or 21 if you prefer
+}
+
+tasks.shadowJar {
+  archiveClassifier.set('all')
+  mergeServiceFiles()
+}

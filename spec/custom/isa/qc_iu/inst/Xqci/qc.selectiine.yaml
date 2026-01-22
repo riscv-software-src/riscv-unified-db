@@ -12,10 +12,10 @@ description: |
   move `simm2` to `rd` otherwise.
   Instruction encoded in R4 instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcics
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcics
 encoding:
   match: -----00----------011-----1011011
   variables:
@@ -29,7 +29,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, simm1, simm2"
+assembly: xd, xs1, simm1, simm2
 access:
   s: always
   u: always

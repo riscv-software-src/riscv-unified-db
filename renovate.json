@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":automergeAll",
+    "helpers:pinGitHubActionDigestsToSemver",
+    "schedule:nonOfficeHours"
+  ],
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchFileNames": [
+        "package.json",
+        "package-lock.json",
+        "requirements.txt"
+      ],
+      "bumpVersions": [
+        {
+          "name": "Update container version",
+          "filePatterns": ["bin/.container-tag"],
+          "bumpType": "minor",
+          "matchStrings": ["(?<version>[^\\s]+)"]
+        }
+      ]
+    }
+  ],
+  "git-submodules": {
+    "enabled": true
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "dockerfile": {
+    "enabled": false
+  },
+
+  "timezone": "America/Los_Angeles"
+}

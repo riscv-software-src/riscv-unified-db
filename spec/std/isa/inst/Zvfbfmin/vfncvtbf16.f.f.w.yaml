@@ -9,7 +9,9 @@ name: vfncvtbf16.f.f.w
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zvfbfmin
+definedBy:
+  extension:
+    name: Zvfbfmin
 assembly: vd, vs2, vm
 encoding:
   match: 010010------11101001-----1010111

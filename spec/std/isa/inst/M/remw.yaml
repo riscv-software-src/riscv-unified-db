@@ -14,8 +14,11 @@ description: |
   If the value in register xs2 is zero, write the sign-extended 32-bit value in xs1 into xd;
 
   If the result of the division overflows, write zero into xd;
-definedBy: M
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0111011
@@ -45,7 +48,7 @@ operation(): |
     Bits<1> sign_bit = src1[31];
     X[xd] = {{32{sign_bit}}, src1};
 
-  } else if ((src1 == {33'b1, 31'b0}) && (src2 == 32'b1)) {
+  } else if ((src1 == 32'h80000000) && (src2 == 32'hFFFFFFFF)) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
     X[xd] = 0;

@@ -13,6 +13,13 @@ priv_mode: M
 length: 64
 description: Machine Security Configuration
 definedBy:
-  name: Sm
-  version: ">= 1.12"
+  extension:
+    allOf:
+      - name: Sm
+        version: ">= 1.12"
+      - anyOf:
+          - name: Zkr
+          - name: Smmpm
+          - name: Zicfilp
+          # - name: Smepmp # TODO: Uncomment when Smepmp is implemented in UDB
 fields: {}

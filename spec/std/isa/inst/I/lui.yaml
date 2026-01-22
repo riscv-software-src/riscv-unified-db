@@ -8,10 +8,12 @@ kind: instruction
 name: lui
 long_name: Load upper immediate
 description: Load the zero-extended imm into xd.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm
 encoding:
-  match: -------------------------0110111
+  match: "-------------------------0110111"
   variables:
     - name: imm
       location: 31-12
@@ -24,7 +26,7 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[xd] = imm;
+operation(): X[xd] = $signed(imm);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

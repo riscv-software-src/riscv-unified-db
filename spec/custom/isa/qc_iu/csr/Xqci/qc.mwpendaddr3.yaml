@@ -10,13 +10,12 @@ long_name: Watchpoint end address for region 3
 address: 0x7d7
 length: 32
 priv_mode: M
-base: 32
 definedBy:
-  anyOf:
-    - name: Xqci
-      version: ">=0.7"
-    - name: Xqciint
-      version: ">=0.4"
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+        version: ">=0.4"
 writable: true
 description: |
   Watchpoint end address for region 3

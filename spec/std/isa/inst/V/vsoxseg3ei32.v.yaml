@@ -9,7 +9,9 @@ name: vsoxseg3ei32.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vs3, (xs1), vs2, vm
 encoding:
   match: 010011-----------110-----0100111

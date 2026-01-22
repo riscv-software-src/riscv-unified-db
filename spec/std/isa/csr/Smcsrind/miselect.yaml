@@ -10,43 +10,30 @@ address: 0x350
 writable: true
 priv_mode: M
 length: MXLEN
-definedBy: Smcsrind
-description:
-  - id: csr-miselect-purpose
-    normative: true
-    text: |
-      The CSRs listed in the table above provide a window for accessing register state indirectly.
-      The value of `miselect` determines which register is accessed upon read or write of each of
-      the machine indirect alias CSRs (`mireg*`). `miselect` value ranges are allocated to dependent
-      extensions, which specify the register state accessible via each `miregi` register, for each
-      `miselect` value. `miselect` is a WARL register.
+definedBy:
+  extension:
+    name: Smcsrind
+description: |
+  The CSRs listed in the table above provide a window for accessing register state indirectly.
+  The value of `miselect` determines which register is accessed upon read or write of each of
+  the machine indirect alias CSRs (`mireg*`). `miselect` value ranges are allocated to dependent
+  extensions, which specify the register state accessible via each `miregi` register, for each
+  `miselect` value. `miselect` is a WARL register.
 
-  - id: csr-miselect-implemented-bits
-    normative: true
-    text: |
-      The `miselect` register implements at least enough bits to support all implemented `miselect`
-      values (corresponding to the implemented extensions that utilize `miselect`/`mireg*` to
-      indirectly access register state). The `miselect` register may be read-only zero if there are
-      no extensions implemented that utilize it.
+  The `miselect` register implements at least enough bits to support all implemented `miselect`
+  values (corresponding to the implemented extensions that utilize `miselect`/`mireg*` to
+  indirectly access register state). The `miselect` register may be read-only zero if there are
+  no extensions implemented that utilize it.
 
-  - id: csr-miselect-custom-standard-bit
-    normative: true
-    text: |
-      Values of `miselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
-      custom use, presumably for accessing custom registers through the alias CSRs. Values of
-      `miselect` with the most-significant bit clear are designated only for standard use and are
-      reserved until allocated to a standard architecture extension.
+  Values of `miselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
+  custom use, presumably for accessing custom registers through the alias CSRs. Values of
+  `miselect` with the most-significant bit clear are designated only for standard use and are
+  reserved until allocated to a standard architecture extension.
 
-  - id: csr-miselect-msb-stability
-    normative: true
-    text: |
-      If XLEN is changed, the most-significant bit of `miselect` moves to the new position,
-      retaining its value from before.
+  If XLEN is changed, the most-significant bit of `miselect` moves to the new position,
+  retaining its value from before.
 
-  - id: csr-miselect-no-custom-support
-    normative: false
-    text: |
-      An implementation is not required to support any custom values for `miselect`.
+  An implementation is not required to support any custom values for `miselect`.
 
 fields:
   VALUE:
@@ -54,9 +41,7 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description:
-      - id: csr-miselect-value-purpose
-        normative: true
-        text: Selects which indirect register is accessed via `mireg*`.
+    description: |
+      Selects which indirect register is accessed via `mireg*`.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |

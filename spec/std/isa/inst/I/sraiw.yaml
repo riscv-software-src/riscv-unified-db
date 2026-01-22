@@ -10,8 +10,11 @@ long_name: Shift right arithmetic immediate word
 description: |
   Arithmetic shift (the original sign bit is copied into the vacated upper bits) the
   32-bit value in xs1 right by shamt, and store the sign-extended result in xd.
-definedBy: I
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 assembly: xd, xs1, shamt
 encoding:
   match: 0100000----------101-----0011011
@@ -30,8 +33,8 @@ access:
 data_independent_timing: true
 operation(): |
   # shamt is between 0-32
-  XReg operand = sext(X[xs1], 31);
-  X[xd] = sext(operand >>> shamt, 31);
+  XReg operand = sext(X[xs1], 32);
+  X[xd] = sext(operand >>> shamt, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

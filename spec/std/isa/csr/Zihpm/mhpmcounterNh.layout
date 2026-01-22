@@ -12,10 +12,13 @@ address: <%= "0x" + (0xB80 + hpm_num).to_s(16).upcase %>
 writable: true
 priv_mode: M
 length: 32
-base: 32
 description: |
   Upper half of mhpmcounter<%= hpm_num %>.
-definedBy: Smhpm
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Smhpm
 fields:
   COUNT:
     location: 31-0

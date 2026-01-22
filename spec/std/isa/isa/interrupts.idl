@@ -234,8 +234,7 @@ function highest_priority_interrupt {
       return InterruptCode::MachineSoftware;
     } else if (int_mask[$bits(InterruptCode::MachineTimer)] == 1'b1) {
       return InterruptCode::MachineTimer;
-    }
-    if (CSR[misa].S == 1'b1) {
+    } else if (CSR[misa].S == 1'b1) {
       if (int_mask[$bits(InterruptCode::SupervisorExternal)] == 1'b1) {
         return InterruptCode::SupervisorExternal;
       } else if (int_mask[$bits(InterruptCode::SupervisorSoftware)] == 1'b1) {
@@ -243,8 +242,7 @@ function highest_priority_interrupt {
       } else if (int_mask[$bits(InterruptCode::SupervisorTimer)] == 1'b1) {
         return InterruptCode::SupervisorTimer;
       }
-    }
-    # if (CSR[misa].H == 1'b1) {
+    # } else if (CSR[misa].H == 1'b1) {
     #   if (int_mask[$bits(InterruptCode::SupervisorGuestExternal)] == 1'b1) {
     #     return InterruptCode::SupervisorGuestExternal;
     #   } else if (int_mask[$bits(InterruptCode::VirtualSupervisorExternal)] == 1'b1) {
@@ -255,7 +253,7 @@ function highest_priority_interrupt {
     #     return InterruptCode::VirtualSupervisorTimer;
     #   }
     # }
-    if (implemented?(ExtensionName::Sscofpmf)) {
+    } else if (implemented?(ExtensionName::Sscofpmf)) {
       if (int_mask[$bits(InterruptCode::LocalCounterOverflow)] == 1'b1) {
         return InterruptCode::LocalCounterOverflow;
       }

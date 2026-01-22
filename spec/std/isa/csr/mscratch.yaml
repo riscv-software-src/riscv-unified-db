@@ -12,7 +12,9 @@ writable: true
 priv_mode: M
 length: MXLEN
 description: Scratch register for software use. Bits are not interpreted by hardware.
-definedBy: Sm
+definedBy:
+  extension:
+    name: Sm
 fields:
   SCRATCH:
     location_rv32: 31-0

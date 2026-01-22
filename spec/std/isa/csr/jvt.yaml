@@ -9,20 +9,17 @@ name: jvt
 long_name: Table Jump Base Vector and Control Register
 address: 0x017
 writable: true
-description:
-  - id: csr-jvt-purpose
-    normative: true
-    text: |
-      The `jvt` register is an XLEN-bit WARL read/write register that holds the jump table configuration,
-      consisting of the jump table base address (BASE) and the jump table mode (MODE).
-  - id: csr-jvt-architectural
-    normative: false
-    text: |
-      `jvt` CSR adds architectural state to the system software context (such as an OS process), therefore
-      must be saved/restored on context switches.
+description: |
+  The `jvt` register is an XLEN-bit WARL read/write register that holds the jump table configuration,
+  consisting of the jump table base address (BASE) and the jump table mode (MODE).
+
+  `jvt` CSR adds architectural state to the system software context (such as an OS process), therefore
+  must be saved/restored on context switches.
 priv_mode: U
 length: XLEN
-definedBy: Zcmt
+definedBy:
+  extension:
+    name: Zcmt
 fields:
   BASE:
     location_rv64: 63-6
@@ -89,3 +86,5 @@ fields:
       return 0;
 sw_read(): |
   check_zcmt_enabled($encoding);
+
+  return $bits(CSR[jvt]);

@@ -7,13 +7,22 @@ $schema: "csr_schema.json#"
 kind: csr
 name: mseccfgh
 long_name: Most significant 32 bits of Machine Security Configuration
-base: 32
 address: 0x757
 writable: true
 priv_mode: M
 length: 32
 description: Machine Security Configuration
 definedBy:
-  name: Sm
-  version: ">= 1.12"
+  allOf:
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: Sm
+            version: ">= 1.12"
+          - anyOf:
+              - name: Zkr
+              - name: Smmpm
+              - name: Zicfilp
+              # - name: Smepmp # TODO: Uncomment when Smepmp is implemented in UDB
+
 fields: {}

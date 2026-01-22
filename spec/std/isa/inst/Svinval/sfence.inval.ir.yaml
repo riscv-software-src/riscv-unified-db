@@ -7,7 +7,9 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sfence.inval.ir
 long_name: Order implicit page table reads after invalidation
-definedBy: Svinval
+definedBy:
+  extension:
+    name: Svinval
 encoding:
   match: "00011000000100000000000001110011"
 description: |

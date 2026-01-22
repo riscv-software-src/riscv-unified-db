@@ -14,7 +14,8 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    implies:
-      name: Zvknha
-      version: "1.0.0"
+    ratification_date: 2023-09
+    requirements:
+      extension:
+        name: Zvknha
+        version: "= 1.0.0"

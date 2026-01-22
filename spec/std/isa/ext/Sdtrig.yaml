@@ -26,66 +26,8 @@ description: |
   matches performs the action configured for that trigger.
 
   Triggers do not fire while in Debug Mode.
-params:
-  DBG_HCONTEXT_WIDTH:
-    schema:
-      type: integer
-      minimum: 0
-      maximum: 14
-    description: Specifies the size of HCONTEXT
-  DBG_SCONTEXT_WIDTH:
-    schema:
-      type: integer
-      minimum: 0
-      maximum: 32
-    description: Specifies the size of SCONTEXT
-  MCONTEXT_AVAILABLE:
-    schema:
-      type: boolean
-    description: Specifies if MCONTEXT is available
-  HCONTEXT_AVAILABLE:
-    schema:
-      type: boolean
-    description: Specifies if HCONTEXT is available
-    extra_validation: |
-      # MCONTEXT must exist if HCONTEXT does
-      assert (MCONTEXT_AVAILABLE) if HCONTEXT_AVAILABLE
-  MSTATEEN_CONTEXT_TYPE:
-    when:
-      name: Smstateen
-      version: ~> 1.0
-    schema:
-      type: string
-      enum: [rw, read-only-0, read-only-1]
-      default: rw
-    description: |
-      Behavior of the mstateen0.CONTEXT bit:
-
-        * 'rw': read-write
-        * 'read-only-0': read-only, fixed to 0
-        * 'read-only-1': read-only, fixed to 1
-  HSTATEEN_CONTEXT_TYPE:
-    when:
-      allOf:
-        - name: H
-          version: ~> 1.0
-        - name: Ssstateen
-          version: ~> 1.0
-    schema:
-      type: string
-      enum: [rw, read-only-0, read-only-1]
-      default: rw
-    description: |
-      Behavior of the hstateen0.CONTEXT bit:
-
-        * 'rw': read-write
-        * 'read-only-0': read-only, fixed to 0
-        * 'read-only-1': read-only, fixed to 1
-    extra_validation: |
-      assert HSTATEEN_CONTEXT_TYPE == 'read-only-0' if MSTATEEN_CONTEXT_TYPE == 'read-only-0'
-      assert HSTATEEN_CONTEXT_TYPE == 'read-only-1' if MSTATEEN_CONTEXT_TYPE == 'read-only-1'
 type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
+    ratification_date: 2025-02

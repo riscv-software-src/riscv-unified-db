@@ -11,10 +11,10 @@ description: |
   Branches to `PC` + `offset` if the unsigned value in `rs1` is greater than or equal to the unsigned immediate `imm`.
   Instruction encoded in QC.EB instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibi
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibi
 encoding:
   match: -----------------------11111-----100-----0011111
   variables:
@@ -28,7 +28,7 @@ encoding:
     - name: rs1
       location: 19-15
       not: 0
-assembly: " xs1, imm, offset"
+assembly: xs1, imm, offset
 access:
   s: always
   u: always

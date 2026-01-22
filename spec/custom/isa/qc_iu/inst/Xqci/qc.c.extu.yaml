@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: inst_schema.json#
 kind: instruction
@@ -12,11 +12,11 @@ description: |
   The width of the subset is determined by (`width_minus1`[4:0] + 1) (1..32).
   Instruction encoded in CI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
-assembly: " xd, width"
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
+assembly: xd, width
 encoding:
   match: 0001----------10
   variables:

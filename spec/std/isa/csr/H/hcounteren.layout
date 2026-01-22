@@ -16,7 +16,9 @@ description: |
   to VS/VU-mode
 
   See `cycle` for a table describing how exceptions occur.
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   CY:
     location: 0
@@ -43,7 +45,9 @@ fields:
       ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
       ! 1 ! 1 ! 1 ! allowed              ! allowed
       !===
-    definedBy: Zicntr
+    definedBy:
+      extension:
+        name: Zicntr
     type(): |
       if (HCOUNTENABLE_EN[0]) {
         return CsrFieldType::RW;
@@ -81,7 +85,9 @@ fields:
       ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
       ! 1 ! 1 ! 1 ! allowed              ! allowed
       !===
-    definedBy: Zicntr
+    definedBy:
+      extension:
+        name: Zicntr
     type(): |
       if (HCOUNTENABLE_EN[1]) {
         return CsrFieldType::RW;

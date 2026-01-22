@@ -13,7 +13,9 @@ description: |
   If the value in register xs2 is zero, write the value in xs1 into xd;
 
   If the result of the division overflows, write zero into xd;
-definedBy: M
+definedBy:
+  extension:
+    name: M
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0110011

@@ -15,8 +15,9 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    requires:
-      allOf:
-        - Zvfbfmin
-        - Zfbfmin
+    ratification_date: 2024-06
+requirements:
+  extension:
+    allOf:
+      - name: Zvfbfmin
+      - name: Zfbfmin
