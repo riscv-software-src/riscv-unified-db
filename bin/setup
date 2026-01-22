@@ -136,10 +136,14 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
         GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
         CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -v ${GIT_PATH}:${GIT_PATH}${SELINUX_LABEL}"
     fi
-    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --tmpfs /.cache --tmpfs /.npm"
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e HOME"
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --tmpfs ${HOME}"
 
-    # run as the host user, and bind /etc/{passwd,group} to get the ids
-    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --user $(id -u):$(id -g) -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro"
+    # run as the host user, and copy in /etc/{passwd,group} to get the mappings
+    mkdir -p "${ROOT}/.cache"
+    getent passwd > "${ROOT}/.cache/passwd"
+    getent group >> "${ROOT}/.cache/group"
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --user $(id -u):$(id -g) -v ${ROOT}/.cache/passwd:/etc/passwd:ro -v ${ROOT}/.cache/group:/etc/group:ro"
 
     if [ -v PRE_COMMIT_HOME ]; then
       CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e PRE_COMMIT_HOME"
