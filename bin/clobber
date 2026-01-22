@@ -7,5 +7,6 @@ rm -rf                 \
   ${ROOT}/.home        \
   ${ROOT}/.bundle      \
   ${ROOT}/.singularity \
+  ${ROOT}/.cache       \
   ${ROOT}/gen          \
   ${ROOT}/sorbet
