@@ -11,7 +11,6 @@ on:
   workflow_dispatch:
 env:
   DOCKER: 1
-  XDG_CACHE_HOME: ${{ github.workspace }}/.cache
 
 # cancel any prior actions from the same PR that are still running (we only care about the final commit)
 concurrency:
