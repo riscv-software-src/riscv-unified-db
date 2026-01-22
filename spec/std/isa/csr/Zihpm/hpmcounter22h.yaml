@@ -35,7 +35,7 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        name: Sscofpmf
+        name: Zihpm
 fields:
   COUNT:
     location: 31-0
