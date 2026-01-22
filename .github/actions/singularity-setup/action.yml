@@ -4,16 +4,16 @@ runs:
   using: composite
   steps:
       - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
+        uses: eWaterCycle/setup-apptainer@4bb22c52d4f63406c49e94c804632975787312b3 # v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             .home/.gems
