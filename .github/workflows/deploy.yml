@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: run reuse
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate UDB API Docs
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Resolve unconfig
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer CSR
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Extension
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Instructions
@@ -142,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate ISA Explorer Spreadsheet
@@ -161,7 +161,7 @@ jobs:
       VERSIONS: all
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual
@@ -177,7 +177,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual for a config
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           submodules: "true"
       - name: singularity setup
@@ -211,7 +211,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVI20
@@ -227,7 +227,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVA20
@@ -243,7 +243,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVA22
@@ -259,7 +259,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVA23
@@ -275,7 +275,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVB23
@@ -291,7 +291,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate AC100 CRD
@@ -307,7 +307,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate AC200 CRD
@@ -323,7 +323,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVI20-32 CRD
@@ -339,7 +339,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVI20-64 CRD
@@ -355,7 +355,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC100-32 CRD
@@ -371,7 +371,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC100-64 CRD
@@ -387,7 +387,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC200-32 CRD
@@ -403,7 +403,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC200-64 CRD
@@ -419,7 +419,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC300-32 CRD
@@ -435,7 +435,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC300-64 CRD
@@ -451,7 +451,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVI20-32 CTP
@@ -467,7 +467,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate RVI20-64 CTP
@@ -483,7 +483,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate MC100-32 CTP
@@ -499,7 +499,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Build IDL doc

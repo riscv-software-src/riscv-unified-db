@@ -13,7 +13,7 @@ jobs:
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: print latest_commit
         run: echo ${{ github.sha }}
 
@@ -30,7 +30,7 @@ jobs:
       SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run regression
