@@ -61,19 +61,16 @@ fi
 # get the container type
 #
 # use, in priority order:
-#  1. devcontainer, if DEVCONTAINER_ENV is set in the environment
+#  1. native, if IN_UDB_CONTAINER is set in the environment
 #  2. the type stored in .container-type
 #  3. Docker, if DOCKER is set in the environment
 #  4. Podman, if PODMAN is set in the environment
 #  5. Singularity, if SINGULARITY is set in the environment
 #  6. The choice made by the user, which will be cached in .container-type
-if [ -v DEVCONTAINER_ENV ]; then
-CONTAINER_TYPE=devcontainer
-elif [ -v SINGULARITY_NAME ]; then
-# already in a container
-CONTAINER_TYPE=devcontainer
+if [ -v IN_UDB_CONTAINER ]; then
+CONTAINER_TYPE=native
 elif [ -f "${ROOT}/.container-type" ]; then
-CONTAINER_TYPE=$(cat ${ROOT}/.container-type)
+CONTAINER_TYPE=$(cat "${ROOT}/.container-type")
 elif [ -v DOCKER ]; then
 CONTAINER_TYPE=docker
 elif [ -v PODMAN ]; then
@@ -84,7 +81,7 @@ else
   echo -e "UDB tools run in a container. Docker, Podman, and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Podman\\n3. Singularity\\n"
   while true; do
     echo "Which would you like to use? (1/2/3) "
-    read ans
+    read -r ans
     case $ans in
         [1]* ) CONTAINER_TYPE=docker; break;;
         [2]* ) CONTAINER_TYPE=podman; break;;
@@ -94,7 +91,7 @@ else
   done
 fi
 
-if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "podman" -a "${CONTAINER_TYPE}" != "singularity" -a "${CONTAINER_TYPE}" != "devcontainer" ]; then
+if [ "${CONTAINER_TYPE}" != "docker" ] && [ "${CONTAINER_TYPE}" != "podman" ] && [ "${CONTAINER_TYPE}" != "singularity" ] && [ "${CONTAINER_TYPE}" != "native" ]; then
   echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
 fi
 
@@ -107,9 +104,7 @@ echo "Using ${CONTAINER_TYPE} environment"
 if [ -v GITHUB_ACTIONS ] && [ "${CONTAINER_TYPE}" == "singularity" ]; then
     echo "Running in a GitHub Action"
     CONTAINER_PATH=${ROOT}/.singularity/image.sif
-    HOME_PATH=${GITHUB_WORKSPACE}
     GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
-    SINGULARITY_CACHE=--disable-cache
 
     # needed to get singularity working on Ubuntu 24.04
     # see https://github.com/lima-vm/lima/issues/2319
@@ -131,44 +126,65 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
     else
       SELINUX_LABEL=""
     fi
+
+    CONTAINER_RUN_FLAGS="-v ${ROOT}:${ROOT}${SELINUX_LABEL}"
+    if [ -v UDB_CONTAINER_BIND ]; then
+      CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -v ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}${SELINUX_LABEL}"
+    fi
+    if [ -f "$ROOT/.git" ]; then
+        # if this is a worktree, need to add the parent git repo in, too
+        GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
+        CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -v ${GIT_PATH}:${GIT_PATH}${SELINUX_LABEL}"
+    fi
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e HOME"
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --tmpfs ${HOME}"
+
+    # run as the host user, and copy in /etc/{passwd,group} to get the mappings
+    mkdir -p "${ROOT}/.cache"
+    getent passwd > "${ROOT}/.cache/passwd"
+    getent group >> "${ROOT}/.cache/group"
+    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --user $(id -u):$(id -g) -v ${ROOT}/.cache/passwd:/etc/passwd:ro -v ${ROOT}/.cache/group:/etc/group:ro"
+
+    if [ -v PRE_COMMIT_HOME ]; then
+      CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e PRE_COMMIT_HOME"
+    fi
+
     if [ -t 1 ] && [ -t 0 ]; then
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it ${CONTAINER_RUN_FLAGS} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else
-      CONTAINER_BASE="${CONTAINER_TYPE} run --rm -v ${ROOT}:${ROOT}${SELINUX_LABEL} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
+      CONTAINER_BASE="${CONTAINER_TYPE} run --rm ${CONTAINER_RUN_FLAGS} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     fi
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
-    HOME_PATH=${HOME}
     GEM_HOME=${ROOT}/.home/.gems && GEM_PATH=$GEM_HOME
     export GEM_HOME
     export GEM_PATH
-    SINGULARITY_CACHE=
     if [ ! -f "${CONTAINER_PATH}" ]; then
       echo "Fetching container..."
       if [ ! -d "${ROOT}/.singularity" ]; then
         mkdir -p "${ROOT}/.singularity"
       fi
-      singularity pull "${SINGULARITY_CACHE}" "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
+      singularity pull "${CONTAINER_PATH}" "oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG"
     fi
-elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
-    HOME_PATH=${HOME}
-else
+    if [ -v UDB_CONTAINER_BIND ]; then
+      EXTRA_BIND="--bind ${UDB_CONTAINER_BIND}:${UDB_CONTAINER_BIND}"
+    fi
+elif [ "${CONTAINER_TYPE}" != "native" ]; then
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
 fi
 
-if [ -f "$ROOT/.git" ]; then
-    # if this is a worktree, need to add the parent git repo in, too
-    GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
-    HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
-fi
-
-if [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
+if [ "${CONTAINER_TYPE}" == "native" ]; then
     RUN=""
-elif [ "${CONTAINER_TYPE}" == "docker" -o "${CONTAINER_TYPE}" == "podman" ]; then
+elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ]; then
     RUN="${CONTAINER_BASE}"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
-    RUN="singularity run ${HOME_OPT} ${CONTAINER_PATH}"
+    if [ -f "$ROOT/.git" ]; then
+        # if this is a worktree, need to add the parent git repo in, too
+        GIT_PATH=$(git rev-parse --git-common-dir | tr -d '\n' | xargs dirname)
+        GIT_BIND="--bind ${GIT_PATH}:${GIT_PATH}"
+    fi
+    RUN="singularity run --no-home ${GIT_BIND} ${EXTRA_BIND} ${CONTAINER_PATH}"
 else
     echo "Bad container type: ${CONTAINER_TYPE}" 1>&2
     exit 1
@@ -242,8 +258,10 @@ INSTALL_PYTHON=\$(realpath ./bin/python)
 ARGS=(hook-impl --config=.pre-commit-config.yaml --hook-type=pre-commit)
 # end templated
 
+GIT_REPO_ROOT=$(git rev-parse --show-toplevel | tr -d '\n')
 HERE="$(cd "$(dirname "\$0")" && pwd)"
 ARGS+=(--hook-dir "\$HERE" -- "\$@")
+export PRE_COMMIT_HOME=${GIT_REPO_ROOT}/.cache
 
 if [ -x "\$INSTALL_PYTHON" ]; then
     exec "\$INSTALL_PYTHON" -mpre_commit "\${ARGS[@]}"

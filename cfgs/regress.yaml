@@ -3,6 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: unconfigured
-name: _
+name: regress
 description: |
-  A completely unconfigured RVI-standard architecture; not even MXLEN is known.
+  Config used by some regression tests to get shortened versions of some objects.
+arch_overlay: regress
