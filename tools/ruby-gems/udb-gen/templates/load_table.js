@@ -1,3 +1,6 @@
+//  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+//  SPDX-License-Identifier: BSD-3-Clause-Clear
+
 // Chunked data loading for better performance
 function loadDataInChunks(data, chunkSize = 500, delay = 50) {
     if (!Array.isArray(data) || data.length === 0) return;
