@@ -20,5 +20,7 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    requires: Zve32f
+    ratification_date: 2023-06
+requirements:
+  extension:
+    name: Zve32f

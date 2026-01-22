@@ -12,10 +12,10 @@ description: |
   move `rs3` to `rd` otherwise.
   Instruction encoded in R4 instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcics
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcics
 encoding:
   match: -----10----------010-----1011011
   variables:
@@ -30,7 +30,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, imm, xs2, xs3"
+assembly: xd, imm, xs2, xs3
 access:
   s: always
   u: always

@@ -7,24 +7,24 @@ name: qc_iu
 arch_overlay: qc_iu
 description: Configuration with the Xqci and Xqccmp custom extensions.
 implemented_extensions:
-  - { name: Sm, version: "1.13" }
-  - { name: Smhpm, version: "1.13" }
-  - { name: Smrnmi, version: "1.0" }
-  - { name: Smdbltrp, version: "1.0" }
-  - { name: I, version: "2.1" }
-  - { name: M, version: "2.0" }
-  - { name: B, version: "1.0" }
-  - { name: Zca, version: "1.0" }
-  - { name: Zcb, version: "1.0" }
-  - { name: Zicntr, version: "2.0" }
-  - { name: Zicsr, version: "2.0" }
-  - { name: Zihpm, version: "2.0" }
-  - { name: Xqccmp, version: "0.3" }
-  - { name: Xqci, version: "0.8" }
+  - { name: Sm, version: "= 1.13" }
+  - { name: Smhpm, version: "= 1.13" }
+  - { name: Smrnmi, version: "= 1.0" }
+  - { name: Smdbltrp, version: "= 1.0" }
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: B, version: "= 1.0" }
+  - { name: Zca, version: "= 1.0" }
+  - { name: Zcb, version: "= 1.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zihpm, version: "= 2.0" }
+  - { name: Xqccmp, version: "= 0.3" }
+  - { name: Xqci, version: "= 0.8" }
 params:
   MXLEN: 32
   PHYS_ADDR_WIDTH: 32
-  ARCH_ID: 0
+  ARCH_ID_VALUE: 0
   CONFIG_PTR_ADDRESS: 0
   HPM_EVENTS: []
   MTVEC_MODES: [0, 1]
@@ -132,13 +132,13 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
-  IMP_ID: 0 # TODO
+  IMP_ID_VALUE: 0 # TODO
   VENDOR_ID_BANK: 0 # TODO
   VENDOR_ID_OFFSET: 0 # TODO
   MISALIGNED_LDST: false
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
-  MISALIGNED_SPLIT_STRATEGY: by_byte
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
   TRAP_ON_ILLEGAL_WLRL: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true

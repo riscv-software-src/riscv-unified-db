@@ -12,9 +12,13 @@ description: |
   the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
   copying bit 31 to all of the more-significant bits.
 definedBy:
-  anyOf: [Zbb, Zbkb]
+  allOf:
+    - xlen: 64
+    - extension:
+        anyOf:
+          - name: Zbb
+          - name: Zbkb
 assembly: xd, xs1, shamt
-base: 64
 encoding:
   match: 0110000----------101-----0011011
   variables:

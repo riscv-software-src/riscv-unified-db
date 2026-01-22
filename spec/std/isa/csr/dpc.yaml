@@ -1,7 +1,7 @@
 # Copyright (c) Katherine Hsu
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 $schema: "csr_schema.json#"
 kind: csr
@@ -33,7 +33,9 @@ description: |
   dpc to change where the hart resumes.
 
   This CSR is read/write.
-definedBy: Sdext
+definedBy:
+  extension:
+    name: Sdext
 fields:
   DPC:
     location_rv32: 31-0

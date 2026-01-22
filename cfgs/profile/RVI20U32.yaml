@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: CC0-1.0
+
+# AUTO-GENERATED FILE. DO NOT EDIT
+# To regenerate, run `./do gen:cfg` in the UDB root directory
+# The data comes from the UDB profile definitions in spec/std/isa/profile/
+
+---
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: RVI20U32
+description:
+params:
+  MXLEN: 32
+mandatory_extensions:
+- name: I
+  version: "~> 2.1"
+non_mandatory_extensions:
+- name: A
+  version: "~> 2.1"
+- name: C
+  version: "~> 2.0"
+- name: D
+  version: "~> 2.2"
+- name: F
+  version: "~> 2.2"
+- name: M
+  version: "~> 2.0"
+- name: Zicntr
+  version: "~> 2.0"
+- name: Zifencei
+  version: "~> 2.0"
+- name: Zihpm
+  version: "~> 2.0"
+additional_extensions: true

@@ -9,7 +9,6 @@ name: instreth
 long_name: Instructions retired counter, high bits
 address: 0xC82
 writable: false
-base: 32
 description: |
   Alias for high bits of M-mode CSR `minstret`[63:32].
 
@@ -29,7 +28,11 @@ description: |
   !===
 priv_mode: U
 length: 32
-definedBy: Zicntr
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Zicntr
 fields:
   COUNT:
     location: 31-0

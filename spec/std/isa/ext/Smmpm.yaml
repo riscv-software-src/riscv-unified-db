@@ -13,12 +13,4 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-params:
-  PMLEN:
-    description: |
-      The number of high-order bits of an address that are masked by the
-      pointer masking facility.
-    schema:
-      type: integer
-    also_defined_in: [Ssnpm, Smmpm]
+    ratification_date: 2024-10

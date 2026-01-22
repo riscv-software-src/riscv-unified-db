@@ -21,7 +21,9 @@ description: |
   htval is a WARL register that must be able to hold zero and may be capable of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any.
 priv_mode: M
 length: MXLEN
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   VALUE:
     location_rv64: 63-0

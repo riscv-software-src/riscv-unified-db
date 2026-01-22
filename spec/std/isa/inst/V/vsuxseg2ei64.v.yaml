@@ -9,7 +9,9 @@ name: vsuxseg2ei64.v
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vs3, (xs1), vs2, vm
 encoding:
   match: 001001-----------111-----0100111

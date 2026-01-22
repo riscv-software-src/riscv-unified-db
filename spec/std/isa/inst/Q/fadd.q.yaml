@@ -7,13 +7,12 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fadd.q
 long_name: Floating-point Add Quad-Precision
-description:
-  - id: inst-fadd.q-behaviour
-    normative: false
-    text: |
-      `fadd.q` is analogous to `fadd.d` and performs double-precision floating-point addition between
-      `qs1` and `qs2` and writes the final result to `qd`.
-definedBy: Q
+definedBy:
+  extension:
+    name: Q
+description: |
+  `fadd.q` is analogous to `fadd.d` and performs double-precision floating-point addition between
+  `qs1` and `qs2` and writes the final result to `qd`.
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000011------------------1010011

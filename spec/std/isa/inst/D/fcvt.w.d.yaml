@@ -7,13 +7,14 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.w.d
 long_name: Floating-Point Convert Double-Precision to Word
-description:
-  - id: inst-fcvt.w.d-behaviour
-    normative: false
-    text: |
-      The `fcvt.w.d` instruction converts a double-precision floating-point number in floating-point register `fs1` to a
-      signed 32-bit integer, in integer register `xd`.
-definedBy: D
+definedBy:
+  extension:
+    oneOf:
+      - name: D
+      - name: Zdinx
+description: |
+  The `fcvt.w.d` instruction converts a double-precision floating-point number in floating-point register `fs1` to a
+  signed 32-bit integer, in integer register `xd`.
 assembly: xd, fs1, rm
 encoding:
   match: 110000100000-------------1010011

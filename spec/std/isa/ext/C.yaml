@@ -18,21 +18,24 @@ versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    implies:
-      - name: Zca
-        version: "1.0.0"
-      - if:
-          name: F
-          version: ~> 2.2
-        then:
+requirements:
+  #   Zca is the non-FP subset of C. "C" + "F" implies Zcf. "C" + "D" implies Zcd.
+  allOf:
+    - extension:
+        name: Zca
+    - anyOf:
+      - not:
+          extension:
+            name: F
+      - xlen: 64
+      - extension:
           name: Zcf
-          version: "1.0.0"
-      - if:
-          name: D
-          version: ~> 2.2
-        then:
+    - oneOf:
+      - not:
+          extension:
+            name: D
+      - extension:
           name: Zcd
-          version: "1.0.0"
 description: |
   The `C` extension reduces static and dynamic code size by
   adding short 16-bit instruction encodings for common operations. The C
@@ -313,9 +316,3 @@ description: |
   !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5`
   !===
   |===
-params:
-  MUTABLE_MISA_C:
-    description: |
-      Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.
-    schema:
-      type: boolean

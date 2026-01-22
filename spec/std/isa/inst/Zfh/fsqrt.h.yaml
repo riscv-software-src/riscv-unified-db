@@ -9,7 +9,11 @@ name: fsqrt.h
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zfh
+definedBy:
+  extension:
+    oneOf:
+      - name: Zfh
+      - name: Zhinx
 assembly: fd, fs1, rm
 encoding:
   match: 010111000000-------------1010011

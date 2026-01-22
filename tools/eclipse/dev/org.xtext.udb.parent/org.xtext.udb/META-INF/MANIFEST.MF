@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.xtext.udb
+Bundle-ManifestVersion: 2
+Bundle-Name: org.xtext.udb
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.xtext.udb; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.19.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.39.0",
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: org.xtext.example.udb.parser.antlr,
+ org.xtext.example.udb.udb.impl,
+ org.xtext.example.udb.parser.antlr.internal,
+ org.xtext.example.udb.scoping,
+ org.xtext.example.udb.generator,
+ org.xtext.example.udb.services,
+ org.xtext.example.udb.udb,
+ org.xtext.example.udb.udb.util,
+ org.xtext.example.udb.validation,
+ org.xtext.example.udb.serializer,
+ org.xtext.example.udb,
+ org.xtext.example.udb.parser.antlr.lexer
+Import-Package: org.apache.log4j

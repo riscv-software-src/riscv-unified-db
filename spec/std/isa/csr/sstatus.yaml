@@ -15,7 +15,9 @@ description: |
   The sstatus register tracks and controls the hart's current operating state.
 
   All fields in sstatus are aliases of the same field in mstatus.
-definedBy: S
+definedBy:
+  extension:
+    name: S
 fields:
   SD:
     # The *position* of SD changes when SXLEN changes (yuck^[TM])
@@ -32,15 +34,16 @@ fields:
     affectedBy: [F, D, V]
   UXL:
     location: 33-32
-    base: 64
-    alias: mstatus.MXR
+    definedBy:
+      xlen: 64
+    alias: mstatus.UXL
     description: |
       *U-mode XLEN*
 
       Alias of `mstatus.UXL`.
 
     type: RO
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 2
   MXR:
     alias: mstatus.MXR
     location: 19
@@ -80,7 +83,9 @@ fields:
       Alias of `mstatus.FS`.
 
     type: RW-H
-    definedBy: F
+    definedBy:
+      extension:
+        name: F
     reset_value: UNDEFINED_LEGAL
   VS:
     alias: mstatus.VS
@@ -92,7 +97,9 @@ fields:
 
     type: RW-H
     reset_value: UNDEFINED_LEGAL
-    definedBy: V
+    definedBy:
+      extension:
+        name: V
   SPP:
     alias: mstatus.SPP
     location: 8
@@ -101,7 +108,9 @@ fields:
 
       Alias of `mstatus.SPP`.
     type: RW-H
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
   UBE:
     alias: mstatus.UBE
@@ -111,7 +120,9 @@ fields:
 
       Alias of `mstatus.UBE`.
     type: RO
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
   SPIE:
     alias: mstatus.SPIE
@@ -122,7 +133,9 @@ fields:
       Alias of `mstatus.SPIE`.
 
     type: RW-H
-    definedBy: S
+    definedBy:
+      extension:
+        name: S
     reset_value: UNDEFINED_LEGAL
   SIE:
     alias: mstatus.SIE

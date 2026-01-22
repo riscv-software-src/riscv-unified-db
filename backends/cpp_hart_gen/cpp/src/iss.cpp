@@ -3,6 +3,8 @@
 
 #include <CLI/CLI.hpp>
 #include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 #include "udb/defines.hpp"
 #include "udb/elf_reader.hpp"
@@ -10,9 +12,12 @@
 #include "udb/inst.hpp"
 #include "udb/iss_soc_model.hpp"
 
+using json = nlohmann::json;
+
 struct Options {
   std::string config_name;
   std::filesystem::path config_path;
+  std::filesystem::path memory_map_path;
   bool show_configs;
   std::string elf_file_path;
 
@@ -24,6 +29,7 @@ int parse_cmdline(int argc, char **argv, Options &options) {
   CLI::App app("Bare-bones ISS");
   app.add_option("-m,--model", options.config_name, "Hart model");
   app.add_option("-c,--cfg", options.config_path, "Hart configuration file");
+  app.add_option("--mm, --memory-map", options.memory_map_path, "Memory map file");
   app.add_flag("-l,--list-configs", options.show_configs,
                "List available configurations");
 
@@ -32,6 +38,35 @@ int parse_cmdline(int argc, char **argv, Options &options) {
   CLI11_PARSE(app, argc, argv);
   return PARSE_OK;
 }
+
+static const std::pair<uint64_t, uint64_t> get_memory_range(std::filesystem::path memmap, std::filesystem::path elf_file_path) {
+  json regions;
+  uint64_t memsz;
+
+  if(!memmap.empty()) {
+    std::ifstream f(memmap);
+    json data = json::parse(f);
+    regions = data["regions"];
+
+    for (const auto& region : regions) {
+      auto type = region["type"];
+      if (type == "ram") {
+        std::string base = region["base"]["value"];
+        std::string size = region["size"]["value"];
+        return std::make_pair(std::stoul(base, nullptr, 0), std::stoul(size, nullptr, 0));
+      }
+    }
+  }
+
+  udb::ElfReader elf_reader(elf_file_path.c_str());
+  auto range = elf_reader.mem_range();
+  memsz = range.second - range.first;
+  // round up to a page for good measure
+  memsz = (memsz + 0xfff) & ~0xfffull;
+
+  return std::make_pair(range.first, memsz);
+}
+
 
 int main(int argc, char **argv) {
   Options opts;
@@ -52,22 +87,16 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  udb::ElfReader elf_reader(opts.elf_file_path.c_str());
-
-  // how much memory do we need?
-  auto range = elf_reader.mem_range();
-  uint64_t memsz = range.second - range.first + 1;
-
-  // round up to a page for good measure
-  memsz = (memsz & ~0xfffull) + 0x1000;
-
-  udb::IssSocModel soc(memsz, range.first);
+  auto range = get_memory_range(opts.memory_map_path, opts.elf_file_path);
+  udb::IssSocModel soc(range.second, range.first);
 
   auto hart = udb::HartFactory::create<udb::IssSocModel>(opts.config_name, 0,
                                                          opts.config_path, soc);
   auto tracer = udb::HartFactory::create_tracer<udb::IssSocModel>(
       "riscv-tests", opts.config_name, hart);
   hart->attach_tracer(tracer);
+
+  udb::ElfReader elf_reader(opts.elf_file_path.c_str());
   auto entry_pc = elf_reader.loadLoadableSegments(soc);
   hart->reset(entry_pc);
 

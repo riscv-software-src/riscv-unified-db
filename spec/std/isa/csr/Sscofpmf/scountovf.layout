@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
 $schema: csr_schema.json#
 kind: csr
@@ -11,7 +11,9 @@ address: 0xDA0
 writable: false
 priv_mode: S
 length: 32
-definedBy: Sscofpmf
+definedBy:
+  extension:
+    name: Sscofpmf
 description: |
   A 32-bit read-only register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
   (`mhpmevent3` - `mhpmevent31`) — where `scountovf` bit X corresponds to `mhpmeventX`.

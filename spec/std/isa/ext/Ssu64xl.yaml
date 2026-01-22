@@ -16,8 +16,8 @@ type: privileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    param_constraints:
-      UXLEN:
-        schema:
-          enum: [64, 3264]
+    ratification_date: 2023-03
+requirements:
+  param:
+    name: UXLEN
+    includes: 64

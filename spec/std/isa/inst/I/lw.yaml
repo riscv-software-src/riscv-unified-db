@@ -11,10 +11,12 @@ description: |
   Load 32 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
   Sign extend the result.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xd, imm(xs1)
 encoding:
-  match: -----------------010-----0000011
+  match: "-----------------010-----0000011"
   variables:
     - name: imm
       location: 31-20
@@ -30,7 +32,7 @@ access:
 operation(): |
   XReg virtual_address = X[xs1] + $signed(imm);
 
-  X[xd] = $signed(read_memory<32>(virtual_address, $encoding));
+  X[xd] = sext(read_memory<32>(virtual_address, $encoding), 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

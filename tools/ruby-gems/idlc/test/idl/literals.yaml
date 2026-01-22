@@ -4,6 +4,11 @@
 
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# e: IDL expression
+# =: Expected result (to_idl)
+# d: description
+# p: parameter value list
+
 schema: expression_schema.json#
 tests:
   ###################################################

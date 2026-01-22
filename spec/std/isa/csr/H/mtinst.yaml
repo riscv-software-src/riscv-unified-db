@@ -17,7 +17,9 @@ description: |
   mtinst is a WARL register that need only be able to hold the values that the implementation may automatically write to it on a trap.
 priv_mode: M
 length: MXLEN
-definedBy: H
+definedBy:
+  extension:
+    name: H
 fields:
   VALUE:
     location_rv64: 63-0

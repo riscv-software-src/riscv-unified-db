@@ -17,9 +17,11 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    implies:
-      - name: Zvks
-        version: "1.0.0"
-      - name: Zvkg
-        version: "1.0.0"
+    ratification_date: 2023-09
+    requirements:
+      extension:
+        allOf:
+          - name: Zvks
+            version: "= 1.0.0"
+          - name: Zvkg
+            version: "= 1.0.0"

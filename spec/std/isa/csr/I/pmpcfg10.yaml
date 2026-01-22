@@ -1,6 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 
-# WARNING: This file is auto-generated from spec/std/isa/csr/I/pmpcfgN.layout# SPDX-License-Identifier: BSD-3-Clause-Clear
+# WARNING: This file is auto-generated from spec/std/isa/csr/I/pmpcfgN.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
 
@@ -13,7 +15,9 @@ writable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
-definedBy: Smpmp
+definedBy:
+  extension:
+    name: Smpmp
 fields:
   pmp40cfg:
     location: 7-0
@@ -249,7 +253,8 @@ fields:
       return CSR[pmpcfg10].pmp43cfg;
   pmp44cfg:
     location: 39-32
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 44*
 
@@ -308,7 +313,8 @@ fields:
       return CSR[pmpcfg10].pmp44cfg;
   pmp45cfg:
     location: 47-40
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 45*
 
@@ -367,7 +373,8 @@ fields:
       return CSR[pmpcfg10].pmp45cfg;
   pmp46cfg:
     location: 55-48
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 46*
 
@@ -426,7 +433,8 @@ fields:
       return CSR[pmpcfg10].pmp46cfg;
   pmp47cfg:
     location: 63-56
-    base: 64 # upper half doesn't exist in RV32
+    definedBy:
+      xlen: 64 # upper half doesn't exist in RV32
     description: |
       *PMP configuration for entry 47*
 

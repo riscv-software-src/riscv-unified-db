@@ -10,18 +10,18 @@ long_name: Upper 32 bits of Machine State Enable 0 Register
 address: 0x31C
 priv_mode: M
 length: 32
-base: 32
 writable: true
-description:
-  - id: csr-mstateen0h-purpose
-    normative: true
-    text: |
-      For RV64 harts, the Smstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State
-      Enable 0), `mstateen1`, `mstateen2`, and `mstateen3`. For RV32, the registers listed above are 32-bit, and for the
-      machine-level CSRs there is a corresponding set of high-half CSRs for the upper 32 bits of each register:
-      `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`.
+description: |
+  For RV64 harts, the Smstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State
+  Enable 0), `mstateen1`, `mstateen2`, and `mstateen3`. For RV32, the registers listed above are 32-bit, and for the
+  machine-level CSRs there is a corresponding set of high-half CSRs for the upper 32 bits of each register:
+  `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`.
 
-definedBy: Smstateen
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Smstateen
 fields:
   SE0:
     long_name: hstateen0, hstateen0h, and sstateen0 access control
@@ -38,8 +38,9 @@ fields:
     long_name: henvcfg, henvcfgh, and senvcfg access control
     location: 30
     definedBy:
-      name: S
-      version: ">= 1.11"
+      extension:
+        name: S
+        version: ">= 1.11"
     alias: mstateen0.ENVCFG
     sw_write(csr_value): |
       CSR[mstateen0].ENVCFG = csr_value.ENVCFG;
@@ -51,7 +52,9 @@ fields:
   CSRIND:
     long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 28
-    definedBy: Sscsrind
+    definedBy:
+      extension:
+        name: Sscsrind
     alias: mstateen0.CSRIND
     sw_write(csr_value): |
       CSR[mstateen0].CSRIND = csr_value.CSRIND;
@@ -64,7 +67,9 @@ fields:
   AIA:
     long_name: Ssaia state access control
     location: 27
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: mstateen0.AIA
     sw_write(csr_value): |
       CSR[mstateen0].AIA = csr_value.AIA;
@@ -77,7 +82,9 @@ fields:
   IMSIC:
     long_name: IMSIC state access control
     location: 26
-    definedBy: Ssaia
+    definedBy:
+      extension:
+        name: Ssaia
     alias: mstateen0.IMSIC
     sw_write(csr_value): |
       CSR[mstateen0].IMSIC = csr_value.IMSIC;
@@ -90,7 +97,9 @@ fields:
   CONTEXT:
     long_name: scontext and hcontext access control
     location: 25
-    definedBy: Sdtrig
+    definedBy:
+      extension:
+        name: Sdtrig
     alias: mstateen0.CONTEXT
     sw_write(csr_value): |
       CSR[mstateen0].CONTEXT = csr_value.CONTEXT;
@@ -115,7 +124,9 @@ fields:
   SRMCFG:
     long_name: srmcfg access control
     location: 23
-    definedBy: Ssqosid
+    definedBy:
+      extension:
+        name: Ssqosid
     alias: mstateen0.SRMCFG
     sw_write(csr_value): |
       CSR[mstateen0].SRMCFG = csr_value.SRMCFG;

@@ -6,31 +6,15 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zicntr
-long_name: Architectural performance counters
-description: Architectural performance counters
+long_name: Base Counters and Timers
+description: |
+  The CYCLE, TIME, and INSTRET counters, which have dedicated functions
+  (cycle count, real-time clock, and instructions retired, respectively).
 type: unprivileged
 versions:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    requires:
-      name: Zicsr
-      version: ">= 2.0"
-params:
-  TIME_CSR_IMPLEMENTED:
-    description: |
-      Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
-      CSR or emulate access at M-mode.
-
-      Possible values:
-
-      true::
-        `time`/`timeh` exists, and accessing it will not cause an IllegalInstruction trap
-
-      false::
-        `time`/`timeh` does not exist.
-        Accessing the CSR will cause an IllegalInstruction trap or enter an unpredictable state,
-        depending on TRAP_ON_UNIMPLEMENTED_CSR.
-        Privileged software may emulate the `time` CSR, or may pass the exception to a lower level.
-    schema:
-      type: boolean
+requirements:
+  extension:
+    name: Zicsr

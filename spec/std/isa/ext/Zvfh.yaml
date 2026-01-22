@@ -35,8 +35,9 @@ type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: null
-    requires:
-      allOf:
-        - Zve32f
-        - Zfhmin
+    ratification_date: 2023-06
+requirements:
+  extension:
+    allOf:
+      - name: Zve32f
+      - name: Zfhmin

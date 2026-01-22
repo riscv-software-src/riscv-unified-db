@@ -148,6 +148,20 @@ jobs:
           path: _site/pdfs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVI20-32-CRD
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-32-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download RVI20-64-CRD
+        uses: actions/download-artifact@v5
+        with:
+          name: rvi20-64-crd
+          path: _site/pdfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Download MC100-32
         uses: actions/download-artifact@v5
         with:
@@ -228,9 +242,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: "_site"
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

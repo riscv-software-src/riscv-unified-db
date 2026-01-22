@@ -1,6 +1,8 @@
 
+# typed: false
 require "active_support"
 require "active_support/core_ext/string/inflections"
+require "tty-command"
 
 require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
@@ -82,7 +84,8 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
   [
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
-  ] + Dir.glob(CPP_HART_GEN_SRC / 'lib' / '**' / '*')
+  ] + Dir.glob(CPP_HART_GEN_SRC / "lib" / "**" / "*") \
+  + FileList[$resolver.resolved_spec_path(configs_build_name[0][0]) / "**" / "*.yaml"]
 } do |t|
   configs, = configs_build_name
   config_name = configs[0]
@@ -134,7 +137,8 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
-  ]
+  ] \
+  + FileList[$resolver.resolved_spec_path(config_name) / "**" / "*.yaml"]
 } do |t|
   parts = t.name.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
@@ -202,9 +206,14 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/build/Makefile} => [
     "-DCONFIG_LIST=\"#{ENV['CONFIG'].gsub(',', ';')}\"",
     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     "-DCMAKE_BUILD_TYPE=#{cmake_build_type}"
-  ].join(" ")
+  ]
+  if ENV["IGNOREUNDEFINED"].nil?
+    cmd.push("-DIGNOREUNDEFINED=NO")
+  else
+    cmd.push("-DIGNOREUNDEFINED=YES")
+  end
 
-  sh cmd
+  sh cmd.join(" ")
 end
 
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hpp} do |t|
@@ -296,7 +305,6 @@ namespace :gen do
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"
@@ -311,7 +319,13 @@ namespace :gen do
       end
     end
 
-    generated_files.each { |fn| Rake::Task["#{fn}.unformatted"].invoke }
+    pb =
+      Udb.create_progressbar(
+        "Generating ISS source files (:file) [:bar] :current/:total",
+        total: generated_files.size,
+        clear: true
+      )
+    generated_files.each { |fn| pb.advance(file: File.basename(fn)); Rake::Task["#{fn}.unformatted"].invoke }
 
     multitask "__generate_formatted_cpp_#{build_name}" => generated_files
     Rake::MultiTask["__generate_formatted_cpp_#{build_name}"].invoke
@@ -342,7 +356,16 @@ namespace :build do
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
-      sh "make -j #{$jobs}"
+      sh "make -j #{$jobs} iss"
+    end
+  end
+
+  task iss: ["gen:cpp_hart"] do
+    _, build_name = configs_build_name
+
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+    Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
+      sh "make -j #{$jobs} iss"
     end
   end
 
@@ -369,8 +392,8 @@ end
 task checkout_riscv_tests: "#{$root}/ext/riscv-tests/env/LICENSE"
 
 task build_riscv_tests: "checkout_riscv_tests" do
-  Dir.chdir "#{$root}/ext/riscv-tests/isa" do
-    sh "make RISCV_GCC_OPTS='-static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -I/usr/include/newlib'"
+  Dir.chdir "#{$root}/tests/isa" do
+    sh "make"
   end
 end
 
@@ -395,7 +418,12 @@ namespace :test do
     end
   end
 
-  task riscv_tests: ["build_riscv_tests", "build:cpp_hart"] do
+  def run_test(cmd, test_name)
+    @cmd_runner ||= TTY::Command.new
+    @cmd_runner.run(cmd, timeout: 10, only_output_on_error: true)
+  end
+
+  task riscv_tests: ["build_riscv_tests", "build:iss"] do
     configs_name, build_name = configs_build_name
     rv32uiTests = ["simple", "add", "addi", "and",
       "andi", "auipc", "beq", "bge", "bgeu", "blt",
@@ -405,24 +433,84 @@ namespace :test do
       "sw", "st_ld", "sll", "slli", "slt", "slti",
       "sltiu", "sltu", "sra", "srai", "srl",
       "srli", "sub", "xor", "xori"]
+    rv64uiTests = ["add", "addi", "addiw", "addw",
+      "and", "andi",
+      "auipc",
+      "beq", "bge", "bgeu", "blt", "bltu", "bne",
+      "simple",
+      "fence_i",
+      "jal", "jalr",
+      "lb", "lbu", "lh", "lhu", "lw", "lwu", "ld", "ld_st",
+      "lui",
+      "ma_data",
+      "or", "ori",
+      "sb", "sh", "sw", "sd", "st_ld",
+      "sll", "slli", "slliw", "sllw",
+      "slt", "slti", "sltiu", "sltu",
+      "sra", "srai", "sraiw", "sraw",
+      "srl", "srli", "srliw", "srlw",
+      "sub", "subw",
+      "xor", "xori"]
 
-    rv32uiTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32ui-p-#{t}"
-    end
+    rv32umTests = ["div", "divu",
+      "mul", "mulh", "mulhsu", "mulhu",
+      "rem", "remu"]
+    rv64umTests = ["div", "divu", "divuw", "divw",
+      "mul", "mulh", "mulhsu", "mulhu", "mulw",
+      "rem", "remu", "remuw", "remw"]
 
-    rv32umTests = [ "div", "divu", "mul", "mulh", "mulhsu", "mulhu", "rem", "remu" ]
-    rv32umTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32um-p-#{t}"
-    end
-
-    rv32ucTests = [ "rvc" ]
-    rv32ucTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32uc-p-#{t}"
-    end
+    # compressed tests same for rv32 as rv64
+    ucTests = ["rvc"]
 
     rv32siTests = ["csr", "dirty", "ma_fetch", "scall", "sbreak"]
-    rv32siTests.each do |t|
-      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-riscv-tests.yaml ext/riscv-tests/isa/rv32si-p-#{t}"
+    rv64siTests = ["csr", "dirty", "icache-alias", "ma_fetch", "scall", "sbreak"]
+
+    if configs_name[0] == "rv64"
+      uiTests = rv64uiTests
+      umTests = rv64umTests
+      siTests = rv64siTests
+    else
+      uiTests = rv32uiTests
+      umTests = rv32umTests
+      siTests = rv32siTests
+    end
+
+    uiTests.each do |t|
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}ui-p-#{t}",
+        "#{configs_name[0]}ui-p-#{t}"
+      )
+    end
+
+    umTests.each do |t|
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}um-p-#{t}",
+        "#{configs_name[0]}um-p-#{t}"
+      )
+    end
+
+    ucTests.each do |t|
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}uc-p-#{t}",
+        "#{configs_name[0]}um-p-#{t}"
+      )
+    end
+
+    siTests.each do |t|
+      run_test(
+        "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m #{configs_name[0]} -c #{$root}/cfgs/#{configs_name[0]}-riscv-tests.yaml ext/riscv-tests/isa/#{configs_name[0]}si-p-#{t}",
+        "#{configs_name[0]}si-p-#{t}"
+      )
+    end
+  end
+
+  task riscv_vector_tests: ["build_riscv_tests", "build:iss"] do
+    _, build_name = configs_build_name
+
+    # These extensions to the riscv-tests suite have binaries under a different diretcory
+    rv32uvTests = ["vsetivli", "vsetvl", "vsetvli_rs1_eq_zero", "vsetvli_vl_lt_vlmax"]
+    rv32uvTests.each do |t|
+      sh "#{CPP_HART_GEN_DST}/#{build_name}/build/iss -m rv32 -c #{$root}/cfgs/rv32-vector.yaml tests/isa/rv32uv-p-#{t}"
     end
   end
 end

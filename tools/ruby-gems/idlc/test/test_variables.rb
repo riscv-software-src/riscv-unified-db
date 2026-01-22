@@ -1,11 +1,13 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: false
 # frozen_string_literal: true
 
-require 'idlc'
-require_relative 'test_helper'
 require "minitest/autorun"
+
+require "idlc"
+require_relative "helpers"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
 
@@ -22,7 +24,7 @@ class TestVariables < Minitest::Test
     IDL
 
     assert_raises(Idl::AstNode::TypeError) do
-      @compiler.compile_func_body(idl, symtab: @symtab, no_rescue: true)
+      @compiler.compile_func_body(idl, symtab: @symtab, no_rescue: true, input_file: "")
     end
   end
 end

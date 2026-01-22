@@ -11,10 +11,10 @@ description: |
   Move `simm` to `rd` if the value in `rs1` is equal to value `imm`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcicli
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcicli
 encoding:
   match: -----11----------000-----1011011
   variables:
@@ -28,7 +28,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, imm, simm"
+assembly: xd, xs1, imm, simm
 access:
   s: always
   u: always

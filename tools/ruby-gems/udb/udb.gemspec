@@ -3,6 +3,7 @@
 
 # frozen_string_literal: true
 
+require_relative "lib/gem_versions.rb"
 require_relative "lib/udb/version"
 
 Gem::Specification.new do |s|
@@ -26,11 +27,12 @@ Gem::Specification.new do |s|
     "mailing_list_uri" => "https://lists.riscv.org/g/tech-unifieddb",
     "bug_tracker_uri" => "https://github.com/riscv-software-src/riscv-unified-db/issues"
   }
-  s.required_ruby_version = "~> 3.2" # only supported in UDB container
+  s.required_ruby_version = "~> 3.2"
 
   s.require_paths = ["lib"]
   s.bindir = "bin"
   s.executables << "udb"
+  s.extensions = ["ext/z3/extconf.rb"]
 
   s.add_dependency "activesupport"
   s.add_dependency "asciidoctor"
@@ -38,19 +40,27 @@ Gem::Specification.new do |s|
   s.add_dependency "concurrent-ruby"
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
-  s.add_dependency "sorbet-runtime"
+  s.add_dependency "numbers_and_words"
+  s.add_dependency "pastel"
+  s.add_dependency "ruby-minisat", ">= 2.2.0.3"
+  s.add_dependency "sorbet-runtime", "= #{UdbGems::SORBET_VERSION}"
   s.add_dependency "terminal-table"
   s.add_dependency "thor"
   s.add_dependency "tilt"
+  s.add_dependency "tty-command"
+  s.add_dependency "tty-logger"
+  s.add_dependency "tty-progressbar"
   s.add_dependency "udb_helpers"
+  s.add_dependency "z3"
 
   s.add_development_dependency "rubocop-github"
   s.add_development_dependency "rubocop-minitest"
   s.add_development_dependency "rubocop-performance"
   s.add_development_dependency "rubocop-sorbet"
   s.add_development_dependency "simplecov"
-  s.add_development_dependency "sorbet"
-  s.add_development_dependency "tapioca"
+  s.add_development_dependency "simplecov-cobertura"
+  s.add_development_dependency "sorbet", "= #{UdbGems::SORBET_VERSION}"
+  s.add_development_dependency "tapioca", "= #{UdbGems::TAPIOCA_VERSION}"
   s.add_development_dependency "yard"
   s.add_development_dependency "yard-sorbet"
 end

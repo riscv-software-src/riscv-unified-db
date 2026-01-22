@@ -11,10 +11,10 @@ description: |
   Increments `rd` by the multiplication of `rs1` and a signed immediate `imm`.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciac
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciac
 encoding:
   match: -----------------110-----0001011
   variables:
@@ -26,7 +26,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, imm"
+assembly: xd, xs1, imm
 access:
   s: always
   u: always

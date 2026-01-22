@@ -9,7 +9,9 @@ name: vfsgnjn.vf
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: V
+definedBy:
+  extension:
+    name: V
 assembly: vd, vs2, fs1, vm
 encoding:
   match: 001001-----------101-----1010111

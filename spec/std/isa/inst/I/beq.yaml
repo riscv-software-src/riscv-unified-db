@@ -12,14 +12,17 @@ description: |
   the value in register xs1 is equal to the value in register xs2.
 
   Raise a `MisalignedAddress` exception if PC + imm is misaligned.
-definedBy: I
+definedBy:
+  extension:
+    name: I
 assembly: xs1, xs2, imm
 encoding:
-  match: -----------------000-----1100011
+  match: "-----------------000-----1100011"
   variables:
     - name: imm
       location: 31|7|30-25|11-8
       left_shift: 1
+      sign_extend: true
     - name: xs2
       location: 24-20
     - name: xs1

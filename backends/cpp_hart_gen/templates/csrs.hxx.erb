@@ -1,3 +1,6 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+
 #pragma once
 
 #include <algorithm>
@@ -19,7 +22,7 @@ namespace udb {
 
   <%- csrs.each do |csr| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| csr.defined_in_base?(xlen) } -%>
-  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
 
   // Field classes for <%= csr.name %>
 
@@ -143,11 +146,6 @@ namespace udb {
     // void _sw_write(const ValueType &field_write_value);
     // <%- end -%>
 
-    void makeUndefined() {
-      // default ValueType constructor is all unknown
-      m_value = ValueType();
-    }
-
     CsrFieldType type(const Bits<8>& xlen) const override;
 
   private:
@@ -215,10 +213,39 @@ namespace udb {
     bool writable() const override { return <%= csr.writable %>; }
 
     bool defined() override {
-      return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_req|
-        # check that (1) the extension is implemented and (2) that the implemented version is compatible with the requirement
-        "(m_parent->m_implemented_exts.find(ExtensionName::#{ext_name}) != m_parent->m_implemented_exts.end()) \
-        && (VersionRequirement(\"#{ext_req}\"sv).satisfied_by(m_parent->m_implemented_exts.find(ExtensionName::#{ext_name})->second))"
+      return <%= csr.defined_by_condition.to_cxx { |term|
+        if term.is_a?(Udb::ExtensionTerm)
+          # check that (1) the extension is implemented and (2) that the implemented version is compatible with the requirement
+          "(m_parent->m_cfg.implemented_exts_hash().find(ExtensionName::#{term.name}) != m_parent->m_cfg.implemented_exts_hash().end()) \
+          && (VersionRequirement(\"#{term.comparison.serialize} #{term.version}\"sv).satisfied_by(m_parent->m_cfg.implemented_exts_hash().find(ExtensionName::#{term.name})->second.version))"
+        elsif term.is_a?(Udb::XlenTerm)
+          "(m_parent->xlen() == #{term.xlen}_b)"
+        elsif term.is_a?(Udb::ParameterTerm)
+          var = "m_parent->m_params.#{term.name}.value()"
+          comparison_type = term.comparison_type
+          case comparison_type
+          when Udb::ParamterTerm::ParameterComparisonType::Equal
+            "(#{var} == #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::NotEqual
+            "(#{var} != #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::LessThan
+            "(#{var} < #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::GreaterThan
+            "(#{var} > #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::LessThanOrEqual
+            "(#{var} <= #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::GreaterThanOrEqual
+            "(#{var} >= #{term.comparison_value})"
+          when Udb::ParamterTerm::ParameterComparisonType::Includes
+            "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
+          when Udb::ParamterTerm::ParameterComparisonType::OneOf
+            vals = term.comparison_value
+            tests = vals.map { |v| "(#{var} == #{v})" }.join(" || ")
+            "(#{tests})"
+          else
+            T.absurd(comparison_type)
+          end
+        end
         } %>;
     }
 
@@ -254,7 +281,7 @@ namespace udb {
       } else {
         udb_assert(xlen == 64_b, "Bad xlen");
         <%-
-          field_cpp = fields_for_xlen32.map do |field|
+          field_cpp = fields_for_xlen64.map do |field|
             if field.dynamic_location?
               "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(64).size) - 1).to_s(16)}_b).template widening_sll<#{field.location(64).begin}>())"
             else

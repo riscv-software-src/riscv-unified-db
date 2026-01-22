@@ -15,10 +15,10 @@ description: |
   In case when `rs1` bit [21] == 1 width is enforced to 32.
   Instruction encoded in I instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibm
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibm
 encoding:
   match: 1----------------000-----0001011
   variables:
@@ -30,7 +30,7 @@ encoding:
     - name: rd
       location: 11-7
       not: 0
-assembly: " xd, xs1, imm"
+assembly: xd, xs1, imm
 access:
   s: always
   u: always

@@ -15,7 +15,9 @@ description: |
   Zero and infinite inputs are copied to _fd_ unmodified.
 
   Signaling NaN inputs cause the invalid operation exception flag to be set; no other exception flags are set. FROUND.S is encoded like FCVT.S.D, but with rs2=4.
-definedBy: Zfa
+definedBy:
+  extension:
+    name: Zfa
 assembly: fd, fs1, rm
 encoding:
   match: 010000000100-------------1010011

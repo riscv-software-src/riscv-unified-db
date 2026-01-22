@@ -8,9 +8,10 @@ kind: instruction
 name: hinval.vvma
 long_name: Invalidate cached address translations
 definedBy:
-  allOf:
-    - Svinval
-    - H
+  extension:
+    allOf:
+      - name: Svinval
+      - name: H
 encoding:
   match: 0010011----------000000001110011
   variables:

@@ -10,26 +10,25 @@ long_name: Upper 32 bits of Hypervisor State Enable 2 Register
 address: 0x61E
 priv_mode: S
 length: 32
-base: 32
 writable: true
-description:
-  - id: csr-hstateen0h-purpose
-    normative: true
-    text: |
-      For RV64 harts, the Smstateen/Ssstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State Enable 0),
-      `mstateen1`, `mstateen2`, and `mstateen3`. If supervisor mode is implemented, another four CSRs are defined at
-      supervisor level: `sstateen0`, `sstateen1`, `sstateen2`, and `sstateen3`. And if the hypervisor extension is implemented,
-      another set of CSRs is added: `hstateen0`, `hstateen1`, `hstateen2`, and `hstateen3`.
+description: |
+  For RV64 harts, the Smstateen/Ssstateen extension adds four new 64-bit CSRs at machine level: `mstateen0` (Machine State Enable 0),
+  `mstateen1`, `mstateen2`, and `mstateen3`. If supervisor mode is implemented, another four CSRs are defined at
+  supervisor level: `sstateen0`, `sstateen1`, `sstateen2`, and `sstateen3`. And if the hypervisor extension is implemented,
+  another set of CSRs is added: `hstateen0`, `hstateen1`, `hstateen2`, and `hstateen3`.
 
-      For RV32, the registers listed above are 32-bit, and for the machine-level and hypervisor CSRs there is a corresponding
-      set of high-half CSRs for the upper 32 bits of each register: `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`, `hstateen0h`,
-      `hstateen1h`, `hstateen2h`, and `hstateen3h`.
+  For RV32, the registers listed above are 32-bit, and for the machine-level and hypervisor CSRs there is a corresponding
+  set of high-half CSRs for the upper 32 bits of each register: `mstateen0h`, `mstateen1h`, `mstateen2h`, `mstateen3h`, `hstateen0h`,
+  `hstateen1h`, `hstateen2h`, and `hstateen3h`.
 
 definedBy:
   allOf:
-    - H
-    - Smstateen
-    - Ssstateen
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: H
+          - name: Smstateen
+          - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen2 access control

@@ -9,12 +9,12 @@ name: qc.mclicie0
 long_name: IRQ Enable 0
 address: 0x7f8
 length: 32
-base: 32
 priv_mode: M
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqciint
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
 writable: true
 description: |
   Enable bits for IRQs 0-31

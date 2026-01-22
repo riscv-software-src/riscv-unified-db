@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# typed: false
+# frozen_string_literal: true
+
+require "sorbet-runtime"
+require "tty-table"
+
+require_relative "../lib/udb-gen/subcommands/ext-doc"
+require_relative "../lib/udb-gen/subcommands/isa-explorer"
+
+include TTY::Exit
+
+def subcommands
+  @subcommands ||=
+    UdbGen::Subcommand.subclasses.map do |cmd_klass|
+      if cmd_klass.name == "UdbGen::SubcommandWithCommonOptions"
+        cmd_klass.subclasses.map do |subcmd_klass|
+          subcmd_klass.new
+        end
+      else
+        cmd_klass.new
+      end
+    end.flatten.sort { |a, b| a.name <=> b.name }
+end
+
+def subcommand_table
+  t = TTY::Table.new
+  subcommands.each do |cmd|
+    t << [cmd.name, cmd.desc]
+  end
+  t
+end
+
+def usage
+  <<~USAGE
+    #{$PROGRAM_NAME} SUB-COMMAND [OPTIONS]
+
+    Subcommands:
+    #{subcommand_table.render(:basic, indent: 4, multiline: true, padding: [0, 2, 0, 0])}
+
+    Run `#{$PROGRAM_NAME}` SUB-COMMAND --help` for details
+  USAGE
+end
+
+if ARGV.empty? || subcommands.find { |cmd| cmd.name == ARGV[0] }.nil?
+  puts usage
+
+  exit_with(:usage_error)
+end
+
+subcmd = subcommands.find { |cmd| cmd.name == ARGV[0] }
+subcmd.run(ARGV[1..])

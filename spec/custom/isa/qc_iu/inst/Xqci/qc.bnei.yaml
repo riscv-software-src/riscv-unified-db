@@ -11,10 +11,10 @@ description: |
   Branches to `PC` + `offset` if the value in `rs1` is not equal to the signed immediate.
   Instruction encoded in BI instruction format.
 definedBy:
-  anyOf:
-    - Xqci
-    - Xqcibi
-base: 32
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqcibi
 encoding:
   match: -----------------001-----1111011
   variables:
@@ -28,7 +28,7 @@ encoding:
     - name: rs1
       location: 19-15
       not: 0
-assembly: " xs1, imm, offset"
+assembly: xs1, imm, offset
 access:
   s: always
   u: always

@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zfhmin
-long_name: Minimal half-precision Floating-point
+long_name: Minimal half-precision floating-point
 description: |
   `Zfhmin` provides
   minimal support for 16-bit half-precision binary floating-point
@@ -50,6 +50,6 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires:
-      name: F
-      version: ">= 2.2"
+requirements:
+  extension:
+    name: F

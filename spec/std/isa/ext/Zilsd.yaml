@@ -16,3 +16,5 @@ versions:
   - version: "1.0"
     state: ratified
     ratification_date: "2025-02"
+requirements:
+  xlen: 32

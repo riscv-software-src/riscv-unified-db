@@ -11,9 +11,10 @@ description: |
   Multiplies XLEN bits of the source operands from rsd' and xs2' and writes the lowest XLEN bits of the result to rsd'.
 
 definedBy:
-  allOf:
-    - Zcb
-    - Zmmul
+  extension:
+    allOf:
+      - name: Zcb
+      - name: Zmmul
 assembly: xd, xs2
 encoding:
   match: 100111---10---01
@@ -27,7 +28,7 @@ access:
   u: always
   vs: always
   vu: always
-operation(): |
+operation(): |2
 
   if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);

@@ -10,8 +10,11 @@ long_name: Add word
 description: |
   Add the 32-bit values in xs1 to xs2, and store the sign-extended result in xd.
   Any overflow is thrown away.
-definedBy: I
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------000-----0111011
@@ -29,9 +32,9 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  XReg operand1 = sext(X[xs1], 31);
-  XReg operand2 = sext(X[xs2], 31);
-  X[xd] = sext(operand1 + operand2, 31);
+  XReg operand1 = sext(X[xs1], 32);
+  XReg operand2 = sext(X[xs2], 32);
+  X[xd] = sext(operand1 + operand2, 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

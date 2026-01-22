@@ -9,8 +9,11 @@ name: packw
 long_name: No synopsis available
 description: |
   No description available.
-definedBy: Zbkb
-base: 64
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zbkb
 assembly: xd, xs1, xs2
 encoding:
   match: 0000100----------100-----0111011

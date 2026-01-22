@@ -7,7 +7,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: B
 type: unprivileged
-long_name: Bitmanipulation instructions
+long_name: Bit Manipulation
 company:
   name: RISC-V International
   url: https://riscv.org
@@ -23,13 +23,15 @@ versions:
         email: ved@rivosinc.com
         company: Rivos, Inc.
     url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
-    implies:
-      - name: Zba
-        version: "1.0.0"
-      - name: Zbb
-        version: "1.0.0"
-      - name: Zbs
-        version: "1.0.0"
+    requirements:
+      extension:
+        allOf:
+          - name: Zba
+            version: "= 1.0.0"
+          - name: Zbb
+            version: "= 1.0.0"
+          - name: Zbs
+            version: "= 1.0.0"
 description: |
   The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 
@@ -37,9 +39,3 @@ description: |
   the implementation supports the instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
   When `misa.B` is 0, it indicates that the implementation may not support one or more of the
   `Zba`, `Zbb`, or `Zbs` extensions.
-params:
-  MUTABLE_MISA_B:
-    description: |
-      Indicates whether or not the `B` extension can be disabled with the `misa.B` bit.
-    schema:
-      type: boolean
