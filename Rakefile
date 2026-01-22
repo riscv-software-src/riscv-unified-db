@@ -488,6 +488,38 @@ namespace :gen do
     exit(1)
   end
 
+  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead")
+  task :isa_explorer_spreadsheet do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead")
+  task :isa_explorer_browser_ext do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead")
+  task :isa_explorer_browser_inst do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead")
+  task :isa_explorer_browser_csr do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  desc("DEPRECATED")
+  task :isa_explorer_browser do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
   desc "Generate config files for profiles"
   task :cfg do
     cfg_arch = $resolver.cfg_arch_for("_")

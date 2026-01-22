@@ -5,6 +5,7 @@ From: ubuntu:24.04
   requirements.txt /opt/requirements.txt
   package.json /opt/node/package.json
   package-lock.json /opt/node/package-lock.json
+  .ruby-version /opt/.ruby-version
 
 %post
   export DEBIAN_FRONTEND=noninteractive
@@ -14,7 +15,7 @@ From: ubuntu:24.04
   # please keep pkgs sorted
   apt-get install -y --no-install-recommends \
     build-essential \
-    bundler \
+    cargo \
     clang-format \
     clang-tidy \
     cmake \
@@ -37,14 +38,20 @@ From: ubuntu:24.04
     minisat \
     nodejs \
     npm \
-    parallel \
     python3 \
     python3-pip \
     python3.12-venv \
-    ruby \
-    ruby-dev \
+    rustc \
     shellcheck \
     zlib1g-dev
+
+  # build / install ruby
+  git clone https://github.com/rbenv/rbenv.git /opt/rbenv
+  export RBENV_ROOT=/opt/.rbenv
+  git clone https://github.com/rbenv/ruby-build.git "$(/opt/rbenv/bin/rbenv root)"/plugins/ruby-build
+  /opt/rbenv/bin/rbenv install $(cat /opt/.ruby-version | tr -d "\n")
+  /opt/rbenv/bin/rbenv global $(cat /opt/.ruby-version | tr -d "\n")
+  /opt/rbenv/bin/rbenv init - > /opt/.rbenv-init
 
   # build/install eqntott
   git clone --depth=1 https://github.com/TheProjecter/eqntott.git
@@ -94,3 +101,6 @@ From: ubuntu:24.04
 %environment
   export PATH="/opt/venv/bin:/opt/node/node_modules/.bin:$PATH"
   export NODE_PATH="/opt/node/node_modules"
+  RBENV_ROOT=/opt/.rbenv
+  source /opt/.rbenv-init
+  export RUBY_YJIT_ENABLE=1
