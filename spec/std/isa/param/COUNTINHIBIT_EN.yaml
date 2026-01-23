@@ -14,8 +14,6 @@ description: |
 
   COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,
   which is always read-only-0.
-
-  COUNTINHIBIT_EN[3:31] must all be false if `Zihpm` is not implemented.
 long_name: TODO
 schema:
   type: array
