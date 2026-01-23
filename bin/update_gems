@@ -1,0 +1,49 @@
+#!/bin/bash
+# update the gems used by riscv-unified-db
+
+# this should be run on the host (not in the container)
+
+increment_minor_version() {
+  local version=$1
+  # Set Internal Field Separator to '.'
+  IFS='.' read -r major minor <<<"$version"
+
+  # Increment the minor version number using arithmetic expansion
+  ((minor++))
+
+  # Re-assemble the version string
+  local new_version="${major}.${minor}"
+  echo "$new_version"
+}
+
+# first, we update all the gems on the host, which will give us updated Gemfile.lock files
+# and sorbet definitions
+cd tools/ruby-gems/idlc || exit 1
+bundle update --bundler --ruby
+bundle exec tapioca gems --all
+bundle exec tapioca dsl
+bundle exec tapioca annotations
+cd - || exit 1
+
+cd tools/ruby-gems/udb || exit 1
+bundle update --bundler --ruby
+bundle exec tapioca gems --all
+bundle exec tapioca dsl
+bundle exec tapioca annotations
+cd - || exit 1
+
+cd tools/ruby-gems/udb-gen || exit 1
+bundle update --bundler --ruby
+bundle exec tapioca gems --all
+bundle exec tapioca dsl
+bundle exec tapioca annotations
+cd - || exit 1
+
+bundle update --bundler --ruby
+
+# increment container-tag
+new_version=$(increment_minor_version "$(cat bin/.container-tag)")
+echo "$new_version" > bin/.container-tag
+
+# now rebuild the container, using the new Gemfile.locks
+./bin/build_container

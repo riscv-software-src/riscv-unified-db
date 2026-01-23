@@ -2,3 +2,4 @@
 .
 --ignore
 ext/
+--cache-dir=.sorbet-cache
