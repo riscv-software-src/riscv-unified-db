@@ -73,6 +73,8 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
+      - name: print env
+        run: ./bin/bash -c printenv
       - name: Run udb gem ${{ matrix.test }} unit tests
         run: ./do test:sorbet
   regress-idlc-unit:
