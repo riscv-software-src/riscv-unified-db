@@ -94,6 +94,10 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
       CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e PRE_COMMIT_HOME"
     fi
 
+    if [ -v XDG_CACHE_HOME ]; then
+      CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e XDG_CACHE_HOME"
+    fi
+
     if [ -t 1 ] && [ -t 0 ]; then
       CONTAINER_BASE="${CONTAINER_TYPE} run --rm -it ${CONTAINER_RUN_FLAGS} -w ${ROOT} riscvintl/udb:${CONTAINER_TAG}"
     else

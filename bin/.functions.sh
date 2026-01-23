@@ -1,6 +1,7 @@
 #!/bin/bash
 
 get_container_type() {
+  local root=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
   # get the container type
   #
   # use, in priority order:
@@ -13,8 +14,8 @@ get_container_type() {
   local container_type=
   if [ -v IN_UDB_CONTAINER ]; then
   container_type=native
-  elif [ -f "${ROOT}/.container-type" ]; then
-  container_type=$(cat "${ROOT}/.container-type")
+  elif [ -f "${root}/.container-type" ]; then
+  container_type=$(cat "${root}/.container-type")
   elif [ -v DOCKER ]; then
   container_type=docker
   elif [ -v PODMAN ]; then
