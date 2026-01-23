@@ -73,8 +73,10 @@ jobs:
           path: ${{ runner.temp }}
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
+      - name: set XDG_CACHE_HOME # can't set with the env: key because the runner context isn't available there
+        run: export XDG_CACHE_HOME=${{ runner.temp }}/.cache && printenv
       - name: Run udb gem ${{ matrix.test }} unit tests
-        run: XDG_CACHE_HOME=${{ runner.temp }}/.cache ./do test:sorbet
+        run: ./do test:sorbet
   regress-idlc-unit:
     runs-on: ubuntu-latest
     needs: build-container
