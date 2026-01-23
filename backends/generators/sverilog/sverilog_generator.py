@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import sys
-import logging
 from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from generator import load_instructions, load_csrs, load_exception_codes
+from generator import load_csrs, load_exception_codes, load_instructions
 
 
 def parse_args():
@@ -83,7 +83,7 @@ def format_cause_name(name):
 def match_to_sverilog_bits(match_str):
     """Convert a match string to SystemVerilog bit pattern."""
     if not match_str:
-        logging.error(f"Empty match string encountered.")
+        logging.error("Empty match string encountered.")
 
     # For compressed instructions (16-bit), we need to handle them differently.
     # The 16-bit pattern is in the lower 16 bits,

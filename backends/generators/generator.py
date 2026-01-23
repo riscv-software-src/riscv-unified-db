@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-import os
-import yaml
-import logging
-import pprint
 import json
+import logging
+import os
+import pprint
+
+import yaml
 
 pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
@@ -125,7 +126,7 @@ def parse_extension_requirements(extensions_spec):
     """
     if extensions_spec is None:
         # If definedBy is None, we should never match
-        logging.error(f"Missing 'definedBy' field")
+        logging.error("Missing 'definedBy' field")
         return lambda exts: False
 
     if isinstance(extensions_spec, str):
@@ -562,10 +563,10 @@ def load_exception_codes(
             logging.error(
                 f"Error loading resolved codes file {resolved_codes_file}: {e}"
             )
-    # Logging an error and skipping the exception cause generation if no resolved codes file found
-    else:
-        logging.error(f"Error loading resolved codes file {resolved_codes_file}: {e}")
-        return
+    # Skip exception cause generation if no resolved codes file found or specified
+    elif resolved_codes_file:
+        logging.error(f"Resolved codes file not found: {resolved_codes_file}")
+        return []
 
     if found_extensions > 0:
         logging.info(

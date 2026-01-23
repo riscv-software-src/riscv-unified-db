@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-import os
-import sys
 import argparse
 import logging
+import os
+import sys
 
 # Add parent directory to path to find generator.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from generator import load_instructions, load_csrs, parse_match, signed
+from generator import load_csrs, load_instructions, parse_match, signed
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
@@ -47,9 +47,9 @@ func encode(a obj.As) *inst {
         csr_val = (enc_match >> 20) & ((1 << 12) - 1)
         funct7 = (enc_match >> 25) & ((1 << 7) - 1)
         # Create the instruction case name. For example, "bclri" becomes "ABCLRI"
-        instr_case = f"A{name.upper().replace('.','')}"
+        instr_case = f"A{name.upper().replace('.', '')}"
         instr_str += f"""  case {instr_case}:
-    return &inst{{ {hex(opcode)}, {hex(funct3)}, {hex(rs1)}, {hex(rs2)}, {signed(csr_val,12)}, {hex(funct7)} }}
+    return &inst{{ {hex(opcode)}, {hex(funct3)}, {hex(rs1)}, {hex(rs2)}, {signed(csr_val, 12)}, {hex(funct7)} }}
 """
     instructions_end = """  }
 	return nil

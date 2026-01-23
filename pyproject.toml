@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[tool.ruff]
+# Target Python 3.12 to match pre-commit config
+target-version = "py312"
+
+# Set line length to match black's default
+line-length = 88
+
+[tool.ruff.lint]
+# Start with a conservative set of rules, can expand later
+# Based on recommendations from issue #1235
+select = [
+  "F",    # Pyflakes - various basic rules
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "I",    # isort - import sorting
+  "UP",   # pyupgrade - suggest newer Python syntax
+  "B",    # flake8-bugbear - find likely bugs
+  "SIM",  # flake8-simplify - simplifications
+]
+
+# Ignore rules that conflict with formatter or are too strict initially
+# These can be enabled gradually as the codebase is cleaned up
+ignore = [
+  "E501",   # Line too long - handled by formatter
+  "E402",   # Module level import not at top of file - intentional for sys.path manipulation
+  "E711",   # Comparison to None - existing code pattern, can address later
+  "E722",   # Bare except - existing code pattern, can address later
+  "E731",   # Lambda assignment - existing code pattern
+  "B006",   # Mutable default arguments - existing code, can address later
+  "B007",   # Loop control variable not used - stylistic
+  "B016",   # Raise literal - existing bug, should be fixed separately
+  "B904",   # raise ... from err - good practice but can add incrementally
+  "UP038",  # Use X | Y in isinstance - newer syntax, can add incrementally
+  "SIM101", # Multiple isinstance calls - stylistic
+  "SIM102", # Nested if statements - stylistic, can address later
+  "SIM105", # contextlib.suppress - stylistic, can address later
+  "SIM118", # Use key in dict instead of dict.keys() - stylistic
+]
+
+[tool.ruff.lint.isort]
+# Match the existing import style in the codebase
+known-first-party = ["udb"]

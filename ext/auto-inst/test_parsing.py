@@ -2,14 +2,15 @@
 # SPDX-FileCopyrightText: 2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-import pytest
 import json
 import os
+
+import pytest
 from parsing import (
+    compare_yaml_json_encoding,
     get_json_path,
     get_yaml_directory,
     get_yaml_instructions,
-    compare_yaml_json_encoding,
 )
 
 # Global variables to store loaded data

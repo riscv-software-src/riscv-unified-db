@@ -4,9 +4,10 @@
 
 import os
 import re
-import yaml
 from pathlib import Path
+
 import pytest
+import yaml
 
 yaml_instructions = {}
 REPO_DIRECTORY = None
@@ -185,7 +186,7 @@ def compare_yaml_json_encoding(
 
     if bit_index != -1:
         return [
-            f"JSON encoding does not appear to be {expected_length} bits. Ends at bit {bit_index+1}."
+            f"JSON encoding does not appear to be {expected_length} bits. Ends at bit {bit_index + 1}."
         ]
 
     normalized_json_bits = []

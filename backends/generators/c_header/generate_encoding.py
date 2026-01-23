@@ -3,11 +3,11 @@
 Generator script for C encoding header.
 This script uses the existing generator.py functions to create encoding.h.
 """
+
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
-import yaml
 
 # Add parent directory to path to import generator.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,11 +15,10 @@ sys.path.append(parent_dir)
 
 # Import functions from generator.py
 from generator import (
-    load_instructions,
     load_csrs,
     load_exception_codes,
+    load_instructions,
     parse_match,
-    parse_extension_requirements,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
@@ -280,21 +279,21 @@ def main():
     mask_match_str = ""
     for i in sorted(instr_dict.keys()):
         mask_match_str += (
-            f'#define MATCH_{i.upper().replace(".","_")} {instr_dict[i]["match"]}\n'
+            f"#define MATCH_{i.upper().replace('.', '_')} {instr_dict[i]['match']}\n"
         )
         mask_match_str += (
-            f'#define MASK_{i.upper().replace(".","_")} {instr_dict[i]["mask"]}\n'
+            f"#define MASK_{i.upper().replace('.', '_')} {instr_dict[i]['mask']}\n"
         )
 
     declare_insn_str = ""
     for i in sorted(instr_dict.keys()):
-        declare_insn_str += f'DECLARE_INSN({i.replace(".","_")}, MATCH_{i.upper().replace(".","_")}, MASK_{i.upper().replace(".","_")})\n'
+        declare_insn_str += f"DECLARE_INSN({i.replace('.', '_')}, MATCH_{i.upper().replace('.', '_')}, MASK_{i.upper().replace('.', '_')})\n"
 
     csr_names_str = ""
     declare_csr_str = ""
     for addr, name in sorted(csrs.items()):
-        csr_names_str += f"#define CSR_{name.upper().replace(".","_")} 0x{addr:x}\n"
-        declare_csr_str += f"DECLARE_CSR({name.lower().replace(".","_")}, CSR_{name.upper().replace(".","_")})\n"
+        csr_names_str += f"#define CSR_{name.upper().replace('.', '_')} 0x{addr:x}\n"
+        declare_csr_str += f"DECLARE_CSR({name.lower().replace('.', '_')}, CSR_{name.upper().replace('.', '_')})\n"
 
     causes_str = ""
     declare_cause_str = ""

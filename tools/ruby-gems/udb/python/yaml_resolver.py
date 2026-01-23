@@ -1,24 +1,21 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-import glob, os
 import argparse
-import shutil
+import glob
 import json
+import os
+import shutil
 import sys
-
+from copy import deepcopy
 from pathlib import Path
 
-from copy import deepcopy
-from tqdm.auto import tqdm
-from ruamel.yaml import YAML
-from mergedeep import merge, Strategy
 from jsonschema import Draft7Validator, validators
-from jsonschema.exceptions import best_match
-from jsonschema.exceptions import ValidationError
-
+from jsonschema.exceptions import ValidationError, best_match
+from mergedeep import Strategy, merge
 from referencing import Registry, Resource
-from referencing.exceptions import NoSuchResource
+from ruamel.yaml import YAML
+from tqdm.auto import tqdm
 
 # cache of Schema validators
 schemas = {}
@@ -119,7 +116,7 @@ def _merge_patch(base: dict, patch: dict, path_so_far=[]) -> None:
                     # add or overwrite value in base
                     base_ptr = base
                     for k in path_so_far:
-                        if not k in base_ptr:
+                        if k not in base_ptr:
                             base_ptr[k] = {}
                         base_ptr = base_ptr[k]
                     base_ptr = dig(base, *path_so_far)
@@ -248,7 +245,7 @@ def resolve(rel_path: str | Path, arch_root: str | Path, do_checks: bool) -> dic
         return resolved_objs[str(rel_path)]
     else:
         unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
-        if do_checks and (not "name" in unresolved_arch_data):
+        if do_checks and ("name" not in unresolved_arch_data):
             print(
                 f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr
             )
@@ -361,9 +358,9 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
         final_obj = yaml.load("{}")
         for key in keys:
-            if not key in obj:
+            if key not in obj:
                 final_obj[key] = parent_obj[key]
-            elif not key in parent_obj:
+            elif key not in parent_obj:
                 final_obj[key] = _resolve(
                     obj[key],
                     obj_path + [key],
@@ -570,7 +567,7 @@ def write_resolved_file_and_validate(
         schema = _get_schema(resolved_obj["$schema"])
         try:
             schema.validate(instance=resolved_obj)
-        except ValidationError as e:
+        except ValidationError:
             print(f"JSON Schema Validation Error for {rel_path}:")
             print(best_match(schema.iter_errors(resolved_obj)).message)
             exit(1)
@@ -618,14 +615,14 @@ if __name__ == "__main__":
     args = cmdparser.parse_args()
 
     if args.command == "merge":
-        arch_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob("**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if args.overlay_dir != None:
             overlay_paths = glob.glob(
-                f"**/*.yaml", recursive=True, root_dir=args.overlay_dir
+                "**/*.yaml", recursive=True, root_dir=args.overlay_dir
             )
             arch_paths.extend(overlay_paths)
             arch_paths = list(set(arch_paths))
-        merged_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.merged_dir)
+        merged_paths = glob.glob("**/*.yaml", recursive=True, root_dir=args.merged_dir)
         arch_paths.extend(merged_paths)
         arch_paths = list(set(arch_paths))
 
@@ -649,10 +646,10 @@ if __name__ == "__main__":
         )
 
     elif args.command == "resolve":
-        arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob("*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if os.path.exists(args.resolved_dir):
             resolved_paths = glob.glob(
-                f"*/**/*.yaml", recursive=True, root_dir=args.resolved_dir
+                "*/**/*.yaml", recursive=True, root_dir=args.resolved_dir
             )
             arch_paths.extend(resolved_paths)
             arch_paths = list(set(arch_paths))
