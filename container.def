@@ -10,6 +10,24 @@ Stage: spython-base
 requirements.txt /opt/requirements.txt
 package.json /opt/node/
 package-lock.json /opt/node/
+Gemfile /opt/Gemfile
+Gemfile.lock /opt/Gemfile.lock
+tools/ruby-gems/idlc/idlc.gemspec /opt/tools/ruby-gems/idlc/
+tools/ruby-gems/idlc/lib/gem_versions.rb /opt/tools/ruby-gems/idlc/lib/
+tools/ruby-gems/idlc/lib/idlc/version.rb /opt/tools/ruby-gems/idlc/lib/idlc/
+tools/ruby-gems/idl_highlighter/idl_highlighter.gemspec /opt/tools/ruby-gems/idl_highlighter/
+tools/ruby-gems/idl_highlighter/lib/idl_highlighter/version.rb /opt/tools/ruby-gems/idl_highlighter/lib/idl_highlighter/
+tools/ruby-gems/udb/udb.gemspec /opt/tools/ruby-gems/udb/
+tools/ruby-gems/udb/lib/gem_versions.rb /opt/tools/ruby-gems/udb/lib/
+tools/ruby-gems/udb/lib/udb/version.rb /opt/tools/ruby-gems/udb/lib/udb/
+tools/ruby-gems/udb-gen/udb-gen.gemspec /opt/tools/ruby-gems/udb-gen/
+tools/ruby-gems/udb-gen/lib/gem_versions.rb /opt/tools/ruby-gems/udb-gen/lib/
+tools/ruby-gems/udb-gen/lib/udb-gen/version.rb /opt/tools/ruby-gems/udb-gen/lib/udb-gen/
+tools/ruby-gems/udb_helpers/udb_helpers.gemspec /opt/tools/ruby-gems/udb_helpers/
+tools/ruby-gems/udb_helpers/lib/udb_helpers/version.rb /opt/tools/ruby-gems/udb_helpers/lib/udb_helpers/
+tools/ruby-gems/idlc/bin/idlc /workspace/bin/container
+tools/ruby-gems/udb/bin/udb /workspace/bin/container
+tools/ruby-gems/udb-gen/bin/udb-gen /workspace/bin/container
 %post -c /bin/bash
 
 DEBIAN_FRONTEND=noninteractive
@@ -105,6 +123,13 @@ NODE_PATH="/opt/node/node_modules"
 PATH="/opt/node/node_modules/.bin:$PATH"
 IN_UDB_CONTAINER=true
 
+# install gems
+bundle install --gemfile /opt/Gemfile
+
+# the binaries for gems need to be copied in
+mkdir -p /workspace/bin/container
+PATH="/workspace/bin/container:$PATH"
+
 # Grant the default ubuntu user sudo access
 echo ubuntu ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/ubuntu \
 && chmod 0440 /etc/sudoers.d/ubuntu
@@ -115,3 +140,4 @@ export PATH="/opt/venv/bin:$PATH"
 export NODE_PATH="/opt/node/node_modules"
 export PATH="/opt/node/node_modules/.bin:$PATH"
 export IN_UDB_CONTAINER=true
+export PATH="/workspace/bin/container:$PATH"
