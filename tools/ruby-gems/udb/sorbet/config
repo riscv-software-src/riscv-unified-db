@@ -12,3 +12,4 @@ doc
 ext
 --ignore
 python
+--cache-dir=.sorbet-cache
