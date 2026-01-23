@@ -9,4 +9,7 @@ rm -rf                 \
   ${ROOT}/.singularity \
   ${ROOT}/.cache       \
   ${ROOT}/gen          \
-  ${ROOT}/sorbet
+  ${ROOT}/sorbet       \
+  ${ROOT}/tools/ruby-gems/idlc/.sorbet-cache \
+  ${ROOT}/tools/ruby-gems/udb/.sorbet-cache \
+  ${ROOT}/tools/ruby-gems/udb-gen/.sorbet-cache
