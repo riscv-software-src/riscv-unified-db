@@ -66,6 +66,12 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+      # - name: Run sorbet checks
+      #   uses: ./.github/actions/udb-container
+      #   with:
+      #     command: ./do test:sorbet
+      #     env:
+      #       XDG_CACHE_HOME: ${{ runner.temp }}/.cache
       - name: Download docker image
         uses: actions/download-artifact@v4
         with:
@@ -76,7 +82,7 @@ jobs:
       - name: set XDG_CACHE_HOME # can't set with the env: key because the runner context isn't available there
         run: export XDG_CACHE_HOME=${{ runner.temp }}/.cache && printenv
       - name: Run udb gem ${{ matrix.test }} unit tests
-        run: ./do test:sorbet
+        run: echo $XDG_CACHE_HOME && ./do test:sorbet
   regress-idlc-unit:
     runs-on: ubuntu-latest
     needs: build-container
