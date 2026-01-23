@@ -74,7 +74,7 @@ jobs:
       - name: Load image
         run: docker load --input ${{ runner.temp }}/docker_image.tar
       - name: Run sorbet checks
-        run: export XDG_CACHE_HOME=${{ runner.temp }}/.cache && ./bin/bash -c printenv && ./do test:sorbet
+        run: export XDG_CACHE_HOME=${{ github.workspace }}/.cache && ./bin/bash -c printenv && ./do test:sorbet
   regress-idlc-unit:
     runs-on: ubuntu-latest
     needs: build-container
