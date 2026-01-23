@@ -33,7 +33,7 @@ end
 #
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#129
+# source://tzinfo//lib/tzinfo/transition_rule.rb#120
 class TZInfo::AbsoluteDayOfYearTransitionRule < ::TZInfo::DayOfYearTransitionRule
   # Initializes a new {AbsoluteDayOfYearTransitionRule}.
   #
@@ -2206,7 +2206,7 @@ end
 #
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#339
+# source://tzinfo//lib/tzinfo/transition_rule.rb#323
 class TZInfo::DayOfMonthTransitionRule < ::TZInfo::DayOfWeekTransitionRule
   # Initializes a new {DayOfMonthTransitionRule}.
   #
@@ -2284,7 +2284,7 @@ end
 # @abstract
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#273
+# source://tzinfo//lib/tzinfo/transition_rule.rb#261
 class TZInfo::DayOfWeekTransitionRule < ::TZInfo::TransitionRule
   # Initializes a new {DayOfWeekTransitionRule}.
   #
@@ -2360,7 +2360,7 @@ end
 # @abstract
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#81
+# source://tzinfo//lib/tzinfo/transition_rule.rb#73
 class TZInfo::DayOfYearTransitionRule < ::TZInfo::TransitionRule
   # Initializes a new {DayOfYearTransitionRule}.
   #
@@ -2422,7 +2422,7 @@ module TZInfo::Format1; end
 #
 # @private
 #
-# source://tzinfo//lib/tzinfo/format1/country_definer.rb#11
+# source://tzinfo//lib/tzinfo/format1/country_definer.rb#10
 class TZInfo::Format1::CountryDefiner < ::TZInfo::Format2::CountryDefiner
   # Initializes a new {CountryDefiner}.
   #
@@ -3062,7 +3062,7 @@ class TZInfo::InvalidTimezoneIdentifier < ::StandardError; end
 #
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#185
+# source://tzinfo//lib/tzinfo/transition_rule.rb#184
 class TZInfo::JulianDayOfYearTransitionRule < ::TZInfo::DayOfYearTransitionRule
   # Initializes a new {JulianDayOfYearTransitionRule}.
   #
@@ -3148,7 +3148,7 @@ TZInfo::JulianDayOfYearTransitionRule::YEAR = T.let(T.unsafe(nil), Integer)
 #
 # @private
 #
-# source://tzinfo//lib/tzinfo/transition_rule.rb#408
+# source://tzinfo//lib/tzinfo/transition_rule.rb#396
 class TZInfo::LastDayOfMonthTransitionRule < ::TZInfo::DayOfWeekTransitionRule
   # Initializes a new {LastDayOfMonthTransitionRule}.
   #
