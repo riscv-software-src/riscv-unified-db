@@ -150,6 +150,15 @@ repos:
         language: system
         entry: ./bin/generate-container-def
 
+  - repo: local
+    hooks:
+      - id: regress
+        name: generate regress.yml
+        files: (tools/test/gen_regress\.rb|tools/test/regress-tests.yaml|tools/test/regress-gh-template.yaml)$
+        pass_filenames: false
+        language: system
+        entry: ./bin/ruby tools/test/gen_regress.rb
+
   - repo: https://github.com/renovatebot/pre-commit-hooks
     rev: 42.52.2
     hooks:

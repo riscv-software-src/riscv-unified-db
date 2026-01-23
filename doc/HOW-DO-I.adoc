@@ -3,7 +3,67 @@
 
 = FAQ
 
-== Update Ruby gems
+== Development
+
+=== Run regression tests
+
+To run all locally (takes a long time):
+
+[source,bash]
+--
+./bin/regress
+--
+
+To list regression tests:
+
+[source,bash]
+--
+./bin/regress --list
+--
+
+To run a specific regression test:
+
+[source,bash]
+--
+# run the 'regress-sorbet' test
+./bin/regress --name regress-sorbet
+--
+
+To run all regression tests matching a tag:
+
+[source,bash]
+--
+# run all regressions tagged as 'smoke'
+./bin/regress --tag smoke
+--
+
+=== Add a new regression
+
+Basic Regressions::
+--
+Basic (most) regressions that can be run via the command-line within the UDB container are
+stored in `tools/tests/regress-tests.yaml`.
+
+To add a basic regression, you must:
+
+1. Add the regression in `tools/tests/regress-test.yaml`
+    * The main steps of the test should go under the `test` key.
+    * If there are any steps needed to set up the test in GitHub CI, add those under the `pre` key.
+    * If there are any steps needed after the test in GitHub CI, add those under the `post` key.
+2. run `./bin/ruby tools/test/gen_regress.rb`
+--
+
+Complex Regressions::
+--
+Complex regressions are not runnable on the command line. They only run in CI via GitHub Actions.
+
+To add a complex regression, you must:
+
+1. add the steps as a job in `tools/tests/regress-gh-template`
+2. run `./bin/ruby tools/test/gen_regress.rb`
+--
+
+=== Update Ruby gems
 
 This will run natively, so you either need to be in the container already (e.g., in the devcontainer), or you need to have rbenv installed on the host.
 
@@ -27,7 +87,7 @@ Then rebuild the container:
 
 Then `git add` all updated/new files and make a PR.
 
-== Add a new Ruby gem
+=== Add a new Ruby gem
 
 Add the gem in the appropriate Gemfile (top, or one of the sub-project gems under tools/ruby-gems).
 

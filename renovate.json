@@ -27,6 +27,17 @@
       ]
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^tools/ruby-gems/test/*-test.yaml$/"],
+      "matchStrings": [
+        "(?:^|\\r\\n|\\r|\\n|$)\\s+uses:\\s+(?<packageName>.+/.+)@(?<currentDigest>[0-9a-fA-F]+?)\\s*(# (?<currentValue>.*?))?(?:^|\\r\\n|\\r|\\n|$)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "registryUrlTemplate": "https://github.com"
+    }
+  ],
   "git-submodules": {
     "enabled": true
   },

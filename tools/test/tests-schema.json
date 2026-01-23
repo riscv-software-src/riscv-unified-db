@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "title": "Schema for test defintions",
+
+  "type": "object",
+
+  "additionalProperties": false,
+  "required": ["tests"],
+
+  "properties": {
+    "tests": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["test"],
+          "properties": {
+            "test": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "run"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "run": { "type": "string" },
+                  "env": {
+                    "type": "object",
+                    "patternProperties": {
+                      ".*": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "tags": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "env": {
+              "type": "object",
+              "patternProperties": {
+                ".*": { "type": "string" }
+              }
+            },
+            "strategy": {
+              "type": "object",
+              "required": ["matrix"],
+              "additionalProperties": false,
+              "properties": {
+                "matrix": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "post": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "pre": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

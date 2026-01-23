@@ -33,7 +33,8 @@ class TestCfg < Minitest::Test
   Dir[Udb.repo_root / "cfgs" / "*.yaml"].each do |cfg_path|
     define_method "test_cfg_#{File.basename(cfg_path, ".yaml")}_valid" do
       cfg_arch = @resolver.cfg_arch_for(Pathname.new cfg_path)
-      assert cfg_arch.valid?, <<~MSG
+      result = cfg_arch.valid?
+      assert result.valid, <<~MSG
         Config '#{File.basename(cfg_path, ".yaml")}' is not valid.
         To see why, run `./bin/udb validate cfg #{cfg_path}`
       MSG
