@@ -108,7 +108,7 @@ namespace udb {
           m_csr_addr_map{
             <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
               <%- unless csr.address.nil? -%>
-                { PossiblyUnknownBits<12>{<%= csr.address %>_b, 0_b}, &m_csrs.<%= csr.name %> },
+                { PossiblyUnknownBits<12>{<%= csr.address %>_b, 0_b}, &m_csrs.<%= csr.cxx_name %> },
               <%- end -%>
             <%- end -%>
           },
@@ -116,14 +116,14 @@ namespace udb {
           m_csr_indirect_addr_map{
             <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
               <%- if csr.indirect? -%>
-                { {<%= csr.indirect_address %>_b, <%= csr.indirect_slot %>_b}, &m_csrs.<%= csr.name %> },
+                { {<%= csr.indirect_address %>_b, <%= csr.indirect_slot %>_b}, &m_csrs.<%= csr.cxx_name %> },
               <%- end -%>
             <%- end -%>
           },
           <%- end -%>
           m_csr_name_map {
             <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
-                { "<%= csr.name %>", &m_csrs.<%= csr.name %> },
+                { "<%= csr.name %>", &m_csrs.<%= csr.cxx_name %> },
             <%- end -%>
           }
       {

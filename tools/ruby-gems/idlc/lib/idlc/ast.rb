@@ -52,7 +52,7 @@ module Idl
     StringType = Type.new(:string).freeze
 
     # @return [String] Source input file
-    sig { returns(Pathname) }
+    sig { returns(T.nilable(Pathname)) }
     attr_reader :input_file
 
     # @return [Integer] Starting line in the source input file (i.e., position 0 of {#input} in the file)
@@ -2567,13 +2567,15 @@ module Idl
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab) = false
 
-    def csr_field = @children[0]
-    def write_value = @children[1]
+    def csr_field = T.cast(@children[0], CsrFieldReadExpressionAst)
+    def write_value = T.cast(@children[1], RvalueAst)
 
+    sig { params(input: String, interval: T::Range[Integer], csr_field: CsrFieldReadExpressionAst, write_value: RvalueAst).void }
     def initialize(input, interval, csr_field, write_value)
       super(input, interval, [csr_field, write_value])
     end
 
+    sig { params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
       if field(symtab).defined_in_all_bases?
         if symtab.mxlen == 64 && symtab.multi_xlen?
@@ -4540,6 +4542,7 @@ module Idl
   end
 
   class BuiltinVariableAst < AstNode
+    include Rvalue
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
     def const_eval?(symtab)
@@ -4787,17 +4790,8 @@ module Idl
 
     # @!macro value_no
     def value(symtab)
-      @enum_def_type ||= begin
-        enum_def_ast = symtab.get(@enum_class_name)
-        if enum_def_ast.is_a?(BuiltinEnumDefinitionAst)
-          enum_def_ast.type(symtab)
-        else
-          enum_def_ast.type(nil)
-        end
-      end
-      internal_error "Must call type_check first" if @enum_def_type.nil?
-
-      @enum_def_type.value(@member_name)
+      enum_def_type = symtab.get(@enum_class_name)
+      enum_def_type.value(@member_name)
     end
 
     # @!macro to_idl
@@ -7666,22 +7660,11 @@ end,
       end
     end
 
-    # @api private
-    sig { params(symtab: SymbolTable).void }
-    def calc_value(symtab)
-      value_result = value_try do
-        @memo.value = calc_value(symtab)
-      end
-      value_else(value_result) do
-        @memo.value = nil
-      end
-      @memo.value_calculated = true
-    end
-
     # @!macro value
     sig { override.params(symtab: SymbolTable).returns(ValueRbType) }
     def value(symtab)
-      calc_value(symtab) unless @memo.value_calculated
+      calc_value(symtab) unless (@memo.value_calculated == true)
+
 
       if @memo.value.nil?
         value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
@@ -7694,7 +7677,12 @@ end,
     sig { params(symtab: SymbolTable).void }
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
-      return 0 if !field_def(symtab).exists?
+      @memo.value_calculated = true
+
+      if !field_def(symtab).exists?
+        @memo.value = 0
+        return
+      end
 
       symtab.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"
@@ -7704,6 +7692,7 @@ end,
 
       v = field_def(symtab).reset_value
       v = nil if v == "UNDEFINED_LEGAL"
+      @memo.value = v
     end
   end
 

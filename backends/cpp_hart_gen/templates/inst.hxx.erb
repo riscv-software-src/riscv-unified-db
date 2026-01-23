@@ -55,7 +55,7 @@ namespace udb {
 #define __UDB_MUTABLE_GLOBAL(x) m_parent->x
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%><SocType>::
 #define __UDB_CONST_GLOBAL(F) <%= name_of(:hart, cfg_arch)%><SocType>:: F
-#define __UDB_XLEN m_parent->xlen()
+#define __UDB_XLEN m_parent->xlen().to_defined()
 #define __UDB_HART m_parent
 
   <%- ilist.each do |inst| -%>
