@@ -9,6 +9,61 @@ pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
 
+def is_mock_item(name, defined_by=None):
+    """
+    Check if an item (instruction, CSR, etc.) is a mock/test item that should
+    be excluded from standard artifacts.
+
+    Mock items are identified by:
+    - Name containing 'mock' (case-insensitive)
+    - Being defined by an extension starting with 'Xmock' or 'Mock'
+
+    Args:
+        name: The name of the item
+        defined_by: The definedBy field from the item's YAML (optional)
+
+    Returns:
+        True if this is a mock item, False otherwise
+    """
+    # Check if name contains 'mock'
+    if name and "mock" in name.lower():
+        return True
+
+    # Check if defined by a mock extension
+    if defined_by:
+        ext_name = None
+        if isinstance(defined_by, str):
+            ext_name = defined_by
+        elif isinstance(defined_by, dict):
+            if "name" in defined_by:
+                ext_name = defined_by["name"]
+            elif "extension" in defined_by:
+                ext_spec = defined_by["extension"]
+                if isinstance(ext_spec, dict) and "name" in ext_spec:
+                    ext_name = ext_spec["name"]
+                elif isinstance(ext_spec, str):
+                    ext_name = ext_spec
+            elif "allOf" in defined_by:
+                # Check all requirements
+                for req in defined_by["allOf"]:
+                    if is_mock_item(None, req):
+                        return True
+            elif "anyOf" in defined_by or "oneOf" in defined_by:
+                # Check any of the requirements
+                reqs = defined_by.get("anyOf") or defined_by.get("oneOf")
+                for req in reqs:
+                    if is_mock_item(None, req):
+                        return True
+
+        if ext_name and ("mock" in ext_name.lower() or ext_name.startswith("X")):
+            # Extensions starting with X are custom/vendor extensions
+            # Only filter if they also contain 'mock'
+            if "mock" in ext_name.lower():
+                return True
+
+    return False
+
+
 def check_requirement(req, exts):
     if isinstance(req, str):
         return req in exts
@@ -205,7 +260,11 @@ def parse_extension_requirements(extensions_spec):
 
 
 def load_instructions(
-    root_dir, enabled_extensions, include_all=False, target_arch="RV64"
+    root_dir,
+    enabled_extensions,
+    include_all=False,
+    target_arch="RV64",
+    exclude_mock=True,
 ):
     """
     Recursively walk through root_dir, load YAML files that define an instruction,
@@ -213,12 +272,14 @@ def load_instructions(
 
     If include_all is True, extension filtering is bypassed.
     target_arch can be "RV32", "RV64", or "BOTH".
+    If exclude_mock is True (default), mock/test instructions are filtered out.
     """
     instr_dict = {}
     found_files = 0
     found_instructions = 0
     extension_filtered = 0
     encoding_filtered = 0
+    mock_filtered = 0
 
     logging.info(
         f"Searching for instruction files in {root_dir} for target architecture {target_arch}"
@@ -245,6 +306,14 @@ def load_instructions(
             if not name:
                 logging.error(f"Missing 'name' field in {path}")
                 continue
+
+            # Filter out mock/test instructions unless explicitly included
+            if exclude_mock:
+                definedBy = data.get("definedBy")
+                if is_mock_item(name, definedBy):
+                    logging.debug(f"Skipping mock instruction: {name}")
+                    mock_filtered += 1
+                    continue
 
             # If include_all is True, skip extension filtering
             if not include_all:
@@ -385,6 +454,8 @@ def load_instructions(
         logging.info(
             f"Found {found_instructions} instruction definitions in {found_files} files"
         )
+        if mock_filtered > 0:
+            logging.info(f"Filtered out {mock_filtered} mock instructions")
         if extension_filtered > 0:
             logging.info(f"Filtered out {extension_filtered} instructions by extension")
         if encoding_filtered > 0:
@@ -398,7 +469,13 @@ def load_instructions(
     return instr_dict
 
 
-def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64"):
+def load_csrs(
+    csr_root,
+    enabled_extensions,
+    include_all=False,
+    target_arch="RV64",
+    exclude_mock=True,
+):
     """
     Recursively walk through csr_root, load YAML files that define a CSR,
     filter by enabled extensions, and collect them into a dictionary mapping
@@ -406,6 +483,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
 
     If include_all is True, extension filtering is bypassed.
     target_arch can be "RV32", "RV64", or "BOTH".
+    If exclude_mock is True (default), mock/test CSRs are filtered out.
     """
     csrs = {}
     found_files = 0
@@ -413,6 +491,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
     extension_filtered = 0
     arch_filtered = 0
     address_errors = 0
+    mock_filtered = 0
 
     logging.info(
         f"Searching for CSR files in {csr_root} for target architecture {target_arch}"
@@ -439,6 +518,14 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
             if not name:
                 logging.error(f"Missing 'name' field in {path}")
                 continue
+
+            # Filter out mock/test CSRs unless explicitly included
+            if exclude_mock:
+                definedBy = data.get("definedBy")
+                if is_mock_item(name, definedBy):
+                    logging.debug(f"Skipping mock CSR: {name}")
+                    mock_filtered += 1
+                    continue
 
             address = data.get("address")
             indirect_address = data.get("indirect_address")
@@ -501,6 +588,8 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
 
     if found_csrs > 0:
         logging.info(f"Found {found_csrs} CSR definitions in {found_files} files")
+        if mock_filtered > 0:
+            logging.info(f"Filtered out {mock_filtered} mock CSRs")
         if extension_filtered > 0:
             logging.info(f"Filtered out {extension_filtered} CSRs by extension")
         if arch_filtered > 0:

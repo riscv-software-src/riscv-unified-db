@@ -61,6 +61,11 @@ def parse_args():
         "--resolved-codes",
         help="JSON file containing pre-resolved exception codes",
     )
+    parser.add_argument(
+        "--include-mock",
+        action="store_true",
+        help="Include mock/test instructions and CSRs (excluded by default)",
+    )
     return parser.parse_args()
 
 
@@ -174,14 +179,27 @@ def main():
 
     logging.info(f"Target architecture: {args.arch}")
 
+    # By default, mock items are excluded unless --include-mock is specified
+    exclude_mock = not args.include_mock
+
     # Load instructions
     instructions = load_instructions(
-        args.inst_dir, enabled_extensions, args.include_all, args.arch
+        args.inst_dir,
+        enabled_extensions,
+        args.include_all,
+        args.arch,
+        exclude_mock=exclude_mock,
     )
     logging.info(f"Loaded {len(instructions)} instructions")
 
     # Load CSRs
-    csrs = load_csrs(args.csr_dir, enabled_extensions, args.include_all, args.arch)
+    csrs = load_csrs(
+        args.csr_dir,
+        enabled_extensions,
+        args.include_all,
+        args.arch,
+        exclude_mock=exclude_mock,
+    )
     logging.info(f"Loaded {len(csrs)} CSRs")
 
     # Load exception codes
