@@ -501,4 +501,15 @@ module Idl
       end
     end
   end
+
+  class BitsCastAst < AstNode
+    def prune(symtab)
+      p = expr.prune(symtab)
+      if p.type(symtab).kind == :bits
+        return p
+      else
+        return BitsCastAst.new(input, interval, p)
+      end
+    end
+  end
 end

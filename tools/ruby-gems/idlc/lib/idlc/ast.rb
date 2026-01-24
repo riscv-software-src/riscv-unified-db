@@ -3450,8 +3450,8 @@ module Idl
       etype = expr.type(symtab)
 
       case etype.kind
-      # when :bits
-      #   expr.value(symtab)
+      when :bits
+        expr.value(symtab)
       when :enum_ref
         if expr.is_a?(EnumRefAst)
           element_name = expr.text_value.split(":")[2]
@@ -7735,7 +7735,7 @@ end,
     end
 
     # @!macro type
-    def type(symtab) = @type
+    def type(symtab) = @type ||= CsrType.new(symtab.csr(@csr_name))
 
     # @!macro type_check
     def type_check(symtab)
