@@ -9,13 +9,16 @@ implemented_extensions:
   - [Sm, "1.11.0"]
   - [I, "2.1"]
   - [C, "2.0"]
+  - [Zca, "1.0"]
   - [M, "2.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
   - [Smrnmi, "1.0"]
 params:
   MXLEN: 32
-  ARCH_ID_VALUE: 0
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 1
+  MIMPID_IMPLEMENTED: true
   IMP_ID_VALUE: 0
   VENDOR_ID_BANK: 1
   VENDOR_ID_OFFSET: 1
@@ -43,9 +46,46 @@ params:
   PMA_GRANULARITY: 12
   PHYS_ADDR_WIDTH: 32
   MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MUTABLE_MISA_C: false
   MUTABLE_MISA_M: false
   TIME_CSR_IMPLEMENTED: false
+  COUNTINHIBIT_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

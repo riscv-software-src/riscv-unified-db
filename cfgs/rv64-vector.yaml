@@ -11,6 +11,7 @@ implemented_extensions:
   - [I, "2.1"]
   - [C, "2.0"]
   - [Zca, "1.0.0"]
+  - [Zcd, "1.0.0"]
   - [M, "2.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
@@ -22,6 +23,15 @@ implemented_extensions:
   - [Sv39, "1.11.0"]
   - [V, "1.0.0"]
   - [F, "2.2"]
+  - [D, "2.2"]
+  - [Zve64f, "1.0.0"]
+  - [Zve64d, "1.0.0"]
+  - [Zve64x, "1.0.0"]
+  - [Zvl128b, "1.0.0"]
+  - [Zvl64b, "1.0.0"]
+  - [Zvl32b, "1.0.0"]
+  - [Zve32x, "1.0.0"]
+  - [Zve32f, "1.0.0"]
 
 params:
   MXLEN: 64
@@ -61,6 +71,7 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MUTABLE_MISA_C: false
+  MUTABLE_MISA_D: false
   MUTABLE_MISA_M: false
   TIME_CSR_IMPLEMENTED: false
   MUTABLE_MISA_S: false

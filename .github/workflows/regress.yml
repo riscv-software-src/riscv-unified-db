@@ -368,7 +368,7 @@ jobs:
     - name: checkout ISA manual
       run: git submodule update --init ext/riscv-isa-manual
     - name: Mark isa-manual as safe
-      run: ./bin/bash -c "git config --global --add safe.directory '*'
+      run: ./bin/bash -c "git config --global --add safe.directory '*'"
     - name: Generate HTML ISA manual
       run: "./do gen:html_manual"
     env:
