@@ -12,7 +12,7 @@ tests:
     test:
       - name: Run idlxc unit tests
         run: ./do test:idlc:unit
-    post:
+    gh_post:
       - name: Upload idlc coverage reports to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
         with:
@@ -66,7 +66,7 @@ tests:
       MANUAL_NAME: isa
       VERSIONS: isa_regress
       CFG: regress
-    pre:
+    gh_pre:
       - name: checkout ISA manual
         run: git submodule update --init ext/riscv-isa-manual
       - name: Mark isa-manual as safe
@@ -118,7 +118,7 @@ tests:
     test:
       - name: Run udb gem ${{ matrix.test }} unit tests
         run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
-    post:
+    gh_post:
       - name: Update ownership of coverage files # TODO: Remove when Docker image uses non-root user
         run: sudo chown -R $USER:$USER tools/ruby-gems/udb/coverage
       - name: Rename coverage file
@@ -152,7 +152,7 @@ tests:
         run: ./do test:cpp_hart CONFIG=rv64 JOBS=4 BUILD_TYPE=debug
 
   regress-riscv-tests:
-    pre:
+    gh_pre:
       - name: check out riscv-tests
         run: git submodule update --init ext/riscv-tests
     test:
@@ -160,7 +160,7 @@ tests:
         run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
 
   regress-riscv-tests-64:
-    pre:
+    gh_pre:
       - name: check out riscv-tests
         run: git submodule update --init ext/riscv-tests
     test:

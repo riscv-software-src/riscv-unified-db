@@ -41,12 +41,12 @@ tests["tests"].each do |test_name, test_data|
   if test_data.key?("strategy")
     regress_yaml["jobs"][test_name]["strategy"] = test_data["strategy"]
   end
-  if test_data.key?("pre")
-    regress_yaml["jobs"][test_name]["steps"].concat(test_data["pre"])
+  if test_data.key?("gh_pre")
+    regress_yaml["jobs"][test_name]["steps"].concat(test_data["gh_pre"])
   end
   regress_yaml["jobs"][test_name]["steps"].concat(test_data["test"])
-  if test_data.key?("post")
-    regress_yaml["jobs"][test_name]["steps"].concat(test_data["post"])
+  if test_data.key?("gh_post")
+    regress_yaml["jobs"][test_name]["steps"].concat(test_data["gh_post"])
   end
 end
 
