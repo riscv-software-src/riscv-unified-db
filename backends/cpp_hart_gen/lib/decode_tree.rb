@@ -307,7 +307,7 @@ class DecodeGen
                 end
               elsif term.is_a?(Udb::XlenTerm)
                 "(xlen() == #{term.xlen}_b)"
-              elsif term.is_a?(Udb::ParamterTerm)
+              elsif term.is_a?(Udb::ParameterTerm)
                 var =
                   if cfg_arch.params_with_value.key?(term.name)
                     "m_params.#{term.name}_VALUE"
@@ -316,21 +316,21 @@ class DecodeGen
                   end
                 comparison_type = term.comparison_type
                 case comparison_type
-                when Udb::ParamterTerm::ParameterComparisonType::Equal
+                when Udb::ParameterTerm::ParameterComparisonType::Equal
                   "(#{var} == #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::NotEqual
+                when Udb::ParameeterTerm::ParameterComparisonType::NotEqual
                   "(#{var} != #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::LessThan
+                when Udb::ParameterTerm::ParameterComparisonType::LessThan
                   "(#{var} < #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::GreaterThan
+                when Udb::ParameeterTerm::ParameterComparisonType::GreaterThan
                   "(#{var} > #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::LessThanOrEqual
+                when Udb::ParameterTerm::ParameterComparisonType::LessThanOrEqual
                   "(#{var} <= #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::GreaterThanOrEqual
+                when Udb::ParameeterTerm::ParameterComparisonType::GreaterThanOrEqual
                   "(#{var} >= #{term.comparison_value})"
-                when Udb::ParamterTerm::ParameterComparisonType::Includes
+                when Udb::ParameterTerm::ParameterComparisonType::Includes
                   "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
-                when Udb::ParamterTerm::ParameterComparisonType::OneOf
+                when Udb::ParameterTerm::ParameterComparisonType::OneOf
                   vals = term.comparison_value
                   tests = vals.map { |v| "(#{var} == #{v})" }.join(" || ")
                   "(#{tests})"
