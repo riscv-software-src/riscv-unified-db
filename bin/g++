@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
-source $ROOT/setup
+ROOT=$(dirname "$(realpath "${BASH_SOURCE[0]}")")  
+source "$ROOT/setup"
 
 $GPP "$@"
