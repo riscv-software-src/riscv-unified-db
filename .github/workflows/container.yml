@@ -49,10 +49,14 @@ jobs:
           apptainer registry login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }} oras://docker.io
           apptainer push .singularity/image.sif oras://docker.io/riscvintl/spec-generator:${{ env.TAG }}
 
-  publish-docker-container:
+  build-docker-container:
     env:
       DOCKER: 1
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -62,22 +66,82 @@ jobs:
           TAG=$(cat bin/.container-tag)
           echo "TAG=$TAG" >> $GITHUB_ENV
 
+      - name: Set platform
+        run: |
+          if [ "${{ matrix.runner }}" == "ubuntu-24.04" ]; then
+            echo "PLATFORM=linux/amd64" >> $GITHUB_ENV
+          else
+            echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
+          fi
+
       - name: Login to Docker Hub
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        with:
+          context: .
+          file: ./.devcontainer/Dockerfile
+          platforms: ${{ env.PLATFORM }}
+          outputs: type=image,name=riscvintl/udb,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: digests-${{ matrix.runner }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-docker-container:
+    runs-on: ubuntu-24.04
+    needs:
+      - build-docker-container
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Download digests
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          pattern: digests-*
+          merge-multiple: true
+          path: /tmp/digests
+
+      - name: Get container tag
+        run: |
+          TAG=$(cat bin/.container-tag)
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
-      - name: Build and push multi-platform image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+      - name: Login to Docker Hub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         with:
-          push: true
-          file: ./.devcontainer/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          tags: riscvintl/udb:${{ env.TAG }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            --tag riscvintl/udb:${{ env.TAG }} \
+            $(printf 'riscvintl/udb@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect riscvintl/udb:${{ env.TAG }}
