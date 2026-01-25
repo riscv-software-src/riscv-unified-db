@@ -22,69 +22,21 @@ import sys
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
 
-# Mapping of extension names to their march string components
-EXTENSION_MARCH_MAP = {
-    "I": "i",
-    "M": "m",
-    "A": "a",
-    "F": "f",
-    "D": "d",
-    "Q": "q",
-    "C": "c",
-    "Zca": "c",
-    "Zcb": "_zcb",
-    "Zcd": "_zcd",
-    "Zcf": "_zcf",
-    "Zcmop": "_zcmop",
-    "Zcmp": "_zcmp",
-    "Zcmt": "_zcmt",
-    "B": "b",
-    "H": "h",
-    "S": "s",
-    "V": "v",
-    "Zba": "_zba",
-    "Zbb": "_zbb",
-    "Zbc": "_zbc",
-    "Zbkb": "_zbkb",
-    "Zbkx": "_zbkx",
-    "Zbs": "_zbs",
-    "Zfa": "_zfa",
-    "Zfh": "_zfh",
-    "Zfbfmin": "_zfbfmin",
-    "Zicbom": "_zicbom",
-    "Zicbop": "_zicbop",
-    "Zicboz": "_zicboz",
-    "Zicfilp": "_zicfilp",
-    "Zicfiss": "_zicfiss",
-    "Zicond": "_zicond",
-    "Zicsr": "_zicsr",
-    "Zifencei": "_zifencei",
-    "Zihintntl": "_zihintntl",
-    "Zimop": "_zimop",
-    "Zaamo": "_zaamo",
-    "Zabha": "_zabha",
-    "Zacas": "_zacas",
-    "Zalasr": "_zalasr",
-    "Zalrsc": "_zalrsc",
-    "Zawrs": "_zawrs",
-    "Zkn": "_zkn",
-    "Zknd": "_zknd",
-    "Zkne": "_zkne",
-    "Zknh": "_zknh",
-    "Zks": "_zks",
-    "Zvbb": "_zvbb",
-    "Zvbc": "_zvbc",
-    "Zvfbfmin": "_zvfbfmin",
-    "Zvfbfwma": "_zvfbfwma",
-    "Zvkg": "_zvkg",
-    "Zvkned": "_zvkned",
-    "Zvknha": "_zvknha",
-    "Zvks": "_zvks",
-    "Svinval": "_svinval",
-    "Sdext": "_sdext",
-    "Smdbltrp": "_smdbltrp",
-    "Smrnmi": "_smrnmi",
-}
+def get_march_component(ext_name):
+    """
+    Convert extension name to its -march string component.
+
+    Rules (per RISC-V ISA naming convention):
+    - Single-letter extensions map to their lowercase letter (e.g., I -> i, M -> m)
+    - Multi-letter extensions map to underscore + lowercase name (e.g., Zba -> _zba)
+    """
+    if len(ext_name) == 1:
+        # Single-letter base extensions: I, M, A, F, D, Q, C, B, H, S, V, etc.
+        return ext_name.lower()
+    else:
+        # Multi-letter extensions: Zba, Zbb, Zicsr, Svinval, etc.
+        return f"_{ext_name.lower()}"
+
 
 # Standard register names for operand generation
 X_REGS = [
@@ -176,17 +128,13 @@ def get_extension_from_path(inst_path):
 
 def get_march_for_extension(ext_name, base="rv64"):
     """Generate the -march string for a given extension."""
-    if ext_name in EXTENSION_MARCH_MAP:
-        ext_march = EXTENSION_MARCH_MAP[ext_name]
-        if ext_march.startswith("_"):
-            # Extension that requires a base (e.g., _zba)
-            return f"{base}i{ext_march}"
-        else:
-            # Base extension (e.g., i, m, f, d, c)
-            return f"{base}{ext_march}"
+    ext_march = get_march_component(ext_name)
+    if ext_march.startswith("_"):
+        # Multi-letter extension that requires a base (e.g., _zba)
+        return f"{base}i{ext_march}"
     else:
-        # Unknown extension, try lowercase
-        return f"{base}i_{ext_name.lower()}"
+        # Single-letter base extension (e.g., i, m, f, d, c)
+        return f"{base}{ext_march}"
 
 
 def parse_assembly_format(assembly_str, variables):
