@@ -318,15 +318,15 @@ class DecodeGen
                 case comparison_type
                 when Udb::ParameterTerm::ParameterComparisonType::Equal
                   "(#{var} == #{term.comparison_value})"
-                when Udb::ParameeterTerm::ParameterComparisonType::NotEqual
+                when Udb::ParameterTerm::ParameterComparisonType::NotEqual
                   "(#{var} != #{term.comparison_value})"
                 when Udb::ParameterTerm::ParameterComparisonType::LessThan
                   "(#{var} < #{term.comparison_value})"
-                when Udb::ParameeterTerm::ParameterComparisonType::GreaterThan
+                when Udb::ParameterTerm::ParameterComparisonType::GreaterThan
                   "(#{var} > #{term.comparison_value})"
                 when Udb::ParameterTerm::ParameterComparisonType::LessThanOrEqual
                   "(#{var} <= #{term.comparison_value})"
-                when Udb::ParameeterTerm::ParameterComparisonType::GreaterThanOrEqual
+                when Udb::ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
                   "(#{var} >= #{term.comparison_value})"
                 when Udb::ParameterTerm::ParameterComparisonType::Includes
                   "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
