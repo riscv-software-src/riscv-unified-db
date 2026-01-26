@@ -14,7 +14,7 @@
       "type": "object",
       "patternProperties": {
         ".*": {
-          "description": "A regression test defintion",
+          "description": "A regression test definition",
           "type": "object",
           "additionalProperties": false,
           "required": ["test"],
