@@ -67,7 +67,7 @@
               "items": { "type": "string" }
             },
             "env": {
-              "description": "Enviornment variables set for the test",
+              "description": "Environment variables set for the test",
               "examples": [
                 {
                   "env": { "VAR1": "value1" }
