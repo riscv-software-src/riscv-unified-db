@@ -6,7 +6,7 @@
     "helpers:pinGitHubActionDigestsToSemver",
     "schedule:nonOfficeHours"
   ],
-  "ignorePaths": [".github/workflows/regress.yaml"],
+  "ignorePaths": [".github/workflows/regress.yml"],
   "labels": ["dependencies"],
   "lockFileMaintenance": {
     "enabled": true
