@@ -5,7 +5,7 @@
 
 The UnifiedDB project uses continuous integration (CI) to improve quality and automate artifact creation.
 
-We use two framworks for CI:
+We use two frameworks for CI:
 
 - https://pre-commit.com[pre-commit]
 - https://docs.github.com/en/actions[GitHub Actions]

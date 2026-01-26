@@ -37,4 +37,4 @@ Install it on the host:
 bundle install
 ```
 
-Then follow the proceedure in <<Update Ruby gems>>.
+Then follow the procedure in <<Update Ruby gems>>.
