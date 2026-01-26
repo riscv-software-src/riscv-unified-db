@@ -59,7 +59,7 @@ Complex regressions are not runnable on the command line. They only run in CI vi
 
 To add a complex regression, you must:
 
-1. add the steps as a job in `tools/tests/regress-gh-template`
+1. add the steps as a job in `tools/test/regress-gh-template.yaml`
 2. run `./bin/ruby tools/test/gen_regress.rb`
 --
 
