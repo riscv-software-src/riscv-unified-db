@@ -31,7 +31,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^tools/test/*-tests.yaml$/"],
+      "managerFilePatterns": ["tools/test/*-tests.yaml"],
       "matchStrings": [
         "(?:^|\\r\\n|\\r|\\n|$)\\s+uses:\\s+(?<packageName>.+/.+)@(?<currentDigest>[0-9a-fA-F]+?)\\s*(# (?<currentValue>.*?))?(?:^|\\r\\n|\\r|\\n|$)"
       ],
