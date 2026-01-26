@@ -559,7 +559,7 @@ Bits<8> ary[2];                 # declare ary, initialized to [8'd0, 8'd0]
 # Bits<8> d$_line;  # compilation error: '$' is not a valid variable name character
 ----
 
-The general-purpose RISC-V x registers are builtin state for IDL (rather than being declared state). This is to accommodate special-cases regarding the x registers without without needing special language support (e.g., operator overloading) or ugly function calls on every X register access (_e.g._, set_xreg(index, value)):
+The general-purpose RISC-V x registers are builtin state for IDL (rather than being declared state). This is to accommodate special-cases regarding the x registers without needing special language support (e.g., operator overloading) or ugly function calls on every X register access (_e.g._, set_xreg(index, value)):
 
  . The x0 register is hardwired to 0
  . All writes to an x register when MXLEN != the current XLEN are sign-extended to MXLEN.
@@ -988,7 +988,7 @@ IDL is used in several places of a CSR definition in `arch/csr`:
 
 sw_read()::
 
-The "sw_read()" function executes when a software read (via a `Zicsr` instruction) occurs. It executes in Csr scope, takes no arguments, and must return a `Bits<N>` value, where N is the width of the CSR. If a CSR does not specify a "sw_read()", then the value of CSR is formed directly from it's field values.
+The "sw_read()" function executes when a software read (via a `Zicsr` instruction) occurs. It executes in Csr scope, takes no arguments, and must return a `Bits<N>` value, where N is the width of the CSR. If a CSR does not specify a "sw_read()", then the value of CSR is formed directly from its field values.
 
 .Example sw_read()
 [source,yaml]
