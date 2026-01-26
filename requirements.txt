@@ -6,3 +6,4 @@ ruamel.yaml==0.18.6
 mergedeep==1.3.4
 pytest==8.3.4
 ruff==0.14.11
+spython==0.3.14

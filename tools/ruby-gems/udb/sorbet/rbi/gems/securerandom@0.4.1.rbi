@@ -10,9 +10,6 @@ module SecureRandom
   extend ::Random::Formatter
 
   class << self
-    # source://securerandom//lib/securerandom.rb#55
-    def alphanumeric(n = T.unsafe(nil), chars: T.unsafe(nil)); end
-
     # source://securerandom//lib/securerandom.rb#50
     def bytes(n); end
 
