@@ -1201,13 +1201,8 @@ module Udb
     # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
     #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
     def in_scope_csrs(design)
-      raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
-
-      return @in_scope_csrs unless @in_scope_csrs.nil?
-
-      @in_scope_csrs = @arch.csrs.select do |csr|
-        csr.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
-        (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
+      csrs.select do |csr|
+        csr.base.nil? || design.possible_xlens.include?(csr.base)
       end
     end
 
@@ -1215,13 +1210,8 @@ module Udb
     # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty).
     #                              Factors in effect of design's xlen in the appropriate mode for the instruction.
     def in_scope_instructions(design)
-      raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
-
-      return @in_scope_instructions unless @in_scope_instructions.nil?
-
-      @in_scope_instructions = @arch.instructions.select do |inst|
-        inst.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
-        (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
+      directly_defined_instructions.select do |inst|
+        inst.base.nil? || design.possible_xlens.include?(inst.base)
       end
     end
 
