@@ -1,0 +1,36 @@
+{
+  "llm1_total": 3,
+  "llm2_total": 0,
+  "total_unique": 3,
+  "llm1_known": 0,
+  "llm1_novel": 3,
+  "llm2_known": 0,
+  "llm2_novel": 0,
+  "total_agreement": 0,
+  "llm1_only": 3,
+  "llm2_only": 0,
+  "novel_agreement": 0,
+  "llm1_novel_params": [
+    "VTYPE_VMA_ACCESS_TYPE",
+    "VTYPE_VILL_ACCESS_TYPE",
+    "VTYPE_VMA_CONTROLS_MASKED_ELEMENTS"
+  ],
+  "llm2_novel_params": [],
+  "llm1_only_params": [
+    "VTYPE_VMA_ACCESS_TYPE",
+    "VTYPE_VILL_ACCESS_TYPE",
+    "VTYPE_VMA_CONTROLS_MASKED_ELEMENTS"
+  ],
+  "llm2_only_params": [],
+  "novel_agreement_params": [],
+  "metric_1_novelty_percent": 100.0,
+  "metric_2_behavioral_percent": 100.0,
+  "metric_3_documentation_gap_percent": 0.0,
+  "metric_4_validation_feasibility": 0.0,
+  "metric_5_hallucination_rate": 0.0,
+  "metric_6_llm_agreement_percent": 0.0,
+  "metric_7_avg_confidence": 3.0,
+  "metric_8_convergence_rate": 0.0,
+  "metric_9_confidence_alignment": 0,
+  "metric_10_categorization_agreement": 0
+}

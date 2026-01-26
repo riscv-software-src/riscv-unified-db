@@ -39,3 +39,4 @@ riscv-unprivileged.pdf
 
 # emacs backup files
 *~
+.env

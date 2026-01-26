@@ -1,0 +1,62 @@
+{
+  "category": "csr",
+  "item_name": "mcycle",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "MCYCLE_COUNT_ACCESS_TYPE",
+      "csr_name": "MCYCLE",
+      "field_name": "COUNT",
+      "description": "COUNT field is read\u2011write with hardware\u2011driven read behavior",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-RH",
+      "spec_location": "mcyle.yaml fields.COUNT.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "MCYCLE_COUNT_WIDTH_RV64",
+      "csr_name": "MCYCLE",
+      "field_name": "COUNT",
+      "description": "Counter has 64\u2011bit precision on RV64 harts",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "The counter has 64-bit precision on all RV32 and RV64 harts.",
+      "spec_location": "mcyle.yaml description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "MCYCLE_COUNT_HARDWARE_UPDATE",
+      "csr_name": "MCYCLE",
+      "field_name": "COUNT",
+      "description": "Increments every cycle unless mcountinhibit.CY is set",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "Increments every cycle unless:\n  * `mcountinhibit.CY`",
+      "spec_location": "mcyle.yaml fields.COUNT.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "Depends on mcountinhibit.CY; when CY=1 the counter does not increment",
+      "side_effects": ""
+    }
+  ],
+  "hf_count": 3,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:34:46.675306",
+  "metrics": {
+    "hf_extracted": 3,
+    "scout_extracted": 0,
+    "total_unique": 3,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

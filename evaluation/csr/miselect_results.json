@@ -1,0 +1,90 @@
+{
+  "category": "csr",
+  "item_name": "miselect",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "MISELECT_VALUE_ACCESS_TYPE",
+      "csr_name": "MISELECT",
+      "field_name": "VALUE",
+      "description": "The VALUE field is read\u2011write as specified by the Type entry.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW",
+      "spec_location": "MISELECT.yaml fields.VALUE.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "MISELECT_VALUE_RESET_VALUE",
+      "csr_name": "MISELECT",
+      "field_name": "VALUE",
+      "description": "If no extensions use the indirect register window, the register reads as zero.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "The `miselect` register may be read-only zero if there are no extensions implemented that utilize it.",
+      "spec_location": "MISELECT.yaml description",
+      "confidence": 4,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "MISELECT_VALUE_WARL_LEGAL_VALUES",
+      "csr_name": "MISELECT",
+      "field_name": "VALUE",
+      "description": "Values whose most\u2011significant bit is clear and that are allocated to standard extensions are legal; custom values (MSB set) are legal only if the implementation supports them.",
+      "type": "WARL_LEGAL_VALUES",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "Values of `miselect` with the most-significant bit clear are designated only for standard use and are reserved until allocated to a standard architecture extension.",
+      "spec_location": "MISELECT.yaml description",
+      "confidence": 4,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "MISELECT_VALUE_WARL_ILLEGAL_VALUES",
+      "csr_name": "MISELECT",
+      "field_name": "VALUE",
+      "description": "Values that are not allocated to any standard extension and custom values when the implementation does not support them are illegal.",
+      "type": "WARL_ILLEGAL_VALUES",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "An implementation is not required to support any custom values for `miselect`.",
+      "spec_location": "MISELECT.yaml description",
+      "confidence": 4,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "MISELECT_VALUE_WARL_MAPPING",
+      "csr_name": "MISELECT",
+      "field_name": "VALUE",
+      "description": "Writes of illegal values may be treated as UNDEFINED_LEGAL_DETERMINISTIC, allowing the implementation to choose a legal value.",
+      "type": "WARL_MAPPING",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "An implementation is not required to support any custom values for `miselect`.",
+      "spec_location": "MISELECT.yaml description",
+      "confidence": 3,
+      "is_explicit": false,
+      "cross_field_constraints": null,
+      "side_effects": null
+    }
+  ],
+  "hf_count": 5,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:35:23.969174",
+  "metrics": {
+    "hf_extracted": 5,
+    "scout_extracted": 0,
+    "total_unique": 5,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

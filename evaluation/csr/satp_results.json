@@ -1,0 +1,152 @@
+{
+  "category": "csr",
+  "item_name": "satp",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "SATP_MODE_ACCESS_TYPE",
+      "csr_name": "SATP",
+      "field_name": "MODE",
+      "description": "Access type for the MODE field is read\u2011write with hardware\u2011reset semantics.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-R",
+      "spec_location": "satp.yaml fields.MODE.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "SATP_MODE_CONTROLS_TRANSLATION",
+      "csr_name": "SATP",
+      "field_name": "MODE",
+      "description": "Controls the current translation mode according to the table below.",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "MEMORY",
+      "spec_quote": "Controls the current translation mode according to the table below.",
+      "spec_location": "satp.yaml fields.MODE.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "SATP_ASID_ACCESS_TYPE",
+      "csr_name": "SATP",
+      "field_name": "ASID",
+      "description": "Access type for the ASID field is read\u2011write with hardware\u2011reset semantics.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-R",
+      "spec_location": "satp.yaml fields.ASID.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "SATP_PPN_ACCESS_TYPE",
+      "csr_name": "SATP",
+      "field_name": "PPN",
+      "description": "Access type for the PPN field is read\u2011write with hardware\u2011reset semantics.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-R",
+      "spec_location": "satp.yaml fields.PPN.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "SATP_PPN_ALIGNMENT_REQUIREMENT",
+      "csr_name": "SATP",
+      "field_name": "PPN",
+      "description": "PPN is shifted left by 12 bits, so the stored value must be page\u2011aligned.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "MEMORY",
+      "spec_quote": "The physical address of the active root page table is PPN << 12.",
+      "spec_location": "satp.yaml fields.PPN.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    }
+  ],
+  "hf_count": 5,
+  "scout_response": [
+    {
+      "name": "SATP_MODE_LEGAL_VALUES",
+      "csr_name": "SATP",
+      "field_name": "MODE",
+      "description": "SATP.MODE must support at least 0 (Bare) and 8 (Sv39) and 9 (Sv48) and 10 (Sv57)",
+      "type": "WARL_LEGAL_VALUES",
+      "behavioral_impact": "MEMORY",
+      "spec_quote": "The supported modes are implementation-specific but must include 0 (Bare), 8 (Sv39), 9 (Sv48), and 10 (Sv57)",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "SATP_MODE_CONTROLS_TRANSLATION",
+      "csr_name": "SATP",
+      "field_name": "MODE",
+      "description": "SATP.MODE determines translation mechanism (Bare, Sv39, Sv48, Sv57)",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "MEMORY",
+      "spec_quote": "Controls the current translation mode",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "SATP_ASID_LEGAL_VALUES",
+      "csr_name": "SATP",
+      "field_name": "ASID",
+      "description": "ASID field holds a valid Address Space Identifier",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "ASID field holds a valid address space identifier",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "SATP_PPN_LEGAL_VALUES",
+      "csr_name": "SATP",
+      "field_name": "PPN",
+      "description": "PPN field holds a valid Physical Page Number",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "CONSTRAINT",
+      "spec_quote": "The physical address of the active root page table is PPN << 12",
+      "confidence": 5,
+      "is_explicit": true
+    }
+  ],
+  "scout_count": 4,
+  "timestamp": "2026-01-26T14:33:30.850294",
+  "metrics": {
+    "hf_extracted": 5,
+    "scout_extracted": 4,
+    "total_unique": 5,
+    "convergence_percentage": 80.0,
+    "fuzzy_matched": 4,
+    "matched_pairs": [
+      [
+        "SATP_MODE_ACCESS_TYPE",
+        "SATP_MODE_LEGAL_VALUES"
+      ],
+      [
+        "SATP_MODE_CONTROLS_TRANSLATION",
+        "SATP_MODE_CONTROLS_TRANSLATION"
+      ],
+      [
+        "SATP_ASID_ACCESS_TYPE",
+        "SATP_ASID_LEGAL_VALUES"
+      ],
+      [
+        "SATP_PPN_ACCESS_TYPE",
+        "SATP_PPN_LEGAL_VALUES"
+      ]
+    ]
+  }
+}

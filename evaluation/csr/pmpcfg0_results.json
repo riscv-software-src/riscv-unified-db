@@ -1,0 +1,90 @@
+{
+  "category": "csr",
+  "item_name": "pmpcfg0",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "PMPCFG0_PMP0CFG_ACCESS_TYPE",
+      "csr_name": "PMPCFG0",
+      "field_name": "PMP0CFG",
+      "description": "Field is read\u2011write configurable",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW",
+      "spec_location": "pmpcfg0.yaml fields.pmp0cfg.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "PMPCFG0_PMP0CFG_CONTROLS_LOCK",
+      "csr_name": "PMPCFG0",
+      "field_name": "PMP0CFG",
+      "description": "Locks the entry when set",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Locks the en",
+      "spec_location": "pmpcfg0.yaml fields.pmp0cfg.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "PMPCFG0_PMP1CFG_ACCESS_TYPE",
+      "csr_name": "PMPCFG0",
+      "field_name": "PMP1CFG",
+      "description": "Field is read\u2011write configurable",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW",
+      "spec_location": "pmpcfg0.yaml fields.pmp1cfg.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "PMPCFG0_PMP1CFG_CONTROLS_LOCK",
+      "csr_name": "PMPCFG0",
+      "field_name": "PMP1CFG",
+      "description": "Locks the entry when set",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Locks the en",
+      "spec_location": "pmpcfg0.yaml fields.pmp1cfg.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "PMPCFG0_PMP2CFG_ACCESS_TYPE",
+      "csr_name": "PMPCFG0",
+      "field_name": "PMP2CFG",
+      "description": "Field is read\u2011write configurable",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW",
+      "spec_location": "pmpcfg0.yaml fields.pmp2cfg.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    }
+  ],
+  "hf_count": 5,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:34:09.800231",
+  "metrics": {
+    "hf_extracted": 5,
+    "scout_extracted": 0,
+    "total_unique": 5,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

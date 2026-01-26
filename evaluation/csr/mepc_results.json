@@ -1,0 +1,48 @@
+{
+  "category": "csr",
+  "item_name": "mepc",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "MEPC_PC_ACCESS_TYPE",
+      "csr_name": "MEPC",
+      "field_name": "PC",
+      "description": "Field PC is read\u2011write with hardware\u2011driven read side (RW\u2011RH).",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-RH",
+      "spec_location": "mepc.yaml fields.PC.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "MEPC_PC_CONTROLS_TRAP_RETURN",
+      "csr_name": "MEPC",
+      "field_name": "PC",
+      "description": "PC is written with the virtual address of the interrupted instruction and determines where the hart jumps on an exception return from M\u2011mode.",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "TRAP",
+      "spec_quote": "Also controls where the hart jumps on an exception return from M-mode.",
+      "spec_location": "mepc.yaml fields.PC.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    }
+  ],
+  "hf_count": 2,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:30:28.510364",
+  "metrics": {
+    "hf_extracted": 2,
+    "scout_extracted": 0,
+    "total_unique": 2,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

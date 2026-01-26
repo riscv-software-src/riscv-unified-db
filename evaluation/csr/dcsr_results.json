@@ -1,0 +1,48 @@
+{
+  "category": "csr",
+  "item_name": "dcsr",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "DCSR_DEBUGVER_ACCESS_TYPE",
+      "csr_name": "DCSR",
+      "field_name": "DEBUGVER",
+      "description": "DEBUGVER field is read\u2011only indicating the level of debug support.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Type: RO",
+      "spec_location": "dcsr.yaml fields.DEBUGVER.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "DCSR_DEBUGVER_LEGAL_VALUES",
+      "csr_name": "DCSR",
+      "field_name": "DEBUGVER",
+      "description": "Legal values for DEBUGVER: 0 (none), 4 (1.0), 15 (custom).",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "0 (none):: There is no debug support.\n4 (1.0):: Debug support exists as it is described in this document.\n15 (custom):: There is debug support, but it",
+      "spec_location": "dcsr.yaml fields.DEBUGVER.description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    }
+  ],
+  "hf_count": 2,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:36:04.440972",
+  "metrics": {
+    "hf_extracted": 2,
+    "scout_extracted": 0,
+    "total_unique": 2,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

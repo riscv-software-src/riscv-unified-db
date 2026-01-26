@@ -1,0 +1,62 @@
+{
+  "category": "csr",
+  "item_name": "frm",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "FRM_ROUNDINGMODE_ACCESS_TYPE",
+      "csr_name": "FRM",
+      "field_name": "ROUNDINGMODE",
+      "description": "ROUNDINGMODE field is read\u2011write and may be updated by hardware.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RW-H",
+      "spec_location": "frm.yaml fields.ROUNDINGMODE.Type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "FRM_ROUNDINGMODE_LEGAL_VALUES",
+      "csr_name": "FRM",
+      "field_name": "ROUNDINGMODE",
+      "description": "Valid rounding\u2011mode encodings: 0=RNE, 1=RTZ, 2=RDN, 3=RUP, 4=RMM.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "EXECUTION",
+      "spec_quote": "000 RNE Round to Nearest, ties to Even\n001 RTZ Round towards Zero\n010 RDN Round Down (towards -\u221e)\n011 RUP Round Up (towards +\u221e)\n100 RMM Round to Nearest, ties to Max Magnitude",
+      "spec_location": "frm.yaml fields.ROUNDINGMODE.Description",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    },
+    {
+      "name": "FRM_ROUNDINGMODE_CONTROLS_RESERVED_BEHAVIOR",
+      "csr_name": "FRM",
+      "field_name": "ROUNDINGMODE",
+      "description": "When a reserved rounding\u2011mode value is used, the behavior of dependent floating\u2011point instructions is reserved.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "EXECUTION",
+      "spec_quote": "The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is reserved, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).",
+      "spec_location": "frm.yaml fields.ROUNDINGMODE.Description",
+      "confidence": 4,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    }
+  ],
+  "hf_count": 3,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:32:18.343462",
+  "metrics": {
+    "hf_extracted": 3,
+    "scout_extracted": 0,
+    "total_unique": 3,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

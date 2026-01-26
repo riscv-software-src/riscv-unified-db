@@ -1,0 +1,116 @@
+{
+  "category": "csr",
+  "item_name": "hstatus",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [],
+  "hf_count": 0,
+  "scout_response": [
+    {
+      "name": "HSTATUS_VSXL_LEGAL_VALUES",
+      "csr_name": "HSTATUS",
+      "field_name": "VSXL",
+      "description": "Valid values for VSXL field are 0 (32) and 1 (64)",
+      "type": "WARL_LEGAL_VALUES",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Determines the effective XLEN in VS-mode. Valid values are: 0=32, 1=64",
+      "spec_location": "HSTATUS.yaml fields/VSXL.description",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "HSTATUS_VSXL_ACCESS_TYPE",
+      "csr_name": "HSTATUS",
+      "field_name": "VSXL",
+      "description": "VSXL field is read-only when implementation only supports one VSXLEN",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.",
+      "spec_location": "HSTATUS.yaml fields/VSXL.description",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "HSTATUS_VTSR_RESET_VALUE",
+      "csr_name": "HSTATUS",
+      "field_name": "VTSR",
+      "description": "VTSR field reset value",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "",
+      "spec_location": "",
+      "confidence": 4,
+      "is_explicit": false
+    },
+    {
+      "name": "HSTATUS_VTSR_CONTROLS_TRAP",
+      "csr_name": "HSTATUS",
+      "field_name": "VTSR",
+      "description": "VTSR field controls Virtual Instruction exception on sret",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "TRAP",
+      "spec_quote": "When hstatus.VTSR is set, executing the sret instruction in VS-mode raises a Virtual Instruction exception.",
+      "spec_location": "HSTATUS.yaml fields/VTSR.description",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "HSTATUS_VTW_RESET_VALUE",
+      "csr_name": "HSTATUS",
+      "field_name": "VTW",
+      "description": "VTW field reset value",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "",
+      "spec_location": "",
+      "confidence": 4,
+      "is_explicit": false
+    },
+    {
+      "name": "HSTATUS_VTW_CONTROLS_TRAP",
+      "csr_name": "HSTATUS",
+      "field_name": "VTW",
+      "description": "VTW field controls Virtual Instruction exception on wfi",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "TRAP",
+      "spec_quote": "When hstatus.VTW is set, a wfi instruction executed in VS-mode raises a Virtual Instruction exception.",
+      "spec_location": "HSTATUS.yaml fields/VTW.description",
+      "confidence": 5,
+      "is_explicit": true
+    },
+    {
+      "name": "HSTATUS_VTVM_RESET_VALUE",
+      "csr_name": "HSTATUS",
+      "field_name": "VTVM",
+      "description": "VTVM field reset value",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "",
+      "spec_location": "",
+      "confidence": 4,
+      "is_explicit": false
+    },
+    {
+      "name": "HSTATUS_VTVM_CONTROLS_TRAP",
+      "csr_name": "HSTATUS",
+      "field_name": "VTVM",
+      "description": "VTVM field controls Virtual Instruction exception on sfence.vma",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "TRAP",
+      "spec_quote": "When set, a 'Virtual Instruction' trap occurs when executing an sfence.vma, sinval.vma, or an explicit CSR access of the satp.",
+      "spec_location": "HSTATUS.yaml fields/VTVM.description",
+      "confidence": 5,
+      "is_explicit": true
+    }
+  ],
+  "scout_count": 8,
+  "timestamp": "2026-01-26T14:31:41.367220",
+  "metrics": {
+    "hf_extracted": 0,
+    "scout_extracted": 8,
+    "total_unique": 8,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

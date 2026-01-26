@@ -1,0 +1,62 @@
+{
+  "category": "csr",
+  "item_name": "vtype",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "VTYPE_VILL_ACCESS_TYPE",
+      "csr_name": "VTYPE",
+      "field_name": "VILL",
+      "description": "VILL field is read\u2011only hardware\u2011updated",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RO-H",
+      "spec_location": "vtype.yaml fields.VILL.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "VTYPE_VMA_ACCESS_TYPE",
+      "csr_name": "VTYPE",
+      "field_name": "VMA",
+      "description": "VMA field is read\u2011only hardware\u2011updated",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "ACCESS",
+      "spec_quote": "Type: RO-H",
+      "spec_location": "vtype.yaml fields.VMA.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    },
+    {
+      "name": "VTYPE_VMA_CONTROLS_MASKED_ELEMENTS",
+      "csr_name": "VTYPE",
+      "field_name": "VMA",
+      "description": "Controls how inactive masked\u2011off elements are treated during vector execution",
+      "type": "BEHAVIORAL",
+      "behavioral_impact": "EXECUTION",
+      "spec_quote": "Vector mask agnostic bit. Modifies the behavior of destination inactive masked\u2011off elements during the execution of vector instructions.",
+      "spec_location": "vtype.yaml fields.VMA.description",
+      "confidence": 4,
+      "is_explicit": true,
+      "cross_field_constraints": null,
+      "side_effects": null
+    }
+  ],
+  "hf_count": 3,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:32:58.229933",
+  "metrics": {
+    "hf_extracted": 3,
+    "scout_extracted": 0,
+    "total_unique": 3,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}

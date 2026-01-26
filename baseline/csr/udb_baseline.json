@@ -1,0 +1,2353 @@
+{
+  "timestamp": "2026-01-26T13:35:04.534418",
+  "category": "csr",
+  "source": "UDB csr YAML files",
+  "total_parameters": 290,
+  "parameters": {
+    "CYCLEH_COUNT": {
+      "category": "csr",
+      "file": "cycleh.yaml",
+      "description": "Alias of `mcycleh.COUNT`.",
+      "csr": "CYCLEH",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "CYCLE_COUNT": {
+      "category": "csr",
+      "file": "cycle.yaml",
+      "description": "Alias of `mcycle.COUNT`.",
+      "csr": "CYCLE",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "DCSR_CAUSE": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "Explains why Debug Mode was entered.\nWhen there are multiple reasons to enter Debug Mode in a\nsingle",
+      "csr": "DCSR",
+      "field": "CAUSE",
+      "type": "RO"
+    },
+    "DCSR_CETRIG": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "This bit is part of Smdbltrp and only exists when that extension is implemented.\n0 (disabled):: A ha",
+      "csr": "DCSR",
+      "field": "CETRIG",
+      "type": "RW"
+    },
+    "DCSR_DEBUGVER": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (none):: There is no debug support.\n4 (1.0):: Debug support exists as it is described in this docu",
+      "csr": "DCSR",
+      "field": "DEBUGVER",
+      "type": "RO"
+    },
+    "DCSR_EBREAKM": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (exception):: ebreak instructions in M-mode behave as described in the Privileged Spec.\n1 (debug m",
+      "csr": "DCSR",
+      "field": "EBREAKM",
+      "type": "RW"
+    },
+    "DCSR_EBREAKS": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (exception):: ebreak instructions in S-mode behave as described in the Privileged Spec.\n1 (debug m",
+      "csr": "DCSR",
+      "field": "EBREAKS",
+      "type": "RW"
+    },
+    "DCSR_EBREAKU": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (exception):: ebreak instructions in U-mode behave as described in the Privileged Spec.\n1 (debug m",
+      "csr": "DCSR",
+      "field": "EBREAKU",
+      "type": "RW"
+    },
+    "DCSR_EBREAKVS": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (exception):: ebreak instructions in VS-mode behave as described in the Privileged Spec.\n1 (debug ",
+      "csr": "DCSR",
+      "field": "EBREAKVS",
+      "type": "RW"
+    },
+    "DCSR_EBREAKVU": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (exception):: ebreak instructions in VU-mode behave as described in the Privileged Spec.\n1 (debug ",
+      "csr": "DCSR",
+      "field": "EBREAKVU",
+      "type": "RW"
+    },
+    "DCSR_EXTCAUSE": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "When cause is 7, this optional field contains the value of a more specific halt reason than \"other.\"",
+      "csr": "DCSR",
+      "field": "EXTCAUSE",
+      "type": "RO"
+    },
+    "DCSR_MPRVEN": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (disabled):: mprv in mstatus is ignored in Debug Mode.\n1 (enabled):: mprv in mstatus takes effect ",
+      "csr": "DCSR",
+      "field": "MPRVEN",
+      "type": "RW"
+    },
+    "DCSR_NMIP": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "When set, there is a Non-Maskable-Interrupt (NMI) pending for the hart.\nSince an NMI can indicate a ",
+      "csr": "DCSR",
+      "field": "NMIP",
+      "type": "RO"
+    },
+    "DCSR_PELP": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "This bit is part of Zicfilp and only exists when that extension is implemented.\n0 (NO_LP_EXPECTED)::",
+      "csr": "DCSR",
+      "field": "PELP",
+      "type": "RW"
+    },
+    "DCSR_PRV": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "Contains the privilege mode the hart was operating in when Debug Mode was entered.\nA debugger can ch",
+      "csr": "DCSR",
+      "field": "PRV",
+      "type": "RW"
+    },
+    "DCSR_STEP": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "When set and not in Debug Mode, the hart will only execute a single instruction\nand then enter Debug",
+      "csr": "DCSR",
+      "field": "STEP",
+      "type": "RW"
+    },
+    "DCSR_STEPIE": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (interrupts disabled):: Interrupts (including NMI) are disabled during single stepping with step s",
+      "csr": "DCSR",
+      "field": "STEPIE",
+      "type": "RW"
+    },
+    "DCSR_STOPCOUNT": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (normal):: Increment counters as usual.\n1 (freeze):: Don\u2019t increment any hart-local counters while",
+      "csr": "DCSR",
+      "field": "STOPCOUNT",
+      "type": "RW"
+    },
+    "DCSR_STOPTIME": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "0 (normal):: time continues to reflect mtime.\n1 (freeze):: time is frozen at the time that Debug Mod",
+      "csr": "DCSR",
+      "field": "STOPTIME",
+      "type": "RW"
+    },
+    "DCSR_V": {
+      "category": "csr",
+      "file": "dcsr.yaml",
+      "description": "Extends the prv field with the virtualization mode the hart was operating in\nwhen Debug Mode was ent",
+      "csr": "DCSR",
+      "field": "V",
+      "type": "RW"
+    },
+    "DPC_DPC": {
+      "category": "csr",
+      "file": "dpc.yaml",
+      "description": "Debug PC Value",
+      "csr": "DPC",
+      "field": "DPC",
+      "type": "RW"
+    },
+    "HCONTEXT_HCONTEXT": {
+      "category": "csr",
+      "file": "hcontext.yaml",
+      "description": "Alias of `mcontext.HCONTEXT`.\n",
+      "csr": "HCONTEXT",
+      "field": "HCONTEXT",
+      "type": "RW"
+    },
+    "HEDELEG_B": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Breakpoint*\n\nControls delegation of Breakpoint exceptions to VS-mode.\n\nSee `medeleg.B` for details.",
+      "csr": "HEDELEG",
+      "field": "B",
+      "type": "RW"
+    },
+    "HEDELEG_EM": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Environment Call from M-mode*\n\nEnvironment Call from M-mode exceptions _cannot be delegated to VS-m",
+      "csr": "HEDELEG",
+      "field": "EM",
+      "type": "RO"
+    },
+    "HEDELEG_ES": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Environment Call from HS-mode*\n\nEnvironment Call from HS-mode exceptions _cannot be delegated to VS",
+      "csr": "HEDELEG",
+      "field": "ES",
+      "type": "RO"
+    },
+    "HEDELEG_EU": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Environment Call from VU-mode*\n\nControls delegation of Environment Call from VU-mode exceptions to ",
+      "csr": "HEDELEG",
+      "field": "EU",
+      "type": "RW"
+    },
+    "HEDELEG_EVS": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Environment Call from VS-mode*\n\nEnvironment Call from VS-mode exceptions _cannot be delegated to VS",
+      "csr": "HEDELEG",
+      "field": "EVS",
+      "type": "RO"
+    },
+    "HEDELEG_IAF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Instruction Access Fault*\n\nControls delegation of Instruction Access Fault exceptions to VS-mode.\n\n",
+      "csr": "HEDELEG",
+      "field": "IAF",
+      "type": "RW"
+    },
+    "HEDELEG_IAM": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Instruction Address Misaligned*\n\nControls delegation of Instruction Address Misaligned exceptions t",
+      "csr": "HEDELEG",
+      "field": "IAM",
+      "type": "RW"
+    },
+    "HEDELEG_IGPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Instruction Guest Page Fault*\n\nInstruction Guest Page Fault exceptions _cannot be delegated to VS-m",
+      "csr": "HEDELEG",
+      "field": "IGPF",
+      "type": "RO"
+    },
+    "HEDELEG_II": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Illegal Instruction*\n\nControls delegation of Illegal Instruction exceptions to VS-mode.\n\nSee `medel",
+      "csr": "HEDELEG",
+      "field": "II",
+      "type": "RW"
+    },
+    "HEDELEG_IPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Instruction Page Fault*\n\nControls delegation of Instruction Page Fault exceptions to VS-mode.\n\nSee ",
+      "csr": "HEDELEG",
+      "field": "IPF",
+      "type": "RW"
+    },
+    "HEDELEG_LAF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Load Access Fault*\n\nControls delegation of Load Access Fault exceptions to VS-mode.\n\nSee `medeleg.L",
+      "csr": "HEDELEG",
+      "field": "LAF",
+      "type": "RW"
+    },
+    "HEDELEG_LAM": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Load Address Misaligned*\n\nControls delegation of Load Address Misaligned exceptions to VS-mode.\n\nSe",
+      "csr": "HEDELEG",
+      "field": "LAM",
+      "type": "RW"
+    },
+    "HEDELEG_LGPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Load Guest Page Fault*\n\nLoad Guest Page Fault exceptions _cannot be delegated to VS-mode_,\nso this ",
+      "csr": "HEDELEG",
+      "field": "LGPF",
+      "type": "RO"
+    },
+    "HEDELEG_LPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Load Page Fault*\n\nControls delegation of Load Page Fault exceptions to VS-mode.\n\nSee `medeleg.LPF` ",
+      "csr": "HEDELEG",
+      "field": "LPF",
+      "type": "RW"
+    },
+    "HEDELEG_SAF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Store/AMO Access Fault*\n\nControls delegation of Store/AMO Access Fault exceptions to VS-mode.\n\nSee ",
+      "csr": "HEDELEG",
+      "field": "SAF",
+      "type": "RW"
+    },
+    "HEDELEG_SAM": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Store/AMO Address Misaligned*\n\nControls delegation of Store/AMO Address Misaligned exceptions to VS",
+      "csr": "HEDELEG",
+      "field": "SAM",
+      "type": "RW"
+    },
+    "HEDELEG_SGPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Store/AMO Guest Page Fault*\n\nStore/AMO Guest Page Fault exceptions _cannot be delegated to VS-mode_",
+      "csr": "HEDELEG",
+      "field": "SGPF",
+      "type": "RO"
+    },
+    "HEDELEG_SPF": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Store/AMO Page Fault*\n\nControls delegation of Store/AMO Page Fault exceptions to VS-mode.\n\nSee `med",
+      "csr": "HEDELEG",
+      "field": "SPF",
+      "type": "RW"
+    },
+    "HEDELEG_VI": {
+      "category": "csr",
+      "file": "hedeleg.yaml",
+      "description": "*Virtual Instruction*\n\nVirtual Instruction exceptions _cannot be delegated to VS-mode_,\nso this fiel",
+      "csr": "HEDELEG",
+      "field": "VI",
+      "type": "RO"
+    },
+    "HSTATEEN0H_AIA": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The AIA bit in `hstateen0h` controls access to all state introduced by\nthe Ssaia extension and is no",
+      "csr": "HSTATEEN0H",
+      "field": "AIA",
+      "type": "RW"
+    },
+    "HSTATEEN0H_CONTEXT": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The CONTEXT bit in `hstateen0h` controls access to the `scontext` CSR provided\nby the Sdtrig extensi",
+      "csr": "HSTATEEN0H",
+      "field": "CONTEXT",
+      "type": "RW"
+    },
+    "HSTATEEN0H_CSRIND": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The CSRIND bit in `hstateen0h` controls access to the `siselect` and the\n`sireg*`, (really `vsiselec",
+      "csr": "HSTATEEN0H",
+      "field": "CSRIND",
+      "type": "RW"
+    },
+    "HSTATEEN0H_CTR": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to\n",
+      "csr": "HSTATEEN0H",
+      "field": "CTR",
+      "type": "RW"
+    },
+    "HSTATEEN0H_ENVCFG": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The ENVCFG bit in `hstateen0h` controls access to the `senvcfg` CSRs.\n",
+      "csr": "HSTATEEN0H",
+      "field": "ENVCFG",
+      "type": "RW"
+    },
+    "HSTATEEN0H_IMSIC": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The IMSIC bit in `hstateen0h` controls access to the guest IMSIC state,\nincluding CSRs `stopei` (rea",
+      "csr": "HSTATEEN0H",
+      "field": "IMSIC",
+      "type": "RW"
+    },
+    "HSTATEEN0H_SE0": {
+      "category": "csr",
+      "file": "hstateen0h.yaml",
+      "description": "The SE0 bit in `hstateen0h` controls access to the `sstateen0` CSR.\n",
+      "csr": "HSTATEEN0H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN0_AIA": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The AIA bit in `hstateen0` controls access to all state introduced by\nthe Ssaia extension and is not",
+      "csr": "HSTATEEN0",
+      "field": "AIA",
+      "type": "RW"
+    },
+    "HSTATEEN0_C": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The C bit controls access to any and all custom state. The C bit of these registers is\nnot custom st",
+      "csr": "HSTATEEN0",
+      "field": "C",
+      "type": "RW"
+    },
+    "HSTATEEN0_CONTEXT": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The CONTEXT bit in `hstateen0` controls access to the `scontext` CSR provided\nby the Sdtrig extensio",
+      "csr": "HSTATEEN0",
+      "field": "CONTEXT",
+      "type": "RW"
+    },
+    "HSTATEEN0_CSRIND": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The CSRIND bit in `hstateen0` controls access to the `siselect` and the\n`sireg*`, (really `vsiselect",
+      "csr": "HSTATEEN0",
+      "field": "CSRIND",
+      "type": "RW"
+    },
+    "HSTATEEN0_CTR": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to\n",
+      "csr": "HSTATEEN0",
+      "field": "CTR",
+      "type": "RW"
+    },
+    "HSTATEEN0_ENVCFG": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The ENVCFG bit in `hstateen0` controls access to the `senvcfg` CSRs.\n",
+      "csr": "HSTATEEN0",
+      "field": "ENVCFG",
+      "type": "RW"
+    },
+    "HSTATEEN0_FCSR": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The FCSR bit controls access to `fcsr` for the case when floating-point instructions\noperate on `x` ",
+      "csr": "HSTATEEN0",
+      "field": "FCSR",
+      "type": "RW"
+    },
+    "HSTATEEN0_IMSIC": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The IMSIC bit in `hstateen0` controls access to the guest IMSIC state,\nincluding CSRs `stopei` (real",
+      "csr": "HSTATEEN0",
+      "field": "IMSIC",
+      "type": "RW"
+    },
+    "HSTATEEN0_JVT": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.\n",
+      "csr": "HSTATEEN0",
+      "field": "JVT",
+      "type": "RW"
+    },
+    "HSTATEEN0_SE0": {
+      "category": "csr",
+      "file": "hstateen0.yaml",
+      "description": "The SE0 bit in `hstateen0` controls access to the `sstateen0` CSR.\n",
+      "csr": "HSTATEEN0",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN1H_SE0": {
+      "category": "csr",
+      "file": "hstateen1h.yaml",
+      "description": "The SE0 bit in `hstateen1h` controls access to the `sstateen1` CSR.\n",
+      "csr": "HSTATEEN1H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN1_SE0": {
+      "category": "csr",
+      "file": "hstateen1.yaml",
+      "description": "The SE0 bit in `hstateen1` controls access to the `sstateen1` CSR.\n",
+      "csr": "HSTATEEN1",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN2H_SE0": {
+      "category": "csr",
+      "file": "hstateen2h.yaml",
+      "description": "The SE0 bit in `hstateen2h` controls access to the `sstateen2` CSR.\n",
+      "csr": "HSTATEEN2H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN2_SE0": {
+      "category": "csr",
+      "file": "hstateen2.yaml",
+      "description": "The SE0 bit in `hstateen2` controls access to the `sstateen2` CSR.\n",
+      "csr": "HSTATEEN2",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN3H_SE0": {
+      "category": "csr",
+      "file": "hstateen3h.yaml",
+      "description": "The SE0 bit in `hstateen3h` controls access to the `sstateen3` CSR.\n",
+      "csr": "HSTATEEN3H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATEEN3_SE0": {
+      "category": "csr",
+      "file": "hstateen3.yaml",
+      "description": "The SE0 bit in `hstateen3` controls access to the `sstateen3` CSR.\n",
+      "csr": "HSTATEEN3",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "HSTATUS_GVA": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "Written by hardware whenever a trap is taken into HS-mode:\n\n* Writes 1 when a trap causes a guest vi",
+      "csr": "HSTATUS",
+      "field": "GVA",
+      "type": "RW"
+    },
+    "HSTATUS_HU": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "When set, the hypervisor load/store instructions (`hlv`, `hlvx`, and `hsv`) can be\nexecuted in U-mod",
+      "csr": "HSTATUS",
+      "field": "HU",
+      "type": "RW"
+    },
+    "HSTATUS_SPV": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "Written by hardware:\n\n* On a trap into HS-mode, hardware writes 1 when the prior mode was VS-mode or",
+      "csr": "HSTATUS",
+      "field": "SPV",
+      "type": "RW"
+    },
+    "HSTATUS_SPVP": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "Written by hardware:\n\n* When taking a trap into HS-mode from VS-mode or VU-mode, `hstatus.SPVP` is w",
+      "csr": "HSTATUS",
+      "field": "SPVP",
+      "type": "RW"
+    },
+    "HSTATUS_VGEIN": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "Selects the guest external interrupt source for VS-level external interrupts.\n\nWhen `hstatus.VGEIN` ",
+      "csr": "HSTATUS",
+      "field": "VGEIN",
+      "type": "RW"
+    },
+    "HSTATUS_VSBE": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": [
+        {
+          "text": "Controls the endianness of data VS-mode (0 = little, 1 = big).\nInstructions are always little endian, regardless of the data setting.\n"
+        },
+        {
+          "text": "Since the CPU does not support big endian in VS-mode, this is hardwired to 0.\n",
+          "when()": "return VS_MODE_ENDIANNESS == \"little\";"
+        },
+        {
+          "text": "Since the CPU does not support little endian in VS-mode, this is hardwired to 1.\n",
+          "when()": "return VS_MODE_ENDIANNESS == \"big\";"
+        }
+      ],
+      "csr": "HSTATUS",
+      "field": "VSBE",
+      "type": "RW"
+    },
+    "HSTATUS_VSXL": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": [
+        {
+          "text": "Determines the effective XLEN in VS-mode. Valid values are:\n\n[separator=\"!\"]\n!===\n! Value ! VSXLEN\n\n! 0     ! 32\n! 1     ! 64\n!===\n",
+          "when()": "return $array_size(VSXLEN) > 1;"
+        },
+        {
+          "text": "Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.\n",
+          "when()": "return $array_size(VSXLEN) == 1 && $array_includes?(VSXLEN, 32);"
+        },
+        {
+          "text": "Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.\n",
+          "when()": "return $array_size(VSXLEN) == 1 && $array_includes?(VSXLEN, 64);"
+        }
+      ],
+      "csr": "HSTATUS",
+      "field": "VSXL",
+      "type": "RW"
+    },
+    "HSTATUS_VTSR": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "When `hstatus.VTSR` is set, executing the `sret` instruction in VS-mode\nraises a `Virtual Instructio",
+      "csr": "HSTATUS",
+      "field": "VTSR",
+      "type": "RW"
+    },
+    "HSTATUS_VTVM": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "When set, a 'Virtual Instruction` trap occurs when executing an `sfence.vma`, `sinval.vma`,\nor an ex",
+      "csr": "HSTATUS",
+      "field": "VTVM",
+      "type": "RW"
+    },
+    "HSTATUS_VTW": {
+      "category": "csr",
+      "file": "hstatus.yaml",
+      "description": "When `hstatus.VTW` is set, a `wfi` instruction executed in VS-mode raises\na `Virtual Instruction` ex",
+      "csr": "HSTATUS",
+      "field": "VTW",
+      "type": "RW"
+    },
+    "INSTRETH_COUNT": {
+      "category": "csr",
+      "file": "instreth.yaml",
+      "description": "Alias of `minstret.COUNT`[63:32].",
+      "csr": "INSTRETH",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "INSTRET_COUNT": {
+      "category": "csr",
+      "file": "instret.yaml",
+      "description": "Alias of `minstret.COUNT`.",
+      "csr": "INSTRET",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "JVT_BASE": {
+      "category": "csr",
+      "file": "jvt.yaml",
+      "description": "The value in the BASE field must always be aligned on a 64-byte boundary. Note that the CSR contains",
+      "csr": "JVT",
+      "field": "BASE",
+      "type": "RW"
+    },
+    "JVT_MODE": {
+      "category": "csr",
+      "file": "jvt.yaml",
+      "description": "`jvt.mode` is a WARL field, so can only be programmed to modes which are implemented. Therefore the\n",
+      "csr": "JVT",
+      "field": "MODE",
+      "type": "RW"
+    },
+    "MARCHID_Architecture": {
+      "category": "csr",
+      "file": "marchid.yaml",
+      "description": "Vendor-specific microarchitecture ID.",
+      "csr": "MARCHID",
+      "field": "Architecture",
+      "type": "RO"
+    },
+    "MCAUSE_CODE": {
+      "category": "csr",
+      "file": "mcause.yaml",
+      "description": "Written by hardware when a trap is taken into M-mode.\n\nHolds the interrupt or exception code for the",
+      "csr": "MCAUSE",
+      "field": "CODE",
+      "type": "RW-RH"
+    },
+    "MCAUSE_INT": {
+      "category": "csr",
+      "file": "mcause.yaml",
+      "description": "Written by hardware when a trap is taken into M-mode.\n\nWhen set, the last exception was caused by an",
+      "csr": "MCAUSE",
+      "field": "INT",
+      "type": "RW-RH"
+    },
+    "MCONFIGPTR_ADDRESS": {
+      "category": "csr",
+      "file": "mconfigptr.yaml",
+      "description": "Pointer to physical address of the Unified Discovery configuration data structure.",
+      "csr": "MCONFIGPTR",
+      "field": "ADDRESS",
+      "type": "RO"
+    },
+    "MCONTEXT_HCONTEXT": {
+      "category": "csr",
+      "file": "mcontext.yaml",
+      "description": "M-Mode or HS-Mode (using `hcontext`) software can write a\ncontext number to this register, which can",
+      "csr": "MCONTEXT",
+      "field": "HCONTEXT",
+      "type": "RW"
+    },
+    "MCYCLEH_COUNT": {
+      "category": "csr",
+      "file": "mcycleh.yaml",
+      "description": "Alias of upper half of `mcycle.COUNT`.\n",
+      "csr": "MCYCLEH",
+      "field": "COUNT",
+      "type": "RW-RH"
+    },
+    "MCYCLE_COUNT": {
+      "category": "csr",
+      "file": "mcycle.yaml",
+      "description": "Cycle counter.\n\n<%- if ext?(:Zicntr) -%>\nAliased as `cycle.CYCLE`.\n<%- end -%>\n\nIncrements every cyc",
+      "csr": "MCYCLE",
+      "field": "COUNT",
+      "type": "RW-RH"
+    },
+    "MEDELEG_B": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Breakpoint*\n\nDelegates Breakpoint exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\nBreakpoint exception",
+      "csr": "MEDELEG",
+      "field": "B",
+      "type": "RW"
+    },
+    "MEDELEG_EM": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Environment Call from M-Mode*\n\nAn Environment Call from M-mode cannot be delegated, so this is a re",
+      "csr": "MEDELEG",
+      "field": "EM",
+      "type": "RO"
+    },
+    "MEDELEG_ES": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Environment Call from S-Mode*\n\nDelegates Environment Call from S-mode exceptions to (H)S-mode.\n<%- ",
+      "csr": "MEDELEG",
+      "field": "ES",
+      "type": "RW"
+    },
+    "MEDELEG_EU": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Environment Call from U-Mode*\n\nDelegates Environment Call from U-mode exceptions to (H)S-mode.\n<%- ",
+      "csr": "MEDELEG",
+      "field": "EU",
+      "type": "RW"
+    },
+    "MEDELEG_EVS": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Environment Call from VS-Mode*\n\nDelegates Environment Call from VS-mode exceptions to (H)S-mode.\n<%",
+      "csr": "MEDELEG",
+      "field": "EVS",
+      "type": "RW"
+    },
+    "MEDELEG_IAF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Instruction Access Fault*\n\nDelegates Instruction Access Fault exceptions to (H)S-mode.\n<%- if ext?(",
+      "csr": "MEDELEG",
+      "field": "IAF",
+      "type": "RW"
+    },
+    "MEDELEG_IAM": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Instruction Address Misaligned*\n\nDelegates Instruction Address Misaligned exceptions to (H)S-mode.\n",
+      "csr": "MEDELEG",
+      "field": "IAM",
+      "type": "RW"
+    },
+    "MEDELEG_IGPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Instruction Guest Page Fault*\n\nDelegates Instruction Guest Page Fault exceptions to (H)S-mode.\n<%- ",
+      "csr": "MEDELEG",
+      "field": "IGPF",
+      "type": "RW"
+    },
+    "MEDELEG_II": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Illegal Instruction*\n\nDelegates Illegal Instruction exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\nIl",
+      "csr": "MEDELEG",
+      "field": "II",
+      "type": "RW"
+    },
+    "MEDELEG_IPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Instruction Page Fault*\n\nDelegates Instruction Page Fault exceptions to (H)S-mode.\n<%- if ext?(:H) ",
+      "csr": "MEDELEG",
+      "field": "IPF",
+      "type": "RW"
+    },
+    "MEDELEG_LAF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Load Access Fault*\n\nDelegates Load Access Fault exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\nLoad A",
+      "csr": "MEDELEG",
+      "field": "LAF",
+      "type": "RW"
+    },
+    "MEDELEG_LAM": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Load Address Misaligned*\n\nDelegates Load Address Misaligned exceptions to (H)S-mode.\n<%- if ext?(:H",
+      "csr": "MEDELEG",
+      "field": "LAM",
+      "type": "RW"
+    },
+    "MEDELEG_LGPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Load Guest Page Fault*\n\nDelegates Load Guest Page Fault exceptions to (H)S-mode.\n<%- if ext?(:H) -%",
+      "csr": "MEDELEG",
+      "field": "LGPF",
+      "type": "RW"
+    },
+    "MEDELEG_LPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Load Page Fault*\n\nDelegates Load Page Fault exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\nLoad Page ",
+      "csr": "MEDELEG",
+      "field": "LPF",
+      "type": "RW"
+    },
+    "MEDELEG_SAF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Store/AMO Access Fault*\n\nDelegates Store/AMO Access Fault exceptions to (H)S-mode.\n<%- if ext?(:H) ",
+      "csr": "MEDELEG",
+      "field": "SAF",
+      "type": "RW"
+    },
+    "MEDELEG_SAM": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Store/AMO Address Misaligned*\n\nDelegates Store/AMO Address Misaligned exceptions to (H)S-mode.\n<%- ",
+      "csr": "MEDELEG",
+      "field": "SAM",
+      "type": "RW"
+    },
+    "MEDELEG_SGPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Store/AMO Guest Page Fault*\n\nDelegates Store/AMO Guest Page Fault exceptions to (H)S-mode.\n<%- if e",
+      "csr": "MEDELEG",
+      "field": "SGPF",
+      "type": "RW"
+    },
+    "MEDELEG_SPF": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Store/AMO Page Fault*\n\nDelegates Store/AMO Page Fault exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\n",
+      "csr": "MEDELEG",
+      "field": "SPF",
+      "type": "RW"
+    },
+    "MEDELEG_VI": {
+      "category": "csr",
+      "file": "medeleg.yaml",
+      "description": "*Virtual Instruction*\n\nDelegates Virtual Instruction exceptions to (H)S-mode.\n<%- if ext?(:H) -%>\nVi",
+      "csr": "MEDELEG",
+      "field": "VI",
+      "type": "RW"
+    },
+    "MENVCFGH_ADUE": {
+      "category": "csr",
+      "file": "menvcfgh.yaml",
+      "description": "Alias of `menvcfg.ADUE`\n",
+      "csr": "MENVCFGH",
+      "field": "ADUE",
+      "type": "RW"
+    },
+    "MENVCFGH_PBMTE": {
+      "category": "csr",
+      "file": "menvcfgh.yaml",
+      "description": "*Page Based Memory Type Enable*\n\nAlias of `menvcfg.PBMTE`\n",
+      "csr": "MENVCFGH",
+      "field": "PBMTE",
+      "type": "RW"
+    },
+    "MENVCFGH_STCE": {
+      "category": "csr",
+      "file": "menvcfgh.yaml",
+      "description": "*STimecmp Enable*\n\nAlias of `menvcfg.STCE`\n",
+      "csr": "MENVCFGH",
+      "field": "STCE",
+      "type": "RW"
+    },
+    "MENVCFG_ADUE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "If the Svadu extension is implemented, the ADUE bit controls whether hardware updating of\nPTE A/D bi",
+      "csr": "MENVCFG",
+      "field": "ADUE",
+      "type": "RW"
+    },
+    "MENVCFG_CBCFE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*Cache Block Clean and Flush instruction Enable*\n\nEnables the execution of the cache block clean ins",
+      "csr": "MENVCFG",
+      "field": "CBCFE",
+      "type": "RW"
+    },
+    "MENVCFG_CBIE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*Cache Block Invalidate instruction Enable*\n\nEnables the execution of the cache block invalidate ins",
+      "csr": "MENVCFG",
+      "field": "CBIE",
+      "type": "RW-R"
+    },
+    "MENVCFG_CBZE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*Cache Block Zero instruction Enable*\n\nEnables the execution of the cache block zero instruction, `C",
+      "csr": "MENVCFG",
+      "field": "CBZE",
+      "type": "RW"
+    },
+    "MENVCFG_FIOM": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*Fence of I/O implies Memory*\n\nWhen `menvcfg.FIOM` is set,\nFENCE instructions ordering I/O regions a",
+      "csr": "MENVCFG",
+      "field": "FIOM",
+      "type": "RW"
+    },
+    "MENVCFG_PBMTE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*Page Based Memory Type Enable*\n\nThe PBMTE bit controls whether the Svpbmt extension is available fo",
+      "csr": "MENVCFG",
+      "field": "PBMTE",
+      "type": "RW"
+    },
+    "MENVCFG_STCE": {
+      "category": "csr",
+      "file": "menvcfg.yaml",
+      "description": "*STimecmp Enable*\n\nWhen set, `stimecmp` is operational.\n\nWhen clear, `stimecmp` access in a mode oth",
+      "csr": "MENVCFG",
+      "field": "STCE",
+      "type": "RW"
+    },
+    "MEPC_PC": {
+      "category": "csr",
+      "file": "mepc.yaml",
+      "description": "When a trap is taken into M-mode, `mepc.PC` is written with the virtual address of the\ninstruction t",
+      "csr": "MEPC",
+      "field": "PC",
+      "type": "RW-RH"
+    },
+    "MHARTID_ID": {
+      "category": "csr",
+      "file": "mhartid.yaml",
+      "description": "hart-specific ID.",
+      "csr": "MHARTID",
+      "field": "ID",
+      "type": "RO"
+    },
+    "MIDELEG_LCOFI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Local Counter Overflow Interrupt delegation*\n\nWhen 1, local counter overflow interrupts are delegat",
+      "csr": "MIDELEG",
+      "field": "LCOFI",
+      "type": "RW"
+    },
+    "MIDELEG_MEI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Machine External interrupt delegation*\n\nSince M-mode interrupts cannot be delegated, this field is ",
+      "csr": "MIDELEG",
+      "field": "MEI",
+      "type": "RO"
+    },
+    "MIDELEG_MSI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Machine Software interrupt delegation*\n\nSince M-mode interrupts cannot be delegated, this field is ",
+      "csr": "MIDELEG",
+      "field": "MSI",
+      "type": "RO"
+    },
+    "MIDELEG_MTI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Machine Timer interrupt delegation*\n\nSince M-mode interrupts cannot be delegated, this field is rea",
+      "csr": "MIDELEG",
+      "field": "MTI",
+      "type": "RO"
+    },
+    "MIDELEG_SEI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Supervisor External interrupt delegation*\n\nWhen 1, Supervisor External interrupts are delegated to ",
+      "csr": "MIDELEG",
+      "field": "SEI",
+      "type": "RW"
+    },
+    "MIDELEG_SGEI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Supervisor Guest External Interrupt delegation*\n\nSupervisor Guest External interrupts are always de",
+      "csr": "MIDELEG",
+      "field": "SGEI",
+      "type": "RO"
+    },
+    "MIDELEG_SSI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Supervisor Software Interrupt delegation*\n\nWhen 1, Supervisor Software interrupts are delegated to ",
+      "csr": "MIDELEG",
+      "field": "SSI",
+      "type": "RW"
+    },
+    "MIDELEG_STI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Supervisor Timer interrupt delegation*\n\nWhen 1, Supervisor Timer interrupts are delegated to HS/S-m",
+      "csr": "MIDELEG",
+      "field": "STI",
+      "type": "RW"
+    },
+    "MIDELEG_VSEI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Virtual Supervisor External interrupt delegation*\n\nVirtual Supervisor External Interrupts are alway",
+      "csr": "MIDELEG",
+      "field": "VSEI",
+      "type": "RO"
+    },
+    "MIDELEG_VSSI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Virtual Supervisor Software Interrupt delegation*\n\nWhen 1, Virtual Supervisor Software interrupts a",
+      "csr": "MIDELEG",
+      "field": "VSSI",
+      "type": "RO"
+    },
+    "MIDELEG_VSTI": {
+      "category": "csr",
+      "file": "mideleg.yaml",
+      "description": "*Virtual Supervisor Timer interrupt delegation*\n\nWhen 1, Virtual Supervisor Timer interrupts are del",
+      "csr": "MIDELEG",
+      "field": "VSTI",
+      "type": "RO"
+    },
+    "MIE_LCOFIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Local Counter Overflow Interrupts.\n\nAlias of `sie.LCOFIE` when `mideleg.LCOFI` is set. Other",
+      "csr": "MIE",
+      "field": "LCOFIE",
+      "type": "RW"
+    },
+    "MIE_MEIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Machine External Interrupts.",
+      "csr": "MIE",
+      "field": "MEIE",
+      "type": "RW"
+    },
+    "MIE_MSIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Machine Software Interrupts.",
+      "csr": "MIE",
+      "field": "MSIE",
+      "type": "RW"
+    },
+    "MIE_MTIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Machine Timer Interrupts.",
+      "csr": "MIE",
+      "field": "MTIE",
+      "type": "RW"
+    },
+    "MIE_SEIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Supervisor External Interrupts.\n\nAlias of `sie.SEIE` when `mideleg.SEI` is set. Otherwise, `",
+      "csr": "MIE",
+      "field": "SEIE",
+      "type": "RW"
+    },
+    "MIE_SGEIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Supervisor Guest External Interrupts\n\nAlias of `hie.SGEIE`.\n",
+      "csr": "MIE",
+      "field": "SGEIE",
+      "type": "RW"
+    },
+    "MIE_SSIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Supervisor Software Interrupts.\n\nAlias of `sie.SSIE` when `mideleg.SSI` is set. Otherwise, `",
+      "csr": "MIE",
+      "field": "SSIE",
+      "type": "RW"
+    },
+    "MIE_STIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Supervisor Timer Interrupts.\n\nAlias of `sip.STIE` when `mideleg.STI` is set. Otherwise, `sip",
+      "csr": "MIE",
+      "field": "STIE",
+      "type": "RW"
+    },
+    "MIE_VSEIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Virtual Supervisor External Interrupts.\n\nAlias of `hie.VSEIE`.\n\nAlias of `vsie.SEIE` when `h",
+      "csr": "MIE",
+      "field": "VSEIE",
+      "type": "RW"
+    },
+    "MIE_VSSIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Virtual Supervisor Software Interrupts.\n\nAlias of `hie.VSSIE`.\n\nAlias of `vsie.SSIE` when `h",
+      "csr": "MIE",
+      "field": "VSSIE",
+      "type": "RW"
+    },
+    "MIE_VSTIE": {
+      "category": "csr",
+      "file": "mie.yaml",
+      "description": "Enables Virtual Supervisor Timer Interrupts.\n\nAlias of `hie.VSTIE`.\n\nAlias of `vsie.STIE` when `hide",
+      "csr": "MIE",
+      "field": "VSTIE",
+      "type": "RW"
+    },
+    "MIMPID_Implementation": {
+      "category": "csr",
+      "file": "mimpid.yaml",
+      "description": "Vendor-specific implementation ID.",
+      "csr": "MIMPID",
+      "field": "Implementation",
+      "type": "RO"
+    },
+    "MINSTRETH_COUNT": {
+      "category": "csr",
+      "file": "minstreth.yaml",
+      "description": "*Instructions retired counter*\n\nUpper half of `minstret`.\n",
+      "csr": "MINSTRETH",
+      "field": "COUNT",
+      "type": "RW-H"
+    },
+    "MINSTRET_COUNT": {
+      "category": "csr",
+      "file": "minstret.yaml",
+      "description": "Instructions retired counter.\n\n<%- if ext?(:Zicntr) -%>\nAliased as `instret.COUNT`.\n<%- end -%>\n\nInc",
+      "csr": "MINSTRET",
+      "field": "COUNT",
+      "type": "RW-H"
+    },
+    "MIP_LCOFIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Local Counter Overflow Interrupt pending*\n\n<%- if ext?(:H) -%>\nWhen `hideleg.LCOFI` is set,\n`vsip.L",
+      "csr": "MIP",
+      "field": "LCOFIP",
+      "type": "RW-H"
+    },
+    "MIP_MEIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Machine External Interrupt Pending*\n\nReports the current pending state of an M-mode external interr",
+      "csr": "MIP",
+      "field": "MEIP",
+      "type": "RO-H"
+    },
+    "MIP_MSIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Machine Software Interrupt Pending*\n\nUnused field.\n\n<%- if ext?(:Smaia) -%>\nWith AIA/IMSIC, IPIs ar",
+      "csr": "MIP",
+      "field": "MSIP",
+      "type": "RO"
+    },
+    "MIP_MTIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Machine Timer Interrupt Pending*\n\nReports the current pending state of an M-mode timer interrupt.\n\n",
+      "csr": "MIP",
+      "field": "MTIP",
+      "type": "RO-H"
+    },
+    "MIP_SEIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Supervisor External Interrupt Pending*\n\nReports the current pending state of an (H)S-mode external ",
+      "csr": "MIP",
+      "field": "SEIP",
+      "type": "RW-H"
+    },
+    "MIP_SGEIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Supervisor Guest External Interrupt Pending*\n\nRead-only summary of any pending Supervisor Guest Ext",
+      "csr": "MIP",
+      "field": "SGEIP",
+      "type": "RO-H"
+    },
+    "MIP_SSIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Supervisor Software Interrupt Pending*\n\nReports the current pending state of an (H)S-mode software ",
+      "csr": "MIP",
+      "field": "SSIP",
+      "type": "RW"
+    },
+    "MIP_STIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Supervisor Timer Interrupt Pending*\n\nReports the current pending state of an (H)S-mode timer interr",
+      "csr": "MIP",
+      "field": "STIP",
+      "type": "RW"
+    },
+    "MIP_VSEIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Virtual Supervisor External Interrupt Pending*\n\nReports the current pending state of a VS-mode exte",
+      "csr": "MIP",
+      "field": "VSEIP",
+      "type": "RO-H"
+    },
+    "MIP_VSSIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Virtual Supervisor Software Interrupt Pending*\n\nReports the current pending state of a VS-mode soft",
+      "csr": "MIP",
+      "field": "VSSIP",
+      "type": "RW"
+    },
+    "MIP_VSTIP": {
+      "category": "csr",
+      "file": "mip.yaml",
+      "description": "*Virtual Supervisor Timer Interrupt Pending*\n\nReports the current pending state of a VS-mode timer i",
+      "csr": "MIP",
+      "field": "VSTIP",
+      "type": "RO-H"
+    },
+    "MISA_A": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `A` (atomic) extension.\n\n[when,\"MUTABLE_MISA_A == true\"]\nWriting 0 to this",
+      "csr": "MISA",
+      "field": "A",
+      "type": "RW"
+    },
+    "MISA_B": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `B` (bitmanip) extension.\n\n[when,\"MUTABLE_MISA_B == true\"]\nWriting 0 to th",
+      "csr": "MISA",
+      "field": "B",
+      "type": "RW"
+    },
+    "MISA_C": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `C` (compressed) extension.\n\n[when,\"MUTABLE_MISA_C == true\"]\nWriting 0 to ",
+      "csr": "MISA",
+      "field": "C",
+      "type": "RW"
+    },
+    "MISA_D": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `D` (double precision float) extension.\n\n[when,\"MUTABLE_MISA_D == true\"]\n-",
+      "csr": "MISA",
+      "field": "D",
+      "type": "RW"
+    },
+    "MISA_F": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `F` (single precision float) extension.\n\n[when,\"MUTABLE_MISA_F == true\"]\n-",
+      "csr": "MISA",
+      "field": "F",
+      "type": "RW"
+    },
+    "MISA_G": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, `D`.\n",
+      "csr": "MISA",
+      "field": "G",
+      "type": "RW"
+    },
+    "MISA_H": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `H` (hypervisor) extension.\n\n[when,\"MUTABLE_MISA_H == true\"]\nWriting 0 to ",
+      "csr": "MISA",
+      "field": "H",
+      "type": "RW"
+    },
+    "MISA_I": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `I` (base) extension.\n",
+      "csr": "MISA",
+      "field": "I",
+      "type": "RO"
+    },
+    "MISA_M": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `M` (integer multiply/divide) extension.\n\n[when,\"MUTABLE_MISA_M == true\"]\n",
+      "csr": "MISA",
+      "field": "M",
+      "type": "RW"
+    },
+    "MISA_MXL": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "XLEN in M-mode.",
+      "csr": "MISA",
+      "field": "MXL",
+      "type": "RO"
+    },
+    "MISA_Q": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `Q` (quad precision float) extension.\n\n[when,\"MUTABLE_MISA_Q == true\"]\n--\n",
+      "csr": "MISA",
+      "field": "Q",
+      "type": "RW"
+    },
+    "MISA_S": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `S` (supervisor mode) extension.\n\n[when,\"MUTABLE_MISA_S == true\"]\nWriting ",
+      "csr": "MISA",
+      "field": "S",
+      "type": "RW"
+    },
+    "MISA_U": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `U` (user mode) extension.\n\n[when,\"MUTABLE_MISA_U == true\"]\nWriting 0 to t",
+      "csr": "MISA",
+      "field": "U",
+      "type": "RW"
+    },
+    "MISA_V": {
+      "category": "csr",
+      "file": "misa.yaml",
+      "description": "Indicates support for the `V` (vector) extension.\n\n[when,\"MUTABLE_MISA_V == true\"]\nWriting 0 to this",
+      "csr": "MISA",
+      "field": "V",
+      "type": "RW"
+    },
+    "MSCONTEXT_DATA": {
+      "category": "csr",
+      "file": "mscontext.yaml",
+      "description": "Supervisor mode software can write a context number to\nthis register, which can be used to set trigg",
+      "csr": "MSCONTEXT",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "MSCRATCH_SCRATCH": {
+      "category": "csr",
+      "file": "mscratch.yaml",
+      "description": "Scratch value",
+      "csr": "MSCRATCH",
+      "field": "SCRATCH",
+      "type": "RW"
+    },
+    "MSTATEEN0H_AIA": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The AIA bit in `mstateen0h` controls access to all state introduced by the Ssaia extension and is no",
+      "csr": "MSTATEEN0H",
+      "field": "AIA",
+      "type": "RW"
+    },
+    "MSTATEEN0H_CONTEXT": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The CONTEXT bit in `mstateen0h` controls access to the `scontext` and `hcontext` CSRs provided by th",
+      "csr": "MSTATEEN0H",
+      "field": "CONTEXT",
+      "type": "RW"
+    },
+    "MSTATEEN0H_CSRIND": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The CSRIND bit in `mstateen0h` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vs",
+      "csr": "MSTATEEN0H",
+      "field": "CSRIND",
+      "type": "RW"
+    },
+    "MSTATEEN0H_CTR": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "When Smstateen is implemented, the `mstateen0.CTR` bit controls access to CTR register state from\npr",
+      "csr": "MSTATEEN0H",
+      "field": "CTR",
+      "type": "RW"
+    },
+    "MSTATEEN0H_ENVCFG": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The ENVCFG bit in `mstateen0h` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.",
+      "csr": "MSTATEEN0H",
+      "field": "ENVCFG",
+      "type": "RW"
+    },
+    "MSTATEEN0H_IMSIC": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The IMSIC bit in `mstateen0h` controls access to the IMSIC state, including CSRs `stopei` and `vstop",
+      "csr": "MSTATEEN0H",
+      "field": "IMSIC",
+      "type": "RW"
+    },
+    "MSTATEEN0H_P1P13": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The P1P13 bit in `mstateen0h` controls access to the `hedelegh` introduced by Privileged Specificati",
+      "csr": "MSTATEEN0H",
+      "field": "P1P13",
+      "type": "RW"
+    },
+    "MSTATEEN0H_SE0": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The SE0 bit in `mstateen0h` controls access to the `hstateen0`, `hstateen0h`, and the `sstateen0` CS",
+      "csr": "MSTATEEN0H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN0H_SRMCFG": {
+      "category": "csr",
+      "file": "mstateen0h.yaml",
+      "description": "The SRMCFG bit in `mstateen0h` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapte",
+      "csr": "MSTATEEN0H",
+      "field": "SRMCFG",
+      "type": "RW"
+    },
+    "MSTATEEN0_AIA": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The AIA bit in `mstateen0` controls access to all state introduced by the Ssaia extension and is not",
+      "csr": "MSTATEEN0",
+      "field": "AIA",
+      "type": "RW"
+    },
+    "MSTATEEN0_C": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The C bit controls access to any and all custom state. The C bit of these registers is\nnot custom st",
+      "csr": "MSTATEEN0",
+      "field": "C",
+      "type": "RW"
+    },
+    "MSTATEEN0_CONTEXT": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The CONTEXT bit in `mstateen0` controls access to the `scontext` and `hcontext` CSRs provided by the",
+      "csr": "MSTATEEN0",
+      "field": "CONTEXT",
+      "type": "RW"
+    },
+    "MSTATEEN0_CSRIND": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The CSRIND bit in `mstateen0` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vsi",
+      "csr": "MSTATEEN0",
+      "field": "CSRIND",
+      "type": "RW"
+    },
+    "MSTATEEN0_CTR": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "When Smstateen is implemented, the `mstateen0.CTR` bit controls access to CTR register state from\npr",
+      "csr": "MSTATEEN0",
+      "field": "CTR",
+      "type": "RW"
+    },
+    "MSTATEEN0_ENVCFG": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The ENVCFG bit in `mstateen0` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.\n",
+      "csr": "MSTATEEN0",
+      "field": "ENVCFG",
+      "type": "RW"
+    },
+    "MSTATEEN0_FCSR": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The FCSR bit controls access to `fcsr` for the case when floating-point instructions\noperate on `x` ",
+      "csr": "MSTATEEN0",
+      "field": "FCSR",
+      "type": "RW"
+    },
+    "MSTATEEN0_IMSIC": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The IMSIC bit in `mstateen0` controls access to the IMSIC state, including CSRs `stopei` and `vstope",
+      "csr": "MSTATEEN0",
+      "field": "IMSIC",
+      "type": "RW"
+    },
+    "MSTATEEN0_JVT": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.\n",
+      "csr": "MSTATEEN0",
+      "field": "JVT",
+      "type": "RW"
+    },
+    "MSTATEEN0_P1P13": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The P1P13 bit in `mstateen0` controls access to the `hedelegh` introduced by Privileged Specificatio",
+      "csr": "MSTATEEN0",
+      "field": "P1P13",
+      "type": "RW"
+    },
+    "MSTATEEN0_SE0": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The SE0 bit in `mstateen0` controls access to the `hstateen0`, `hstateen0h`, and the `sstateen0` CSR",
+      "csr": "MSTATEEN0",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN0_SRMCFG": {
+      "category": "csr",
+      "file": "mstateen0.yaml",
+      "description": "The SRMCFG bit in `mstateen0` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter",
+      "csr": "MSTATEEN0",
+      "field": "SRMCFG",
+      "type": "RW"
+    },
+    "MSTATEEN1H_SE0": {
+      "category": "csr",
+      "file": "mstateen1h.yaml",
+      "description": "The SE0 bit in `mstateen1h` controls access to the `hstateen1`, `hstateen1h`, and the `sstateen1` CS",
+      "csr": "MSTATEEN1H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN1_SE0": {
+      "category": "csr",
+      "file": "mstateen1.yaml",
+      "description": "The SE0 bit in `mstateen1` controls access to the `hstateen1`, `hstateen1h`, and the `sstateen1` CSR",
+      "csr": "MSTATEEN1",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN2H_SE0": {
+      "category": "csr",
+      "file": "mstateen2h.yaml",
+      "description": "The SE0 bit in `mstateen2h` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CS",
+      "csr": "MSTATEEN2H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN2_SE0": {
+      "category": "csr",
+      "file": "mstateen2.yaml",
+      "description": "The SE0 bit in `mstateen2` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CSR",
+      "csr": "MSTATEEN2",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN3H_SE0": {
+      "category": "csr",
+      "file": "mstateen3h.yaml",
+      "description": "The SE0 bit in `mstateen3h` controls access to the `hstateen3`, `hstateen3h`, and the `sstateen3` CS",
+      "csr": "MSTATEEN3H",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATEEN3_SE0": {
+      "category": "csr",
+      "file": "mstateen3.yaml",
+      "description": "The SE0 bit in `mstateen3` controls access to the `hstateen3`, `hstateen3h`, and the `sstateen3` CSR",
+      "csr": "MSTATEEN3",
+      "field": "SE0",
+      "type": "RW"
+    },
+    "MSTATUSH_GVA": {
+      "category": "csr",
+      "file": "mstatush.yaml",
+      "description": "*Guest Virtual Address*\n\nWhen a trap is taken and a guest virtual address is written into mtval, GVA",
+      "csr": "MSTATUSH",
+      "field": "GVA",
+      "type": "RW-H"
+    },
+    "MSTATUSH_MBE": {
+      "category": "csr",
+      "file": "mstatush.yaml",
+      "description": "see `mstatus.MBE`\n",
+      "csr": "MSTATUSH",
+      "field": "MBE",
+      "type": "RW"
+    },
+    "MSTATUSH_MDT": {
+      "category": "csr",
+      "file": "mstatush.yaml",
+      "description": "*Machine Disable Trap*\n\nWritten to 1 when entering M-mode from an exception/interrupt.\nWhen returnin",
+      "csr": "MSTATUSH",
+      "field": "MDT",
+      "type": "RW-H"
+    },
+    "MSTATUSH_MPV": {
+      "category": "csr",
+      "file": "mstatush.yaml",
+      "description": "*Machine Previous Virtualization mode*\n\nWritten with the prior virtualization mode when entering M-m",
+      "csr": "MSTATUSH",
+      "field": "MPV",
+      "type": "RW-H"
+    },
+    "MSTATUSH_SBE": {
+      "category": "csr",
+      "file": "mstatush.yaml",
+      "description": "see `mstatus.SBE`\n",
+      "csr": "MSTATUSH",
+      "field": "SBE",
+      "type": "RW"
+    },
+    "MSTATUS_FS": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 0, floating point instructions (from F and D extensions) are disabled,\nand cause `ILLEGAL INSTR",
+      "csr": "MSTATUS",
+      "field": "FS",
+      "type": "RW"
+    },
+    "MSTATUS_GVA": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When a trap is taken and a guest virtual address is written into mtval, GVA is set.\nWhen a trap is t",
+      "csr": "MSTATUS",
+      "field": "GVA",
+      "type": "RW-H"
+    },
+    "MSTATUS_MBE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Controls the endianness of data M-mode (0 = little, 1 = big).\nInstructions are always little endian,",
+      "csr": "MSTATUS",
+      "field": "MBE",
+      "type": "RW"
+    },
+    "MSTATUS_MDT": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written to 1 when entering M-mode from an exception/interrupt.\nWhen returning via an MRET instructio",
+      "csr": "MSTATUS",
+      "field": "MDT",
+      "type": "RW-H"
+    },
+    "MSTATUS_MIE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with the value 0 when entering M-mode from an exception",
+      "csr": "MSTATUS",
+      "field": "MIE",
+      "type": "RW-H"
+    },
+    "MSTATUS_MPIE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with prior value of `mstatus.MIE` when entering M-mode ",
+      "csr": "MSTATUS",
+      "field": "MPIE",
+      "type": "RW-H"
+    },
+    "MSTATUS_MPP": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with the prior nominal privilege level when entering M-",
+      "csr": "MSTATUS",
+      "field": "MPP",
+      "type": "RW-H"
+    },
+    "MSTATUS_MPRV": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 1, loads and stores behave as if the current virtualization mode:privilege level was\n`mstatus.M",
+      "csr": "MSTATUS",
+      "field": "MPRV",
+      "type": "RW"
+    },
+    "MSTATUS_MPV": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written with the prior virtualization mode when entering M-mode from an exception/interrupt.\nWhen re",
+      "csr": "MSTATUS",
+      "field": "MPV",
+      "type": "RW-H"
+    },
+    "MSTATUS_MXR": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 1, loads from pages marked readable *or executable* are allowed.\nWhen 0, loads from pages marke",
+      "csr": "MSTATUS",
+      "field": "MXR",
+      "type": "RW"
+    },
+    "MSTATUS_SBE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Controls the endianness of S-mode (0 = little, 1 = big).\nInstructions are always little endian, rega",
+      "csr": "MSTATUS",
+      "field": "SBE",
+      "type": "RW"
+    },
+    "MSTATUS_SD": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Read-only bit that summarizes whether either the FS, XS, or VS\nfields signal the presence of some di",
+      "csr": "MSTATUS",
+      "field": "SD",
+      "type": "RW"
+    },
+    "MSTATUS_SIE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with the value 0 when entering (H)S-mode from an except",
+      "csr": "MSTATUS",
+      "field": "SIE",
+      "type": "RW"
+    },
+    "MSTATUS_SPIE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with prior value of `mstatus.SIE` when entering (H)S-mo",
+      "csr": "MSTATUS",
+      "field": "SPIE",
+      "type": "RW"
+    },
+    "MSTATUS_SPP": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Written by hardware in two cases:\n\n* Written with the prior nominal privilege level when entering (H",
+      "csr": "MSTATUS",
+      "field": "SPP",
+      "type": "RW-H"
+    },
+    "MSTATUS_SUM": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 0, an S-mode read or an M-mode read with mstatus.MPRV=1 and mstatus.MPP=01\nto a 'U' (user) page",
+      "csr": "MSTATUS",
+      "field": "SUM",
+      "type": "RW"
+    },
+    "MSTATUS_SXL": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).\n\n[when,\"SXLEN==",
+      "csr": "MSTATUS",
+      "field": "SXL",
+      "type": "RW"
+    },
+    "MSTATUS_TSR": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 1, attempts to execute the `sret` instruction while executing in HS/S-mode\nwill raise an Illega",
+      "csr": "MSTATUS",
+      "field": "TSR",
+      "type": "RW"
+    },
+    "MSTATUS_TVM": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 1, an `Illegal Instruction` trap occurs when\n\n* writing the `satp` CSR, executing an `sfence.vm",
+      "csr": "MSTATUS",
+      "field": "TVM",
+      "type": "RW"
+    },
+    "MSTATUS_TW": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 1, the WFI instruction will raise an Illegal Instruction trap after an\nimplementaion-defined wa",
+      "csr": "MSTATUS",
+      "field": "TW",
+      "type": "RW"
+    },
+    "MSTATUS_UBE": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Controls the endianness of U-mode (0 = little, 1 = big).\nInstructions are always little endian, rega",
+      "csr": "MSTATUS",
+      "field": "UBE",
+      "type": "RW"
+    },
+    "MSTATUS_UXL": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "U-mode XLEN.\n\nSets the effective XLEN for U-mode (1 = 32-bit, 2 = 64-bit, 3 = 128-bit [reserved]).\n\n",
+      "csr": "MSTATUS",
+      "field": "UXL",
+      "type": "RW"
+    },
+    "MSTATUS_VS": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "When 0, vector instructions (from the V extension) are disabled, and cause ILLEGAL INSTRUCTION excep",
+      "csr": "MSTATUS",
+      "field": "VS",
+      "type": "RW"
+    },
+    "MSTATUS_XS": {
+      "category": "csr",
+      "file": "mstatus.yaml",
+      "description": "Summarizes the current state of any custom extension state.\nEither 0 - Off, 1 - Initial, 2 - Clean, ",
+      "csr": "MSTATUS",
+      "field": "XS",
+      "type": "RO"
+    },
+    "MTVAL_VALUE": {
+      "category": "csr",
+      "file": "mtval.yaml",
+      "description": "Written with trap-specific information when a trap is taken into M-mode.\n\nThe values are:\n\n[separato",
+      "csr": "MTVAL",
+      "field": "VALUE",
+      "type": "RW-H"
+    },
+    "MTVEC_BASE": {
+      "category": "csr",
+      "file": "mtvec.yaml",
+      "description": "Bits [MXLEN-1:2] of the exception vector physical address for any trap taken in M-mode.\n\nThe impleme",
+      "csr": "MTVEC",
+      "field": "BASE",
+      "type": "RW"
+    },
+    "MTVEC_MODE": {
+      "category": "csr",
+      "file": "mtvec.yaml",
+      "description": "Vectoring mode for asynchronous interrupts.\n\n0 - Direct, 1 - Vectored\n\nWhen Direct, all synchronous ",
+      "csr": "MTVEC",
+      "field": "MODE",
+      "type": "RW"
+    },
+    "MVENDORID_Bank": {
+      "category": "csr",
+      "file": "mvendorid.yaml",
+      "description": "JEDEC manufacturer ID bank minus 1",
+      "csr": "MVENDORID",
+      "field": "Bank",
+      "type": "RO"
+    },
+    "MVENDORID_Offset": {
+      "category": "csr",
+      "file": "mvendorid.yaml",
+      "description": "JEDEC manufacturer ID offset",
+      "csr": "MVENDORID",
+      "field": "Offset",
+      "type": "RO"
+    },
+    "SATP_ASID": {
+      "category": "csr",
+      "file": "satp.yaml",
+      "description": "*Address Space ID*\n",
+      "csr": "SATP",
+      "field": "ASID",
+      "type": "RW-R"
+    },
+    "SATP_MODE": {
+      "category": "csr",
+      "file": "satp.yaml",
+      "description": "*Translation Mode*\n\nControls the current translation mode according to the table below.\n\n[separator=",
+      "csr": "SATP",
+      "field": "MODE",
+      "type": "RW-R"
+    },
+    "SATP_PPN": {
+      "category": "csr",
+      "file": "satp.yaml",
+      "description": "*Physical Page Number*\n\nThe physical address of the active root page table is PPN << 12.\n\nCan only h",
+      "csr": "SATP",
+      "field": "PPN",
+      "type": "RW-R"
+    },
+    "SCAUSE_CODE": {
+      "category": "csr",
+      "file": "scause.yaml",
+      "description": "Written by hardware when a trap is taken into S-mode.\n\nHolds the interrupt or exception code for the",
+      "csr": "SCAUSE",
+      "field": "CODE",
+      "type": "RW-RH"
+    },
+    "SCAUSE_INT": {
+      "category": "csr",
+      "file": "scause.yaml",
+      "description": "Written by hardware when a trap is taken into S-mode.\n\nWhen set, the last exception was caused by an",
+      "csr": "SCAUSE",
+      "field": "INT",
+      "type": "RW-RH"
+    },
+    "SCONTEXT_DATA": {
+      "category": "csr",
+      "file": "scontext.yaml",
+      "description": "Supervisor mode software can write a context number to\nthis register, which can be used to set trigg",
+      "csr": "SCONTEXT",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "SENVCFG_CBCFE": {
+      "category": "csr",
+      "file": "senvcfg.yaml",
+      "description": "*Cache Block Clean and Flush instruction Enable*\n\nEnables the execution of the cache block clean ins",
+      "csr": "SENVCFG",
+      "field": "CBCFE",
+      "type": "RW"
+    },
+    "SENVCFG_CBIE": {
+      "category": "csr",
+      "file": "senvcfg.yaml",
+      "description": "*Cache Block Invalidate instruction Enable*\n\nThis field has restricted values based on the value of ",
+      "csr": "SENVCFG",
+      "field": "CBIE",
+      "type": "RW-R"
+    },
+    "SENVCFG_CBZE": {
+      "category": "csr",
+      "file": "senvcfg.yaml",
+      "description": "*Cache Block Zero instruction Enable*\n\nBit is read-only 0 when `menvcfg.CBZE` is clear.\n\nEnables the",
+      "csr": "SENVCFG",
+      "field": "CBZE",
+      "type": "RW"
+    },
+    "SENVCFG_FIOM": {
+      "category": "csr",
+      "file": "senvcfg.yaml",
+      "description": "*Fence of I/O implies Memory*\n\nWhen either `senvcfg.FIOM` or `menvcfg.FIOM` is set,\nFENCE instructio",
+      "csr": "SENVCFG",
+      "field": "FIOM",
+      "type": "RW"
+    },
+    "SEPC_PC": {
+      "category": "csr",
+      "file": "sepc.yaml",
+      "description": "When a trap is taken into S-mode, `sepc.PC` is written with the virtual address of the\ninstruction t",
+      "csr": "SEPC",
+      "field": "PC",
+      "type": "RW-RH"
+    },
+    "SIP_LCOFIP": {
+      "category": "csr",
+      "file": "sip.yaml",
+      "description": "*Local Counter Overflow Interrupt pending*\n\nReports the current pending state of a Local Counter Ove",
+      "csr": "SIP",
+      "field": "LCOFIP",
+      "type": "RW-H"
+    },
+    "SIP_SEIP": {
+      "category": "csr",
+      "file": "sip.yaml",
+      "description": "*Supervisor External Interrupt Pending*\n\nReports the current pending state of an (H)S-mode external ",
+      "csr": "SIP",
+      "field": "SEIP",
+      "type": "RO-H"
+    },
+    "SIP_SSIP": {
+      "category": "csr",
+      "file": "sip.yaml",
+      "description": "*Supervisor Software Interrupt Pending*\n\nReports the current pending state of an (H)S-mode software ",
+      "csr": "SIP",
+      "field": "SSIP",
+      "type": "RW"
+    },
+    "SIP_STIP": {
+      "category": "csr",
+      "file": "sip.yaml",
+      "description": "*Supervisor Timer Interrupt Pending*\n\nReports the current pending state of an (H)S-mode timer interr",
+      "csr": "SIP",
+      "field": "STIP",
+      "type": "RO-H"
+    },
+    "SSCRATCH_SCRATCH": {
+      "category": "csr",
+      "file": "sscratch.yaml",
+      "description": "Scratch value",
+      "csr": "SSCRATCH",
+      "field": "SCRATCH",
+      "type": "RW"
+    },
+    "SSTATEEN0_C": {
+      "category": "csr",
+      "file": "sstateen0.yaml",
+      "description": "The C bit controls access to any and all custom state. The C bit of these registers is\nnot custom st",
+      "csr": "SSTATEEN0",
+      "field": "C",
+      "type": "RW"
+    },
+    "SSTATEEN0_FCSR": {
+      "category": "csr",
+      "file": "sstateen0.yaml",
+      "description": "The FCSR bit controls access to `fcsr` for the case when floating-point instructions\noperate on `x` ",
+      "csr": "SSTATEEN0",
+      "field": "FCSR",
+      "type": "RW"
+    },
+    "SSTATEEN0_JVT": {
+      "category": "csr",
+      "file": "sstateen0.yaml",
+      "description": "The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.\n",
+      "csr": "SSTATEEN0",
+      "field": "JVT",
+      "type": "RW"
+    },
+    "SSTATEEN1_DATA": {
+      "category": "csr",
+      "file": "sstateen1.yaml",
+      "description": "Data value",
+      "csr": "SSTATEEN1",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "SSTATEEN2_DATA": {
+      "category": "csr",
+      "file": "sstateen2.yaml",
+      "description": "Data value",
+      "csr": "SSTATEEN2",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "SSTATEEN3_DATA": {
+      "category": "csr",
+      "file": "sstateen3.yaml",
+      "description": "Data value",
+      "csr": "SSTATEEN3",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "SSTATUS_FS": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "Floating point context status.\n\nAlias of `mstatus.FS`.\n",
+      "csr": "SSTATUS",
+      "field": "FS",
+      "type": "RW-H"
+    },
+    "SSTATUS_MXR": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*Make eXecutable Readable*\n\nAlias of `mstatus.MXR`.\n",
+      "csr": "SSTATUS",
+      "field": "MXR",
+      "type": "RW"
+    },
+    "SSTATUS_SD": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*State Dirty*\n\nAlias of `mstatus.SD`.\n",
+      "csr": "SSTATUS",
+      "field": "SD",
+      "type": "RO-H"
+    },
+    "SSTATUS_SIE": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*S-mode Interrupt Enable*\n\nAlias of `mstatus.SIE`.\n",
+      "csr": "SSTATUS",
+      "field": "SIE",
+      "type": "RW-H"
+    },
+    "SSTATUS_SPIE": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*S-mode Previous Interrupt Enable*\n\nAlias of `mstatus.SPIE`.\n",
+      "csr": "SSTATUS",
+      "field": "SPIE",
+      "type": "RW-H"
+    },
+    "SSTATUS_SPP": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*S-mode Previous Privilege*\n\nAlias of `mstatus.SPP`.\n",
+      "csr": "SSTATUS",
+      "field": "SPP",
+      "type": "RW-H"
+    },
+    "SSTATUS_SUM": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*permit Supervisor Memory Access*\n\nAlias of `mstatus.SUM`.\n",
+      "csr": "SSTATUS",
+      "field": "SUM",
+      "type": "RW"
+    },
+    "SSTATUS_UBE": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*U-mode Big Endian*\n\nAlias of `mstatus.UBE`.\n",
+      "csr": "SSTATUS",
+      "field": "UBE",
+      "type": "RO"
+    },
+    "SSTATUS_UXL": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "*U-mode XLEN*\n\nAlias of `mstatus.UXL`.\n",
+      "csr": "SSTATUS",
+      "field": "UXL",
+      "type": "RO"
+    },
+    "SSTATUS_VS": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "Vector context status.\n\nAlias of `mstatus.VS`.\n",
+      "csr": "SSTATUS",
+      "field": "VS",
+      "type": "RW-H"
+    },
+    "SSTATUS_XS": {
+      "category": "csr",
+      "file": "sstatus.yaml",
+      "description": "Custom (X) extension context Status.\n\nAlias of `mstatus.XS`.\n",
+      "csr": "SSTATUS",
+      "field": "XS",
+      "type": "RO"
+    },
+    "STVAL_VALUE": {
+      "category": "csr",
+      "file": "stval.yaml",
+      "description": "Written with trap-specific information when a trap is taken into S-mode.\n\nThe values are:\n\n[separato",
+      "csr": "STVAL",
+      "field": "VALUE",
+      "type": "RW-H"
+    },
+    "STVEC_BASE": {
+      "category": "csr",
+      "file": "stvec.yaml",
+      "description": "<%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>\nBit 63:0 of the virtual address of the e",
+      "csr": "STVEC",
+      "field": "BASE",
+      "type": "RW-R"
+    },
+    "STVEC_MODE": {
+      "category": "csr",
+      "file": "stvec.yaml",
+      "description": "Vectoring mode for asynchronous interrupts.\n\n0 - Direct, 1 - Vectored\n\nWhen Direct, all synchronous ",
+      "csr": "STVEC",
+      "field": "MODE",
+      "type": "RW-R"
+    },
+    "TDATA1_DATA": {
+      "category": "csr",
+      "file": "tdata1.yaml",
+      "description": "If type is 0, then this field is hard-wired to 0.\nTrigger-specific data.\n",
+      "csr": "TDATA1",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "TDATA1_DMODE": {
+      "category": "csr",
+      "file": "tdata1.yaml",
+      "description": "If type is 0, then this bit is hard-wired to 0.\n\n0 (both): Both Debug and M-mode can write the `tdat",
+      "csr": "TDATA1",
+      "field": "DMODE",
+      "type": "RW"
+    },
+    "TDATA1_TYPE": {
+      "category": "csr",
+      "file": "tdata1.yaml",
+      "description": "0 (none):: There is no trigger at this `tselect`.\n1 (legacy):: The trigger is a legacy SiFive addres",
+      "csr": "TDATA1",
+      "field": "TYPE",
+      "type": "RW"
+    },
+    "TDATA2_DATA": {
+      "category": "csr",
+      "file": "tdata2.yaml",
+      "description": "Data value",
+      "csr": "TDATA2",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "TDATA3_DATA": {
+      "category": "csr",
+      "file": "tdata3.yaml",
+      "description": "Data value",
+      "csr": "TDATA3",
+      "field": "DATA",
+      "type": "RW"
+    },
+    "TIMEH_COUNT": {
+      "category": "csr",
+      "file": "timeh.yaml",
+      "description": "Reports the most significant 32 bits of the current wall-clock time from the timer device.\n",
+      "csr": "TIMEH",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "TIME_COUNT": {
+      "category": "csr",
+      "file": "time.yaml",
+      "description": "Reports the current wall-clock time from the timer device.\n\nAlias of the `mtime` memory-mapped CSR.\n",
+      "csr": "TIME",
+      "field": "COUNT",
+      "type": "RO-H"
+    },
+    "TSELECT_INDEX": {
+      "category": "csr",
+      "file": "tselect.yaml",
+      "description": "Index value",
+      "csr": "TSELECT",
+      "field": "INDEX",
+      "type": "RW"
+    },
+    "VSCAUSE_CODE": {
+      "category": "csr",
+      "file": "vscause.yaml",
+      "description": "Written by hardware when a trap is taken into VS-mode.\n\nHolds the interrupt or exception code for th",
+      "csr": "VSCAUSE",
+      "field": "CODE",
+      "type": "RW-RH"
+    },
+    "VSCAUSE_INT": {
+      "category": "csr",
+      "file": "vscause.yaml",
+      "description": "Written by hardware when a trap is taken into VS-mode.\n\nWhen set, the last exception was caused by a",
+      "csr": "VSCAUSE",
+      "field": "INT",
+      "type": "RW-RH"
+    },
+    "VSEPC_PC": {
+      "category": "csr",
+      "file": "vsepc.yaml",
+      "description": "When a trap is taken into VS-mode, `vsepc.PC` is written with the virtual address of the\ninstruction",
+      "csr": "VSEPC",
+      "field": "PC",
+      "type": "RW-RH"
+    },
+    "VSSTATUS_FS": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*Floating point context status*\n\nWhen 0, floating point instructions (from F and D extensions) in VS",
+      "csr": "VSSTATUS",
+      "field": "FS",
+      "type": "RW-H"
+    },
+    "VSSTATUS_MXR": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*Make eXecutable Readable*\n\nMakes it possible to read executable pages when loading from effective V",
+      "csr": "VSSTATUS",
+      "field": "MXR",
+      "type": "RW"
+    },
+    "VSSTATUS_SD": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*State Dirty*\n\nRead-only bit that summarizes whether any of the\n`vsstatus.FS`, <% if ext?(:V) %> `vs",
+      "csr": "VSSTATUS",
+      "field": "SD",
+      "type": "RO-H"
+    },
+    "VSSTATUS_SIE": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*VS-mode Interrupt Enable*\n\nWritten by hardware in two cases:\n\n* Written with the value 0 when enter",
+      "csr": "VSSTATUS",
+      "field": "SIE",
+      "type": "RW-H"
+    },
+    "VSSTATUS_SPIE": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*VS-mode Previous Interrupt Enable*\n\nWritten by hardware in two cases:\n\n* Written with prior value o",
+      "csr": "VSSTATUS",
+      "field": "SPIE",
+      "type": "RW-H"
+    },
+    "VSSTATUS_SPP": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*VS-mode Previous Privilege*\n\nWritten with the prior nominal privilege level (_i.e._, 0 for VU-mode ",
+      "csr": "VSSTATUS",
+      "field": "SPP",
+      "type": "RW-H"
+    },
+    "VSSTATUS_SUM": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*permit Supervisor Memory Access*\n\nAllows VS-mode to read user pages.\n\nApplies to the following load",
+      "csr": "VSSTATUS",
+      "field": "SUM",
+      "type": "RW"
+    },
+    "VSSTATUS_UBE": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*VU-mode Big Endian*\n\nControls the endianness of VU-mode (0 = little, 1 = big).\n\n[when,\"VU_MODE_ENDI",
+      "csr": "VSSTATUS",
+      "field": "UBE",
+      "type": "RW"
+    },
+    "VSSTATUS_UXL": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*VU-mode XLEN*\n\nSets the effective XLEN for VU-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).\n\n[when,\"V",
+      "csr": "VSSTATUS",
+      "field": "UXL",
+      "type": "RW"
+    },
+    "VSSTATUS_VS": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*Vector context status*\n\nWhen 0, vector instructions (from the V extension) are disabled, and cause ",
+      "csr": "VSSTATUS",
+      "field": "VS",
+      "type": "RW-H"
+    },
+    "VSSTATUS_XS": {
+      "category": "csr",
+      "file": "vsstatus.yaml",
+      "description": "*Custom (X) extension context Status*\n\nSummarizes the current state of any custom extension state.\nE",
+      "csr": "VSSTATUS",
+      "field": "XS",
+      "type": "RO"
+    },
+    "VSTVAL_VALUE": {
+      "category": "csr",
+      "file": "vstval.yaml",
+      "description": "Written with trap-specific information when a trap is taken into VS-mode.\n\nThe values are:\n\n[separat",
+      "csr": "VSTVAL",
+      "field": "VALUE",
+      "type": "RW-H"
+    },
+    "VSTVEC_BASE": {
+      "category": "csr",
+      "file": "vstvec.yaml",
+      "description": "<%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>\nBit 63:0 of the virtual address of the e",
+      "csr": "VSTVEC",
+      "field": "BASE",
+      "type": "RW-R"
+    },
+    "VSTVEC_MODE": {
+      "category": "csr",
+      "file": "vstvec.yaml",
+      "description": "Vectoring mode for asynchronous interrupts taken into VS-mode.\n\n0 - Direct, 1 - Vectored\n\nWhen Direc",
+      "csr": "VSTVEC",
+      "field": "MODE",
+      "type": "RW-R"
+    }
+  }
+}

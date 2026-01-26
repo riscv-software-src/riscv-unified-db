@@ -1,0 +1,34 @@
+{
+  "category": "csr",
+  "item_name": "sstatus",
+  "model_1": "openai/gpt-oss-120b",
+  "model_2": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "hf_response": [
+    {
+      "name": "SSTATUS_SD_ACCESS_TYPE",
+      "csr_name": "SSTATUS",
+      "field_name": "SD",
+      "description": "Read\u2011Only, hardware\u2011updated state\u2011dirty flag.",
+      "type": "CONSTRAINT",
+      "behavioral_impact": "STATE",
+      "spec_quote": "Type: RO-H",
+      "spec_location": "sstatus.yaml fields.SD.type",
+      "confidence": 5,
+      "is_explicit": true,
+      "cross_field_constraints": "",
+      "side_effects": ""
+    }
+  ],
+  "hf_count": 1,
+  "scout_response": [],
+  "scout_count": 0,
+  "timestamp": "2026-01-26T14:31:04.301834",
+  "metrics": {
+    "hf_extracted": 1,
+    "scout_extracted": 0,
+    "total_unique": 1,
+    "convergence_percentage": 0.0,
+    "fuzzy_matched": 0,
+    "matched_pairs": []
+  }
+}
