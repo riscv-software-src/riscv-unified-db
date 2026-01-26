@@ -1,0 +1,23 @@
+# Copyright (c) Ishaan Arora
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Ztso
+long_name: Total Store Ordering
+description: |
+  The Ztso extension provides Total Store Ordering (TSO) memory consistency semantics
+  for RISC-V systems. This is an optional extension that complements the baseline
+  RISC-V Weak Memory Ordering (RVWMO) model by providing stricter memory ordering
+  guarantees.
+
+  When Ztso is implemented, all loads and stores behave as if they have implicit
+  acquire and release semantics, respectively. This provides a familiar programming
+  model for software developed on architectures that natively support TSO, such as x86.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-01

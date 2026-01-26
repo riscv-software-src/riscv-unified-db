@@ -84,11 +84,18 @@ elif [ "${CONTAINER_TYPE}" == "docker" ] || [ "${CONTAINER_TYPE}" == "podman" ];
       CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --tmpfs ${HOME}"
     fi
 
-    # run as the host user, and copy in /etc/{passwd,group} to get the mappings
     mkdir -p "${ROOT}/.cache"
-    getent passwd > "${ROOT}/.cache/passwd"
-    getent group >> "${ROOT}/.cache/group"
-    CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --user $(id -u):$(id -g) -v ${ROOT}/.cache/passwd:/etc/passwd:ro -v ${ROOT}/.cache/group:/etc/group:ro"
+
+    # run as the host user
+    if [ "${CONTAINER_TYPE}" == "podman" ]; then
+      # Use --userns=keep-id for rootless podman to properly map user IDs with SELinux
+      CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --userns=keep-id"
+    else
+      # Copy in /etc/{passwd,group} to get the user mappings
+      getent passwd > "${ROOT}/.cache/passwd"
+      getent group >> "${ROOT}/.cache/group"
+      CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} --user $(id -u):$(id -g) -v ${ROOT}/.cache/passwd:/etc/passwd:ro -v ${ROOT}/.cache/group:/etc/group:ro"
+    fi
 
     if [ -v PRE_COMMIT_HOME ]; then
       CONTAINER_RUN_FLAGS="${CONTAINER_RUN_FLAGS} -e PRE_COMMIT_HOME"
