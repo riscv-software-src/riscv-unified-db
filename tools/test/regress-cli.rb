@@ -8,6 +8,7 @@
 require "sorbet-runtime"
 require "tty-command"
 require "tty-exit"
+require "tty-logger"
 require "tty-table"
 require "tty-option"
 require "yaml"
@@ -88,6 +89,7 @@ class Cli
   def initialize
     @name = "regress"
     @desc = "Run regression tests"
+    @logger = TTY::Logger.new
   end
 
   sig { returns(T::Hash[String, T.untyped]) }
@@ -120,7 +122,7 @@ class Cli
   sig { params(test_name: String).void }
   def cmd_run_single_test(test_name)
     unless test_data.fetch("tests").key?(test_name)
-      warn "No test named '#{test_name}'"
+      @logger.warn "No test named '#{test_name}'"
       exit_with(:data_error)
     end
 
@@ -136,11 +138,11 @@ class Cli
         if params[:matrix]
           k, v = params[:matrix].split("=").map(&:strip)
           unless matrix.key?(k)
-            warn "'#{k}' is not a matrix type"
+            @logger.warn "'#{k}' is not a matrix type"
             exit_with(:data_error)
           end
           unless matrix.fetch(k).include?(v)
-            warn "'#{v}' is not an option for matrix '#{k}'"
+            @logger.warn "'#{v}' is not an option for matrix '#{k}'"
             exit_with(:data_error)
           end
           cmd.run env, "bash -c \"#{gh_sub(step.fetch("run"), sub: { "matrix.#{k}" => v })}\""
@@ -154,6 +156,21 @@ class Cli
       else
         cmd.run env, "bash -c \"#{gh_sub(step.fetch("run"))}\""
       end
+    end
+  end
+
+  sig { void }
+  def cmd_run_tagged_tests(tag_name)
+    nran = 0
+    test_data.fetch("tests").each do |tname, tdata|
+      next unless tdata.key?("tag") && tdata.fetch("tags").include?(tag_name)
+      nran += 1
+      cmd_run_single_test(tname)
+    end
+    if nran.zero?
+      exit_with(:data_error, "Did not find any tests tagged with '#{tag_name}'")
+    else
+      @logger.info "Ran #{nran} tests"
     end
   end
 
@@ -188,6 +205,11 @@ class Cli
 
     unless params[:test].nil?
       cmd_run_single_test(params[:test])
+      exit_with(:success)
+    end
+
+    unless params[:tag].nil?
+      cmd_run_tagged_tests(params[:tag])
       exit_with(:success)
     end
 

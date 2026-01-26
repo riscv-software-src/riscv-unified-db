@@ -71,7 +71,7 @@ tests:
         run: git submodule update --init ext/riscv-isa-manual
       - name: Mark isa-manual as safe
         # Run in docker to get git config set correctly for submodules
-        run: ./bin/bash -c "git config --global --add safe.directory '*'"
+        run: ./bin/bash -c "git config --local --add safe.directory '*'"
     test:
       - name: Generate HTML ISA manual
         run: ./do gen:html_manual
@@ -176,3 +176,8 @@ tests:
     test:
       - name: Check profile_extensions
         run: ./do test:profile_extensions
+
+  regress-regress:
+    test:
+      - name: Test that local regress runner works
+        run: ./bin/regress -n regress-sorbet

@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+ROOT=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+
+help() {
+  echo "Usage: chore [OPTION] COMMAND [COMMAND_OPTIONS]"
+  echo ""
+  echo ""
+  echo "Options:"
+  echo ""
+  echo "  -h: Print help"
+  echo ""
+  echo "Commands:"
+  echo ""
+  echo "  gen: Generate an artifact ('chore gen -h' for more)"
+  echo ""
+}
+
+gen_subcmd_usage() {
+  echo "Usage: chore gen [-h] TARGET"
+  echo ""
+  echo ""
+  echo "Options:"
+  echo ""
+  echo "  -f:      Fail on change; exit with status 1 if the generated file changes"
+  echo "  -h:      Print help"
+  echo ""
+  echo "Commands:"
+  echo ""
+  echo "  all:     Generate all development artifacts"
+  echo "  regress: Generate .github/workflows/regress.yml"
+  echo ""
+}
+
+source_setup() {
+  if [ -z "$SETUP_SOURCED" ]; then
+    export SETUP_SOURCED=1
+    source "$ROOT"/setup
+  fi
+}
+
+do_gen_regress() {
+  source_setup
+  echo "Generating .github/workflows/regress.yml"
+  if [ $fail_on_change -eq 1 ]; then
+    local sha_before
+    sha_before=$(sha256sum "$ROOT"/.github/workflows/regress.yml)
+  fi
+  $RUBY tools/test/gen_regress.rb
+  if [ $fail_on_change -eq 1 ]; then
+    local sha_after
+    sha_after=$(sha256sum "$ROOT"/.github/workflows/regress.yml)
+    if [ "$sha_before" != "$sha_after" ]; then
+      exit 1
+    fi
+  fi
+}
+
+do_gen_all() {
+  do_gen_regress
+}
+
+while getopts ":h" opt; do # Go through the options
+  case $opt in
+    # help
+    h )
+      help
+      exit 0 # Exit correctly
+    ;;
+    # Invalid option
+    ? )
+        echo "[ERROR]: Invalid option: -${OPTARG}"
+        help
+        exit 1 # Exit with error
+    ;;
+  esac
+done
+shift $((OPTIND-1))
+subcommand=$1; shift # Get subcommand and shift to next option
+
+case "$subcommand" in
+  gen )
+    fail_on_change=0
+    while getopts ":hf" opt; do # Go through the options
+      case $opt in
+        # help
+        h )
+          gen_subcmd_usage
+          exit 0 # Exit correctly
+        ;;
+        f )
+          fail_on_change=1
+          shift
+          ;;
+        # Invalid option
+        ? )
+            echo "[ERROR]: Invalid option: -${OPTARG}"
+            gen_subcmd_usage
+            exit 1 # Exit with error
+        ;;
+      esac
+    done
+    target="$1"; shift
+    case "$target" in
+      all )
+        do_gen_all
+        exit 0
+        ;;
+      regress )
+        do_gen_regress
+        exit 0
+        ;;
+      * )
+        echo "Invalid target: $subcommand"
+        gen_subcmd_usage
+        exit 1
+    esac
+    ;;
+  # Invalid subcommand
+  * )
+    if [ ! -z "$subcommand" ]; then  # Don't show if no subcommand provided
+      echo "Invalid subcommand: $subcommand"
+    fi
+    usage
+    exit 1 # Exit with error
+  ;;
+esac
