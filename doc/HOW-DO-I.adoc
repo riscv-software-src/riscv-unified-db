@@ -42,11 +42,11 @@ To run all regression tests matching a tag:
 Basic Regressions::
 --
 Basic (most) regressions that can be run via the command-line within the UDB container are
-stored in `tools/tests/regress-tests.yaml`.
+stored in `tools/test/regress-tests.yaml`.
 
 To add a basic regression, you must:
 
-1. Add the regression in `tools/tests/regress-test.yaml`
+1. Add the regression in `tools/test/regress-tests.yaml`
     * The main steps of the test should go under the `test` key.
     * If there are any steps needed to set up the test in GitHub CI, add those under the `pre` key.
     * If there are any steps needed after the test in GitHub CI, add those under the `post` key.
