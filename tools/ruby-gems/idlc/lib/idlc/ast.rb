@@ -4782,10 +4782,18 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      internal_error "Not frozen?" unless frozen?
-      type_error "No enum named #{@enum_class_name}" if @enum_def_type.nil?
+      if !frozen?
+        enum_def_type = symtab.get(@enum_class_name)
 
-      @enum_def_type.ref_type
+        if enum_def_type.nil? || enum_def_type.kind != :enum
+          type_error "#{@enum_class_name} is not a defined Enum"
+        end
+        enum_def_type.ref_type
+      else
+        type_error "No enum named #{@enum_class_name}" if @enum_def_type.nil?
+
+        @enum_def_type.ref_type
+      end
     end
 
     # @!macro value_no
