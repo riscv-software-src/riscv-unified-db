@@ -140,7 +140,7 @@ class Cli
             exit_with(:data_error)
           end
           unless matrix.fetch(k).include?(v)
-            warn "'#{v}' is not an options for matrix '#{k}"
+            warn "'#{v}' is not an option for matrix '#{k}'"
             exit_with(:data_error)
           end
           cmd.run env, "bash -c \"#{gh_sub(step.fetch("run"), sub: { "matrix.#{k}" => v })}\""
