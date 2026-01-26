@@ -23,15 +23,15 @@ get_container_type() {
   elif [ -v SINGULARITY ]; then
   container_type=singularity
   else
-    echo -e "UDB tools run in a container. Docker, Podman, and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Podman\\n3. Singularity\\n"
+    echo -e "UDB tools run in a container. Docker, Podman, and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Podman\\n3. Singularity\\n" >&2
     while true; do
-      echo "Which would you like to use? (1/2/3) "
+      echo "Which would you like to use? (1/2/3) " >&2
       read -r ans
       case $ans in
           [1]* ) container_type=docker; break;;
           [2]* ) container_type=podman; break;;
           [3]* ) container_type=singularity; break;;
-          * ) echo -e "\\nPlease answer 1, 2, or 3.";;
+          * ) echo -e "\\nPlease answer 1, 2, or 3." >&2;;
       esac
     done
   fi
