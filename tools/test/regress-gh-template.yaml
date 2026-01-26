@@ -55,7 +55,7 @@ jobs:
           name: docker_image
           path: ${{ runner.temp }}/docker_image.tar
   never-runs:
-    # this just exists so that rennovate can keep the download-artifact pointer up-to-date
+    # this just exists so that renovate can keep the download-artifact pointer up-to-date
     # we use it for regressions later
     runs-on: ubuntu-latest
     if: "false"
