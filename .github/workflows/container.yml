@@ -55,7 +55,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        include:
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Clone Github Repo Action
@@ -65,14 +69,6 @@ jobs:
         run: |
           TAG=$(cat bin/.container-tag)
           echo "TAG=$TAG" >> $GITHUB_ENV
-
-      - name: Set platform
-        run: |
-          if [ "${{ matrix.runner }}" == "ubuntu-24.04" ]; then
-            echo "PLATFORM=linux/amd64" >> $GITHUB_ENV
-          else
-            echo "PLATFORM=linux/arm64" >> $GITHUB_ENV
-          fi
 
       - name: Login to Docker Hub
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
@@ -87,9 +83,8 @@ jobs:
         id: build
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
-          context: .
           file: ./.devcontainer/Dockerfile
-          platforms: ${{ env.PLATFORM }}
+          platforms: ${{ matrix.platform }}
           outputs: type=image,name=riscvintl/udb,push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
