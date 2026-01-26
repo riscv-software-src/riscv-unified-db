@@ -2577,19 +2577,7 @@ module Idl
 
     sig { params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
-      if field(symtab).defined_in_all_bases?
-        if symtab.mxlen == 64 && symtab.multi_xlen?
-          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
-        else
-          Type.new(:bits, width: field(symtab).location(symtab.mxlen.nil? ? 64 : symtab.mxlen).size)
-        end
-      elsif field(symtab).base64_only?
-        Type.new(:bits, width: field(symtab).location(64).size)
-      elsif field(symtab).base32_only?
-        Type.new(:bits, width: field(symtab).location(32).size)
-      else
-        internal_error "Unexpected base for field"
-      end
+      csr_field.type(symtab)
     end
 
     def field(symtab)

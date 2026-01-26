@@ -45,6 +45,17 @@ module Idl
       @kind == :bits
     end
 
+    def ==(other)
+      return false unless other.is_a?(Type)
+
+      case other.kind
+      when :bits
+        @kind == :bits && @width == other.width
+      else
+        raise "TODO: Type == for #{other.kind}"
+      end
+    end
+
     def runtime?
       if @kind == :array
         @sub_type.runtime?
