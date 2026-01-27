@@ -1342,7 +1342,7 @@ class Udb::AbstractCondition
   sig { params(other_condition: ::Udb::AbstractCondition).returns(T::Boolean) }
   def always_implies?(other_condition); end
 
-  # is is possible for this condition and other to be simultaneously true?
+  # is it possible for this condition and other to be simultaneously true?
   #
   # source://udb//../../udb/lib/udb/condition.rb#213
   sig { params(other: ::Udb::AbstractCondition).returns(T::Boolean) }

@@ -1,0 +1,22 @@
+# Copyright (c) Ishaan Arora
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Ssu32xl
+long_name: 32-bit UXLEN
+description: |
+  `sstatus.UXL` must be capable of holding the value 1 (i.e., UXLEN=32 must be supported).
+
+  This allows U-mode to run 32-bit code on a 64-bit machine by setting `sstatus.UXL` to 1.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-12
+requirements:
+  param:
+    name: UXLEN
+    includes: 32

@@ -4,13 +4,11 @@
 # typed: false
 # frozen_string_literal: true
 
-require "simplecov"
-require "simplecov-cobertura"
+require_relative "test_helper"
 
-UDB_ROOT = (Pathname.new(__dir__) / "..").realpath
-
-require_relative "test_logic"
-require_relative "test_conditions"
-require_relative "test_cli"
-require_relative "test_yaml_loader"
+require_relative "test_cfg"
 require_relative "test_cfg_arch"
+require_relative "test_cli"
+require_relative "test_conditions"
+require_relative "test_logic"
+require_relative "test_yaml_loader"
