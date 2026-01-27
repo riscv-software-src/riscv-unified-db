@@ -14,7 +14,7 @@ $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
 require_relative "helpers"
 
 # test IDL variables
-class TestVariables < Minitest::Test
+class TestAstType < Minitest::Test
   include TestMixin
 
   def test_enum_ref
