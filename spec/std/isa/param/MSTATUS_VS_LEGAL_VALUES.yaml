@@ -38,6 +38,8 @@ requirements:
     If there is a hardware update to mstatus.VS, then the Dirty state must be supported
 definedBy:
   extension:
-    anyOf:
-      - name: V
-      - name: S
+    allOf:
+      - name: Sm
+      - anyOf:
+        - name: Zvl32b
+        - name: S

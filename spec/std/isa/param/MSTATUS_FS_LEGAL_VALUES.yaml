@@ -34,6 +34,8 @@ requirements:
     supported
 definedBy:
   extension:
-    anyOf:
-      - name: F
-      - name: S
+    allOf:
+      - name: Sm
+      - anyOf:
+        - name: F
+        - name: S

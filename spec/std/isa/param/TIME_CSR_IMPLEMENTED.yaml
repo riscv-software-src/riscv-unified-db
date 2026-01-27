@@ -25,4 +25,6 @@ schema:
   type: boolean
 definedBy:
   extension:
-    name: Zicntr
+    allOf:
+      - name: Zicntr
+      - name: Sm

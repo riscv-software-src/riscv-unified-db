@@ -14,4 +14,4 @@ schema:
   enum: ["ceil(AVL/2)", "VLMAX", "custom"]
 definedBy:
   extension:
-    name: V
+    name: Zvl32b

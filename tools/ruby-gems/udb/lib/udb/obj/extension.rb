@@ -124,7 +124,7 @@ module Udb
 
               # inst is defined transitively by self if:
               (
-                (param_defined & -ext_implemented) # it must be defined when preconditions are met, and
+                (-param_defined & ext_implemented) # it must be defined when preconditions are met, and
               ).unsatisfiable? && \
               (
                 (-param_defined & preconditions_met) # it may not be defined when only self's requirements are met

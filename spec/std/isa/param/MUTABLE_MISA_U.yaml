@@ -16,4 +16,6 @@ schema:
   type: boolean
 definedBy:
   extension:
-    name: U
+    allOf:
+      - name: U
+      - name: Sm

@@ -17,4 +17,4 @@ schema:
 #      reason: VLEN >= ELEN, which must be a power of 2, and must be no greater than 2^16.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b

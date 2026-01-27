@@ -21,4 +21,6 @@ requirements:
     without S mode (and thus MUTABLE_MISA_H is not an option -- it's always true)
 definedBy:
   extension:
-    name: H
+    allOf:
+      - name: Sm
+      - name: H

@@ -25,4 +25,6 @@ schema:
     - imprecise
 definedBy:
   extension:
-    name: F
+    allOf:
+      - name: F
+      - name: Sm
