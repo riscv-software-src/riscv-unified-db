@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Validate mise configuration
+
+set -e
+
+ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
+cd "$ROOT"
+
+echo "Validating mise configuration..."
+
+# Check if .mise.toml exists
+if [ ! -f ".mise.toml" ]; then
+  echo "ERROR: .mise.toml not found"
+  exit 1
+fi
+
+# Check if .ruby-version exists (referenced in .mise.toml)
+if [ ! -f ".ruby-version" ]; then
+  echo "ERROR: .ruby-version not found"
+  exit 1
+fi
+
+# If mise is available, validate the config
+if command -v mise &> /dev/null; then
+  echo "Running mise doctor..."
+  mise doctor
+  
+  echo ""
+  echo "Current tool versions:"
+  mise current
+else
+  echo "mise not installed (OK for container-only usage)"
+fi
+
+echo ""
+echo "✓ mise configuration is valid"

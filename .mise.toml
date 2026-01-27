@@ -1,0 +1,14 @@
+# RISC-V Unified Database - Tool Version Management
+# https://mise.jdx.dev
+
+[tools]
+ruby = "3.4.8"
+node = "22.12.0"
+python = "3.12"
+
+[env]
+_.path = ["./bin"]
+RUBY_YJIT_ENABLE = "1"
+
+[settings]
+legacy_version_file = true

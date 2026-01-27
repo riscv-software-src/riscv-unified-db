@@ -5,10 +5,12 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR /workspace
 
-# please keep pkgs sorted
+# Install system dependencies
+# Note: nodejs, npm, python3 are now installed via mise for better version control
 RUN apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
   build-essential \
+  ca-certificates \
   clang-format \
   clang-tidy \
   cmake \
@@ -24,34 +26,51 @@ RUN apt-get update && \
   less \
   libc6-dev-riscv64-cross \
   libelf-dev \
+  libffi-dev \
   libgmp-dev \
+  liblzma-dev \
   libnewlib-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  libssl-dev \
   libyaml-dev \
   libz3-dev \
   minisat \
-  nodejs \
-  npm \
   parallel \
-  python3 \
-  python3-pip \
-  python3.12-venv \
   rustc \
   shellcheck \
   sudo \
+  tk-dev \
+  xz-utils \
   zlib1g-dev \
   \
   && apt-get clean autoclean \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-  # build / install ruby
+# Install mise for unified tool version management
+# This manages Ruby, Node.js, and Python versions
+RUN curl https://mise.run | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Copy version configuration files
+COPY .mise.toml /opt/.mise.toml
 COPY .ruby-version /opt/.ruby-version
+
+# Install tools via mise (Ruby, Node.js, Python)
+WORKDIR /opt
+RUN mise trust /opt/.mise.toml && \
+    MISE_NODE_VERIFY=0 mise install --yes && \
+    mise reshim
+ENV PATH="/root/.local/share/mise/shims:$PATH"
+ENV MISE_DATA_DIR="/root/.local/share/mise"
 ENV RUBY_YJIT_ENABLE=1
-RUN git clone --depth=1 https://github.com/rbenv/ruby-build.git && \
-    cd ruby-build && \
-    ./bin/ruby-build $(cat /opt/.ruby-version | tr -d "\n") /usr && \
-    cd .. && \
-    rm -rf ruby-build
+
+# Verify installations
+RUN ruby --version && \
+    node --version && \
+    npm --version && \
+    python3 --version
 
 # build/install eqntott
 RUN git clone --depth=1 https://github.com/TheProjecter/eqntott.git && \
@@ -82,15 +101,17 @@ RUN git clone https://github.com/jar-ben/mustool.git && \
 
 # Create Python virtual environment and install packages
 COPY requirements.txt /opt/requirements.txt
-RUN /usr/bin/python3 -m venv /opt/venv && \
-  /opt/venv/bin/pip install -r /opt/requirements.txt && \
+RUN python3 -m venv /opt/venv && \
+  /opt/venv/bin/pip install --no-cache-dir -r /opt/requirements.txt && \
   rm /opt/requirements.txt
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install npm packages globally in the container
+# The newer npm from mise (>= 10.2.0) fixes Podman UID/GID issues (npm/cli#5998)
 COPY package.json package-lock.json /opt/node/
 RUN cd /opt/node && \
-  /usr/bin/npm ci && \
+  npm ci --no-audit --no-fund && \
+  chown -R root:root /opt/node/node_modules && \
   rm /opt/node/package.json /opt/node/package-lock.json
 ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"
