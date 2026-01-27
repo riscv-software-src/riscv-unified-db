@@ -69,5 +69,15 @@ class TestVariables < Minitest::Test
     assert_equal Idl::Type.new(:bits, width: 16), ast.csr_field.type(symtab)
     assert_equal Idl::Type.new(:bits, width: 16), ast.type(symtab)
 
+    idl = "CSR[notacsr].FIELD = 1"
+    @compiler.parser.set_input_file("", 0)
+    m = @compiler.parser.parse(idl, root: :assignment)
+    refute_nil m
+    ast = m.to_ast
+    refute_nil ast
+    assert_raises Idl::AstNode::TypeError do
+      ast.freeze_tree(symtab)
+    end
+
   end
 end
