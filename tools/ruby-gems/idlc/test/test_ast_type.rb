@@ -38,6 +38,19 @@ class TestVariables < Minitest::Test
     assert_equal Idl::Type.new(:enum_ref, enum_class: symtab.get("MyEnum")), ast.type(symtab)
     ast.freeze_tree(symtab)
     assert_equal Idl::Type.new(:enum_ref, enum_class: symtab.get("MyEnum")), ast.type(symtab)
+
+    idl = "NotAnEnum::Member"
+    m = @compiler.parser.parse(idl, root: :enum_ref)
+    refute_nil m
+    ast = m.to_ast
+    refute_nil ast
+    assert_raises Idl::AstNode::TypeError do
+      ast.type(symtab)
+    end
+    assert_raises Idl::AstNode::TypeError do
+      ast.freeze_tree(symtab)
+    end
+
   end
 
   def test_csr_field_assignment
