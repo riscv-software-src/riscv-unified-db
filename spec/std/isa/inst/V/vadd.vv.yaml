@@ -12,7 +12,7 @@ description: |
   Add source vector register groups from vs1 and vs2 according to mask vm and store results in vd.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 000000-----------000-----1010111

@@ -11,7 +11,7 @@ description: |
   No description available.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 assembly: vd, (xs1), xs2, vm
 encoding:
   match: 010010-----------101-----0000111

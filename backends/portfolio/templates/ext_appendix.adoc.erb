@@ -75,7 +75,7 @@ h| Requirements a|
 --
 <% end -%>
 
-<% insts = min_ext_ver.in_scope_instructions(portfolio_design) -%>
+<% insts = min_ext_ver.in_scope_instructions(portfolio_design.possible_xlens) -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -91,7 +91,7 @@ The following <%= insts.size %> instructions are added by extension version <%= 
 |===
 <% end -%>
 
-<% csrs = min_ext_ver.in_scope_csrs(portfolio_design) -%>
+<% csrs = min_ext_ver.in_scope_csrs(portfolio_design.possible_xlens) -%>
 <% unless csrs.empty? -%>
 ==== CSRs
 

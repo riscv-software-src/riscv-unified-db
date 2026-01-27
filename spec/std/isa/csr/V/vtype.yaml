@@ -14,7 +14,7 @@ length: MXLEN
 description: Provides the default type used to interpret the contents of the vector register file.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 fields:
   VILL:
     location_rv32: 31

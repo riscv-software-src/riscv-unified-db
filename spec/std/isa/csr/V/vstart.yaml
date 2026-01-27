@@ -14,7 +14,7 @@ length: MXLEN
 description: Specifies the index of the first element to be executed by a vector instruction.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 fields:
   VALUE:
     location_rv32: 31-0

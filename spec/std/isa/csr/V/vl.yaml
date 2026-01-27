@@ -14,7 +14,7 @@ length: MXLEN
 description: Holds an unsigned integer specifying number of elements to be updated with results from a vector instruction.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 fields:
   VALUE:
     location_rv32: 31-0

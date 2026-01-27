@@ -14,7 +14,7 @@ length: MXLEN
 description: Contains aliases to vxrm and vxsat CSRs
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 fields:
   VXRM:
     location: 2-1
