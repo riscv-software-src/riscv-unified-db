@@ -22,16 +22,17 @@ Enhanced features:
 """
 
 import asyncio
+import contextlib
 import json
 import os
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
-import yaml
 import re
+from pathlib import Path
+from typing import Any
+
+import yaml
 from mcp.server.lowlevel.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent
-
+from mcp.types import TextContent, Tool
 
 # ============================================================================
 # Constants and Configuration
@@ -146,7 +147,7 @@ def _load_yaml(path: Path) -> dict:
         return yaml.safe_load(fh) or {}
 
 
-def _extract_defined_by(data: dict) -> List[str]:
+def _extract_defined_by(data: dict) -> list[str]:
     """Extract extension names from definedBy field (handles string, list, dict with anyOf/allOf)."""
     defined = data.get("definedBy")
     if defined is None:
@@ -163,7 +164,7 @@ def _extract_defined_by(data: dict) -> List[str]:
     return []
 
 
-def _extension_in_path(rel_parts: List[str]) -> Optional[str]:
+def _extension_in_path(rel_parts: list[str]) -> str | None:
     """Find extension name from path (heuristic: segment after 'inst')."""
     for i, part in enumerate(rel_parts):
         if part == "inst" and i + 1 < len(rel_parts):
@@ -191,14 +192,14 @@ def _csr_extensions(data: dict) -> set[str]:
     return exts
 
 
-def _extract_xlen(data: dict) -> Set[int]:
+def _extract_xlen(data: dict) -> set[int]:
     """
     Extract XLEN values from instruction/CSR data.
 
     Checks base field and other indicators to determine if instruction
     supports 32-bit, 64-bit, or both.
     """
-    xlens: Set[int] = set()
+    xlens: set[int] = set()
 
     # Check base field (common indicator)
     base = data.get("base")
@@ -240,9 +241,7 @@ def _extract_xlen(data: dict) -> Set[int]:
     return xlens
 
 
-def _matches_field_search(
-    data: dict, field: str, pattern: str, use_regex: bool = False
-) -> bool:
+def _matches_field_search(data: dict, field: str, pattern: str, use_regex: bool = False) -> bool:
     """
     Check if a specific field in data matches the pattern.
 
@@ -284,9 +283,9 @@ def _matches_field_search(
 # ============================================================================
 
 
-def _iter_instruction_yaml_paths() -> List[Path]:
+def _iter_instruction_yaml_paths() -> list[Path]:
     """Find all instruction YAML files."""
-    paths: List[Path] = []
+    paths: list[Path] = []
     if not GEN_DIR.exists():
         return paths
     for root, _dirs, files in os.walk(GEN_DIR):
@@ -298,17 +297,14 @@ def _iter_instruction_yaml_paths() -> List[Path]:
             if f.lower().endswith((".yaml", ".yml")):
                 p = root_p / f
                 # Must be under spec/*/inst or resolved_spec/*/inst
-                if any(
-                    part in {"spec", "resolved_spec"}
-                    for part in p.relative_to(GEN_DIR).parts
-                ):
+                if any(part in {"spec", "resolved_spec"} for part in p.relative_to(GEN_DIR).parts):
                     paths.append(p)
     return paths
 
 
-def _iter_csr_yaml_paths() -> List[Path]:
+def _iter_csr_yaml_paths() -> list[Path]:
     """Find all CSR YAML files."""
-    paths: List[Path] = []
+    paths: list[Path] = []
     if not GEN_DIR.exists():
         return paths
     for root, _dirs, files in os.walk(GEN_DIR):
@@ -322,9 +318,9 @@ def _iter_csr_yaml_paths() -> List[Path]:
     return paths
 
 
-def _iter_extension_yaml_paths() -> List[Path]:
+def _iter_extension_yaml_paths() -> list[Path]:
     """Find all extension YAML files."""
-    paths: List[Path] = []
+    paths: list[Path] = []
     if not GEN_DIR.exists():
         return paths
     for root, _dirs, files in os.walk(GEN_DIR):
@@ -347,7 +343,7 @@ async def list_gen_yaml():
     """List all YAML files under gen/ as repo-relative paths."""
     if not GEN_DIR.exists():
         return {"files": []}
-    paths: List[str] = []
+    paths: list[str] = []
     for root, _dirs, files in os.walk(GEN_DIR):
         for f in files:
             if f.lower().endswith((".yaml", ".yml")):
@@ -358,7 +354,7 @@ async def list_gen_yaml():
     return {"count": len(paths), "files": paths}
 
 
-async def read_gen_yaml(args: Dict[str, Any]):
+async def read_gen_yaml(args: dict[str, Any]):
     """Read and parse a YAML file under gen/."""
     rel = args.get("path")
     if not isinstance(rel, str):
@@ -373,7 +369,7 @@ async def read_gen_yaml(args: Dict[str, Any]):
 # ============================================================================
 
 
-async def search_instructions(args: Dict[str, Any]):
+async def search_instructions(args: dict[str, Any]):
     """
     Search instruction YAMLs with flexible filtering.
 
@@ -400,13 +396,11 @@ async def search_instructions(args: Dict[str, Any]):
         raise ValueError("'term' must be a string if provided")
     if not isinstance(keys, list) or not all(isinstance(k, str) for k in keys):
         raise ValueError("'keys' must be a list of strings")
-    if not isinstance(extensions, list) or not all(
-        isinstance(e, str) for e in extensions
-    ):
+    if not isinstance(extensions, list) or not all(isinstance(e, str) for e in extensions):
         raise ValueError("'extensions' must be a list of strings")
 
     # Parse XLEN filter
-    xlen_set: Set[int] = set()
+    xlen_set: set[int] = set()
     if xlen_filter is not None:
         if isinstance(xlen_filter, int):
             xlen_set = {xlen_filter}
@@ -417,13 +411,11 @@ async def search_instructions(args: Dict[str, Any]):
                 if isinstance(x, int) or (isinstance(x, str) and x.isdigit())
             }
         else:
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 xlen_set = {int(xlen_filter)}
-            except (ValueError, TypeError):
-                pass
 
     ext_set = {e for e in extensions}
-    results: List[dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     count = 0
 
     # Compile regex if needed
@@ -462,9 +454,7 @@ async def search_instructions(args: Dict[str, Any]):
             inst_name = data.get("name", "")
             assembly = data.get("assembly", "")
             long_name = data.get("long_name", "")
-            search_text = (
-                f"{namepart} {target_str} {inst_name} {assembly} {long_name}".lower()
-            )
+            search_text = f"{namepart} {target_str} {inst_name} {assembly} {long_name}".lower()
 
             matched = False
 
@@ -553,7 +543,7 @@ async def search_instructions(args: Dict[str, Any]):
 # ============================================================================
 
 
-async def search_csrs(args: Dict[str, Any]):
+async def search_csrs(args: dict[str, Any]):
     """
     Search CSR YAMLs with flexible filtering.
 
@@ -580,13 +570,11 @@ async def search_csrs(args: Dict[str, Any]):
         raise ValueError("'term' must be a string if provided")
     if not isinstance(keys, list) or not all(isinstance(k, str) for k in keys):
         raise ValueError("'keys' must be a list of strings")
-    if not isinstance(extensions, list) or not all(
-        isinstance(e, str) for e in extensions
-    ):
+    if not isinstance(extensions, list) or not all(isinstance(e, str) for e in extensions):
         raise ValueError("'extensions' must be a list of strings")
 
     # Parse XLEN filter
-    xlen_set: Set[int] = set()
+    xlen_set: set[int] = set()
     if xlen_filter is not None:
         if isinstance(xlen_filter, int):
             xlen_set = {xlen_filter}
@@ -597,13 +585,11 @@ async def search_csrs(args: Dict[str, Any]):
                 if isinstance(x, int) or (isinstance(x, str) and x.isdigit())
             }
         else:
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 xlen_set = {int(xlen_filter)}
-            except (ValueError, TypeError):
-                pass
 
     ext_set = set(extensions)
-    results: List[dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     count = 0
 
     # Compile regex if needed
@@ -714,7 +700,7 @@ async def search_csrs(args: Dict[str, Any]):
 # ============================================================================
 
 
-async def search_all(args: Dict[str, Any]):
+async def search_all(args: dict[str, Any]):
     """
     Search across multiple domains (instructions, CSRs, extensions) simultaneously.
 
@@ -790,10 +776,8 @@ async def search_all(args: Dict[str, Any]):
         ext_results = {"count": 0, "results": []}
         regex_pattern = None
         if use_regex:
-            try:
+            with contextlib.suppress(re.error):
                 regex_pattern = re.compile(term, re.IGNORECASE)
-            except re.error:
-                pass
 
         for p in _iter_extension_yaml_paths():
             try:
@@ -823,9 +807,7 @@ async def search_all(args: Dict[str, Any]):
                         "long_name": long_name,
                     }
                     if fuzzy:
-                        score = max(
-                            _fuzzy_score(term, name), _fuzzy_score(term, long_name)
-                        )
+                        score = max(_fuzzy_score(term, name), _fuzzy_score(term, long_name))
                         info["fuzzy_score"] = round(score, 3)
 
                     ext_results["results"].append(info)
@@ -837,9 +819,7 @@ async def search_all(args: Dict[str, Any]):
 
         # Sort by fuzzy score if applicable
         if fuzzy:
-            ext_results["results"].sort(
-                key=lambda x: x.get("fuzzy_score", 0), reverse=True
-            )
+            ext_results["results"].sort(key=lambda x: x.get("fuzzy_score", 0), reverse=True)
 
         results["extensions"] = ext_results
 
@@ -863,7 +843,7 @@ async def search_all(args: Dict[str, Any]):
 # ============================================================================
 
 
-async def search_extensions(args: Dict[str, Any]):
+async def search_extensions(args: dict[str, Any]):
     """
     Flexible extension search and retrieval.
 
@@ -934,11 +914,7 @@ async def search_extensions(args: Dict[str, Any]):
             except Exception:
                 continue
             defined_by = set(_extract_defined_by(data))
-            rel_parts = (
-                p.relative_to(GEN_DIR).parts
-                if str(p).startswith(str(GEN_DIR))
-                else p.parts
-            )
+            rel_parts = p.relative_to(GEN_DIR).parts if str(p).startswith(str(GEN_DIR)) else p.parts
             ext_from_path = _extension_in_path(list(rel_parts))
             if name in defined_by or (ext_from_path == name):
                 insts.append(
@@ -994,14 +970,10 @@ def _find_funcs_adoc() -> tuple[Path | None, Path | None]:
     cfg_root = GEN_DIR / "cfg_html_doc"
     if not cfg_root.exists():
         return None, None
-    for root, dirs, files in os.walk(cfg_root):
+    for root, _dirs, _files in os.walk(cfg_root):
         root_p = Path(root)
         # prefer antora/modules/funcs/pages/funcs.adoc
-        if (
-            root_p.name == "pages"
-            and "funcs" in root_p.parts
-            and "modules" in root_p.parts
-        ):
+        if root_p.name == "pages" and "funcs" in root_p.parts and "modules" in root_p.parts:
             cand = root_p / "funcs.adoc"
             if cand.exists():
                 funcs_doc = cand
@@ -1051,7 +1023,7 @@ def _parse_funcs_sections(funcs_path: Path) -> dict[str, str]:
     return sections
 
 
-async def search_functions(args: Dict[str, Any]):
+async def search_functions(args: dict[str, Any]):
     """
     Search function documentation.
 
@@ -1086,7 +1058,7 @@ async def search_functions(args: Dict[str, Any]):
     return {"count": len(out), "results": out}
 
 
-async def read_function_doc(args: Dict[str, Any]):
+async def read_function_doc(args: dict[str, Any]):
     """Read complete documentation for a specific function."""
     name = args.get("name")
     if not isinstance(name, str) or not name:
@@ -1112,7 +1084,7 @@ async def read_function_doc(args: Dict[str, Any]):
     }
 
 
-async def find_function_usages(args: Dict[str, Any]):
+async def find_function_usages(args: dict[str, Any]):
     """Find instruction YAMLs that use a specific function."""
     name = args.get("name")
     limit = int(args.get("limit") or 50)
@@ -1159,7 +1131,7 @@ async def main() -> None:
     server = Server("riscv-udb-mcp")
 
     @server.list_tools()
-    async def _list_tools() -> List[Tool]:
+    async def _list_tools() -> list[Tool]:
         return [
             # ===== Low-Level YAML Access =====
             Tool(
@@ -1415,9 +1387,7 @@ async def main() -> None:
                 description="Read complete documentation for a specific function by name",
                 inputSchema={
                     "type": "object",
-                    "properties": {
-                        "name": {"type": "string", "description": "function name"}
-                    },
+                    "properties": {"name": {"type": "string", "description": "function name"}},
                     "required": ["name"],
                 },
             ),
@@ -1441,7 +1411,7 @@ async def main() -> None:
         ]
 
     @server.call_tool()
-    async def _call_tool(name: str, arguments: Dict[str, Any] | None):
+    async def _call_tool(name: str, arguments: dict[str, Any] | None):
         args = arguments or {}
 
         # Route to appropriate handler
@@ -1480,7 +1450,5 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         asyncio.run(main())
-    except KeyboardInterrupt:
-        pass
