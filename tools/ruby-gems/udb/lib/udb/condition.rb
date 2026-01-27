@@ -208,13 +208,13 @@ module Udb
       end
     end
 
-    # is is possible for this condition and other to be simultaneously true?
+    # is it possible for this condition and other to be simultaneously true?
     sig { params(other: AbstractCondition).returns(T::Boolean) }
     def compatible?(other)
       (self & other).satisfiable?
     end
 
-    # @return if the condition is, possibly is, or is definately not satisfied by cfg_arch
+    # @return if the condition is, possibly is, or is definitely not satisfied by cfg_arch
     sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
     def satisfied_by_cfg_arch?(_cfg_arch); end
 
