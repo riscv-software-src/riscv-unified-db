@@ -51,6 +51,8 @@ module Idl
       case other.kind
       when :bits
         @kind == :bits && @width == other.width
+      when :enum_ref
+        @kind == :enum_ref && @enum_class.name == other.name
       else
         raise "TODO: Type == for #{other.kind}"
       end

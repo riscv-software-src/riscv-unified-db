@@ -17,6 +17,29 @@ require_relative "helpers"
 class TestVariables < Minitest::Test
   include TestMixin
 
+  def test_enum_ref
+    def_idl = "enum MyEnum { Member 0b0 }"
+    symtab = Idl::SymbolTable.new(
+      possible_xlens_cb: proc { [32, 64] }
+    )
+    @compiler.parser.set_input_file("", 0)
+    m = @compiler.parser.parse(def_idl, root: :enum_definition)
+    refute_nil m
+    ast = m.to_ast
+    refute_nil ast
+    ast.freeze_tree(symtab)
+    ast.add_symbol(symtab)
+
+    idl = "MyEnum::Member"
+    m = @compiler.parser.parse(idl, root: :enum_ref)
+    refute_nil m
+    ast = m.to_ast
+    refute_nil ast
+    assert_equal Idl::Type.new(:enum_ref, enum_class: symtab.get("MyEnum")), ast.type(symtab)
+    ast.freeze_tree(symtab)
+    assert_equal Idl::Type.new(:enum_ref, enum_class: symtab.get("MyEnum")), ast.type(symtab)
+  end
+
   def test_csr_field_assignment
     $mock_csr_field_class = Class.new do
       include Idl::CsrField
