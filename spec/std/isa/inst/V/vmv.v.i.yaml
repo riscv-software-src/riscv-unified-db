@@ -6,9 +6,15 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmv.v.i
-long_name: No synopsis available
+long_name: Vector move immediate to vector register
 description: |
-  No description available.
+  Copies a sign-extended 5-bit immediate value to all elements of the destination
+  vector register group. This is an unmasked instruction (vm=1), so all body elements
+  are written with the immediate value.
+
+  The 5-bit immediate (simm[4:0]) is sign-extended to SEW bits and written to each
+  element of the destination vector register group from index 0 to vl-1.
+  Elements past vl are handled according to the tail agnostic/undisturbed policy.
 definedBy:
   extension:
     name: V
@@ -27,6 +33,36 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # Get current vector state
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    # (lmul_type == VectorLmulType::Divide)
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  # Sign-extend the 5-bit immediate to XLEN bits for use in loop
+  XReg sext_imm = $signed(imm);
+
+  # Iterate through elements from vstart to vl
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    U32 start_bit_pos = i * state.sew;
+    U32 end_bit_pos = start_bit_pos + state.sew - 1;
+
+    # Write the sign-extended immediate (truncated to SEW bits) to the element
+    v[vd] = {
+      v[vd][VLEN-1:end_bit_pos + 1],
+      sext_imm[state.sew-1:0],
+      v[vd][start_bit_pos-1:0]
+    };
+  }
+
+  CSR[vstart].VALUE = 0;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
