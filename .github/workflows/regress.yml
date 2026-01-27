@@ -370,11 +370,7 @@ jobs:
     - name: Mark isa-manual as safe
       run: ./bin/bash -c "git config --local --add safe.directory '*'"
     - name: Generate HTML ISA manual
-      run: "./do gen:html_manual"
-    env:
-      MANUAL_NAME: isa
-      VERSIONS: isa_regress
-      CFG: regress
+      run: "./bin/generate manual -c regress -v isa_regress -f html"
   regress-gen-instruction-appendix:
     runs-on: ubuntu-latest
     needs: build-container

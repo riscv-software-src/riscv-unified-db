@@ -17,7 +17,7 @@ module UdbGen
     include TTY::Exit
     include TemplateHelpers
 
-    NAME="ext-doc"
+    NAME = "ext-doc"
 
     sig { void }
     def initialize
@@ -157,7 +157,7 @@ module UdbGen
 
       primary_ext = ext_reqs.fetch(0).extension
 
-      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "ext_pdf.adoc.erb"
+      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "ext-doc" / "ext_pdf.adoc.erb"
       gen_filename = params[:output_dir] / "#{basename}.adoc"
 
       erb = ERB.new(template_path.read, trim_mode: "-")

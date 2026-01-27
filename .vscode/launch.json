@@ -84,15 +84,6 @@
     },
     {
       "type": "rdbg",
-      "name": "Manual",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:html_manual MANUAL_NAME=isa VERSIONS=all",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
       "name": "MC100-32-CRD",
       "request": "launch",
       "command": "bundle exec rake",

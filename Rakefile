@@ -474,39 +474,44 @@ namespace :gen do
 
   desc "DEPRECATED -- Run `./bin/udb-gen ext-doc --help` instead"
   task :ext_pdf do
-    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/udb-gen ext-doc `"
+    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/generate ext-doc `"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead")
   task :isa_explorer_spreadsheet do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t xlsx -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_ext do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_inst do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_csr do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED")
   task :isa_explorer_browser do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  task :html_manual do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate manual -h` for help"
     exit(1)
   end
 

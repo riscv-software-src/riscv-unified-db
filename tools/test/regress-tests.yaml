@@ -62,10 +62,6 @@ tests:
         run: ./do test:inst_encodings
 
   regress-gen-isa-manual:
-    env:
-      MANUAL_NAME: isa
-      VERSIONS: isa_regress
-      CFG: regress
     gh_pre:
       - name: checkout ISA manual
         run: git submodule update --init ext/riscv-isa-manual
@@ -74,7 +70,7 @@ tests:
         run: ./bin/bash -c "git config --local --add safe.directory '*'"
     test:
       - name: Generate HTML ISA manual
-        run: ./do gen:html_manual
+        run: ./bin/generate manual -c regress -v isa_regress -f html
 
   regress-gen-instruction-appendix:
     test:

@@ -10,6 +10,7 @@ require "tty-table"
 
 require_relative "../lib/udb-gen/subcommands/ext-doc"
 require_relative "../lib/udb-gen/subcommands/isa-explorer"
+require_relative "../lib/udb-gen/subcommands/manual"
 
 include TTY::Exit
 

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Script to coordinate all generators in the UDB repo
+# This exists because generators are written in different languages (Ruby, Python, etc.).
+# Instead of users needing to know which interpreter to use, we provide this script to abstract it away
+
+# this generate script uses git-like argument structure; that is, uses sub-commands
+# To add a new generator, add a new sub-command of this script, and have that subcommand call the
+# generator
+
+# for example, the ext-doc subcommand is a simple wrapper that maps:
+#
+#   ./bin/generate ext-doc [ARGS]  ---->   ./bin/udb-gen ext-doc [ARGS]
+
+ROOT=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+
+help() {
+  echo "Usage: generate [OPTION] COMMAND [COMMAND_OPTIONS]"
+  echo ""
+  echo ""
+  echo "Options:"
+  echo ""
+  echo "  -h: Print help"
+  echo ""
+  echo "Commands:"
+  echo ""
+  echo "  ext-doc:       Generate documentation for an extension ('generate ext-doc -h' for more)"
+  echo "  isa-explorer:  Generate tables of ISA information      ('generate isa-explorer -h' for more)"
+  echo "  manual:        Generate ISA manual                     ('generate manual -h' for more)"
+  echo ""
+}
+
+while getopts ":h" opt; do # Go through the options
+  case $opt in
+    # help
+    h )
+      help
+      exit 0 # Exit correctly
+    ;;
+    # Invalid option
+    ? )
+        echo "[ERROR]: Invalid option: -${OPTARG}"
+        help
+        exit 1 # Exit with error
+    ;;
+  esac
+done
+subcommand=$1
+
+case "$subcommand" in
+  ext-doc | isa-explorer | manual )
+    exec "${ROOT}/udb-gen" "${@:1}"
+    exit 0
+    ;;
+  # Invalid subcommand
+  * )
+    if [ ! -z "$subcommand" ]; then  # Don't show if no subcommand provided
+      echo "Invalid subcommand: $subcommand"
+    fi
+    help
+    exit 1 # Exit with error
+  ;;
+esac

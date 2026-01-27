@@ -145,10 +145,10 @@ repos:
     hooks:
       - id: singularity
         name: generate container.def
-        files: (bin/generate-container-def|\.devcontainer/Dockerfile|container\.def)$
+        files: (bin/generate|\.devcontainer/Dockerfile|container\.def)$
         pass_filenames: false
         language: system
-        entry: ./bin/generate-container-def
+        entry: ./bin/chore gen container-def
 
   - repo: local
     hooks:

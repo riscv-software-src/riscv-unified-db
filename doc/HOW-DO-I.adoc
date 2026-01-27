@@ -76,7 +76,7 @@ rbenv install
 Then, update the gems on the host. This will update the Gemfile.lock files and sorbet definitions.
 
 ```bash
-./bin/update_gems
+./bin/chore update gems
 ```
 
 Then rebuild the container:

@@ -532,7 +532,7 @@ module UdbGen
 
       js_table = IsaExplorerGen.gen_js_ext_table(cfg_arch, params[:skip])
 
-      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "ext-browser.html.erb"
+      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "isa-explorer" / "ext-browser.html.erb"
 
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
@@ -558,7 +558,7 @@ module UdbGen
 
       js_table = IsaExplorerGen.gen_js_inst_table(cfg_arch, params[:skip])
 
-      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "inst-browser.html.erb"
+      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "isa-explorer" / "inst-browser.html.erb"
 
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
@@ -584,7 +584,7 @@ module UdbGen
 
       js_table = IsaExplorerGen.gen_js_csr_table(cfg_arch, params[:skip])
 
-      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "csr-browser.html.erb"
+      template_path = Pathname.new(Gem.loaded_specs["udb-gen"].full_gem_path) / "templates" / "isa-explorer" / "csr-browser.html.erb"
 
       erb = ERB.new(template_path.read, trim_mode: "-")
       erb.filename = template_path.to_s
