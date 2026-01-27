@@ -299,6 +299,21 @@ namespace udb {
       return true;
     }
 
+
+    // builtins for qc_iu
+
+    void delay(uint64_t) { }
+
+    void iss_syscall(uint64_t, uint64_t) { }
+
+    uint32_t read_device_32(uint64_t) { return 0; }
+
+    void write_device_32(uint64_t, uint32_t) { }
+
+    void sync_read_after_write_device(bool, uint32_t) {}
+
+    void sync_write_after_read_device(bool, uint32_t) {}
+
    private:
     DenseMemory m_memory;
   };

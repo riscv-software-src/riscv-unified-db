@@ -258,19 +258,19 @@ fields:
         name: V
 sw_read(): |
   return (
-    (CSR[misa].MXL << (xlen() - 2)) |
-    (CSR[misa].V << 21) |
-    (CSR[misa].U << 20) |
-    (CSR[misa].S << 18) |
-    (CSR[misa].Q << 16) |
-    (CSR[misa].M << 12) |
-    (CSR[misa].I << 7) |
-    (CSR[misa].H << 6) |
-    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 5) | # 'G'
-    (CSR[misa].F << 4) |
-    (CSR[misa].D << 3) |
-    (CSR[misa].C << 2) |
-    (CSR[misa].B << 1) |
+    (CSR[misa].MXL `<< (xlen() - 2)) |
+    (CSR[misa].V `<< 21) |
+    (CSR[misa].U `<< 20) |
+    (CSR[misa].S `<< 18) |
+    (CSR[misa].Q `<< 16) |
+    (CSR[misa].M `<< 12) |
+    (CSR[misa].I `<< 7) |
+    (CSR[misa].H `<< 6) |
+    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) `<< 5) | # 'G'
+    (CSR[misa].F `<< 4) |
+    (CSR[misa].D `<< 3) |
+    (CSR[misa].C `<< 2) |
+    (CSR[misa].B `<< 1) |
     CSR[misa].A);
 cert_normative_rules:
   - id: csr.misa.disabling_bits

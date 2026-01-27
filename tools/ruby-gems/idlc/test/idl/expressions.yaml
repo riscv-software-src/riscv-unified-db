@@ -550,3 +550,11 @@ tests:
   - e: 2 + 1 != 1
     =: "true"
     d: Inequality, lower precedence than addition
+
+  #################################################
+  ## $bits cast
+  #################################################
+
+  - e: $bits(1'b0)
+    =: 1'd0
+    d: Bits cast of a bits type
