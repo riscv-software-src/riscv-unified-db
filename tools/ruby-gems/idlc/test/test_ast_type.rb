@@ -53,6 +53,18 @@ class TestVariables < Minitest::Test
 
   end
 
+  def test_bits_cast
+    symtab = Idl::SymbolTable.new(
+      possible_xlens_cb: proc { [32, 64] }
+    )
+    idl = "$bits(1'b0)"
+    m = @compiler.parser.parse(idl, root: :bits_cast)
+    refute_nil m
+    ast = m.to_ast
+    refute_nil ast
+    assert_equal Idl::Type.new(:bits, width: 1), ast.type(symtab)
+  end
+
   def test_csr_field_assignment
     $mock_csr_field_class = Class.new do
       include Idl::CsrField
