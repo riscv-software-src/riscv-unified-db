@@ -114,5 +114,30 @@ namespace udb {
       s.pma_applies_Q_(PmaAttribute::ValueType{}, static_cast<uint64_t>(0),
                        static_cast<uint32_t>(0))
     } -> std::same_as<uint8_t>;
+
+    // qc_iu builtins
+    {
+      s.delay(static_cast<uint64_t>(0))
+    };
+
+    {
+      s.iss_syscall(static_cast<uint64_t>(0), static_cast<uint64_t>(0))
+    };
+
+    {
+      s.read_device_32(static_cast<uint64_t>(0))
+    } -> std::same_as<uint32_t>;
+
+    {
+      s.write_device_32(static_cast<uint64_t>(0), static_cast<uint32_t>(0))
+    };
+
+    {
+      s.sync_read_after_write_device(true, static_cast<uint32_t>(0))
+    };
+
+    {
+      s.sync_write_after_read_device(true, static_cast<uint32_t>(0))
+    };
   };
 }  // namespace udb
