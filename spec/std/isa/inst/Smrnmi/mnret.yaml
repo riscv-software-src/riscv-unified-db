@@ -28,7 +28,9 @@ access:
 data_independent_timing: false
 operation(): |
   if (CSR[mnstatus].MNPP != 2'b11) {
-    CSR[mstatus].MPRV = 0;
+    if (implemented?(ExtensionName::U)) {
+      CSR[mstatus].MPRV = 0;
+    }
     if (implemented?(ExtensionName::Smdbltrp)) {
       if (xlen() == 64) {
         CSR[mstatus].MDT = 1'b0;
