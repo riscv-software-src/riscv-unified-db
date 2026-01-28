@@ -23,6 +23,6 @@ definedBy:
               - name: Zkr
               - name: Smmpm
               - name: Zicfilp
-              # - name: Smepmp # TODO: Uncomment when Smepmp is implemented in UDB
+              - name: Smepmp
 
 fields: {}
