@@ -43,6 +43,35 @@
       ],
       "description": "Location of a field in a register"
     },
+    "bit_length_value": {
+      "description": "Bit width value for a register or field",
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "enum": ["MXLEN", "FLEN", "VLEN"]
+        }
+      ]
+    },
+    "register_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+      "description": "Register name"
+    },
+    "register_file_name": {
+      "type": "string",
+      "pattern": "^[A-Z]$",
+      "description": "Register file name"
+    },
+    "register_alias": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$",
+      "description": "Register alias or ABI mnemonic"
+    },
     "possibly_split_field_location": {
       "description": "Location specifier for a field",
       "oneOf": [

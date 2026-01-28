@@ -26,6 +26,7 @@ module Udb
         Csr = new("csr")
         CsrField = new("csr_field")
         Extension = new("extension")
+        RegisterFile = new("register_file")
         Parameter = new("parameter")
         ExceptionCode = new("exception_code")
         InterruptCode = new("interrupt_code")

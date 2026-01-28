@@ -1,0 +1,201 @@
+# Copyright (c) Animesh Agarwal
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/register_file_schema.json
+
+$schema: register_file_schema.json#
+kind: register_file
+name: X
+long_name: General Purpose Registers
+description: |
+  The 'X' register file contains the general-purpose integer registers. Each register
+  is MXLEN bits wide, but will appear to be XLEN bits wide if XLEN<MXLEN. Register
+  'x0' is hardwired to zero, while the remaining registers hold architecturally
+  visible integer state used by the calling convention and execution environment.
+definedBy: I
+register_class: general_purpose
+register_length: MXLEN
+registers:
+  - name: x0
+    abi_mnemonics: [zero]
+    roles: [zero]
+    description: |
+      Register x0 is hardwired with all bits equal to 0.
+    arch_read(): |
+      return 0;
+    arch_write(value): |
+      return 0;
+  - name: x1
+    abi_mnemonics: [ra]
+    caller_saved: true
+    roles: [return_address]
+    description: Return address register used by CALL/JAL instructions.
+  - name: x2
+    abi_mnemonics: [sp]
+    callee_saved: true
+    roles: [stack_pointer]
+    description: Stack pointer.
+  - name: x3
+    abi_mnemonics: [gp]
+    roles: [global_pointer]
+    description: Global pointer.
+  - name: x4
+    abi_mnemonics: [tp]
+    roles: [thread_pointer]
+    description: Thread pointer or TLS base.
+  - name: x5
+    abi_mnemonics: [t0]
+    caller_saved: true
+    roles: [temporary, return_address]
+    description: Temporary register / linkage scratch.
+  - name: x6
+    abi_mnemonics: [t1]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+  - name: x7
+    abi_mnemonics: [t2]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+  - name: x8
+    abi_mnemonics: [s0, fp]
+    callee_saved: true
+    roles: [frame_pointer]
+    description: Callee-saved register; used as frame pointer when required.
+  - name: x9
+    abi_mnemonics: [s1]
+    callee_saved: true
+    description: Callee-saved register.
+  - name: x10
+    abi_mnemonics: [a0]
+    caller_saved: true
+    roles: [argument, return_value]
+    description: Function argument / return value register 0.
+  - name: x11
+    abi_mnemonics: [a1]
+    caller_saved: true
+    roles: [argument, return_value]
+    description: Function argument / return value register 1.
+  - name: x12
+    abi_mnemonics: [a2]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 2.
+  - name: x13
+    abi_mnemonics: [a3]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 3.
+  - name: x14
+    abi_mnemonics: [a4]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 4.
+  - name: x15
+    abi_mnemonics: [a5]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 5.
+  - name: x16
+    abi_mnemonics: [a6]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 6.
+    when:
+      not: { name: E }
+  - name: x17
+    abi_mnemonics: [a7]
+    caller_saved: true
+    roles: [argument]
+    description: Function argument register 7 / syscall ID.
+    when:
+      not: { name: E }
+  - name: x18
+    abi_mnemonics: [s2]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x19
+    abi_mnemonics: [s3]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x20
+    abi_mnemonics: [s4]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x21
+    abi_mnemonics: [s5]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x22
+    abi_mnemonics: [s6]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x23
+    abi_mnemonics: [s7]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x24
+    abi_mnemonics: [s8]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x25
+    abi_mnemonics: [s9]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x26
+    abi_mnemonics: [s10]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x27
+    abi_mnemonics: [s11]
+    callee_saved: true
+    description: Callee-saved register.
+    when:
+      not: { name: E }
+  - name: x28
+    abi_mnemonics: [t3]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x29
+    abi_mnemonics: [t4]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x30
+    abi_mnemonics: [t5]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+    when:
+      not: { name: E }
+  - name: x31
+    abi_mnemonics: [t6]
+    caller_saved: true
+    roles: [temporary]
+    description: Temporary register.
+    when:
+      not: { name: E }

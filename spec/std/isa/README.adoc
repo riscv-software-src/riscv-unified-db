@@ -29,8 +29,8 @@ Three standard configs are present:
  * `rv64`: A configuration where only `MXLEN` is known to be 64, i.e., the RV64 ISA.
 
 The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
-files for _Extensions_, _Instructions_, and _Control and Status Registers (CSRs)_.
-Each extension/instruction/CSR has its own file.
+files for _Extensions_, _Instructions_, _RegFiles_, and _Control and Status Registers (CSRs)_.
+Each extension/instruction/regfile/CSR has its own file.
 
 == Flow
 
@@ -141,6 +141,40 @@ H: # <1>
 <7> A description of the extension, as Asciidoc source
 
 === Instructions
+
+=== Register Files
+
+.Example register file specification
+[source,yaml]
+----
+$schema: register_file_schema.json#
+kind: register_file
+name: X
+long_name: Integer General Purpose Registers
+definedBy: I
+register_class: general_purpose
+register_length: MXLEN # <1>
+registers:
+  - name: x0    # <2>
+    abi_mnemonics: [zero] # <3>
+    roles: [zero]
+    arch_read(): | # <4>
+      return 0;
+    arch_write(value): |
+      # x0 ignores all writes
+  - name: x1
+    abi_mnemonics: [ra]
+    roles: [return_address]
+  - name: x8
+    abi_mnemonics: [s0, fp] # <5>
+    roles: [callee_saved, frame_pointer]
+----
+
+<1> The registers in a register file have identical fixed widths, either an explicit width or from a parameter (e.g. MXLEN or VLEN).
+<2> Each register has a unique name (e.g., x0, x1, x2, etc.). The register's index is inferred from its position in the array (starting from 0).
+<3> Registers can optionally have ABI mnemonics (e.g., ra, sp, fp, etc.).
+<4> Individual registers can define `arch_read()` and `arch_write()` for architecturally mandated behavior (e.g., x0 hardwired to zero).
+<5> A register can have multiple ABI mnemonics (e.g., x8 is known as both s0 and fp).
 
 [source,yaml]
 ----
