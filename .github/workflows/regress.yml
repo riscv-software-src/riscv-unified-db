@@ -482,6 +482,20 @@ jobs:
         run: docker load --input ${{ runner.temp }}/docker_image.tar
       - name: Generate sverilog_header code
         run: ./do gen:sverilog
+  regress-gen-capstone:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate capstone code
+        run: |
+          ./do gen:capstone
+          python3 -m pip install capstone
+          python3 tools/python-packages/udb-capstone/regress.py
   regress-cpp-unit:
     runs-on: ubuntu-latest
     needs: build-container
