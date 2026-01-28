@@ -95,7 +95,7 @@ module Idl
     sig { returns(T::Array[Symbol]) }
     attr_reader :qualifiers
 
-    sig { returns(T.any(Integer, Symbol)) }
+    sig { returns(T.nilable(T.any(Integer, Symbol))) }
     attr_reader :width
 
     sig { returns(T.nilable(AstNode)) }
