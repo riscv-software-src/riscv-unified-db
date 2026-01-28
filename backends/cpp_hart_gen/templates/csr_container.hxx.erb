@@ -17,11 +17,11 @@ namespace udb {
   template <SocModel SocType>
   struct <%= name_of(:csr_container, cfg_arch) %> {
     <%- csrs.each do |csr| -%>
-    <%= name_of(:csr, cfg_arch, csr.name) %><SocType> <%= csr.name %>;
+    <%= name_of(:csr, cfg_arch, csr.name) %><SocType> <%= csr.cxx_name %>;
     <%- end -%>
 
     <%= name_of(:csr_container, cfg_arch) %> (<%= name_of(:hart, cfg_arch) %><SocType>* parent) :
-      <%= csrs.map { |csr| "#{csr.name}(parent)" }.join(",\n      ") -%>
+      <%= csrs.map { |csr| "#{csr.cxx_name}(parent)" }.join(",\n      ") -%>
     {}
 
     void reset() {
@@ -55,7 +55,7 @@ namespace udb {
         sorted_csrs = CsrSorter.new(csrs, cfg_arch).tsort
       -%>
       <%- sorted_csrs.each do |csr| -%>
-      <%= csr %>.reset();
+      <%= cfg_arch.csr(csr).cxx_name %>.reset();
       <%- end -%>
     }
   };

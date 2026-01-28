@@ -9,8 +9,26 @@ require_relative "control_flow_pass"
 require_relative "written_pass"
 require "idlc/type"
 
+module Udb
+  class Csr < TopLevelDatabaseObject
+    def cxx_name = @cxx_name = name.gsub(".", "_")
+  end
+end
+
 module Idl
   class Type
+    def to_cxx_no_qualifiers_constexpr(v)
+      t = to_cxx_no_qualifiers
+      c = t.gsub("std::string", "std::string_view")
+      if v.is_a?(Array)
+        if c =~ /.*std::vector<(.*)>.*/
+          subt = $1
+          c = "std::array<#{subt}, #{v.size}>"
+        end
+      end
+      c
+    end
+
     def to_cxx_no_qualifiers
       case @kind
       when :bits
@@ -286,12 +304,14 @@ module Idl
       else
         if function_name == "sw_read"
           if symtab.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
-            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}(__UDB_XLEN)"
+            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.cxx_name})._#{function_name}(__UDB_XLEN)"
           else
-            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name})._#{function_name}()"
+            "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.cxx_name})._#{function_name}()"
           end
+        elsif function_name == "address"
+          "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.cxx_name})._address()"
         else
-          "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+          "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.cxx_name}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
         end
       end
     end
@@ -444,7 +464,7 @@ module Idl
       if csr_obj.nil?
         "#{' ' * indent}__UDB_CSR_BY_ADDR(#{csr.idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_obj.cxx_name}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       end
     end
   end
@@ -520,9 +540,9 @@ module Idl
 
       field  = csr_field.field_def(symtab)
       if symtab.multi_xlen? && field.dynamic_location?
-        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_obj(symtab).cxx_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_field.csr_obj(symtab).cxx_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
       end
     end
   end
@@ -1034,7 +1054,7 @@ module Idl
   class CsrFieldReadExpressionAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_def(symtab).name}).#{@field_name}()._hw_read()"
+      "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr_def(symtab).cxx_name}).#{@field_name}()._hw_read()"
     end
   end
 
@@ -1043,9 +1063,9 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       csr = csr_def(symtab)
       if symtab.multi_xlen? && csr.format_changes_with_xlen?
-        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.cxx_name})._hw_read(__UDB_XLEN)"
       else
-        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
+        "#{' ' * indent}__UDB_CSR_BY_NAME(#{csr.cxx_name})._hw_read()"
       end
     end
   end
