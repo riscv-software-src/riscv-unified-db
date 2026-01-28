@@ -1,0 +1,166 @@
+# Copyright (c) Muhammad Abdullah — 10xEngineers
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: sctrctl
+long_name: Supervisor Control Transfer Records Control Register
+address: 0x14E
+writable: true
+priv_mode: S
+length: 64
+definedBy: Smctr
+description: The `sctrctl` register enables and configures the Control Transfer Records capability in S mode.
+fields:
+  U:
+    location: 0
+    type: RW
+    alias: mctrctl.U
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enable transfer recording in the User mode.
+  S:
+    location: 1
+    type: RW
+    alias: mctrctl.S
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enable transfer recording in the Supervisor mode.
+  RASEMU:
+    location: 7
+    type: RW
+    alias: mctrctl.RASEMU
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it enables RAS (Return Address Stack) Emulation Mode.
+  STE:
+    location: 8
+    type: RW
+    alias: mctrctl.STE
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Enables recording of traps to S-mode when S=0.
+  BPFRZ:
+    location: 11
+    type: RW
+    alias: mctrctl.BPFRZ
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Set `sctrstatus.FROZEN` on a breakpoint exception that traps to M or S mode.
+  LCOFIFRZ:
+    location: 12
+    type: RW
+    alias: mctrctl.LCOFIFRZ
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      Set `sctrstatus.FROZEN` on local-counter-overflow interrupt (LCOFI) that traps
+      to M or S mode.
+    definedBy: Sscofpmf
+  EXCINH:
+    location: 33
+    type: RW
+    alias: mctrctl.EXCINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of exceptions.
+  INTRINH:
+    location: 34
+    type: RW
+    alias: mctrctl.INTRINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of interrupts.
+  TRETINH:
+    location: 35
+    type: RW
+    alias: mctrctl.TRETINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of trap returns.
+  NTBREN:
+    location: 36
+    type: RW
+    alias: mctrctl.NTBREN
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it enables recording of not-taken branches.
+  TKBRINH:
+    location: 37
+    type: RW
+    alias: mctrctl.TKBRINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of taken branches.
+  INDCALLINH:
+    location: 40
+    type: RW
+    alias: mctrctl.INDCALLINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of indirect calls.
+  DIRCALLINH:
+    location: 41
+    type: RW
+    alias: mctrctl.DIRCALLINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of direct calls.
+  INDJMPINH:
+    location: 42
+    type: RW
+    alias: mctrctl.INDJMPINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of indirect jumps (without linkage).
+  DIRJMPINH:
+    location: 43
+    type: RW
+    alias: mctrctl.DIRJMPINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of direct jumps (without linkage).
+  CORSWAPINH:
+    location: 44
+    type: RW
+    alias: mctrctl.CORSWAPINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of co-routine swaps.
+  RETINH:
+    location: 45
+    type: RW
+    alias: mctrctl.RETINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of function returns.
+  INDLJMPINH:
+    location: 46
+    type: RW
+    alias: mctrctl.INDLJMPINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of other indirect jumps (with linkage).
+  DIRLJMPINH:
+    location: 47
+    type: RW
+    alias: mctrctl.DIRLJMPINH
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      When set, it inhibits recording of other direct jumps (with linkage).
+  CUSTOM:
+    location: 63-60
+    type: RW
+    alias: mctrctl.CUSTOM
+    reset_value: UNDEFINED_LEGAL
+    description: |
+      WARL bits designated for custom use. The value 0 must correspond to standard behavior.
+sw_read(): |
+  Bits<12> sctrctl_addr = 0x14E;
+  Bits<64> sctrctl_mask = 0x787F9F80000DC3;
+  Csr csr_handle = direct_csr_lookup(sctrctl_addr);
+  if (!csr_handle.valid) {
+    unimplemented_csr($encoding);
+  }
+  return (CSR[mctrctl] & sctrctl_mask);
