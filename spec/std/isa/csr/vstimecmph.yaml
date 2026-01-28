@@ -1,0 +1,50 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vstimecmph
+long_name: Virtual Supervisor Timer Compare High
+address: 0x25D
+writable: true
+priv_mode: M
+length: 32
+base: 32
+definedBy: H
+description: |
+  The `vstimecmph` CSR is the upper 32 bits of the virtual supervisor timer compare register for RV32.
+  Together with `vstimecmp`, this forms a 64-bit timer compare value.
+
+  When the 64-bit `time` CSR reaches or exceeds the 64-bit value formed by concatenating
+  `vstimecmph` and `vstimecmp` (`{vstimecmph, vstimecmp}`), a virtual supervisor timer interrupt is triggered.
+
+  This CSR is available when both the Sstc extension and H extension are implemented,
+  and both `menvcfg.STCE` and `henvcfg.STCE` are set.
+  When either control bit is clear, accessing this CSR will cause an `IllegalInstruction` exception.
+
+sw_read(): |
+  if (implemented?(ExtensionName::S) && implemented?(ExtensionName::Sstc) && (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  return CSR[vstimecmph].VALUE;
+
+fields:
+  VALUE:
+    location: 31-0
+    alias: vstimecmp.VALUE[63:32]
+    description: |
+      Virtual Timer Compare High Value
+
+      Upper 32 bits of the 64-bit virtual supervisor timer compare value.
+      The full compare value is `{vstimecmph.VALUE, vstimecmp.VALUE}`.
+    type: RW
+    reset_value: 0
+    definedBy: H
+    affectedBy: Sstc
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::S) && implemented?(ExtensionName::Sstc) && (CSR[menvcfg].STCE == 0 || CSR[henvcfg].STCE == 0)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      return csr_value.VALUE;
