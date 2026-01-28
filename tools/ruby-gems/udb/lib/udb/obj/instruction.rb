@@ -1031,8 +1031,6 @@ module Udb
       return false if !defined_in_base?(xlen) || !other_inst.defined_in_base?(xlen)
       return false unless encoding(xlen).indistinguishable?(other_inst.encoding(xlen))
 
-      puts "XXXXXXXXXXXXXXXXXXXXXX   #{name} and #{other_inst.name} are indistinguishable"
-
       # ok, so they have the same encoding. can they be present at the same time?
       return false if !defined_by_condition.compatible?(other_inst.defined_by_condition)
 
