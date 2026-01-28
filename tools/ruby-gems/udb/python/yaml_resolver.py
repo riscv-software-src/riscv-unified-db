@@ -22,9 +22,32 @@ schemas = {}
 
 
 def udb_root(d):
-    return d if os.path.exists(os.path.join(d, "do")) else udb_root(os.path.dirname(d))
+    """
+    Find the nearest ancestor directory of ``d`` that contains a ``do`` directory.
 
+    Parameters
+    ----------
+    d : str
+        Starting directory path.
 
+    Returns
+    -------
+    str
+        The path to the nearest ancestor directory containing ``do``.
+
+    Raises
+    ------
+    RuntimeError
+        If no ancestor directory (including the filesystem root) contains ``do``.
+    """
+    current = d
+    while True:
+        if os.path.exists(os.path.join(current, "do")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            raise RuntimeError(f"Could not find 'do' directory in any ancestor of {d}")
+        current = parent
 UDB_ROOT = (
     udb_root(os.path.dirname(os.path.realpath(__file__)))
     if os.getenv("UDB_ROOT") == None
