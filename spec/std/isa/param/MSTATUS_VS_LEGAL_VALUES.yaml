@@ -41,5 +41,5 @@ definedBy:
     allOf:
       - name: Sm
       - anyOf:
-        - name: Zvl32b
-        - name: S
+          - name: Zvl32b
+          - name: S
