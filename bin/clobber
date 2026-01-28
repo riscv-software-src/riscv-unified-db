@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
+ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
 
-rm -rf                 \
-  ${ROOT}/.stamps      \
-  ${ROOT}/.home        \
-  ${ROOT}/.bundle      \
-  ${ROOT}/.singularity \
-  ${ROOT}/.cache       \
-  ${ROOT}/gen          \
-  ${ROOT}/sorbet       \
-  ${ROOT}/tools/ruby-gems/idlc/.sorbet-cache \
-  ${ROOT}/tools/ruby-gems/udb/.sorbet-cache \
-  ${ROOT}/tools/ruby-gems/udb-gen/.sorbet-cache
+rm -rf                   \
+  "${ROOT}"/.stamps      \
+  "${ROOT}"/.home        \
+  "${ROOT}"/.bundle      \
+  "${ROOT}"/.singularity \
+  "${ROOT}"/.cache       \
+  "${ROOT}"/gen          \
+  "${ROOT}"/sorbet       \
+  "${ROOT}"/tools/ruby-gems/idlc/.sorbet-cache \
+  "${ROOT}"/tools/ruby-gems/udb/.sorbet-cache \
+  "${ROOT}"/tools/ruby-gems/udb-gen/.sorbet-cache
