@@ -128,9 +128,6 @@ requirements:
     - extension:
         name: Sm
         version: ">= 1.13"
-    - not:
-        extension:
-          name: Svade
 doc_license:
   name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
   url: https://creativecommons.org/licenses/by/4.0/
