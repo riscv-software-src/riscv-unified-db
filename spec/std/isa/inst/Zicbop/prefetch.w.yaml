@@ -21,7 +21,6 @@ encoding:
   variables:
     - name: imm
       location: 31-25
-      sign_extend: true
     - name: xs1
       location: 19-15
 access:
