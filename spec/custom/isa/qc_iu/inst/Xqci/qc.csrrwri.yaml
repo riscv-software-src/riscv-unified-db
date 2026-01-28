@@ -41,7 +41,7 @@ operation(): |
   XReg csr_addr = X[rs2];
   Csr csr = direct_csr_lookup(csr_addr);
   if (rd != 0) {
-    X[rd] = csr_sw_read(csr_addr);
+    X[rd] = csr_sw_read(csr);
   }
   # writes the zero-extended immediate to the CSR,
   # performing any WARL transformations first

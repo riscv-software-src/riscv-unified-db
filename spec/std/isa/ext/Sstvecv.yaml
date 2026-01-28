@@ -1,0 +1,30 @@
+# Copyright (c) Ishaan Arora
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sstvecv
+long_name: Vectored exception handling
+description: |
+  `stvec.MODE` must be capable of holding the value 1 (Vectored).
+  When `stvec.MODE`=Vectored, interrupts set `pc` to `stvec.BASE + 4 * cause`,
+  allowing each interrupt source to have its own entry point.
+  Synchronous exceptions still use the base address regardless of the mode.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-03
+    url: https://github.com/riscv/riscv-profiles/releases/tag/v1.0
+    repositories:
+      - url: https://github.com/riscv/riscv-profiles
+        branch: main
+    contributors:
+      - name: Krste Asanovic
+        company: SiFive, Inc.
+requirements:
+  param:
+    name: STVEC_MODE_VECTORED
+    equal: true

@@ -15,7 +15,8 @@ rm -f container.def
 ${RUN} ${SPYTHON} recipe .devcontainer/Dockerfile | \
   grep -v SHELL | \
   sed 's!%post!%post -c /bin/bash!g' | \
-  sed '/%runscript/,$d' \
+  sed '/%runscript/,$d' | \
+  sed 's/\r$//g' \
   >> container.def
   # grep -V SHELL >> container.def
 chmod 444 container.def

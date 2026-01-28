@@ -147,13 +147,13 @@ The <%= proc_cert_model.name %> certificate doesn't cover their behaviors.
 
 <% [Udb::Presence::Mandatory, Udb::Presence::Option].each do |presence_obj| -%>
 
-=== <%= presence_obj.to_s.capitalize %> Extensions
+=== <%= presence_obj.to_s_concise.capitalize %> Extensions
 
 <% ext_reqs = proc_cert_model.in_scope_ext_reqs(presence_obj) -%>
 <% if ext_reqs.empty? -%>
 None
 <% else -%>
-The <%= proc_cert_model.name %> certificate has <%= ext_reqs.size %> <%= presence_obj.to_s %> extensions.
+The <%= proc_cert_model.name %> certificate has <%= ext_reqs.size %> <%= presence_obj.to_s_concise %> extensions.
 
 [%autowidth]
 |===
