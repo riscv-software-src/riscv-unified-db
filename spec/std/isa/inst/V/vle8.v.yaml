@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vle8.v
-long_name: No synopsis available
+long_name: Vector 8-bit unit-stride load
 description: |
-  No description available.
+  Move 8-bit values from memory to vector registers.
 definedBy:
   extension:
     name: V
@@ -29,6 +29,18 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  # "A simple in-order implementation can ignore the settings and simply execute all vector instructions using the undisturbed policy"
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    U32 start_bit_pos = (CSR[vstart].VALUE + i) * 8;
+    U32 end_bit_pos = start_bit_pos + 7;
+    v[vd] = {
+      v[vd][VLEN-1:end_bit_pos + 1],
+      sext(read_memory<8>(virtual_address, $encoding), 8),
+      v[vd][start_bit_pos-1:0]
+    };
+    virtual_address = virtual_address + 1;
+  }
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
