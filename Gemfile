@@ -37,7 +37,7 @@ group :development do
   gem "ruby-prof"
   gem "sorbet"
   gem "spoom"
-  gem "tapioca", require: false
+  gem "tapioca", "= 0.16.11", require: false
 end
 
 group :development, :test do

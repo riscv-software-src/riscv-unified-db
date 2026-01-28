@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../schemas/config_schema.json
+# yaml-language-server: $schema=../spec/schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
