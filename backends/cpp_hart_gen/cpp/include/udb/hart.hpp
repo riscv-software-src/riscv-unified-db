@@ -306,6 +306,14 @@ namespace udb {
       return true;
     }
 
+    // qc_iu builtins
+    void delay(const PossiblyUnknownBits<64>& length) { m_soc.delay(length.get()); }
+    void iss_syscall(const PossiblyUnknownBits<64>& id, const PossiblyUnknownBits<64>& arg) { m_soc.iss_syscall(id.get(), arg.get()); }
+    Bits<32> read_device_32(const PossiblyUnknownBits<64>& addr) { return m_soc.read_device_32(addr.get()); }
+    void write_device_32(const PossiblyUnknownBits<64>& addr, PossiblyUnknownBits<32>& value) { m_soc.write_device_32(addr.get(), value.get()); }
+    void sync_read_after_write_device(bool completed, const PossiblyUnknownBits<32>& write_bitmask) { m_soc.sync_read_after_write_device(completed, write_bitmask.get()); }
+    void sync_write_after_read_device(bool completed, const PossiblyUnknownBits<32>& write_bitmask) { m_soc.sync_write_after_read_device(completed, write_bitmask.get()); }
+
     // xlen of M-mode, i.e., MXLEN
     virtual unsigned mxlen() = 0;
 
