@@ -17,7 +17,7 @@ versions:
 requirements:
   allOf:
     - extension:
-        name: Zvl32b
+        name: Zvl64b
     - param:
         name: VLEN
         greaterThanOrEqual: 128

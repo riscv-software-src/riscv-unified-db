@@ -25,4 +25,6 @@ schema:
     - imprecise
 definedBy:
   extension:
-    name: Zvl32b
+    allOf:
+      - name: Zvl32b
+      - name: Sm
