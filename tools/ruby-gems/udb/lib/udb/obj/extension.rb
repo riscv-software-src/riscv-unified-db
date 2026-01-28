@@ -315,7 +315,7 @@ module Udb
 
             # csr is defined exclusively by self if:
             (
-              (csr_defined & -requirement_met) # it must be defined when self is met, and
+              (-csr_defined & requirement_met) # it must be defined when self is met, and
             ).unsatisfiable? &
             (
               (-csr_defined & preconditions_met)  # it may not be defined when only self's requirements are met
