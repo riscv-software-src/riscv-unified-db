@@ -706,7 +706,7 @@ module Udb
     def csrs
       @csrs ||=
         ext.csrs.select do |csr|
-          (csr.defined_by_condition && to_condition).satisfiable?
+          (csr.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -1166,7 +1166,7 @@ module Udb
       end
     end
 
-    sig { params(xlens: T::Array[Integer]).returns(T::Array[Csr]) }
+    sig { params(xlens: T::Array[Integer]).returns(T::Array[Instruction]) }
     def in_scope_instructions(xlens)
       directly_defined_instructions.select do |inst|
         inst.base.nil? || xlens.include?(inst.base)
