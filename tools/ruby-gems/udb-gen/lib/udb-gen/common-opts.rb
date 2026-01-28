@@ -13,6 +13,11 @@ module UdbGen
     extend T::Sig
     include TTY::Option
 
+    sig { params(name: String, desc: String).void }
+    def initialize(name:, desc:)
+      super(name:, desc:)
+    end
+
     option :cfg do
       T.bind(self, TTY::Option::Parameter::Option)
       short "-c"

@@ -31,6 +31,18 @@ gen_subcmd_usage() {
   echo "  all:           Generate all development artifacts"
   echo "  container-def: Generate Singularity container def from Dockerfile"
   echo "  regress:       Generate .github/workflows/regress.yml"
+  echo "  ruby-type-def: Generate Ruby type signatutres"
+  echo ""
+}
+
+gen_ruby_type_def_usage() {
+  echo "Usage: chore gen ruby-type-def [-g GEM]"
+  echo ""
+  echo "Options:"
+  echo ""
+  echo "  -g GEM:   Generate type signatures for GEM"
+  echo "            If not provided, generates for all gems"
+  echo "            Valid gems are: [udb, idlc, udb-gen]"
   echo ""
 }
 
@@ -121,14 +133,14 @@ do_update_gems() {
   bundle exec tapioca annotations
   cd - || exit 1
 
-  cd tools/ruby-gems/udb || exit 1
+  cd "${ROOT}"/../tools/ruby-gems/udb || exit 1
   bundle update --bundler --ruby
   bundle exec tapioca gems --all
   bundle exec tapioca dsl
   bundle exec tapioca annotations
   cd - || exit 1
 
-  cd tools/ruby-gems/udb-gen || exit 1
+  cd "${ROOT}"/../tools/ruby-gems/udb-gen || exit 1
   bundle update --bundler --ruby
   bundle exec tapioca gems --all
   bundle exec tapioca dsl
@@ -144,6 +156,37 @@ do_update_gems() {
   # now rebuild the container, using the new Gemfile.locks
   ./bin/build_container
 
+}
+
+do_ruby_type_def() {
+  gem=$1
+  gems=()
+  case "$gem" in
+    all )
+      gems+=("udb" "idlc" "udb-gen")
+      ;;
+    udb )
+      gems=("udb")
+      ;;
+    idlc )
+      gems=("idlc")
+      ;;
+    udb-gen )
+      gems=("udb-gen")
+      ;;
+    * )
+      echo "Invalid gem '$gem'" >&2
+      echo "Options are: [all, udb, idlc, udb-gen]" >&2
+      exit 1 # Exit with error
+      ;;
+  esac
+  for gem in "${gems[@]}"; do
+    cd "${ROOT}"/../tools/ruby-gems/"${gem}" || exit 1
+    bundle exec tapioca gems --all
+    bundle exec tapioca dsl
+    bundle exec tapioca annotations
+    cd - || exit 1
+  done
 }
 
 while getopts ":h" opt; do # Go through the options
@@ -198,6 +241,30 @@ case "$subcommand" in
         ;;
       regress )
         do_gen_regress
+        exit 0
+        ;;
+      ruby-type-def )
+        gem=all
+        while getopts ":hg:" opt; do # Go through the options
+          case $opt in
+            # help
+            h )
+              gen_ruby_type_def_usage
+              exit 0 # Exit correctly
+            ;;
+            g )
+              gem=$OPTARG
+              shift
+              ;;
+            # Invalid option
+            ? )
+                echo "[ERROR]: Invalid option: -${OPTARG}"
+                gen_ruby_type_def_usage
+                exit 1 # Exit with error
+            ;;
+          esac
+        done
+        do_ruby_type_def "$gem"
         exit 0
         ;;
       * )

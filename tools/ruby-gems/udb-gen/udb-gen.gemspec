@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables << "udb-gen"
 
+  s.add_dependency "rake"
   s.add_dependency "sorbet-runtime", "= #{UdbGems::SORBET_VERSION}"
   s.add_dependency "tty-exit"
   s.add_dependency "tty-option"

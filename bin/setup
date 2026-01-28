@@ -45,7 +45,7 @@ fi
 # Check if container type or tag has changed
 NEEDS_CLOBBER=false
 
-if [ -f "${ROOT}/.cache/previous-container-type" ]; then
+if [ ! -v IN_UDB_CONTAINER ] && [ -f "${ROOT}/.cache/previous-container-type" ]; then
   PREVIOUS_CONTAINER_TYPE=$(cat "${ROOT}/.cache/previous-container-type")
   if [ "${PREVIOUS_CONTAINER_TYPE}" != "${CONTAINER_TYPE}" ]; then
     echo "Container type changed from ${PREVIOUS_CONTAINER_TYPE} to ${CONTAINER_TYPE}"
@@ -53,7 +53,7 @@ if [ -f "${ROOT}/.cache/previous-container-type" ]; then
   fi
 fi
 
-if [ -f "${ROOT}/.cache/previous-container-tag" ]; then
+if [ ! -v IN_UDB_CONTAINER ] && [ -f "${ROOT}/.cache/previous-container-tag" ]; then
   PREVIOUS_CONTAINER_TAG=$(cat "${ROOT}/.cache/previous-container-tag")
   if [ "${PREVIOUS_CONTAINER_TAG}" != "${CONTAINER_TAG}" ]; then
     echo "Container tag changed from ${PREVIOUS_CONTAINER_TAG} to ${CONTAINER_TAG}"
@@ -68,8 +68,10 @@ fi
 
 # Update the cached values
 mkdir -p "${ROOT}/.cache"
-echo "${CONTAINER_TYPE}" > "${ROOT}/.cache/previous-container-type"
-echo "${CONTAINER_TAG}" > "${ROOT}/.cache/previous-container-tag"
+if [ ! -v IN_UDB_CONTAINER ]; then
+  echo "${CONTAINER_TYPE}" > "${ROOT}/.cache/previous-container-type"
+  echo "${CONTAINER_TAG}" > "${ROOT}/.cache/previous-container-tag"
+fi
 
 echo "Using ${CONTAINER_TYPE} environment"
 

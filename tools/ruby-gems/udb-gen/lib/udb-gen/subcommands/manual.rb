@@ -60,22 +60,22 @@ module UdbGen
       default Udb.repo_root / "gen" / "manual"
     end
 
-    def gen_html
-      app_class = Class.new(Rake::Application) do
-        def initialize(gen_dir:, cfg_arch:, versions:, resolver:)
-          super()
-          @gen_dir = gen_dir
-          @cfg_arch = cfg_arch
-          @versions = versions
-          @resolver = resolver
-        end
-        def gen_dir = @gen_dir
-        def cfg_arch = @cfg_arch
-        def versions = @versions
-        def resolver = @resolver
+    RakeApp = Class.new(Rake::Application) do
+      def initialize(gen_dir:, cfg_arch:, versions:, resolver:)
+        super()
+        @gen_dir = gen_dir
+        @cfg_arch = cfg_arch
+        @versions = versions
+        @resolver = resolver
       end
+      def gen_dir = @gen_dir
+      def cfg_arch = @cfg_arch
+      def versions = @versions
+      def resolver = @resolver
+    end
 
-      app = app_class.new(
+    def gen_html
+      app = RakeApp.new(
         gen_dir: params[:output_dir],
         cfg_arch:,
         versions: params[:versions],
