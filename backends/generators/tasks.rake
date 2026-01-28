@@ -7,6 +7,7 @@ require 'tempfile'
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 directory "#{$root}/gen/sverilog"
+directory "#{$root}/gen/rust"
 
 def with_resolved_exception_codes(cfg_arch)
   # Process ERB templates in exception codes using Ruby ERB processing
@@ -126,5 +127,29 @@ namespace :gen do
          "--resolved-codes=#{resolved_codes} " \
          "--output=#{output_dir}riscv_decode_package.svh --include-all"
     end
+  end
+
+  desc <<~DESC
+    Generate Rust code from RISC-V instruction and CSR definitions
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated Rust code (defaults to "#{$root}/gen/rust")
+  DESC
+  task rust: "#{$root}/gen/rust" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/rust/"
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+    csr_dir = cfg_arch.path / "csr"
+
+    # Run the Rust generator script
+    sh "/opt/venv/bin/python3 #{$root}/backends/generators/rust/rust_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}riscv.rs --include-all"
   end
 end
