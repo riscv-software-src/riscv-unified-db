@@ -519,6 +519,40 @@ builtin function wfi {
   }
 }
 
+builtin function wait_on_reservation_set {
+  arguments Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Hint to temporarily stall execution
+    in a low-power state as long as:
+
+    * The reservation set is valid
+    * No pending interrupt is observed
+    * If "wrs.sto", STO_DURATION has not elapsed
+
+    A valid implementation is a no-op.
+    The model will advance the PC; this function does not need to.
+  }
+}
+
+# A special form of "wait_on_reservation_set" when "wrs.nto" must
+# complete within an implementation defined bounded time limit
+builtin function wait_on_reservation_set_bounded {
+  returns Boolean
+  description {
+    Hint to temporarily stall execution
+    in a low-power state as long as:
+
+    * The reservation set is valid
+    * No pending interrupt is observed
+    * BOUNDED_TIME_LIMIT has not elapsed
+
+    A valid implementation is a no-op.
+    The model will advance the PC; this function does not need to.
+
+    Returns false if BOUNDED_TIME_LIMIT exceeded, else true
+  }
+}
+
 builtin function pma_applies? {
   returns Boolean
   arguments

@@ -49,3 +49,4 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  wait_on_reservation_set($encoding);
