@@ -96,6 +96,31 @@ ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"
 ENV IN_UDB_CONTAINER=true
 
+# install gems
+COPY Gemfile /opt/Gemfile
+COPY Gemfile.lock /opt/Gemfile.lock
+COPY tools/ruby-gems/idlc/idlc.gemspec /opt/tools/ruby-gems/idlc/
+COPY tools/ruby-gems/idlc/lib/gem_versions.rb /opt/tools/ruby-gems/idlc/lib/
+COPY tools/ruby-gems/idlc/lib/idlc/version.rb /opt/tools/ruby-gems/idlc/lib/idlc/
+COPY tools/ruby-gems/idl_highlighter/idl_highlighter.gemspec /opt/tools/ruby-gems/idl_highlighter/
+COPY tools/ruby-gems/idl_highlighter/lib/idl_highlighter/version.rb /opt/tools/ruby-gems/idl_highlighter/lib/idl_highlighter/
+COPY tools/ruby-gems/udb/udb.gemspec /opt/tools/ruby-gems/udb/
+COPY tools/ruby-gems/udb/lib/gem_versions.rb /opt/tools/ruby-gems/udb/lib/
+COPY tools/ruby-gems/udb/lib/udb/version.rb /opt/tools/ruby-gems/udb/lib/udb/
+COPY tools/ruby-gems/udb-gen/udb-gen.gemspec /opt/tools/ruby-gems/udb-gen/
+COPY tools/ruby-gems/udb-gen/lib/gem_versions.rb /opt/tools/ruby-gems/udb-gen/lib/
+COPY tools/ruby-gems/udb-gen/lib/udb-gen/version.rb /opt/tools/ruby-gems/udb-gen/lib/udb-gen/
+COPY tools/ruby-gems/udb_helpers/udb_helpers.gemspec /opt/tools/ruby-gems/udb_helpers/
+COPY tools/ruby-gems/udb_helpers/lib/udb_helpers/version.rb /opt/tools/ruby-gems/udb_helpers/lib/udb_helpers/
+RUN bundle install --gemfile /opt/Gemfile
+
+# the binaries for gems need to be copied in
+RUN mkdir -p /workspace/bin/container
+COPY tools/ruby-gems/idlc/bin/idlc /workspace/bin/container
+COPY tools/ruby-gems/udb/bin/udb /workspace/bin/container
+COPY tools/ruby-gems/udb-gen/bin/udb-gen /workspace/bin/container
+ENV PATH="/workspace/bin/container:$PATH"
+
 # Grant the default ubuntu user sudo access
 RUN echo ubuntu ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/ubuntu \
     && chmod 0440 /etc/sudoers.d/ubuntu

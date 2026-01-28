@@ -30,6 +30,8 @@ sorbet
 !tools/ruby-gems/udb-gen/sorbet
 !tools/ruby-gems/udb-gen/lib/sorbet
 coverage
+.sorbet-cache
+.project
 
 # emacs backup files
 *~

@@ -45,6 +45,19 @@ module Idl
       @kind == :bits
     end
 
+    def ==(other)
+      return false unless other.is_a?(Type)
+
+      case other.kind
+      when :bits
+        @kind == :bits && @width == other.width
+      when :enum_ref
+        @kind == :enum_ref && @enum_class.name == other.name
+      else
+        raise "TODO: Type == for #{other.kind}"
+      end
+    end
+
     def runtime?
       if @kind == :array
         @sub_type.runtime?
@@ -263,7 +276,7 @@ module Idl
           warn "You seem to be missing an $enum cast"
           return false
         end
-        return type.kind != :boolean
+        return type.kind == :bits || type.kind == :bitfield
       when :enum
         if type.kind == :bits
           return false
@@ -355,6 +368,8 @@ module Idl
           "string"
         elsif @kind == :struct
           "struct #{T.cast(self, StructType).type_name}"
+        elsif @kind == :function
+          "function #{name}"
         else
           raise @kind.to_s
         end
