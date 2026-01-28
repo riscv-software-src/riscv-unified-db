@@ -36,7 +36,7 @@ module UdbGen
     option :format do
       T.bind(self, TTY::Option::Parameter::Option)
       short "-f"
-      long "--format"
+      long "--format=format"
       desc "Output format"
       permit ["html"]
       default "html"
