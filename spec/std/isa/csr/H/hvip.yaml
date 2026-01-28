@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hvip
+long_name: Hypervisor Virtual Interrupt Pending Register
+description: |
+  The `hvip` register is an HSXLEN-bit read/write register that a hypervisor can write to indicate virtual interrupts intended for VS-mode.
+  It contains interrupt-pending bits for virtual interrupts such as VS-level external interrupts, timer interrupts, and software interrupts.
+address: 0x645
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  VSEIP:
+    location: 10
+    type: RW
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level external interrupts. This bit is writable and
+      is set to 1 to assert a VS-level external interrupt.
+
+  VSTIP:
+    location: 6
+    type: RW
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level timer interrupts. This bit is writable and
+      is set to 1 to assert a VS-level timer interrupt.
+
+  VSSIP:
+    location: 2
+    type: RW
+    reset_value: 0
+    description: |
+      Pending interrupt bit for VS-level software interrupts. This bit is writable and
+      is set to 1 to assert a VS-level software interrupt.

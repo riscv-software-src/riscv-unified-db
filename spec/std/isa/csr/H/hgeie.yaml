@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hgeie
+long_name: Hypervisor Guest External Interrupt Enable Register
+description: |
+  The hgeie register is an HSXLEN-bit read/write register that contains enable bits for the guest external interrupts at this hart. Guest external interrupt number i corresponds with bit i in hgeie.
+
+  Guest external interrupts represent interrupts directed to individual virtual machines at VS-level. If a RISC-V platform supports placing a physical device under the direct control of a guest OS with minimal hypervisor intervention (known as pass-through or direct assignment between a virtual machine and the physical device), then, in such circumstance, interrupts from the device are intended for a specific virtual machine.
+
+  [Note]
+  Support for guest external interrupts requires an interrupt controller that can collect virtual-machine-directed interrupts separately from other interrupts.
+
+  The number of bits implemented in hgeie for guest external interrupts is UNSPECIFIED and may be zero. This number is known as GEILEN. The least-significant bits are implemented first, apart from bit 0. Hence, if GEILEN is nonzero, bits GEILEN:1 shall be writable in hgeie, and all other bit positions shall be read-only zeros.
+
+  Register hgeie selects the subset of guest external interrupts that cause a supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
+address: 0x607
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  GEI_ENABLE:
+    location_rv32: 31-1
+    location_rv64: 63-1
+    type: RW
+    reset_value: 0
+    description: |
+      The number of bits implemented in hgeie for guest external interrupts is UNSPECIFIED and may be zero. This number is known as GEILEN. The least-significant bits are implemented first, apart from bit 0. Hence, if GEILEN is nonzero, bits GEILEN:1 shall be writable in hgeie, and all other bit positions shall be read-only zeros in  hgeie.
+      Register hgeie selects the subset of guest external interrupts that cause a supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
