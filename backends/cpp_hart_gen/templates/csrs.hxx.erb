@@ -207,7 +207,7 @@ namespace udb {
     unsigned address() const override { <%= !csr.indirect? ? "return #{csr.address};" : "throw CsrAddressTypeError(\"#{csr.name} is not direct addressible.\")" %>; }
     uint64_t indirect_address() const override { <%= csr.indirect? ? "return #{csr.indirect_address};" : "throw CsrAddressTypeError(\"#{csr.name} is not indirect.\")" %>; }
     uint8_t indirect_slot() const override { <%= csr.indirect? ? "return #{csr.indirect_slot};" : "throw CsrAddressTypeError(\"#{csr.name} is not indirect.\")" %>; }
-    static constexpr unsigned _address() { return <%= csr.address %>; }
+    static constexpr Bits<12> _address() { return <%= csr.address %>_b; }
     const std::string name() const override { return "<%= csr.name %>"; }
     PrivilegeMode mode() const override { return PrivilegeMode::<%= csr.priv_mode %>; }
     bool writable() const override { return <%= csr.writable %>; }

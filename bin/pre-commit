@@ -3,4 +3,5 @@
 ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 source $ROOT/bin/setup
 
+export PRE_COMMIT_HOME=${ROOT}/.cache/pre-commit
 $PYTHON -mpre_commit "$@"

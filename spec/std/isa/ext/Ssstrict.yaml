@@ -40,3 +40,13 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-10
+requirements:
+  allOf:
+    - param:
+        name: TRAP_ON_UNIMPLEMENTED_INSTRUCTION
+        equal: true
+        reason: Ssstrict requires unimplemented opcodes to trap
+    - param:
+        name: TRAP_ON_UNIMPLEMENTED_CSR
+        equal: true
+        reason: Ssstrict requires unimplemented CSR accesses to trap

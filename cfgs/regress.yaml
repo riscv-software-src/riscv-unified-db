@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: unconfigured
+name: regress
+description: |
+  Config used by some regression tests to get shortened versions of some objects.
+arch_overlay: regress
