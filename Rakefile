@@ -65,16 +65,6 @@ file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
 end
 
 namespace :chore do
-  desc "Update Ruby library dependencies"
-  task :update_deps do
-    # these should run in order,
-    # so don't change this to use task prereqs, which might run in any order
-    $rake_cmd_runner.run "bundle update --gemfile Gemfile"
-    Rake::Task["chore:idlc:update_deps"].invoke
-    Rake::Task["chore:udb:update_deps"].invoke
-    Rake::Task["chore:udb_gen:update_deps"].invoke
-  end
-
   desc "Update golden instruction appendix"
   task :update_golden_appendix do
     Rake::Task["gen:instruction_appendix_adoc"].invoke

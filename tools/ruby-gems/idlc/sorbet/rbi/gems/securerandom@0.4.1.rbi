@@ -45,9 +45,6 @@ module SecureRandom
   extend ::Random::Formatter
 
   class << self
-    # source://securerandom//lib/securerandom.rb#55
-    def alphanumeric(n = T.unsafe(nil), chars: T.unsafe(nil)); end
-
     # Returns a random binary string containing +size+ bytes.
     #
     # See Random.bytes

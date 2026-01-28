@@ -57,7 +57,7 @@ namespace udb {
       <%- sorted_params.each do |param_name| -%>
       <%- if cfg_arch.param_values.key?(param_name) -%>
       udb_assert(
-        (std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")) == <%= param_name %>.value()),
+        (std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers_constexpr(cfg_arch.param_values.fetch(param_name)) %>>(cfg.param_value("<%= param_name %>")) == <%= param_name %>.value()),
         fmt::format("Parameter '<%= param_name %>' has built-in value '<%= cfg_arch.param_values.fetch(param_name) %>', but was given a run-time value of '{}'", std::any_cast<<%= cfg_arch.param(param_name).idl_type.to_cxx_no_qualifiers %>>(cfg.param_value("<%= param_name %>")))
       );
       <%- else -%>
