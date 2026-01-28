@@ -622,6 +622,9 @@ namespace :test do
     $logger.info "Generating Go Language Support"
     Rake::Task["gen:go"].invoke
 
+    $logger.info "Generating Rust Language Support"
+    Rake::Task["gen:rust"].invoke
+
     $logger.info "Done test:regress"
   end
 
