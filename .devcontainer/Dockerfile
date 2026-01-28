@@ -5,12 +5,10 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR /workspace
 
-# Install system dependencies
-# Note: nodejs, npm, python3 are now installed via mise for better version control
+# please keep pkgs sorted
 RUN apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
   build-essential \
-  ca-certificates \
   clang-format \
   clang-tidy \
   cmake \
@@ -23,16 +21,12 @@ RUN apt-get update && \
   gh \
   git \
   gpg \
+  gpg-agent \
   less \
   libc6-dev-riscv64-cross \
   libelf-dev \
-  libffi-dev \
   libgmp-dev \
-  liblzma-dev \
   libnewlib-dev \
-  libreadline-dev \
-  libsqlite3-dev \
-  libssl-dev \
   libyaml-dev \
   libz3-dev \
   minisat \
@@ -40,33 +34,40 @@ RUN apt-get update && \
   rustc \
   shellcheck \
   sudo \
-  tk-dev \
-  xz-utils \
   zlib1g-dev \
   \
   && apt-get clean autoclean \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-# Install mise for unified tool version management
-# This manages Ruby, Node.js, and Python versions
-RUN curl https://mise.run | sh
-ENV PATH="/root/.local/bin:$PATH"
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV MISE_CACHE_DIR="/mise/cache"
+# MISE_STATE_DIR needed to prevent permission errors in CI when mise tries to track configs
+# Without this, mise defaults to ~/.local/state which isn't writable by non-root CI users
+ENV MISE_STATE_DIR="/mise/state"
+ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
+ENV RUBY_YJIT_ENABLE=1
+ENV MISE_YES=1
+# Disable mise auto-activation to avoid environment pollution
+ENV MISE_SHELL=bash
 
-# Copy version configuration files
+RUN curl https://mise.run | sh
+
 COPY .mise.toml /opt/.mise.toml
 COPY .ruby-version /opt/.ruby-version
 
-# Install tools via mise (Ruby, Node.js, Python)
 WORKDIR /opt
 RUN mise trust /opt/.mise.toml && \
-    MISE_NODE_VERIFY=0 mise install --yes && \
-    mise reshim
-ENV PATH="/root/.local/share/mise/shims:$PATH"
-ENV MISE_DATA_DIR="/root/.local/share/mise"
-ENV RUBY_YJIT_ENABLE=1
+    mise settings set trusted_config_paths '~' && \
+    mise install --yes
 
-# Verify installations
+RUN chmod -R 777 /mise
+
+# Create a profile script to initialize mise without shims
+RUN echo 'eval "$(mise activate bash --shims)"' > /etc/profile.d/mise.sh && \
+    chmod +x /etc/profile.d/mise.sh
+
 RUN ruby --version && \
     node --version && \
     npm --version && \
@@ -107,7 +108,6 @@ RUN python3 -m venv /opt/venv && \
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install npm packages globally in the container
-# The newer npm from mise (>= 10.2.0) fixes Podman UID/GID issues (npm/cli#5998)
 COPY package.json package-lock.json /opt/node/
 RUN cd /opt/node && \
   npm ci --no-audit --no-fund && \
