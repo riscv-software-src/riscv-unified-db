@@ -1,0 +1,179 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=tests-schema.json
+
+---
+tests:
+  regress-idlc-unit:
+    tags:
+      - unit
+      - smoke
+    test:
+      - name: Run idlxc unit tests
+        run: ./do test:idlc:unit
+    gh_post:
+      - name: Upload idlc coverage reports to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tools/ruby-gems/idlc/coverage/coverage.xml
+          flags: idlc
+
+  regress-udb-helpers-unit:
+    tags:
+      - unit
+      - smoke
+    test:
+      - name: Run udb-helpers unit tests
+        run: ./do test:udb_helpers:unit
+
+  regress-sorbet:
+    tags:
+      - smoke
+    test:
+      - name: Run sorbet checks
+        run: export XDG_CACHE_HOME=${{ github.workspace }}/.cache && ./do test:sorbet
+
+  regress-ext-explorer:
+    test:
+      - name: Generate ISA Explorer browser artifacts
+        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer --skip 6
+
+  regress-idl-typecheck:
+    tags:
+      - smoke
+    test:
+      - name: Type check IDL for _
+        run: ./do test:idl CFG=_
+      - name: Type check IDL for rv32
+        run: ./do test:idl CFG=rv32
+      - name: Type check IDL for rv64
+        run: ./do test:idl CFG=rv64
+      - name: Type check IDL for qc_iu
+        run: ./do test:idl CFG=qc_iu
+
+  regress-test-inst-encodings:
+    tags:
+      - smoke
+    test:
+      - name: Checking for conflicts in instruction encodings
+        run: ./do test:inst_encodings
+
+  regress-gen-isa-manual:
+    gh_pre:
+      - name: checkout ISA manual
+        run: git submodule update --init ext/riscv-isa-manual
+      - name: Mark isa-manual as safe
+        # Run in docker to get git config set correctly for submodules
+        run: ./bin/bash -c "git config --local --add safe.directory '*'"
+    test:
+      - name: Generate HTML ISA manual
+        run: ./bin/generate manual -c regress -v isa_regress -f html
+
+  regress-gen-instruction-appendix:
+    test:
+      - name: Generate instruction appendix asciidoc
+        run: ./do gen:instruction_appendix_adoc
+      - name: Check instruction appendix result
+        run: ./do test:instruction_appendix
+
+  regress-cfg-manual:
+    test:
+      - name: Generate HTML ISA manual
+        run: ./do gen:html[example_rv64_with_overlay]
+
+  regress-gen-ext-pdf:
+    test:
+      - name: Generate Xqci extension PDF
+        run: ./bin/ruby tools/scripts/gen_xqci.rb
+
+  regress-gen-certificate:
+    test:
+      - name: Generate extension PDF
+        run: ./do gen:proc_crd_pdf[MockProcessor]
+
+  regress-gen-profile:
+    test:
+      - name: Generate extension PDF
+        run: ./do gen:profile_release_pdf[Mock]
+
+  regress-udb-unit-test:
+    tags:
+      - unit
+    strategy:
+      matrix:
+        test:
+          - logic
+          - conditions
+          - cli
+          - yaml_loader
+          - cfg_arch
+          - cfg
+    test:
+      - name: Run udb gem ${{ matrix.test }} unit tests
+        run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
+    gh_post:
+      - name: Update ownership of coverage files # TODO: Remove when Docker image uses non-root user
+        run: sudo chown -R $USER:$USER tools/ruby-gems/udb/coverage
+      - name: Rename coverage file
+        run: mv tools/ruby-gems/udb/coverage/.resultset.json tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+      - name: Save coverage report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: udb-${{ matrix.test }}-cov
+          path: tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
+
+  regress-gen-go:
+    test:
+      - name: Generate Go code
+        run: ./do gen:go
+
+  regress-gen-c-header:
+    test:
+      - name: Generate c_header code
+        run: ./do gen:c_header
+
+  regress-gen-sverilog:
+    test:
+      - name: Generate sverilog_header code
+        run: ./do gen:sverilog
+
+  regress-cpp-unit:
+    tags:
+      - unit
+    test:
+      - name: Run cpp unit tests
+        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4 BUILD_TYPE=debug
+
+  regress-riscv-tests:
+    gh_pre:
+      - name: check out riscv-tests
+        run: git submodule update --init ext/riscv-tests
+    test:
+      - name: Run RV32 riscv-tests
+        run: ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
+
+  regress-riscv-tests-64:
+    gh_pre:
+      - name: check out riscv-tests
+        run: git submodule update --init ext/riscv-tests
+    test:
+      - name: Run RV64 riscv-tests
+        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
+
+  regress-xqci-doc:
+    test:
+      - name: Generate Xqci pdf documentation
+        run: ./bin/ruby tools/scripts/gen_xqci.rb
+
+  regress-profile-extensions:
+    test:
+      - name: Check profile_extensions
+        run: ./do test:profile_extensions
+
+  regress-regress:
+    test:
+      - name: Test that local regress runner works
+        run: ./bin/regress -n regress-sorbet

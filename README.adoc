@@ -82,22 +82,11 @@ You can start a GitHub Codespace for this repository by clicking the "Code" butt
 
 === Tasks
 
-UnifiedDB uses https://github.com/ruby/rake[Rake], a Ruby-based Makefile alternative, to manage tasks.
-For convenience, running Rake inside the container is encapsulated in `do`. For example:
-
 [source,bash]
 ----
-./do --tasks                 # list all documented tasks
-./do --desc gen:html_manual  # describe the 'gen:html_manual' task in more detail
+./bin/regress -h             # get help on running regression tests
 
-./do test:smoke              # run smoke tests
+./bin/generate -h            # get help on generating content from UDB
 
-# generate all versions of ISA manual, as an Antora static website
-./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-
-# regenerate yaml files for the unresolved architecture
-./do gen:arch
-
-# generate an implementation-specific spec for the 'example_rv64_with_overlay' config
-./do gen:resolved_arch CFG=example_rv64_with_overlay
+./bin/chore -h               # get help on running repository development chores
 ----

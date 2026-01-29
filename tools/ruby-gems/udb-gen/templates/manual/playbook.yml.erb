@@ -1,14 +1,15 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 ---
 site:
   title: <%= manual.marketing_name %>
   start_page: landing:ROOT:index.adoc
 content:
   sources:
-  - url: <%= $root %>
-    start_path: gen/manual/<%= manual.name %>/top/<%= output_hash %>/antora/landing
+  - url: <%= Rake.application.gen_dir %>/<%= manual.name %>/top/<%= output_hash %>/antora/landing
   <%- versions.each do |version_name| -%>
-  - url: <%= $root %>
-    start_path: gen/manual/<%= manual.name %>/<%= version_name %>/antora
+  - url: <%= Rake.application.gen_dir %>/<%= manual.name %>/<%= version_name %>/antora
   <%- end -%>
 antora:
   extensions:
@@ -45,7 +46,7 @@ ui:
       <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/tabs.css">
       <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/custom.css">
   - path: js/vendor/highlight.js
-    contents: <%= $root %>/backends/cfg_html_doc/ui/highlight.js
+    contents: <%= UdbGen.root %>/templates/manual/highlight.js
   - path: css/vendor/custom.css
     contents: |
       .small {

@@ -1,0 +1,9 @@
+version = 1
+
+# Computer-generated files that are checked in
+[[annotations]]
+path = [
+    "tests-schema.json"
+]
+SPDX-FileCopyrightText = "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries."
+SPDX-License-Identifier = "BSD-3-Clause-Clear"

@@ -17,6 +17,7 @@ PATH
   remote: tools/ruby-gems/udb-gen
   specs:
     udb-gen (0.1.0)
+      rake
       sorbet-runtime (= 0.6.12690)
       tty-exit
       tty-option

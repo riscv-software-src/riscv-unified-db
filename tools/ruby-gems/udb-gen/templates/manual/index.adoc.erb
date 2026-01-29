@@ -1,11 +1,15 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+
 // This becomes the index of the entire Antora site
 
 = <%= manual.marketing_name %>
 
 The following versions of the manual can be found here:
 
-<%- manual.versions.each do |version| -%>
-* xref:<%= version.name %>@<%= manual.name %>:ROOT:index.adoc[Version <%= version.marketing_version %>]
+<%- versions.each do |version_name| -%>
+<%-    version = manual.versions.find { |v| v.name == version_name } -%>
+* xref:<%= version_name %>@<%= manual.name %>:ROOT:index.adoc[Version <%= version.marketing_version %>]
 <%- end -%>
 
 This site was generated using https://github.com/riscv-software-src/riscv-unified-db[riscv-unified-db],

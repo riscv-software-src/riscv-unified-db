@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "title": "Schema for test definitions",
+
+  "type": "object",
+
+  "additionalProperties": false,
+  "required": ["tests"],
+
+  "properties": {
+    "tests": {
+      "description": "Mapping of tests. Keys are the test names, and values are the test data",
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "description": "A regression test definition",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["test"],
+          "properties": {
+            "test": {
+              "description": "The main test, specified as a series of shell commands.\n Borrows the {name, run} syntax from GitHub Actions",
+              "examples": [
+                {
+                  "test": [
+                    {
+                      "name": "Say Hello",
+                      "run": "echo \"Hello\""
+                    }
+                  ]
+                },
+                {
+                  "test": [
+                    {
+                      "name": "Test Foo",
+                      "run": "./do test:foo"
+                    },
+                    {
+                      "name": "Test Bar",
+                      "run": "./do test:bar"
+                    }
+                  ]
+                }
+              ],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "run"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "run": { "type": "string" },
+                  "env": {
+                    "type": "object",
+                    "patternProperties": {
+                      ".*": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "tags": {
+              "description": "A list of tags associated with the test",
+              "examples": ["smoke", "unit"],
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "env": {
+              "description": "Environment variables set for the test",
+              "examples": [
+                {
+                  "env": { "VAR1": "value1" }
+                },
+                {
+                  "env": { "VAR2": "value2", "VAR3": "value3" }
+                }
+              ],
+              "type": "object",
+              "patternProperties": {
+                ".*": { "type": "string" }
+              }
+            },
+            "strategy": {
+              "description": "strategy, as defined by GitHub workflow syntax. Used to turn a test spec into  template over many values",
+              "examples": [
+                {
+                  "strategy": {
+                    "matrix": {
+                      "subtest": ["t1", "t2"]
+                    }
+                  }
+                }
+              ],
+              "type": "object",
+              "required": ["matrix"],
+              "additionalProperties": false,
+              "properties": {
+                "matrix": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "gh_post": {
+              "description": "Steps to run in GitHub CI after the main test is done. These steps are not executed by ./bin/regress",
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "gh_pre": {
+              "description": "Steps to run in GitHub CI before the main test runs. These steps are not executed by ./bin/regress.",
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,67 @@
 
 = FAQ
 
-== Update Ruby gems
+== Development
+
+=== Run regression tests
+
+To run all locally (takes a long time):
+
+[source,bash]
+--
+./bin/regress
+--
+
+To list regression tests:
+
+[source,bash]
+--
+./bin/regress --list
+--
+
+To run a specific regression test:
+
+[source,bash]
+--
+# run the 'regress-sorbet' test
+./bin/regress --name regress-sorbet
+--
+
+To run all regression tests matching a tag:
+
+[source,bash]
+--
+# run all regressions tagged as 'smoke'
+./bin/regress --tag smoke
+--
+
+=== Add a new regression
+
+Basic Regressions::
+--
+Basic (most) regressions that can be run via the command-line within the UDB container are
+stored in `tools/test/regress-tests.yaml`.
+
+To add a basic regression, you must:
+
+1. Add the regression in `tools/test/regress-tests.yaml`
+    * The main steps of the test should go under the `test` key.
+    * If there are any steps needed to set up the test in GitHub CI, add those under the `pre` key.
+    * If there are any steps needed after the test in GitHub CI, add those under the `post` key.
+2. run `./bin/chore gen regress`
+--
+
+Complex Regressions::
+--
+Complex regressions are not runnable on the command line. They only run in CI via GitHub Actions.
+
+To add a complex regression, you must:
+
+1. add the steps as a job in `tools/test/regress-gh-template.yaml`
+2. run `./bin/chore gen regress`
+--
+
+=== Update Ruby gems
 
 This will run natively, so you either need to be in the container already (e.g., in the devcontainer), or you need to have rbenv installed on the host.
 
@@ -16,7 +76,7 @@ rbenv install
 Then, update the gems on the host. This will update the Gemfile.lock files and sorbet definitions.
 
 ```bash
-./bin/update_gems
+./bin/chore update gems
 ```
 
 Then rebuild the container:
@@ -27,7 +87,7 @@ Then rebuild the container:
 
 Then `git add` all updated/new files and make a PR.
 
-== Add a new Ruby gem
+=== Add a new Ruby gem
 
 Add the gem in the appropriate Gemfile (top, or one of the sub-project gems under tools/ruby-gems).
 

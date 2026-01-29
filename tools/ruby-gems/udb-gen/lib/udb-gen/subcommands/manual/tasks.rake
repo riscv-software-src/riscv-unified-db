@@ -1,22 +1,19 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # typed: false
 # frozen_string_literal: true
 
 require "digest"
 
-$root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
-
-CFG = ENV.key?("CFG") ? ENV["CFG"] : "_"
-
-MANUAL_GEN_DIR = $resolver.gen_path / "manual"
-
-def versions_from_env(manual_name)
-  versions = ENV["VERSIONS"].split(",")
+def versions_from_env(versions)
+  manual_name = "isa"
   output_hash = nil
   if versions.include?("all")
     raise ArgumentError, "'all' was given as a version, so nothing else should be" unless versions.length == 1
 
     versions = []
-    version_fns = Dir.glob("#{$resolver.std_path}/manual_version/**/*.yaml")
+    version_fns = Dir.glob("#{Rake.application.resolver.std_path}/manual_version/**/*.yaml")
     raise "Cannot find version files" if version_fns.empty?
 
     version_fns.each do |manual_version_fn|
@@ -26,7 +23,7 @@ def versions_from_env(manual_name)
     output_hash = "all"
   else
     versions.each do |version|
-      Udb.logger.warn "No manual version #{version} in the standard spec" if Dir.glob("#{$resolver.std_path}/manual_version/**/#{version}.yaml").empty?
+      Udb.logger.warn "No manual version #{version} in the standard spec" if Dir.glob("#{Rake.application.resolver.std_path}/manual_version/**/#{version}.yaml").empty?
     end
     output_hash = versions.size == 1 ? versions[0] : Digest::SHA2.hexdigest(versions.join(""))
   end
@@ -34,11 +31,11 @@ def versions_from_env(manual_name)
   [versions, output_hash]
 end
 
-directory MANUAL_GEN_DIR / "adoc"
-directory MANUAL_GEN_DIR / "antora"
-directory MANUAL_GEN_DIR / "html"
+directory Rake.application.gen_dir / "adoc"
+directory Rake.application.gen_dir / "antora"
+directory Rake.application.gen_dir / "html"
 
-file MANUAL_GEN_DIR / "antora" / "antora.yml" => (MANUAL_GEN_DIR / "antora").to_s do |t|
+file Rake.application.gen_dir / "antora" / "antora.yml" => (Rake.application.gen_dir / "antora").to_s do |t|
   File.write t.name, <<~ANTORA
     name: riscv_manual
     version: #{cfg_arch.manual_version?}
@@ -49,11 +46,11 @@ file MANUAL_GEN_DIR / "antora" / "antora.yml" => (MANUAL_GEN_DIR / "antora").to_
 end
 
 # Rule to create a chapter page in antora hierarchy
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/chapters/pages/.*\.adoc} do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/chapters/pages/.*\.adoc} do |t|
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
   version_name = parts[1]
-  manual = $resolver.cfg_arch_for(CFG).manual(parts[0])
+  manual = Rake.application.cfg_arch.manual(parts[0])
   manual_version = manual.version(parts[1])
   chapter_name = File.basename(t.name, ".adoc")
 
@@ -67,12 +64,12 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/chapters/pages/.*\.adoc} do |t|
 end
 
 # Rule to create antora.yml for a manual version
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
-  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/antora.yml} => proc { |tname|
+  parts = tname.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
   version_name = parts[1]
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   manual = cfg_arch.manual(manual_name)
   version = cfg_arch.manual_version(version_name)
 
@@ -85,8 +82,8 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
     version.__source
   ]
 } do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = $resolver.cfg_arch_for(CFG).manual(parts[0])&.version(parts[1])
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
+  manual_version = Rake.application.cfg_arch.manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -101,19 +98,19 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
 end
 
 # Rule to create nav.adoc for a manual version
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
-  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/nav.adoc} => proc { |tname|
+  parts = tname.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
   version_name = parts[1]
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   manual = cfg_arch.manual(manual_name)
   version = cfg_arch.manual_version(version_name)
 
   raise "Cannot find manual" if manual.nil?
   raise "Cannot find version" if version.nil?
 
-  nav_template_path = $root / "backends" / "manual" / "templates" / "#{manual_name}_nav.adoc.erb"
+  nav_template_path = UdbGen.root / "templates" / "manual" / "#{manual_name}_nav.adoc.erb"
 
   FileList[
     __FILE__,
@@ -122,12 +119,12 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
     nav_template_path.to_s
   ]
 } do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = $resolver.cfg_arch_for(CFG).manual(parts[0])&.version(parts[1])
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
+  manual_version = Rake.application.cfg_arch.manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
-  nav_template_path = $root / "backends" / "manual" / "templates" / "#{parts[0]}_nav.adoc.erb"
+  nav_template_path = UdbGen.root / "templates" / "manual" / "#{parts[0]}_nav.adoc.erb"
   unless nav_template_path.exist?
     raise "There is no navigation file for manual '#{parts[0]}' at '#{nav_template_path}'"
   end
@@ -142,19 +139,19 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
 end
 
 # Rule to create start page for a manual version
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { |tname|
-  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { |tname|
+  parts = tname.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
   version_name = parts[1]
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   manual = cfg_arch.manual(manual_name)
   version = cfg_arch.manual_version(version_name)
 
   raise "Cannot find manual" if manual.nil?
   raise "Cannot find version" if version.nil?
 
-  version_index_template_path = $root / "backends" / "manual" / "templates" / "#{manual_name}_version_index.adoc.erb"
+  version_index_template_path = UdbGen.root / "templates" / "manual" / "#{manual_name}_version_index.adoc.erb"
 
   raise "Cannot find #{version_index_template_path}" unless version_index_template_path.exist?
 
@@ -165,12 +162,12 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { 
     version_index_template_path.to_s
   ]
 } do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = $resolver.cfg_arch_for(CFG).manual(parts[0])&.version(parts[1])
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
+  manual_version = Rake.application.cfg_arch.manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
-  version_index_template_path = $root / "backends" / "manual" / "templates" / "#{parts[0]}_version_index.adoc.erb"
+  version_index_template_path = UdbGen.root / "templates" / "manual" / "#{parts[0]}_version_index.adoc.erb"
   unless version_index_template_path.exist?
     raise "There is no navigation file for manual '#{parts[0]}' at '#{version_index_template_path}'"
   end
@@ -183,17 +180,17 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { 
 end
 
 # rule to create instruction appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   __FILE__,
-  ($root / "backends" / "manual" / "templates" / "instruction.adoc.erb").to_s
+  (UdbGen.root / "templates" / "manual" / "instruction.adoc.erb").to_s
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   inst = cfg_arch.instruction(inst_name)
   raise "Can't find instruction '#{inst_name}'" if inst.nil?
 
-  inst_template_path = $root / "backends" / "manual" / "templates" / "instruction.adoc.erb"
+  inst_template_path = UdbGen.root / "templates" / "manual" / "instruction.adoc.erb"
   erb = ERB.new(inst_template_path.read, trim_mode: "-")
   erb.filename = inst_template_path.to_s
 
@@ -202,19 +199,18 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
 end
 
 # rule to create csr appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   __FILE__,
-  "gen:arch",
-  ($root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb").to_s
+  (UdbGen.root / "templates" / "common" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
 
   csr = cfg_arch.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
 
-  csr_template_path = $root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb"
+  csr_template_path = UdbGen.root / "templates" / "common" / "csr.adoc.erb"
   erb = ERB.new(csr_template_path.read, trim_mode: "-")
   erb.filename = csr_template_path.to_s
 
@@ -223,17 +219,17 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
 end
 
 # rule to create ext appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
   __FILE__,
-  ($root / "backends" / "manual" / "templates" / "ext.adoc.erb").to_s
+  (UdbGen.root / "templates" / "manual" / "ext.adoc.erb").to_s
 ] do |t|
   ext_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   ext = cfg_arch.extension(ext_name)
   raise "Can't find extension '#{ext_name}'" if ext.nil?
 
-  ext_template_path = $root / "backends" / "manual" / "templates" / "ext.adoc.erb"
+  ext_template_path = UdbGen.root / "templates" / "manual" / "ext.adoc.erb"
   erb = ERB.new(ext_template_path.read, trim_mode: "-")
   erb.filename = ext_template_path.to_s
 
@@ -242,13 +238,13 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
 end
 
 # rule to create IDL function appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   __FILE__,
-  ($root / "backends" / "manual" / "templates" / "func.adoc.erb").to_s
+  (UdbGen.root / "templates" / "manual" / "func.adoc.erb").to_s
 ] do |t|
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
 
-  funcs_template_path = $root / "backends" / "manual" / "templates" / "func.adoc.erb"
+  funcs_template_path = UdbGen.root / "templates" / "manual" / "func.adoc.erb"
   erb = ERB.new(funcs_template_path.read, trim_mode: "-")
   erb.filename = funcs_template_path.to_s
 
@@ -257,15 +253,15 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
 end
 
 # rule to create IDL function appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => [
+rule %r{#{Rake.application.gen_dir}/.*/.*/antora/modules/params/pages/param_list.adoc} => [
   __FILE__,
-  ($root / "backends" / "manual" / "templates" / "param_list.adoc.erb").to_s
+  (UdbGen.root / "templates" / "manual" / "param_list.adoc.erb").to_s
 ] do |t|
-  cfg_arch = $resolver.cfg_arch_for(CFG)
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  cfg_arch = Rake.application.cfg_arch
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_version = cfg_arch.manual(parts[0])&.version(parts[1])
 
-  param_list_template_path = $root / "backends" / "manual" / "templates" / "param_list.adoc.erb"
+  param_list_template_path = UdbGen.root / "templates" / "manual" / "param_list.adoc.erb"
   erb = ERB.new(param_list_template_path.read, trim_mode: "-")
   erb.filename = param_list_template_path.to_s
 
@@ -273,13 +269,13 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => 
   File.write t.name, Udb::Helpers::AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
-rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
+rule %r{#{Rake.application.gen_dir}/.*/top/.*/antora/landing/antora.yml} => [
   __FILE__
 ] do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   manual = cfg_arch.manual(manual_name)
   raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
 
@@ -291,80 +287,80 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
   ANTORA
 end
 
-rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc} => proc { |tname|
-  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc} => proc { |tname|
+  parts = tname.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
-  versions, _ = versions_from_env(ENV["MANUAL_NAME"])
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  versions, _ = versions_from_env(Rake.application.versions)
+  cfg_arch = Rake.application.cfg_arch
   version_files = versions.map { |v| cfg_arch.manual_version(v).__source }
   manual = cfg_arch.manual(manual_name)
   FileList[
     __FILE__,
     manual.__source,
-    ($root / "backends" / "manual" / "templates" / "index.adoc.erb").to_s,
+    (UdbGen.root / "templates" / "manual" / "index.adoc.erb").to_s,
   ] + version_files
 } do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
 
-  versions, output_hash = versions_from_env(manual_name)
+  versions, output_hash = versions_from_env(Rake.application.versions)
   raise "unexpected mismatch" unless output_hash == parts[2]
 
-  landing_template_path = $root / "backends" / "manual" / "templates" / "index.adoc.erb"
+  landing_template_path = UdbGen.root / "templates" / "manual" / "index.adoc.erb"
   erb = ERB.new(landing_template_path.read, trim_mode: "-")
   erb.filename = landing_template_path.to_s
 
-  manual = $resolver.cfg_arch_for(CFG).manual(manual_name)
+  manual = Rake.application.cfg_arch.manual(manual_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, erb.result(binding)
 end
 
-rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tname|
-  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tname|
+  parts = tname.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
-  versions, _ = versions_from_env(ENV["MANUAL_NAME"])
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  versions, _ = versions_from_env(Rake.application.versions)
+  cfg_arch = Rake.application.cfg_arch
   version_files = versions.map { |v| cfg_arch.manual_version(v).__source }
   manual = cfg_arch.manual(manual_name)
   FileList[
     __FILE__,
     manual.__source,
-    ($root / "backends" / "manual" / "templates" / "playbook.yml.erb").to_s,
+    (UdbGen.root / "templates" / "manual" / "playbook.yml.erb").to_s,
   ] + version_files
 } do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_name = parts[0]
 
-  versions, output_hash = versions_from_env(manual_name)
+  versions, output_hash = versions_from_env(Rake.application.versions)
   raise "unexpected mismatch" unless output_hash == parts[2]
 
-  playbook_template_path = $root / "backends" / "manual" / "templates" / "playbook.yml.erb"
+  playbook_template_path = UdbGen.root / "templates" / "manual" / "playbook.yml.erb"
   erb = ERB.new(playbook_template_path.read, trim_mode: "-")
   erb.filename = playbook_template_path.to_s
 
-  manual = $resolver.cfg_arch_for(CFG).manual(manual_name)
+  manual = Rake.application.cfg_arch.manual(manual_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, erb.result(binding)
 end
 
-file $root / "ext" / "riscv-isa-manual" / "README.md" do
+file Udb.repo_root / "ext" / "riscv-isa-manual" / "README.md" do
   sh "git submodule update --init ext/riscv-isa-manual 2>&1"
 end
 
-rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/ext/riscv-isa-manual/README.md"] do |t|
-  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+rule %r{#{Rake.application.gen_dir}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{Udb.repo_root}/ext/riscv-isa-manual/README.md"] do |t|
+  parts = t.name.sub("#{Rake.application.gen_dir}/", "").split("/")
   manual_version_name = parts[1]
 
-  cfg_arch = $resolver.cfg_arch_for(CFG)
+  cfg_arch = Rake.application.cfg_arch
   version = cfg_arch.manual_version(manual_version_name)
 
   raise "No manual version named '#{manual_version_name}' found" if version.nil?
 
   FileUtils.mkdir_p File.dirname(t.name)
   tree = version.isa_manual_tree
-  Dir.chdir($root / "ext" / "riscv-isa-manual") do
+  Dir.chdir(Udb.repo_root / "ext" / "riscv-isa-manual") do
     Tempfile.create("isa-manual") do |tmpfile|
       sh "git archive --format=tar -o #{tmpfile.path} #{tree}"
       sh "tar xf #{tmpfile.path} -C #{File.dirname(t.name)}"
@@ -373,32 +369,26 @@ rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/
 end
 
 namespace :gen do
-  desc File.read("#{File.dirname(__FILE__)}/README.adoc")
   task :html_manual do
-    raise ArgumentError, "Missing required environment variable MANUAL_NAME\n\n#{html_manual_desc}" if ENV["MANUAL_NAME"].nil?
-    raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
+    versions, output_hash = versions_from_env(Rake.application.versions)
+    cfg_arch = Rake.application.cfg_arch
 
-    versions, output_hash = versions_from_env(ENV["MANUAL_NAME"])
-    cfg_arch = $resolver.cfg_arch_for(CFG)
-
-    manual = cfg_arch.manual(ENV["MANUAL_NAME"])
-    raise "No manual named '#{ENV['MANUAL_NAME']}" if manual.nil?
-
+    manual = cfg_arch.manual("isa")
 
     # check out the correct version of riscv-isa-manual, if needed
     versions.each do |version|
       version_obj = cfg_arch.manual_version(version)
 
-      manual.repo_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version / "riscv-isa-manual"
+      manual.repo_path = Rake.application.gen_dir / "isa" / version / "riscv-isa-manual"
 
       if version_obj.uses_isa_manual? == true \
-         && !(MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "riscv-isa-manual").exist?
-        Rake::Task[MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "riscv-isa-manual" / "README.md"].invoke
+         && !(Rake.application.gen_dir / "isa" / version_obj.name / "riscv-isa-manual").exist?
+        Rake::Task[Rake.application.gen_dir / "isa" / version_obj.name / "riscv-isa-manual" / "README.md"].invoke
       end
 
       # create chapter pages in antora
 
-      antora_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "antora"
+      antora_path = Rake.application.gen_dir / "isa" / version_obj.name / "antora"
       version_obj.volumes.each do |volume|
         volume.chapters.each do |chapter|
           Rake::Task[antora_path / "modules" / "chapters" / "pages" / "#{chapter.name}.adoc"].invoke
@@ -409,70 +399,74 @@ namespace :gen do
       Rake::Task[antora_path / "antora.yml"].invoke
       Rake::Task[antora_path / "nav.adoc"].invoke
 
-      $logger.info "Generating CSRs"
+      Udb.logger.info "Generating CSRs"
       version_obj.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
       end
 
-      $logger.info "Generating Instructions"
+      Udb.logger.info "Generating Instructions"
       version_obj.instructions.each do |inst|
         Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
       end
 
-      $logger.info "Generating Extensions"
+      Udb.logger.info "Generating Extensions"
       version_obj.extensions.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
       Rake::Task[antora_path / "modules" / "params" / "pages" / "param_list.adoc"].invoke
     end
 
-    landing_page_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "modules" / "ROOT" / "pages" / "index.adoc"
+    landing_page_path = Rake.application.gen_dir / "isa" / "top" / output_hash / "antora" / "landing" / "modules" / "ROOT" / "pages" / "index.adoc"
     Rake::Task[landing_page_path].invoke
 
-    landing_antora_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "antora.yml"
+    landing_antora_path = Rake.application.gen_dir / "isa" / "top" / output_hash / "antora" / "landing" / "antora.yml"
     Rake::Task[landing_antora_path].invoke
 
-    playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
+    playbook_path = Rake.application.gen_dir / "isa" / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
-    $logger.info "Running Antora for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+    Udb.logger.info "Running Antora for HTML site to create '#{Rake.application.gen_dir / "isa" / output_hash / 'html'}'"
+
+    # antora requires that the source directories be git repositories
+    versions.each do |version_name|
+      dir = Rake.application.gen_dir / manual.name / version_name / "antora"
+      gitfile = dir / ".git"
+      unless gitfile.exist?
+        Dir.chdir dir do
+          sh "git init"
+          sh "git add *"
+          sh "git config --local user.email 'me@you.com'" # doesn't matter
+          sh "git config --local user.name 'Me You'" # doesn't matter
+          sh "git config --local init.defaultBranch main"
+          sh "git commit --no-verify -m 'initial'"
+        end
+      end
+    end
+
+    landing_dir = Rake.application.gen_dir / manual.name / "top" / output_hash / "antora" / "landing"
+    gitfile = landing_dir / ".git"
+    unless gitfile.exist?
+      Dir.chdir landing_dir do
+        sh "git init"
+        sh "git add *"
+        sh "git config --local user.email 'me@you.com'" # doesn't matter
+        sh "git config --local user.name 'Me You'" # doesn't matter
+        sh "git config --local init.defaultBranch main"
+        sh "git commit --no-verify -m 'initial'"
+      end
+    end
 
     sh [
       "/opt/node/node_modules/.bin/antora",
       "--stacktrace",
       "generate",
-      "--cache-dir=#{$root}/.home/.antora",
-      "--to-dir=#{MANUAL_GEN_DIR}/#{ENV['MANUAL_NAME']}/top/#{output_hash}/html",
+      "--cache-dir=#{Udb.repo_root}/.home/.antora",
+      "--to-dir=#{Rake.application.gen_dir}/isa/top/#{output_hash}/html",
       "--log-level=all",
       "--fetch",
       playbook_path.to_s
     ].join(" ")
 
-    $logger.info "Done running Antora for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
-  end
-end
-
-namespace :serve do
-  desc "Serve an HTML site for one or more versions of the manual (gen:html_manual for options)"
-  task :html_manual do
-    Rake::Task["gen:html_manual"].invoke
-
-    port = ENV.key?("PORT") ? ENV["PORT"] : 8000
-
-    cfg_arch = $resolver.cfg_arch_for(CFG)
-    manual = cfg_arch.manuals.find { |m| m.name == ENV["MANUAL_NAME"] }
-    raise "No manual '#{ENV['MANUAL_NAME']}'" if manual.nil?
-
-    _, output_hash = versions_from_env(manual)
-
-    html_dir = "#{MANUAL_GEN_DIR}/#{ENV['MANUAL_NAME']}/top/#{output_hash}/html"
-    Dir.chdir(html_dir) do
-      require "webrick"
-
-      server = WEBrick::HTTPServer.new Port: port.to_i, DocumentRoot: html_dir.to_s
-      trap("INT") { server.shutdown }
-      puts "\n\nView server at http://#{`hostname`.strip}:#{port}\n\n"
-      server.start
-    end
+    Udb.logger.info "Done running Antora for HTML site to create '#{Rake.application.gen_dir / "isa" / output_hash / 'html'}'"
   end
 end

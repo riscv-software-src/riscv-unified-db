@@ -1,7 +1,8 @@
 #!/bin/bash
 
 get_container_type() {
-  local root=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
+  local root
+  root=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
   # get the container type
   #
   # use, in priority order:

@@ -474,39 +474,44 @@ namespace :gen do
 
   desc "DEPRECATED -- Run `./bin/udb-gen ext-doc --help` instead"
   task :ext_pdf do
-    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/udb-gen ext-doc `"
+    warn "DEPRECATED     `./do gen:ext_pdf` was removed in favor of `./bin/generate ext-doc `"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead")
   task :isa_explorer_spreadsheet do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t xlsx -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_ext do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_inst do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead")
   task :isa_explorer_browser_csr do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
     exit(1)
   end
 
   desc("DEPRECATED")
   task :isa_explorer_browser do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
+    exit(1)
+  end
+
+  task :html_manual do
+    Udb.logger.warn "DEPRECATED -- Run `./bin/generate manual -h` for help"
     exit(1)
   end
 
@@ -536,95 +541,18 @@ end
 
 namespace :test do
   task :unit do
-    Rake::Task["test:idlc:unit"].invoke
-    Rake::Task["test:udb:unit"].invoke
-    Rake::Task["test:udb_helpers:unit"].invoke
+    Udb.logger.warn "Running unit tests through do/Rake has been deprecated"
+    Udb.logger.warn "Try `./bin/regress --tag unit` instead"
   end
-  desc <<~DESC
-    Run smoke tests
 
-    These are basic but fast-running tests to check the database and tools
-  DESC
   task :smoke do
-    $logger.info "Starting test:smoke"
-    $logger.info "Running test:sorbet"
-    Rake::Task["test:sorbet"].invoke
-    $logger.info "Running test:unit"
-    Rake::Task["test:unit"].invoke
-    $logger.info "Running gen:isa_explorer_browser_ext"
-    Rake::Task["gen:isa_explorer_browser_ext"].invoke
-    # $logger.info "Running test:lib"
-    # Rake::Task["test:lib"].invoke
-    $logger.info "Running test:schema"
-    Rake::Task["test:schema"].invoke
-    $logger.info "UPDATE: Running test:idl for rv32"
-    ENV["CFG"] = "rv32"
-    Rake::Task["test:idl"].invoke
-    $logger.info "UPDATE: Running test:idl for rv64"
-    ENV["CFG"] = "rv64"
-    Rake::Task["test:idl"].invoke
-    $logger.info "UPDATE: Running test:idl for qc_iu"
-    ENV["CFG"] = "qc_iu"
-    $logger.info "Running test:inst_encodings"
-    Rake::Task["test:inst_encodings"].invoke
-    $logger.info "Running test:llvm"
-    Rake::Task["test:llvm"].invoke
-    $logger.info "Done test:smoke"
+    Udb.logger.warn "Running smoke through do/Rake has been deprecated"
+    Udb.logger.warn "Try `./bin/regress --tag smoke` instead"
   end
 
-  desc <<~DESC
-    Run the regression tests
-
-    These tests must pass before a commit will be allowed in the main branch on GitHub
-  DESC
   task :regress do
-    $logger.info "Starting test:regress"
-    Rake::Task["test:smoke"].invoke
-
-    $logger.info "Running gen:isa_explorer_browser"
-    Rake::Task["gen:isa_explorer_browser"].invoke
-
-    $logger.info "Running gen:isa_explorer_spreadsheet"
-    Rake::Task["gen:isa_explorer_spreadsheet"].invoke
-
-    $logger.info "Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
-    ENV["MANUAL_NAME"] = "isa"
-    ENV["VERSIONS"] = "all"
-    Rake::Task["gen:html_manual"].invoke
-
-    $logger.info "Running gen:ext_pdf EXT=B VERSION=latest"
-    ENV["EXT"] = "B"
-    ENV["VERSION"] = "latest"
-    Rake::Task["gen:ext_pdf"].invoke
-
-    $logger.info "Running gen:html for example_rv64_with_overlay"
-    Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
-
-    $logger.info "Generating MockProcessor-CRD.pdf"
-    Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
-
-    $logger.info "Generating MockProcessor-CTP.pdf"
-    Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
-
-    $logger.info "Generating MockProfileRelease.pdf"
-    Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
-
-    $logger.info "Generating Go Language Support"
-    Rake::Task["gen:go"].invoke
-
-    $logger.info "Done test:regress"
-  end
-
-  desc <<~DESC
-    Run the nightly regression tests
-
-    Generally, this tries to build all artifacts
-  DESC
-  task :nightly do
-    Rake::Task["test:regress"].invoke
-    Rake::Task["portfolios"].invoke
-    puts
-    puts "Nightly regression test PASSED"
+    Udb.logger.warn "Running regression through do/Rake has been deprecated"
+    Udb.logger.warn "Try `./bin/regress --all` instead"
   end
 end
 

@@ -165,7 +165,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual
-        run: ./do gen:html_manual
+        run: ./bin/generate manual -v all -f html
       - name: Upload HTML ISA manual
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: (github.event_name == 'push') && (github.ref_name == 'main')

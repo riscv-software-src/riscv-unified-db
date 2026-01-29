@@ -11520,6 +11520,141 @@ YARD::ROOT = T.let(T.unsafe(nil), String)
 # source://yard//lib/yard/autoload.rb#192
 module YARD::Rake; end
 
+# The rake task to run {CLI::Yardoc} and generate documentation.
+#
+# source://yard//lib/yard/rake/yardoc_task.rb#8
+class YARD::Rake::YardocTask < ::Rake::TaskLib
+  # Creates a new task with name +name+.
+  #
+  # @param name [String, Symbol] the name of the rake task
+  # @return [YardocTask] a new instance of YardocTask
+  # @yield a block to allow any options to be modified on the task
+  # @yieldparam _self [YardocTask] the task object to allow any parameters
+  #   to be changed.
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#50
+  def initialize(name = T.unsafe(nil)); end
+
+  # Runs a +Proc+ after the task
+  #
+  # @return [Proc] a proc to call after running the task
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#36
+  def after; end
+
+  # Runs a +Proc+ after the task
+  #
+  # @return [Proc] a proc to call after running the task
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#36
+  def after=(_arg0); end
+
+  # Runs a +Proc+ before the task
+  #
+  # @return [Proc] a proc to call before running the task
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#32
+  def before; end
+
+  # Runs a +Proc+ before the task
+  #
+  # @return [Proc] a proc to call before running the task
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#32
+  def before=(_arg0); end
+
+  # The Ruby source files (and any extra documentation files separated by '-')
+  # to process.
+  #
+  # @example Task files assignment
+  #   YARD::Rake::YardocTask.new do |t|
+  #   t.files   = ['app/**/*.rb', 'lib/**/*.rb', '-', 'doc/FAQ.md', 'doc/Changes.md']
+  #   end
+  # @return [Array<String>] a list of files
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#28
+  def files; end
+
+  # The Ruby source files (and any extra documentation files separated by '-')
+  # to process.
+  #
+  # @example Task files assignment
+  #   YARD::Rake::YardocTask.new do |t|
+  #   t.files   = ['app/**/*.rb', 'lib/**/*.rb', '-', 'doc/FAQ.md', 'doc/Changes.md']
+  #   end
+  # @return [Array<String>] a list of files
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#28
+  def files=(_arg0); end
+
+  # The name of the task
+  #
+  # @return [String] the task name
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#11
+  def name; end
+
+  # The name of the task
+  #
+  # @return [String] the task name
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#11
+  def name=(_arg0); end
+
+  # Options to pass to {CLI::Yardoc}
+  #
+  # @return [Array<String>] the options passed to the commandline utility
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#15
+  def options; end
+
+  # Options to pass to {CLI::Yardoc}
+  #
+  # @return [Array<String>] the options passed to the commandline utility
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#15
+  def options=(_arg0); end
+
+  # Options to pass to {CLI::Stats}
+  #
+  # @return [Array<String>] the options passed to the stats utility
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#19
+  def stats_options; end
+
+  # Options to pass to {CLI::Stats}
+  #
+  # @return [Array<String>] the options passed to the stats utility
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#19
+  def stats_options=(_arg0); end
+
+  # @return [Verifier, Proc] an optional {Verifier} to run against all objects
+  #   being generated. Any object that the verifier returns false for will be
+  #   excluded from documentation. This attribute can also be a lambda.
+  # @see Verifier
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#42
+  def verifier; end
+
+  # @return [Verifier, Proc] an optional {Verifier} to run against all objects
+  #   being generated. Any object that the verifier returns false for will be
+  #   excluded from documentation. This attribute can also be a lambda.
+  # @see Verifier
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#42
+  def verifier=(_arg0); end
+
+  protected
+
+  # Defines the rake task
+  #
+  # @return [void]
+  #
+  # source://yard//lib/yard/rake/yardoc_task.rb#68
+  def define; end
+end
+
 # The +Registry+ is the centralized data store for all {CodeObjects} created
 # during parsing. The storage is a key value store with the object's path
 # (see {CodeObjects::Base#path}) as the key and the object itself as the value.

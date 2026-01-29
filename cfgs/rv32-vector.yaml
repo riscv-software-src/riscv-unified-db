@@ -11,6 +11,10 @@ implemented_extensions:
   - [I, "2.1"]
   - [C, "2.0"]
   - [Zca, "1.0.0"]
+  - [Zcf, "1.0.0"]
+  - [Zcd, "1.0.0"]
+  - [D, "2.2.0"]
+  - [F, "2.2.0"]
   - [M, "2.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
@@ -21,6 +25,14 @@ implemented_extensions:
   - [Zifencei, "2.0.0"]
   - [Sv32, "1.11.0"]
   - [V, "1.0.0"]
+  - [Zve64f, "1.0.0"]
+  - [Zve64d, "1.0.0"]
+  - [Zve64x, "1.0.0"]
+  - [Zvl128b, "1.0.0"]
+  - [Zvl64b, "1.0.0"]
+  - [Zvl32b, "1.0.0"]
+  - [Zve32x, "1.0.0"]
+  - [Zve32f, "1.0.0"]
 
 params:
   MXLEN: 32
@@ -60,6 +72,8 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MUTABLE_MISA_C: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_F: false
   MUTABLE_MISA_M: false
   TIME_CSR_IMPLEMENTED: false
   MUTABLE_MISA_S: false
@@ -193,7 +207,8 @@ params:
   TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: false
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_FS_LEGAL_VALUES: [0]
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 3]
   MSTATUS_TVM_IMPLEMENTED: false
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 12

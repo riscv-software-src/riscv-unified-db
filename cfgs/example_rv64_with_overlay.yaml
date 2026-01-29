@@ -28,6 +28,14 @@ implemented_extensions:
   - [Smpmp, "1.12.0"]
   - [U, "1.0.0"]
   - [V, "1.0.0"]
+  - [Zve64f, "1.0.0"]
+  - [Zve64d, "1.0.0"]
+  - [Zve64x, "1.0.0"]
+  - [Zvl128b, "1.0.0"]
+  - [Zvl64b, "1.0.0"]
+  - [Zvl32b, "1.0.0"]
+  - [Zve32x, "1.0.0"]
+  - [Zve32f, "1.0.0"]
   - [Zicntr, "2.0.0"]
   - [Zicsr, "2.0.0"]
   - [Zihpm, "2.0.0"]
@@ -47,6 +55,14 @@ implemented_extensions:
 
 params:
   MXLEN: 64
+
+  VLEN: 128
+
+  ELEN: 64
+
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
 
   MARCHID_IMPLEMENTED: true
 
