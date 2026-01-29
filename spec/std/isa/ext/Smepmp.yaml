@@ -1,0 +1,36 @@
+# Copyright (c) Ishaan Arora
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smepmp
+long_name: PMP Enhancements for memory access and execution prevention on Machine mode
+description: |
+  The Smepmp extension enhances the Physical Memory Protection (PMP) mechanism
+  to support M-mode memory access and execution prevention.
+
+  Smepmp adds a new Machine Security Configuration register (`mseccfg`) with the
+  following key fields:
+
+  * **MML (Machine Mode Lockdown)**: When set, changes the interpretation of
+    PMP rules so that `pmpcfg.L` marks rules as M-mode-only rather than locked.
+    This enables shared regions accessible across multiple privilege levels.
+
+  * **MMWP (Machine Mode Whitelist Policy)**: When set, memory regions without
+    matching PMP rules are denied in M-mode instead of being accessible.
+    This provides a default-deny policy for M-mode.
+
+  * **RLB (Rule Locking Bypass)**: Allows modification of locked PMP rules.
+    Intended as a debug mechanism or temporary boot-time workaround.
+
+  These enhancements enable more secure system configurations by allowing
+  software to restrict M-mode's access to memory, which is essential for
+  implementing trusted execution environments and secure boot processes.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-12
+    url: https://github.com/riscv/riscv-tee/blob/main/Smepmp/Smepmp.pdf
