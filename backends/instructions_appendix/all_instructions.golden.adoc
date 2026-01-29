@@ -54915,7 +54915,7 @@ Included in::
 == vmv.v.i
 
 Synopsis::
-No synopsis available
+Vector move immediate to vector register
 
 Base::
 
@@ -54937,7 +54937,13 @@ Encoding::
 ....
 
 Description::
-No description available.
+Copies a sign-extended 5-bit immediate value to all elements of the destination
+vector register group. This is an unmasked instruction (vm=1), so all body elements
+are written with the immediate value.
+
+The 5-bit immediate (simm[4:0]) is sign-extended to SEW bits and written to each
+element of the destination vector register group from index 0 to vl-1.
+Elements past vl are handled according to the tail agnostic/undisturbed policy.
 
 
 Decode Variables::
