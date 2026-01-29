@@ -15,6 +15,9 @@ versions:
     state: ratified
     ratification_date: 2021-11
 requirements:
-  param:
-    name: VLEN
-    greaterThanOrEqual: 512
+  allOf:
+    - extension:
+        name: Zvl256b
+    - param:
+        name: VLEN
+        greaterThanOrEqual: 512

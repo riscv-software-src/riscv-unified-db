@@ -17,4 +17,4 @@ schema:
 #      reason: ELEN >= 8, which must be a power of 2.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b

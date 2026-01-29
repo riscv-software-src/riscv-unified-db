@@ -14,7 +14,7 @@ length: MXLEN
 description: Holds a 2-bit read-write rounding-mode field in the least-significant bits
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 sw_read(): |
   return CSR[vcsr].VXRM;
 fields:

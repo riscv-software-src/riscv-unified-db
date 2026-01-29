@@ -154,7 +154,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
     definedBy:
       extension:
-        name: V
+        name: Zvl32b
   SPP:
     location: 8
     description: |

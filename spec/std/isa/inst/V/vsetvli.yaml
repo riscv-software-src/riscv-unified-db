@@ -10,7 +10,7 @@ long_name: Vector Set Vector Type and Vector Length Immediate
 description: Set the vtype and vl CSRs, and write the new value of vl into rd.
 definedBy:
   extension:
-    name: V
+    name: Zvl32b
 assembly: xd, xs1, vtypei
 encoding:
   match: 0----------------111-----1010111

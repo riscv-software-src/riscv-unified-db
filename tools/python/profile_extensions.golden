@@ -36,6 +36,9 @@ RVA20S64:
 - Zifencei ~> 2.0 mandatory
 - Ssu64xl ~> 1.0 optional
 - Sv48 ~> 1.11 optional
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zihpm ~> 2.0 optional
 RVA20U64:
 - A ~> 2.1 mandatory
@@ -52,6 +55,9 @@ RVA20U64:
 - Ziccrse ~> 1.0 mandatory
 - Zicntr ~> 2.0 mandatory
 - Zicsr ~> 2.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zihpm ~> 2.0 optional
 RVA22S64:
 - A ~> 2.1 mandatory
@@ -100,6 +106,9 @@ RVA22S64:
 - Sv57 ~> 1.12 optional
 - Svnapot ~> 1.0 optional
 - V ~> 1.0 optional
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zfh ~> 1.0 optional
 - Zkn ~> 1.0 optional
 - Zkr ~> 1.0 optional
@@ -133,6 +142,9 @@ RVA22U64:
 - Zihpm ~> 2.0 mandatory
 - Zkt ~> 1.0 mandatory
 - V ~> 1.0 optional
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zfh ~> 1.0 optional
 - Zkn ~> 1.0 optional
 - Zks ~> 1.0 optional
@@ -195,6 +207,9 @@ RVA23M64:
 - Zvbb ~>1.0 mandatory
 - Zvfhmin ~>1.0 mandatory
 - Zvkt ~>1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
@@ -263,6 +278,9 @@ RVA23S64:
 - Zvbb ~>1.0 mandatory
 - Zvfhmin ~>1.0 mandatory
 - Zvkt ~>1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sspm ~>1.0 {'optional': 'expansion'}
 - Ssstrict ~>1.0 {'optional': 'expansion'}
@@ -311,6 +329,9 @@ RVA23U64:
 - Zvbb ~>1.0 mandatory
 - Zvfhmin ~>1.0 mandatory
 - Zvkt ~>1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zabha ~>1.0 {'optional': 'development'}
 - Zacas ~>1.0 {'optional': 'development'}
 - Zama16b ~>1.0 {'optional': 'development'}
@@ -377,6 +398,9 @@ RVB23M64:
 - Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sha ~>1.0 {'optional': 'expansion'}
 - Ssnpm ~>1.0 {'optional': 'expansion'}
@@ -440,6 +464,9 @@ RVB23S64:
 - Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Sdtrig ~>1.0 {'optional': 'expansion'}
 - Sha ~>1.0 {'optional': 'expansion'}
 - Ssnpm ~>1.0 {'optional': 'expansion'}
@@ -488,6 +515,9 @@ RVB23U64:
 - Zihpm ~> 2.0 mandatory
 - Zimop ~>1.0 mandatory
 - Zkt ~> 1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zabha ~>1.0 {'optional': 'development'}
 - Zacas ~>1.0 {'optional': 'development'}
 - Zama16b ~>1.0 {'optional': 'development'}
@@ -521,6 +551,9 @@ RVI20U32:
 - D ~> 2.2 optional
 - F ~> 2.2 optional
 - M ~> 2.0 optional
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zicntr ~> 2.0 optional
 - Zifencei ~> 2.0 optional
 - Zihpm ~> 2.0 optional
@@ -531,6 +564,9 @@ RVI20U64:
 - D ~> 2.2 optional
 - F ~> 2.2 optional
 - M ~> 2.0 optional
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
 - Zicntr ~> 2.0 optional
 - Zifencei ~> 2.0 optional
 - Zihpm ~> 2.0 optional

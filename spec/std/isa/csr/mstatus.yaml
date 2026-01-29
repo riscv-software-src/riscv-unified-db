@@ -34,7 +34,7 @@ fields:
       extension:
         anyOf:
           - name: F
-          - name: V
+          - name: Zvl32b
           # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
     type(): |
       # this is read-only if FS and VS are both read-only
@@ -455,7 +455,7 @@ fields:
     definedBy:
       extension:
         anyOf:
-          - name: V
+          - name: Zvl32b
           - name: S
     type(): |
       if (implemented?(ExtensionName::V) && (!MISA_CSR_IMPLEMENTED || CSR[misa].V == 1'b1)) {

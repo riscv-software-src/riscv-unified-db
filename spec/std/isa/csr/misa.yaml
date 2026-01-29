@@ -255,7 +255,7 @@ fields:
       return implemented?(ExtensionName::V) ? 1 : 0;
     definedBy:
       extension:
-        name: V
+        name: Zvl32b
 sw_read(): |
   return (
     (CSR[misa].MXL `<< (xlen() - 2)) |

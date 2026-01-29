@@ -647,18 +647,8 @@ module Udb
     sig { returns(T::Array[T.any(Parameter, ParameterWithValue)]) }
     def params
       @params ||=
-        begin
-          if valid? && ext.versions.size == 1
-            ext.params
-          elsif !valid?
-            []
-          else
-            ext.params.select do |p|
-              # c = self and not any other version of the extension
-              (-p.defined_by_condition & to_condition).unsatisfiable? && \
-                (-p.defined_by_condition & requirements_condition).satisfiable?
-            end
-          end
+        ext.params.select do |param|
+          (param.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -667,24 +657,8 @@ module Udb
     sig { returns(T::Array[Instruction]) }
     def directly_defined_instructions
       @instructions ||=
-        begin
-          pb =
-            Udb.create_progressbar(
-              "Finding instructions for #{self} [:bar] :current/:total",
-              total: @arch.instructions.size,
-              clear: true
-            )
-          @arch.instructions.select do |i|
-            pb.advance
-            i_defined = i.defined_by_condition
-            if i_defined.mentions?(self, expand: false)
-              version_implemented = to_condition
-              preconditions_met = requirements_condition
-
-              (-i_defined & version_implemented).unsatisfiable? && \
-                (-i_defined & preconditions_met).satisfiable?
-            end
-          end
+        ext.instructions.select do |inst|
+          (inst.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -731,20 +705,8 @@ module Udb
     sig { returns(T::Array[Csr]) }
     def csrs
       @csrs ||=
-        begin
-          pb =
-            Udb.create_progressbar(
-              "Finding csrs for #{self} [:bar] :current/:total",
-              total: @arch.csrs.size,
-              clear: true
-            )
-          @arch.csrs.select do |csr|
-            pb.advance
-            if csr.defined_by_condition.mentions?(self, expand: false)
-              (-csr.defined_by_condition & to_condition).unsatisfiable? &&
-                (-csr.defined_by_condition & requirements_condition).satisfiable?
-            end
-          end
+        ext.csrs.select do |csr|
+          (csr.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -1197,31 +1159,17 @@ module Udb
         end
     end
 
-    # @param design [Design] The design
-    # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
-    #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
-    def in_scope_csrs(design)
-      raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
-
-      return @in_scope_csrs unless @in_scope_csrs.nil?
-
-      @in_scope_csrs = @arch.csrs.select do |csr|
-        csr.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
-        (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
+    sig { params(xlens: T::Array[Integer]).returns(T::Array[Csr]) }
+    def in_scope_csrs(xlens)
+      csrs.select do |csr|
+        csr.base.nil? || xlens.include?(csr.base)
       end
     end
 
-    # @param design [Design] The design
-    # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty).
-    #                              Factors in effect of design's xlen in the appropriate mode for the instruction.
-    def in_scope_instructions(design)
-      raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
-
-      return @in_scope_instructions unless @in_scope_instructions.nil?
-
-      @in_scope_instructions = @arch.instructions.select do |inst|
-        inst.defined_by_condition.satisfiability_depends_on_ext_req?(to_ext_req) &&
-        (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
+    sig { params(xlens: T::Array[Integer]).returns(T::Array[Instruction]) }
+    def in_scope_instructions(xlens)
+      directly_defined_instructions.select do |inst|
+        inst.base.nil? || xlens.include?(inst.base)
       end
     end
 
@@ -1504,27 +1452,8 @@ module Udb
     sig { returns(T::Array[T.any(Parameter, ParameterWithValue)]) }
     def params
       @params ||=
-        begin
-          pb =
-            Udb.create_progressbar(
-              "Finding defined parameters for #{self} [:bar] :current/:total",
-              total: cfg_arch.params.size,
-              clear: true
-            )
-          cfg_arch.params.select do |p|
-            pb.advance
-            param_defined = p.defined_by_condition
-            requirement_met = to_condition
-            preconditions_met = requirements_condition
-
-            # param is defined exclusively by self if:
-            (
-              (-param_defined & requirement_met) # it must be defined when self is met, and
-            ).unsatisfiable? &
-            (
-              (-param_defined & preconditions_met)  # it may not be defined when only self's requirements are met
-            ).satisfiable?
-          end
+        extension.params.select do |param|
+          (param.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -1542,24 +1471,8 @@ module Udb
     sig { returns(T::Array[Instruction]) }
     def instructions
       @instructions ||=
-        begin
-          pb =
-            Udb.create_progressbar(
-              "Finding instructions for #{self} [:bar] :current/:total",
-              total: cfg_arch.instructions.size,
-              clear: true
-            )
-          @arch.instructions.select do |i|
-            pb.advance
-            if i.defined_by_condition.mentions?(self)
-              i_defined = i.defined_by_condition
-              req_met = to_condition
-              precondition_met = requirements_condition
-
-              (-i_defined & req_met).unsatisfiable? && \
-                (-i_defined & precondition_met).satisfiable?
-            end
-          end
+        extension.instructions.select do |inst|
+          (inst.defined_by_condition & to_condition).satisfiable?
         end
     end
 
@@ -1613,20 +1526,8 @@ module Udb
     sig { returns(T::Array[Csr]) }
     def csrs
       @csrs ||=
-        begin
-          pb =
-            Udb.create_progressbar(
-              "Finding CSRs for #{self} [:bar] :current/:total",
-              total: @arch.csrs.size,
-              clear: true
-            )
-          @arch.csrs.select do |csr|
-            pb.advance
-            if csr.defined_by_condition.mentions?(self)
-              (-csr.defined_by_condition & to_condition).unsatisfiable? && \
-                (-csr.defined_by_condition & requirements_condition).satisfiable?
-            end
-          end
+        extension.csrs.select do |csr|
+          (csr.defined_by_condition & to_condition).satisfiable?
         end
     end
 
