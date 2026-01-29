@@ -2,6 +2,7 @@
   "recommendations": [
     "asciidoctor.asciidoctor-vscode",
     "castwide.solargraph",
+    "charliermarsh.ruff",
     "CraigMaslowski.erb",
     "HowerLimited.udb-extension-pack-vscode",
     "mathematic.vscode-pdf",

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import sys
-import logging
 from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from generator import load_instructions, load_csrs, load_exception_codes
+from generator import load_csrs, load_exception_codes, load_instructions
 
 
 def parse_args():
@@ -41,9 +41,7 @@ def parse_args():
         action="store_true",
         help="Include all instructions and CSRs regardless of extensions",
     )
-    parser.add_argument(
-        "--debug", "-d", action="store_true", help="Enable debug logging"
-    )
+    parser.add_argument("--debug", "-d", action="store_true", help="Enable debug logging")
     parser.add_argument(
         "--extensions",
         "-e",
@@ -83,7 +81,7 @@ def format_cause_name(name):
 def match_to_sverilog_bits(match_str):
     """Convert a match string to SystemVerilog bit pattern."""
     if not match_str:
-        logging.error(f"Empty match string encountered.")
+        logging.error("Empty match string encountered.")
 
     # For compressed instructions (16-bit), we need to handle them differently.
     # The 16-bit pattern is in the lower 16 bits,
@@ -112,12 +110,8 @@ def generate_sverilog(instructions, csrs, causes, output_file):
             (len(format_instruction_name(name)) for name in instructions.keys()),
             default=0,
         )
-        max_csr_len = max(
-            (len(format_csr_name(csrs[addr])) for addr in csrs.keys()), default=0
-        )
-        max_cause_len = max(
-            (len(format_cause_name(name)) for _, name in causes), default=0
-        )
+        max_csr_len = max((len(format_csr_name(csrs[addr])) for addr in csrs.keys()), default=0)
+        max_cause_len = max((len(format_cause_name(name)) for _, name in causes), default=0)
         max_len = max(max_instr_len, max_csr_len)
 
         # Write instruction parameters
@@ -175,9 +169,7 @@ def main():
     logging.info(f"Target architecture: {args.arch}")
 
     # Load instructions
-    instructions = load_instructions(
-        args.inst_dir, enabled_extensions, args.include_all, args.arch
-    )
+    instructions = load_instructions(args.inst_dir, enabled_extensions, args.include_all, args.arch)
     logging.info(f"Loaded {len(instructions)} instructions")
 
     # Load CSRs

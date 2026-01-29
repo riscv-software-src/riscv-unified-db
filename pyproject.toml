@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [ "ext" ]
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes - various basic rules
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "I",    # isort - import related rules
+    "UP",   # pyupgrade - suggest upgrades for newer Python
+    "B",    # flake8-bugbear - bugbear rules
+    "A",    # flake8-builtins - shadow builtins
+    "EXE",  # flake8-executable - executable file shebangs
+    "RUF",  # ruff specific rules
+    "SIM",  # flake8-simplify - simplifications
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E711",   # comparison to None (too many to fix now)
+    "B016",   # cannot raise a literal (legacy code)
+    "B904",   # raise from err (requires careful refactoring)
+    "SIM102", # nested if statements (readability preference)
+    "SIM108", # ternary operator (readability preference)
+    "SIM118", # use key in dict instead of key in dict.keys()
+    "RUF005", # consider list unpacking instead of concatenation
+]
