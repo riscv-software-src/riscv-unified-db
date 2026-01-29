@@ -20,6 +20,7 @@ RUN apt-get update && \
   gh \
   git \
   gpg \
+  gpg-agent \
   less \
   libc6-dev-riscv64-cross \
   libelf-dev \
@@ -28,12 +29,7 @@ RUN apt-get update && \
   libyaml-dev \
   libz3-dev \
   minisat \
-  nodejs \
-  npm \
   parallel \
-  python3 \
-  python3-pip \
-  python3.12-venv \
   rustc \
   shellcheck \
   sudo \
@@ -43,14 +39,38 @@ RUN apt-get update && \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-  # build / install ruby
-COPY .ruby-version /opt/.ruby-version
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV MISE_CACHE_DIR="/mise/cache"
+# MISE_STATE_DIR needed to prevent permission errors in CI when mise tries to track configs
+# Without this, mise defaults to ~/.local/state which isn't writable by non-root CI users
+ENV MISE_STATE_DIR="/mise/state"
+ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
 ENV RUBY_YJIT_ENABLE=1
-RUN git clone --depth=1 https://github.com/rbenv/ruby-build.git && \
-    cd ruby-build && \
-    ./bin/ruby-build $(cat /opt/.ruby-version | tr -d "\n") /usr && \
-    cd .. && \
-    rm -rf ruby-build
+ENV MISE_YES=1
+# Disable mise auto-activation to avoid environment pollution
+ENV MISE_SHELL=bash
+
+RUN curl https://mise.run | sh
+
+COPY .mise.toml /opt/.mise.toml
+COPY .ruby-version /opt/.ruby-version
+
+WORKDIR /opt
+RUN mise trust /opt/.mise.toml && \
+    mise settings set trusted_config_paths '~' && \
+    mise install --yes
+
+RUN chmod -R 777 /mise
+
+# Create a profile script to initialize mise without shims
+RUN echo 'eval "$(mise activate bash --shims)"' > /etc/profile.d/mise.sh && \
+    chmod +x /etc/profile.d/mise.sh
+
+RUN ruby --version && \
+    node --version && \
+    npm --version && \
+    python3 --version
 
 # build/install eqntott
 RUN git clone --depth=1 https://github.com/TheProjecter/eqntott.git && \
@@ -81,15 +101,16 @@ RUN git clone https://github.com/jar-ben/mustool.git && \
 
 # Create Python virtual environment and install packages
 COPY requirements.txt /opt/requirements.txt
-RUN /usr/bin/python3 -m venv /opt/venv && \
-  /opt/venv/bin/pip install -r /opt/requirements.txt && \
+RUN python3 -m venv /opt/venv && \
+  /opt/venv/bin/pip install --no-cache-dir -r /opt/requirements.txt && \
   rm /opt/requirements.txt
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install npm packages globally in the container
 COPY package.json package-lock.json /opt/node/
 RUN cd /opt/node && \
-  /usr/bin/npm ci && \
+  npm ci --no-audit --no-fund && \
+  chown -R root:root /opt/node/node_modules && \
   rm /opt/node/package.json /opt/node/package-lock.json
 ENV NODE_PATH="/opt/node/node_modules"
 ENV PATH="/opt/node/node_modules/.bin:$PATH"

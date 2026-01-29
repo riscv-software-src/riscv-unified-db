@@ -35,3 +35,7 @@ coverage
 
 # emacs backup files
 *~
+
+# mise local configuration
+.mise.local.toml
+.mise/

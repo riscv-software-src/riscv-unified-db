@@ -6,6 +6,7 @@ From: ubuntu:24.04
 Stage: spython-base
 
 %files
+.mise.toml /opt/.mise.toml
 .ruby-version /opt/.ruby-version
 requirements.txt /opt/requirements.txt
 package.json /opt/node/
@@ -51,6 +52,7 @@ gdb \
 gh \
 git \
 gpg \
+gpg-agent \
 less \
 libc6-dev-riscv64-cross \
 libelf-dev \
@@ -59,12 +61,7 @@ libnewlib-dev \
 libyaml-dev \
 libz3-dev \
 minisat \
-nodejs \
-npm \
 parallel \
-python3 \
-python3-pip \
-python3.12-venv \
 rustc \
 shellcheck \
 sudo \
@@ -74,13 +71,36 @@ zlib1g-dev \
 && apt-get autoremove -y \
 && rm -rf /var/lib/{apt,dpkg,cache,log}/*
 
-  # build / install ruby
+MISE_DATA_DIR="/mise"
+MISE_CONFIG_DIR="/mise"
+MISE_CACHE_DIR="/mise/cache"
+# MISE_STATE_DIR needed to prevent permission errors in CI when mise tries to track configs
+# Without this, mise defaults to ~/.local/state which isn't writable by non-root CI users
+MISE_STATE_DIR="/mise/state"
+MISE_INSTALL_PATH="/usr/local/bin/mise"
 RUBY_YJIT_ENABLE=1
-git clone --depth=1 https://github.com/rbenv/ruby-build.git && \
-cd ruby-build && \
-./bin/ruby-build $(cat /opt/.ruby-version | tr -d "\n") /usr && \
-cd .. && \
-rm -rf ruby-build
+MISE_YES=1
+# Disable mise auto-activation to avoid environment pollution
+
+curl https://mise.run | sh
+
+
+mkdir -p /opt
+cd /opt
+mise trust /opt/.mise.toml && \
+mise settings set trusted_config_paths '~' && \
+mise install --yes
+
+chmod -R 777 /mise
+
+# Create a profile script to initialize mise without shims
+echo 'eval "$(mise activate bash --shims)"' > /etc/profile.d/mise.sh && \
+chmod +x /etc/profile.d/mise.sh
+
+ruby --version && \
+node --version && \
+npm --version && \
+python3 --version
 
 # build/install eqntott
 git clone --depth=1 https://github.com/TheProjecter/eqntott.git && \
@@ -110,14 +130,15 @@ cd .. && \
 rm -rf mustool
 
 # Create Python virtual environment and install packages
-/usr/bin/python3 -m venv /opt/venv && \
-/opt/venv/bin/pip install -r /opt/requirements.txt && \
+python3 -m venv /opt/venv && \
+/opt/venv/bin/pip install --no-cache-dir -r /opt/requirements.txt && \
 rm /opt/requirements.txt
 PATH="/opt/venv/bin:$PATH"
 
 # Install npm packages globally in the container
 cd /opt/node && \
-/usr/bin/npm ci && \
+npm ci --no-audit --no-fund && \
+chown -R root:root /opt/node/node_modules && \
 rm /opt/node/package.json /opt/node/package-lock.json
 NODE_PATH="/opt/node/node_modules"
 PATH="/opt/node/node_modules/.bin:$PATH"
@@ -135,7 +156,13 @@ echo ubuntu ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/ubuntu \
 && chmod 0440 /etc/sudoers.d/ubuntu
 %environment
 export DEBIAN_FRONTEND=noninteractive
+export MISE_DATA_DIR="/mise"
+export MISE_CONFIG_DIR="/mise"
+export MISE_CACHE_DIR="/mise/cache"
+export MISE_STATE_DIR="/mise/state"
+export MISE_INSTALL_PATH="/usr/local/bin/mise"
 export RUBY_YJIT_ENABLE=1
+export MISE_YES=1
 export PATH="/opt/venv/bin:$PATH"
 export NODE_PATH="/opt/node/node_modules"
 export PATH="/opt/node/node_modules/.bin:$PATH"

@@ -1,0 +1,14 @@
+# RISC-V Unified Database - Tool Version Management
+# https://mise.jdx.dev
+
+[tools]
+node = "24"
+python = "3.12"
+
+[env]
+_.path = ["./bin"]
+RUBY_YJIT_ENABLE = "1"
+
+[settings]
+# tools can read the versions files used by other version managers
+idiomatic_version_file_enable_tools = ['ruby']
