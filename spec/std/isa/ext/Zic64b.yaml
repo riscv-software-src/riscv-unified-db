@@ -12,7 +12,7 @@ description: |
 
   [NOTE]
   This extension was ratified with the RVA20 profiles.
-type: privileged
+type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified

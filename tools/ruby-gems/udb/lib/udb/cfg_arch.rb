@@ -430,7 +430,7 @@ module Udb
     private :symtab_callbacks
 
     # @api private
-    # generated enum defintions for the symbol table
+    # generated enum definitions for the symbol table
     sig { returns(T::Array[Idl::SymbolTable::EnumDef]) }
     def symtab_enums
       [
