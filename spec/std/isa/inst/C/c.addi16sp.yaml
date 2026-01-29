@@ -23,6 +23,7 @@ encoding:
       location: 12|4-3|5|2|6
       left_shift: 4
       not: 0
+      sign_extend: true
 access:
   s: always
   u: always

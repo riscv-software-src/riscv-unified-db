@@ -20,6 +20,7 @@ encoding:
   variables:
     - name: imm
       location: 12|6-2
+      sign_extend: true
     - name: xd
       location: 9-7
 access:

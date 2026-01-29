@@ -22,6 +22,7 @@ encoding:
     - name: imm
       location: 12|6-2
       left_shift: 12
+      sign_extend: true
     - name: xd
       location: 11-7
       not: [0, 2]

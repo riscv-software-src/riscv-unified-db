@@ -18,6 +18,7 @@ encoding:
     - name: imm
       location: 31-12
       left_shift: 12
+      sign_extend: true
     - name: xd
       location: 11-7
 access:
