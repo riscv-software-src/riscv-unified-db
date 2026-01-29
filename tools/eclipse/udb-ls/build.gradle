@@ -7,7 +7,7 @@ plugins {
 repositories { mavenCentral() }
 
 ext {
-  xtextVersion = '2.40.0'   // matches your workspace
+  xtextVersion = '2.41.0'   // matches your workspace
 }
 
 dependencies {
