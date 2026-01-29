@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: LEGAL_VSTART
+description: |
+  Implementations are permitted to raise illegal-instruction exceptions when attempting to execute a vector instruction with a value of vstart that the implementation can never produce when executing that same instruction with the same vtype setting.
+long_name: TODO
+schema:
+  type: string
+  enum: ["1_stride", "2_stride", "4_stride", "custom"]
+definedBy:
+  extension:
+    name: V

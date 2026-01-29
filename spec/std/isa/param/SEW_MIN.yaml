@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SEW_MIN
+description: |
+  Implementations must provide fractional LMUL settings that allow the narrowest supported type to occupy a fraction of a vector register corresponding to the ratio of the narrowest supported type's width to that of the largest supported type's width. In general, the requirement is to support LMUL >= SEW_MIN/ELEN, where SEW_MIN is the narrowest supported SEW value and ELEN is the widest supported SEW value.
+long_name: TODO
+schema:
+  type: integer
+  enum: [8, 16, 32, 64]
+  default: 8
+#    requirements:
+#      idl(): |
+#        -> SEW_MIN <= ELEN;
+#      reason: SEW_MIN <= ELEN
+definedBy:
+  extension:
+    name: V

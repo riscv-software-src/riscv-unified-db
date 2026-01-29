@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED
+description: |
+  For a given supported fractional LMUL setting, implementations must support SEW settings between SEW_MIN and LMUL * ELEN, inclusive.
+long_name: TODO
+schema:
+  type: string
+  enum: ["no_unrequired_supported", "custom"]
+definedBy:
+  extension:
+    name: V
