@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VECTOR_LS_INDEX_MAX_EEW
+description: |
+  A profile may place an upper limit on the maximum supported index EEW (e.g., only up to XLEN) smaller than ELEN.
+long_name: TODO
+schema:
+  type: string
+  enum: ["8", "16", "32", "64", "XLEN"]
+#    requirements:
+#      idl(): |
+#        -> (VECTOR_LS_INDEX_MAX_EEW == "8" -> 8 <= ELEN) &&
+#           (VECTOR_LS_INDEX_MAX_EEW == "16" -> 16 <= ELEN) &&
+#           (VECTOR_LS_INDEX_MAX_EEW == "32" -> 32 <= ELEN) &&
+#           (VECTOR_LS_INDEX_MAX_EEW == "64" -> 64 <= ELEN) &&
+#           (VECTOR_LS_INDEX_MAX_EEW == "XLEN" -> XLEN <= ELEN);
+#      reason: Index EEW must not exceed ELEN
+definedBy:
+  extension:
+    name: V

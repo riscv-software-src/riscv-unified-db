@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: IMPRECISE_VECTOR_TRAP_SETTABLE
+description: |
+  Some profiles may choose to provide a privileged mode bit to select between precise and imprecise vector traps.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: V

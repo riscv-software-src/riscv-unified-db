@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSSTATUS_VS_EXISTS
+description: |
+  For implementations with a writable misa.V field, the vsstatus.VS field may exist even if misa.V is clear.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: V

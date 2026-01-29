@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD
+description: |
+  For fault-only-first segment loads, if an exception is detected partway through accessing the zeroth segment, the trap is taken. If an exception is detected partway through accessing a subsequent segment, vl is reduced to the index of that segment. In both cases, it is implementation-defined whether a subset of the segment is loaded.
+long_name: TODO
+schema:
+  type: string
+  enum: ["no_subsegment_loaded", "custom"]
+definedBy:
+  extension:
+    name: V

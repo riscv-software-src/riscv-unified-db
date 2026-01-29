@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: RESERVED_VSET_X0X0_VLMAX_CHANGE
+description: |
+  When rs1=x0 and rd=x0, the instructions operate as if the current vector length in vl is used as the AVL. Use of the vset instructions with a new SEW/LMUL ratio that would result in a change of VLMAX is reserved. Implementations may set vill in either case.
+long_name: TODO
+schema:
+  type: string
+  enum: ["never", "always", "custom"]
+definedBy:
+  extension:
+    name: V

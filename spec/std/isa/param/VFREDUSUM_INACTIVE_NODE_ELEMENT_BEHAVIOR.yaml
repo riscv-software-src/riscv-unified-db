@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR
+description: |
+  A node where one input is derived only from elements masked-off or beyond the active vector length may either treat that input as the additive identity of the appropriate EEW or simply copy the other input to its output.
+long_name: TODO
+schema:
+  type: string
+  enum: ["additive_identity", "copy"]
+definedBy:
+  extension:
+    name: V
