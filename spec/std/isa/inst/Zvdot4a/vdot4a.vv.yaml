@@ -1,0 +1,39 @@
+# Copyright (c) <your name/company>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: vdot4a.vv
+long_name: Vector 4-element signed-signed dot-product accumulate (vector-vector)
+description: |
+  Computes the dot product of four signed 8-bit elements from `vs2` and four
+  signed 8-bit elements from `vs1` (both packed within the same 32-bit element
+  group), sums the four products, and accumulates the signed 32-bit result into
+  the corresponding 32-bit element of `vd`.
+
+  No saturation is performed; given the 8-bit source width and 32-bit
+  accumulation width, overflow is presumed infrequent.
+definedBy:
+  extension:
+    name: Zvdot4a
+assembly: vd, vs2, vs1, vm
+encoding:
+  match: 101100-----------010-----1010111
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
