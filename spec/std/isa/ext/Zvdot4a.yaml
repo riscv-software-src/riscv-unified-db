@@ -5,7 +5,7 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: Zvdot4a
+name: Zvdot4a8i
 long_name: Vector Dot-Product (4-element, 8-bit integer)
 description: |
   Convolution operations have seen considerable speedup on other microprocessor
