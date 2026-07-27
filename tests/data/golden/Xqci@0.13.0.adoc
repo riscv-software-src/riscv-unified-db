@@ -39489,6 +39489,7 @@ if pass:[(]xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::M) {
 return xref:#udb-function-mode[mode]pass:[(]);
 ----
 
+<<<<<<< HEAD
 [#udb-function-endianness]
 === endianness
 Returns the endianness for the effective privilege mode.
@@ -39545,6 +39546,8 @@ if pass:[(]xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) 
 }
 ----
 
+=======
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
 [#udb-function-exception_handling_mode]
 === exception_handling_mode
 Returns the target privilege mode that will handle synchronous exception `exception_code`
@@ -39653,7 +39656,10 @@ return sp;
 === highest_set_bit
 Returns the position of the highest (nearest MSB) bit that is '1',
 or -1 if value is zero.
+<<<<<<< HEAD
 Callers should cast the return value with $signed().
+=======
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
   
 
 [cols="1,4"]
@@ -39675,9 +39681,15 @@ h! `XReg`
 
 [source,idl,subs="specialchars,macros"]
 ----
+<<<<<<< HEAD
 for pass:[(]Bits<8> i = xref:#udb-function-xlen[xlen]pass:[(]); i > 0; i--) {
   if pass:[(]value[i - 1] == 1) {
     return i - 1;
+=======
+for pass:[(]Bits<8> i = xref:#udb-function-xlen[xlen]pass:[(]) - 1; i >= 0; i--) {
+  if pass:[(]value[i] == 1) {
+    return i;
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
   }
 }
 return -'sd1;
@@ -40506,6 +40518,7 @@ h! `Bits<INSTR_ENC_SIZE>`
 ----
 Boolean aligned = xref:#udb-function-is_naturally_aligned[is_naturally_aligned]pass:[(]LEN, virtual_address);
 XReg physical_address;
+<<<<<<< HEAD
 XReg result;
 if pass:[(]aligned) {
   result = xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]LEN, virtual_address, encoding, 1'b0, 1'b0);
@@ -40518,12 +40531,17 @@ if pass:[(]aligned) {
     }
   }
   return result;
+=======
+if pass:[(]aligned) {
+  return xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]LEN, virtual_address, encoding, 1'b0, 1'b0);
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
 }
 if pass:[(]MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
   xref:#udb-function-assert[assert]pass:[(]MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
   physical_address = (CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-S[S] == 1) ? xref:#udb-function-translate[translate]pass:[(]virtual_address, MemoryOperation::Read, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]), encoding).paddr : virtual_address;
   if pass:[(]xref:#udb-function-misaligned_is_atomic?[misaligned_is_atomic?]pass:[(]LEN, physical_address)) {
     xref:#udb-function-access_check[access_check]pass:[(]physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]));
+<<<<<<< HEAD
     result = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
     if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
       U32 tmp;
@@ -40534,6 +40552,9 @@ if pass:[(]MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
       }
     }
     return result;
+=======
+    return xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
   }
 }
 if pass:[(]!MISALIGNED_LDST) {
@@ -40544,6 +40565,7 @@ if pass:[(]!MISALIGNED_LDST) {
   xref:#udb-function-raise[raise]pass:[(]ExceptionCode::LoadAddressMisaligned, xref:#udb-function-mode[mode]pass:[(]), virtual_address);
 } else {
   if pass:[(]MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
+<<<<<<< HEAD
     result = 0;
     for pass:[(]U32 I = 0; I < (LEN / 8); I++) {
       result = result | (xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]8, virtual_address pass:[+] I, encoding, 1'b0, 1'b0) pass:[`]<< (8 * I));
@@ -40556,6 +40578,12 @@ if pass:[(]!MISALIGNED_LDST) {
         result[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
       }
     }
+=======
+    XReg result = 0;
+    for pass:[(]U32 I = 0; I < (LEN / 8); I++) {
+      result = result | (xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]8, virtual_address pass:[+] I, encoding, 1'b0, 1'b0) pass:[`]<< (8 * I));
+    }
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
     return result;
   } else if pass:[(]MISALIGNED_SPLIT_STRATEGY == "custom") {
     xref:#udb-function-unpredictable[unpredictable]pass:[(]"An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");
@@ -41061,6 +41089,7 @@ h! `Bits<INSTR_ENC_SIZE>`
 ----
 Boolean aligned = xref:#udb-function-is_naturally_aligned[is_naturally_aligned]pass:[(]LEN, virtual_address);
 XReg physical_address;
+<<<<<<< HEAD
 if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
   U32 tmp;
   for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
@@ -41069,6 +41098,8 @@ if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endi
     value[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
   }
 }
+=======
+>>>>>>> 2d745b38603a ([autofix.ci] apply automated fixes)
 if pass:[(]aligned) {
   xref:#udb-function-write_memory_aligned[write_memory_aligned]pass:[(]LEN, virtual_address, value, encoding, 1'b0, 1'b0);
   return ;
