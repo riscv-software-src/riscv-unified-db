@@ -13,7 +13,7 @@ description: |
   the unsigned 32-bit result into the corresponding 32-bit element of `vd`.
 definedBy:
   extension:
-    name: Zvdot4a
+    name: Zvdot4a8i
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 101000-----------010-----1010111

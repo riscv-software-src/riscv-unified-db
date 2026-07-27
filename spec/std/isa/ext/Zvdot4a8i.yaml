@@ -26,7 +26,7 @@ description: |
   32-bit, it is presumed that overflow is infrequent, so no saturation option
   has been provided.
 
-  This extension was previously known as Zvqdotq; it was renamed to Zvdot4a
+  This extension was previously known as Zvqdotq; it was renamed to Zvdot4a8i
   (with the instruction mnemonics renamed from vqdot* to vdot4a*) following
   ARC feedback.
 type: unprivileged

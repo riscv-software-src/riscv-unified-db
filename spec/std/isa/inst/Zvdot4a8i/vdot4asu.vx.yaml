@@ -5,19 +5,19 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: vdot4au.vx
-long_name: Vector 4-element unsigned-unsigned dot-product accumulate (vector-scalar)
+name: vdot4asu.vx
+long_name: Vector 4-element signed-unsigned dot-product accumulate (vector-scalar)
 description: |
-  Computes the dot product of four unsigned 8-bit elements from `vs2` and four
+  Computes the dot product of four signed 8-bit elements from `vs2` and four
   unsigned 8-bit elements packed/replicated from the scalar `rs1`, sums the
-  four products, and accumulates the unsigned 32-bit result into the
+  four products, and accumulates the signed 32-bit result into the
   corresponding 32-bit element of `vd`.
 definedBy:
   extension:
-    name: Zvdot4a
+    name: Zvdot4a8i
 assembly: vd, vs2, rs1, vm
 encoding:
-  match: 101000-----------110-----1010111
+  match: 101010-----------110-----1010111
   variables:
     - name: vm
       location: 25-25

@@ -17,7 +17,7 @@ description: |
   accumulation width, overflow is presumed infrequent.
 definedBy:
   extension:
-    name: Zvdot4a
+    name: Zvdot4a8i
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 101100-----------010-----1010111

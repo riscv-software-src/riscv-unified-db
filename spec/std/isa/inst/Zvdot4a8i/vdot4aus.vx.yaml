@@ -21,7 +21,7 @@ description: |
   so this variant is provided explicitly.
 definedBy:
   extension:
-    name: Zvdot4a
+    name: Zvdot4a8i
 assembly: vd, vs2, rs1, vm
 encoding:
   match: 101110-----------110-----1010111
