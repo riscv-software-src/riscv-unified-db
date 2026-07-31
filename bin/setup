@@ -50,9 +50,9 @@ _ok "mise ready ($("$MISE_BIN" --version 2>/dev/null | head -1))"
 # Install tool versions via mise
 # ---------------------------------------------------------------------------
 
-_section "Tool versions (Ruby, Node.js, uv, CMake, …)"
+_section "Tool versions (Ruby, aube, uv, CMake, …)"
 
-# gpg is required by some asdf plugins (make, node, ruby) during
+# gpg is required by some asdf plugins (make, ruby) during
 # mise install. Check for it early to surface a clear error.
 if ! command -v gpg > /dev/null 2>&1 && ! command -v gpg2 > /dev/null 2>&1; then
   printf "\nERROR: GnuPG (gpg) is required but not found.\n" >&2
@@ -63,7 +63,7 @@ fi
 _note "gpg found"
 
 # Pre-initialize ~/.gnupg before mise install so parallel gpg invocations
-# (e.g. for node, make, ruby) don't race to create the directory.
+# (e.g. for make, ruby) don't race to create the directory.
 mkdir -p "${GNUPGHOME:-$HOME/.gnupg}" && chmod 700 "${GNUPGHOME:-$HOME/.gnupg}"
 
 # mise install is idempotent and exits quickly when everything is current.
@@ -132,10 +132,10 @@ fi
 _ok "Python packages installed"
 
 # ---------------------------------------------------------------------------
-# npm packages
+# aube packages
 # ---------------------------------------------------------------------------
 
-_section "npm packages"
+_section "aube packages"
 
 # Temporary migration shim for existing users with symlinks from the old shared-env setup.
 if [[ -L "$ROOT/node_modules" ]]; then
@@ -146,12 +146,12 @@ if [[ -L "$ROOT/node_modules" ]]; then
   fi
 fi
 
-_run "Running npm ci..."
-if ! "$ROOT/bin/npm" ci; then
-  printf "\nERROR: npm ci failed.\n" >&2
+_run "Running aube ci..."
+if ! "$ROOT/bin/aube" ci; then
+  printf "\nERROR: aube ci failed.\n" >&2
   exit 1
 fi
-_ok "npm packages installed"
+_ok "aube packages installed"
 
 # ---------------------------------------------------------------------------
 # C++ toolchain preference

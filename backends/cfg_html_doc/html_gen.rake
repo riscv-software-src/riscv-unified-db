@@ -236,7 +236,10 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
 
   $logger.info "Running Antora to create #{config_name}"
   sh [
-    "#{$root}/node_modules/.bin/antora",
+    "#{$root}/bin/aube",
+    "exec",
+    "antora",
+    "--",
     "--stacktrace",
     "generate",
     "--cache-dir=#{$root}/.home/.antora",

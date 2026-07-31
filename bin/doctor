@@ -151,7 +151,7 @@ _check_mise_tools() {
     return
   fi
 
-  local tools=(ruby node uv cmake make shellcheck github-cli prek)
+  local tools=(ruby aube uv cmake make shellcheck github-cli prek)
   for tool in "${tools[@]}"; do
     _check_mise_tool "$tool"
   done
@@ -229,16 +229,26 @@ _check_python_ecosystem() {
 _check_node_ecosystem() {
   _section "Node.js Ecosystem"
 
+  local node_version
+  if node_version=$("$ROOT/bin/aube" node --version 2>/dev/null); then
+    _pass "Node.js runtime  ${_C_DIM}${node_version#v} (via aube)${_C_RESET}"
+    _record_pass
+  else
+    _fail "Node.js runtime not available through aube"
+    _info "Fix: run \`bin/setup\` or \`bin/aube node --version\`"
+    _record_fail
+  fi
+
   if [[ -L "$ROOT/node_modules" ]]; then
     _warn "node_modules is a symlink from the old shared-environment setup"
-    _info "Fix: run \`bin/setup\` to replace it with npm's default in-tree node_modules"
+    _info "Fix: run \`bin/setup\` to replace it with aube's in-tree node_modules"
     _record_warn
   elif [[ -d "$ROOT/node_modules" ]]; then
     _pass "node_modules installed"
     _record_pass
   else
     _fail "node_modules not found"
-    _info "Fix: run \`bin/setup\` or \`bin/npm ci\`"
+    _info "Fix: run \`bin/setup\` or \`bin/aube ci\`"
     _record_fail
   fi
 }
@@ -266,7 +276,7 @@ _check_developer_setup() {
     fi
 
     if [[ -f "${git_hooks_dir}/hooks/post-merge" ]]; then
-      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install' "${git_hooks_dir}/hooks/post-merge" 2>/dev/null; then
+      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install|bin/npm" ci' "${git_hooks_dir}/hooks/post-merge" 2>/dev/null; then
         _warn "Post-merge hook is stale"
         _info "Fix: run \`bin/setup\`"
         _record_warn
@@ -281,7 +291,7 @@ _check_developer_setup() {
     fi
 
     if [[ -f "${git_hooks_dir}/hooks/post-checkout" ]]; then
-      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install' "${git_hooks_dir}/hooks/post-checkout" 2>/dev/null; then
+      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install|bin/npm" ci' "${git_hooks_dir}/hooks/post-checkout" 2>/dev/null; then
         _warn "Post-checkout hook is stale"
         _info "Fix: run \`bin/setup\`"
         _record_warn

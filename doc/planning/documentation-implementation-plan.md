@@ -33,9 +33,9 @@ Set up the Docusaurus project, CI/CD, and scaffolding before writing any content
     package.json
   ```
 - [x] **0.1.2** Initialize Docusaurus in the existing `doc/` directory. Because `doc/` already contains files, run `npx create-docusaurus@latest` into a temporary directory and then copy the scaffold files into `doc/`, skipping any files that already exist (e.g., `README.md`). Alternatively: `cd doc && npx create-docusaurus@latest . classic --typescript` — Docusaurus will warn about the non-empty directory but will proceed. Review and reconcile any conflicts before committing.
-- [x] **0.1.3** Add `doc/node_modules/` to `.gitignore`. Also added `doc/.docusaurus` and `doc/build`. The root `node_modules` entry covers `doc/node_modules/` since Docusaurus is managed as an npm workspace (see D3 in `decisions.md`).
+- [x] **0.1.3** Add `doc/node_modules/` to `.gitignore`. Also added `doc/.docusaurus` and `doc/build`. The root `node_modules` entry covers `doc/node_modules/` since Docusaurus is managed from the root package-lock with aube (see D3 in `decisions.md`).
 - [x] **0.1.4** Commit the bare scaffold with a `docs/placeholder.md` so the site builds.
-- [x] **0.1.5** Verify `npm run build` succeeds from `doc/`.
+- [x] **0.1.5** Verify `./bin/aubr -C doc build` succeeds.
 
 ### 0.2 — Configure Docusaurus
 
@@ -61,7 +61,7 @@ Set up the Docusaurus project, CI/CD, and scaffolding before writing any content
 
 ### 0.4 — CI/CD integration
 
-- [x] **0.4.1** Add a CI check that builds the Docusaurus site on every PR and push to `main`. The `build-docs-site` job is defined in `tools/test/regress-tests.yaml` (auto-generates `.github/workflows/regress.yml`) and runs `npm ci` + `npm run build --workspace=doc` inside the Docker container via `./bin/npm`. No deployment — this is build-only for now (see D4 in `decisions.md`).
+- [x] **0.4.1** Add a CI check that builds the Docusaurus site on every PR and push to `main`. The `build-docs-site` job is defined in `tools/test/regress-tests.yaml` (auto-generates `.github/workflows/regress.yml`) and runs `./bin/aube ci` + `./bin/aubr -C doc build`. No deployment — this is build-only for now (see D4 in `decisions.md`).
 - [ ] **0.4.2** Decide whether the new Docusaurus site replaces or coexists with the existing `pages.yml` workflow.
   - **Recommended**: Keep `pages.yml` for generated artifacts; have the Docusaurus site link out to them. Merge the two deployments into a single Pages root once the Docusaurus site is ready to go live.
   - **This decision (Q4) must be made before 0.4.3 is executed.** See Open Questions.
@@ -168,8 +168,8 @@ All four use CSS custom properties (`var(--idl-logo-bg)`, `var(--idl-logo-fg)`) 
 - [x] **0.8.2** Write `doc/planning/README.md` explaining what these files are and that the implementation plan is the active working document.
 - [x] **0.8.3** Write `doc/README.md` covering:
   - One-line description of what this directory is
-  - How to install dependencies (`npm ci` inside `doc/`)
-  - How to run the local dev server (`npm start`)
+  - How to install dependencies (`./bin/aube ci` from the repo root)
+  - How to run the local dev server (`./bin/aubr -C doc start`)
   - Where the full contributor guide lives once the site is running (`/docs/contributing/docs-site`)
   - Where the architecture notes live (`/docs/contributing/docs-architecture`)
   - Where the planning docs live (`doc/planning/`)
@@ -517,7 +517,7 @@ For each generator: description, what it produces, how to invoke it, example out
 - [ ] **9.5** Write `docs/contributing/code-review.md` — review process, code owners.
 - [ ] **9.6** Write `docs/contributing/license.md` — BSD-3-Clear, what is and isn't accepted.
 - [ ] **9.7** Write `docs/contributing/docs-site.md` — contributor guide for the documentation site itself:
-  - Prerequisites and local dev setup (`npm ci`, `npm start`)
+  - Prerequisites and local dev setup (`./bin/aube ci`, `./bin/aubr -C doc start`)
   - How to add a new page (file location, front matter, sidebar registration)
   - How to add a page to the sidebar (`sidebars.js`)
   - Markdown conventions used on this site (admonitions, code blocks, MDX components)
@@ -550,7 +550,7 @@ This phase sets up the tooling to keep docs in sync with source automatically.
 - [x] **10.1.4** Generation step added: `bin/chore gen schema-docs` (run manually; not yet wired into the Docusaurus pre-build step — see note below).
 - [~] **10.1.5** Improving schema files with better `description` fields and `examples`: `config_schema.json` fully done; `schema_defs.json` partially done (`extension_name`, `requirement_string`, `version_requirements`, `extension_version`, `condition` updated); remaining schemas not yet reviewed. See schema content review status in Phase 5.4.
 
-  **Note**: Schema docs are currently regenerated manually via `bin/chore gen schema-docs` and committed. Wiring into the Docusaurus pre-build step requires the Docker container to be available during `npm run build`, which is not the case in the current CI setup (see D4). Options: (a) keep committing generated files, (b) add a CI step that runs `bin/chore gen schema-docs` before the Docusaurus build, (c) move generation to a Node.js script that runs without Docker.
+  **Note**: Schema docs are currently regenerated manually via `bin/chore gen schema-docs` and committed. Wiring into the Docusaurus pre-build step requires the Docker container to be available during `./bin/aubr -C doc build`, which is not the case in the current CI setup (see D4). Options: (a) keep committing generated files, (b) add a CI step that runs `bin/chore gen schema-docs` before the Docusaurus build, (c) move generation to a Node.js script that runs without Docker.
 
 ### 10.2 — CLI documentation generation
 
@@ -631,7 +631,7 @@ Components that need a `DOCS.md`:
 
 ## Phase 14 — Quality and Polish
 
-- [ ] **14.1** Run a broken-link check (`npm run build` catches most; also use `linkinator` or similar).
+- [ ] **14.1** Run a broken-link check (`./bin/aubr -C doc build` catches most; also use `linkinator` or similar).
 - [ ] **14.2** Add OpenGraph / SEO metadata to key pages.
 - [ ] **14.3** Verify mobile responsiveness.
 - [ ] **14.4** Verify dark mode.

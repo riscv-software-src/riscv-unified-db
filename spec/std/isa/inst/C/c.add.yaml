@@ -28,6 +28,7 @@ access:
   u: always
   vs: always
   vu: always
+data_independent_timing: true
 hints:
   - { $ref: inst/Zihintntl/c.ntl.p1.yaml# }
   - { $ref: inst/Zihintntl/c.ntl.pall.yaml# }

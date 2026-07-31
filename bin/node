@@ -1,5 +1,3 @@
 #!/bin/bash
 ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
-EXEC_DIR=${PWD}
-cd "$ROOT" || exit 1
-exec "$ROOT"/bin/mise exec -- bash -c 'cd "$1" && shift && exec "$@"' _ "$EXEC_DIR" node "$@"
+exec "$ROOT/bin/aube" node "$@"

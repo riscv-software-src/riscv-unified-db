@@ -203,6 +203,21 @@ description: |
   |          | &#10003; | sraw  _rd_, _rs1_, _rs2_ |  'sraw'
   |===
 
+  ===  Zicond (Conditional Zero)
+
+  All instructions are included.
+
+  [%header,cols="^1,^1,4,8"]
+  |===
+  |RV32
+  |RV64
+  |Mnemonic
+  |Instruction
+
+  | &#10003; | &#10003; | czero.eqz _rd_, _rs1_, _rs2_ | 'czero.eqz'
+  | &#10003; | &#10003; | czero.nez _rd_, _rs1_, _rs2_ | 'czero.nez'
+  |===
+
   ===	RVM (Multiply)
 
   Multiplication is included; division and remaindering excluded.
@@ -221,7 +236,7 @@ description: |
   |          | &#10003; | mulw   _rd_, _rs1_, _rs2_ | 'mulw'
   |===
 
-  ===	RVC (Compressed)
+  ===	Zca (Compressed)
 
   Same criteria as in RVI. Organised by quadrants.
 
@@ -248,6 +263,23 @@ description: |
   | &#10003; | &#10003; | c.slli     | 'c_slli'
   | &#10003; | &#10003; | c.mv       | 'c_mv'
   | &#10003; | &#10003; | c.add      | 'c_add'
+  |===
+
+  ===	Zcb Extension
+
+  These instructions are compressed versions of `I` and `M` instructions that are
+  included in `Zkt`.
+
+  [%header,cols="^1,^1,4,8"]
+  |===
+  |RV32
+  |RV64
+  |Mnemonic
+  |Instruction
+
+  | &#10003; | &#10003; | c.mul       | 'c_mul'
+  | &#10003; | &#10003; | c.not       | 'c_not'
+  | &#10003; | &#10003; | c.zext.b    | 'c_zext_b'
   |===
 
   ===	RVK (Scalar Cryptography)

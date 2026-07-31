@@ -28,6 +28,7 @@ access:
   u: always
   vs: always
   vu: always
+data_independent_timing: true
 operation(): |
   # shamt is between 0-63
   X[creg2reg(xd)] = X[creg2reg(xd)] & $signed(imm);

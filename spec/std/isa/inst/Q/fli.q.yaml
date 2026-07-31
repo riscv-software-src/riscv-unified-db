@@ -9,7 +9,7 @@ name: fli.q
 long_name: Floating-Point Load Immediate Quad-Precision
 description: |
   The `fli.q` instruction loads one of 32 quad-precision floating-point constants, encoded in the `xs1`
-  field, into floating-point register `rd`.
+  field, into floating-point register `fd`.
   `fli.q` is encoded like `fmv.w.x`, but with _fmt_ = Q.
 definedBy:
   extension:

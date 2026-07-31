@@ -19,7 +19,9 @@ description: |
 
 definedBy:
   extension:
-    name: Zfhmin
+    anyOf:
+      - name: Zfhmin
+      - name: Zfbfmin
 assembly: fs2, imm(xs1)
 encoding:
   match: "-----------------001-----0100111"

@@ -8,13 +8,13 @@ kind: instruction
 name: fclass.q
 long_name: Floating-Point Classify Quad-Precision
 description: |
-  The `fclass.q` instruction examines the value in floating-point register `rs1` and writes to integer
-  register `rd` a 10-bit mask that indicates the class of the floating-point number.
+  The `fclass.q` instruction examines the value in floating-point register `fs1` and writes to integer
+  register `xd` a 10-bit mask that indicates the class of the floating-point number.
 
-  The format of the mask is described in table given below. The corresponding bit in `rd`
-  will be set if the property is true and clear otherwise. All other bits in `rd` are cleared.
+  The format of the mask is described in table given below. The corresponding bit in `xd`
+  will be set if the property is true and clear otherwise. All other bits in `xd` are cleared.
 
-  Note that exactly one bit in `rd` will be set. `fclass.q` does not set the floating-point
+  Note that exactly one bit in `xd` will be set. `fclass.q` does not set the floating-point
   exception flags.
 
   .Format of result of `fclass` instruction.

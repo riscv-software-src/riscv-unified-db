@@ -488,7 +488,5 @@ tests:
       - smoke
       - artifacts
     test:
-      - name: Install Node dependencies
-        run: ./bin/npm ci
       - name: Build Docusaurus site
-        run: ./bin/npm run build --workspace=doc
+        run: ./bin/aubr -C doc --frozen-lockfile build

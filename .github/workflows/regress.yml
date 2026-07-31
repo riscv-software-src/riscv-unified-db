@@ -205,27 +205,19 @@ jobs:
     name: VS Code Mocha tests
     runs-on: ubuntu-latest
     needs: java-tests
-    defaults:
-      run:
-        working-directory: tools/eclipse/udb-vscode
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: tools/eclipse/udb-vscode/package-lock.json
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
       - name: Setup Temurin JDK 21 (for LS)
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: temurin
           java-version: "21"
-      - name: Install deps
-        run: npm ci
       - name: Compile
-        run: npm run compile
+        run: ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile compile
       - name: Run VS Code tests
-        run: xvfb-run -a npm test
+        run: xvfb-run -a ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile test
       - name: Archive VS Code test logs (always)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -961,10 +953,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
-      - name: Install Node dependencies
-        run: ./bin/npm ci
       - name: Build Docusaurus site
-        run: ./bin/npm run build --workspace=doc
+        run: ./bin/aubr -C doc --frozen-lockfile build
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ((github.event_name == 'push') && (github.ref_name == 'main'))

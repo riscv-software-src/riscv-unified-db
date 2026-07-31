@@ -43,8 +43,8 @@ if echo "$_changed" | grep -qF 'uv.lock'; then
 fi
 
 if echo "$_changed" | grep -qF 'package-lock.json'; then
-  echo "⚙  package-lock.json changed — syncing npm packages..."
-  (cd "$ROOT" && "$ROOT/bin/npm" ci)
+  echo "⚙  package-lock.json changed — syncing aube packages..."
+  (cd "$ROOT" && "$ROOT/bin/aube" ci)
 fi
 HOOK
 chmod +x "$GIT_HOOKS_DIR/post-merge"
@@ -79,8 +79,8 @@ if echo "$_changed" | grep -qF 'uv.lock'; then
 fi
 
 if echo "$_changed" | grep -qF 'package-lock.json'; then
-  echo "⚙  package-lock.json changed — syncing npm packages..."
-  (cd "$ROOT" && "$ROOT/bin/npm" ci)
+  echo "⚙  package-lock.json changed — syncing aube packages..."
+  (cd "$ROOT" && "$ROOT/bin/aube" ci)
 fi
 HOOK
 chmod +x "$GIT_HOOKS_DIR/post-checkout"

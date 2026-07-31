@@ -40,7 +40,7 @@ fields:
       Cycle counter.
 
       <%- if ext?(:Zicntr) -%>
-      Aliased as `cycle.CYCLE`.
+      Aliased as `cycle.COUNT`.
       <%- end -%>
 
       Increments every cycle unless:

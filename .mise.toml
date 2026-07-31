@@ -6,8 +6,8 @@
 [tools]
 ruby = "3.4.10"
 prek = "0.4.10"
-node = "24.18.0"
-uv = "0.11.31"
+aube = "1.35.0"
+uv = "0.11.32"
 cmake = "4.4.0"
 make = "4.4.1"
 shellcheck = "0.11.0"
@@ -41,8 +41,8 @@ if [[ -L "$root/node_modules" ]]; then
   if [[ "$node_modules_target" == "${XDG_DATA_HOME:-$HOME/.local/share}/udb/npm-"*/node_modules ]]; then
     echo "mise: removing old shared node_modules symlink"
     rm -f "$root/node_modules"
-    echo "mise: running npm ci"
-    "$root/bin/npm" ci
+    echo "mise: running aube ci"
+    "$root/bin/aube" ci
   fi
 fi
 ''' }

@@ -41,7 +41,7 @@ fields:
 
       When Direct, all synchronous exceptions and asynchronous interrupts jump to (`stvec.BASE` << 2).
 
-      When Vectored, asynchronous interrupts jump to (`stvec.BASE` << 2 + `scause.CAUSE`*4) while synchronous exceptions continue to jump to (`stvec.BASE` << 2).
+      When Vectored, asynchronous interrupts jump to (`stvec.BASE` << 2 + `scause.CODE`*4) while synchronous exceptions continue to jump to (`stvec.BASE` << 2).
     type(): |
       return ($array_size(STVEC_MODES) == 1) ? CsrFieldType::RO : CsrFieldType::RWR;
     sw_write(csr_value): |

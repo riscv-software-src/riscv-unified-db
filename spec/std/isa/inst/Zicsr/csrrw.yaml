@@ -34,6 +34,18 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
+  - when: xd == 0 && csr == 0x001
+    to: fsflags xs1
+  - when: xd == 0 && csr == 0x002
+    to: fsrm xs1
+  - when: xd == 0 && csr == 0x003
+    to: fscsr xs1
+  - when: csr == 0x001
+    to: fsflags xd, xs1
+  - when: csr == 0x002
+    to: fsrm xd, xs1
+  - when: csr == 0x003
+    to: fscsr xd, xs1
   - when: xd == 0
     to: csrw csr, xs1
 operation(): |

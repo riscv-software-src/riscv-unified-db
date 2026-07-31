@@ -2,6 +2,13 @@
   "name": "udb-vscode",
   "version": "0.0.1",
   "private": true,
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.18.0",
+      "onFail": "download"
+    }
+  },
   "engines": {
     "vscode": "^1.91.0"
   },
@@ -41,9 +48,9 @@
   "main": "./out/extension.js",
   "scripts": {
     "compile": "tsc -p .",
-    "test": "npm run compile && node ./out/test/runTests.js",
+    "test": "aube run compile && aube node ./out/test/runTests.js",
     "watch": "tsc -w",
-    "vscode:prepublish": "npm run compile"
+    "vscode:prepublish": "aube run compile"
   },
   "devDependencies": {
     "@types/mocha": "10.0.10",

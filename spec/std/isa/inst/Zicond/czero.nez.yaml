@@ -30,6 +30,6 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: false
+data_independent_timing: true
 operation(): |
   X[xd] = (X[xs2] != 0) ? 0 : X[xs1];

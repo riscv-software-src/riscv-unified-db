@@ -124,32 +124,33 @@ If this decision were reversed (back to JavaScript):
 
 ---
 
-## D3 — npm workspaces: Docusaurus as a workspace member of the root package.json
+## D3 — aube-managed workspace: Docusaurus as a workspace member of the root package.json
 
 **Status**: Decided
 **Date**: 2026-03
 
 ### Decision
-Docusaurus dependencies are managed via npm workspaces. The root `package.json` declares
-`"workspaces": ["doc"]`. There is a single `node_modules/` at the repo root and a single
-`package-lock.json`. `doc/package.json` remains as the Docusaurus-specific manifest (listing
-Docusaurus dependencies) but has no lockfile of its own.
+Docusaurus dependencies are managed from the repo root with aube while keeping the existing npm
+`package-lock.json` as the shared lockfile. The root `package.json` declares `"workspaces": ["doc"]`,
+and aube reads that workspace from the shared `package-lock.json`. `doc/package.json` remains as the
+Docusaurus-specific manifest (listing Docusaurus dependencies) but has no lockfile of its own.
 
-All npm commands are run from the repo root:
-- `npm install` — install all dependencies
-- `npm run build --workspace=doc` — build the docs site
-- `npm run start --workspace=doc` — start the dev server
+All aube commands are run from the repo root:
+- `./bin/aube ci` — install dependencies explicitly
+- `./bin/aubr -C doc build` — build the docs site
+- `./bin/aubr -C doc start` — start the dev server
 
 ### Rationale
 - The repo already had a root `package.json` (for Antora, Prettier, etc.); a second `package.json`
   in `doc/` would create two separate `node_modules/` trees and two lockfiles to maintain.
-- npm workspaces unify dependency management with no loss of isolation between the root packages
+- aube uses the existing `package-lock.json`, so contributors do not need a lockfile-format migration.
+- aube workspaces unify dependency management with no loss of isolation between the root packages
   and the Docusaurus packages.
 
 ### Implemented in
 - `package.json` — added `"private": true` and `"workspaces": ["doc"]`
-- `doc/package.json` — unchanged (remains the Docusaurus manifest)
-- `doc/README.md` — updated to show workspace commands (`npm run build --workspace=doc`)
+- `doc/package.json` — remains the Docusaurus manifest and declares Docusaurus packages imported directly by the site
+- `doc/README.md` — updated to show aube commands (`./bin/aubr -C doc build`)
 - `.gitignore` — comment noting that `doc/package-lock.json` is intentionally absent
 
 ### Reversal: split back to a standalone doc/package.json
@@ -157,11 +158,11 @@ If this decision were reversed (Docusaurus managed independently in `doc/`):
 
 1. Remove `"workspaces": ["doc"]` from root `package.json`.
 2. Remove `"private": true` from root `package.json` if it was not there before.
-3. Run `npm install` from the repo root to regenerate the root lockfile without the workspace.
-4. Run `npm install` from inside `doc/` to generate `doc/package-lock.json`.
-5. Update `doc/README.md`: change workspace commands back to `cd doc && npm ci` / `npm start`.
+3. Run `./bin/aube install --lockfile-only` from the repo root to regenerate the root lockfile without the workspace.
+4. Run `./bin/aube install -C doc --lockfile-only` from the repo root to generate `doc/package-lock.json`.
+5. Update `doc/README.md`: change workspace commands back to `./bin/aube ci -C doc` / `./bin/aubr -C doc start`.
 6. Update `.gitignore`: remove the comment about `doc/package-lock.json`; add `doc/node_modules/` explicitly if the bare `node_modules` entry is removed.
-7. Update CI workflow to `cd doc && npm ci && npm run build` instead of `npm run build --workspace=doc`.
+7. Update CI workflow to `./bin/aube ci -C doc && ./bin/aubr -C doc build` instead of the root workspace build.
 
 ---
 
@@ -174,8 +175,8 @@ If this decision were reversed (Docusaurus managed independently in `doc/`):
 ### Decision
 The `build-docs-site` CI job builds the Docusaurus site on every PR and push to `main` as a smoke
 test, but does **not deploy** it to GitHub Pages. Deployment is wired up in Phase 15 when content
-is ready. The job runs inside the Docker container via `./bin/npm` (the project's wrapper that
-works in both container and native mise environments).
+is ready. The job runs via `./bin/aube`/`./bin/aubr` wrappers that work in both container and native
+mise environments.
 
 ### Rationale
 - Catches build errors (broken links, TypeScript errors, missing dependencies) on every PR.
@@ -187,7 +188,7 @@ works in both container and native mise environments).
 ### Implemented in
 - `tools/test/regress-tests.yaml` — added `build-docs-site` test with `ci_stage: pr`, `tags: [smoke]`
 - `.github/workflows/regress.yml` — auto-generated from the above
-- `bin/npm` — created as a wrapper script (matches existing `bin/node`, `bin/ruby`, etc.)
+- `bin/aube` and `bin/aubr` — wrappers for aube-managed installs and script execution
 - `doc/planning/documentation-implementation-plan.md` — task 0.4.1 marked `[x]`
 
 ### Reversal: deploy immediately (skip build-only phase)

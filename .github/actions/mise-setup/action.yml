@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 name: mise setup
-description: Set up mise environment and install Ruby gems, Python packages, and npm packages
+description: Set up mise environment and install Ruby gems, Python packages, and aube packages
 inputs:
   toolchain:
     description: Whether to pull/build the RISC-V toolchain container (for C++ jobs)
@@ -15,7 +15,7 @@ runs:
       run: mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
     - uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
       with:
-        version: 2026.7.11
+        version: 2026.7.12
     # Write toolchain preference to .toolchain-local so bin/setup (section 7)
     # finds it and section 8 behaves correctly without prompting.
     - name: Configure toolchain
@@ -35,12 +35,12 @@ runs:
       uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
     - name: Login to GHCR
       if: inputs.toolchain == 'true'
-      uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+      uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-    # Cache downloaded artifacts only; let bundler, uv, and npm use their default
+    # Cache downloaded artifacts only; let bundler, uv, and aube use their default
     # install locations in the workspace/environment.
     - name: Cache udb native deps (z3, espresso, eqntott, must)
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -52,11 +52,11 @@ runs:
       with:
         path: ~/.cache/uv
         key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-    - name: Cache npm packages
+    - name: Cache aube packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:
-        path: ~/.npm
-        key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+        path: ~/.local/share/aube/store
+        key: aube-${{ runner.os }}-${{ hashFiles('package-lock.json', 'package.json', 'tools/eclipse/udb-vscode/package-lock.json', 'tools/eclipse/udb-vscode/package.json') }}
     - name: Set up environment and install dependencies
       shell: bash
       run: ./bin/setup
