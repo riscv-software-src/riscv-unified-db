@@ -1,0 +1,58 @@
+# Copyright (c) RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zilx
+long_name: Indexed Integer Load Instructions
+description: |
+  The Zilx extension provides integer load instructions that compute their
+  effective address from a base register and an index register. The extension
+  defines unscaled indexed loads and scaled indexed loads. On RV64, the
+  extension also defines scaled loads that zero-extend the low 32 bits of the
+  index register before scaling and forming the effective address.
+
+  Each Zilx instruction uses `xs1` as the index operand and `xs2` as the base
+  operand, computes an effective address, loads a byte, halfword, word, or
+  doubleword from memory, and writes the extended load result to `xd`. The
+  operand roles match the shift-add instructions of the `Zba` extension, in
+  which the shifted operand is `xs1` and the added base is `xs2`.
+
+  Effective addresses are computed using XLEN-bit two's-complement address
+  arithmetic, and address arithmetic overflow is ignored:
+
+  * For an unscaled indexed load, the effective address is the low XLEN bits of
+    `X[xs2] + X[xs1]`.
+  * For a scaled indexed load, the effective address is the low XLEN bits of
+    `X[xs2] + (X[xs1] << log2(access-size))`, where _access-size_ is the number
+    of bytes loaded by the instruction.
+  * For a scaled unsigned-word-index load (mnemonic prefix `lxsuw`), the index
+    operand is zero-extended from `X[xs1][31:0]` to 64 bits before scaling.
+    These instructions are defined only for RV64.
+
+  Byte loads are provided only as scaled forms (mnemonic prefixes `lxs` and
+  `lxsuw`). Because the scale factor for a byte access is 1, an unscaled byte
+  load would be identical to the scaled byte load, so no unscaled byte load is
+  defined. For convenience, `lxb` and `lxbu` are provided as assembler
+  pseudoinstructions for `lxsb` and `lxsbu`, respectively.
+
+  Zilx adds no architectural state, CSRs, or memory-ordering rules. Except for
+  the effective-address calculation, each Zilx instruction behaves as the
+  corresponding base integer load of the same access size and signedness, and
+  follows the same exception, address-alignment, access-fault, page-fault, PMP,
+  PMA, privilege, atomicity, and memory-ordering rules.
+
+  Zilx instructions reuse the `AMO` major opcode. The access width and
+  signedness are encoded in _funct3_ using the same encoding as base integer
+  loads, and the addressing mode is encoded in _funct5_. For all Zilx
+  instructions the _aq_ and _rl_ bits must be 0; encodings with _aq_ or _rl_
+  set are reserved.
+type: unprivileged
+versions:
+  - version: "0.1.0"
+    state: development
+    repositories:
+      - url: https://github.com/riscv/riscv-zilx
+        branch: main

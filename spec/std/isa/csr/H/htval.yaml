@@ -19,8 +19,8 @@ description: |
   Otherwise, for misaligned loads and stores that cause guest-page faults, a nonzero guest physical address in htval corresponds to the faulting portion of the access as indicated by the virtual address in stval. For instruction guest-page faults on systems with variable-length instructions, a nonzero htval corresponds to the faulting portion of the instruction as indicated by the virtual address in stval.
 
   htval is a WARL register that must be able to hold zero and may be capable of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any.
-priv_mode: M
-length: MXLEN
+priv_mode: S
+length: SXLEN
 definedBy:
   extension:
     name: H
@@ -38,5 +38,5 @@ fields:
         return CsrFieldType::RO;
       }
     description: |
-      Exception-specific information for a trap into M-mode.
+      Exception-specific information for a trap into HS-mode.
     reset_value: UNDEFINED_LEGAL

@@ -1,0 +1,30 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: c.sspopchk
+long_name: Compressed Shadow Stack Pop and Check
+description: |
+  C.SSPOPCHK pops a value from the shadow stack and checks it against link
+  register `x5`.
+
+  This instruction uses the `c.mop.5` codepoint provided by Zcmop and expands
+  to `sspopchk x5`.
+definedBy:
+  extension:
+    allOf:
+      - name: Zicfiss
+      - name: Zcmop
+assembly: x5
+encoding:
+  match: "0110001010000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

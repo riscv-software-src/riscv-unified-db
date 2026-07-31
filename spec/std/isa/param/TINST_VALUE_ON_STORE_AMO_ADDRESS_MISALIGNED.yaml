@@ -7,7 +7,7 @@ $schema: param_schema.json#
 kind: parameter
 name: TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED
 description: |
-  Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+  Value written into htinst/mtinst on a StoreAmoAddressMisaligned exception from VU/VS-mode.
 
   Possible values:
     * "always zero": Always write the value zero

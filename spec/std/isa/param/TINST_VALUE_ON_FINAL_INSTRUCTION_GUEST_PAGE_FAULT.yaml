@@ -7,7 +7,7 @@ $schema: param_schema.json#
 kind: parameter
 name: TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT
 description: |
-  Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+  Value written into htinst/mtinst when there is an instruction guest-page fault on a final translation.
 
   Possible values:
     * "always zero": Always write the value zero

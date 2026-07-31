@@ -25,3 +25,16 @@ schema:
 definedBy:
   extension:
     name: H
+requirements:
+  idl(): |
+    for (U32 i = 0; i < 3; i++) {
+      !implemented?(ExtensionName::Zicntr) -> !HCOUNTENABLE_EN[i];
+    }
+    for (U32 i = 3; i < 32; i++) {
+      !implemented?(ExtensionName::Zihpm) -> !HCOUNTENABLE_EN[i];
+      (!HPM_COUNTER_EN[i]) -> !HCOUNTENABLE_EN[i];
+    }
+  reason: |
+    Counters 0-2 are defined by Zicntr
+    Counters 3..31 are defined by Zihpm
+    When mhpmcounter[i] is not implemented, it cannot be enabled.

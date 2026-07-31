@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Shlcofideleg
+long_name: Hypervisor local counter overflow interrupt delegation
+description: |
+  Shlcofideleg supports delegating Local Counter Overflow Interrupts
+  (LCOFIs) to VS-mode.
+
+  When Shlcofideleg is implemented, `hideleg` bit 13 is writable.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-10
+requirements:
+  extension:
+    allOf:
+      - name: H
+      - name: Sscofpmf

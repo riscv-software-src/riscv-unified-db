@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /home/jcarlin/riscv-projects/riscv-unified-db/bin/wavedrom
+:wavedrom: {docdir}/../../bin/wavedrom
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -14666,6 +14666,109 @@ Included in::
 
 
 
+[#udb:doc:inst:c_sspopchk]
+== c.sspopchk
+
+Synopsis::
+Compressed Shadow Stack Pop and Check
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+c.sspopchk x5
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x6281,"type":2}]}
+....
+
+Description::
+C.SSPOPCHK pops a value from the shadow stack and checks it against link
+register `x5`.
+
+This instruction uses the xref:insts:c_mop_5.adoc#udb:doc:inst:c_mop_5[c.mop.5] codepoint provided by Zcmop and expands
+to `sspopchk x5`.
+
+
+Decode Variables::
+c.sspopchk has no decode variables.
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zicfiss*
+| any
+| *Zcmop*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:c_sspush]
+== c.sspush
+
+Synopsis::
+Compressed Shadow Stack Push
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+c.sspush x1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x6081,"type":2}]}
+....
+
+Description::
+C.SSPUSH pushes link register `x1` to the shadow stack.
+
+This instruction uses the xref:insts:c_mop_1.adoc#udb:doc:inst:c_mop_1[c.mop.1] codepoint provided by Zcmop and expands
+to `sspush x1`.
+
+
+Decode Variables::
+c.sspush has no decode variables.
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zicfiss*
+| any
+| *Zcmop*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:c_sub]
 == c.sub
 
@@ -29074,6 +29177,1095 @@ Included in::
 | Extension | Version
 
 | *I*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxd]
+== lxd
+
+Synopsis::
+Load indexed doubleword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxh]
+== lxh
+
+Synopsis::
+Load indexed halfword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxhu]
+== lxhu
+
+Synopsis::
+Load indexed halfword unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxhu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsb]
+== lxsb
+
+Synopsis::
+Load scaled indexed byte
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsb xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+The `lxb` mnemonic is an assembler pseudoinstruction for xref:insts:lxsb.adoc#udb:doc:inst:lxsb[lxsb].
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsbu]
+== lxsbu
+
+Synopsis::
+Load scaled indexed byte unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsbu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+The `lxbu` mnemonic is an assembler pseudoinstruction for xref:insts:lxsbu.adoc#udb:doc:inst:lxsbu[lxsbu].
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsd]
+== lxsd
+
+Synopsis::
+Load scaled indexed doubleword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 3)`, where `xs2` is the base and `xs1` is the index.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsh]
+== lxsh
+
+Synopsis::
+Load scaled indexed halfword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 1)`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxshu]
+== lxshu
+
+Synopsis::
+Load scaled indexed halfword unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxshu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 1)`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsuwb]
+== lxsuwb
+
+Synopsis::
+Load scaled indexed byte with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwb xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + zext32(X[xs1])`, where `xs2` is the base and `xs1` is the index.
+The index is zero-extended from `X[xs1][31:0]` before forming the address.
+Sign extend the loaded byte to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwbu]
+== lxsuwbu
+
+Synopsis::
+Load scaled indexed byte unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwbu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + zext32(X[xs1])`, where `xs2` is the base and `xs1` is the index.
+The index is zero-extended from `X[xs1][31:0]` before forming the address.
+Zero extend the loaded byte to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwd]
+== lxsuwd
+
+Synopsis::
+Load scaled indexed doubleword with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 3)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwh]
+== lxsuwh
+
+Synopsis::
+Load scaled indexed halfword with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 1)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Sign extend the loaded halfword to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwhu]
+== lxsuwhu
+
+Synopsis::
+Load scaled indexed halfword unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwhu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 1)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Zero extend the loaded halfword to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuww]
+== lxsuww
+
+Synopsis::
+Load scaled indexed word with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuww xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 2)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Sign extend the loaded word to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwwu]
+== lxsuwwu
+
+Synopsis::
+Load scaled indexed word unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwwu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 2)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Zero extend the loaded word to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsw]
+== lxsw
+
+Synopsis::
+Load scaled indexed word
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsw xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 2)`, where `xs2` is the base and `xs1` is the index.
+On RV64, the loaded word is sign-extended to 64 bits.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxswu]
+== lxswu
+
+Synopsis::
+Load scaled indexed word unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxswu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 2)`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxw]
+== lxw
+
+Synopsis::
+Load indexed word
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxw xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+On RV64, the loaded word is sign-extended to 64 bits.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxwu]
+== lxwu
+
+Synopsis::
+Load indexed word unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxwu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
 | any
 |===
 

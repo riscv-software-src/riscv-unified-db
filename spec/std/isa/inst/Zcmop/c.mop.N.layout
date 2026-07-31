@@ -42,4 +42,11 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+<% if n == 1 -%>
+hints:
+  - { $ref: inst/Zicfiss/c.sspush.yaml# }
+<% elsif n == 5 -%>
+hints:
+  - { $ref: inst/Zicfiss/c.sspopchk.yaml# }
+<% end -%>
 operation(): "" #do nothing

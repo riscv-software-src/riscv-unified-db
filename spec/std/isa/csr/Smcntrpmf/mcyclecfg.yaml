@@ -48,7 +48,7 @@ fields:
       allOf:
         - xlen: 64
         - extension:
-            name: M
+            name: Sm
     description: If set, then counting of events in M-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 

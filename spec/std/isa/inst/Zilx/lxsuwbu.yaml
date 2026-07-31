@@ -1,0 +1,40 @@
+# Copyright (c) RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: lxsuwbu
+long_name: Load scaled indexed byte unsigned with unsigned word index
+description: |
+  Load 8 bits of data into register `xd` from the effective address
+  `X[xs2] + zext32(X[xs1])`, where `xs2` is the base and `xs1` is the index.
+  The index is zero-extended from `X[xs1][31:0]` before forming the address.
+  Zero extend the loaded byte to 64 bits.
+
+  This instruction is defined only for RV64.
+definedBy:
+  allOf:
+    - xlen: 64
+    - extension:
+        name: Zilx
+assembly: xd, (xs2), xs1
+encoding:
+  match: 1111000----------100-----0101111
+  variables:
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg virtual_address = X[xs2] + X[xs1][31:0];
+
+  X[xd] = read_memory(8, virtual_address, $encoding);
