@@ -12,7 +12,7 @@ description: |
     * [32]:     VSXLEN is always 32
     * [64]:     VSXLEN is always 64
     * [32, 64]: VSXLEN can be changed (via `hstatus.VSXL`) between 32 and 64
-long_name: TODO
+long_name: Virtual Supervisor Mode Register Widths
 schema:
   type: array
   items:
