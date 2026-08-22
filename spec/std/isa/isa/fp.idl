@@ -140,6 +140,38 @@ function nan_box {
   }
 }
 
+function f16_operand {
+  returns Bits<16>
+  arguments Bits<64> f_value
+  description {
+    Reads a half-precision value from an FP register, converting an incorrectly
+    NaN-boxed value to the canonical NaN.
+  }
+  body {
+    if (implemented?(ExtensionName::D) && f_value[63:16] != 48'hFFFFFFFFFFFF) {
+      return HP_CANONICAL_NAN;
+    }
+    if (!implemented?(ExtensionName::D) && f_value[31:16] != 16'hFFFF) {
+      return HP_CANONICAL_NAN;
+    }
+    return f_value[15:0];
+  }
+}
+
+function f16_result {
+  returns Bits<64>
+  arguments Bits<16> value
+  description {
+    Produces the FP-register representation of a half-precision result.
+  }
+  body {
+    if (implemented?(ExtensionName::D)) {
+      return 64'hFFFFFFFFFFFF0000 | value;
+    }
+    return 32'hFFFF0000 | value;
+  }
+}
+
 function check_f_ok {
   arguments
     Bits<INSTR_ENC_SIZE> encoding

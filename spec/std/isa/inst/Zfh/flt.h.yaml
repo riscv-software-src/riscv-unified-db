@@ -31,3 +31,12 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  Bits<16> a = f16_operand(F[fs1]);
+  Bits<16> b = f16_operand(F[fs2]);
+  if (is_hp_nan?(a) || is_hp_nan?(b)) {
+    set_fp_flag(FpFlag::NV);
+    X[xd] = 0;
+  } else {
+    X[xd] = hp_less_than?(a, b) ? 1 : 0;
+  }

@@ -35,3 +35,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  F[fd] = f32_to_f64(f16_to_f32(f16_operand(F[fs1])));
+  mark_f_state_dirty();
