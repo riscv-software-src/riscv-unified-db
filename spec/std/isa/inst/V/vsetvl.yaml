@@ -40,6 +40,7 @@ operation(): |
     CSR[vtype].VTA = 0;
     CSR[vtype].VSEW = 0;
     CSR[vtype].VLMUL = 0;
+    CSR[vl].VALUE = 0;
   } else {
     # valid, do the write
     CSR[vtype].VILL = 0;

@@ -26,8 +26,15 @@
 
 namespace udb {
 
+<%# Vector state checks and updates are emitted by inst.hxx rather than IDL instruction bodies. -%>
+<%- functions = cfg_arch.reachable_functions.dup -%>
+<%- if cfg_arch.possible_instructions.any? { |inst| inst.name.downcase.start_with?("v") } -%>
+<%- functions << cfg_arch.symtab.get("check_v_state_enabled").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_v_ok").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("mark_v_state_dirty").func_def_ast -%>
+<%- end -%>
 <%# need to get symtab at function scope -%>
-<%- cfg_arch.reachable_functions.each do |func| -%>
+<%- functions.uniq(&:name).each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
 <%# next unless func.templated? || func.constexpr?(cfg_arch.symtab) # non-templated functions come next -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(func) -%>
