@@ -28,10 +28,4 @@ access:
 data_independent_timing: false
 operation(): |
   XReg virtual_address = X[xs1];
-  U32 nregs = 8;
-  for (U32 i = 0; i < VLEN / 64 * nregs; i++) {
-    U32 start_bit = (i * 64) % VLEN;
-    U32 end_bit = start_bit + 63;
-    U32 reg_off = i / (VLEN / 64);
-    write_memory(64, virtual_address + (i * 8), V[vs3 + reg_off][end_bit:start_bit], $encoding);
-  }
+  whole_register_store(vs3, virtual_address, 8, $encoding);

@@ -65,6 +65,52 @@ function mark_v_state_dirty {
   }
 }
 
+function whole_register_load {
+  arguments
+    Bits<5> vd,
+    XReg virtual_address,
+    U32 nregs,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Loads complete vector registers. Whole-register transfers use byte-granular
+    `vstart` and do not depend on the active vector configuration.
+  }
+  body {
+    U32 bytes_per_reg = VLEN / 8;
+    U32 total_bytes = bytes_per_reg * nregs;
+    for (U32 byte_index = CSR[vstart].VALUE; byte_index < total_bytes; byte_index++) {
+      U32 reg_off = byte_index / bytes_per_reg;
+      U32 start_bit = (byte_index % bytes_per_reg) * 8;
+      V[vd + reg_off][start_bit + 7:start_bit] =
+        read_memory(8, virtual_address + byte_index, encoding)[7:0];
+    }
+    CSR[vstart].VALUE = 0;
+  }
+}
+
+function whole_register_store {
+  arguments
+    Bits<5> vs3,
+    XReg virtual_address,
+    U32 nregs,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Stores complete vector registers. Whole-register transfers use byte-granular
+    `vstart` and do not depend on the active vector configuration.
+  }
+  body {
+    U32 bytes_per_reg = VLEN / 8;
+    U32 total_bytes = bytes_per_reg * nregs;
+    for (U32 byte_index = CSR[vstart].VALUE; byte_index < total_bytes; byte_index++) {
+      U32 reg_off = byte_index / bytes_per_reg;
+      U32 start_bit = (byte_index % bytes_per_reg) * 8;
+      write_memory(8, virtual_address + byte_index,
+                   V[vs3 + reg_off][start_bit + 7:start_bit], encoding);
+    }
+    CSR[vstart].VALUE = 0;
+  }
+}
+
 struct VectorState {
   Bits<7> sew;
   Bits<3> log2_sew;

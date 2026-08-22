@@ -31,12 +31,4 @@ pseudoinstructions:
 data_independent_timing: false
 operation(): |
   XReg virtual_address = X[xs1];
-  U32 eew = 8;
-  U32 elems_per_reg = VLEN / 8;
-  for (U32 r = 0; r < 2; r++) {
-    for (U32 j = 0; j < elems_per_reg; j++) {
-      U32 start_bit = j * 8;
-      U32 end_bit = start_bit + 7;
-      V[vd + r][end_bit:start_bit] = read_memory(8, virtual_address + (r * elems_per_reg + j) * 1, $encoding)[7:0];
-    }
-  }
+  whole_register_load(vd, virtual_address, 2, $encoding);
