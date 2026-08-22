@@ -61,6 +61,8 @@ namespace udb {
   <%- ilist.each do |inst| -%>
   <%- needs_rv32 = inst.rv32? && cfg_arch.possible_xlens.include?(32) -%>
   <%- needs_rv64 = inst.rv64? && cfg_arch.possible_xlens.include?(64) -%>
+  <%- vector_state_instruction = inst.name.downcase.start_with?("v") -%>
+  <%- vector_instruction = vector_state_instruction && !%w[vsetvl vsetvli vsetivli].include?(inst.name.downcase) -%>
   template <unsigned XLEN, SocModel SocType>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstWithKnownLength<XLEN, <%= inst.encoding_width %>> {
 
@@ -144,6 +146,11 @@ namespace udb {
       <%- if inst.operation_ast.nil? -%>
         m_parent->assert(false, "There is no operation() defined for this instruction");
       <%- else -%>
+      <%- if vector_instruction -%>
+      m_parent->check_v_ok(this->_encoding());
+      <%- elsif vector_state_instruction -%>
+      m_parent->check_v_state_enabled(this->_encoding());
+      <%- end -%>
       <%- if !inst.base.nil? -%>
         <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
         <%- symtab = inst.fill_symtab(inst.base, pruned_ast) -%>
@@ -167,6 +174,9 @@ namespace udb {
         <%- symtab.release -%>
       }
       <%- end -%>
+      <%- end -%>
+      <%- if vector_state_instruction -%>
+      m_parent->mark_v_state_dirty();
       <%- end -%>
     }
 

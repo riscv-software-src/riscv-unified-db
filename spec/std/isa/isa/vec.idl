@@ -18,6 +18,53 @@ enum VectorLmulType {
   Multiply
 }
 
+function check_v_state_enabled {
+  arguments
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Checks whether vector state is enabled for the current privilege mode.
+  }
+  body {
+    if (MUTABLE_MISA_V && CSR[misa].V == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+
+    if (CSR[mstatus].VS == 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_v_ok {
+  arguments
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Checks whether a vector instruction may execute with the current vector
+    configuration.
+  }
+  body {
+    check_v_state_enabled(encoding);
+
+    if (CSR[vtype].VILL == 1'b1) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function mark_v_state_dirty {
+  description {
+    Potentially updates `mstatus.VS` to the Dirty (3) state, depending on
+    configuration settings.
+  }
+  body {
+    if (HW_MSTATUS_VS_DIRTY_UPDATE == "precise") {
+      CSR[mstatus].VS = 3;
+    } else if (HW_MSTATUS_VS_DIRTY_UPDATE == "imprecise") {
+      unpredictable("The hart may or may not update mstatus.VS now");
+    }
+  }
+}
+
 struct VectorState {
   Bits<7> sew;
   Bits<3> log2_sew;
