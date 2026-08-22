@@ -63,6 +63,7 @@ namespace udb {
   <%- needs_rv64 = inst.rv64? && cfg_arch.possible_xlens.include?(64) -%>
   <%- vector_state_instruction = inst.name.downcase.start_with?("v") -%>
   <%- vector_instruction = vector_state_instruction && !%w[vsetvl vsetvli vsetivli].include?(inst.name.downcase) -%>
+  <%- whole_register_vector_instruction = inst.name.downcase.match?(/\Av(?:l[1248]re(?:8|16|32|64)|s[1248]r)\.v\z/) -%>
   template <unsigned XLEN, SocModel SocType>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstWithKnownLength<XLEN, <%= inst.encoding_width %>> {
 
@@ -146,7 +147,9 @@ namespace udb {
       <%- if inst.operation_ast.nil? -%>
         m_parent->assert(false, "There is no operation() defined for this instruction");
       <%- else -%>
-      <%- if vector_instruction -%>
+      <%- if vector_instruction && whole_register_vector_instruction -%>
+      m_parent->check_v_state_enabled(this->_encoding());
+      <%- elsif vector_instruction -%>
       m_parent->check_v_ok(this->_encoding());
       <%- elsif vector_state_instruction -%>
       m_parent->check_v_state_enabled(this->_encoding());
