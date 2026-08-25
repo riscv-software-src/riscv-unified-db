@@ -31,8 +31,10 @@ data_independent_timing: false
 operation(): |
   # vstart != 0 is reserved for this instruction per the V spec
   if (CSR[vstart].VALUE != 0) {
-    unpredictable("vcompress.vm with vstart != 0 is reserved");
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
+
+  check_vector_register_group_no_overlap(vd, vs2, $encoding);
 
   VectorState state = vector_state();
 

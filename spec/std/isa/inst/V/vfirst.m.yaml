@@ -31,7 +31,7 @@ data_independent_timing: false
 operation(): |
   # vstart != 0 is reserved for this instruction per the V spec
   if (CSR[vstart].VALUE != 0) {
-    unpredictable("vfirst.m with vstart != 0 is reserved");
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   # Find the index of the first set bit in the mask register vs2 within [0, VL).

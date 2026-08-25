@@ -28,4 +28,4 @@ access:
 data_independent_timing: false
 operation(): |
   XReg virtual_address = X[xs1];
-  whole_register_load(vd, virtual_address, 1, $encoding);
+  whole_register_load(vd, virtual_address, 1, 64, $encoding);

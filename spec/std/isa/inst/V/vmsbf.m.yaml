@@ -30,7 +30,10 @@ access:
 data_independent_timing: false
 operation(): |
   if (CSR[vstart].VALUE != 0) {
-    unpredictable("vmsbf.m with vstart != 0 is reserved");
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (vd == vs2) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   Boolean found = false;
   for (U32 i = 0; i < CSR[vl].VALUE; i++) {

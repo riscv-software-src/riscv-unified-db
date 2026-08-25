@@ -31,6 +31,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   VectorState state = vector_state();
 
   XReg acc = V[vs1][state.sew-1:0];

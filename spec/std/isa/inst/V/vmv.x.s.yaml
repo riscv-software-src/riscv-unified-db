@@ -31,6 +31,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   VectorState state = vector_state();
 
   # vmv.x.s copies element 0 of vs2 to xd, sign-extending to XLEN

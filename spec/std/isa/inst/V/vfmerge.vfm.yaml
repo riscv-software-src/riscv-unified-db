@@ -39,8 +39,10 @@ operation(): |
     U32 start_bit = (i % elems_per_reg) * state.sew;
     U32 end_bit = start_bit + state.sew - 1;
     if (V[0][i] == 1'b1) {
-      if (state.sew == 32) {
-        V[vd + reg_off][end_bit:start_bit] = F[fs1][31:0];
+      if (state.sew == 16) {
+        V[vd + reg_off][end_bit:start_bit] = f16_operand(F[fs1]);
+      } else if (state.sew == 32) {
+        V[vd + reg_off][end_bit:start_bit] = f32_operand(F[fs1]);
       } else {
         V[vd + reg_off][end_bit:start_bit] = F[fs1][63:0];
       }
