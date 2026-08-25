@@ -31,6 +31,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   check_f_ok($encoding);
   VectorState state = vector_state();
   RoundingMode mode = rm_to_mode(3'b111, $encoding);

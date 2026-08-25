@@ -29,6 +29,10 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   VectorState state = vector_state();
 
   U32 src_sew = state.sew >> 1;

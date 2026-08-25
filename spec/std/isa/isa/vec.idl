@@ -51,6 +51,212 @@ function check_v_ok {
   }
 }
 
+function check_masked_vector_register_overlap {
+  arguments
+    Bits<1> vm,
+    Bits<5> reg,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that a masked vector instruction does not overlap the mask register.
+  }
+  body {
+    if (vm == 1'b0 && reg == 5'b00000) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_v_fp_sew {
+  arguments
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Vector floating-point instructions require SEW to be at least 16 bits.
+  }
+  body {
+    if (vector_state().sew < 16) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_widening_sew {
+  arguments
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that a widening vector instruction does not require elements wider
+    than ELEN.
+  }
+  body {
+    if (vector_state().sew > ELEN / 2) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_extension_sew {
+  arguments
+    U32 factor,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that a vector extension source EEW is supported.
+  }
+  body {
+    if (vector_state().sew / factor < SEW_MIN) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_register_group_no_overlap {
+  arguments
+    Bits<5> vd,
+    Bits<5> vs2,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that equal-width vector register groups do not overlap.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (1 << state.log2_lmul) : 1;
+    if (vd < vs2 + group_regs && vs2 < vd + group_regs) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_register_groups_no_overlap {
+  arguments
+    Bits<5> first_reg,
+    U32 first_nfields,
+    U32 first_eew,
+    Bits<5> second_reg,
+    U32 second_nfields,
+    U32 second_eew,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that two vector register operands with possibly different EMUL values
+    do not overlap.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 first_numerator = first_eew;
+    U32 first_denominator = state.sew;
+    U32 second_numerator = second_eew;
+    U32 second_denominator = state.sew;
+
+    if (state.lmul_type == VectorLmulType::Multiply) {
+      first_numerator = first_numerator << state.log2_lmul;
+      second_numerator = second_numerator << state.log2_lmul;
+    } else {
+      first_denominator = first_denominator << state.log2_lmul;
+      second_denominator = second_denominator << state.log2_lmul;
+    }
+
+    U32 first_registers = first_nfields *
+      ((first_numerator + first_denominator - 1) / first_denominator);
+    U32 second_registers = second_nfields *
+      ((second_numerator + second_denominator - 1) / second_denominator);
+    if (first_reg < second_reg + second_registers &&
+        second_reg < first_reg + first_registers) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_widening_register_group_overlap {
+  arguments
+    Bits<5> vd,
+    U32 vd_eew,
+    Bits<5> vs,
+    U32 vs_eew,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check overlap legality for a destination vector register group that is
+    wider than a source group. The source may overlap only when it occupies
+    the highest-numbered part of the destination and has EMUL at least one.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 denominator = state.sew;
+    U32 vd_numerator = vd_eew;
+    U32 vs_numerator = vs_eew;
+
+    if (state.lmul_type == VectorLmulType::Multiply) {
+      vd_numerator = vd_numerator << state.log2_lmul;
+      vs_numerator = vs_numerator << state.log2_lmul;
+    } else {
+      denominator = denominator << state.log2_lmul;
+    }
+
+    U32 vd_registers = (vd_numerator + denominator - 1) / denominator;
+    U32 vs_registers = (vs_numerator + denominator - 1) / denominator;
+    Boolean overlaps = vd < vs + vs_registers && vs < vd + vd_registers;
+    Boolean source_is_highest_part = vs + vs_registers == vd + vd_registers;
+    Boolean legal_overlap = vd_eew > vs_eew && vs_numerator >= denominator &&
+      source_is_highest_part;
+
+    if (overlaps && !legal_overlap) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_widening_reduction_source_overlap {
+  arguments
+    Bits<5> vs2,
+    Bits<5> vs1,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that a widening reduction's wide scalar accumulator does not
+    overlap its narrow vector source group, which would read one register
+    with two effective element widths.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 vs2_registers = state.lmul_type == VectorLmulType::Multiply ?
+      (1 << state.log2_lmul) : 1;
+
+    if (vs2 <= vs1 && vs1 < vs2 + vs2_registers) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
+function check_vector_segment_register_group {
+  arguments
+    Bits<5> reg,
+    U32 nfields,
+    U32 eew,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check register-group legality for a segmented vector memory operand.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 emul_numerator = eew;
+    U32 emul_denominator = state.sew;
+
+    if (state.lmul_type == VectorLmulType::Multiply) {
+      emul_numerator = emul_numerator << state.log2_lmul;
+    } else {
+      emul_denominator = emul_denominator << state.log2_lmul;
+    }
+
+    if (emul_numerator > 32'd8 * emul_denominator ||
+        nfields * emul_numerator > 32'd8 * emul_denominator) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+
+    # Fractional EMUL operands still occupy one physical register per field.
+    U32 registers_per_field =
+      (emul_numerator + emul_denominator - 1) / emul_denominator;
+    if ((emul_numerator >= emul_denominator && reg % registers_per_field != 0) ||
+        reg + nfields * registers_per_field > 32'd32) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
 function mark_v_state_dirty {
   description {
     Potentially updates `mstatus.VS` to the Dirty (3) state, depending on
@@ -70,15 +276,24 @@ function whole_register_load {
     Bits<5> vd,
     XReg virtual_address,
     U32 nregs,
+    U32 eew,
     Bits<INSTR_ENC_SIZE> encoding
   description {
-    Loads complete vector registers. Whole-register transfers use byte-granular
-    `vstart` and do not depend on the active vector configuration.
+    Loads complete vector registers using the encoded effective element width.
+    Whole-register transfers do not depend on the active vector configuration.
   }
   body {
     U32 bytes_per_reg = VLEN / 8;
     U32 total_bytes = bytes_per_reg * nregs;
-    for (U32 byte_index = CSR[vstart].VALUE; byte_index < total_bytes; byte_index++) {
+    U32 elems_per_reg = VLEN / eew;
+    U32 evl = nregs * elems_per_reg;
+
+    if (CSR[vstart].VALUE >= evl || vd % nregs != 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+
+    U32 start_byte = CSR[vstart].VALUE * (eew / 8);
+    for (U32 byte_index = start_byte; byte_index < total_bytes; byte_index++) {
       U32 reg_off = byte_index / bytes_per_reg;
       U32 start_bit = (byte_index % bytes_per_reg) * 8;
       V[vd + reg_off][start_bit + 7:start_bit] =
@@ -95,12 +310,17 @@ function whole_register_store {
     U32 nregs,
     Bits<INSTR_ENC_SIZE> encoding
   description {
-    Stores complete vector registers. Whole-register transfers use byte-granular
-    `vstart` and do not depend on the active vector configuration.
+    Stores complete vector registers with encoded EEW=8. Whole-register
+    transfers do not depend on the active vector configuration.
   }
   body {
     U32 bytes_per_reg = VLEN / 8;
     U32 total_bytes = bytes_per_reg * nregs;
+
+    if (CSR[vstart].VALUE >= total_bytes || vs3 % nregs != 0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+
     for (U32 byte_index = CSR[vstart].VALUE; byte_index < total_bytes; byte_index++) {
       U32 reg_off = byte_index / bytes_per_reg;
       U32 start_bit = (byte_index % bytes_per_reg) * 8;

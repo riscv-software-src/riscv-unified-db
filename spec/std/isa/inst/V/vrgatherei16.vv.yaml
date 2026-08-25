@@ -34,6 +34,12 @@ operation(): |
   VectorState state = vector_state();
   VectorLmulType lmul_type = state.lmul_type;
 
+  # vs1 contains EEW=16 indices. At SEW=8 and LMUL=8, its EMUL would be
+  # 16, which is reserved because vector register groups cannot exceed EMUL=8.
+  if (state.sew == 8 && lmul_type == VectorLmulType::Multiply && state.log2_lmul == 3) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   XReg vlen = VLEN;
   XReg vlmax;
   if (lmul_type == VectorLmulType::Multiply) {

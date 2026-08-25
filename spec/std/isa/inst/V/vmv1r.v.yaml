@@ -27,6 +27,17 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  for (U32 i = 0; i < VLEN; i++) {
-    V[vd][i] = V[vs2][i];
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  U32 evl = elems_per_reg;
+
+  if (CSR[vstart].VALUE >= evl || vd % 1 != 0 || vs2 % 1 != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
+
+  for (U32 i = CSR[vstart].VALUE; i < evl; i++) {
+    U32 start_bit = (i % elems_per_reg) * state.sew;
+    U32 end_bit = start_bit + state.sew - 1;
+    V[vd][end_bit:start_bit] = V[vs2][end_bit:start_bit];
+  }
+  CSR[vstart].VALUE = 0;

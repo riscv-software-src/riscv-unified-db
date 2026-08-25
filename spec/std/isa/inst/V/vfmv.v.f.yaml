@@ -32,7 +32,7 @@ operation(): |
   check_f_ok($encoding);
   VectorState state = vector_state();
   U32 elems_per_reg = VLEN >> state.log2_sew;
-  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
     U32 reg_off = i / elems_per_reg;
     U32 start_bit = (i % elems_per_reg) * state.sew;
     U32 end_bit = start_bit + state.sew - 1;

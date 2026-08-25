@@ -45,7 +45,13 @@ operation(): |
       U32 dst_reg_off = i / dst_elems_per_reg;
       U32 dst_start = (i % dst_elems_per_reg) * state.sew;
       U32 dst_end = dst_start + state.sew - 1;
-      if (state.sew == 32) {
+      if (state.sew == 8) {
+        Bits<16> elem = V[vs2 + src_reg_off][src_end:src_start];
+        V[vd + dst_reg_off][dst_end:dst_start] = f32_to_i8(f16_to_f32(elem), RoundingMode::RTZ);
+      } else if (state.sew == 16) {
+        Bits<32> elem = V[vs2 + src_reg_off][src_end:src_start];
+        V[vd + dst_reg_off][dst_end:dst_start] = f32_to_i16(elem, RoundingMode::RTZ);
+      } else if (state.sew == 32) {
         V[vd + dst_reg_off][dst_end:dst_start] = f64_to_i32(V[vs2 + src_reg_off][src_end:src_start], RoundingMode::RTZ);
       }
     }

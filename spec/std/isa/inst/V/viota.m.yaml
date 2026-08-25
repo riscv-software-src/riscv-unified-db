@@ -31,7 +31,7 @@ data_independent_timing: false
 operation(): |
   # vstart != 0 is reserved for this instruction per the V spec
   if (CSR[vstart].VALUE != 0) {
-    unpredictable("viota.m with vstart != 0 is reserved");
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   VectorState state = vector_state();
