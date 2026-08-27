@@ -172,6 +172,90 @@ function f16_result {
   }
 }
 
+function bf16_operand {
+  returns Bits<16>
+  arguments Bits<64> f_value
+  description {
+    Reads a bfloat16 value from an FP register, converting an incorrectly
+    NaN-boxed value to the canonical bfloat16 NaN.
+  }
+  body {
+    if (implemented?(ExtensionName::D) && f_value[63:16] != 48'hFFFFFFFFFFFF) {
+      return 16'h7FC0;
+    }
+    if (!implemented?(ExtensionName::D) && f_value[31:16] != 16'hFFFF) {
+      return 16'h7FC0;
+    }
+    return f_value[15:0];
+  }
+}
+
+function bf16_to_f32 {
+  returns Bits<32>
+  arguments Bits<16> a
+  description {
+    Converts a bfloat16 value to binary32 without changing the value.
+    A NaN result is canonicalized and a signaling NaN raises invalid.
+  }
+  body {
+    if (a[14:7] == 8'hFF) {
+      if (a[6:0] != 0) {
+        if (a[6] == 0) { set_fp_flag(FpFlag::NV); }
+        return SP_CANONICAL_NAN;
+      }
+      return {a[15], 8'hFF, 23'h0};
+    }
+    return {a, 16'h0000};
+  }
+}
+
+function f32_to_bf16 {
+  returns Bits<16>
+  arguments
+    Bits<32> a,
+    RoundingMode mode
+  description {
+    Converts binary32 to bfloat16 using the requested rounding mode.
+  }
+  body {
+    Bits<1> sign = a[31];
+    Bits<8> exp = a[30:23];
+    Bits<23> frac = a[22:0];
+
+    if (exp == 8'hFF) {
+      if (frac != 0) {
+        if (is_sp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+        return 16'h7FC0;
+      }
+      return a[31:16];
+    }
+
+    Bits<16> result = a[31:16];
+    Bits<16> round_bits = a[15:0];
+    Boolean increment = false;
+    if (mode == RoundingMode::RNE) {
+      increment = (round_bits > 16'h8000) || ((round_bits == 16'h8000) && (result[0] == 1));
+    } else if (mode == RoundingMode::RMM) {
+      increment = round_bits >= 16'h8000;
+    } else if (mode == RoundingMode::RDN) {
+      increment = (sign == 1) && (round_bits != 0);
+    } else if (mode == RoundingMode::RUP) {
+      increment = (sign == 0) && (round_bits != 0);
+    }
+
+    if (increment) { result = result + 16'1; }
+    if (round_bits != 0) {
+      set_fp_flag(FpFlag::NX);
+      if (result[14:7] == 8'hFF) {
+        set_fp_flag(FpFlag::OF);
+      } else if (result[14:7] == 0) {
+        set_fp_flag(FpFlag::UF);
+      }
+    }
+    return result;
+  }
+}
+
 function check_f_ok {
   arguments
     Bits<INSTR_ENC_SIZE> encoding

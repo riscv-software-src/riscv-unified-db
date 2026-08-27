@@ -29,3 +29,39 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  Bits<16> result;
+  if (xs1 == 0) { result = 16'hBC00; }
+  else if (xs1 == 1) { result = 16'h0400; }
+  else if (xs1 == 2) { result = 16'h0100; }
+  else if (xs1 == 3) { result = 16'h0200; }
+  else if (xs1 == 4) { result = 16'h1C00; }
+  else if (xs1 == 5) { result = 16'h2000; }
+  else if (xs1 == 6) { result = 16'h2C00; }
+  else if (xs1 == 7) { result = 16'h3000; }
+  else if (xs1 == 8) { result = 16'h3400; }
+  else if (xs1 == 9) { result = 16'h3500; }
+  else if (xs1 == 10) { result = 16'h3600; }
+  else if (xs1 == 11) { result = 16'h3700; }
+  else if (xs1 == 12) { result = 16'h3800; }
+  else if (xs1 == 13) { result = 16'h3900; }
+  else if (xs1 == 14) { result = 16'h3A00; }
+  else if (xs1 == 15) { result = 16'h3B00; }
+  else if (xs1 == 16) { result = 16'h3C00; }
+  else if (xs1 == 17) { result = 16'h3D00; }
+  else if (xs1 == 18) { result = 16'h3E00; }
+  else if (xs1 == 19) { result = 16'h3F00; }
+  else if (xs1 == 20) { result = 16'h4000; }
+  else if (xs1 == 21) { result = 16'h4100; }
+  else if (xs1 == 22) { result = 16'h4200; }
+  else if (xs1 == 23) { result = 16'h4400; }
+  else if (xs1 == 24) { result = 16'h4800; }
+  else if (xs1 == 25) { result = 16'h4C00; }
+  else if (xs1 == 26) { result = 16'h5800; }
+  else if (xs1 == 27) { result = 16'h5C00; }
+  else if (xs1 == 28) { result = 16'h7800; }
+  else if (xs1 == 29) { result = 16'h7C00; }
+  else if (xs1 == 30) { result = 16'h7C00; }
+  else { result = HP_CANONICAL_NAN; }
+  F[fd] = f16_result(result);
+  mark_f_state_dirty();
