@@ -31,3 +31,17 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  Bits<16> a = f16_operand(F[fs1]);
+  Bits<16> b = f16_operand(F[fs2]);
+  if (is_hp_nan?(a) || is_hp_nan?(b)) {
+    if (is_hp_signaling_nan?(a) || is_hp_signaling_nan?(b)) {
+      set_fp_flag(FpFlag::NV);
+    }
+    F[fd] = f16_result(HP_CANONICAL_NAN);
+  } else {
+    # Treat -0 as less than +0 so maximumNumber selects +0.
+    Boolean a_lt_b = ((a[14:0] | b[14:0]) == 0) ? (a[15] == 1) : hp_less_than?(a, b);
+    F[fd] = f16_result(a_lt_b ? b : a);
+  }
+  mark_f_state_dirty();
