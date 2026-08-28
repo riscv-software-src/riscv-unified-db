@@ -29,3 +29,25 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # vstart != 0 is reserved for this instruction per the V spec
+  if (CSR[vstart].VALUE != 0) {
+    unpredictable("vfirst.m with vstart != 0 is reserved");
+  }
+
+  # Find the index of the first set bit in the mask register vs2 within [0, VL).
+  # Per spec: with vm=0, only active elements (where V0[i]=1) are considered.
+  # Returns -1 (all ones) if no active bits are set.
+  XReg result = {xlen(){1'b1}};  # -1 (all ones) as initial value
+  Boolean found = false;
+
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      if (!found && V[vs2][i] == 1'b1) {
+        result = i;
+        found = true;
+      }
+    }
+  }
+
+  X[xd] = result;
+  CSR[vstart].VALUE = 0;

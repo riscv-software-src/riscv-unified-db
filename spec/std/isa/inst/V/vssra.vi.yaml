@@ -31,3 +31,61 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  Bits<2> vxrm_mode = CSR[vcsr].VXRM;
+  U32 shamt = imm[((state.log2_sew > 5) ? 5 : state.log2_sew)-1:0];
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  XReg one = 1;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      XReg a_raw = V[vs2 + reg_off][end_bit:start_bit];
+      XReg sign_bit = a_raw[state.sew-1:state.sew-1];
+
+      XReg round_bit = 0;
+      if (shamt > 0) {
+        # Guard bit: bit (shamt-1) of raw source
+        XReg guard = (a_raw >> (shamt - 1)) & 1;
+        # Sticky bits: bits below shamt-1
+        XReg sticky = a_raw & ((one << (shamt - 1)) - 1);
+        # Result LSB: bit shamt of raw source
+        XReg res_lsb = (a_raw >> shamt) & 1;
+        if (vxrm_mode == 2'b00) {
+          round_bit = guard;
+        } else if (vxrm_mode == 2'b01) {
+          round_bit = guard & (sticky != 0 || res_lsb != 0 ? 1 : 0);
+        } else if (vxrm_mode == 2'b10) {
+          round_bit = 0;
+        } else {
+          round_bit = (1 - res_lsb) & (guard != 0 || sticky != 0 ? 1 : 0);
+        }
+      }
+
+      XReg logical_shifted = a_raw >> shamt;
+      XReg fill_ones;
+      if (shamt == 0) {
+        fill_ones = 0;
+      } else {
+        fill_ones = (state.sew < 64) ? (((one << state.sew) - 1) & ~((one << (state.sew - shamt)) - 1))
+                                       : ~((one << (64 - shamt)) - 1);
+      }
+      XReg shifted = (sign_bit == 1) ? (logical_shifted | fill_ones) : logical_shifted;
+      XReg result = shifted + round_bit;
+      V[vd + reg_off][end_bit:start_bit] = result[state.sew-1:0];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

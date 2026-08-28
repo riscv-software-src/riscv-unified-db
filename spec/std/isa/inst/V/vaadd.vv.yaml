@@ -31,3 +31,48 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  Bits<2> vxrm_mode = CSR[vcsr].VXRM;
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      XReg a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      XReg b = $signed(V[vs1 + reg_off][end_bit:start_bit]);
+      XReg sum = a + b;
+      XReg a_sign = a[63:63];
+      XReg overflow_bit = (state.sew == 64 && a[63:63] == b[63:63] && sum[63:63] != a[63:63]) ? a_sign : sum[63:63];
+
+      # Roundoff with d=1: v[0] is guard bit, v[1] is LSB of result
+      XReg v0 = sum & 1;
+      XReg v1 = (sum >> 1) & 1;
+      XReg round_bit;
+      if (vxrm_mode == 2'b00) {
+        round_bit = v0;
+      } else if (vxrm_mode == 2'b01) {
+        round_bit = v0 & v1;
+      } else if (vxrm_mode == 2'b10) {
+        round_bit = 0;
+      } else {
+        round_bit = (1 - v1) & v0;
+      }
+
+      XReg result = ((sum >> 1) | (overflow_bit << 63)) + round_bit;
+      V[vd + reg_off][end_bit:start_bit] = result[state.sew-1:0];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

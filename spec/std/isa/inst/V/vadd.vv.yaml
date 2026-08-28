@@ -44,10 +44,14 @@ operation(): |
     vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
   }
 
+  U32 elems_per_reg = VLEN >> state.log2_sew;
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
-    U32 start_bit_pos = i * state.sew;
-    U32 end_bit_pos = start_bit_pos + state.sew - 1;
-    V[vd][end_bit_pos:start_bit_pos] = V[vs2][end_bit_pos:start_bit_pos] + V[vs1][end_bit_pos:start_bit_pos];
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      V[vd + reg_off][end_bit:start_bit] = V[vs2 + reg_off][end_bit:start_bit] + V[vs1 + reg_off][end_bit:start_bit];
+    }
   }
 
   CSR[vstart].VALUE = 0;

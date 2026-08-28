@@ -33,3 +33,42 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 32) {
+        Bits<32> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<32> b = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<1> sign_a = a[31:31];
+        Bits<1> sign_b = b[31:31];
+        if (is_sp_nan?(a) || is_sp_nan?(b)) {
+          if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) {
+            set_fp_flag(FpFlag::NV);
+          }
+          V[vd][i] = 1'b1;
+        } else {
+          V[vd][i] = (!((a == b) || ((a[30:0] | b[30:0]) == 0))) ? 1'b1 : 1'b0;
+        }
+      } else {
+        Bits<64> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<64> b = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<1> sign_a = a[63:63];
+        Bits<1> sign_b = b[63:63];
+        if (is_dp_nan?(a) || is_dp_nan?(b)) {
+          if (is_dp_signaling_nan?(a) || is_dp_signaling_nan?(b)) {
+            set_fp_flag(FpFlag::NV);
+          }
+          V[vd][i] = 1'b1;
+        } else {
+          V[vd][i] = (!((a == b) || ((a[62:0] | b[62:0]) == 0))) ? 1'b1 : 1'b0;
+        }
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

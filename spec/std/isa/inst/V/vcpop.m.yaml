@@ -29,3 +29,16 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    unpredictable("vcpop.m with vstart != 0 is reserved");
+  }
+  XReg count = 0;
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      if (V[vs2][i] == 1'b1) {
+        count = count + 1;
+      }
+    }
+  }
+  X[xd] = count;
+  CSR[vstart].VALUE = 0;

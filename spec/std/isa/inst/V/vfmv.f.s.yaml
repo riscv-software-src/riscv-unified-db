@@ -29,3 +29,11 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  if (state.sew == 32) {
+    F[fd] = nan_box(32, 64, V[vs2][31:0]);
+  } else {
+    F[fd] = V[vs2][state.sew - 1:0];
+  }
+  mark_f_state_dirty();

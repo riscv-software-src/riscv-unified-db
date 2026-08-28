@@ -31,3 +31,36 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  RoundingMode mode = rm_to_mode(3'b111, $encoding);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  if (state.sew == 32) {
+    Bits<32> acc = V[vs1][31:0];
+    for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+      if (vm == 1'b1 || V[0][i] == 1'b1) {
+        U32 reg_off = i / elems_per_reg;
+        U32 start_bit = (i % elems_per_reg) * state.sew;
+        Bits<32> elem = V[vs2 + reg_off][start_bit + state.sew - 1:start_bit];
+        acc = f32_add(acc, elem, mode);
+      }
+    }
+    if (CSR[vl].VALUE > 0) {
+      V[vd][31:0] = acc;
+    }
+  } else {
+    Bits<64> acc = V[vs1][63:0];
+    for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+      if (vm == 1'b1 || V[0][i] == 1'b1) {
+        U32 reg_off = i / elems_per_reg;
+        U32 start_bit = (i % elems_per_reg) * state.sew;
+        Bits<64> elem = V[vs2 + reg_off][start_bit + state.sew - 1:start_bit];
+        acc = f64_add(acc, elem, mode);
+      }
+    }
+    if (CSR[vl].VALUE > 0) {
+      V[vd][63:0] = acc;
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

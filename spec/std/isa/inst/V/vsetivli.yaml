@@ -51,7 +51,13 @@ operation(): |
 
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  XReg vlmax;
+  if (state.lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    # Fractional LMUL (mf2/mf4/mf8): divide VLEN by LMUL denominator
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
   XReg AVL = uimm;
   XReg CEIL_AVL_OVER_TWO = (AVL + 1) / 2;
   if (AVL <= vlmax) {
