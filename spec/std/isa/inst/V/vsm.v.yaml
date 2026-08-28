@@ -27,3 +27,12 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  # Store ceil(vl/8) bytes from mask register to memory.
+  # A simple implementation stores all VLEN/8 bytes (= 16 for VLEN=128).
+  for (U32 i = 0; i < (VLEN / 8); i++) {
+    U32 byte_start = i * 8;
+    U32 byte_end = byte_start + 7;
+    write_memory(8, virtual_address + i, V[vs3][byte_end:byte_start], $encoding);
+  }
+  CSR[vstart].VALUE = 0;

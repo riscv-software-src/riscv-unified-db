@@ -29,3 +29,15 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  # "A simple in-order implementation can ignore the settings and simply execute all vector instructions using the undisturbed policy"
+  U32 elems_per_reg = VLEN / 32;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * 32;
+      U32 end_bit = start_bit + 31;
+      write_memory(32, virtual_address + (i * 4), V[vs3 + reg_off][end_bit:start_bit], $encoding);
+    }
+  }
+  CSR[vstart].VALUE = 0;

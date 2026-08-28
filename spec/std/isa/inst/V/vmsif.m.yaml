@@ -29,3 +29,20 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    unpredictable("vmsif.m with vstart != 0 is reserved");
+  }
+  Boolean found = false;
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      if (found) {
+        V[vd][i] = 1'b0;
+      } else {
+        V[vd][i] = 1'b1;
+        if (V[vs2][i] == 1'b1) {
+          found = true;
+        }
+      }
+    }
+  }
+  CSR[vstart].VALUE = 0;

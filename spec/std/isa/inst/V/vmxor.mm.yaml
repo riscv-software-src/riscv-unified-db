@@ -32,3 +32,12 @@ pseudoinstructions:
     to: vmclr.m vd
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    V[vd][i] = V[vs2][i] ^ V[vs1][i];
+  }
+  if (CSR[vtype].VTA == 1'b1) {
+    for (U32 i = CSR[vl].VALUE; i < VLEN; i++) {
+      V[vd][i] = 1'b1;
+    }
+  }

@@ -27,3 +27,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+
+  if (CSR[vl].VALUE > 0) {
+    V[vd][state.sew-1:0] = X[xs1][state.sew-1:0];
+  }

@@ -31,3 +31,116 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  Bits<2> vxrm_mode = CSR[vcsr].VXRM;
+  XReg sext_xs1 = $signed(X[xs1]);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  XReg one = 1;
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      XReg a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      XReg b = $signed(sext_xs1[state.sew-1:0]);
+
+      if (state.sew == 64) {
+        Boolean neg_result = (a[63:63] != b[63:63]);
+        XReg abs_a = (a[63:63] == 1'b1) ? -a : a;
+        XReg abs_b = (b[63:63] == 1'b1) ? -b : b;
+        XReg mag_hi = mul64Hi(abs_a, abs_b);
+        XReg mag_lo = abs_a * abs_b;
+
+        XReg full_hi;
+        XReg full_lo;
+        if (neg_result) {
+          full_lo = ~mag_lo + 1;
+          full_hi = (mag_lo == 0) ? (~mag_hi + 1) : ~mag_hi;
+        } else {
+          full_hi = mag_hi;
+          full_lo = mag_lo;
+        }
+
+        XReg guard64 = (full_lo >> 62) & 1;
+        XReg sticky64 = full_lo & ((one << 62) - 1);
+        XReg res_lsb64 = (full_lo >> 63) & 1;
+
+        XReg round_bit64 = 0;
+        if (vxrm_mode == 2'b00) {
+          round_bit64 = guard64;
+        } else if (vxrm_mode == 2'b01) {
+          round_bit64 = guard64 & (sticky64 != 0 ? 1'b1 : 1'b0 | res_lsb64);
+        } else if (vxrm_mode == 2'b10) {
+          round_bit64 = 0;
+        } else {
+          round_bit64 = ~res_lsb64 & (guard64 != 0 ? 1'b1 : 1'b0 | (sticky64 != 0 ? 1'b1 : 1'b0));
+        }
+
+        XReg shifted = (full_hi << 1) | (full_lo >> 63);
+        XReg result_full = shifted + round_bit64;
+        XReg sign_of_result = full_hi[63:63];
+        Boolean overflow = (shifted[63:63] != sign_of_result) || (shifted[63:63] == 1'b0 && result_full[63:63] == 1'b1);
+
+        if (overflow) {
+          if (sign_of_result == 1'b0) {
+            V[vd + reg_off][end_bit:start_bit] = ((one << state.sew) - 1) >> 1;
+          } else {
+            V[vd + reg_off][end_bit:start_bit] = one << (state.sew - 1);
+          }
+          CSR[vcsr].VXSAT = 1'b1;
+        } else {
+          V[vd + reg_off][end_bit:start_bit] = result_full;
+        }
+      } else {
+        XReg product = a * b;
+
+        U32 d = state.sew - 1;
+        XReg guard = (product >> (d - 1)) & 1;
+        XReg sticky = product & ((one << (d - 1)) - 1);
+        XReg res_lsb = (product >> d) & 1;
+
+        XReg round_bit = 0;
+        if (vxrm_mode == 2'b00) {
+          round_bit = guard;
+        } else if (vxrm_mode == 2'b01) {
+          round_bit = guard & (sticky != 0 ? 1'b1 : 1'b0 | res_lsb);
+        } else if (vxrm_mode == 2'b10) {
+          round_bit = 0;
+        } else {
+          round_bit = ~res_lsb & (guard != 0 ? 1'b1 : 1'b0 | (sticky != 0 ? 1'b1 : 1'b0));
+        }
+
+        XReg sign_bit = product[63:63];
+        XReg logical_shifted = product >> d;
+        XReg fill_ones = (d == 0) ? 0 : ~((one << (64 - d)) - 1);
+        XReg shifted = (sign_bit == 1) ? (logical_shifted | fill_ones) : logical_shifted;
+        XReg result_full = shifted + round_bit;
+
+        XReg truncated = $signed(result_full[state.sew-1:0]);
+        if ($signed(result_full) != $signed(truncated)) {
+          if (result_full[63:63] == 1'b0) {
+            V[vd + reg_off][end_bit:start_bit] = ((one << state.sew) - 1) >> 1;
+          } else {
+            V[vd + reg_off][end_bit:start_bit] = one << (state.sew - 1);
+        }
+          CSR[vcsr].VXSAT = 1'b1;
+        } else {
+          V[vd + reg_off][end_bit:start_bit] = result_full[state.sew-1:0];
+        }
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

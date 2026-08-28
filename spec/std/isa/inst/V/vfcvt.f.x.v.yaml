@@ -29,3 +29,23 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  RoundingMode mode = rm_to_mode(3'b111, $encoding);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 32) {
+        Bits<32> elem = V[vs2 + reg_off][end_bit:start_bit];
+        V[vd + reg_off][end_bit:start_bit] = i32_to_f32($signed(elem), mode);
+      } else {
+        Bits<64> elem = V[vs2 + reg_off][end_bit:start_bit];
+        V[vd + reg_off][end_bit:start_bit] = i64_to_f64($signed(elem), mode);
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

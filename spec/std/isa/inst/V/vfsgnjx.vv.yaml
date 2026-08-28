@@ -36,3 +36,19 @@ pseudoinstructions:
     to: vfabs.v vd, vs2
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      Bits<1> s1 = V[vs1 + reg_off][end_bit:end_bit];
+      Bits<1> s2 = V[vs2 + reg_off][end_bit:end_bit];
+      V[vd + reg_off][end_bit:end_bit] = s1 ^ s2;
+      V[vd + reg_off][end_bit - 1:start_bit] = V[vs2 + reg_off][end_bit - 1:start_bit];
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

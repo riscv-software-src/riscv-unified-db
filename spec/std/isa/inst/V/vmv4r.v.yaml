@@ -27,3 +27,9 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  for (U32 i = 0; i < VLEN; i++) {
+    V[vd][i] = V[vs2][i];
+    V[vd+1][i] = V[vs2+1][i];
+    V[vd+2][i] = V[vs2+2][i];
+    V[vd+3][i] = V[vs2+3][i];
+  }

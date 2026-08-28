@@ -31,3 +31,33 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      XReg vs2_elem = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      XReg vs1_elem = $signed(V[vs1 + reg_off][end_bit:start_bit]);
+      if (vs1_elem == 0) {
+        V[vd + reg_off][end_bit:start_bit] = vs2_elem[state.sew-1:0];
+      } else if ($signed(vs2_elem) == $signed(vs1_elem) && $signed(vs1_elem) == -2'sd1) {
+        V[vd + reg_off][end_bit:start_bit] = 0;
+      } else {
+        V[vd + reg_off][end_bit:start_bit] = ($signed(vs2_elem) % $signed(vs1_elem))[state.sew-1:0];
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

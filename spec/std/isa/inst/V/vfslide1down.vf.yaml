@@ -33,3 +33,27 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  U32 vl = CSR[vl].VALUE;
+  for (U32 i = CSR[vstart].VALUE; i < vl; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (i + 1 < vl) {
+        U32 src_reg_off = (i + 1) / elems_per_reg;
+        U32 src_start = ((i + 1) % elems_per_reg) * state.sew;
+        V[vd + reg_off][end_bit:start_bit] = V[vs2 + src_reg_off][src_start + state.sew - 1:src_start];
+      } else {
+        if (state.sew == 32) {
+          V[vd + reg_off][end_bit:start_bit] = F[fs1][31:0];
+        } else {
+          V[vd + reg_off][end_bit:start_bit] = F[fs1][63:0];
+        }
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

@@ -27,3 +27,13 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  U32 eew = 64;
+  U32 elems_per_reg = VLEN / 64;
+  for (U32 r = 0; r < 8; r++) {
+    for (U32 j = 0; j < elems_per_reg; j++) {
+      U32 start_bit = j * 64;
+      U32 end_bit = start_bit + 63;
+      V[vd + r][end_bit:start_bit] = read_memory(64, virtual_address + (r * elems_per_reg + j) * 8, $encoding)[63:0];
+    }
+  }

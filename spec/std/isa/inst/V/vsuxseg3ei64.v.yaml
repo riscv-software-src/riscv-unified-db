@@ -31,3 +31,37 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  VectorState state = vector_state();
+  U32 idx_elems_per_reg = VLEN / 64;
+  U32 dat_elems_per_reg = VLEN >> state.log2_sew;
+  U32 dat_emul;
+  if (state.lmul_type == VectorLmulType::Multiply) {
+    dat_emul = 32'd1 << state.log2_lmul;
+  } else {
+    dat_emul = 1;
+  }
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 idx_reg_off = i / idx_elems_per_reg;
+      U32 idx_start = (i % idx_elems_per_reg) * 64;
+      XReg offset = V[vs2 + idx_reg_off][idx_start + 63:idx_start];
+      XReg base_addr = virtual_address + offset;
+      U32 dat_reg_off = i / dat_elems_per_reg;
+      U32 dat_start = (i % dat_elems_per_reg) * state.sew;
+      U32 dat_end = dat_start + state.sew - 1;
+      for (U32 f = 0; f < 3; f++) {
+        XReg addr = base_addr + f * (state.sew / 8);
+        if (state.sew == 8) {
+          write_memory(8, addr, V[vs3 + f * dat_emul + dat_reg_off][dat_end:dat_start], $encoding);
+        } else if (state.sew == 16) {
+          write_memory(16, addr, V[vs3 + f * dat_emul + dat_reg_off][dat_end:dat_start], $encoding);
+        } else if (state.sew == 32) {
+          write_memory(32, addr, V[vs3 + f * dat_emul + dat_reg_off][dat_end:dat_start], $encoding);
+        } else {
+          write_memory(64, addr, V[vs3 + f * dat_emul + dat_reg_off][dat_end:dat_start], $encoding);
+        }
+      }
+    }
+  }
+  CSR[vstart].VALUE = 0;

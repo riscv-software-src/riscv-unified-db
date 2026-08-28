@@ -31,3 +31,39 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      XReg vs2_elem = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      XReg vs1_elem = $signed(V[vs1 + reg_off][end_bit:start_bit]);
+      if (state.sew == 64) {
+        Boolean neg_result = (vs2_elem[63:63] != vs1_elem[63:63]);
+        XReg abs_a = (vs2_elem[63:63] == 1'b1) ? -vs2_elem : vs2_elem;
+        XReg abs_b = (vs1_elem[63:63] == 1'b1) ? -vs1_elem : vs1_elem;
+        XReg hi = mul64Hi(abs_a, abs_b);
+        XReg lo = abs_a * abs_b;
+        if (neg_result) {
+          hi = ~hi + ((lo == 0) ? 1 : 0);
+        }
+        V[vd + reg_off][end_bit:start_bit] = hi;
+      } else {
+        V[vd + reg_off][end_bit:start_bit] = (vs2_elem * vs1_elem)[2*state.sew-1:state.sew];
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

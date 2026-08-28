@@ -29,3 +29,18 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    U32 reg_off = i / elems_per_reg;
+    U32 start_bit = (i % elems_per_reg) * state.sew;
+    U32 end_bit = start_bit + state.sew - 1;
+    XReg borrow_in = V[0][i];
+    XReg vs2_val = V[vs2 + reg_off][end_bit:start_bit];
+    XReg xs1_val = X[xs1][state.sew-1:0];
+    XReg sub1 = xs1_val + borrow_in;
+    V[vd][i] = (vs2_val < sub1 || (borrow_in == 1'b1 && xs1_val == {state.sew{1'b1}})) ? 1'b1 : 1'b0;
+  }
+
+  CSR[vstart].VALUE = 0;

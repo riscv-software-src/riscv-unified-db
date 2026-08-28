@@ -31,3 +31,63 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  Bits<2> vxrm_mode = CSR[vcsr].VXRM;
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  XReg one = 1;
+  U32 src_elems_per_reg = VLEN >> (state.log2_sew + 1);
+
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      U32 src_sew = state.sew << 1;
+      U32 src_reg_off = i / src_elems_per_reg;
+      U32 src_start = (i % src_elems_per_reg) * src_sew;
+      U32 src_end = src_start + src_sew - 1;
+
+      U32 shamt = V[vs1 + reg_off][end_bit:start_bit][state.log2_sew:0];
+      XReg a = V[vs2 + src_reg_off][src_end:src_start];
+
+      XReg round_bit = 0;
+      if (shamt > 0) {
+        XReg guard = (a >> (shamt - 1)) & 1;
+        XReg sticky = a & ((one << (shamt - 1)) - 1);
+        XReg res_lsb = (a >> shamt) & 1;
+        if (vxrm_mode == 2'b00) {
+          round_bit = guard;
+        } else if (vxrm_mode == 2'b01) {
+          round_bit = guard & (sticky != 0 ? 1'b1 : 1'b0 | res_lsb);
+        } else if (vxrm_mode == 2'b10) {
+          round_bit = 0;
+        } else {
+          round_bit = (res_lsb ^ 1'b1) & (guard != 0 ? 1'b1 : 1'b0 | (sticky != 0 ? 1'b1 : 1'b0));
+        }
+      }
+
+      XReg shifted_sext = a >> shamt;
+      XReg result_full = shifted_sext + round_bit;
+      XReg max_val = (one << state.sew) - 1;
+      if (result_full > max_val) {
+        V[vd + reg_off][end_bit:start_bit] = max_val;
+        CSR[vcsr].VXSAT = 1'b1;
+      } else {
+        V[vd + reg_off][end_bit:start_bit] = result_full[state.sew-1:0];
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;
