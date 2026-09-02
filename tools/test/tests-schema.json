@@ -95,7 +95,7 @@
               "items": { "type": "string" }
             },
             "ci_stage": {
-              "enum": ["pr", "merge_queue"]
+              "enum": ["pr", "merge_queue", "manual"]
             },
             "gh_save_artifact": {
               "description": "Use this if something from the test should be saved for a later action.\nThe upload *only* occurs when the test is being run on a `push` event to main.\nWhen used, the file or folder at `path` will be uploaded to github after all test steps complete.\n\nThis is typically used to save an artifact to display on the pages deployment.",

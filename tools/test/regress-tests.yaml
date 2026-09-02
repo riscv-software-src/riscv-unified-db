@@ -258,6 +258,22 @@ tests:
       - name: Run vector riscv-tests
         run: ./do test:riscv_vector_tests CONFIG=rv64-vector IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
 
+  regress-riscv-arch-test-vector-udb-64-max:
+    ci_stage: manual
+    toolchain_container: true
+    tags:
+      - integration
+      - vector
+    timeout_minutes: 120
+    test:
+      - name: Run udb-64-max vector arch-tests
+        run: >
+          EXTENSIONS=Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64
+          JOBS=4
+          BUILD_TYPE=debug
+          IGNOREUNDEFINED=YES
+          ./tools/test/run_udb_64_max_vector_arch_test.sh
+
   regress-profile-extensions:
     ci_stage: pr
     test:
