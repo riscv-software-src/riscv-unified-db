@@ -32,7 +32,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 def validate_test(test_name: str, test_data: dict[str, Any]) -> None:
     ci_stage = test_data["ci_stage"]
-    if ci_stage not in {"pr", "merge_queue"}:
+    if ci_stage not in {"pr", "merge_queue", "manual"}:
         raise ValueError(f"bad ci_stage in test '{test_name}': {ci_stage}")
 
     matrix = test_data.get("strategy", {}).get("matrix")
@@ -101,13 +101,19 @@ def main() -> None:
     template_job_names = [name for name in regress_yaml["jobs"] if name != "never-runs"]
     tests = load_yaml(TEST_DIR / "regress-tests.yaml")
 
+    ci_tests: dict[str, Any] = {}
     for test_name, test_data in tests["tests"].items():
         validate_test(test_name, test_data)
+        if test_data["ci_stage"] == "manual":
+            continue
+        ci_tests[test_name] = test_data
+
+    for test_name, test_data in ci_tests.items():
         regress_yaml["jobs"][test_name] = create_job(test_data, regress_yaml)
 
     regress_yaml["jobs"]["regress-complete"] = {
         "runs-on": "ubuntu-latest",
-        "needs": list(tests["tests"].keys()) + template_job_names,
+        "needs": list(ci_tests.keys()) + template_job_names,
         "if": "always()",
         "steps": [
             {
