@@ -5,6 +5,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <optional>
 #include <nlohmann/json.hpp>
 #include <sys/param.h>
 
@@ -41,7 +42,11 @@ struct Options
   std::string elfFilePath;
   bool halt;
   bool gdbMode;
+  bool uartEnabled;
+  bool clintEnabled;
   uint16_t gdbPort;
+  uint64_t uartBase;
+  uint64_t clintBase;
   std::vector<std::string> trace;
 
   Options()
@@ -50,7 +55,11 @@ struct Options
     showConfigs = false;
     halt = false;
     gdbMode = false;
+    uartEnabled = false;
+    clintEnabled = false;
     gdbPort = GDB_PORT_DEFAULT;
+    uartBase = 0;
+    clintBase = 0;
   }
 };
 
@@ -81,6 +90,8 @@ private:
   int CreateMemoryMap(std::filesystem::path memMapPath,
                       std::filesystem::path elfPath = "");
   void SetInitState(Options& opts);
+  void UpdatePlatformInterruptLines();
+  bool PlatformInterruptPending() const;
   udb::Tracer* CreateTracer(std::string& tracer);
   HostTargetInterface* CreateHostTargetInterface(udb::IssSocModel* pSoC, std::filesystem::path elfPath);
   int OnHartNotification(uint64_t uiEvent, void* pData);
@@ -117,6 +128,12 @@ private:
   std::list<uint64_t> m_breakpointList;
   std::list<udb::MemAccessRange> m_readWatchpointList;
   std::list<udb::MemAccessRange> m_writeWatchpointList;
+  bool m_machineSoftwareInterruptPending = false;
+  bool m_supervisorSoftwareInterruptPending = false;
+  bool m_machineTimerInterruptPending = false;
+  bool m_machineExternalInterruptPending = false;
+  bool m_supervisorExternalInterruptPending = false;
+  bool m_waitingForInterrupt = false;
 };
 
 int ParseCommandLine(int argc, char *argv[], Options &options)
@@ -126,6 +143,12 @@ int ParseCommandLine(int argc, char *argv[], Options &options)
   app.add_option("-m,--model", options.configName, "Hart model");
   app.add_option("-c,--cfg", options.configPath, "Hart configuration file");
   app.add_option("--mm, --memory-map", options.memoryMapPath, "Memory map file");
+  auto *uartBaseOption = app.add_option(
+      "--uart-base", options.uartBase,
+      "Base address of the optional minimal NS16550 console device");
+  auto *clintBaseOption = app.add_option(
+      "--clint-base", options.clintBase,
+      "Base address of the optional minimal CLINT device");
   app.add_option("-p, --gdbport", options.gdbPort, "GDB port");
   app.add_option<std::vector<std::string>>("-t, --trace", options.trace, "Tracers to enable");
   app.add_flag("-l,--list-configs", options.showConfigs,
@@ -136,6 +159,8 @@ int ParseCommandLine(int argc, char *argv[], Options &options)
   app.add_option("elf_file", options.elfFilePath, "File to run");
 
   CLI11_PARSE(app, argc, argv);
+  options.uartEnabled = uartBaseOption->count() != 0;
+  options.clintEnabled = clintBaseOption->count() != 0;
   return 0;
 }
 
@@ -179,9 +204,15 @@ InstructionSetSimulator::InstructionSetSimulator(Options& opts) :
   //Load and validate the config
   auto yaml = YAML::LoadFile(m_opts.configPath.string());
   json config = udb::ConfigValidator::validate(yaml);
+  const uint64_t misaligned_max_atomicity_granule_size =
+      config.at("params").at("MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE").get<uint64_t>();
 
   CreateMemoryMap(opts.memoryMapPath, opts.elfFilePath);
-  m_pSoC = new udb::IssSocModel(m_memMap.size, m_memMap.base);
+  m_pSoC = new udb::IssSocModel(
+      m_memMap.size, m_memMap.base,
+      opts.uartEnabled ? std::optional<uint64_t>{opts.uartBase} : std::nullopt,
+      opts.clintEnabled ? std::optional<uint64_t>{opts.clintBase} : std::nullopt,
+      misaligned_max_atomicity_granule_size);
   if(m_pSoC)
   {
     //Create Hart with reference to SoC model
@@ -283,6 +314,54 @@ int InstructionSetSimulator::CreateMemoryMap(std::filesystem::path memMapPath,
   return -1;
 }
 
+void InstructionSetSimulator::UpdatePlatformInterruptLines()
+{
+  const bool machineSoftwareInterruptPending =
+      m_pSoC->machine_software_interrupt_pending();
+  if (machineSoftwareInterruptPending != m_machineSoftwareInterruptPending) {
+    m_pHart->set_platform_software_interrupt(
+        udb::PrivilegeMode{udb::PrivilegeMode::M}, machineSoftwareInterruptPending);
+    m_machineSoftwareInterruptPending = machineSoftwareInterruptPending;
+  }
+
+  const bool supervisorSoftwareInterruptPending =
+      m_pSoC->supervisor_software_interrupt_pending();
+  if (supervisorSoftwareInterruptPending != m_supervisorSoftwareInterruptPending) {
+    m_pHart->set_platform_software_interrupt(
+        udb::PrivilegeMode{udb::PrivilegeMode::S}, supervisorSoftwareInterruptPending);
+    m_supervisorSoftwareInterruptPending = supervisorSoftwareInterruptPending;
+  }
+
+  const bool machineTimerInterruptPending = m_pSoC->machine_timer_interrupt_pending();
+  if (machineTimerInterruptPending != m_machineTimerInterruptPending) {
+    m_pHart->set_platform_timer_interrupt(
+        udb::PrivilegeMode{udb::PrivilegeMode::M}, machineTimerInterruptPending);
+    m_machineTimerInterruptPending = machineTimerInterruptPending;
+  }
+
+  const bool machineExternalInterruptPending = m_pSoC->machine_external_interrupt_pending();
+  if (machineExternalInterruptPending != m_machineExternalInterruptPending) {
+    m_pHart->set_platform_external_interrupt(
+        udb::PrivilegeMode{udb::PrivilegeMode::M}, machineExternalInterruptPending);
+    m_machineExternalInterruptPending = machineExternalInterruptPending;
+  }
+
+  const bool supervisorExternalInterruptPending =
+      m_pSoC->supervisor_external_interrupt_pending();
+  if (supervisorExternalInterruptPending != m_supervisorExternalInterruptPending) {
+    m_pHart->set_platform_external_interrupt(
+        udb::PrivilegeMode{udb::PrivilegeMode::S}, supervisorExternalInterruptPending);
+    m_supervisorExternalInterruptPending = supervisorExternalInterruptPending;
+  }
+}
+
+bool InstructionSetSimulator::PlatformInterruptPending() const
+{
+  return m_machineSoftwareInterruptPending || m_supervisorSoftwareInterruptPending ||
+         m_machineTimerInterruptPending || m_machineExternalInterruptPending ||
+         m_supervisorExternalInterruptPending;
+}
+
 int InstructionSetSimulator::Run()
 {
   int result = 0;
@@ -311,6 +390,16 @@ int InstructionSetSimulator::Run()
         break;
     }
 
+    m_pSoC->tick(m_waitingForInterrupt);
+    UpdatePlatformInterruptLines();
+
+    if (m_waitingForInterrupt && m_state != STATE_HALT) {
+      if (!PlatformInterruptPending()) {
+        continue;
+      }
+      m_waitingForInterrupt = false;
+    }
+
     switch(m_state)
     {
     case STATE_SINGLE_STEP:
@@ -326,12 +415,19 @@ int InstructionSetSimulator::Run()
       stopReason = m_pHart->run_one();
       break;
     case STATE_RUN_N:
-      stopReason = m_pHart->run_n(100);
+      // Platform interrupt state is sampled above. Keep the execution quantum
+      // to one instruction so short-lived device interrupts are observable.
+      stopReason = m_pHart->run_n(1);
       break;
     case STATE_HALT:
     default:
         stopReason = StopReason::InstLimitReached;
       break;
+    }
+
+    if (stopReason == StopReason::Wfi) {
+      m_waitingForInterrupt = true;
+      continue;
     }
 
     if (stopReason != StopReason::InstLimitReached &&

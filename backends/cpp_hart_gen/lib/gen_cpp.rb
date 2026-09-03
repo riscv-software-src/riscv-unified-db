@@ -852,6 +852,18 @@ module Idl
     lt_sub == rt.sub_type.to_cxx_no_qualifiers ? rhs_cpp : "array_cast<#{lt_sub}>(#{rhs_cpp})"
   end
 
+  # Array literals infer their element type from the first literal.  That is
+  # too narrow for a declaration such as `Bits<8> values[256] = [0x63, ...]`:
+  # the first value is representable in seven bits, while later values are not.
+  # Emit the literal in the destination element type whenever one is known.
+  def self.array_rhs_cpp(lt, rhs, symtab, indent_spaces: 2)
+    if lt.kind == :array && rhs.is_a?(ArrayLiteralAst)
+      rhs.gen_cpp_as_element_type(symtab, lt.sub_type, indent_spaces:)
+    else
+      maybe_array_cast(lt, rhs.type(symtab), rhs.gen_cpp(symtab, 0, indent_spaces:))
+    end
+  end
+
   class VariableDeclarationWithInitializationAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
@@ -865,8 +877,7 @@ module Idl
         end
       else
         lt = lhs_type(symtab)
-        rt = rhs.type(symtab)
-        rhs_cpp = Idl.maybe_array_cast(lt, rt, rhs.gen_cpp(symtab, 0, indent_spaces:))
+        rhs_cpp = Idl.array_rhs_cpp(lt, rhs, symtab, indent_spaces:)
         "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab, 0, indent_spaces:)}, #{ary_size.gen_cpp(symtab, 0, indent_spaces:)}> #{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs_cpp}"
       end
     end
@@ -929,8 +940,7 @@ module Idl
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       lt = lhs.type(symtab)
-      rt = rhs.type(symtab)
-      rhs_cpp = Idl.maybe_array_cast(lt, rt, rhs.gen_cpp(symtab, 0, indent_spaces:))
+      rhs_cpp = Idl.array_rhs_cpp(lt, rhs, symtab, indent_spaces:)
       "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs_cpp}"
     end
   end
@@ -952,7 +962,30 @@ module Idl
         rf_name = lhs_type.sub_type.name.downcase
         "#{' ' * indent}__UDB_HART->_set_#{rf_name}reg( #{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       elsif lhs.type(symtab).kind == :bits
-        "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.setBit(#{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        lhs_cpp = lhs.gen_cpp(symtab, 0, indent_spaces:)
+        idx_cpp = idx.gen_cpp(symtab, 0, indent_spaces:)
+        rhs_cpp = rhs.gen_cpp(symtab, 0, indent_spaces:)
+        if lhs_cpp.include?("_vreg(")
+          # Vector register bit-indexed assignment: must use read-modify-write to avoid
+          # modifying a temporary copy returned by _vreg() by value.
+          # Extract the register index expression from the LHS. Use a balanced-paren
+          # match: find the outermost _vreg(...) argument accounting for nested parens.
+          vreg_idx = begin
+            inner = lhs_cpp.sub(/.*__UDB_HART->_vreg\(/, "")
+            depth = 0
+            result = ""
+            inner.each_char do |c|
+              break if depth == 0 && c == ")"
+              depth += 1 if c == "("
+              depth -= 1 if c == ")"
+              result += c
+            end
+            result.empty? ? "vd()" : result
+          end
+          "#{' ' * indent}{ auto __vreg_tmp = #{lhs_cpp}; __vreg_tmp.setBit(#{idx_cpp}, #{rhs_cpp}); __UDB_HART->_set_vreg(#{vreg_idx}, __vreg_tmp); }"
+        else
+          "#{' ' * indent}#{lhs_cpp}.setBit(#{idx_cpp}, #{rhs_cpp})"
+        end
       else
         # actually an array
         "#{' ' * indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.at(#{idx.gen_cpp(symtab, 0, indent_spaces:)}.get()) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
@@ -1021,7 +1054,11 @@ module Idl
   class ArrayLiteralAst < AstNode
     sig { override.params(symtab: SymbolTable, indent: Integer, indent_spaces: Integer).returns(String) }
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "std::array<#{element_nodes.fetch(0).type(symtab).to_cxx_no_qualifiers}, #{element_nodes.size}>{#{element_nodes.map { |e| e.gen_cpp(symtab, 0) }.join(', ')}}"
+      gen_cpp_as_element_type(symtab, element_nodes.fetch(0).type(symtab), indent_spaces:)
+    end
+
+    def gen_cpp_as_element_type(symtab, element_type, indent_spaces: 2)
+      "std::array<#{element_type.to_cxx_no_qualifiers}, #{element_nodes.size}>{#{element_nodes.map { |e| e.gen_cpp(symtab, 0, indent_spaces:) }.join(', ')}}"
     end
   end
 

@@ -47,6 +47,10 @@ CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>
 template <SocModel SocType>
 void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset() {
 
+  <%- if field.alias -%>
+  // Aliases share their target field's storage and are reset with that target.
+  return;
+  <%- else -%>
   <%- ast = field.pruned_reset_value_ast -%>
   <%- if ast.nil? -%>
   <%- v = field.reset_value -%>
@@ -70,6 +74,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset(
   _hw_write(val, m_hart->xlen().to_defined());
   <%- else -%>
   _hw_write(val);
+  <%- end -%>
   <%- end -%>
   <%- end -%>
 }
@@ -218,9 +223,13 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Possibly
     <%- else -%>
 
     <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
-    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>, xlen);
+    if (!m_<%= field.name %>.readOnly(xlen)) {
+      m_<%= field.name %>._hw_write(csr_value.<%= field.name %>, xlen);
+    }
     <%- else -%>
-    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+    if (!m_<%= field.name %>.readOnly(xlen)) {
+      m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+    }
     <%- end -%>
     <%- end -%>
   }
@@ -250,7 +259,9 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Possibly
     m_<%= field.name %>._hw_write(wr_val);
   }
   <%- else -%>
-  m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+  if (!m_<%= field.name %>.readOnly(<%= cfg_arch.possible_xlens[0] %>_b)) {
+    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+  }
   <%- end -%>
   <%- end -%>
   return true;

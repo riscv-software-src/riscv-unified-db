@@ -88,6 +88,10 @@ namespace udb {
         try {
           raise(ExceptionCode{ExceptionCode::IllegalInstruction}, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION.value() ? enc : decltype(enc){0});
         } catch (const AbortInstruction& e) {
+          // raise() has installed the trap target in m_next_pc.  Commit it
+          // before returning so the next run begins at the trap vector rather
+          // than re-fetching the faulting PC in the handler's privilege mode.
+          advance_pc();
           return StopReason::Exception;
         }
       }
@@ -170,11 +174,10 @@ namespace udb {
 
           m_cur_inst = current_bb->alloc_inst();
           if (_decode(m_pc, enc, m_cur_inst) == false) {
-            try {
-              raise(ExceptionCode{ExceptionCode::IllegalInstruction}, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION.value() ? enc : decltype(enc){0});
-            } catch (const AbortInstruction& e) {
-              return StopReason::Exception;
-            }
+            // alloc_inst() reserves a cache slot before decode.  Do not retain
+            // that unconstructed slot when the illegal-instruction trap returns.
+            current_bb->invalidate();
+            raise(ExceptionCode{ExceptionCode::IllegalInstruction}, mode(), m_params.REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION.value() ? enc : decltype(enc){0});
           }
           this->Notify(DECODE_EVENT, (void*)m_cur_inst);
 

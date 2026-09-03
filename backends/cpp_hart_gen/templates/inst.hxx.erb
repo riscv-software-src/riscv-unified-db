@@ -64,6 +64,29 @@ namespace udb {
   <%- vector_state_instruction = inst.name.downcase.start_with?("v") -%>
   <%- vector_instruction = vector_state_instruction && !%w[vsetvl vsetvli vsetivli].include?(inst.name.downcase) -%>
   <%- whole_register_vector_instruction = inst.name.downcase.match?(/\Av(?:l[1248]re(?:8|16|32|64)|s[1248]r)\.v\z/) -%>
+  <%- decode_xlen = needs_rv32 ? 32 : 64 -%>
+  <%- decode_variable_names = inst.decode_variables(decode_xlen).map { |dv| dv.name.to_s } -%>
+  <%- vector_register_operands = %w[vd vs1 vs2 vs3].select { |name| decode_variable_names.include?(name) } -%>
+  <%- implicit_v0_mask = inst.assembly.split(/\s*,\s*/).include?("v0") -%>
+  <%- mask_result_instruction = inst.name.downcase.match?(/\Av(?:m(?:adc|sbc|seq|sne|sltu?|sleu?|sgtu?)|mf(?:eq|ne|lt|le|gt|ge))\./) -%>
+  <%- reduction_instruction = inst.name.downcase.match?(/\Av(?:f|w|fw)?red/) -%>
+  <%- vector_fp_instruction = (inst.name.downcase.start_with?("vf") || inst.name.downcase.start_with?("vmf")) && !inst.name.downcase.start_with?("vfirst") && !inst.name.downcase.match?(/\Avfwcvt\.f\.x(?:u)?\.v\z|\Avfncvt(?:\.rtz)?\.x(?:u)?\.f\.w\z/) -%>
+  <%- segment_match = inst.name.downcase.match(/\Av(?:l(?:s|ux|ox)?|s(?:s|ux|ox)?)seg([2-8])e(i?)(8|16|32|64)(?:ff)?\.v\z/) -%>
+  <%- segment_fields = segment_match && segment_match[1] -%>
+  <%- segment_indexed = segment_match && segment_match[2] == "i" -%>
+  <%- segment_eew = segment_match && segment_match[3] -%>
+  <%- segment_base_operand = inst.name.downcase.start_with?("vl") ? "vd" : "vs3" -%>
+  <%- gather_instruction = inst.name.downcase.match?(/\Avrgather(?:ei16)?\.(?:vv|vx|vi)\z/) -%>
+  <%- viota_instruction = inst.name.downcase == "viota.m" -%>
+  <%- slideup_instruction = inst.name.downcase.match?(/\Av(?:f)?slide(?:1)?up\./) -%>
+  <%- unit_load_match = inst.name.downcase.match(/\Avle(8|16|32|64)\.v\z/) -%>
+  <%- widening_instruction = inst.name.downcase.match?(/\Av(?:f)?w/) -%>
+  <%- widening_reduction_instruction = inst.name.downcase.match?(/\Av(?:f|w|fw)?red/) -%>
+  <%- widening_wide_vs2_instruction = widening_instruction && inst.name.downcase.match?(/\.w(?:v|x|f)\z/) -%>
+  <%- widening_wv_instruction = widening_wide_vs2_instruction && inst.name.downcase.end_with?(".wv") -%>
+  <%- widening_vv_instruction = widening_instruction && inst.name.downcase.end_with?(".vv") -%>
+  <%- narrowing_shift_instruction = inst.name.downcase.match?(/\Avn(?:clipu?|sra|srl)\.wv\z/) -%>
+  <%- extension_match = inst.name.downcase.match(/\Av[sz]ext\.vf([248])\z/) -%>
   template <unsigned XLEN, SocModel SocType>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstWithKnownLength<XLEN, <%= inst.encoding_width %>> {
 
@@ -151,6 +174,62 @@ namespace udb {
       m_parent->check_v_state_enabled(this->_encoding());
       <%- elsif vector_instruction -%>
       m_parent->check_v_ok(this->_encoding());
+      <%- if vector_fp_instruction -%>
+      m_parent->check_v_fp_sew(this->_encoding());
+      <%- end -%>
+      <%- if segment_match -%>
+      m_parent->check_vector_segment_register_group(<%= segment_base_operand %>(), _Bits<32, false>(<%= segment_fields %>_b), <%= segment_indexed ? "m_parent->vector_state().sew" : "_Bits<32, false>(#{segment_eew}_b)" %>, this->_encoding());
+      <%- if segment_indexed -%>
+      m_parent->check_vector_segment_register_group(vs2(), _Bits<32, false>(1_b), _Bits<32, false>(<%= segment_eew %>_b), this->_encoding());
+      <%- if segment_base_operand == "vd" -%>
+      m_parent->check_vector_register_groups_no_overlap(<%= segment_base_operand %>(), _Bits<32, false>(<%= segment_fields %>_b), m_parent->vector_state().sew, vs2(), _Bits<32, false>(1_b), _Bits<32, false>(<%= segment_eew %>_b), this->_encoding());
+      <%- end -%>
+      <%- end -%>
+      <%- end -%>
+      <%- if unit_load_match -%>
+      m_parent->check_vector_segment_register_group(vd(), _Bits<32, false>(1_b), _Bits<32, false>(<%= unit_load_match[1] %>_b), this->_encoding());
+      <%- end -%>
+      <%- if gather_instruction -%>
+      m_parent->check_vector_register_group_no_overlap(vd(), vs2(), this->_encoding());
+      <%- if decode_variable_names.include?("vs1") -%>
+      m_parent->check_vector_register_group_no_overlap(vd(), vs1(), this->_encoding());
+      <%- end -%>
+      <%- end -%>
+      <%- if viota_instruction -%>
+      m_parent->check_vector_register_group_no_overlap(vd(), vs2(), this->_encoding());
+      <%- end -%>
+      <%- if slideup_instruction -%>
+      m_parent->check_vector_register_group_no_overlap(vd(), vs2(), this->_encoding());
+      <%- end -%>
+      <%- if widening_instruction -%>
+      m_parent->check_vector_widening_sew(this->_encoding());
+      <%- if widening_reduction_instruction -%>
+      m_parent->check_vector_widening_reduction_source_overlap(vs2(), vs1(), this->_encoding());
+      <%- else -%>
+      <%- unless widening_wide_vs2_instruction -%>
+      m_parent->check_vector_widening_register_group_overlap(vd(), m_parent->vector_state().sew << _Bits<1, false>(1_b), vs2(), m_parent->vector_state().sew, this->_encoding());
+      <%- end -%>
+      <%- if widening_vv_instruction || widening_wv_instruction -%>
+      m_parent->check_vector_widening_register_group_overlap(vd(), m_parent->vector_state().sew << _Bits<1, false>(1_b), vs1(), m_parent->vector_state().sew, this->_encoding());
+      <%- end -%>
+      <%- if widening_wv_instruction -%>
+      m_parent->check_vector_register_groups_no_overlap(vs2(), _Bits<32, false>(1_b), m_parent->vector_state().sew << _Bits<1, false>(1_b), vs1(), _Bits<32, false>(1_b), m_parent->vector_state().sew, this->_encoding());
+      <%- end -%>
+      <%- end -%>
+      <%- end -%>
+      <%- if narrowing_shift_instruction -%>
+      m_parent->check_vector_register_groups_no_overlap(vs2(), _Bits<32, false>(1_b), m_parent->vector_state().sew << _Bits<1, false>(1_b), vs1(), _Bits<32, false>(1_b), m_parent->vector_state().sew, this->_encoding());
+      <%- end -%>
+      <%- if extension_match -%>
+      m_parent->check_vector_extension_sew(_Bits<32, false>(<%= extension_match[1] %>_b), this->_encoding());
+      m_parent->check_vector_widening_register_group_overlap(vd(), m_parent->vector_state().sew, vs2(), m_parent->vector_state().sew / _Bits<32, false>(<%= extension_match[1] %>_b), this->_encoding());
+      <%- end -%>
+      <%- if decode_variable_names.include?("vm") || implicit_v0_mask -%>
+      <%- vector_register_operands.each do |operand| -%>
+      <%- next if operand == "vd" && (mask_result_instruction || reduction_instruction) -%>
+      m_parent->check_masked_vector_register_overlap(<%= decode_variable_names.include?("vm") ? "vm()" : "_Bits<1, false>(0_b)" %>, <%= operand %>(), this->_encoding());
+      <%- end -%>
+      <%- end -%>
       <%- elsif vector_state_instruction -%>
       m_parent->check_v_state_enabled(this->_encoding());
       <%- end -%>

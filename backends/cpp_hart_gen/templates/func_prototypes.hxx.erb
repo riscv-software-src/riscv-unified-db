@@ -12,6 +12,15 @@
 <%- if cfg_arch.possible_instructions.any? { |inst| inst.name.downcase.start_with?("v") } -%>
 <%- functions << cfg_arch.symtab.get("check_v_state_enabled").func_def_ast -%>
 <%- functions << cfg_arch.symtab.get("check_v_ok").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_masked_vector_register_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_v_fp_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_extension_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_register_group_no_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_register_groups_no_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_register_group_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_reduction_source_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_segment_register_group").func_def_ast -%>
 <%- functions << cfg_arch.symtab.get("mark_v_state_dirty").func_def_ast -%>
 <%- end -%>
 <%# need to get symtab at function scope -%>

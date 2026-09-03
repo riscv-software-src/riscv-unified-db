@@ -31,6 +31,20 @@ namespace udb {
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- field_base = field.defined_in_all_bases? ? cfg_arch.possible_xlens[0] : (field.defined_in_base32? ? 32 : 64) -%>
+  <%- alias_target = field.alias&.field -%>
+  <%- if alias_target -%>
+  <%- alias_range = field.alias.range -%>
+  <%- source_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
+  <%- if alias_range.nil? -%>
+  <%- target_width = cfg_arch.possible_xlens.map { |xlen| alias_target.defined_in_base?(xlen) ? alias_target.location(xlen).size : 0 }.max -%>
+  <%- raise "Alias width mismatch for #{csr.name}.#{field.name}" unless target_width == source_width -%>
+  <%- else -%>
+  <%- alias_high = [alias_range.begin, alias_range.end].max -%>
+  <%- alias_low = [alias_range.begin, alias_range.end].min -%>
+  <%- alias_width = alias_high - alias_low + 1 -%>
+  <%- raise "Alias width mismatch for #{csr.name}.#{field.name}" unless alias_width == source_width -%>
+  <%- end -%>
+  <%- end -%>
   template <SocModel SocType>
   class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %> : public CsrFieldBase {
   public:
@@ -66,10 +80,32 @@ namespace udb {
     void reset() override;
 
     PossiblyUnknownBits<MAX_POSSIBLE_XLEN> hw_read(const Bits<8>& xlen) const override {
+      <%- if alias_target -%>
+      <%- if alias_range.nil? -%>
+      return m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>()
+          .hw_read(xlen);
+      <%- else -%>
+      return m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>()
+          .hw_read(xlen)
+          .template extract<<%= alias_high %>, <%= alias_low %>>();
+      <%- end -%>
+      <%- else -%>
       return m_value;
+      <%- end -%>
     }
     ValueType _hw_read() const {
+      <%- if alias_target -%>
+      <%- if alias_range.nil? -%>
+      return ValueType(m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>()
+                           .hw_read(m_hart->xlen().to_defined()));
+      <%- else -%>
+      return ValueType(m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>()
+                           .hw_read(m_hart->xlen().to_defined())
+                           .template extract<<%= alias_high %>, <%= alias_low %>>());
+      <%- end -%>
+      <%- else -%>
       return m_value;
+      <%- end -%>
     }
     PossiblyUnknownBits<MAX_POSSIBLE_XLEN> extract(const PossiblyUnknownBits<MAX_POSSIBLE_XLEN>& csr_value, const Bits<8>& xlen) const override {
       <%- if cfg_arch.multi_xlen? && field.defined_in_all_bases? -%>
@@ -119,6 +155,15 @@ namespace udb {
     }
     <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
     void _hw_write(const ValueType &field_write_value, const PossiblyUnknownBits<8>& xlen) {
+      <%- if alias_target -%>
+      auto &target_field = m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>();
+      <%- if alias_range.nil? -%>
+      target_field.hw_write(field_write_value, xlen.to_defined());
+      <%- else -%>
+      auto target_value = target_field.hw_read(xlen.to_defined());
+      target_field.hw_write(bit_insert<<%= alias_high %>, <%= alias_low %>, MAX_POSSIBLE_XLEN>(target_value, field_write_value), xlen.to_defined());
+      <%- end -%>
+      <%- else -%>
       if (xlen == 32_b) {
         static constexpr ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>_b;
         m_value = field_write_value & mask;
@@ -126,10 +171,35 @@ namespace udb {
         static constexpr ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>_b;
         m_value = field_write_value & mask;
       }
+      <%- end -%>
     }
     <%- else -%>
     void _hw_write(const ValueType &field_write_value) {
+      <%- if alias_target -%>
+      auto &target_field = m_hart->_csrContainer().<%= alias_target.parent.cxx_name %>.<%= alias_target.name %>();
+      <%- if alias_range.nil? -%>
+      target_field.hw_write(field_write_value, m_hart->xlen().to_defined());
+      <%- else -%>
+      auto target_value = target_field.hw_read(m_hart->xlen().to_defined());
+      target_field.hw_write(bit_insert<<%= alias_high %>, <%= alias_low %>, MAX_POSSIBLE_XLEN>(target_value, field_write_value), m_hart->xlen().to_defined());
+      <%- end -%>
+      <%- else -%>
       m_value = field_write_value;
+      <%- if csr.name == "mstatus" && ["FS", "XS", "VS"].include?(field.name) && fields.any? { |f| f.name == "SD" } -%>
+      // SD summarizes dirty extension state rather than owning independent state.
+      auto& mstatus = m_hart->_csrContainer().mstatus;
+      const auto fs = mstatus.FS()._hw_read();
+      const auto xs = mstatus.XS()._hw_read();
+      const auto vs = mstatus.VS()._hw_read();
+      if ((fs.unknown_mask() != 0_b) || (xs.unknown_mask() != 0_b) ||
+          (vs.unknown_mask() != 0_b)) {
+        mstatus.SD()._hw_write(PossiblyUnknownBits<1>());
+      } else {
+        mstatus.SD()._hw_write(PossiblyUnknownBits<1>(
+            (fs == 3_b || xs == 3_b || vs == 3_b) ? 1_b : 0_b));
+      }
+      <%- end -%>
+      <%- end -%>
     }
     <%- end -%>
 

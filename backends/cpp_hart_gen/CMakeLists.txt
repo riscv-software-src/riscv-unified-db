@@ -286,6 +286,7 @@ target_include_directories(test_softfloat_fp PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_softfloat_fp PRIVATE hart Catch2::Catch2WithMain libsoftfloat_static)
 target_compile_definitions(test_softfloat_fp PRIVATE
   UDB_FP_DIRECTED_JSONL="${UDB_ROOT}/tests/data/fp/directed/f32_fpgen_expanded.jsonl"
+  UDB_FP_TEST_CONFIG="${UDB_ROOT}/cfgs/rv64-riscv-tests.yaml"
 )
 
 add_executable(test_regfile

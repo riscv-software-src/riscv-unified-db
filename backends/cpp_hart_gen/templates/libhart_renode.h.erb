@@ -39,6 +39,12 @@ LINKAGE {
   typedef int StopReasonValueType;
 }
 
+LINKAGE typedef struct UdbEntropySourceSample {
+  uint8_t opst;
+  uint8_t custom;
+  uint16_t entropy;
+} UdbEntropySourceSample;
+
 // callback functions for the SoC model
 LINKAGE typedef struct {
   uint64_t (*read_hpm_counter)(uint64_t counternum);
@@ -97,8 +103,7 @@ LINKAGE typedef struct {
   // returns 1 if pma applies to the *entire* region [paddr, paddr + len)
   // returns 0 otherwise
   uint8_t (*pma_applies_Q_)(PmaAttributeValueType pma, uint64_t paddr, uint32_t len);
-  uint32_t (*read_seed)();
-  void (*write_seed)();
+  UdbEntropySourceSample (*poll_entropy_source)();
 } FnPointerSocModel;
 
 LINKAGE int32_t tlib_init(char *cpu_name);

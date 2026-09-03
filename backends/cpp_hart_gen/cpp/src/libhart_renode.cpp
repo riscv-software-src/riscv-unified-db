@@ -24,6 +24,7 @@ struct RenodeSocModel {
 
   uint64_t read_mcycle() { return 0; }
   uint64_t read_mtime() { return 0; }
+  udb::UdbEntropySourceSample poll_entropy_source() { return {0b01, 0, 0}; }
 
   // returns new value of mcycle (could be different than new_value)
   uint64_t sw_write_mcycle(uint64_t new_value) { return 0; }
@@ -63,6 +64,10 @@ struct RenodeSocModel {
   }
   uint64_t read_physical_memory_64(uint64_t paddr) {
     return renode_read_quad(paddr);
+  }
+  uint8_t physical_memory_accessible_Q_(uint64_t, uint64_t,
+                                        udb::MemoryOperation::ValueType) {
+    return 1;
   }
   void write_physical_memory_8(uint64_t paddr, uint64_t value) {
     renode_write_byte(paddr, value);
