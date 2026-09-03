@@ -24,7 +24,7 @@ module Udb
     # @!attribute field
     #  @return [CsrField] The field being aliased
     # @!attribute range
-    #  @return [Range] Range of the aliased field that is being pointed to
+    #  @return [Range,nil] Explicit range of the aliased field, or nil for the entire field
     Alias = Struct.new(:field, :range)
 
     # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
@@ -297,22 +297,32 @@ module Udb
       return @alias unless @alias.nil?
 
       if @data.key?("alias")
-        raise "Can't parse alias" unless data["alias"] =~ /^[a-z][a-z0-9]+\.[A-Z0-9]+(\[([0-9]+)(:[0-9]+)?\])?$/
+        alias_data = data["alias"]
+        return unless alias_data.is_a?(String)
 
-        csr_name = T.must(Regexp.last_match(1))
-        csr_field = Regexp.last_match(2)
-        range = Regexp.last_match(3)
-        range_start = Regexp.last_match(4)
-        range_end = Regexp.last_match(5)
+        match = /^([a-z][a-z0-9]+)\.([A-Z0-9]+)(\[([0-9]+)(:([0-9]+))?\])?$/.match(alias_data)
+        raise "Can't parse alias" if match.nil?
 
-        csr_field = T.must(cfg_arch.csr(csr_name)).field(csr_field)
+        csr_name = T.must(match[1])
+        csr_field = T.must(match[2])
+        range_text = match[3]
+        range_start = match[4]
+        range_end = match[6]
+
+        target_csr = cfg_arch.csr(csr_name)
+        return if target_csr.nil?
+
+        csr_field = target_csr.field(csr_field)
+        return if csr_field.nil?
+        return unless csr_field.exists_in_cfg?(cfg_arch)
+
         range =
-          if range.nil?
-            csr_field.location
+          if range_text.nil?
+            nil
           elsif range_end.nil?
             (range_start.to_i..range_start.to_i)
           else
-            (range_start.to_i..range_end[1..].to_i)
+            (range_start.to_i..range_end.to_i)
           end
         @alias = Alias.new(csr_field, range)
       end
