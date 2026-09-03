@@ -16,6 +16,13 @@ namespace udb {
   static_assert((0xeeff_b).extract<0, 0>() == 0x1_b, "Did not extract a bit");
   static_assert((0xeeff_b).extract<8, 8>() == 0x0_b, "Did not extract a bit");
 
+  template <
+    template <unsigned, bool> class BitsClass, unsigned T, bool Signed,
+    typename MsbType, typename LsbType, typename ValueType
+  >
+  void bit_insert(BitsClass<T, Signed> &target, const MsbType &msb, const LsbType &lsb,
+                  const ValueType &value);
+
   template <unsigned MSB, unsigned LSB, unsigned TargetN,
     template <unsigned, bool> class TargetBitsType, unsigned ArgN, bool ArgSign,
     template <unsigned, bool> class ValueBitsType>
@@ -25,11 +32,17 @@ namespace udb {
     const ValueBitsType<MSB - LSB + 1, false> &value) {
     static_assert(MSB < TargetN, "MSB is outside target range");
     static_assert(LSB <= MSB, "LSB is greater than MSB");
-    static_assert(TargetN <= BitsMaxNativePrecision,
-                  "Multi-precision Bits is not constexpr");
-    TargetBitsType<TargetN, ArgSign> mask =
-        ((Bits<1>{1}.template widening_sll<MSB - LSB + 1>()) - 1_b).template widening_sll<LSB>();
-    return (target & ~mask) | ((value.template widening_sll<LSB>()) & mask);
+    if constexpr (TargetBitsType<TargetN, ArgSign>::RuntimeWidth) {
+      TargetBitsType<TargetN, ArgSign> result = target;
+      bit_insert(result, Bits<32>{MSB}, Bits<32>{LSB}, value);
+      return result;
+    } else {
+      static_assert(TargetN <= BitsMaxNativePrecision,
+                    "Multi-precision Bits is not constexpr");
+      TargetBitsType<TargetN, ArgSign> mask =
+          ((Bits<1>{1}.template widening_sll<MSB - LSB + 1>()) - 1_b).template widening_sll<LSB>();
+      return (target & ~mask) | ((value.template widening_sll<LSB>()) & mask);
+    }
   }
 
   static_assert(bit_insert<0, 0, 32>(0x000000000_b, 1_b) == 0x1_b, "Did not insert bit");

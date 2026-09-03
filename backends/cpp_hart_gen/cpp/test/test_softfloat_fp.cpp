@@ -12,6 +12,7 @@
 
 #include <udb/bits.hpp>
 #include <udb/cfgs/rv64/hart.hxx>
+#include <udb/config_validator.hpp>
 #include <udb/csr.hpp>
 #include <udb/db_data.hxx>
 #include <udb/enum.hxx>
@@ -30,6 +31,7 @@ struct NullSocModel {
   uint64_t read_mcycle() { return 0; }
   uint64_t read_mtime() { return 0; }
   uint64_t sw_write_mcycle(uint64_t value) { return value; }
+  UdbEntropySourceSample poll_entropy_source() { return {0b01, 0, 0}; }
   void cache_block_zero(uint64_t) {}
   void eei_ecall_from_m() {}
   void eei_ecall_from_s() {}
@@ -51,6 +53,10 @@ struct NullSocModel {
   uint64_t read_physical_memory_16(uint64_t) { return 0; }
   uint64_t read_physical_memory_32(uint64_t) { return 0; }
   uint64_t read_physical_memory_64(uint64_t) { return 0; }
+  uint8_t physical_memory_accessible_Q_(uint64_t, uint64_t,
+                                        udb::MemoryOperation::ValueType) {
+    return 1;
+  }
   void write_physical_memory_8(uint64_t, uint64_t) {}
   void write_physical_memory_16(uint64_t, uint64_t) {}
   void write_physical_memory_32(uint64_t, uint64_t) {}
@@ -162,16 +168,13 @@ uint_fast8_t get_softfloat_muladd_op(std::string_view op) {
 }
 
 Config make_test_config() {
-  nlohmann::json implemented_exts = nlohmann::json::array(
-      {nlohmann::json::array({"I", "2.1.0"}),
-       nlohmann::json::array({"M", "2.0.0"}),
-       nlohmann::json::array({"Zicsr", "2.0.0"}),
-       nlohmann::json::array({"Zifencei", "2.0.0"}),
-       nlohmann::json::array({"F", "2.2.0"})});
-
-  nlohmann::json param_values = nlohmann::json::object();
-  param_values["MXLEN"] = 64;
-  return Config(implemented_exts, param_values);
+#ifndef UDB_FP_TEST_CONFIG
+  throw std::runtime_error("UDB_FP_TEST_CONFIG compile definition is missing");
+#else
+  const auto yaml = YAML::LoadFile(UDB_FP_TEST_CONFIG);
+  const auto json = ConfigValidator::validate(yaml);
+  return Config(json.at("implemented_extensions"), json.at("params"));
+#endif
 }
 
 uint32_t read_fflags(TestHart& hart) {

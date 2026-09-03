@@ -151,14 +151,8 @@ namespace udb {
         <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
         <%- next if global.type(cfg_arch.symtab).const? && global.rhs.const_eval?(cfg_arch.symtab) -%>
         <%- lhs_t = global.type(cfg_arch.symtab) -%>
-        <%- rhs_t = global.rhs.type(cfg_arch.symtab) -%>
-        <%- rhs_cpp = global.rhs.gen_cpp(cfg_arch.symtab, 0) -%>
-        <%- lhs_sub = lhs_t.sub_type.to_cxx_no_qualifiers if lhs_t.kind == :array -%>
-        <%- if lhs_t.kind == :array && rhs_t.kind == :array && lhs_sub != rhs_t.sub_type.to_cxx_no_qualifiers -%>
-        <%= global.id %> = array_cast<<%= lhs_sub %>>(<%= rhs_cpp %>);
-        <%- else -%>
+        <%- rhs_cpp = Idl.array_rhs_cpp(lhs_t, global.rhs, cfg_arch.symtab) -%>
         <%= global.id %> = <%= rhs_cpp %>;
-        <%- end -%>
         <%- else -%>
         // <%= global.id %> = unknown;
         <%- end -%>
@@ -219,6 +213,15 @@ namespace udb {
 
       bool implemented_csr_Q_(const Bits<12>& csr_addr) {
         return m_csr_addr_map.count(csr_addr) == 1;
+      }
+
+      <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> poll_entropy_source() {
+        const UdbEntropySourceSample source = this->m_soc.poll_entropy_source();
+        <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> sample;
+        sample.opst = Bits<2>{source.opst};
+        sample.custom = Bits<8>{source.custom};
+        sample.entropy = Bits<16>{source.entropy};
+        return sample;
       }
 
       <%= name_of(:struct, cfg_arch, "Csr") %> direct_csr_lookup(const PossiblyUnknownBits<12>& csr_addr) {
@@ -486,6 +489,14 @@ namespace udb {
       return cachedTranslationresult;
     }
 
+    // Basic blocks are keyed by virtual PC. A translation fence must prevent
+    // reuse of instructions decoded through a mapping that has just changed.
+    template <typename VmaOrderType>
+    void invalidate_translations(const VmaOrderType&) {
+      m_bb_cache.invalidate();
+      this->m_exit_requested = true;
+    }
+
     <%= name_of(:csr_container, cfg_arch) %><SocType>& _csrContainer() { return m_csrs; }
 
     int run_one() override { return _run_one(); }
@@ -496,6 +507,33 @@ namespace udb {
 
     int run_n(uint64_t n) override { return _run_n(n); }
     int _run_n(uint64_t n);
+
+    void set_platform_software_interrupt(const PrivilegeMode& target_mode,
+                                         bool pending) override {
+      if (pending) {
+        set_software_interrupt(target_mode);
+      } else {
+        clear_software_interrupt(target_mode);
+      }
+    }
+
+    void set_platform_timer_interrupt(const PrivilegeMode& target_mode,
+                                      bool pending) override {
+      if (pending) {
+        set_timer_interrupt(target_mode);
+      } else {
+        clear_timer_interrupt(target_mode);
+      }
+    }
+
+    void set_platform_external_interrupt(const PrivilegeMode& target_mode,
+                                         bool pending) override {
+      if (pending) {
+        set_external_interrupt(target_mode);
+      } else {
+        clear_external_interrupt(target_mode);
+      }
+    }
 
     // external interrupt interface
     void set_mmode_ext_int() {
@@ -532,6 +570,18 @@ namespace udb {
 
       result.pAddr = translateResult.paddr.get();
       return result;
+    }
+
+    bool fault_only_first_read_native(uint64_t len, uint64_t virtual_address,
+                                      uint64_t encoding) override {
+      auto fault_only_first_trap_scope = this->suppress_fault_only_first_traps();
+      try {
+        this->append_fault_only_first_read_value(PossiblyUnknownBits<64>{
+            this->read_memory(Bits<32>{len}, Bits<64>{virtual_address}, Bits<64>{encoding})});
+        return true;
+      } catch (const FaultOnlyFirstTrap&) {
+        return false;
+      }
     }
 
     PrivilegeMode _get_mode() override {

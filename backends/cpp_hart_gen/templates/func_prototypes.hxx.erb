@@ -7,8 +7,24 @@
 #define __UDB_STRUCT(struct_name) <%= name_of(:cfg, cfg_arch) %>_ ## struct_name ## _Struct
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
 
+<%# Vector state checks and updates are emitted by inst.hxx rather than IDL instruction bodies. -%>
+<%- functions = cfg_arch.reachable_functions.dup -%>
+<%- if cfg_arch.possible_instructions.any? { |inst| inst.name.downcase.start_with?("v") } -%>
+<%- functions << cfg_arch.symtab.get("check_v_state_enabled").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_v_ok").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_masked_vector_register_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_v_fp_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_extension_sew").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_register_group_no_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_register_groups_no_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_register_group_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_widening_reduction_source_overlap").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("check_vector_segment_register_group").func_def_ast -%>
+<%- functions << cfg_arch.symtab.get("mark_v_state_dirty").func_def_ast -%>
+<%- end -%>
 <%# need to get symtab at function scope -%>
-<%- cfg_arch.reachable_functions.each do |func| -%>
+<%- functions.uniq(&:name).each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
 

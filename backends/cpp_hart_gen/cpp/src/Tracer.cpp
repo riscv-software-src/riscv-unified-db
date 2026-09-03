@@ -1,4 +1,5 @@
 #include "udb/Tracer.hpp"
+#include "udb/cpp_exceptions.hpp"
 #include "udb/inst.hpp"
 
 namespace udb
@@ -32,15 +33,21 @@ namespace udb
       {
         udb::InstBase* pInst = (udb::InstBase*)pData;
         fmt::print("PC {:x} {}\n", m_pHart->pc(), pInst->disassemble());
-        for(auto r : pInst->srcRegs())
-          fmt::print("R {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+        try {
+          for(auto r : pInst->srcRegs())
+            fmt::print("R {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+        } catch (const ComplexRegDetermination&) {
+        }
       }
       break;
     case EXECUTE_EVENT:
       {
         udb::InstBase* pInst = (udb::InstBase*)pData;
-        for (auto r : pInst->dstRegs())
-          fmt::print("R= {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+        try {
+          for (auto r : pInst->dstRegs())
+            fmt::print("R= {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+        } catch (const ComplexRegDetermination&) {
+        }
       }
       break;
     case EXCEPTION_EVENT:
