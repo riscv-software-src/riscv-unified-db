@@ -576,7 +576,7 @@ jobs:
         with:
           toolchain: true
       - name: Run cpp unit tests
-        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4 BUILD_TYPE=debug
+        run: ./do test:cpp_hart CONFIG=rv64 BUILD_NAME=rv64-unit JOBS=4 BUILD_TYPE=debug
 
   regress-riscv-tests-32:
     runs-on: ubuntu-latest
