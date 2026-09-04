@@ -7,29 +7,8 @@
 #define __UDB_STRUCT(struct_name) <%= name_of(:cfg, cfg_arch) %>_ ## struct_name ## _Struct
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name.value()
 
-<%# Vector state checks and updates are emitted by inst.hxx rather than IDL instruction bodies. -%>
-<%- functions = cfg_arch.reachable_functions.dup -%>
-<%- if cfg_arch.possible_instructions.any? { |inst| inst.name.downcase.start_with?("v") } -%>
-<%- [
-  "check_v_state_enabled",
-  "check_v_ok",
-  "check_masked_vector_register_overlap",
-  "check_v_fp_sew",
-  "check_vector_widening_sew",
-  "check_vector_extension_sew",
-  "check_vector_register_group_no_overlap",
-  "check_vector_register_groups_no_overlap",
-  "check_vector_widening_register_group_overlap",
-  "check_vector_widening_reduction_source_overlap",
-  "check_vector_segment_register_group",
-  "mark_v_state_dirty",
-].each do |func_name| -%>
-<%- func_symbol = cfg_arch.symtab.get(func_name) -%>
-<%- functions << func_symbol.func_def_ast unless func_symbol.nil? -%>
-<%- end -%>
-<%- end -%>
 <%# need to get symtab at function scope -%>
-<%- functions.uniq(&:name).each do |func| -%>
+<%- cfg_arch.reachable_functions.each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
 
