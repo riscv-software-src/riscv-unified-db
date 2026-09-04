@@ -10,18 +10,23 @@
 <%# Vector state checks and updates are emitted by inst.hxx rather than IDL instruction bodies. -%>
 <%- functions = cfg_arch.reachable_functions.dup -%>
 <%- if cfg_arch.possible_instructions.any? { |inst| inst.name.downcase.start_with?("v") } -%>
-<%- functions << cfg_arch.symtab.get("check_v_state_enabled").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_v_ok").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_masked_vector_register_overlap").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_v_fp_sew").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_widening_sew").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_extension_sew").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_register_group_no_overlap").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_register_groups_no_overlap").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_widening_register_group_overlap").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_widening_reduction_source_overlap").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("check_vector_segment_register_group").func_def_ast -%>
-<%- functions << cfg_arch.symtab.get("mark_v_state_dirty").func_def_ast -%>
+<%- [
+  "check_v_state_enabled",
+  "check_v_ok",
+  "check_masked_vector_register_overlap",
+  "check_v_fp_sew",
+  "check_vector_widening_sew",
+  "check_vector_extension_sew",
+  "check_vector_register_group_no_overlap",
+  "check_vector_register_groups_no_overlap",
+  "check_vector_widening_register_group_overlap",
+  "check_vector_widening_reduction_source_overlap",
+  "check_vector_segment_register_group",
+  "mark_v_state_dirty",
+].each do |func_name| -%>
+<%- func_symbol = cfg_arch.symtab.get(func_name) -%>
+<%- functions << func_symbol.func_def_ast unless func_symbol.nil? -%>
+<%- end -%>
 <%- end -%>
 <%# need to get symtab at function scope -%>
 <%- functions.uniq(&:name).each do |func| -%>
