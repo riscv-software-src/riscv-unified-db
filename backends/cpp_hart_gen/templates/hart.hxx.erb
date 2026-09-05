@@ -215,6 +215,7 @@ namespace udb {
         return m_csr_addr_map.count(csr_addr) == 1;
       }
 
+      <%- if cfg_arch.global_ast.structs.any? { |struct| struct.name == "EntropySourceSample" } -%>
       <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> poll_entropy_source() {
         const UdbEntropySourceSample source = this->m_soc.poll_entropy_source();
         <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> sample;
@@ -223,6 +224,7 @@ namespace udb {
         sample.entropy = Bits<16>{source.entropy};
         return sample;
       }
+      <%- end -%>
 
       <%= name_of(:struct, cfg_arch, "Csr") %> direct_csr_lookup(const PossiblyUnknownBits<12>& csr_addr) {
         <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
