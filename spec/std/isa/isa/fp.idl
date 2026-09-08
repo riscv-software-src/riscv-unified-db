@@ -235,6 +235,37 @@ function nan_box {
   }
 }
 
+function f32_operand {
+  returns Bits<32>
+  arguments Bits<64> f_value
+  description {
+    Reads a single-precision value from an FP register, converting an
+    incorrectly NaN-boxed value to the canonical NaN when D is implemented.
+  }
+  body {
+    if (implemented?(ExtensionName::D) && f_value[63:32] != 32'hffffffff) {
+      return SP_CANONICAL_NAN;
+    }
+
+    return f_value[31:0];
+  }
+}
+
+function f32_result {
+  returns Bits<64>
+  arguments Bits<32> value
+  description {
+    Produces the FP-register representation of a single-precision result.
+  }
+  body {
+    if (implemented?(ExtensionName::D)) {
+      return 64'hFFFFFFFF00000000 | value;
+    }
+
+    return value;
+  }
+}
+
 function f16_operand {
   returns Bits<16>
   arguments Bits<64> f_value
@@ -1522,6 +1553,89 @@ function f16_muladd {
     Bits<64> b64 = f32_to_f64(f16_to_f32(b));
     Bits<64> c64 = f32_to_f64(f16_to_f32(c));
     return f64_to_f16(f64_muladd(a64, b64, c64, op, mode), mode);
+  }
+}
+
+function f32_to_i8 {
+  returns Bits<8>
+  arguments Bits<32> a, RoundingMode mode
+  description { Converts a binary32 value to a signed 8-bit integer. }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<16> exp = expF32UI(a);
+    Bits<32> frac = fracF32UI(a);
+
+    if (exp == 8'hFF) {
+      set_fp_flag(FpFlag::NV);
+      return (frac != 0 || sign == 0) ? 8'h7F : 8'h80;
+    }
+
+    Boolean invalid = false;
+    if (sign == 0) {
+      if ((mode == RoundingMode::RNE) || (mode == RoundingMode::RMM)) {
+        invalid = a >= 32'h42FF0000;
+      } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RDN)) {
+        invalid = a >= 32'h43000000;
+      } else {
+        invalid = a > 32'h42FE0000;
+      }
+    } else {
+      if (mode == RoundingMode::RNE) {
+        invalid = a > 32'hC3008000;
+      } else if (mode == RoundingMode::RMM) {
+        invalid = a >= 32'hC3008000;
+      } else {
+        invalid = a > 32'hC3000000;
+      }
+    }
+    if (invalid) {
+      set_fp_flag(FpFlag::NV);
+      return (sign == 1) ? 8'h80 : 8'h7F;
+    }
+
+    Bits<32> z = f32_to_i32(a, mode);
+    return z[7:0];
+  }
+}
+
+function f32_to_ui8 {
+  returns Bits<8>
+  arguments Bits<32> a, RoundingMode mode
+  description { Converts a binary32 value to an unsigned 8-bit integer. }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<16> exp = expF32UI(a);
+
+    if (exp == 8'hFF) {
+      set_fp_flag(FpFlag::NV);
+      return (fracF32UI(a) != 0 || sign == 0) ? 8'hFF : 0;
+    }
+
+    Boolean invalid = false;
+    if (sign == 0) {
+      if ((mode == RoundingMode::RNE) || (mode == RoundingMode::RMM)) {
+        invalid = a >= 32'h437F8000;
+      } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RDN)) {
+        invalid = a >= 32'h43800000;
+      } else {
+        invalid = a > 32'h437F0000;
+      }
+    } else if (mode == RoundingMode::RNE) {
+      invalid = a > 32'hBF000000;
+    } else if (mode == RoundingMode::RMM) {
+      invalid = a >= 32'hBF000000;
+    } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RUP)) {
+      invalid = a >= 32'hBF800000;
+    } else {
+      invalid = a != 32'h80000000;
+    }
+    if (invalid) {
+      set_fp_flag(FpFlag::NV);
+      return (sign == 0) ? 8'hFF : 0;
+    }
+
+    Bits<32> z = f32_to_ui32(a, mode);
+    return z[7:0];
   }
 }
 
