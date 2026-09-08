@@ -20,6 +20,101 @@ Bits<32> SP_CANONICAL_NAN = 32'b0_11111111_10000000000000000000000;
 
 Bits<16> HP_CANONICAL_NAN = 16'b0_11111_1000000000;
 
+function is_hp_neg_inf? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is negative infinity. }
+  body { return hp_value == 16'hFC00; }
+}
+
+function is_hp_pos_inf? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is positive infinity. }
+  body { return hp_value == 16'h7C00; }
+}
+
+function is_hp_neg_norm? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a negative normal number. }
+  body {
+    return (hp_value[15] == 1) && (hp_value[14:10] != 0) && (hp_value[14:10] != 5'h1F);
+  }
+}
+
+function is_hp_pos_norm? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a positive normal number. }
+  body {
+    return (hp_value[15] == 0) && (hp_value[14:10] != 0) && (hp_value[14:10] != 5'h1F);
+  }
+}
+
+function is_hp_neg_subnorm? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a negative subnormal number. }
+  body { return (hp_value[15] == 1) && (hp_value[14:10] == 0) && (hp_value[9:0] != 0); }
+}
+
+function is_hp_pos_subnorm? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a positive subnormal number. }
+  body { return (hp_value[15] == 0) && (hp_value[14:10] == 0) && (hp_value[9:0] != 0); }
+}
+
+function is_hp_neg_zero? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is negative zero. }
+  body { return hp_value == 16'h8000; }
+}
+
+function is_hp_pos_zero? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is positive zero. }
+  body { return hp_value == 0; }
+}
+
+function is_hp_nan? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a NaN. }
+  body { return (hp_value[14:10] == 5'h1F) && (hp_value[9:0] != 0); }
+}
+
+function is_hp_signaling_nan? {
+  returns Boolean
+  arguments Bits<16> hp_value
+  description { Returns true if +hp_value+ is a signaling NaN. }
+  body {
+    return (hp_value[14:10] == 5'h1F) && (hp_value[9] == 0) && (hp_value[8:0] != 0);
+  }
+}
+
+function hp_equal? {
+  returns Boolean
+  arguments Bits<16> a, Bits<16> b
+  description { Compares two non-NaN half-precision values for equality. }
+  body { return (a == b) || ((a[14:0] | b[14:0]) == 0); }
+}
+
+function hp_less_than? {
+  returns Boolean
+  arguments Bits<16> a, Bits<16> b
+  description { Compares two non-NaN half-precision values. }
+  body {
+    Bits<1> sign_a = a[15];
+    Bits<1> sign_b = b[15];
+    return ((sign_a != sign_b) && (sign_a == 1) && ((a[14:0] | b[14:0]) != 0)) ||
+           ((sign_a == sign_b) && (a != b) && ((sign_a ^ ((a < b) ? 1'b1 : 1'b0)) != 0));
+  }
+}
+
 Bits<32> WORD_NEG_OVERFLOW = 32'h8000_0000; # minimum signed 32-bit integer
 Bits<32> WORD_POS_OVERFLOW = 32'h7FFF_FFFF; # maximum signed 32-bit integer
 
@@ -1258,16 +1353,270 @@ function packToF32UI {
 }
 
 function packToF16UI {
-  returns Bits<32>
+  returns Bits<16>
   arguments
     Bits<1> sign,
     Bits<5> exp,
-    Bits<10> sig
+    Bits<16> sig
   description {
     Pack components into a 16-bit value
   }
   body {
-    return {sign, exp, sig};
+    return (sign `<< 15) + (exp `<< 10) + sig;
+  }
+}
+
+function f16_to_f32 {
+  returns Bits<32>
+  arguments Bits<16> a
+  description {
+    Converts a binary16 value to binary32 without changing floating-point flags.
+  }
+  body {
+    Bits<1> sign = a[15];
+    Bits<5> exp = a[14:10];
+    Bits<10> frac = a[9:0];
+
+    if (exp == 5'h1F) {
+      if (is_hp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+      if (frac != 0) { return SP_CANONICAL_NAN; }
+      return packToF32UI(sign, 8'hFF, 0);
+    }
+    if (exp == 0) {
+      if (frac == 0) { return packToF32UI(sign, 0, 0); }
+      Bits<8> shiftDist = count_leading_zeros(10, frac);
+      Bits<10> normFrac = frac << (shiftDist + 1);
+      return packToF32UI(sign, 8'h70 - shiftDist, normFrac `<< 13);
+    }
+    return packToF32UI(sign, exp + 8'h70, frac `<< 13);
+  }
+}
+
+function softfloat_roundPackToF16 {
+  returns Bits<16>
+  arguments
+    Bits<1> sign,
+    Bits<16> exp,
+    Bits<16> sig,
+    RoundingMode mode
+  description {
+    Rounds and packs a binary16 significand using the SoftFloat convention.
+  }
+  body {
+    Bits<16> roundIncrement = 16'h0008;
+    if ((mode != RoundingMode::RNE) && (mode != RoundingMode::RMM)) {
+      roundIncrement =
+        (mode == ((sign != 0) ? RoundingMode::RDN : RoundingMode::RUP)) ? 16'h000F : 0;
+    }
+    Bits<16> roundBits = sig & 16'h000F;
+
+    if (16'h001D <= exp) {
+      if ($signed(exp) < 's0) {
+        Boolean isTiny = (exp < 16'hFFFF) || (sig + roundIncrement < 16'h8000);
+        Bits<16> shiftDist = -$signed(exp);
+        sig = softfloat_shiftRightJam32(sig, shiftDist);
+        exp = 0;
+        roundBits = sig & 16'h000F;
+        if (isTiny && (roundBits != 0)) { set_fp_flag(FpFlag::UF); }
+      } else if ((16'h001D < exp) || (16'h8000 <= sig + roundIncrement)) {
+        set_fp_flag(FpFlag::OF);
+        set_fp_flag(FpFlag::NX);
+        return packToF16UI(sign, 5'h1F, 0) - ((roundIncrement == 0) ? 1 : 0);
+      }
+    }
+
+    sig = (sig + roundIncrement) >> 4;
+    if (roundBits != 0) { set_fp_flag(FpFlag::NX); }
+    if ((roundBits == 16'h0008) && (mode == RoundingMode::RNE)) { sig = sig & ~16'h0001; }
+    if (sig == 0) { exp = 0; }
+    return packToF16UI(sign, exp, sig);
+  }
+}
+
+function f32_to_f16 {
+  returns Bits<16>
+  arguments
+    Bits<32> a,
+    RoundingMode mode
+  description {
+    Converts a binary32 value to binary16 using the requested rounding mode.
+  }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<16> exp = expF32UI(a);
+    Bits<32> frac = fracF32UI(a);
+
+    if (exp == 8'hFF) {
+      if (frac != 0) {
+        if (is_sp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+        return HP_CANONICAL_NAN;
+      }
+      return packToF16UI(sign, 5'h1F, 0);
+    }
+
+    Bits<16> frac16 = softfloat_shiftRightJam32(frac, 9);
+    if ((exp | frac16) == 0) { return packToF16UI(sign, 0, 0); }
+    Bits<16> z = softfloat_roundPackToF16(sign, exp - 16'h0071, 16'h4000 | frac16, mode);
+
+    if (!is_sp_nan?(a) && (f16_to_f32(z) != a)) {
+      set_fp_flag(FpFlag::NX);
+    }
+    return z;
+  }
+}
+
+function f32_to_f16_rod {
+  returns Bits<16>
+  arguments Bits<32> a
+  description { Converts binary32 to binary16 using round-to-odd. }
+  body {
+    Bits<16> result = f32_to_f16(a, RoundingMode::RTZ);
+    if (!is_sp_nan?(a) && (f16_to_f32(result) != a)) {
+      result = result | 1;
+    }
+    return result;
+  }
+}
+
+function f16_add {
+  returns Bits<16>
+  arguments Bits<16> a, Bits<16> b, RoundingMode mode
+  description { Adds two binary16 values. }
+  body { return f32_to_f16(f32_add(f16_to_f32(a), f16_to_f32(b), mode), mode); }
+}
+
+function f16_sub {
+  returns Bits<16>
+  arguments Bits<16> a, Bits<16> b, RoundingMode mode
+  description { Subtracts two binary16 values. }
+  body { return f32_to_f16(f32_sub(f16_to_f32(a), f16_to_f32(b), mode), mode); }
+}
+
+function f16_mul {
+  returns Bits<16>
+  arguments Bits<16> a, Bits<16> b, RoundingMode mode
+  description { Multiplies two binary16 values. }
+  body { return f32_to_f16(f32_mul(f16_to_f32(a), f16_to_f32(b), mode), mode); }
+}
+
+function f16_div {
+  returns Bits<16>
+  arguments Bits<16> a, Bits<16> b, RoundingMode mode
+  description { Divides two binary16 values. }
+  body { return f32_to_f16(f32_div(f16_to_f32(a), f16_to_f32(b), mode), mode); }
+}
+
+function f16_sqrt {
+  returns Bits<16>
+  arguments Bits<16> a, RoundingMode mode
+  description { Computes the square root of a binary16 value. }
+  body { return f32_to_f16(f32_sqrt(f16_to_f32(a), mode), mode); }
+}
+
+function f16_muladd {
+  returns Bits<16>
+  arguments Bits<16> a, Bits<16> b, Bits<16> c, F32MulAddOp op, RoundingMode mode
+  description { Computes a fused multiply-add on binary16 operands. }
+  body {
+    Bits<64> a64 = f32_to_f64(f16_to_f32(a));
+    Bits<64> b64 = f32_to_f64(f16_to_f32(b));
+    Bits<64> c64 = f32_to_f64(f16_to_f32(c));
+    return f64_to_f16(f64_muladd(a64, b64, c64, op, mode), mode);
+  }
+}
+
+function f32_to_i16 {
+  returns Bits<16>
+  arguments Bits<32> a, RoundingMode mode
+  description { Converts a binary32 value to a signed 16-bit integer. }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<16> exp = expF32UI(a);
+    Bits<32> frac = fracF32UI(a);
+
+    if (exp == 8'hFF) {
+      set_fp_flag(FpFlag::NV);
+      return (frac != 0 || sign == 0) ? 16'h7FFF : 16'h8000;
+    }
+
+    Boolean invalid = false;
+    if (sign == 0) {
+      if ((mode == RoundingMode::RNE) || (mode == RoundingMode::RMM)) {
+        invalid = a >= 32'h46FFFF00;
+      } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RDN)) {
+        invalid = a >= 32'h47000000;
+      } else {
+        invalid = a > 32'h46FFFE00;
+      }
+    } else {
+      if (mode == RoundingMode::RNE) {
+        invalid = a > 32'hC7000080;
+      } else if (mode == RoundingMode::RMM) {
+        invalid = a >= 32'hC7000080;
+      } else {
+        invalid = a > 32'hC7000000;
+      }
+    }
+    if (invalid) {
+      set_fp_flag(FpFlag::NV);
+      return (sign == 1) ? 16'h8000 : 16'h7FFF;
+    }
+
+    Bits<32> z = f32_to_i32(a, mode);
+    if ($signed(z) > $signed(32'h00007FFF)) {
+      set_fp_flag(FpFlag::NV);
+      return 16'h7FFF;
+    }
+    if ($signed(z) < $signed(32'hFFFF8000)) {
+      set_fp_flag(FpFlag::NV);
+      return 16'h8000;
+    }
+    return z[15:0];
+  }
+}
+
+function f32_to_ui16 {
+  returns Bits<16>
+  arguments Bits<32> a, RoundingMode mode
+  description { Converts a binary32 value to an unsigned 16-bit integer. }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<16> exp = expF32UI(a);
+
+    if (exp == 8'hFF) {
+      set_fp_flag(FpFlag::NV);
+      return (fracF32UI(a) != 0 || sign == 0) ? 16'hFFFF : 0;
+    }
+
+    Boolean invalid = false;
+    if (sign == 0) {
+      if ((mode == RoundingMode::RNE) || (mode == RoundingMode::RMM)) {
+        invalid = a >= 32'h477FFF80;
+      } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RDN)) {
+        invalid = a >= 32'h47800000;
+      } else {
+        invalid = a > 32'h477FFF00;
+      }
+    } else if (mode == RoundingMode::RNE) {
+      invalid = a > 32'hBF000000;
+    } else if (mode == RoundingMode::RMM) {
+      invalid = a >= 32'hBF000000;
+    } else if ((mode == RoundingMode::RTZ) || (mode == RoundingMode::RUP)) {
+      invalid = a >= 32'hBF800000;
+    } else {
+      invalid = a != 32'h80000000;
+    }
+    if (invalid) {
+      set_fp_flag(FpFlag::NV);
+      return (sign == 0) ? 16'hFFFF : 0;
+    }
+
+    Bits<32> z = f32_to_ui32(a, mode);
+    if (z > 32'h0000FFFF) {
+      set_fp_flag(FpFlag::NV);
+      return 16'hFFFF;
+    }
+    return z[15:0];
   }
 }
 
@@ -3261,6 +3610,33 @@ function f64_to_f32 {
     }
 
     return softfloat_roundPackToF32(sign, exp - 16'h0381, 0x40000000 | frac32, mode);
+  }
+}
+
+function f64_to_f16 {
+  returns Bits<16>
+  arguments
+    U64 a,
+    RoundingMode mode
+  description {
+    Converts a binary64 value directly to binary16 using the requested rounding mode.
+  }
+  body {
+    Bits<1> sign = signF64UI(a);
+    Bits<16> exp = expF64UI(a);
+    Bits<64> frac = fracF64UI(a);
+
+    if (exp == 11'h7FF) {
+      if (frac != 0) {
+        if (is_dp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+        return HP_CANONICAL_NAN;
+      }
+      return packToF16UI(sign, 5'h1F, 0);
+    }
+
+    Bits<16> frac16 = softfloat_shiftRightJam64(frac, 38);
+    if ((exp | frac16) == 0) { return packToF16UI(sign, 0, 0); }
+    return softfloat_roundPackToF16(sign, exp - 16'h03F1, 16'h4000 | frac16, mode);
   }
 }
 
