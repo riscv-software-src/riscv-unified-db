@@ -24,6 +24,9 @@ fields:
   STCE:
     location: 31
     alias: menvcfg.STCE
+    sw_write(csr_value): |
+      CSR[menvcfg].STCE = csr_value.STCE;
+      return csr_value.STCE;
     description: |
       *STimecmp Enable*
 
@@ -36,6 +39,9 @@ fields:
   PBMTE:
     location: 30
     alias: menvcfg.PBMTE
+    sw_write(csr_value): |
+      CSR[menvcfg].PBMTE = csr_value.PBMTE;
+      return csr_value.PBMTE;
     description: |
       *Page Based Memory Type Enable*
 
@@ -48,6 +54,9 @@ fields:
   ADUE:
     location: 29
     alias: menvcfg.ADUE
+    sw_write(csr_value): |
+      CSR[menvcfg].ADUE = csr_value.ADUE;
+      return csr_value.ADUE;
     description: |
       Alias of `menvcfg.ADUE`
     definedBy:
@@ -57,3 +66,4 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+sw_read(): return $bits(CSR[menvcfg])[63:32];
