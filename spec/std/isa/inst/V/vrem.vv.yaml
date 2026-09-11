@@ -50,10 +50,10 @@ operation(): |
       U32 end_bit = start_bit + state.sew - 1;
       XReg vs2_elem = $signed(V[vs2 + reg_off][end_bit:start_bit]);
       XReg vs1_elem = $signed(V[vs1 + reg_off][end_bit:start_bit]);
-      XReg min_val = (X[0] + 1) << (state.sew - 1);
+      XReg min_val = (vs1_elem - vs1_elem + 1) << (state.sew - 1);
       if (vs1_elem == 0) {
         V[vd + reg_off][end_bit:start_bit] = vs2_elem[state.sew-1:0];
-      } else if ($signed(vs2_elem) == $signed(min_val[state.sew-1:0]) && $signed(vs1_elem) == $signed(X[0] - 1)) {
+      } else if ($signed(vs2_elem) == $signed(min_val[state.sew-1:0]) && ($signed(vs1_elem) + 1) == 0) {
         V[vd + reg_off][end_bit:start_bit] = 0;
       } else {
         V[vd + reg_off][end_bit:start_bit] = ($signed(vs2_elem) % $signed(vs1_elem))[state.sew-1:0];
