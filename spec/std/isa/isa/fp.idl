@@ -3053,7 +3053,7 @@ function softfloat_subMagsF64 {
       shiftDist = count_leading_zeros(64, sigDiff) - 11;
       expZ = expA - shiftDist;
 
-      if ($signed(expZ) < 0) {
+      if ($signed(expZ) < 0s) {
         shiftDist = expA;
         expZ = 0;
       }
