@@ -45151,7 +45151,7 @@ Included in::
 == vfrec7.v
 
 Synopsis::
-No synopsis available
+Vector floating-point reciprocal estimate to 7 bits
 
 Base::
 
@@ -45173,7 +45173,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+Returns an estimate of 1/x accurate to 7 bits.
 
 
 Decode Variables::
@@ -45415,7 +45415,7 @@ Included in::
 == vfrsqrt7.v
 
 Synopsis::
-No synopsis available
+Vector floating-point reciprocal square-root estimate to 7 bits
 
 Base::
 
@@ -45437,7 +45437,7 @@ Encoding::
 ....
 
 Description::
-No description available.
+Returns an estimate of 1/sqrt(x) accurate to 7 bits.
 
 
 Decode Variables::
