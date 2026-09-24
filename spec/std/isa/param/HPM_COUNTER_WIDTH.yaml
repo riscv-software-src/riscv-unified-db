@@ -1,0 +1,38 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HPM_COUNTER_WIDTH
+long_name: Width of each HPM counter
+definedBy:
+  extension:
+    name: Sm
+description: |
+  The number of bits of precision implemented by each HPM counter.
+
+  There is one entry for each counter, indexed 0-31, in the same way as `HPM_COUNTER_EN`.
+  Index 3 corresponds to `mhpmcounter3`.
+  Index 31 corresponds to `mhpmcounter31`.
+
+  Indices 0-2 *must* be 64: they are placeholders for the three counters
+  (`cycle`/`mcycle`, `time`, and `instret`/`minstret`), which are 64 bits wide
+  and whose width this parameter does not control.
+  The rest of the HPM counters follow at indexes 3-31.
+
+  The privileged specification allows an HPM counter to have up to 64 bits of precision.
+  The entry for a counter whose `HPM_COUNTER_EN` entry is `false` has no effect.
+schema:
+  type: array
+  items:
+    - const: 64
+    - const: 64
+    - const: 64
+  additionalItems:
+    type: integer
+    minimum: 1
+    maximum: 64
+  minItems: 32
+  maxItems: 32
