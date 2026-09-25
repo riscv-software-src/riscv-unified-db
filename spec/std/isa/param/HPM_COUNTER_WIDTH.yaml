@@ -32,7 +32,7 @@ schema:
     - const: 64
   additionalItems:
     type: integer
-    minimum: 1
+    minimum: 0
     maximum: 64
   minItems: 32
   maxItems: 32
