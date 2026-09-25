@@ -40,7 +40,6 @@
 /* Configuration parameters */
 #define UDB_ARCH_ID_VALUE 1
 #define UDB_ARCH_ID_VALUE_1
-#define UDB_HPM_COUNTER_WIDTH_64
 #define UDB_IMP_ID_VALUE 0
 #define UDB_IMP_ID_VALUE_0
 #define UDB_MARCHID_IMPLEMENTED

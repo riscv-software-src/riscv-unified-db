@@ -14,7 +14,7 @@ repos:
       - id: end-of-file-fixer
         priority: 10
         # Exclude reference and generated files
-        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|\.github/workflows/regress\.yml|tests/data/golden/.*)
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|HPM_COUNTER[0-9]+_WIDTH\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|\.github/workflows/regress\.yml|tests/data/golden/.*)
       - id: trailing-whitespace
         priority: 11
         args: [--markdown-linebreak-ext=md]
