@@ -179,7 +179,7 @@ operation(): |
   XReg value = X[xs2];
 
   if (!is_naturally_aligned(<%= current_size[:align_bits] %>, virtual_address)) {
-    # can raise either LoadAddressMisaligned *or* LoadAccessFault
+    # can raise either StoreAmoAddressMisaligned *or* StoreAmoAccessFault
     #
     # from the spec:
     #   If the address is not naturally aligned, an address-misaligned exception or
@@ -188,11 +188,11 @@ operation(): |
     #   for the misalignment, if the misaligned access should not be emulated.
 
     if (LRSC_MISALIGNED_BEHAVIOR == "always raise misaligned exception") {
-      raise(ExceptionCode::LoadAddressMisaligned, effective_ldst_mode(), virtual_address);
+      raise(ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
     } else if (LRSC_MISALIGNED_BEHAVIOR == "always raise access fault") {
-      raise(ExceptionCode::LoadAccessFault, effective_ldst_mode(), virtual_address);
+      raise(ExceptionCode::StoreAmoAccessFault, effective_ldst_mode(), virtual_address);
     } else {
-      unpredictable("Implementations may raise either a LoadAddressMisaligned or a LoadAccessFault when an LR/SC address is misaligned");
+      unpredictable("Implementations may raise either a StoreAmoAddressMisaligned or a StoreAmoAccessFault when an SC address is misaligned");
     }
   }
 
