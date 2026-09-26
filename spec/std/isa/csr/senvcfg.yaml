@@ -115,9 +115,8 @@ fields:
     sw_write(csr_value): |
       if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
         return csr_value.CBIE;
-      } else {
-        return CSR[senvcfg].CBIE;
       }
+      return CSR[senvcfg].CBIE;
     reset_value: UNDEFINED_LEGAL
   UKTE:
     location: 8
