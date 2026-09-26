@@ -88,17 +88,12 @@ fields:
     description: |
       *Cache Block Invalidate instruction Enable*
 
-      This field has restricted values based on the value of `menvcfg.CBIE`.
-      When an invalid value is written, it is ignored and the field remains unchanged.
+      The legal values of this field do not depend on `menvcfg.CBIE`.
+      When the reserved value `10` is written, it is ignored and the field remains unchanged.
 
-      [separator="!",%autowidth,cols=",.>"]
-      !===
-      ! [.rotate]#`menvcfg.CBIE`# ! Valid values of `senvcfg.CBIE`
-
-      ! 00 ! 00
-      ! 01 ! 00, 01
-      ! 11 ! 00, 01, 11
-      !===
+      Execution of `cbo.inval` in U-mode is enabled only if it is also enabled in S-mode
+      by `menvcfg.CBIE`. If `menvcfg.CBIE` is `01`, an enabled `cbo.inval` performs a
+      flush operation in U-mode even if `senvcfg.CBIE` is `11`.
 
       Controls execution of the cache block invalidate instruction, `cbo.inval`,
       in U-mode
@@ -120,9 +115,8 @@ fields:
     sw_write(csr_value): |
       if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
         return csr_value.CBIE;
-      } else {
-        return UNDEFINED_LEGAL_DETERMINISTIC;
       }
+      return CSR[senvcfg].CBIE;
     reset_value: UNDEFINED_LEGAL
   UKTE:
     location: 8
