@@ -75,19 +75,14 @@ fields:
   HPM<%= hpm_num %>:
     location: <%= hpm_num %>
     definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: <%= hpm_num %>
-            equal: true
+      extension:
+        name: Sm
     description: |
       [when="COUNTINHIBIT_EN[<%= hpm_num %>] == true"]
       When set, `hpmcounter<%= hpm_num %>.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[<%= hpm_num %>] == false"]
-      Since `hpmcounter<%= hpm_num %>` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM<%= hpm_num %>` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[<%= hpm_num %>] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
