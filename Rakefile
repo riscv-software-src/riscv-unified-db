@@ -136,6 +136,11 @@ namespace :test do
       raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
   end
+  # "Run the parameter emitter/validator test suite"
+  task :param_emitter do
+    sh "uv run pytest tools/python/param_emitter/test_param_emitter.py -v"
+  end
+
   # "Run the IDL compiler test suite"
   task :idl_compiler do
     test_files = Dir["#{$root}/lib/idl/tests/test_*.rb"]
