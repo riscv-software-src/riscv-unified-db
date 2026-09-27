@@ -359,7 +359,7 @@ int InstructionSetSimulator::Run()
 
 int InstructionSetSimulator::OnReadGPR(REGISTERFILE& registerFile)
 {
-  registerFile.nXRegs = MIN(registerFile.nXRegs, 32);
+  registerFile.nXRegs = MIN(registerFile.nXRegs, static_cast<int>(m_pHart->xreg_count()));
   for(int i = 0 ; i < registerFile.nXRegs ; i++)
   {
     registerFile.xReg[i] = m_pHart->xreg(i);
@@ -369,7 +369,7 @@ int InstructionSetSimulator::OnReadGPR(REGISTERFILE& registerFile)
 
 int InstructionSetSimulator::OnWriteGPR(REGISTERFILE& registerFile)
 {
-  registerFile.nXRegs = MIN(registerFile.nXRegs, 32);
+  registerFile.nXRegs = MIN(registerFile.nXRegs, static_cast<int>(m_pHart->xreg_count()));
   for(int i = 0 ; i < registerFile.nXRegs ; i++)
   {
     m_pHart->set_xreg(i, registerFile.xReg[i]);
@@ -417,7 +417,7 @@ int InstructionSetSimulator::OnWriteMemory(uint64_t uiAddress, uint64_t& uiLen, 
 
 int InstructionSetSimulator::OnReadSingleRegister(int reg, uint64_t& value)
 {
-  if(reg >= RISCV_REG_GPR_FIRST && reg <= RISCV_REG_GPR_LAST)
+  if(reg >= RISCV_REG_GPR_FIRST && reg < static_cast<int>(m_pHart->xreg_count()))
     value = m_pHart->xreg(reg);
   else if (reg == RISCV_REG_PC)
     value = m_pHart->pc();
@@ -460,7 +460,7 @@ int InstructionSetSimulator::OnReadSingleRegister(int reg, uint64_t& value)
 
 int InstructionSetSimulator::OnWriteSingleRegister(int reg, uint64_t& value)
 {
-  if(reg >= RISCV_REG_GPR_FIRST && reg <= RISCV_REG_GPR_LAST)
+  if(reg >= RISCV_REG_GPR_FIRST && reg < static_cast<int>(m_pHart->xreg_count()))
     m_pHart->set_xreg(reg, value);
   else if (reg == RISCV_REG_PC)
     m_pHart->set_next_pc(value);

@@ -201,6 +201,10 @@ module CppHartGen
       cfg_arch.register_files
     end
 
+    def applicable_registers(register_file)
+      register_file.registers_for(cfg_arch)
+    end
+
     private
 
     def idl_body_to_cpp(body)

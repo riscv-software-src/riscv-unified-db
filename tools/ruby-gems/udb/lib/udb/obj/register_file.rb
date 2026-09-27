@@ -172,6 +172,14 @@ class RegisterFile < TopLevelDatabaseObject
     @registers ||= @data.fetch("registers", []).map.with_index { |reg, idx| RegisterEntry.new(self, reg, idx) }
   end
 
+  sig { params(cfg_arch: ConfiguredArchitecture).returns(T::Array[RegisterEntry]) }
+  def registers_for(cfg_arch)
+    registers.select do |register|
+      condition = register.when_condition
+      condition.nil? || condition.could_be_satisfied_by_cfg_arch?(cfg_arch)
+    end
+  end
+
   sig { returns(T::Array[T::Hash[String, T.untyped]]) }
   def templates = @data.fetch("templates", [])
  end

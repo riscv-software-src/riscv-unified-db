@@ -15,7 +15,9 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        name: I
+        anyOf:
+          - name: I
+          - name: E
 assembly: xd, imm(xs1)
 encoding:
   match: "-----------------110-----0000011"

@@ -12,7 +12,9 @@ description: |
   Any overflow is thrown away.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------000-----0110011

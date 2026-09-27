@@ -13,7 +13,9 @@ description: |
   Sign extend the result.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, imm(xs1)
 encoding:
   match: "-----------------010-----0000011"

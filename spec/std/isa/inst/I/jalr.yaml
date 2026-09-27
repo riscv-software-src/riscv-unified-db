@@ -14,7 +14,9 @@ description: |
   in xd.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, imm(xs1)
 encoding:
   match: "-----------------000-----1100111"

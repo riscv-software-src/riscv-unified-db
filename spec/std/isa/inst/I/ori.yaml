@@ -10,7 +10,9 @@ long_name: Or immediate
 description: Or an immediate to the value in xs1, and store the result in xd
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, imm
 encoding:
   match: "-----------------110-----0010011"

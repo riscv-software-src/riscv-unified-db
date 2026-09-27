@@ -10,7 +10,9 @@ long_name: Load upper immediate
 description: Load the zero-extended imm into xd.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, imm
 encoding:
   match: "-------------------------0110111"

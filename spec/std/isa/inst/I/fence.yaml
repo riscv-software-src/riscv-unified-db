@@ -125,7 +125,9 @@ description: |
 
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: pred, succ
 encoding:
   match: "-----------------000-----0001111"

@@ -25,7 +25,9 @@ description: |
   and should not increment the `minstret` CSR.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: ""
 encoding:
   match: "00000000000000000000000001110011"

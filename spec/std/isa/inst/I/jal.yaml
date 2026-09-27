@@ -12,7 +12,9 @@ description: |
   address in xd.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, imm
 encoding:
   match: "-------------------------1101111"

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "title": "Register File Schema",
   "description": "Schema for describing a register file",
   "$defs": {
@@ -25,7 +25,7 @@
           "$ref": "schema_defs.json#/$defs/spec_text"
         },
         "when": {
-          "$ref": "schema_defs.json#/$defs/requires_entry"
+          "$ref": "schema_defs.json#/$defs/condition"
         },
         "reset_value": {
           "type": "string",
@@ -101,7 +101,7 @@
           "$ref": "schema_defs.json#/$defs/spec_text"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry"
+          "$ref": "schema_defs.json#/$defs/condition"
         },
         "register_class": {
           "type": "string",
