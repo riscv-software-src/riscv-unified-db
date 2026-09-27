@@ -205,6 +205,15 @@ module CppHartGen
       register_file.registers_for(cfg_arch)
     end
 
+    def register_count_expr(register_file)
+      count = applicable_registers(register_file).count
+      return count.to_s unless register_file.name == "X" && count > 16
+
+      e_possible = Udb::Condition.new({ "extension" => { "name" => "E" } }, cfg_arch)
+        .could_be_satisfied_by_cfg_arch?(cfg_arch)
+      e_possible ? "(implemented_Q_(ExtensionName::E) ? 16 : #{count})" : count.to_s
+    end
+
     private
 
     def idl_body_to_cpp(body)

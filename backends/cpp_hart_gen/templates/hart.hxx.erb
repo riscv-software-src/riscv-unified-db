@@ -346,14 +346,15 @@ namespace udb {
       <%- entries = applicable_registers(rf) -%>
       <%- entries_with_read = entries.select { |r| r.arch_read } -%>
       <%- entries_with_write = entries.select { |r| r.arch_write } -%>
+      <%- entry_count = rf.name == "X" ? "xreg_count()" : entries.count.to_s -%>
 
       <%- if rf.name == "X" -%>
-      unsigned xreg_count() const override { return <%= entries.count %>; }
+      unsigned xreg_count() const override { return <%= register_count_expr(rf) %>; }
 
       <%- end -%>
       uint64_t <%= rf_name %>reg(unsigned num) const override {
-        if (num >= <%= entries.count %>) {
-          throw std::out_of_range("<%= rf.name %> register indices are 0 - <%= entries.count - 1 %>, inclusive");
+        if (num >= <%= entry_count %>) {
+          throw std::out_of_range("<%= rf.name %> register index out of range");
         }
         <%- if is_runtime_width -%>
         return static_cast<uint64_t>(_<%= rf_name %>reg(num).get().get_ui());
@@ -382,8 +383,8 @@ namespace udb {
       }
 
       void set_<%= rf_name %>reg(unsigned num, uint64_t value) override {
-        if (num >= <%= entries.count %>) {
-          throw std::out_of_range("<%= rf.name %> register indices are 0 - <%= entries.count - 1 %>, inclusive");
+        if (num >= <%= entry_count %>) {
+          throw std::out_of_range("<%= rf.name %> register index out of range");
         }
         <%- if is_runtime_width -%>
         _set_<%= rf_name %>reg(Bits<8>{num}, <%= accessor_type %>{Bits<64>{value}});

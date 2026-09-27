@@ -230,15 +230,15 @@ class DecodeGen
     "(#{efs.join(' | ')})"
   end
 
-  def e_base?
-    return @e_base if defined?(@e_base)
+  def e_possible?
+    return @e_possible if defined?(@e_possible)
 
-    @e_base = Udb::Condition.new({ "extension" => { "name" => "E" } }, @cfg_arch)
-      .satisfied_by_cfg_arch?(@cfg_arch) == Udb::SatisfiedResult::Yes
+    @e_possible = Udb::Condition.new({ "extension" => { "name" => "E" } }, @cfg_arch)
+      .could_be_satisfied_by_cfg_arch?(@cfg_arch)
   end
 
   def e_xreg_decode_variables(inst, xlen)
-    return [] unless e_base?
+    return [] unless e_possible?
 
     inst.encoding(xlen).decode_variables.select { |dv| ["xd", "xs1", "xs2"].include?(dv.name) }
   end
@@ -330,7 +330,7 @@ class DecodeGen
           end
           if child.type == DecodeTreeNode::ENDPOINT_TYPE
             e_xreg_decode_variables(child.insts[0], xlen).each do |dv|
-              conds << "(#{extract_dv(dv, encoding_var_name)} < 16_b)"
+              conds << "(!implemented_Q_(ExtensionName::E) || (#{extract_dv(dv, encoding_var_name)} < 16_b))"
             end
           end
           if has_guarded_hints
@@ -383,7 +383,7 @@ class DecodeGen
           conds << dv_allowed_cond(dv, encoding_var_name) unless dv.excludes.empty?
         end
         e_xreg_decode_variables(hint_inst, xlen).each do |dv|
-          conds << "(#{extract_dv(dv, encoding_var_name)} < 16_b)"
+          conds << "(!implemented_Q_(ExtensionName::E) || (#{extract_dv(dv, encoding_var_name)} < 16_b))"
         end
         conds << implemented_cond_cxx(hint_inst) if needs_to_check_implemented?(hint_inst)
         code += <<~HINT_INST
