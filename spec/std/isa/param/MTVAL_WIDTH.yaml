@@ -29,7 +29,7 @@ requirements:
 
     # in RV32, MTVAL must be able to hold a physical address if M-mode takes an exception
     # that reports an address
-    # Since phyiscal address width can be larger than 32 with Sv32, need to downsize MTVAL in that case
+    # Since physical address width can be larger than 32 with Sv32, need to downsize MTVAL in that case
     (
       MXLEN == 32 &&
       PHYS_ADDR_WIDTH > 32 &&
@@ -46,7 +46,8 @@ requirements:
         )
     ) -> (MTVAL_WIDTH == 32);
 
-    # TODO: uncomment when we have support for parameter comparison to other parameters
+    # TODO: uncomment when we have support for parameter/function comparison
+    #       on the RHS of a constraint.
     # (
     #   (
     #     MXLEN == 64 ||
@@ -68,6 +69,8 @@ requirements:
     #     )
     # ) -> (MTVAL_WIDTH >= PHYS_ADDR_WIDTH);
 
+    # TODO: uncomment when we have support for parameter/function comparison
+    #       on the RHS of a constraint.
     # (
     #   implemented?(ExtensionName::S) &&
     #   (
