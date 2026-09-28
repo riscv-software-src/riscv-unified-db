@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/ziccamoc.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Ziccamoc extension is implemented, then main memory regions with both the cacheability and coherence PMAs must provide ``AMOCASQ``-level PMA support.",
+      "section": "Preamble > Ziccamoc Extension for Main Memory Compare-and-Swap, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    }
+  ]
+}

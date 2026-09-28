@@ -1,0 +1,350 @@
+# configs/schema_rules.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+# Filter keyword lists for the RISC-V UDB spec_chunker.py pipeline.
+#
+# This file externalises every frozenset / vocabulary constant that was
+# previously hardcoded in spec_chunker.py so they can be tuned, reviewed, or
+# audited without touching Python source.
+#
+# Sections
+# --------
+#   signals          — keyword lists that BOOST a sentence (keep signals)
+#   noise            — keyword lists that SUPPRESS a sentence (drop signals)
+#   intent           — mode-specific intent keyword groups
+#   regex_constants  — notes on compiled regex patterns (informational only;
+#                      regexes themselves stay in Python for safety)
+#
+# All lists are lowercased.  Trailing spaces (e.g. "may ") are intentional —
+# they prevent matching substrings like "maybe", "mayor", "whenever".
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+# ── 1. Keep signals ──────────────────────────────────────────────────────────
+
+signals:
+
+  # Hard normative modals.  "must not" and "shall not" both match because the
+  # parent token ("must", "shall") is normative regardless of negation.
+  strong_modals:
+    - must
+    - shall
+
+  # Permission / recommendation modals.  "can" and "either" are deliberately
+  # absent — too common in non-normative prose.
+  # Note: "may " has a trailing space to avoid "maybe", "mayor" etc.
+  weak_modals:
+    - should
+    - "may "
+    - need not
+    - is not required to
+
+  # Named CSR identifiers and RISC-V-specific register names.
+  # Bare "register" is intentionally absent (causes false positives in prose).
+  csr_vocab:
+    - csr
+    - warl
+    - wpri
+    - wlrl
+    - mstatus
+    - sstatus
+    - ustatus
+    - mtvec
+    - stvec
+    - utvec
+    - mepc
+    - sepc
+    - uepc
+    - mcause
+    - scause
+    - ucause
+    - mtval
+    - stval
+    - utval
+    - mip
+    - mie
+    - sip
+    - sie
+    - satp
+    - hgatp
+    - vsatp
+    - hstatus
+    - vsstatus
+    - vsie
+    - vsip
+    - vsepc
+    - vstval
+    - pmpcfg
+    - pmpaddr
+    - mhpmcounter
+    - mhpmevent
+    - mcounteren
+    - scounteren
+    - hcounteren
+    - menvcfg
+    - senvcfg
+    - henvcfg
+    - mideleg
+    - medeleg
+    - sideleg
+    - sedeleg
+    - mscratch
+    - sscratch
+    - mhartid
+    - mvendorid
+    - marchid
+    - mimpid
+    - fcsr
+    - fflags
+    - frm
+    - vstart
+    - vxsat
+    - vxrm
+    - vcsr
+    - vl
+    - vtype
+    - vlenb
+    - tselect
+    - tdata1
+    - tdata2
+    - tdata3
+    - dcsr
+    - dpc
+    - dscratch0
+    - dscratch1
+
+  # Used only for section-name context boosting, NOT sentence classification.
+  register_context_vocab:
+    - csr
+    - register
+    - control register
+    - status register
+
+  # Bit / field structure vocabulary.
+  # "bit" and "bits" alone are omitted; pair with bit_constraint for explicit rules.
+  field_vocab:
+    - field
+    - encoded
+    - value of
+    - sign-extended
+    - zero-extended
+    - upper bits
+    - lower bits
+    - most significant
+    - least significant
+
+  # Used jointly with field_vocab for _has_explicit_bit_rule().
+  bit_constraint_vocab:
+    - bit
+    - bits
+
+  # Range / numeric constraint vocabulary.
+  # Bare digit matching is intentionally omitted (causes raw-chunk explosion).
+  range_vocab:
+    - greater than
+    - less than
+    - no greater than
+    - no less than
+    - at least
+    - at most
+    - equal to
+    - not equal
+    - maximum
+    - minimum
+    - in the range
+    - xlen-bit
+    - xlen bits
+
+  # Condition / trap vocabulary.
+  # "if " and "when " have trailing spaces to avoid "differs", "whenever".
+  condition_vocab:
+    - "if "
+    - "when "
+    - "unless "
+    - provided that
+    - in the case
+    - trap
+    - exception
+    - fault
+    - interrupt
+    - illegal instruction
+
+  # Precise boolean-state vocabulary.
+  # "set" and "clear" alone are omitted (appear in non-normative prose).
+  binary_state_vocab:
+    - enabled
+    - disabled
+    - set to 0
+    - set to 1
+    - set to zero
+    - set to one
+    - cleared to
+    - cleared when
+    - asserted
+    - deasserted
+    - read-only zero
+    - hardwired to zero
+    - hardwired to one
+    - active-low
+    - active-high
+
+  # CSR field access-mode vocabulary.
+  access_vocab:
+    - read-only
+    - write-only
+    - read/write
+    - writable
+    - write-1-to-clear
+    - write-1-to-set
+
+  # Normative intent vocabulary used in the general extract mode.
+  normative_intent_vocab:
+    - determined by
+    - depends on
+    - computed from
+    - not permitted
+    - illegal instruction
+    - raise
+    - raises
+    - results in
+    - is extended to
+    - are extended to
+
+
+# ── 2. Drop signals ──────────────────────────────────────────────────────────
+
+noise:
+
+  # Non-normative narrative patterns.
+  # A sentence matching any of these is rejected UNLESS a strong modal is present.
+  narrative_patterns:
+    - for example
+    - for instance
+    - e.g.
+    - i.e.
+    - we propose
+    - we proposed
+    - it is suggested
+    - this allows
+    - this avoids
+    - this ensures
+    - is designed to
+    - intended to
+    - intended for
+    - useful in
+    - useful for
+    - can often
+    - in practice
+    - typically
+    - in general
+    - note that
+    - "note:"
+    - rationale
+    - as an example
+
+  # Pure-computation patterns — no constraint implied.
+  computation_patterns:
+    - expands to
+    - is performed
+    - the result is
+    - are arithmetic
+    - are instructions
+    - contains instructions
+    - are crucial
+    - are essential
+
+  # AsciiDoc / diagram artefacts that survive text cleaning.
+  noise_patterns:
+    - wavedrom
+    - "..."
+    - we propose
+    - we proposed
+    - "rationale:"
+    - "introduction:"
+
+  # Soft-rationale patterns — rejected when no strong modal is present.
+  soft_rationale_patterns:
+    - can often
+    - can be used to
+    - is useful
+    - are useful
+    - "because "
+    - this avoids
+    - this allows
+    - this ensures
+    - in some implementations
+    - designed to
+    - intended to
+    - is important
+    - are important
+    - is crucial
+    - are crucial
+    - is intended
+    - are intended
+
+
+# ── 3. Intent vocabularies (mode-specific) ────────────────────────────────────
+
+intent:
+
+  # process_formal — memory-model / formal sections.
+  formal:
+    - ordering
+    - constraint
+    - visible
+    - execution
+    - allowed
+    - observed
+    - memory
+    - operation
+    - po
+    - rf
+    - co
+    - fr
+    - happens-before
+    - program order
+
+  # process_profile — profile requirement sections.
+  profile:
+    - requires
+    - must include
+    - mandatory
+    - optional
+    - profile
+    - extension
+    - shall support
+    - ratified
+    - mandated
+
+  # process_docs — naming / intro / preface sections.
+  docs:
+    - must be
+    - format
+    - naming
+    - encoding
+    - structure
+
+
+# ── 4. Regex constants (informational) ────────────────────────────────────────
+# These regexes are compiled in Python (spec_chunker.py) for performance;
+# they are documented here for auditability and cross-referencing.
+
+regex_constants:
+  note_block:           '\[NOTE\]\s*\n====.*?====\s*\n'
+  equal_runs:           '={2,}'
+  anchor:               '\[\[.*?\]\]'
+  norm_attr:            '\[#?norm:[^\]]+\]#?'
+  index_term:           '\(\(\(.*?\)\)\)'
+  xref:                 '<<[^>]+>>'
+  table:                '\|===.*?\|==='
+  percent_attr:         '\[%.*?\]'
+  block_comment:        '/\*.*?\*/'
+  list_bullet:          '^[\*\-]\s+'
+  whitespace:           '\s+'
+  section_hdr:          '^(=+)\s+(.+)$'
+  split_sentence:       '(?<=[.;])\s+(?=[A-Z][a-z])'
+  split_conditional:    '(?=\b(?:If|When|Unless|Otherwise)\b)'
+  tag_pair:             '<[^>]{1,80}>'
+  numeric_constraint:   >
+    \b\d+\s*(?:bits?|bytes?|words?|xlen|mxlen|ilen)\b
+    |\b(?:at least|at most|no (?:greater|less) than)\s+\d
+    |\b\d+(?:-bit|-byte)\b

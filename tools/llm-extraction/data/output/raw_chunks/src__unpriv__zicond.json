@@ -1,0 +1,294 @@
+{
+  "source_file": "src/unpriv/zicond.adoc",
+  "total": 36,
+  "sentences": [
+    {
+      "text": "The Zicond extension defines two R-type instructions that support branchless conditional operations.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0",
+      "line_range": [
+        6,
+        11
+      ]
+    },
+    {
+      "text": "|{check} |{check} |czero.eqz rd, rs1, rs2 |",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0",
+      "line_range": [
+        13,
+        16
+      ]
+    },
+    {
+      "text": "|{check} |{check} |czero.nez rd, rs1, rs2 |",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0",
+      "line_range": [
+        18,
+        21
+      ]
+    },
+    {
+      "text": "[insns-czero-eqz,reftext=\"Conditional zero, if condition is equal to zero\"]",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order)",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "Synopsis:: Moves zero to a register rd, if the condition rs2 is equal to zero, otherwise moves rs1 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        30,
+        31
+      ]
+    },
+    {
+      "text": "Mnemonic:: czero.eqz rd, rs1, rs2",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        33,
+        34
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['CZERO.EQZ']}, { bits: 5, name: 'rs1', attr: ['value'] }, { bits: 5, name: 'rs2', attr: ['condition'] }, { bits: 7, name: 0x7, attr: ['CZERO'] }, ]} ....",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        36,
+        47
+      ]
+    },
+    {
+      "text": "If rs2 contains the value zero, this instruction writes the value zero to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        49,
+        51
+      ]
+    },
+    {
+      "text": "Otherwise, this instruction copies the contents of rs1 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        49,
+        51
+      ]
+    },
+    {
+      "text": "This instruction carries a syntactic dependency from both rs1 and rs2 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        53,
+        55
+      ]
+    },
+    {
+      "text": "Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in rs1 and rs2.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        53,
+        55
+      ]
+    },
+    {
+      "text": "SAIL code:: [source,sail] -- let condition = X(rs2); result : xlenbits = if (condition zeros()) then zeros() else X(rs1); X(rd) = result; --",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        57,
+        64
+      ]
+    },
+    {
+      "text": "[insns-czero-nez,reftext=\"Conditional zero, if condition is nonzero\"]",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz",
+      "line_range": [
+        68,
+        68
+      ]
+    },
+    {
+      "text": "Synopsis:: Moves zero to a register rd, if the condition rs2 is nonzero, otherwise moves rs1 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        71,
+        72
+      ]
+    },
+    {
+      "text": "Mnemonic:: czero.nez rd, rs1, rs2",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        74,
+        75
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x7, attr: ['CZERO.NEZ']}, { bits: 5, name: 'rs1', attr: ['value'] }, { bits: 5, name: 'rs2', attr: ['condition'] }, { bits: 7, name: 0x7, attr: ['CZERO'] }, ]} ....",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        77,
+        88
+      ]
+    },
+    {
+      "text": "If rs2 contains a nonzero value, this instruction writes the value zero to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        90,
+        92
+      ]
+    },
+    {
+      "text": "Otherwise, this instruction copies the contents of rs1 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        90,
+        92
+      ]
+    },
+    {
+      "text": "This instruction carries a syntactic dependency from both rs1 and rs2 to rd.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        94,
+        96
+      ]
+    },
+    {
+      "text": "Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in rs1 and rs2.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        94,
+        96
+      ]
+    },
+    {
+      "text": "SAIL code:: [source,sail] -- let condition = X(rs2); result : xlenbits = if (condition != zeros()) then zeros() else X(rs1); X(rd) = result; --",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > czero.eqz > czero.nez",
+      "line_range": [
+        98,
+        105
+      ]
+    },
+    {
+      "text": "The instructions from this extension can be used to construct sequences that perform conditional-arithmetic, conditional-bitwise-logical, and conditional-select operations.",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples",
+      "line_range": [
+        109,
+        109
+      ]
+    },
+    {
+      "text": "| |Operation |Instruction sequence |Length",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        113,
+        117
+      ]
+    },
+    {
+      "text": "|*Conditional add, if zero* + `rd = (rc 0) ? (rs1 + rs2) : rs1` |czero.nez rd, rs2, rc add rd, rs1, rd .8+.^|2 insns",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        119,
+        123
+      ]
+    },
+    {
+      "text": "|*Conditional add, if non-zero* + `rd = (rc != 0) ? (rs1 + rs2) : rs1` |czero.eqz rd, rs2, rc add rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        125,
+        128
+      ]
+    },
+    {
+      "text": "|*Conditional subtract, if zero* + `rd = (rc 0) ? (rs1 - rs2) : rs1` |czero.nez rd, rs2, rc sub rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        130,
+        133
+      ]
+    },
+    {
+      "text": "|*Conditional subtract, if non-zero* + `rd = (rc != 0) ? (rs1 - rs2) : rs1` |czero.eqz rd, rs2, rc sub rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        135,
+        138
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-or, if zero* + `rd = (rc 0) ? (rs1 \\| rs2) : rs1` |czero.nez rd, rs2, rc or rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        140,
+        143
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-or, if non-zero* + `rd = (rc != 0) ? (rs1 \\| rs2) : rs1` |czero.eqz rd, rs2, rc or rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        145,
+        148
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-xor, if zero* + `rd = (rc 0) ? (rs1 ^ rs2) : rs1` |czero.nez rd, rs2, rc xor rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        150,
+        153
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-xor, if non-zero* + `rd = (rc != 0) ? (rs1 ^ rs2) : rs1` |czero.eqz rd, rs2, rc xor rd, rs1, rd",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        155,
+        158
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-and, if zero* + `rd = (rc 0) ? (rs1 & rs2) : rs1` |and rd, rs1, rs2 czero.eqz rtmp, rs1, rc or rd, rd, rtmp .4+.^|3 insns + (requires 1 temporary)",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        160,
+        166
+      ]
+    },
+    {
+      "text": "|*Conditional bitwise-and, if non-zero* + `rd = (rc != 0) ? (rs1 & rs2) : rs1` |and rd, rs1, rs2 czero.nez rtmp, rs1, rc or rd, rd, rtmp",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        168,
+        172
+      ]
+    },
+    {
+      "text": "|*Conditional select, if zero* + `rd = (rc 0) ? rs1 : rs2` |czero.nez rd, rs1, rc czero.eqz rtmp, rs2, rc add rd, rd, rtmp",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        174,
+        178
+      ]
+    },
+    {
+      "text": "|*Conditional select, if non-zero* + `rd = (rc != 0) ? rs1 : rs2` |czero.eqz rd, rs1, rc czero.nez rtmp, rs2, rc add rd, rd, rtmp",
+      "section": "Preamble > \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0 > Instructions (in alphabetical order) > Usage examples > Instruction sequences",
+      "line_range": [
+        180,
+        184
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "source_file": "src/unpriv/zihpm.adoc",
+  "total": 7,
+  "sentences": [
+    {
+      "text": "The Zihpm extension comprises up to 29 additional unprivileged 64-bit hardware performance counters, `hpmcounter3-hpmcounter31`.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "When XLEN=32, the upper 32 bits of these performance counters are accessible via additional CSRs `hpmcounter3h- hpmcounter31h`.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "The Zihpm extension depends on the Zicsr extension.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "The implemented number and width of these additional counters, and the set of events they count, are platform-specific.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "Accessing an unimplemented counter may cause an illegal-instruction exception or may return a constant value.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "If the configuration used to select the events counted by a counter is misconfigured, the counter may return a constant value.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        3,
+        13
+      ]
+    },
+    {
+      "text": "The execution environment should provide a means to determine the number and width of the implemented counters, and an interface to configure the events to be counted by each counter.",
+      "section": "Preamble > \"Zihpm\" Extension for Hardware Performance Counters",
+      "line_range": [
+        15,
+        17
+      ]
+    }
+  ]
+}

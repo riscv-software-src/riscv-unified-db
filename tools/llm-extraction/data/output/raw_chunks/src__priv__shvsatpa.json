@@ -1,0 +1,14 @@
+{
+  "source_file": "src/priv/shvsatpa.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Shvsatpa extension is implemented, all translation modes supported in `satp` must be supported in `vsatp`.",
+      "section": "Preamble > Shvsatpa Extension for Translation Mode Support, Version 1.0",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

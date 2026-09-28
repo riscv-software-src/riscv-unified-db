@@ -1,0 +1,174 @@
+{
+  "source_file": "src/unpriv/zihintntl.adoc",
+  "total": 21,
+  "sentences": [
+    {
+      "text": "The NTL instructions are HINTs that indicate that the explicit memory accesses of the immediately subsequent instruction (henceforth \"target instruction\") exhibit poor temporal locality of reference.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The NTL instructions do not change architectural state, nor do they alter the architecturally visible effects of the target instruction.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "Four variants are provided:",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The NTL.P1 instruction indicates that the target instruction does not exhibit temporal locality within the capacity of the innermost level of private cache in the memory hierarchy. NTL.P1 is encoded as ADD x0, x0, x2.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "The NTL.PALL instruction indicates that the target instruction does not exhibit temporal locality within the capacity of any level of private cache in the memory hierarchy. NTL.PALL is encoded as ADD x0, x0, x3.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        15,
+        17
+      ]
+    },
+    {
+      "text": "The NTL.S1 instruction indicates that the target instruction does not exhibit temporal locality within the capacity of the innermost level of shared cache in the memory hierarchy. NTL.S1 is encoded as ADD x0, x0, x4.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        19,
+        22
+      ]
+    },
+    {
+      "text": "The NTL.ALL instruction indicates that the target instruction does not exhibit temporal locality within the capacity of any level of cache in the memory hierarchy. NTL.ALL is encoded as ADD x0, x0, x5.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        24,
+        26
+      ]
+    },
+    {
+      "text": "lists several software use cases and the recommended NTL variant that portable software—i.e., software not tuned for any specific implementation's memory hierarchy—should use in each case.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        28,
+        28
+      ]
+    },
+    {
+      "text": ".Recommended NTL variant for portable software to employ in various scenarios. | |Scenario |Recommended NTL variant |Access to a working set between 64 KiB and 256 KiB in size |NTL.P1 |Access to a working set between 256 KiB and 1 MiB in size |NTL.PALL |Access to a working set greater than 1 MiB in size |NTL.S1 |Access with no exploitable temporal locality (e.g., streaming) |NTL.ALL |Access to a contended synchronization variable |NTL.PALL |",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        30,
+        40
+      ]
+    },
+    {
+      "text": "lists several sample memory hierarchies and recommends how each NTL variant maps onto each cache level.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        42,
+        52
+      ]
+    },
+    {
+      "text": "The table also recommends which NTL variant that implementation-tuned software should use to avoid allocating in a particular cache level.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        42,
+        52
+      ]
+    },
+    {
+      "text": "For example, for a system with a private L1 and a shared L2, it is recommended that NTL.P1 and NTL.PALL indicate that temporal locality cannot be exploited by the L1, and that NTL.S1 and NTL.ALL indicate that temporal locality cannot be exploited by the L2.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        42,
+        52
+      ]
+    },
+    {
+      "text": "Furthermore, software tuned for such a system should use NTL.P1 to indicate a lack of temporal locality exploitable by the L1, or should use NTL.ALL indicate a lack of temporal locality exploitable by the L2.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        42,
+        52
+      ]
+    },
+    {
+      "text": "If the C or Zca extension is provided, compressed variants of these HINTs are also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as C.ADD x0, x5.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        54,
+        57
+      ]
+    },
+    {
+      "text": "The NTL instructions affect all memory-access instructions except the cache-management instructions in the Zicbom extension.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": ".Mapping of NTL variants to various memory hierarchies. | | Memory hierarchy 4+| Recommended mapping of NTL + variant to actual cache level 4+| Recommended NTL variant for + explicit cache management | |P1 |PALL |S1 |ALL |L1 |L2 |L3 |L4/L5 9+^| Common Scenarios | No caches 4+|--- 4+|none |Private L1 only |L1 |L1 |L1 |L1| ALL |--- |--- |--- |Private L1; shared L2 |L1 |L1 |L2 |L2 |P1|ALL|---|--- |Private L1; shared L2/L3 |L1 | L1 | L2 | L3 |P1 |S1 |ALL |--- |Private L1/L2 |L1 |L2 |L2 |L2 | P1 |ALL |--- |--- |Private L1/L2; shared L3 |L1 | L2 | L3 | L3 | P1 | PALL| ALL |--- |Private L1/L2; shared L3/L4 | L1 | L2| L3 | L4 | P1 | PALL | S1 | ALL 9+^| Uncommon Scenarios |Private L1/L2/L3; shared L4 | L1 | L3 |L4 |L4 |P1 |P1 |PALL |ALL |Private L1; shared L2/L3/L4 |L1 | L1 |L2 |L4 |P1 |S1 |ALL |ALL |Private L1/L2; shared L3/L4/L5 |L1 | L2 | L3 | L5 |P1 | PALL |S1 |ALL |Private L1/L2/L3; shared L4/L5 |L1 |L3 |L4 |L5 |P1 |P1 |PALL |ALL |",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        64,
+        87
+      ]
+    },
+    {
+      "text": "When an NTL instruction is applied to a prefetch hint in the Zicbop extension, it indicates that a cache line should be prefetched into a cache that is outer from the level specified by the NTL.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        89,
+        91
+      ]
+    },
+    {
+      "text": "Software is discouraged from following an NTL instruction with an instruction that does not explicitly access memory.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        93,
+        96
+      ]
+    },
+    {
+      "text": "Nonadherence to this recommendation might reduce performance but otherwise has no architecturally visible effect.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        93,
+        96
+      ]
+    },
+    {
+      "text": "In the event that a trap is taken on the target instruction, implementations are discouraged from applying the NTL to the first instruction in the trap handler.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        98,
+        101
+      ]
+    },
+    {
+      "text": "Instead, implementations are recommended to ignore the HINT in this case.",
+      "section": "Preamble > \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0",
+      "line_range": [
+        98,
+        101
+      ]
+    }
+  ]
+}

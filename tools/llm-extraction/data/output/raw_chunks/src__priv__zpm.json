@@ -1,0 +1,878 @@
+{
+  "source_file": "src/priv/zpm.adoc",
+  "total": 109,
+  "sentences": [
+    {
+      "text": "RISC-V Pointer Masking (PM) is a feature that, when enabled, causes the CPU to ignore the upper bits of the effective address (these terms will be defined more precisely in the Background section).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "This allows these bits to be used in whichever way the application chooses.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "The version of the extension being described here specifically targets **tag checks**:",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "When an address is accessed, the tag stored in the masked bits can be compared against a range-based tag.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "This is used for dynamic safety checkers such as HWASAN cite:[HWASAN].",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "Such tools can be applied in all privilege modes (U, S, and M).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "HWASAN leverages tags in the upper bits of the address to identify memory errors such as use-after-free or buffer overflow errors.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "By storing a *pointer tag* in the upper bits of the address and checking it against a *memory tag* stored in a side table, it can identify whether a pointer is pointing to a valid location.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "Doing this without hardware support introduces significant overheads since the pointer tag needs to be manually removed for every conventional memory operation.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "Pointer masking support reduces these overheads.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "Pointer masking only adds the ability to ignore pointer tags during regular memory accesses.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "The tag checks themselves can be implemented in software or hardware.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "If implemented in software, pointer masking still provides performance benefits since non-checked accesses do not need to transform the address before every memory access.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "Hardware implementations are expected to provide even larger benefits due to performing tag checks out-of-band and hardening security guarantees derived from these checks.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "We anticipate that future extensions may build on pointer masking to support this functionality in hardware.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "It is worth mentioning that while HWASAN is the primary use-case for the current pointer masking extension, a number of other hardware/software features may be implemented leveraging Pointer Masking.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        11,
+        11
+      ]
+    },
+    {
+      "text": "Some of these use cases include sandboxing, object type checks and garbage collection bits in runtime systems.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        11,
+        11
+      ]
+    },
+    {
+      "text": "Note that the current version of the spec does not explicitly address these use cases, but future extensions may build on it to do so.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        11,
+        11
+      ]
+    },
+    {
+      "text": "While we describe the high-level concepts of pointer masking as if it was a single extension, it is, in reality, a family of extensions that implementations or profiles may choose to individually include or exclude (see ).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction",
+      "line_range": [
+        13,
+        13
+      ]
+    },
+    {
+      "text": "We now define basic terms.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "Note that these rely on the definition of an “ignore” transformation, which is defined in .",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "**Effective address (as defined in the RISC-V Base ISA):** A load/store effective address sent to the memory subsystem (e.g., as generated during the execution of load/store instructions).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "This does not include addresses corresponding to implicit accesses, such as page-table walks.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "**Masked bits:** The upper PMLEN bits of an address, where PMLEN is a configurable parameter.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        23,
+        23
+      ]
+    },
+    {
+      "text": "We will use PMLEN consistently throughout this chapter to refer to this parameter.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        23,
+        23
+      ]
+    },
+    {
+      "text": "**Transformed address:** An effective address after the ignore transformation has been applied.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        25,
+        25
+      ]
+    },
+    {
+      "text": "**Address translation mode:** The MODE of the currently active address translation scheme as defined in the RISC-V privileged specification.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "This could, for example, refer to Bare, Sv39, Sv48, and Sv57.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "In accordance with the privileged specification, non-Bare translation modes are referred to as virtual-memory schemes.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "For the purpose of this specification, M-mode translation is treated as equivalent to Bare.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "**Address validity:** The RISC-V privileged spec defines validity of addresses based on the address translation mode that is currently in use (e.g., Sv57, Sv48, Sv39, etc.).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        29,
+        29
+      ]
+    },
+    {
+      "text": "For a virtual address to be valid, all bits in the unused portion of the address must be the same as the Most Significant Bit (MSB) of the used portion.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        29,
+        29
+      ]
+    },
+    {
+      "text": "For example, when page-based 48-bit virtual memory (Sv48) is used, load/store effective addresses, which are 64 bits, must have bits 63–48 all set to bit 47, or else a page-fault exception will occur.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        29,
+        29
+      ]
+    },
+    {
+      "text": "For physical addresses, validity means that bits XLEN-1 to PABITS are zero, where PABITS is the number of physical address bits supported by the processor.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        29,
+        29
+      ]
+    },
+    {
+      "text": "**NVBITS:** The upper bits within a virtual address that have no effect on addressing memory and are only used for validity checks.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        31,
+        31
+      ]
+    },
+    {
+      "text": "These bits depend on the currently active address translation mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        31,
+        31
+      ]
+    },
+    {
+      "text": "For example, in Sv48, these are bits 63-48.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        31,
+        31
+      ]
+    },
+    {
+      "text": "**VBITS:** The bits within a virtual address that affect which memory is addressed.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        33,
+        33
+      ]
+    },
+    {
+      "text": "These are the bits of an address which are used to index into page tables.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Definitions",
+      "line_range": [
+        33,
+        33
+      ]
+    },
+    {
+      "text": "The ignore transformation differs depending on whether it applies to a virtual or physical address.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        38,
+        38
+      ]
+    },
+    {
+      "text": "For virtual addresses, it replaces the upper PMLEN bits with the sign extension of the PMLEN+1st bit.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        38,
+        38
+      ]
+    },
+    {
+      "text": "[source] .\"Ignore\" Transformation for virtual addresses, expressed in Verilog code. ---- transformedeffectiveaddress = {{PMLEN{effectiveaddress[XLEN-PMLEN-1]}}, effectiveaddress[XLEN-PMLEN-1:0]} ----",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        40,
+        45
+      ]
+    },
+    {
+      "text": "When applied to a physical address, including guest-physical addresses (i.e., all cases except when the active satp register's MODE field != Bare), the ignore transformation replaces the upper PMLEN bits with 0.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        47,
+        47
+      ]
+    },
+    {
+      "text": "This includes both the case of running in M-mode and running in other privilege modes with Bare address translation mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        47,
+        47
+      ]
+    },
+    {
+      "text": "[source] .\"Ignore\" Transformation for physical addresses, expressed in Verilog code. ---- transformedeffectiveaddress = {{PMLEN{0}}, effectiveaddress[XLEN-PMLEN-1:0]} ----",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        49,
+        54
+      ]
+    },
+    {
+      "text": "When pointer masking is enabled, the ignore transformation will be applied to every explicit memory access (e.g., loads/stores, atomics operations, and floating point loads/stores).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        56,
+        56
+      ]
+    },
+    {
+      "text": "The transformation *does not* apply to implicit accesses such as page-table walks or instruction fetches.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        56,
+        56
+      ]
+    },
+    {
+      "text": "The set of accesses that pointer masking applies to is described in .",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        56,
+        56
+      ]
+    },
+    {
+      "text": "[WARNING] Pointer masking does not change the underlying address generation logic or permission checks.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "Under a fixed address translation mode, it is semantically equivalent to replacing a subset of instructions (e.g., loads and stores) with an instruction sequence that applies the ignore operation to the target address of this instruction and then applies the instruction to the transformed address.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "References to address translation and other implementation details in the text are primarily to explain design decisions and common implementation patterns.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "Note that pointer masking is purely an arithmetic operation on the address that makes no assumption about the meaning of the addresses it is applied to.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        63,
+        63
+      ]
+    },
+    {
+      "text": "Pointer masking with the same value of PMLEN always has the same effect for the same type of address (virtual or physical).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        63,
+        63
+      ]
+    },
+    {
+      "text": "This ensures that code that relies on pointer masking does not need to be aware of the environment it runs in once pointer masking has been enabled, as long as the value of PMLEN is known, and whether or not addresses are virtual or physical.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        63,
+        63
+      ]
+    },
+    {
+      "text": "For example, the same application or library code can run in user mode, supervisor mode or M-mode (with different address translation modes) without modification.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > The “Ignore” Transformation",
+      "line_range": [
+        63,
+        63
+      ]
+    },
+    {
+      "text": "shows an example of the pointer masking transformation on a virtual address when PM is enabled for RV64 under Sv57 (PMLEN=7).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Example",
+      "line_range": [
+        67,
+        67
+      ]
+    },
+    {
+      "text": ".Example of PM address translation for RV64 under Sv57 | |Page-based profile|Sv57 on RV64 |Effective Address |0xABFFFFFF12345678 + NVBITS[1010101] VBITS[11111111111111111111111110001...000] |PMLEN|7 |Mask|0x01FFFFFFFFFFFFFF + NVBITS[0000000] VBITS[11111111111111111111111111111...111] |PMLEN+1st bit from the top (i.e., bit XLEN-PMLEN-1)|1 |Transformed effective address |0xFFFFFFFF12345678 + NVBITS[1111111] VBITS[11111111111111111111111110001...000]",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Example",
+      "line_range": [
+        71,
+        82
+      ]
+    },
+    {
+      "text": "If the address was a physical address rather than a virtual address with Sv57, the transformed address with PMLEN=7 would be 0x1FFFFFF12345678.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Example",
+      "line_range": [
+        86,
+        86
+      ]
+    },
+    {
+      "text": "From an implementation perspective, ignoring bits is deeply connected to the maximum virtual and physical address space supported by the processor (e.g., Bare, Sv48, Sv57).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        90,
+        90
+      ]
+    },
+    {
+      "text": "In particular, applying the above transformation is cheap if it covers only bits that are not used by **any** supported address translation mode (as it is equivalent to switching off validity checks).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        90,
+        90
+      ]
+    },
+    {
+      "text": "Masking NVBITS beyond those bits is more expensive as it requires ignoring them in the TLB tag, and even more expensive if the masked bits extend into the VBITS portion of the address (as it requires performing the actual sign extension).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        90,
+        90
+      ]
+    },
+    {
+      "text": "Similarly, when running in Bare or M mode, it is common for implementations to not use a particular number of bits at the top of the physical address range and fix them to zero.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        90,
+        90
+      ]
+    },
+    {
+      "text": "Applying the ignore transformation to those bits is cheap as well, since it will result in a valid physical address with all the upper bits fixed to 0.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        90,
+        90
+      ]
+    },
+    {
+      "text": "The current standard only supports PMLEN=XLEN-48 (i.e., PMLEN=16 in RV64) and PMLEN=XLEN-57 (i.e., PMLEN=7 in RV64). A setting has been reserved to potentially support other values of PMLEN in future standards.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        92,
+        92
+      ]
+    },
+    {
+      "text": "In such future standards, different supported values of PMLEN may be defined for each privilege mode (U/VU, S/HS, and M).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Determining the Value of PMLEN",
+      "line_range": [
+        92,
+        92
+      ]
+    },
+    {
+      "text": "Pointer masking is controlled separately for different privilege modes.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "The subset of supported privilege modes is determined by the set of supported pointer masking extensions.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "Different privilege modes may have different pointer masking settings active simultaneously and the hardware will automatically apply the pointer masking settings of the currently active privilege mode. A privilege mode's pointer masking setting is configured by bits in configuration registers of the next-higher privilege mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "Note that the pointer masking setting that is applied only depends on the active privilege mode, not on the address that is being masked.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "Some operating systems (e.g., Linux) may use certain bits in the address to disambiguate between different types of addresses (e.g., kernel and user-mode addresses).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "Pointer masking does not take these semantics into account and is purely an arithmetic operation on the address it is given.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking and Privilege Modes",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "Pointer masking applies to all explicit memory accesses.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        102,
+        102
+      ]
+    },
+    {
+      "text": "Currently, in the Base and Privileged ISAs, these are:",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        102,
+        102
+      ]
+    },
+    {
+      "text": "**Base Instruction Set**: LB, LH, LW, LBU, LHU, LWU, LD, SB, SH, SW, SD. * **Atomics**: All instructions in RV32A and RV64A. * **Floating Point**: FLW, FLD, FLQ, FSW, FSD, FSQ. * **Compressed**: All instructions mapping to any of the above, and C.LWSP, C.LDSP, C.FLWSP, C.FLDSP, C.SWSP, C.SDSP, C.FSWSP, C.FSDSP. * **Hypervisor Extension**: HLV.\\*, HSV.* (in some cases; see ). * **Cache Management Operations**: All instructions in Zicbom, Zicbop and Zicboz. * **Vector Extension**: All vector load and store instructions in the ratified RVV 1.0 spec. * **Zicfiss Extension**: SSPUSH, C.SSPUSH, SSPOPCHK, C.SSPOPCHK, SSAMOSWAP.W/D. * **Assorted**: FENCE, FENCE.I (if the currently unused address fields become enabled in the future).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        104,
+        112
+      ]
+    },
+    {
+      "text": "For other extensions, pointer masking applies to all explicit memory accesses by default.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        114,
+        114
+      ]
+    },
+    {
+      "text": "Future extensions may add specific language to indicate whether particular accesses are or are not included in pointer masking.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        114,
+        114
+      ]
+    },
+    {
+      "text": "MPRV and SPVP affect pointer masking as well, causing the pointer masking settings of the effective privilege mode to be applied.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        116,
+        116
+      ]
+    },
+    {
+      "text": "When MXR is in effect at the effective privilege mode where explicit memory access is performed, pointer masking does not apply.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        116,
+        116
+      ]
+    },
+    {
+      "text": "Pointer masking only applies to accesses generated by instructions on the CPU (including CPU extensions such as an FPU). E.g., it does not apply to accesses generated by page-table walks, the IOMMU, or devices.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        118,
+        118
+      ]
+    },
+    {
+      "text": "Misaligned accesses are supported, subject to the same limitations as in the absence of pointer masking.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "The behavior is identical to applying the pointer masking transformation to every constituent aligned memory access.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "In other words, the accessed bytes should be identical to the bytes that would be accessed if the pointer masking transformation was individually applied to every byte of the access without pointer masking.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "This ensures that both hardware implementations and emulation of misaligned accesses in M-mode behave the same way, and that the M-mode implementation is identical whether or not pointer masking is enabled (e.g., such an implementation may leverage MPRV to apply the correct privilege mode's pointer masking setting).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "No pointer masking operations are applied when software reads/writes to CSRs, including those meant to hold addresses.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        122,
+        122
+      ]
+    },
+    {
+      "text": "If software stores tagged addresses into such CSRs, data load or data store operations based on those addresses are subject to pointer masking only if they are explicit () and pointer masking is enabled for the privilege mode that performs the access.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        122,
+        122
+      ]
+    },
+    {
+      "text": "The implemented WARL width of CSRs is unaffected by pointer masking (e.g., if a CSR supports 52 bits of valid addresses and pointer masking is supported with PMLEN=16, the necessary number of WARL bits remains 52 independently of whether pointer masking is enabled or disabled).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        122,
+        122
+      ]
+    },
+    {
+      "text": "In contrast to software writes, pointer masking, when applicable, **is applied** for hardware writes to a CSR (e.g., when the hardware writes the transformed address to `stval` when taking an exception).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        124,
+        124
+      ]
+    },
+    {
+      "text": "Pointer masking is also applied, when applicable, to the memory access address when matching address triggers in debug.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        124,
+        124
+      ]
+    },
+    {
+      "text": "For example, software is free to write a tagged or untagged address to `stvec`, but on trap delivery (e.g., due to an exception or interrupt), pointer masking **will not be applied** to the address of the trap handler.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        126,
+        126
+      ]
+    },
+    {
+      "text": "However, when delivering an exception, the hardware applies pointer masking to any address written into `stval` if pointer masking is applicable to that address.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Memory Accesses Subject to Pointer Masking",
+      "line_range": [
+        126,
+        126
+      ]
+    },
+    {
+      "text": "Pointer masking refers to a number of separate extensions, all of which are privileged.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        131,
+        131
+      ]
+    },
+    {
+      "text": "This approach is used to capture optionality of pointer masking features.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        131,
+        131
+      ]
+    },
+    {
+      "text": "Profiles and implementations may choose to support an arbitrary subset of these extensions and must define valid ranges for their corresponding values of PMLEN.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        131,
+        131
+      ]
+    },
+    {
+      "text": "**Ssnpm**: A supervisor-level extension that provides pointer masking for the next lower privilege mode (U-mode), and for VS- and VU-modes if the H extension is present.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        135,
+        137
+      ]
+    },
+    {
+      "text": "See , , , and . * **Smnpm**: A machine-level extension that provides pointer masking for the next lower privilege mode (S/HS if S-mode is implemented, or U-mode otherwise).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        135,
+        137
+      ]
+    },
+    {
+      "text": "See . * **Smmpm**: A machine-level extension that provides pointer masking for M-mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        135,
+        137
+      ]
+    },
+    {
+      "text": "In addition, the pointer masking standard defines two extensions that describe an execution environment but have no bearing on hardware implementations.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        139,
+        139
+      ]
+    },
+    {
+      "text": "These extensions are intended to be used in profile specifications where a User profile or a Supervisor profile can only reference User level or Supervisor level pointer masking functionality, and not the associated CSR controls that exist at a higher privilege level (i.e., in the execution environment).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        139,
+        139
+      ]
+    },
+    {
+      "text": "**Sspm**: An extension that indicates that there is pointer-masking support available in supervisor mode, with some facility provided in the supervisor execution environment to control pointer masking. * **Supm**: An extension that indicates that there is pointer-masking support available in user mode, with some facility provided in the application execution environment to control pointer masking.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        141,
+        142
+      ]
+    },
+    {
+      "text": "The precise nature of these facilities is left to the respective execution environment.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        144,
+        144
+      ]
+    },
+    {
+      "text": "Pointer masking only applies to RV64.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        146,
+        146
+      ]
+    },
+    {
+      "text": "In RV32, trying to enable pointer masking will result in an illegal WARL write and not update the pointer masking configuration bits (see , , , and for details).",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        146,
+        146
+      ]
+    },
+    {
+      "text": "The same is the case on RV64 or larger systems when UXL/SXL/MXL is set to 1 for the corresponding privilege mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        146,
+        146
+      ]
+    },
+    {
+      "text": "Note that in RV32, the CSR bits introduced by pointer masking are still present, for compatibility between RV32 and larger systems with UXL/SXL/MXL set to 1.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        146,
+        146
+      ]
+    },
+    {
+      "text": "Setting UXL/SXL/MXL to 1 will clear the corresponding pointer masking configuration bits.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Pointer Masking Extensions",
+      "line_range": [
+        146,
+        146
+      ]
+    },
+    {
+      "text": "As described in , the supported values of PMLEN may depend on the effective privilege mode.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Number of Masked Bits",
+      "line_range": [
+        150,
+        150
+      ]
+    },
+    {
+      "text": "The current standard only defines PMLEN=XLEN-48 and PMLEN=XLEN-57, but this assumption may be relaxed in future extensions and profiles.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Number of Masked Bits",
+      "line_range": [
+        150,
+        150
+      ]
+    },
+    {
+      "text": "Trying to enable pointer masking in an unsupported scenario represents an illegal write to the corresponding pointer masking enable bit and follows WARL semantics.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Number of Masked Bits",
+      "line_range": [
+        150,
+        150
+      ]
+    },
+    {
+      "text": "Future profiles may choose to define certain combinations of privilege modes and supported values of PMLEN as mandatory.",
+      "section": "Preamble > Pointer Masking Extensions, Version 1.0.0 > Introduction > Background > Number of Masked Bits",
+      "line_range": [
+        150,
+        150
+      ]
+    }
+  ]
+}

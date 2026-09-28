@@ -1,0 +1,1222 @@
+{
+  "source_file": "src/rv32.adoc",
+  "total": 152,
+  "sentences": [
+    {
+      "text": "This chapter describes the RV32I base integer instruction set.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1",
+      "line_range": [
+        3,
+        3
+      ]
+    },
+    {
+      "text": "shows the unprivileged state for the base integer ISA.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "For RV32I, the 32 `x` registers are each 32 bits wide, i.e., `XLEN=32`.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "Register `x0` is hardwired with all bits equal to 0.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "General purpose registers `x1-x31` hold values that various instructions interpret as a collection of Boolean values, or as two's complement signed binary integers or unsigned binary integers.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "There is one additional unprivileged register: the program counter `pc` holds the address of the current instruction.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        14,
+        16
+      ]
+    },
+    {
+      "text": ".RISC-V base unprivileged integer register state. [cols=\"<,^,>\",options=\"header\",width=\"50%\",align=\"center\",grid=\"rows\"] | <| [.small]XLEN-1| >| [.small]0 3+^| [.small]x0/zero 3+^| [.small]x1 3+^| [.small]x2 3+^| [.small]x3 3+^| [.small]x4 3+^| [.small]x5 3+^| [.small]x6 3+^| [.small]x7 3+^| [.small]x8 3+^| [.small]x9 3+^| [.small]x10 3+^| [.small]x11 3+^| [.small]x12 3+^| [.small]x13 3+^| [.small]x14 3+^| [.small]x15 3+^| [.small]x16 3+^| [.small]x17 3+^| [.small]x18 3+^| [.small]x19 3+^| [.small]x20 3+^| [.small]x21 3+^| [.small]x22 3+^| [.small]x23 3+^| [.small]x24 3+^| [.small]x25 3+^| [.small]x26 3+^| [.small]x27 3+^| [.small]x28 3+^| [.small]x29 3+^| [.small]x30 3+^| [.small]x31 3+^| [.small]pc |",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Programmers' Model for Base Integer ISA",
+      "line_range": [
+        18,
+        56
+      ]
+    },
+    {
+      "text": "In the base RV32I ISA, there are four core instruction formats (R/I/S/U), as shown in .",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "All are a fixed 32 bits in length.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "The base ISA has `IALIGN=32`, meaning that instructions must be aligned on a four-byte boundary in memory.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "An instruction-address-misaligned exception is generated on a taken branch or unconditional jump if the target address is not `IALIGN-bit` aligned.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "This exception is reported on the branch or jump instruction, not on the target instruction.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "No instruction-address-misaligned exception is generated for a conditional branch that is not taken.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        59,
+        66
+      ]
+    },
+    {
+      "text": "The behavior upon decoding a reserved instruction is UNSPECIFIED.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        68,
+        68
+      ]
+    },
+    {
+      "text": "The RISC-V ISA keeps the source (rs1 and rs2) and destination (rd) registers at the same position in all formats to simplify decoding.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        70,
+        77
+      ]
+    },
+    {
+      "text": "Except for the 5-bit immediates used in , immediates are always sign-extended, and are generally packed towards the leftmost available bits in the instruction and have been allocated to reduce hardware complexity.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        70,
+        77
+      ]
+    },
+    {
+      "text": "In particular, the sign bit for all immediates is always in bit 31 of the instruction to speed sign-extension circuitry.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Base Instruction Formats",
+      "line_range": [
+        70,
+        77
+      ]
+    },
+    {
+      "text": "There are a further two variants of the instruction formats (B/J) based on the handling of immediates, as shown in .",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        84,
+        85
+      ]
+    },
+    {
+      "text": "The only difference between the S and B formats is that the 12-bit immediate field is used to encode branch offsets in multiples of 2 in the B format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        91,
+        96
+      ]
+    },
+    {
+      "text": "Instead of shifting all bits in the instruction-encoded immediate left by one in hardware as is conventionally done, the middle bits (imm[10:1]) and sign bit stay in fixed positions, while the lowest bit in S format (inst[7]) encodes a high-order bit in B format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        91,
+        96
+      ]
+    },
+    {
+      "text": "Similarly, the only difference between the U and J formats is that the 20-bit immediate is shifted left by 12 bits to form U immediates and by 1 bit to form J immediates.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        98,
+        102
+      ]
+    },
+    {
+      "text": "The location of instruction bits in the U and J format immediates is chosen to maximize overlap with the other formats and with each other.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        98,
+        102
+      ]
+    },
+    {
+      "text": "shows the immediates produced by each of the base instruction formats, and is labeled to show which instruction bit (inst[y]) produces each bit of the immediate value.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        104,
+        106
+      ]
+    },
+    {
+      "text": "include::images/wavedrom/i-immediate.edn[]",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        108,
+        109
+      ]
+    },
+    {
+      "text": ".Types of immediate produced by RISC-V instructions. include::images/wavedrom/j-immediate.edn[]",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        117,
+        118
+      ]
+    },
+    {
+      "text": "The fields are labeled with the instruction bits used to construct their value.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "Sign extensions always uses inst[31].",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Immediate Encoding Variants",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "Most integer computational instructions operate on `XLEN` bits of values held in the integer register file.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        126,
+        132
+      ]
+    },
+    {
+      "text": "Integer computational instructions are either encoded as register-immediate operations using the I-type format or as register-register operations using the R-type format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        126,
+        132
+      ]
+    },
+    {
+      "text": "The destination is register rd for both register-immediate and register-register instructions.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        126,
+        132
+      ]
+    },
+    {
+      "text": "No integer computational instructions cause arithmetic exceptions.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        126,
+        132
+      ]
+    },
+    {
+      "text": "ADDI adds the sign-extended 12-bit immediate to register rs1.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        139,
+        141
+      ]
+    },
+    {
+      "text": "Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result. ADDI rd, rs1, 0 is used to implement the MV rd, rs1 assembler pseudoinstruction.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        139,
+        141
+      ]
+    },
+    {
+      "text": "SLTI (set less than immediate) places the value 1 in register rd if register rs1 is less than the sign-extended immediate when both are treated as signed numbers, else 0 is written to rd. SLTIU is similar but compares the values as unsigned numbers (i.e., the immediate is first sign-extended to XLEN bits then treated as an unsigned number).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        143,
+        149
+      ]
+    },
+    {
+      "text": "Note, SLTIU rd, rs1, 1 sets rd to 1 if rs1 equals zero, otherwise sets rd to 0 (assembler pseudoinstruction SEQZ rd, rs).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        143,
+        149
+      ]
+    },
+    {
+      "text": "ANDI, ORI, XORI are logical operations that perform bitwise AND, OR, and XOR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        151,
+        154
+      ]
+    },
+    {
+      "text": "Note, XORI rd, rs1, -1 performs a bitwise logical inversion of register rs1 (assembler pseudoinstruction NOT rd, rs).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        151,
+        154
+      ]
+    },
+    {
+      "text": "Shifts by a constant are encoded as a specialization of the I-type format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        160,
+        166
+      ]
+    },
+    {
+      "text": "The operand to be shifted is in rs1, and the shift amount is encoded in the lower 5 bits of the I-immediate field.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        160,
+        166
+      ]
+    },
+    {
+      "text": "The right-shift type is encoded in bit 30. SLLI is a logical left shift (zeros are shifted into the lower bits); SRLI is a logical right shift (zeros are shifted into the upper bits); and SRAI is an arithmetic right shift (the original sign bit is copied into the vacated upper bits).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        160,
+        166
+      ]
+    },
+    {
+      "text": "LUI (load upper immediate) is used to build 32-bit constants and uses the U-type format. LUI places the 32-bit U-immediate value into the destination register rd, filling in the lowest 12 bits with zeros.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        172,
+        174
+      ]
+    },
+    {
+      "text": "AUIPC (add upper immediate to `pc`) is used to build `pc`-relative addresses and uses the U-type format. AUIPC forms a 32-bit offset from the U-immediate, filling in the lowest 12 bits with zeros, adds this offset to the address of the AUIPC instruction, then places the result in register rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        176,
+        181
+      ]
+    },
+    {
+      "text": "RV32I defines several arithmetic R-type operations.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        185,
+        187
+      ]
+    },
+    {
+      "text": "All operations read the rs1 and rs2 registers as source operands and write the result into register rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        185,
+        187
+      ]
+    },
+    {
+      "text": "The funct7 and funct3 fields select the type of operation.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        185,
+        187
+      ]
+    },
+    {
+      "text": "ADD performs the addition of rs1 and rs2. SUB performs the subtraction of rs2 from rs1.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        193,
+        200
+      ]
+    },
+    {
+      "text": "Overflows are ignored and the low XLEN bits of results are written to the destination rd. SLT and SLTU perform signed and unsigned compares respectively, writing 1 to rd if rs1 < rs2, 0 otherwise.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        193,
+        200
+      ]
+    },
+    {
+      "text": "Note, SLTU rd, x0, rs2 sets rd to 1 if rs2 is not equal to zero, otherwise sets rd to zero (assembler pseudoinstruction SNEZ rd, rs). AND, OR, and XOR perform bitwise logical operations.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        193,
+        200
+      ]
+    },
+    {
+      "text": "SLL, SRL, and SRA perform logical left, logical right, and arithmetic right shifts on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Instructions",
+      "line_range": [
+        202,
+        204
+      ]
+    },
+    {
+      "text": "The NOP instruction does not change any architecturally visible state, except for advancing the `pc` and incrementing any applicable performance counters. NOP is encoded as ADDI x0, x0, 0.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > NOP Instruction",
+      "line_range": [
+        212,
+        214
+      ]
+    },
+    {
+      "text": "RV32I provides two types of control transfer instructions: unconditional jumps and conditional branches.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions",
+      "line_range": [
+        218,
+        221
+      ]
+    },
+    {
+      "text": "Control transfer instructions in RV32I do not have architecturally visible delay slots.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions",
+      "line_range": [
+        218,
+        221
+      ]
+    },
+    {
+      "text": "If an instruction access-fault or instruction page-fault exception occurs on the target of a jump or taken branch, the exception is reported on the target instruction, not on the jump or branch instruction.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions",
+      "line_range": [
+        223,
+        225
+      ]
+    },
+    {
+      "text": "The jump and link (JAL) instruction uses the J-type format, where the J-immediate encodes a signed offset in multiples of 2 bytes.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        228,
+        235
+      ]
+    },
+    {
+      "text": "The offset is sign-extended and added to the address of the jump instruction to form the jump target address.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        228,
+        235
+      ]
+    },
+    {
+      "text": "Jumps can therefore target a {pm}1 MiB range. JAL stores the address of the instruction following the jump (`pc`+4) into register rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        228,
+        235
+      ]
+    },
+    {
+      "text": "The standard software calling convention uses `x1` as the return address register and `x5` as an alternate link register.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        228,
+        235
+      ]
+    },
+    {
+      "text": "Plain unconditional jumps (assembler pseudoinstruction J) are encoded as a JAL with rd=`x0`.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        237,
+        238
+      ]
+    },
+    {
+      "text": "The indirect jump instruction JALR (jump and link register) uses the I-type encoding.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        244,
+        251
+      ]
+    },
+    {
+      "text": "The target address is obtained by adding the sign-extended 12-bit I-immediate to the register rs1, then setting the least-significant bit of the result to zero.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        244,
+        251
+      ]
+    },
+    {
+      "text": "The address of the instruction following the jump (`pc`+4) is written to register rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        244,
+        251
+      ]
+    },
+    {
+      "text": "Register `x0` can be used as the destination if the result is not required.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        244,
+        251
+      ]
+    },
+    {
+      "text": "Plain unconditional indirect jumps (assembler pseudoinstruction JR) are encoded as a JALR with rd=`x0`.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        253,
+        257
+      ]
+    },
+    {
+      "text": "Procedure returns in the standard calling convention (assembler pseudoinstruction RET) are encoded as a JALR with rd=`x0`, rs1=`x1`, and imm=0.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        253,
+        257
+      ]
+    },
+    {
+      "text": "The JAL and JALR instructions will generate an instruction-address-misaligned exception if the target address is not aligned to a four-byte boundary.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        263,
+        266
+      ]
+    },
+    {
+      "text": "Return-address prediction stacks are a common feature of high-performance instruction-fetch units, but require accurate detection of instructions used for procedure calls and returns to be effective.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        268,
+        274
+      ]
+    },
+    {
+      "text": "For RISC-V, hints as to the instructions' usage are encoded implicitly via the register numbers used. A JAL instruction should push the return address onto a return-address stack (RAS) only when rd is `x1` or `x5`. JALR instructions should push/pop a RAS as shown in .",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        268,
+        274
+      ]
+    },
+    {
+      "text": ".Return-address stack prediction hints encoded in the register operands of a JALR instruction. | |rd is x1/x5 |rs1 is x1/x5 |rd=rs1 |RAS action",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        276,
+        280
+      ]
+    },
+    {
+      "text": "|Yes |Yes |No |Pop, then push",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Unconditional Jumps",
+      "line_range": [
+        288,
+        288
+      ]
+    },
+    {
+      "text": "All branch instructions use the B-type instruction format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        295,
+        298
+      ]
+    },
+    {
+      "text": "The 12-bit B-immediate encodes signed offsets in multiples of 2 bytes.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        295,
+        298
+      ]
+    },
+    {
+      "text": "The offset is sign-extended and added to the address of the branch instruction to give the target address.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        295,
+        298
+      ]
+    },
+    {
+      "text": "The conditional branch range is {pm}4 KiB.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        295,
+        298
+      ]
+    },
+    {
+      "text": "Branch instructions compare two registers. BEQ and BNE take the branch if registers rs1 and rs2 are equal or unequal respectively. BLT and BLTU take the branch if rs1 is less than rs2, using signed and unsigned comparison respectively. BGE and BGEU take the branch if rs1 is greater than or equal to rs2, using signed and unsigned comparison respectively.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        304,
+        311
+      ]
+    },
+    {
+      "text": "Note, BGT, BGTU, BLE, and BLEU can be synthesized by reversing the operands to BLT, BLTU, BGE, and BGEU, respectively.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        304,
+        311
+      ]
+    },
+    {
+      "text": "Software should be optimized such that the sequential code path is the most common path, with less-frequently taken code paths placed out of line.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        313,
+        318
+      ]
+    },
+    {
+      "text": "Software should also assume that backward branches will be predicted taken and forward branches as not taken, at least the first time they are encountered.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        313,
+        318
+      ]
+    },
+    {
+      "text": "Dynamic predictors should quickly learn any predictable branch behavior.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        313,
+        318
+      ]
+    },
+    {
+      "text": "Unlike some other architectures, the RISC-V jump (JAL with rd=`x0`) instruction should always be used for unconditional branches instead of a conditional branch instruction with an always-true condition. RISC-V jumps are also PC-relative and support a much wider offset range than branches, and will not pollute conditional-branch prediction tables.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        320,
+        324
+      ]
+    },
+    {
+      "text": "The conditional branch instructions will generate an instruction-address-misaligned exception if the target address is not aligned to a four-byte boundary and the branch condition evaluates to true.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        326,
+        330
+      ]
+    },
+    {
+      "text": "If the branch condition evaluates to false, the instruction-address-misaligned exception will not be raised.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Control Transfer Instructions > Conditional Branches",
+      "line_range": [
+        326,
+        330
+      ]
+    },
+    {
+      "text": "RV32I is a load-store architecture, where only load and store instructions access memory and arithmetic instructions only operate on CPU registers. RV32I provides a 32-bit address space that is byte-addressed.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        335,
+        343
+      ]
+    },
+    {
+      "text": "The EEI will define what portions of the address space are legal to access with which instructions (e.g., some addresses might be read only, or support word access only).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        335,
+        343
+      ]
+    },
+    {
+      "text": "Loads with a destination of `x0` must still raise any exceptions and cause any other side effects even though the load value is discarded.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        335,
+        343
+      ]
+    },
+    {
+      "text": "The EEI will define whether the memory system is little-endian or big-endian.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        345,
+        346
+      ]
+    },
+    {
+      "text": "In RISC-V, endianness is byte-address invariant.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        345,
+        346
+      ]
+    },
+    {
+      "text": "Load and store instructions transfer a value between the registers and memory.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        352,
+        357
+      ]
+    },
+    {
+      "text": "Loads are encoded in the I-type format and stores are S-type.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        352,
+        357
+      ]
+    },
+    {
+      "text": "The effective address is obtained by adding register rs1 to the sign-extended 12-bit offset.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        352,
+        357
+      ]
+    },
+    {
+      "text": "Loads copy a value from memory to register rd.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        352,
+        357
+      ]
+    },
+    {
+      "text": "Stores copy the value in register rs2 to memory.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        352,
+        357
+      ]
+    },
+    {
+      "text": "The LW instruction loads a 32-bit value from memory into rd. LH loads a 16-bit value from memory, then sign-extends to 32-bits before storing in rd. LHU loads a 16-bit value from memory but then zero extends to 32-bits before storing in rd. LB and LBU are defined analogously for 8-bit values.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        359,
+        366
+      ]
+    },
+    {
+      "text": "The SW, SH, and SB instructions store 32-bit, 16-bit, and 8-bit values from the low bits of register rs2 to memory.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        359,
+        366
+      ]
+    },
+    {
+      "text": "Regardless of EEI, loads and stores whose effective addresses are naturally aligned shall not raise an address-misaligned exception.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        368,
+        372
+      ]
+    },
+    {
+      "text": "Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., the effective address is not divisible by the size of the access in bytes) have behavior dependent on the EEI.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        368,
+        372
+      ]
+    },
+    {
+      "text": "An EEI may guarantee that misaligned loads and stores are fully supported, and so the software running inside the execution environment will never experience a contained or fatal address-misaligned trap.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        374,
+        379
+      ]
+    },
+    {
+      "text": "In this case, the misaligned loads and stores can be handled in hardware, or via an invisible trap into the execution environment implementation, or possibly a combination of hardware and invisible trap depending on address.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        374,
+        379
+      ]
+    },
+    {
+      "text": "An EEI may not guarantee misaligned loads and stores are handled invisibly.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        381,
+        394
+      ]
+    },
+    {
+      "text": "In this case, loads and stores that are not naturally aligned may either complete execution successfully or raise an exception.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        381,
+        394
+      ]
+    },
+    {
+      "text": "The exception raised can be either an address-misaligned exception or an access-fault exception.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        381,
+        394
+      ]
+    },
+    {
+      "text": "For a memory access that would otherwise be able to complete except for the misalignment, an access-fault exception can be raised instead of an address-misaligned exception if the misaligned access should not be emulated, e.g., if accesses to the memory region have side effects.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        381,
+        394
+      ]
+    },
+    {
+      "text": "When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must define if exceptions caused by address misalignment result in a contained trap (allowing software running inside the execution environment to handle the trap) or a fatal trap (terminating execution).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        381,
+        394
+      ]
+    },
+    {
+      "text": "Even when misaligned loads and stores complete successfully, these accesses might run extremely slowly depending on the implementation (e.g., when implemented via an invisible trap).",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        396,
+        402
+      ]
+    },
+    {
+      "text": "Furthermore, whereas naturally aligned loads and stores are guaranteed to execute atomically, misaligned loads and stores might not, and hence require additional synchronization to ensure atomicity.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        396,
+        402
+      ]
+    },
+    {
+      "text": "FENCE instructions are used to order device I/O and memory accesses as viewed by other RISC-V harts and external devices or coprocessors.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        410,
+        418
+      ]
+    },
+    {
+      "text": "Any combination of device input (I), device output (O), memory reads \\(R), and memory writes (W) may be ordered with respect to any combination of the same.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        410,
+        418
+      ]
+    },
+    {
+      "text": "Informally, no other RISC-V hart or external device can observe any operation in the successor set following a FENCE before any operation in the predecessor set preceding the FENCE. provides a precise description of the RISC-V memory consistency model.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        410,
+        418
+      ]
+    },
+    {
+      "text": "FENCE instructions also order memory reads and writes made by the hart as observed by memory reads and writes made by an external device.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        420,
+        423
+      ]
+    },
+    {
+      "text": "However, FENCE instructions do not order observations of events made by an external device using any other signaling mechanism.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        420,
+        423
+      ]
+    },
+    {
+      "text": "The EEI will define what I/O operations are possible, and in particular, which memory addresses when accessed by load and store instructions will be treated and ordered as device input and device output operations respectively rather than memory reads and writes.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        425,
+        433
+      ]
+    },
+    {
+      "text": "For example, memory-mapped I/O devices will typically be accessed with uncached loads and stores that are ordered using the I and O bits rather than the R and W bits.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        425,
+        433
+      ]
+    },
+    {
+      "text": "Instruction-set extensions might also describe new I/O instructions that will also be ordered using the I and O bits in a FENCE instruction.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        425,
+        433
+      ]
+    },
+    {
+      "text": "[float=\"center\",align=\"center\",cols=\"^1,^1,<3\",options=\"header\"] .Fence mode encoding | |fm field |Mnemonic suffix|Meaning |0000 |none |Normal Fence |1000 |.TSO |With `FENCE RW,RW`: exclude write-to-read ordering; otherwise: Reserved for future use. |other|other |Reserved for future use. |",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        435,
+        443
+      ]
+    },
+    {
+      "text": "The FENCE mode field fm defines the semantics of the FENCE instruction. A `FENCE` (with fm=`0000`) orders all memory operations in its predecessor set before all memory operations in its successor set.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        445,
+        448
+      ]
+    },
+    {
+      "text": "A `FENCE.TSO` instruction is encoded as a FENCE instruction with fm=`1000`, predecessor=`RW`, and successor=`RW`. `FENCE.TSO` orders all load operations in its predecessor set before all memory operations in its successor set, and all store operations in its predecessor set before all store operations in its successor set.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        450,
+        457
+      ]
+    },
+    {
+      "text": "This leaves `non-AMO` store operations in the `FENCE.TSO's` predecessor set unordered with `non-AMO` loads in its successor set.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        450,
+        457
+      ]
+    },
+    {
+      "text": "The unused fields in the FENCE instructions--rs1 and rd--are reserved for finer-grain fences in future extensions.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        459,
+        467
+      ]
+    },
+    {
+      "text": "For forward compatibility, base implementations shall ignore these fields, and standard software shall zero these fields.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        459,
+        467
+      ]
+    },
+    {
+      "text": "Likewise, many fm and predecessor/successor set settings are also reserved for future use.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        459,
+        467
+      ]
+    },
+    {
+      "text": "Base implementations shall treat all such reserved configurations as `FENCE` instructions (with fm=`0000`), and standard software shall use only non-reserved configurations.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Memory Ordering Instructions",
+      "line_range": [
+        459,
+        467
+      ]
+    },
+    {
+      "text": "`SYSTEM` instructions are used to access system functionality that might require privileged access and are encoded using the I-type instruction format.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        472,
+        478
+      ]
+    },
+    {
+      "text": "These can be divided into two main classes: those that atomically read-modify-write control and status registers (CSRs), and all other potentially privileged instructions. CSR instructions are described in , and the base unprivileged instructions are described in the following section.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        472,
+        478
+      ]
+    },
+    {
+      "text": "These two instructions cause a precise requested trap to the supporting execution environment.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        484,
+        485
+      ]
+    },
+    {
+      "text": "The `ECALL` instruction is used to make a service request to the execution environment.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        487,
+        490
+      ]
+    },
+    {
+      "text": "The `EEI` will define how parameters for the service request are passed, but usually these will be in defined locations in the integer register file.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        487,
+        490
+      ]
+    },
+    {
+      "text": "The `EBREAK` instruction is used to return control to a debugging environment.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > Environment Call and Breakpoints",
+      "line_range": [
+        492,
+        492
+      ]
+    },
+    {
+      "text": "RV32I reserves a large encoding space for HINT instructions, which are usually used to communicate performance hints to the microarchitecture.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        500,
+        505
+      ]
+    },
+    {
+      "text": "Like the NOP instruction, HINTs do not change any architecturally visible state, except for advancing the `pc` and any applicable performance counters.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        500,
+        505
+      ]
+    },
+    {
+      "text": "Implementations are always allowed to ignore the encoded hints.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        500,
+        505
+      ]
+    },
+    {
+      "text": "Most RV32I HINTs are encoded as integer computational instructions with rd=`x0`.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        507,
+        509
+      ]
+    },
+    {
+      "text": "The other RV32I HINTs are encoded as FENCE instructions with a null predecessor or successor set and with fm=0.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        507,
+        509
+      ]
+    },
+    {
+      "text": "lists all RV32I HINT code points. 91% of the HINT space is reserved for standard HINTs.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        511,
+        514
+      ]
+    },
+    {
+      "text": "The remainder of the HINT space is designated for custom HINTs: no standard HINTs will ever be defined in this subspace.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        511,
+        514
+      ]
+    },
+    {
+      "text": ".RV32I HINT instructions. [float=\"center\",align=\"center\",cols=\"<,<,^,<\",options=\"header\"] | |Instruction |Constraints |Code Points |Purpose",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        518,
+        522
+      ]
+    },
+    {
+      "text": "|LUI |rd=`x0` |2^20^ .8+<.^m|Designated for future standard use",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        524,
+        524
+      ]
+    },
+    {
+      "text": "|ADDI |rd=`x0`, and either rs1{ne}``x0`` or imm{ne}0 |2^17^−1",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        528,
+        528
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1{ne}``x0`` |2^10^−32",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        536,
+        536
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1=`x0`, rs2{ne}``x2-x5`` | 28",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        538,
+        538
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1=`x0`, rs2=`x2-x5` |4|(rs2=`x2`) NTL.P1 + (rs2=`x3`) NTL.PALL + (rs2=`x4`) NTL.S1 + (rs2=`x5`) NTL.ALL",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        540,
+        543
+      ]
+    },
+    {
+      "text": "|SLLI |rd=`x0`, rs1=`x0`, shamt=31 |1|Semihosting entry marker",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        545,
+        545
+      ]
+    },
+    {
+      "text": "|SRAI |rd=`x0`, rs1=`x0`, shamt=7 |1|Semihosting exit marker",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        547,
+        547
+      ]
+    },
+    {
+      "text": "|SUB |rd=`x0` |2^10^ .11+<.^m|Designated for future standard use",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        549,
+        549
+      ]
+    },
+    {
+      "text": "|FENCE |rd=`x0`, rs1{ne}``x0``, fm=0, and either pred=0 or succ=0| 2^10^−63",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        563,
+        563
+      ]
+    },
+    {
+      "text": "|FENCE |rd{ne}``x0``, rs1=`x0`, fm=0, and either pred=0 or succ=0| 2^10^−63",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        565,
+        565
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred=0, succ{ne}0 |15",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        567,
+        567
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred{ne}W, succ=0 |15",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        569,
+        569
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred=W, succ=0 |1 |PAUSE",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        571,
+        571
+      ]
+    },
+    {
+      "text": "|SLTI |rd=`x0` |2^17^ .7+<.^m|Designated for custom use",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        575,
+        575
+      ]
+    },
+    {
+      "text": "|SLLI |rd=`x0`, and either rs1{ne}``x0`` or shamt{ne}31 |2^10^−1",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        579,
+        579
+      ]
+    },
+    {
+      "text": "|SRAI |rd=`x0`, and either rs1{ne}``x0`` or shamt{ne}7 |2^10^−1",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        583,
+        583
+      ]
+    },
+    {
+      "text": "NOTE: `slli x0, x0, 0x1f` and `srai x0, x0, 7` were previously designated as custom HINTs, but they have been appropriated for use in semihosting calls, as described in .",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        590,
+        594
+      ]
+    },
+    {
+      "text": "To reflect their usage in practice, the base ISA spec has been changed to designate them as standard HINTs.",
+      "section": "Preamble > RV32I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        590,
+        594
+      ]
+    }
+  ]
+}

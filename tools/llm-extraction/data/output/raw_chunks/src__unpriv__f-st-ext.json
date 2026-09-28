@@ -1,0 +1,678 @@
+{
+  "source_file": "src/unpriv/f-st-ext.adoc",
+  "total": 84,
+  "sentences": [
+    {
+      "text": "This chapter describes the F standard extension for single-precision floating-point, which adds computational instructions compliant with the 's binary32 format and operations.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The F extension depends on the \"Zicsr\" extension for control and status register access.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The F extension adds 32 floating-point registers, `f0-f31`, each 32 bits wide, and a floating-point control and status register `fcsr`, which contains the operating mode and exception status of the floating-point unit.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": "This additional state is shown in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": "We use the term FLEN to describe the width of the floating-point registers in the RISC-V ISA, and FLEN=32 for the F single-precision floating-point extension.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": "Most floating-point instructions operate on values in the floating-point register file.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": "Floating-point load and store instructions transfer floating-point values between registers and memory.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": "Instructions to transfer values to and from the integer register file are also provided.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        11,
+        20
+      ]
+    },
+    {
+      "text": ".RISC-V standard F extension single-precision floating-point state [cols=\"<,^,>\",options=\"header\",width=\"50%\",align=\"center\",grid=\"rows\"] | | [.small]FLEN-1| >| [.small]0 3+^| [.small]f0 3+^| [.small]f1 3+^| [.small]f2 3+^| [.small]f3 3+^| [.small]f4 3+^| [.small]f5 3+^| [.small]f6 3+^| [.small]f7 3+^| [.small]f8 3+^| [.small]f9 3+^| [.small]f10 3+^| [.small]f11 3+^| [.small]f12 3+^| [.small]f13 3+^| [.small]f14 3+^| [.small]f15 3+^| [.small]f16 3+^| [.small]f17 3+^| [.small]f18 3+^| [.small]f19 3+^| [.small]f20 3+^| [.small]f21 3+^| [.small]f22 3+^| [.small]f23 3+^| [.small]f24 3+^| [.small]f25 3+^| [.small]f26 3+^| [.small]f27 3+^| [.small]f28 3+^| [.small]f29 3+^| [.small]f30 3+^| [.small]f31 3+^| [.small]FLEN | [.small]31| >| [.small]0 3+^| [.small]fcsr 3+^| [.small]32 |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State",
+      "line_range": [
+        22,
+        63
+      ]
+    },
+    {
+      "text": "The floating-point control and status register, `fcsr`, is a RISC-V control and status register (CSR).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        67,
+        71
+      ]
+    },
+    {
+      "text": "It is a 32-bit read/write register that selects the dynamic rounding mode for floating-point arithmetic operations and holds the accrued exception flags, as shown in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        67,
+        71
+      ]
+    },
+    {
+      "text": ".Floating-point control and status register include::images/wavedrom/float-csr.edn[]",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        73,
+        75
+      ]
+    },
+    {
+      "text": "The `fcsr` register can be read and written with the FRCSR and FSCSR instructions, which are assembler pseudoinstructions built on the underlying CSR access instructions. FRCSR reads `fcsr` by copying it into integer register rd. FSCSR swaps the value in `fcsr` by copying the original value into integer register rd, and then writing a new value obtained from integer register rs1 into `fcsr`.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        77,
+        82
+      ]
+    },
+    {
+      "text": "The fields within the `fcsr` can also be accessed individually through different CSR addresses, and separate assembler pseudoinstructions are defined for these accesses.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        84,
+        93
+      ]
+    },
+    {
+      "text": "The FRRM instruction reads the Rounding Mode field `frm` (`fcsr` bits 7--5) and copies it into the least-significant three bits of integer register rd, with zero in all other bits. FSRM swaps the value in `frm` by copying the original value into integer register rd, and then writing a new value obtained from the three least-significant bits of integer register rs1 into `frm`. FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags field `fflags` (`fcsr` bits 4--0).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        84,
+        93
+      ]
+    },
+    {
+      "text": "Bits 31--8 of the `fcsr` are reserved for other standard extensions.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        95,
+        99
+      ]
+    },
+    {
+      "text": "If these extensions are not present, implementations shall ignore writes to these bits and supply a zero value when read.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        95,
+        99
+      ]
+    },
+    {
+      "text": "Standard software should preserve the contents of these bits.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        95,
+        99
+      ]
+    },
+    {
+      "text": "Floating-point operations use either a static rounding mode encoded in the instruction, or a dynamic rounding mode held in `frm`.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        101,
+        108
+      ]
+    },
+    {
+      "text": "Rounding modes are encoded as shown in . A value of 111 in the instruction's rm field selects the dynamic rounding mode held in `frm`.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        101,
+        108
+      ]
+    },
+    {
+      "text": "The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is reserved, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        101,
+        108
+      ]
+    },
+    {
+      "text": "Some instructions, including widening conversions, have the rm field but are nevertheless mathematically unaffected by the rounding mode; software should set their rm field to RNE (000) but implementations must treat the rm field as usual (in particular, with regard to decoding legal vs. reserved encodings).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        101,
+        108
+      ]
+    },
+    {
+      "text": ".Rounding mode encoding. | |Rounding Mode |Mnemonic |Meaning |000 |RNE |Round to Nearest, ties to Even |001 |RTZ |Round towards Zero |010 |RDN |Round Down (towards −{inf}) |011 |RUP |Round Up (towards +{inf}) |100 |RMM |Round to Nearest, ties to Max Magnitude |101 | |Reserved for future use. |110 | |Reserved for future use. |111 |DYN |In instruction's rm field, selects dynamic rounding mode;",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        110,
+        123
+      ]
+    },
+    {
+      "text": "In Rounding Mode register, reserved. |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        110,
+        123
+      ]
+    },
+    {
+      "text": "The accrued exception flags indicate the exception conditions that have arisen on any floating-point arithmetic instruction since the field was last reset by software, as shown in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        125,
+        130
+      ]
+    },
+    {
+      "text": "The base RISC-V ISA does not support generating a trap on the setting of a floating-point exception flag.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        125,
+        130
+      ]
+    },
+    {
+      "text": ".Accrued exception flag encoding. | |Flag Mnemonic |Flag Meaning |NV |Invalid Operation |DZ |Divide by Zero |OF |Overflow |UF |Underflow |NX |Inexact |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Floating-Point Control and Status Register",
+      "line_range": [
+        132,
+        142
+      ]
+    },
+    {
+      "text": "Except when otherwise stated, if the result of a floating-point operation is NaN, it is the canonical NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > NaN Generation and Propagation",
+      "line_range": [
+        147,
+        153
+      ]
+    },
+    {
+      "text": "The canonical NaN has a positive sign and all significand bits clear except the MSB, a.k.a. the quiet bit.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > NaN Generation and Propagation",
+      "line_range": [
+        147,
+        153
+      ]
+    },
+    {
+      "text": "For single-precision floating-point, this corresponds to the pattern `0x7fc00000`.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > NaN Generation and Propagation",
+      "line_range": [
+        147,
+        153
+      ]
+    },
+    {
+      "text": "Operations on subnormal numbers are handled in accordance with IEEE 754-2008.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Subnormal Arithmetic",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "In the parlance of IEEE 754-2008, tininess is detected after rounding.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Subnormal Arithmetic",
+      "line_range": [
+        164,
+        166
+      ]
+    },
+    {
+      "text": "Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Load and Store Instructions",
+      "line_range": [
+        170,
+        171
+      ]
+    },
+    {
+      "text": "The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Load and Store Instructions",
+      "line_range": [
+        170,
+        171
+      ]
+    },
+    {
+      "text": "FLW and FSW are only guaranteed to execute atomically if the effective address is naturally aligned.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Load and Store Instructions",
+      "line_range": [
+        177,
+        179
+      ]
+    },
+    {
+      "text": "FLW and FSW do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Load and Store Instructions",
+      "line_range": [
+        181,
+        182
+      ]
+    },
+    {
+      "text": "As described in , the execution environment defines whether misaligned floating-point loads and stores are handled invisibly or raise a contained or fatal trap.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Load and Store Instructions",
+      "line_range": [
+        184,
+        185
+      ]
+    },
+    {
+      "text": "Floating-point arithmetic instructions with one or two source operands use the R-type format with the OP-FP major opcode. FADD.S and FMUL.S perform single-precision floating-point addition and multiplication respectively, between rs1 and rs2. FSUB.S performs the single-precision floating-point subtraction of rs2 from rs1. FDIV.S performs the single-precision floating-point division of rs1 by rs2. FSQRT.S computes the square root of rs1.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        190,
+        194
+      ]
+    },
+    {
+      "text": "In each case, the result is written to rd.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        190,
+        194
+      ]
+    },
+    {
+      "text": "The 2-bit floating-point format field fmt is encoded as shown in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        196,
+        198
+      ]
+    },
+    {
+      "text": "It is set to S (00) for all instructions in the F extension.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        196,
+        198
+      ]
+    },
+    {
+      "text": ".Format field encoding | |fmt field |Mnemonic |Meaning |00 |S |32-bit single-precision |01 |D |64-bit double-precision |10 |H |16-bit half-precision |11 |Q |128-bit quad-precision |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        200,
+        209
+      ]
+    },
+    {
+      "text": "All floating-point operations that perform rounding can select the rounding mode using the rm field with the encoding shown in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        211,
+        214
+      ]
+    },
+    {
+      "text": "Floating-point minimum-number and maximum-number instructions FMIN.S and FMAX.S write, respectively, the smaller or larger of rs1 and rs2 to rd.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        216,
+        220
+      ]
+    },
+    {
+      "text": "For the purposes of these instructions only, the value −0.0 is considered to be less than the value +0.0.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        216,
+        220
+      ]
+    },
+    {
+      "text": "If both inputs are NaNs, the result is the canonical NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        216,
+        220
+      ]
+    },
+    {
+      "text": "If only one operand is a NaN, the result is the non-NaN operand.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        216,
+        220
+      ]
+    },
+    {
+      "text": "Signaling NaN inputs set the invalid operation exception flag, even when the result is not NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        216,
+        220
+      ]
+    },
+    {
+      "text": "Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        227,
+        229
+      ]
+    },
+    {
+      "text": "This format is only used by the floating-point fused multiply-add instructions.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        227,
+        229
+      ]
+    },
+    {
+      "text": "FMADD.S multiplies the values in rs1 and rs2, adds the value in rs3, and writes the final result to rd. FMADD.S computes (rs1×rs2)+rs3.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        231,
+        234
+      ]
+    },
+    {
+      "text": "FMSUB.S multiplies the values in rs1 and rs2, subtracts the value in rs3, and writes the final result to rd. FMSUB.S computes (rs1×rs2)−rs3.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        236,
+        238
+      ]
+    },
+    {
+      "text": "FNMSUB.S multiplies the values in rs1 and rs2, negates the product, adds the value in rs3, and writes the final result to rd. FNMSUB.S computes −(rs1×rs2)+rs3.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        240,
+        241
+      ]
+    },
+    {
+      "text": "FNMADD.S multiplies the values in rs1 and rs2, negates the product, subtracts the value in rs3, and writes the final result to rd. FNMADD.S computes −(rs1×rs2)−rs3.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        243,
+        244
+      ]
+    },
+    {
+      "text": "The fused multiply-add instructions must set the invalid operation exception flag when the multiplicands are {inf} and zero, even when the addend is a quiet NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Computational Instructions",
+      "line_range": [
+        250,
+        252
+      ]
+    },
+    {
+      "text": "Floating-point-to-integer and integer-to-floating-point conversion instructions are encoded in the OP-FP major opcode space. FCVT.W.S or FCVT.L.S converts a floating-point number in floating-point register rs1 to a signed 32-bit or 64-bit integer, respectively, in integer register rd. FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed integer, respectively, in integer register rs1 into a floating-point number in floating-point register rd. FCVT.WU.S, FCVT.LU.S, FCVT.S.WU, and FCVT.S.LU variants convert to or from unsigned integer values.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        256,
+        270
+      ]
+    },
+    {
+      "text": "For XLEN>32, FCVT.W[U].S sign-extends the 32-bit result to the destination register width. FCVT.L[U].S and FCVT.S.L[U] are RV64-only instructions.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        256,
+        270
+      ]
+    },
+    {
+      "text": "If the rounded result is not representable in the destination format, it is clipped to the nearest value and the invalid flag is set. gives the range of valid inputs for FCVT.int.S and the behavior for invalid inputs.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        256,
+        270
+      ]
+    },
+    {
+      "text": "All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, `x0`, which will never set any exception flags.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        272,
+        276
+      ]
+    },
+    {
+      "text": ".Domains of float-to-integer conversions and behavior for invalid inputs | | |FCVT.W.S |FCVT.WU.S |FCVT.L.S |FCVT.LU.S |Minimum valid input (after rounding) |−2^31^ |0 |−2^63^ |0",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        278,
+        284
+      ]
+    },
+    {
+      "text": "|Maximum valid input (after rounding) |2^31^−1 |2^32^−1 |2^63^−1 |2^64^−1",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        286,
+        287
+      ]
+    },
+    {
+      "text": "|Output for out-of-range negative input |−2^31^ |0 |−2^63^ |0",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        289,
+        290
+      ]
+    },
+    {
+      "text": "|Output for -{inf} |−2^31^ |0 |−2^63^ |0",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        292,
+        293
+      ]
+    },
+    {
+      "text": "|Output for out-of-range positive input |2^31^−1 |2^32^−1 |2^63^−1 |2^64^−1",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        295,
+        296
+      ]
+    },
+    {
+      "text": "|Output for +{inf} or NaN |2^31^−1 |2^32^−1 |2^63^−1 |2^64^−1 |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        298,
+        300
+      ]
+    },
+    {
+      "text": "All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        302,
+        305
+      ]
+    },
+    {
+      "text": "Floating-point to floating-point sign-injection instructions, FSGNJ.S, FSGNJN.S, and FSGNJX.S, produce a result that takes all bits except the sign bit from rs1.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        311,
+        321
+      ]
+    },
+    {
+      "text": "For FSGNJ, the result's sign bit is rs2's sign bit; for FSGNJN, the result's sign bit is the opposite of rs2's sign bit; and for FSGNJX, the sign bit is the XOR of the sign bits of rs1 and rs2.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        311,
+        321
+      ]
+    },
+    {
+      "text": "Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        311,
+        321
+      ]
+    },
+    {
+      "text": "Note, FSGNJ.S rx, ry, ry moves ry to rx (assembler pseudoinstruction FMV.S rx, ry); FSGNJN.S rx, ry, ry moves the negation of ry to rx (assembler pseudoinstruction FNEG.S rx, ry); and FSGNJX.S rx, ry, ry moves the absolute value of ry to rx (assembler pseudoinstruction FABS.S rx, ry).",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        311,
+        321
+      ]
+    },
+    {
+      "text": "Instructions are provided to move bit patterns between the floating-point and integer registers. FMV.X.W moves the single-precision value in floating-point register rs1 represented in the IEEE 754-2008 encoding to the lower 32 bits of integer register rd.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        326,
+        333
+      ]
+    },
+    {
+      "text": "The bits are not modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        326,
+        333
+      ]
+    },
+    {
+      "text": "For RV64, the higher 32 bits of the destination register are filled with copies of the floating-point number's sign bit.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        326,
+        333
+      ]
+    },
+    {
+      "text": "FMV.W.X moves the single-precision value encoded in the IEEE 754-2008 encoding from the lower 32 bits of integer register rs1 to the floating-point register rd.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        335,
+        339
+      ]
+    },
+    {
+      "text": "The bits are not modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Conversion and Move Instructions",
+      "line_range": [
+        335,
+        339
+      ]
+    },
+    {
+      "text": "Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 < rs2, rs1 {le} rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Compare Instructions",
+      "line_range": [
+        347,
+        352
+      ]
+    },
+    {
+      "text": "FLT.S and FLE.S perform what IEEE 754-2008 refers to as signaling comparisons: that is, they set the invalid operation exception flag if either input is NaN. FEQ.S performs a quiet comparison: it only sets the invalid operation exception flag if either input is a signaling NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Compare Instructions",
+      "line_range": [
+        354,
+        360
+      ]
+    },
+    {
+      "text": "For all three instructions, the result is 0 if either operand is NaN.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Compare Instructions",
+      "line_range": [
+        354,
+        360
+      ]
+    },
+    {
+      "text": "The FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        367,
+        375
+      ]
+    },
+    {
+      "text": "The format of the mask is described in .",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        367,
+        375
+      ]
+    },
+    {
+      "text": "The corresponding bit in rd will be set if the property is true and clear otherwise.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        367,
+        375
+      ]
+    },
+    {
+      "text": "All other bits in rd are cleared.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        367,
+        375
+      ]
+    },
+    {
+      "text": "Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        367,
+        375
+      ]
+    },
+    {
+      "text": ".Format of result of FCLASS instruction. | |rd bit |Meaning |0 |rs1 is −{inf}. |1 |rs1 is a negative normal number. |2 |rs1 is a negative subnormal number. |3 |rs1 is −0. |4 |rs1 is +0. |5 |rs1 is a positive subnormal number. |6 |rs1 is a positive normal number. |7 |rs1 is +{inf}. |8 |rs1 is a signaling NaN. |9 |rs1 is a quiet NaN. |",
+      "section": "Preamble > \"F\" Extension for Single-Precision Floating-Point, Version 2.2 > F Register State > Single-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        381,
+        396
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "source_file": "src/unpriv/zifencei.adoc",
+  "total": 9,
+  "sentences": [
+    {
+      "text": "This chapter defines the \"Zifencei\" extension, which includes the FENCE.I instruction that provides explicit synchronization between writes to instruction memory and instruction fetches on the same hart.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "Currently, this instruction is the only standard mechanism to ensure that stores visible to a hart will also be visible to its instruction fetches.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "''' include::images/wavedrom/zifencei-ff.edn[] //.FENCE.I instruction",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        11,
+        15
+      ]
+    },
+    {
+      "text": "The FENCE.I instruction is used to synchronize the instruction and data streams. RISC-V does not guarantee that stores to instruction memory will be made visible to instruction fetches on a RISC-V hart until that hart executes a FENCE.I instruction. A FENCE.I instruction ensures that a subsequent instruction fetch on a RISC-V hart will see any previous data stores already visible to the same RISC-V hart. FENCE.I does not ensure that other RISC-V harts' instruction fetches will observe the local hart's stores in a multiprocessor system.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        17,
+        27
+      ]
+    },
+    {
+      "text": "To make a store to instruction memory visible to all RISC-V harts, the writing hart also has to execute a data FENCE before requesting that all remote RISC-V harts execute a FENCE.I.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        17,
+        27
+      ]
+    },
+    {
+      "text": "A FENCE.I instruction orders all explicit memory accesses that precede the FENCE.I in program order before all instruction fetches that follow the FENCE.I in program order.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        29,
+        32
+      ]
+    },
+    {
+      "text": "An instruction fetch is always ordered before any explicit memory accesses that instruction gives rise to.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        34,
+        35
+      ]
+    },
+    {
+      "text": "The unused fields in the FENCE.I instruction, funct12, rs1, and rd, are reserved for finer-grain fences in future extensions.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        37,
+        43
+      ]
+    },
+    {
+      "text": "For forward compatibility, base implementations shall ignore these fields, and standard software shall zero these fields.",
+      "section": "Preamble > \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0",
+      "line_range": [
+        37,
+        43
+      ]
+    }
+  ]
+}

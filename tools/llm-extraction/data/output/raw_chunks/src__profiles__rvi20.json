@@ -1,0 +1,350 @@
+{
+  "source_file": "src/profiles/rvi20.adoc",
+  "total": 43,
+  "sentences": [
+    {
+      "text": "The RVI20 profiles document the initial set of unprivileged instructions.",
+      "section": "Preamble > RVI20 Profiles",
+      "line_range": [
+        2,
+        6
+      ]
+    },
+    {
+      "text": "These provide a generic target for software toolchains and represent the minimum level of compatibility with RISC-V ratified standards.",
+      "section": "Preamble > RVI20 Profiles",
+      "line_range": [
+        2,
+        6
+      ]
+    },
+    {
+      "text": "The two profiles RVI20U32 and RVI20U64 correspond to the RV32I and RV64I base ISAs respectively.",
+      "section": "Preamble > RVI20 Profiles",
+      "line_range": [
+        2,
+        6
+      ]
+    },
+    {
+      "text": "NOTE: These are designed as unprivileged profiles as opposed to user-mode profiles.",
+      "section": "Preamble > RVI20 Profiles",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "Code using this profile can run in any privilege mode, and so requested and fatal traps may be horizontal traps into an execution environment running in the same privilege mode.",
+      "section": "Preamble > RVI20 Profiles",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "RVI20U32 specifies the ISA features available to generic unprivileged execution environments.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile",
+      "line_range": [
+        16,
+        17
+      ]
+    },
+    {
+      "text": "RV32I is the mandatory base ISA for RVI20U32, and is little-endian.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "As per the unprivileged architecture specification, the `ecall` instruction causes a requested trap to the execution environment.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        23,
+        24
+      ]
+    },
+    {
+      "text": "Misaligned loads and stores might not be supported.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        26,
+        26
+      ]
+    },
+    {
+      "text": "The `fence.tso` instruction is mandatory.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        28,
+        28
+      ]
+    },
+    {
+      "text": "NOTE: The `fence.tso` instruction was incorrectly described as optional in the 2019 ratified specifications.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        30,
+        32
+      ]
+    },
+    {
+      "text": "Later versions of correctly indicate that the instruction is mandatory.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Base",
+      "line_range": [
+        30,
+        32
+      ]
+    },
+    {
+      "text": "There are no mandatory extensions for RVI20U32.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Mandatory Extensions",
+      "line_range": [
+        36,
+        36
+      ]
+    },
+    {
+      "text": "extlink:m[] Integer multiplication and division.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        40,
+        40
+      ]
+    },
+    {
+      "text": "extlink:a[] Atomic instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        42,
+        42
+      ]
+    },
+    {
+      "text": "Single-precision floating-point instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        44,
+        44
+      ]
+    },
+    {
+      "text": "Double-precision floating-point instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        46,
+        46
+      ]
+    },
+    {
+      "text": "NOTE: The rationale to not include Q as an optional extension is that quad-precision floating-point is unlikely to be implemented in hardware, and so we do not require or expect software to expend effort optimizing use of Q instructions in case they are present.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        48,
+        51
+      ]
+    },
+    {
+      "text": "extlink:c[] Compressed Instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        53,
+        53
+      ]
+    },
+    {
+      "text": "Instruction-fetch fence instruction.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        55,
+        55
+      ]
+    },
+    {
+      "text": "Misaligned loads and stores may be supported.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        57,
+        57
+      ]
+    },
+    {
+      "text": "NOTE: The Zicsr extension is not supported independent of the Zicntr or F extensions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        61,
+        62
+      ]
+    },
+    {
+      "text": "Hardware performance counters.",
+      "section": "Preamble > RVI20 Profiles > RVI20U32 Profile > RVI20U32 Optional Extensions",
+      "line_range": [
+        64,
+        64
+      ]
+    },
+    {
+      "text": "RVI20U64 specifies the ISA features available to generic unprivileged execution environments.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile",
+      "line_range": [
+        68,
+        69
+      ]
+    },
+    {
+      "text": "RV64I is the mandatory base ISA for RVI20U64, and is little-endian.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        73,
+        73
+      ]
+    },
+    {
+      "text": "As per the unprivileged architecture specification, the `ecall` instruction causes a requested trap to the execution environment.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        75,
+        76
+      ]
+    },
+    {
+      "text": "Misaligned loads and stores might not be supported.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        78,
+        78
+      ]
+    },
+    {
+      "text": "The `fence.tso` instruction is mandatory.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        80,
+        80
+      ]
+    },
+    {
+      "text": "NOTE: The `fence.tso` instruction was incorrectly described as optional in the 2019 ratified specifications.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        82,
+        90
+      ]
+    },
+    {
+      "text": "However, `fence.tso` is encoded within the standard `fence` encoding such that implementations must treat it as a simple global fence if they do not natively support TSO-ordering optimizations.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        82,
+        90
+      ]
+    },
+    {
+      "text": "As software can always assume without any penalty that `fence.tso` is being exploited by a hardware implementation, there is no advantage to making the instruction a profile option.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        82,
+        90
+      ]
+    },
+    {
+      "text": "Later versions of the unprivileged ISA specifications correctly indicate that `fence.tso` is mandatory.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Base",
+      "line_range": [
+        82,
+        90
+      ]
+    },
+    {
+      "text": "There are no mandatory extensions for RVI20U64.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Mandatory Extensions",
+      "line_range": [
+        94,
+        94
+      ]
+    },
+    {
+      "text": "extlink:m[] Integer multiplication and division.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "extlink:a[] Atomic instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        100,
+        100
+      ]
+    },
+    {
+      "text": "Single-precision floating-point instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        102,
+        102
+      ]
+    },
+    {
+      "text": "Double-precision floating-point instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        104,
+        104
+      ]
+    },
+    {
+      "text": "NOTE: The rationale to not include Q as a profile option is that quad-precision floating-point is unlikely to be implemented in hardware, and so we do not require or expect software to expend effort optimizing use of Q instructions in case they are present.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        106,
+        109
+      ]
+    },
+    {
+      "text": "extlink:c[] Compressed Instructions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        111,
+        111
+      ]
+    },
+    {
+      "text": "Instruction-fetch fence instruction.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        113,
+        113
+      ]
+    },
+    {
+      "text": "Misaligned loads and stores may be supported.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        115,
+        115
+      ]
+    },
+    {
+      "text": "NOTE: The Zicsr extension is not supported independent of the Zicntr or F extensions.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        119,
+        120
+      ]
+    },
+    {
+      "text": "Hardware performance counters.",
+      "section": "Preamble > RVI20 Profiles > RVI20U64 Profile > RVI20U64 Optional Extensions",
+      "line_range": [
+        122,
+        122
+      ]
+    }
+  ]
+}

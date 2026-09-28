@@ -1,0 +1,14 @@
+{
+  "source_file": "src/priv/svvptc.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "When the Svvptc extension is implemented, explicit stores by a hart that update the Valid bit of leaf and/or non-leaf PTEs from 0 to 1 and are visible to a hart will eventually become visible within a bounded timeframe to subsequent implicit accesses by that hart to such PTEs.",
+      "section": "Preamble > \"Svvptc\" Extension for Obviating Memory-Management Instructions after Marking PTEs Valid, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/mm-appendix.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "This appendix contains non-normative documentation that helps explain the rationale behind and the workings of the RISC-V memory consistency models, including formal models of RVWMO.",
+      "section": "Preamble > Memory Model Supplemental Material",
+      "line_range": [
+        4,
+        6
+      ]
+    }
+  ]
+}

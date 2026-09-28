@@ -1,0 +1,318 @@
+{
+  "source_file": "src/priv/smcdeleg.adoc",
+  "total": 39,
+  "sentences": [
+    {
+      "text": "In modern “Rich OS” environments, hardware performance monitoring resources are managed by the kernel, kernel driver, and/or hypervisor.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "Counters may be configured with differing scopes, in some cases counting events system-wide, while in others counting events on behalf of a single virtual machine or application.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "In such environments, the latency of counter writes has a direct impact on overall profiling overhead as a result of frequent counter writes during:",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "Sample collection, to clear overflow indication, and reload overflowed counter(s) .",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        11,
+        14
+      ]
+    },
+    {
+      "text": "Context switch, between processes, threads, containers, or virtual machines",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        11,
+        14
+      ]
+    },
+    {
+      "text": "These extensions provide a means for M-mode to allow writing select counters and event selectors from S/HS-mode.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "The purpose is to avert transitions to and from M-mode that add latency to these performance critical supervisor/hypervisor code sections.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "These extensions also defines one new CSR, scountinhibit.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "For a Machine-level environment, extension *Smcdeleg* (‘Sm’ for Privileged architecture and Machine-level extension, ‘cdeleg’ for Counter Delegation) encompasses all added CSRs and all behavior modifications for a hart, over all privilege levels.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        22,
+        29
+      ]
+    },
+    {
+      "text": "For a Supervisor-level environment, extension *Ssccfg* (‘Ss’ for Privileged architecture and Supervisor-level extension, ‘ccfg’ for Counter Configuration) provides access to delegated counters, and to new supervisor-level state.For a RISC-V hardware platform, Smcdeleg and Ssccfg must always be implemented in tandem.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        22,
+        29
+      ]
+    },
+    {
+      "text": "The Smcdeleg and Ssccfg extensions both depend on the Sscsrind extension.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+      "line_range": [
+        31,
+        31
+      ]
+    },
+    {
+      "text": "The `mcounteren` register allows M-mode to provide the next-lower privilege mode with read access to select counters.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        35,
+        36
+      ]
+    },
+    {
+      "text": "When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to delegate select counters to S-mode.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        35,
+        36
+      ]
+    },
+    {
+      "text": "The `siselect` (and `vsiselect`) index range 0x40-0x5F is reserved for delegated counter access.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        38,
+        43
+      ]
+    },
+    {
+      "text": "When a counter i is delegated (`mcounteren`[i]=1 and `menvcfg`.CDE=1), the register state associated with counter i can be read or written via `sireg*`, while `siselect` holds 0x40+i.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        38,
+        43
+      ]
+    },
+    {
+      "text": "The counter state accessible via alias CSRs is shown in the table below.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        38,
+        43
+      ]
+    },
+    {
+      "text": ".Indirect HPM State Mappings [indirect-hpm-state-mappings] [width=\"100%\",cols=\"21%,20%,21%,18%,20%\",options=\"header\",] | |*`siselect` value* |*`sireg*` |*`sireg4`* |*`sireg2`* |*`sireg5`* |0x40 |`cycle`^1^ |`cycleh`^1^ |`cyclecfg`^14^ |`cyclecfgh`^14^ |0x41 4+^|See below |0x42 |`instret`^1^ |`instreth`^1^ |`instretcfg`^14^ |`instretcfgh`^14^ |0x43 |`hpmcounter3`^2^ |`hpmcounter3h`^2^ |`hpmevent3`^2^ |`hpmevent3h`^23^ |… |… |… |… |… |0x5F |`hpmcounter31`^2^ |`hpmcounter31h`^2^ |`hpmevent31`^2^ |`hpmevent31h`^23^ |",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        45,
+        56
+      ]
+    },
+    {
+      "text": "^1^ Depends on Zicntr support + ^2^ Depends on Zihpm support + ^3^ Depends on Sscofpmf support + ^4^ Depends on Smcntrpmf support",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "`hpmeventi` may represent a subset of the state accessed by the `mhpmeventi` register.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        63,
+        64
+      ]
+    },
+    {
+      "text": "Specifically, if Sscofpmf is implemented, event selector bit 62 (MINH) is read-only 0 when accessed through `sireg*`.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        63,
+        64
+      ]
+    },
+    {
+      "text": "Likewise, `cyclecfg` and `instretcfg` may represent a subset of the state accessed by the `mcyclecfg` and `minstretcfg` registers, respectively.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        66,
+        67
+      ]
+    },
+    {
+      "text": "If Smcntrpmf is implemented, counter configuration register bit 62 (MINH) is read-only 0 when accessed through `sireg*`.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        66,
+        67
+      ]
+    },
+    {
+      "text": "If extension Smstateen is implemented, refer to extensions Smcsrind/Sscsrind () for how setting bit 60 of CSR `mstateen0` to zero prevents access to registers `siselect`, `sireg*`, `vsiselect`, and `vsireg*` from privileged modes less privileged than M-mode, and likewise how setting bit 60 of `hstateen0` to zero prevents access to `siselect` and `sireg*` (really `vsiselect` and `vsireg*`) from VS-mode.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        69,
+        74
+      ]
+    },
+    {
+      "text": "The remaining rules of this section apply only when access to a CSR is not blocked by `mstateen0`[60] = 0 or `hstateen0`[60] = 0.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        76,
+        77
+      ]
+    },
+    {
+      "text": "While the privilege mode is M or S and `siselect` holds a value in the range 0x40-0x5F, illegal-instruction exceptions are raised for the following cases:",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        79,
+        81
+      ]
+    },
+    {
+      "text": "attempts to access any `sireg*` when `menvcfg`.CDE = 0; * attempts to access `sireg3` or `sireg6`; * attempts to access `sireg4` or `sireg5` when XLEN = 64; * attempts to access `sireg*` when `siselect` = 0x41, or when the counter selected by `siselect` is not delegated to S-mode (the corresponding bit in `mcounteren` = 0).",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        83,
+        88
+      ]
+    },
+    {
+      "text": "NOTE: The memory-mapped `mtime` register is not a performance monitoring counter to be managed by supervisor software, hence the special treatment of `siselect` value 0x41 described above.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        90,
+        92
+      ]
+    },
+    {
+      "text": "For each `siselect` and `sireg*` combination defined in , the table further indicates the extensions upon which the underlying counter state depends.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        94,
+        96
+      ]
+    },
+    {
+      "text": "If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        94,
+        96
+      ]
+    },
+    {
+      "text": "If the hypervisor (H) extension is also implemented, then as specified by extensions Smcsrind/Sscsrind, a virtual-instruction exception is raised for attempts from VS-mode or VU-mode to directly access `vsiselect` or `vsireg*`, or attempts from VU-mode to access `siselect` or `sireg*`.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        98,
+        102
+      ]
+    },
+    {
+      "text": "Furthermore, while `vsiselect` holds a value in the range 0x40-0x5F:",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        98,
+        102
+      ]
+    },
+    {
+      "text": "An attempt to access any `vsireg*` from M or S mode raises an illegal-instruction exception. * An attempt from VS-mode to access any `sireg*` (really `vsireg*`) raises an illegal-instruction exception if `menvcfg`.CDE = 0, or a virtual-instruction exception if `menvcfg`.CDE = 1.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation",
+      "line_range": [
+        104,
+        105
+      ]
+    },
+    {
+      "text": "Smcdeleg/Ssccfg defines a new `scountinhibit` register, a masked alias of `mcountinhibit`.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Supervisor Counter Inhibit (`scountinhibit`) Register",
+      "line_range": [
+        109,
+        109
+      ]
+    },
+    {
+      "text": "For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed via `scountinhibit`.For counters not delegated to S-mode, the associated bits in `scountinhibit` are read-only zero.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Supervisor Counter Inhibit (`scountinhibit`) Register",
+      "line_range": [
+        109,
+        109
+      ]
+    },
+    {
+      "text": "When `menvcfg`.CDE=0, attempts to access `scountinhibit` raise an illegal-instruction exception.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Supervisor Counter Inhibit (`scountinhibit`) Register",
+      "line_range": [
+        111,
+        113
+      ]
+    },
+    {
+      "text": "When Supervisor Counter Delegation is enabled, attempts to access `scountinhibit` from VS-mode or VU-mode raise a virtual-instruction exception.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Supervisor Counter Inhibit (`scountinhibit`) Register",
+      "line_range": [
+        111,
+        113
+      ]
+    },
+    {
+      "text": "For implementations that support Smcdeleg/Ssccfg, Sscofpmf, and the H extension, when `menvcfg`.CDE=1, attempts to read `scountovf` from VS-mode or VU-mode raise a virtual-instruction exception.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Virtualizing `scountovf`",
+      "line_range": [
+        118,
+        121
+      ]
+    },
+    {
+      "text": "For implementations that support Smcdeleg, Sscofpmf, and Smaia, the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Virtualizing Local-Counter-Overflow Interrupts",
+      "line_range": [
+        125,
+        128
+      ]
+    },
+    {
+      "text": "For implementations that support Smcdeleg/Ssccfg, Sscofpmf, Smaia/Ssaia, and the H extension, the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.",
+      "section": "Preamble > \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0 > Counter Delegation > Virtualizing Local-Counter-Overflow Interrupts",
+      "line_range": [
+        130,
+        133
+      ]
+    }
+  ]
+}

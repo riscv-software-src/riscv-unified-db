@@ -1,0 +1,150 @@
+{
+  "source_file": "src/unpriv/m-st-ext.adoc",
+  "total": 18,
+  "sentences": [
+    {
+      "text": "This chapter describes the standard integer multiplication and division instruction extension, which is named `M` and contains instructions that multiply or divide values held in two integer registers.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "MUL performs an XLEN-bit×XLEN-bit multiplication of `rs1` by `rs2` and places the lower XLEN bits in the destination register. MULH, MULHU, and MULHSU perform the same multiplication but return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed, unsigned×unsigned, and `rs1`×unsigned `rs2` multiplication.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations",
+      "line_range": [
+        17,
+        23
+      ]
+    },
+    {
+      "text": "If both the high and low bits of the same product are required, then the recommended code sequence is: `MULH[[S]U] rdh, rs1, rs2; MUL rdl, rs1, rs2` (source register specifiers must be in same order and `rdh` cannot be the same as `rs1` or `rs2`).",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations",
+      "line_range": [
+        17,
+        23
+      ]
+    },
+    {
+      "text": "Microarchitectures can then fuse these into a single multiply operation instead of performing two separate multiplies.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations",
+      "line_range": [
+        17,
+        23
+      ]
+    },
+    {
+      "text": "MULW is an RV64 instruction that multiplies the lower 32 bits of the source registers, placing the sign extension of the lower 32 bits of the result into the destination register.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations",
+      "line_range": [
+        25,
+        27
+      ]
+    },
+    {
+      "text": "DIV and DIVU perform an XLEN bits by XLEN bits signed and unsigned integer division of `rs1` by `rs2`, rounding towards zero. REM and REMU provide the remainder of the corresponding division operation.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        37,
+        40
+      ]
+    },
+    {
+      "text": "For REM, the sign of a nonzero result equals the sign of the dividend.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        37,
+        40
+      ]
+    },
+    {
+      "text": "If both the quotient and remainder are required from the same division, the recommended code sequence is: `DIV[U] rdq, rs1, rs2; REM[U] rdr,` `rs1, rs2` (`rdq` cannot be the same as `rs1` or `rs2`).",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        42,
+        46
+      ]
+    },
+    {
+      "text": "Microarchitectures can then fuse these into a single divide operation instead of performing two separate divides.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        42,
+        46
+      ]
+    },
+    {
+      "text": "DIVW and DIVUW are RV64 instructions that divide the lower 32 bits of `rs1` by the lower 32 bits of `rs2`, treating them as signed and unsigned integers, placing the 32-bit quotient in `rd`, sign-extended to 64 bits. REMW and REMUW are RV64 instructions that provide the corresponding signed and unsigned remainder operations.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        48,
+        55
+      ]
+    },
+    {
+      "text": "Both REMW and REMUW always sign-extend the 32-bit result to 64 bits, including on a divide by zero.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        48,
+        55
+      ]
+    },
+    {
+      "text": "The semantics for division by zero and division overflow are summarized in .",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        57,
+        63
+      ]
+    },
+    {
+      "text": "The quotient of division by zero has all bits set, and the remainder of division by zero equals the dividend.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        57,
+        63
+      ]
+    },
+    {
+      "text": "Signed division overflow occurs only when the most-negative integer is divided by −1.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        57,
+        63
+      ]
+    },
+    {
+      "text": "The quotient of a signed division with overflow is equal to the dividend, and the remainder is zero.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        57,
+        63
+      ]
+    },
+    {
+      "text": "Unsigned division overflow cannot occur.",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        57,
+        63
+      ]
+    },
+    {
+      "text": ".Semantics for division by zero and division overflow. L is the width of the operation in bits: XLEN for DIV[U] and REM[U], or 32 for DIV[U]W and REM[U]W. [cols=\"<2,^,^,^,^,^,^\",options=\"header\",] | |Condition |Dividend |Divisor |DIVU[W] |REMU[W] |DIV[W] |REM[W]",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        65,
+        69
+      ]
+    },
+    {
+      "text": "|Division by zero + Overflow (signed only) |x + -2^L-1^ |0 + −1 |2^L^-1 + - |x + - |−1 + -2^L-1^ + |x + 0 |",
+      "section": "Preamble > \"M\" Extension for Integer Multiplication and Division, Version 2.0 > Multiplication Operations > Division Operations",
+      "line_range": [
+        71,
+        80
+      ]
+    }
+  ]
+}

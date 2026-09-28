@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/code-examples.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "This appendix contains code examples for various RISC-V extensions, including implementations of library routines that are expected to be performant across a range of RISC-V implementations.",
+      "section": "Preamble > RISC-V Assembly Code Examples",
+      "line_range": [
+        4,
+        6
+      ]
+    }
+  ]
+}

@@ -1,0 +1,926 @@
+{
+  "source_file": "src/unpriv/zcb.adoc",
+  "total": 115,
+  "sentences": [
+    {
+      "text": "The ext:zcb[] extension adds several compressed instructions which, like those in the extlink:zca[] extension, expand into a single 32-bit instruction.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "The ext:zcb[] extension depends on the ext:zca[] extension.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "As shown on the individual instruction pages, many of the instructions in Zcb depend upon another extension being implemented.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        7,
+        11
+      ]
+    },
+    {
+      "text": "For example, inst:c.mul[] is only implemented if extlink:m[] or extlink:zmmul[] is implemented, and inst:c.sext.b[] is only implemented if extlink:zbb[] is implemented.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        7,
+        11
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        13,
+        18
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lbu rd', uimm(rs1') |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        20,
+        23
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lhu rd', uimm(rs1') |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        25,
+        28
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lh rd', uimm(rs1') |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        30,
+        33
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sb rs2', uimm(rs1') |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        35,
+        38
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sh rs2', uimm(rs1') |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        40,
+        43
+      ]
+    },
+    {
+      "text": "|yes |yes |c.zext.b rsd' |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        45,
+        48
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sext.b rsd' |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        50,
+        53
+      ]
+    },
+    {
+      "text": "|yes |yes |c.zext.h rsd' |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        55,
+        58
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sext.h rsd' |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        60,
+        63
+      ]
+    },
+    {
+      "text": "|yes |yes |c.mul rsd', rs2' |",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        75,
+        78
+      ]
+    },
+    {
+      "text": "[insns-clbu,reftext=\"Load unsigned byte, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions",
+      "line_range": [
+        82,
+        82
+      ]
+    },
+    {
+      "text": "Load unsigned byte, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        87,
+        87
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 2, name: 'uimm[0|1]' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x0 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        95,
+        105
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        107,
+        107
+      ]
+    },
+    {
+      "text": "[source,sail] -- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = encoding[6]; --",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        109,
+        114
+      ]
+    },
+    {
+      "text": "This instruction loads a byte from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        118,
+        118
+      ]
+    },
+    {
+      "text": "The resulting byte is zero extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        118,
+        118
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        122,
+        124
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        128,
+        130
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        128,
+        130
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTZ(mem[X(rs1c)+EXTZ(uimm)][7..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        132,
+        133
+      ]
+    },
+    {
+      "text": "<<< [insns-clhu,reftext=\"Load unsigned halfword, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu",
+      "line_range": [
+        135,
+        136
+      ]
+    },
+    {
+      "text": "Load unsigned halfword, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        141,
+        141
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: 0x0 }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x1 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        149,
+        160
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        162,
+        162
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        164,
+        169
+      ]
+    },
+    {
+      "text": "This instruction loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        173,
+        173
+      ]
+    },
+    {
+      "text": "The resulting halfword is zero extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        173,
+        173
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: // //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        177,
+        180
+      ]
+    },
+    {
+      "text": "[source,sail] -- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        184,
+        186
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        184,
+        186
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTZ(loadmem[X(rs1c)+EXTZ(uimm)][15..0]); --",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        188,
+        189
+      ]
+    },
+    {
+      "text": "<<< [insns-clh,reftext=\"Load signed halfword, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lhu",
+      "line_range": [
+        191,
+        192
+      ]
+    },
+    {
+      "text": "Load signed halfword, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        197,
+        197
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: 0x1 }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x1 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        205,
+        216
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        218,
+        218
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        220,
+        225
+      ]
+    },
+    {
+      "text": "This instruction loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        229,
+        229
+      ]
+    },
+    {
+      "text": "The resulting halfword is sign extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        229,
+        229
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: // //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        233,
+        236
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        240,
+        242
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        240,
+        242
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTS(loadmem[X(rs1c)+EXTZ(uimm)][15..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        244,
+        245
+      ]
+    },
+    {
+      "text": "<<< [insns-csb,reftext=\"Store byte, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.lh",
+      "line_range": [
+        247,
+        248
+      ]
+    },
+    {
+      "text": "Store byte, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        253,
+        253
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rs2\\'' }, { bits: 2, name: 'uimm[0|1]' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x2 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        261,
+        271
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        273,
+        273
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = encoding[6]; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        275,
+        280
+      ]
+    },
+    {
+      "text": "This instruction stores the least significant byte of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        284,
+        284
+      ]
+    },
+    {
+      "text": "None // //32-bit equivalent: // //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        288,
+        292
+      ]
+    },
+    {
+      "text": "[source,sail] -- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        296,
+        298
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        296,
+        298
+      ]
+    },
+    {
+      "text": "mem[X(rs1c)+EXTZ(uimm)][7..0] = X(rs2c) --",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        300,
+        301
+      ]
+    },
+    {
+      "text": "<<< [insns-csh,reftext=\"Store halfword, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sb",
+      "line_range": [
+        303,
+        304
+      ]
+    },
+    {
+      "text": "Store halfword, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        309,
+        309
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rs2\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: '0' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x3 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        317,
+        328
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        330,
+        330
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        332,
+        337
+      ]
+    },
+    {
+      "text": "This instruction stores the least significant halfword of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        341,
+        341
+      ]
+    },
+    {
+      "text": "None // //32-bit equivalent: // //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        345,
+        349
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        351,
+        354
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        351,
+        354
+      ]
+    },
+    {
+      "text": "mem[X(rs1c)+EXTZ(uimm)][15..0] = X(rs2c) ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        356,
+        357
+      ]
+    },
+    {
+      "text": "<<< [insns-czextb,reftext=\"Zero extend byte, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sh",
+      "line_range": [
+        359,
+        360
+      ]
+    },
+    {
+      "text": "Zero extend byte, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        365,
+        365
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x0, attr: ['C.ZEXT.B'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        373,
+        383
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        387,
+        389
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant byte of the operand to XLEN bits by inserting zeros into all of the bits more significant than 7.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        387,
+        389
+      ]
+    },
+    {
+      "text": "[source,asm] ---- andi rd'/rs1', rd'/rs1', 0xff ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        397,
+        400
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[7..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        404,
+        407
+      ]
+    },
+    {
+      "text": "<<< [insns-csextb,reftext=\"Sign extend byte, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.b",
+      "line_range": [
+        409,
+        410
+      ]
+    },
+    {
+      "text": "Sign extend byte, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        415,
+        415
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x1, attr: ['C.SEXT.B'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        423,
+        433
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        437,
+        439
+      ]
+    },
+    {
+      "text": "It sign-extends the least-significant byte in the operand to XLEN bits by copying the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        437,
+        439
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        443,
+        447
+      ]
+    },
+    {
+      "text": "The SAIL module variable for rd'/rs1' is called rsdc.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        451,
+        451
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTS(X(rsdc)[7..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        455,
+        458
+      ]
+    },
+    {
+      "text": "<<< [insns-czexth,reftext=\"Zero extend halfword, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.b",
+      "line_range": [
+        460,
+        461
+      ]
+    },
+    {
+      "text": "Zero extend halfword, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        466,
+        466
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x2, attr: ['C.ZEXT.H'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        474,
+        484
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        488,
+        490
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant halfword of the operand to XLEN bits by inserting zeros into all of the bits more significant than 15.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        488,
+        490
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        494,
+        498
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[15..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        502,
+        505
+      ]
+    },
+    {
+      "text": "<<< [insns-csexth,reftext=\"Sign extend halfword, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.h",
+      "line_range": [
+        507,
+        508
+      ]
+    },
+    {
+      "text": "Sign extend halfword, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        513,
+        513
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x3, attr: ['C.SEXT.H'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        521,
+        531
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        535,
+        537
+      ]
+    },
+    {
+      "text": "It sign-extends the least-significant halfword in the operand to XLEN bits by copying the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        535,
+        537
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        541,
+        545
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTS(X(rsdc)[15..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        549,
+        552
+      ]
+    },
+    {
+      "text": "<<< [insns-czextw,reftext=\"Zero extend word, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.sext.h",
+      "line_range": [
+        554,
+        555
+      ]
+    },
+    {
+      "text": "Zero extend word, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        560,
+        560
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x4, attr: ['C.ZEXT.W'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        568,
+        578
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        582,
+        584
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        582,
+        584
+      ]
+    },
+    {
+      "text": "[source,asm] ---- add.uw rd'/rs1', rd'/rs1', zero ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        592,
+        595
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[31..0]); ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        599,
+        602
+      ]
+    },
+    {
+      "text": "<<< [insns-cnot,reftext=\"Bitwise not, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.zext.w",
+      "line_range": [
+        604,
+        605
+      ]
+    },
+    {
+      "text": "Bitwise not, 16-bit encoding",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        610,
+        610
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x5, attr: ['C.NOT'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        618,
+        628
+      ]
+    },
+    {
+      "text": "This instruction takes the one's complement of rd'/rs1' and writes the result to the same register.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        632,
+        632
+      ]
+    },
+    {
+      "text": "[source,asm] ---- xori rd'/rs1', rd'/rs1', -1 ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        640,
+        643
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = X(rsdc) XOR -1; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        647,
+        650
+      ]
+    },
+    {
+      "text": "<<< [insns-cmul,reftext=\"Multiply, 16-bit encoding\"]",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.not",
+      "line_range": [
+        652,
+        653
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 'rs2\\'', attr: ['SRC2'] }, { bits: 2, name: 0x2, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.mul",
+      "line_range": [
+        666,
+        676
+      ]
+    },
+    {
+      "text": "This instruction multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.mul",
+      "line_range": [
+        680,
+        680
+      ]
+    },
+    {
+      "text": "M or Zmmul must be configured. // //32-bit equivalent: // //",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.mul",
+      "line_range": [
+        684,
+        688
+      ]
+    },
+    {
+      "text": "[source,sail] ---- let resultwide = tobits(2 * sizeof(xlen), signed(X(rsdc)) * signed(X(rs2c))); X(rsdc) = resultwide[(sizeof(xlen) - 1) .. 0]; ----",
+      "section": "Preamble > ext:zcb[] Extension for Additional Compressed Instructions > c.lbu > c.mul",
+      "line_range": [
+        692,
+        696
+      ]
+    }
+  ]
+}

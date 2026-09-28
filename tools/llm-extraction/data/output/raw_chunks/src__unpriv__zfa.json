@@ -1,0 +1,398 @@
+{
+  "source_file": "src/unpriv/zfa.adoc",
+  "total": 49,
+  "sentences": [
+    {
+      "text": "This chapter describes the Zfa standard extension, which adds instructions for immediate loads, IEEE 754-2019 `minimum` and `maximum` operations, round-to-integer operations, and quiet floating-point comparisons.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "For RV32D, the Zfa extension also adds instructions to transfer double-precision floating-point values to and from integer registers, and for RV64Q, it adds analogous instructions for quad-precision floating-point values.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The Zfa extension depends on the F extension.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The FLI.S instruction loads one of 32 single-precision floating-point constants, encoded in the rs1 field, into floating-point register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        14,
+        19
+      ]
+    },
+    {
+      "text": "The correspondence of rs1 field values and single-precision floating-point values is shown in . FLI.S is encoded like FMV.W.X, but with rs2=1.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        14,
+        19
+      ]
+    },
+    {
+      "text": ".Immediate values loaded by the FLI.S instruction. | |rs1 |Value |Sign |Exponent |Significand |0 |−1.0 |`1` |`01111111` |`000...000` |1 |Minimum positive normal |`0` |`00000001` |`000...000` |2 |1.0 × 2^−16^ |`0` |`01101111` |`000...000` |3 |1.0 × 2^−15^ |`0` |`01110000` |`000...000` |4 |1.0 × 2^−8^ |`0` |`01110111` |`000...000` |5 |1.0 × 2^−7^ |`0` |`01111000` |`000...000` |6 |0.0625 (2^−4^) |`0` |`01111011` |`000...000` |7 |0.125 (2^−3^) |`0` |`01111100` |`000...000` |8 |0.25 |`0` |`01111101` |`000...000` |9 |0.3125 |`0` |`01111101` |`010...000` |10 |0.375 |`0` |`01111101` |`100...000` |11 |0.4375 |`0` |`01111101` |`110...000` |12 |0.5 |`0` |`01111110` |`000...000` |13 |0.625 |`0` |`01111110` |`010...000` |14 |0.75 |`0` |`01111110` |`100...000` |15 |0.875 |`0` |`01111110` |`110...000` |16 |1.0 |`0` |`01111111` |`000...000` |17 |1.25 |`0` |`01111111` |`010...000` |18 |1.5 |`0` |`01111111` |`100...000` |19 |1.75 |`0` |`01111111` |`110...000` |20 |2.0 |`0` |`10000000` |`000...000` |21 |2.5 |`0` |`10000000` |`010...000` |22 |3 |`0` |`10000000` |`100...000` |23 |4 |`0` |`10000001` |`000...000` |24 |8 |`0` |`10000010` |`000...000` |25 |16 |`0` |`10000011` |`000...000` |26 |128 (2^7^) |`0` |`10000110` |`000...000` |27 |256 (2^8^) |`0` |`10000111` |`000...000` |28 |2^15^ |`0` |`10001110` |`000...000` |29 |2^16^ |`0` |`10001111` |`000...000` |30 |+{inf} |`0` |`11111111` |`000...000` |31 |Canonical NaN |`0` |`11111111` |`100...000` |",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        21,
+        58
+      ]
+    },
+    {
+      "text": "If the D extension is implemented, FLI.D performs the analogous operation, but loads a double-precision value into floating-point register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        60,
+        66
+      ]
+    },
+    {
+      "text": "Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for double-precision than for single-precision. FLI.D is encoded like FLI.S, but with fmt=D.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        60,
+        66
+      ]
+    },
+    {
+      "text": "If the Q extension is implemented, FLI.Q performs the analogous operation, but loads a quad-precision value into floating-point register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        68,
+        73
+      ]
+    },
+    {
+      "text": "Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for quad-precision. FLI.Q is encoded like FLI.S, but with fmt=Q.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        68,
+        73
+      ]
+    },
+    {
+      "text": "If the Zfh or Zvfh extension is implemented, FLI.H performs the analogous operation, but loads a half-precision floating-point value into register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        75,
+        84
+      ]
+    },
+    {
+      "text": "Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for half-precision.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        75,
+        84
+      ]
+    },
+    {
+      "text": "Furthermore, since 2^16^ is not representable in half-precision floating-point, entry 29 in the table instead loads positive infinity—i.e., it is redundant with entry 30. FLI.H is encoded like FLI.S, but with fmt=H.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        75,
+        84
+      ]
+    },
+    {
+      "text": "The FLI.fmt instructions never set any floating-point exception flags.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions",
+      "line_range": [
+        75,
+        84
+      ]
+    },
+    {
+      "text": "The FMINM.S and FMAXM.S instructions are defined like the FMIN.S and FMAX.S instructions, except that if either input is NaN, the result is the canonical NaN.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Minimum and Maximum Instructions",
+      "line_range": [
+        88,
+        91
+      ]
+    },
+    {
+      "text": "If the D extension is implemented, FMINM.D and FMAXM.D instructions are analogously defined to operate on double-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Minimum and Maximum Instructions",
+      "line_range": [
+        93,
+        95
+      ]
+    },
+    {
+      "text": "If the Zfh extension is implemented, FMINM.H and FMAXM.H instructions are analogously defined to operate on half-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Minimum and Maximum Instructions",
+      "line_range": [
+        97,
+        99
+      ]
+    },
+    {
+      "text": "If the Q extension is implemented, FMINM.Q and FMAXM.Q instructions are analogously defined to operate on quad-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Minimum and Maximum Instructions",
+      "line_range": [
+        101,
+        103
+      ]
+    },
+    {
+      "text": "These instructions are encoded like their FMIN and FMAX counterparts, but with instruction bit 13 set to 1.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Minimum and Maximum Instructions",
+      "line_range": [
+        105,
+        106
+      ]
+    },
+    {
+      "text": "The FROUND.S instruction rounds the single-precision floating-point number in floating-point register rs1 to an integer, according to the rounding mode specified in the instruction's rm field.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        109,
+        116
+      ]
+    },
+    {
+      "text": "It then writes that integer, represented as a single-precision floating-point number, to floating-point register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        109,
+        116
+      ]
+    },
+    {
+      "text": "Zero and infinite inputs are copied to rd unmodified.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        109,
+        116
+      ]
+    },
+    {
+      "text": "Signaling NaN inputs cause the invalid operation exception flag to be set; no other exception flags are set. FROUND.S is encoded like FCVT.S.D, but with rs2=4.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        109,
+        116
+      ]
+    },
+    {
+      "text": "The FROUNDNX.S instruction is defined similarly, but it also sets the inexact exception flag if the input differs from the rounded result and is not NaN. FROUNDNX.S is encoded like FCVT.S.D, but with rs2=5.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        118,
+        121
+      ]
+    },
+    {
+      "text": "If the D extension is implemented, FROUND.D and FROUNDNX.D instructions are analogously defined to operate on double-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        123,
+        126
+      ]
+    },
+    {
+      "text": "They are encoded like FCVT.D.S, but with rs2=4 and 5, respectively,",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        123,
+        126
+      ]
+    },
+    {
+      "text": "If the Zfh extension is implemented, FROUND.H and FROUNDNX.H instructions are analogously defined to operate on half-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        128,
+        132
+      ]
+    },
+    {
+      "text": "They are encoded like FCVT.H.S, but with rs2=4 and 5, respectively,",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        128,
+        132
+      ]
+    },
+    {
+      "text": "If the Q extension is implemented, FROUND.Q and FROUNDNX.Q instructions are analogously defined to operate on quad-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        134,
+        137
+      ]
+    },
+    {
+      "text": "They are encoded like FCVT.Q.S, but with rs2=4 and 5, respectively,",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Round-to-Integer Instructions",
+      "line_range": [
+        134,
+        137
+      ]
+    },
+    {
+      "text": "The FCVTMOD.W.D instruction is defined similarly to the FCVT.W.D instruction, with the following differences. FCVTMOD.W.D always rounds towards zero.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        140,
+        146
+      ]
+    },
+    {
+      "text": "Bits 31:0 are taken from the rounded, unbounded two's complement result, then sign-extended to XLEN bits and written to integer register rd. ±{inf} and NaN are converted to zero.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        140,
+        146
+      ]
+    },
+    {
+      "text": "Floating-point exception flags are raised the same as they would be for FCVT.W.D with the same input operand.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        148,
+        150
+      ]
+    },
+    {
+      "text": "This instruction is only provided if the D extension is implemented.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        152,
+        154
+      ]
+    },
+    {
+      "text": "It is encoded like FCVT.W.D, but with the rs2 field set to 8 and the rm field set to 1 (RTZ).",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        152,
+        154
+      ]
+    },
+    {
+      "text": "Other rm values are reserved.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Modular Convert-to-Integer Instruction",
+      "line_range": [
+        152,
+        154
+      ]
+    },
+    {
+      "text": "For RV32 only, if the D extension is implemented, the FMVH.X.D instruction moves bits 63:32 of floating-point register rs1 into integer register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        157,
+        168
+      ]
+    },
+    {
+      "text": "It is encoded in the OP-FP major opcode with funct3=0, rs2=1, and funct7=1110001.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        157,
+        168
+      ]
+    },
+    {
+      "text": "For RV32 only, if the D extension is implemented, the FMVP.D.X instruction moves a double-precision number from a pair of integer registers into a floating-point register.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        157,
+        168
+      ]
+    },
+    {
+      "text": "Integer registers rs1 and rs2 supply bits 31:0 and 63:32, respectively; the result is written to floating-point register rd. FMVP.D.X is encoded in the OP-FP major opcode with funct3=0 and funct7=1011001.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        157,
+        168
+      ]
+    },
+    {
+      "text": "For RV64 only, if the Q extension is implemented, the FMVH.X.Q instruction moves bits 127:64 of floating-point register rs1 into integer register rd.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        170,
+        181
+      ]
+    },
+    {
+      "text": "It is encoded in the OP-FP major opcode with funct3=0, rs2=1, and funct7=1110011.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        170,
+        181
+      ]
+    },
+    {
+      "text": "For RV64 only, if the Q extension is implemented, the FMVP.Q.X instruction moves a double-precision number from a pair of integer registers into a floating-point register.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        170,
+        181
+      ]
+    },
+    {
+      "text": "Integer registers rs1 and rs2 supply bits 63:0 and 127:64, respectively; the result is written to floating-point register rd. FMVP.Q.X is encoded in the OP-FP major opcode with funct3=0 and funct7=1011011.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Move Instructions",
+      "line_range": [
+        170,
+        181
+      ]
+    },
+    {
+      "text": "The FLEQ.S and FLTQ.S instructions are defined like the FLE.S and FLT.S instructions, except that quiet NaN inputs do not cause the invalid operation exception flag to be set.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Comparison Instructions",
+      "line_range": [
+        185,
+        188
+      ]
+    },
+    {
+      "text": "If the D extension is implemented, FLEQ.D and FLTQ.D instructions are analogously defined to operate on double-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Comparison Instructions",
+      "line_range": [
+        190,
+        192
+      ]
+    },
+    {
+      "text": "If the Zfh extension is implemented, FLEQ.H and FLTQ.H instructions are analogously defined to operate on half-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Comparison Instructions",
+      "line_range": [
+        194,
+        196
+      ]
+    },
+    {
+      "text": "If the Q extension is implemented, FLEQ.Q and FLTQ.Q instructions are analogously defined to operate on quad-precision numbers.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Comparison Instructions",
+      "line_range": [
+        198,
+        200
+      ]
+    },
+    {
+      "text": "These instructions are encoded like their FLE and FLT counterparts, but with instruction bit 14 set to 1.",
+      "section": "Preamble > \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0 > Load-Immediate Instructions > Comparison Instructions",
+      "line_range": [
+        202,
+        203
+      ]
+    }
+  ]
+}

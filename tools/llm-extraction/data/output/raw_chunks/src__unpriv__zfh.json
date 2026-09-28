@@ -1,0 +1,174 @@
+{
+  "source_file": "src/unpriv/zfh.adoc",
+  "total": 21,
+  "sentences": [
+    {
+      "text": "This chapter describes the Zfh standard extension for half-precision floating-point, which adds computational instructions compliant with the IEEE 754-2008 arithmetic standard's binary16 format and operations.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "The Zfh extension depends on the F extension.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "The NaN-boxing scheme described in is extended to allow a half-precision value to be NaN-boxed inside a single-precision value (which may be recursively NaN-boxed inside a double- or quad-precision value when the D or Q extension is present).",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions",
+      "line_range": [
+        13,
+        15
+      ]
+    },
+    {
+      "text": "FLH and FSH are only guaranteed to execute atomically if the effective address is naturally aligned.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions",
+      "line_range": [
+        21,
+        23
+      ]
+    },
+    {
+      "text": "FLH and FSH do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved. FLH NaN-boxes the result written to rd, whereas FSH ignores all but the lower 16 bits in rs2.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions",
+      "line_range": [
+        25,
+        28
+      ]
+    },
+    {
+      "text": "A new supported format is added to the format field of most instructions, as shown in .",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Computational Instructions",
+      "line_range": [
+        32,
+        33
+      ]
+    },
+    {
+      "text": ".Format field encoding. | |fmt field |Mnemonic |Meaning |00 |S |32-bit single-precision |01 |D |64-bit double-precision |10 |H |16-bit half-precision |11 |Q |128-bit quad-precision |",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Computational Instructions",
+      "line_range": [
+        35,
+        44
+      ]
+    },
+    {
+      "text": "The half-precision floating-point computational instructions are defined analogously to their single-precision counterparts, but operate on half-precision operands and produce half-precision results.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Computational Instructions",
+      "line_range": [
+        46,
+        49
+      ]
+    },
+    {
+      "text": "New floating-point-to-integer and integer-to-floating-point conversion instructions are added.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "These instructions are defined analogously to the single-precision-to-integer and integer-to-single-precision conversion instructions. FCVT.W.H or FCVT.L.H converts a half-precision floating-point number to a signed 32-bit or 64-bit integer, respectively. FCVT.H.W or FCVT.H.L converts a 32-bit or 64-bit signed integer, respectively, into a half-precision floating-point number. FCVT.WU.H, FCVT.LU.H, FCVT.H.WU, and FCVT.H.LU variants convert to or from unsigned integer values. FCVT.L[U].H and FCVT.H.L[U] are RV64-only instructions.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "New floating-point-to-floating-point conversion instructions are added.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        71,
+        81
+      ]
+    },
+    {
+      "text": "These instructions are defined analogously to the double-precision floating-point-to-floating-point conversion instructions. FCVT.S.H or FCVT.H.S converts a half-precision floating-point number to a single-precision floating-point number, or vice-versa, respectively.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        71,
+        81
+      ]
+    },
+    {
+      "text": "If the D extension is present, FCVT.D.H or FCVT.H.D converts a half-precision floating-point number to a double-precision floating-point number, or vice-versa, respectively.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        71,
+        81
+      ]
+    },
+    {
+      "text": "If the Q extension is present, FCVT.Q.H or FCVT.H.Q converts a half-precision floating-point number to a quad-precision floating-point number, or vice-versa, respectively.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        71,
+        81
+      ]
+    },
+    {
+      "text": "Floating-point to floating-point sign-injection instructions, FSGNJ.H, FSGNJN.H, and FSGNJX.H are defined analogously to the single-precision sign-injection instruction.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        86,
+        89
+      ]
+    },
+    {
+      "text": "Instructions are provided to move bit patterns between the floating-point and integer registers. FMV.X.H moves the half-precision value in floating-point register rs1 to a representation in the IEEE 754-2008 encoding in integer register rd, filling the upper XLEN-16 bits with copies of the floating-point number's sign bit.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        94,
+        99
+      ]
+    },
+    {
+      "text": "FMV.H.X moves the half-precision value encoded in the IEEE 754-2008 encoding from the lower 16 bits of integer register rs1 to the floating-point register rd, NaN-boxing the result.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        101,
+        104
+      ]
+    },
+    {
+      "text": "FMV.X.H and FMV.H.X do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Conversion and Move Instructions",
+      "line_range": [
+        106,
+        108
+      ]
+    },
+    {
+      "text": "The half-precision floating-point compare instructions are defined analogously to their single-precision counterparts, but operate on half-precision operands.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Floating-Point Compare Instructions",
+      "line_range": [
+        115,
+        118
+      ]
+    },
+    {
+      "text": "The half-precision floating-point classify instruction, FCLASS.H, is defined analogously to its single-precision counterpart, but operates on half-precision operands.",
+      "section": "Preamble > `Zfh` Extension for Half-Precision Floating-Point > Half-Precision Load and Store Instructions > Half-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        125,
+        128
+      ]
+    }
+  ]
+}

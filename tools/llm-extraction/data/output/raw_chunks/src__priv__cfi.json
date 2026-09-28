@@ -1,0 +1,558 @@
+{
+  "source_file": "src/priv/cfi.adoc",
+  "total": 69,
+  "sentences": [
+    {
+      "text": "Control-flow Integrity (CFI) capabilities help defend against Return-Oriented Programming (ROP) and Call/Jump-Oriented Programming (COP/JOP) style control-flow subversion attacks.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The Zicfiss and Zicfilp extensions provide backward-edge and forward-edge control flow integrity respectively.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "Please see the Control-flow Integrity chapter of the Unprivileged ISA specification for further details on these CFI capabilities and the associated Unprivileged ISA.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "This section specifies the Privileged ISA for the Zicfilp extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        13,
+        13
+      ]
+    },
+    {
+      "text": "The term `xLPE` is used to determine if forward-edge CFI using landing pads provided by the Zicfilp extension is enabled at a privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State",
+      "line_range": [
+        18,
+        19
+      ]
+    },
+    {
+      "text": "When S-mode is implemented, it is determined as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": ".`xLPE` determination when S-mode is implemented [width=100%] | |Privilege Mode| xLPE | M | `mseccfg.MLPE` | S or HS | `menvcfg.LPE` | VS | `henvcfg.LPE` | U or VU | `senvcfg.LPE` |",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State",
+      "line_range": [
+        23,
+        32
+      ]
+    },
+    {
+      "text": "When S-mode is not implemented, it is determined as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State",
+      "line_range": [
+        34,
+        34
+      ]
+    },
+    {
+      "text": ".`xLPE` determination when S-mode is not implemented [width=100%] | |Privilege Mode| xLPE | M | `mseccfg.MLPE` | U | `menvcfg.LPE` |",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State",
+      "line_range": [
+        36,
+        43
+      ]
+    },
+    {
+      "text": "A trap may need to be delivered to the same or to a higher privilege mode upon completion of `JALR`/`C.JALR`/`C.JR`, but before the instruction at the target of indirect call/jump was decoded, due to:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        50,
+        52
+      ]
+    },
+    {
+      "text": "Asynchronous interrupts. * Synchronous exceptions with priority higher than that of a software-check exception with `xtval` set to \"landing pad fault (code=2)\" (See of Privileged Specification).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        54,
+        57
+      ]
+    },
+    {
+      "text": "The software-check exception caused by Zicfilp has higher priority than an illegal-instruction exception but lower priority than instruction access-fault.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        59,
+        61
+      ]
+    },
+    {
+      "text": "The software-check exception due to the instruction not being an `LPAD` instruction when `ELP` is `LPEXPECTED` or a software-check exception caused by the `LPAD` instruction itself leads to a trap being delivered to the same or to a higher privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        63,
+        67
+      ]
+    },
+    {
+      "text": "In such cases, the `ELP` prior to the trap, the previous `ELP`, must be preserved by the trap delivery such that it can be restored on a return from the trap.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "To store the previous `ELP` state on trap delivery to M-mode, an `MPELP` bit is provided in the `mstatus` CSR.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "To store the previous `ELP` state on trap delivery to S/HS-mode, an `SPELP` bit is provided in the `mstatus` CSR.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "The `SPELP` bit in `mstatus` can be accessed through the `sstatus` CSR.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "To store the previous `ELP` state on traps to VS-mode, a `SPELP` bit is defined in the `vsstatus` (VS-modes version of `sstatus`).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "To store the previous `ELP` state on transition to Debug Mode, a `pelp` bit is defined in the `dcsr` register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        69,
+        77
+      ]
+    },
+    {
+      "text": "When a trap is taken into privilege mode `x`, the `xPELP` is set to `ELP` and `ELP` is set to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        79,
+        81
+      ]
+    },
+    {
+      "text": "An `MRET` or `SRET` instruction is used to return from a trap in M-mode or S-mode, respectively.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        83,
+        88
+      ]
+    },
+    {
+      "text": "When executing an `xRET` instruction, if the new privilege mode is `y`, then `ELP` is set to the value of `xPELP` if `yLPE` (see ) is 1; otherwise, it is set to `NOLPEXPECTED`; `xPELP` is set to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        83,
+        88
+      ]
+    },
+    {
+      "text": "Upon entry into Debug Mode, the `pelp` bit in `dcsr` is updated with the `ELP` at the privilege level the hart was previously in, and the `ELP` is set to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        90,
+        95
+      ]
+    },
+    {
+      "text": "When a hart resumes from Debug Mode, if the new privilege mode is `y`, then `ELP` is set to the value of `pelp` if `yLPE` (see ) is 1; otherwise, it is set to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        90,
+        95
+      ]
+    },
+    {
+      "text": "See also for semantics added to the RNMI trap and the MNRET instruction when this extension is implemented.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing-Pad-Enabled (LPE) State > Preserving Expected Landing Pad State on Traps",
+      "line_range": [
+        97,
+        98
+      ]
+    },
+    {
+      "text": "This section specifies the Privileged ISA for the Zicfiss extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        105,
+        105
+      ]
+    },
+    {
+      "text": "Attempts to access the `ssp` CSR may result in either an illegal-instruction exception or a virtual-instruction exception, contingent upon the state of the *x*`envcfg.SSE` fields.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        109,
+        112
+      ]
+    },
+    {
+      "text": "The conditions are specified as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        109,
+        112
+      ]
+    },
+    {
+      "text": "If the privilege mode is less than M and `menvcfg.SSE` is 0, an illegal-instruction exception is raised. *",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        114,
+        122
+      ]
+    },
+    {
+      "text": "Otherwise, if in U-mode and `senvcfg.SSE` is 0, an illegal-instruction exception is raised. *",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        114,
+        122
+      ]
+    },
+    {
+      "text": "Otherwise, if in VS-mode and `henvcfg.SSE` is 0, a virtual-instruction exception is raised. *",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        114,
+        122
+      ]
+    },
+    {
+      "text": "Otherwise, if in VU-mode and either `henvcfg.SSE` or `senvcfg.SSE` is 0, a virtual-instruction exception is raised. *",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        114,
+        122
+      ]
+    },
+    {
+      "text": "Otherwise, the access is allowed.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`) CSR access control",
+      "line_range": [
+        114,
+        122
+      ]
+    },
+    {
+      "text": "The term `xSSE` is used to determine if backward-edge CFI using shadow stacks provided by the Zicfiss extension is enabled at a privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow-Stack-Enabled (SSE) State",
+      "line_range": [
+        126,
+        127
+      ]
+    },
+    {
+      "text": "When S-mode is implemented, it is determined as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow-Stack-Enabled (SSE) State",
+      "line_range": [
+        129,
+        129
+      ]
+    },
+    {
+      "text": ".`xSSE` determination when S-mode is implemented [width=100%] | |Privilege Mode| `xSSE` | M | `0` | S or HS | `menvcfg.SSE` | VS | `henvcfg.SSE` | U or VU | `senvcfg.SSE` |",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow-Stack-Enabled (SSE) State",
+      "line_range": [
+        131,
+        140
+      ]
+    },
+    {
+      "text": "When S-mode is not implemented, then `xSSE` is 0 at both M and U privilege modes.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow-Stack-Enabled (SSE) State",
+      "line_range": [
+        142,
+        143
+      ]
+    },
+    {
+      "text": "NOTE: Changes to `xSSE` take effect immediately; address-translation caches need not be synchronized with SFENCE.VMA, HFENCE.GVMA, or HFENCE.VVMA instructions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow-Stack-Enabled (SSE) State",
+      "line_range": [
+        145,
+        147
+      ]
+    },
+    {
+      "text": "To protect shadow stack memory, the memory is associated with a new page type – the Shadow Stack (SS) page – in the single-stage and VS-stage page tables.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        153,
+        157
+      ]
+    },
+    {
+      "text": "The encoding `R=0`, `W=1`, and `X=0`, is defined to represent an SS page.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        153,
+        157
+      ]
+    },
+    {
+      "text": "When `menvcfg.SSE=0`, this encoding remains reserved.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        153,
+        157
+      ]
+    },
+    {
+      "text": "Similarly, when `V=1` and `henvcfg.SSE=0`, this encoding remains reserved at `VS` and `VU` levels.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        153,
+        157
+      ]
+    },
+    {
+      "text": "If `satp.MODE` (or `vsatp.MODE` when `V=1`) is set to `Bare` and the effective privilege mode is less than M, shadow stack instructions raise a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "When the effective privilege mode is M, memory access by an `SSAMOSWAP.W/D` instruction results in a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "Memory mapped as an SS page cannot be written to by instructions other than `SSAMOSWAP.W/D`, `SSPUSH`, and `C.SSPUSH`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "Attempts will raise a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "Access to a SS page using cache-block operation (`CBO.*`) instructions is not permitted.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "Such accesses will raise a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "Implicit accesses, including instruction fetches to an SS page, are not permitted.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "Such accesses will raise an access-fault exception appropriate to the access type.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "However, the shadow stack is readable by all instructions that only load from memory.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        164,
+        171
+      ]
+    },
+    {
+      "text": "If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        173,
+        180
+      ]
+    },
+    {
+      "text": "For shadow stack instructions, the reported instruction type is always as though it were a store or AMO, even for instructions `SSPOPCHK` and `C.SSPOPCHK` that only read from memory and do not write to it.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        173,
+        180
+      ]
+    },
+    {
+      "text": "Shadow stack instructions are restricted to accessing shadow stack (`pte.xwr=010b`) pages.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        182,
+        187
+      ]
+    },
+    {
+      "text": "Should a shadow stack instruction access a page that is not designated as a shadow stack page and is not marked as read-only (`pte.xwr=001`), a store/AMO access-fault exception will be invoked.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        182,
+        187
+      ]
+    },
+    {
+      "text": "Conversely, if the page being accessed by a shadow stack instruction is a read-only page, a store/AMO page-fault exception will be triggered.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        182,
+        187
+      ]
+    },
+    {
+      "text": "If the virtual address in `ssp` is not `XLEN` aligned, then the `SSPUSH`/ `C.SSPUSH`/`SSPOPCHK`/`C.SSPOPCHK` instructions cause a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        191,
+        194
+      ]
+    },
+    {
+      "text": "Correct execution of shadow stack instructions that access memory requires the the accessed memory to be idempotent.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        196,
+        199
+      ]
+    },
+    {
+      "text": "If the memory referenced by `SSPUSH`/`C.SSPUSH`/`SSPOPCHK`/`C.SSPOPCHK`/`SSAMOSWAP.W/D` instructions is not idempotent, then the instructions cause a store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        196,
+        199
+      ]
+    },
+    {
+      "text": "The `U` and `SUM` bit enforcement is performed normally for shadow stack instruction initiated memory accesses.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        201,
+        204
+      ]
+    },
+    {
+      "text": "The state of the `MXR` bit does not affect read access to a shadow stack page as the shadow stack page is always readable by all instructions that load from memory.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        201,
+        204
+      ]
+    },
+    {
+      "text": "The G-stage address translation and protections remain unaffected by the Zicfiss extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "The `xwr 010b` encoding in the G-stage PTE remains reserved.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "When G-stage page tables are active, the shadow stack instructions that access memory require the G-stage page table to have read-write permission for the accessed memory; else a store/AMO guest-page-fault exception is raised.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "Svpbmt and Svnapot extensions are supported for shadow stack pages.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        212,
+        212
+      ]
+    },
+    {
+      "text": "The PMA checks are extended to require memory referenced by shadow stack instructions to be idempotent.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        214,
+        218
+      ]
+    },
+    {
+      "text": "The PMP checks are extended to require read-write permission for memory accessed by shadow stack instructions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        214,
+        218
+      ]
+    },
+    {
+      "text": "If the PMP does not provide read-write permissions or if the accessed memory is not idempotent then a store/AMO access-fault exception is raised.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        214,
+        218
+      ]
+    },
+    {
+      "text": "The `SSAMOSWAP.W/D` instructions require the PMA of the accessed memory range to provide AMOSwap level support.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Memory Protection",
+      "line_range": [
+        220,
+        221
+      ]
+    }
+  ]
+}

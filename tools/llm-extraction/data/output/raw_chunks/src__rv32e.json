@@ -1,0 +1,46 @@
+{
+  "source_file": "src/rv32e.adoc",
+  "total": 5,
+  "sentences": [
+    {
+      "text": "This chapter describes the RV32E and RV64E base integer instruction sets, designed for microcontrollers in embedded systems. RV32E and RV64E are reduced versions of RV32I and RV64I, respectively: the only change is to reduce the number of integer registers to 16.",
+      "section": "Preamble > RV32E and RV64E Base Integer Instruction Sets, Version 2.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "This chapter only outlines the differences between RV32E/RV64E and RV32I/RV64I, and so should be read after and .",
+      "section": "Preamble > RV32E and RV64E Base Integer Instruction Sets, Version 2.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "RV32E and RV64E reduce the integer register count to 16 general-purpose registers, (`x0-x15`), where `x0` is a dedicated zero register.",
+      "section": "Preamble > RV32E and RV64E Base Integer Instruction Sets, Version 2.0 > RV32E and RV64E Programmers’ Model",
+      "line_range": [
+        11,
+        12
+      ]
+    },
+    {
+      "text": "RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that only registers `x0-x15` are provided.",
+      "section": "Preamble > RV32E and RV64E Base Integer Instruction Sets, Version 2.0 > RV32E and RV64E Instruction Set Encoding",
+      "line_range": [
+        15,
+        19
+      ]
+    },
+    {
+      "text": "All encodings specifying the other registers `x16-x31` are reserved.",
+      "section": "Preamble > RV32E and RV64E Base Integer Instruction Sets, Version 2.0 > RV32E and RV64E Instruction Set Encoding",
+      "line_range": [
+        15,
+        19
+      ]
+    }
+  ]
+}

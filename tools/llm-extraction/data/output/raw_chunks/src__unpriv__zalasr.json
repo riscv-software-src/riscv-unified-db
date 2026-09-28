@@ -1,0 +1,270 @@
+{
+  "source_file": "src/unpriv/zalasr.adoc",
+  "total": 33,
+  "sentences": [
+    {
+      "text": "The Zalasr (Load-Acquire and Store-Release) extension provides load-acquire and store-release instructions in RISC-V.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        2,
+        5
+      ]
+    },
+    {
+      "text": "These can be important for high performance designs by enabling finer-grained synchronisation than is possible with fences alone, by providing a unidirectional fence.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        2,
+        5
+      ]
+    },
+    {
+      "text": "Load-acquire and store-release are widely used in language-level memory models: both the Java and {cpp} memory models make use of acquire-release semantics, and {cpp}'s `atomic` provides primitives that are meant to map directly to load-acquire and store-release instructions.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        2,
+        5
+      ]
+    },
+    {
+      "text": "The Zalasr extension builds on the atomic support provided by the Zaamo (Atomic Memory Operations), Zalrsc (Load-Reserved and Store-Conditional), and Zabha (Byte and Halfword Atomic Memory Operations) extensions by providing additional atomic operations (although it can be implemented independently of them).",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "All of the AMO operations in Zaamo (and Zabha) are read-modify-write operations that both load and store.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "The Zalrsc extension provides operations that are only loads or stores.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "However, since it is designed to perform an atomic operation on a single memory word or doubleword, the loads and stores are designed to be paired.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "The load-reserved implies that a future store-conditional will follow while store-conditional requires that there was a previous load-reserved without other intervening loads or stores.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "Therefore, the Zalrsc extension does not provide a general atomic and ordered load or store.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        7,
+        12
+      ]
+    },
+    {
+      "text": "Zalasr fills this gap by offering truly standalone atomic and ordered loads and stores.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        14,
+        16
+      ]
+    },
+    {
+      "text": "The Zalasr instructions are atomic loads and stores that support ordering annotations.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        14,
+        16
+      ]
+    },
+    {
+      "text": "With the combination of Zaamo, Zabha, and Zalasr all {cpp} atomic operations can be supported with single instructions.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+      "line_range": [
+        14,
+        16
+      ]
+    },
+    {
+      "text": "The Zalasr instructions always sign-extend the value placed in rd and ignore the upper bits of the value of rs2.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        20,
+        23
+      ]
+    },
+    {
+      "text": "The instructions in the Zalasr extension require that the address held in rs1 be naturally aligned to the size in bytes (2^width^) of the operand.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        20,
+        23
+      ]
+    },
+    {
+      "text": "If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        20,
+        23
+      ]
+    },
+    {
+      "text": "The access-fault exception can be generated for a memory access that would otherwise be able to complete except for the misalignment, if the misaligned access should not be emulated.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        20,
+        23
+      ]
+    },
+    {
+      "text": "The misaligned atomicity granule PMA, defined in , optionally relaxes this alignment requirement.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        25,
+        26
+      ]
+    },
+    {
+      "text": "If all accessed bytes lie within the same misaligned atomicity granule, the instruction will not raise an exception for reasons of address alignment, and the instruction will give rise to only one memory operation for the purposes of RVWMO—i.e., it will execute atomically.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        25,
+        26
+      ]
+    },
+    {
+      "text": "[insns-ldatomic,reftext=\"Load Acquire\"]",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions",
+      "line_range": [
+        30,
+        30
+      ]
+    },
+    {
+      "text": "Synopsis:: The load-acquire instruction atomically loads a 2^width^-byte value from the address in rs1 and places the sign-extended value into the register rd, subject to the ordering annotations specified in the instruction.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        33,
+        34
+      ]
+    },
+    {
+      "text": "Mnemonic:: lb.{aq,aqrl} rd, (rs1)",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        36,
+        38
+      ]
+    },
+    {
+      "text": "ld.{aq,aqrl} rd, (rs1) Encoding:: [wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr: ['7', 'AMO'], type: 8}, {bits: 5, name: 'rd', attr: ['5', 'dest'], type: 2}, {bits: 3, name: 'funct3', attr: ['3', 'width'], type: 8}, {bits: 5, name: 'rs1', attr: ['5', 'addr'], type: 4}, {bits: 5, name: 'rs2', attr: ['5', '0'], type: 4}, {bits: 1, name: 'rl', attr: ['1', 'ring'], type: 8}, {bits: 1, name: 'aq', attr: ['1', 'orde', '1'], type: 8}, {bits: 5, name: 'funct5', attr: ['5', 'Load Acquire', '00110'], type: 8}, ]} ....",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        44,
+        60
+      ]
+    },
+    {
+      "text": "This instruction loads 2^width^ bytes of memory from rs1 atomically and writes the result into rd.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        64,
+        70
+      ]
+    },
+    {
+      "text": "If the size (2^width+3^) is less than XLEN, it is sign-extended to fill the destination register.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        64,
+        70
+      ]
+    },
+    {
+      "text": "This load must have the ordering annotation aq and may have ordering annotation rl encoded in the instruction.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        64,
+        70
+      ]
+    },
+    {
+      "text": "The instruction always has an \"acquire-RCsc\" annotation, and if the bit rl is set the instruction has a \"release-RCsc\" annotation. + The versions without the aq bit set are RESERVED. LD.{AQ, AQRL} is RV64-only.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        64,
+        70
+      ]
+    },
+    {
+      "text": "[insns-sdatomic,reftext=\"Store Release\"]",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Load Acquire",
+      "line_range": [
+        74,
+        74
+      ]
+    },
+    {
+      "text": "Synopsis:: The store-release instruction atomically stores the 2^width^-byte value from the low bits of register rs2 to the address in rs1, subject to the ordering annotations specified in the instruction.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        78,
+        79
+      ]
+    },
+    {
+      "text": "Mnemonic:: sb.{rl,aqrl} rs2, (rs1)",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        81,
+        83
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr: ['7', 'AMO'], type: 8}, {bits: 5, name: 'rd', attr: ['5', '0'], type: 2}, {bits: 3, name: 'funct3', attr: ['3', 'width'], type: 8}, {bits: 5, name: 'rs1', attr: ['5', 'addr'], type: 4}, {bits: 5, name: 'rs2', attr: ['5', 'src'], type: 4}, {bits: 1, name: 'rl', attr: ['1', 'ring', '1'], type: 8}, {bits: 1, name: 'aq', attr: ['1', 'orde'], type: 8}, {bits: 5, name: 'funct5', attr: ['5', 'Store Release', '00111'], type: 8}, ]} ....",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        92,
+        106
+      ]
+    },
+    {
+      "text": "This instruction stores 2^width^ bytes of memory from rs1 atomically.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        110,
+        115
+      ]
+    },
+    {
+      "text": "This store must have ordering annotation rl and may have ordering annotation aq encoded in the instruction.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        110,
+        115
+      ]
+    },
+    {
+      "text": "The instruction always has an \"release-RCsc\" annotation, and if the bit aq is set the instruction has a \"acquire-RCsc\" annotation. + The versions without the rl bit set are RESERVED. SD.{RL, AQRL} is RV64-only.",
+      "section": "Preamble > \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0 > Load-Acquire and Store-Release Instructions > Store Release",
+      "line_range": [
+        110,
+        115
+      ]
+    }
+  ]
+}

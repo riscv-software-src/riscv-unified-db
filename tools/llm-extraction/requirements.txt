@@ -1,0 +1,12 @@
+# requirements.txt — RISC-V UDB LLM-extraction pipeline
+# Pin minor versions for reproducibility; bump deliberately on dependency audits.
+# pathlib is part of the Python 3.4+ standard library — no install needed.
+
+ruamel.yaml
+pyyaml
+tqdm
+chromadb
+sentence-transformers
+rich
+pandas
+

@@ -1,0 +1,606 @@
+{
+  "source_file": "src/priv/preface.adoc",
+  "total": 75,
+  "sentences": [
+    {
+      "text": "[colophon] // Had to make the above a level 1 heading (two equals signs) to avoid error when building // the ISA manual as a book with other \"parts\".",
+      "section": "Preamble",
+      "line_range": [
+        1,
+        8
+      ]
+    },
+    {
+      "text": "This is opposite to what the adoc says to do // but otherwise asciidoctor creates the error message: // // asciidoctor: ERROR: ext/riscv-isa-manual/src/priv-preface.adoc: line 2: invalid part, must have at least one section (e.g., chapter, appendix, etc.) // // See asciidoctor doc which seems wrong: https://docs.asciidoctor.org/asciidoc/latest/sections/colophon/",
+      "section": "Preamble",
+      "line_range": [
+        1,
+        8
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "It contains the following versions of the RISC-V ISA modules, all of which have been ratified:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "| |Privilege Level |Version |*Machine* |*1.13* |*Supervisor* |*1.13*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "|*Smstateen/Ssstateen* |*1.0* |*Smcsrind/Sscsrind* |*1.0* |*Smepmp* |*1.0* |*Smcntrpmf* |*1.0* |*Smrnmi* |*1.0* |*Smcdeleg/Ssccfg* |*1.0* |*Smdbltrp* |*1.0* |*Smctr* |*1.0* |*Control-flow Integrity* |*1.0* |*Pointer Masking* |*1.0*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        22,
+        31
+      ]
+    },
+    {
+      "text": "|*Svade* |*1.0* |*Svnapot* |*1.0* |*Svpbmt* |*1.0* |*Svadu* |*1.0* |*Svinval* |*1.0* |*Svvptc* |*1.0* |*Svrsw60t59b* |*1.0*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        33,
+        39
+      ]
+    },
+    {
+      "text": "|*Ssqosid* |*1.0* |*Ssu64xl* |*1.0* |*Ssccptr* |*1.0* |*Sstvecd* |*1.0* |*Sstvala* |*1.0* |*Sscounterenw* |*1.0* |*Ssstrict* |*1.0* |*Sstc* |*1.0* |*Sscofpmf* |*1.0* |*Ssdbltrp* |*1.0*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        41,
+        50
+      ]
+    },
+    {
+      "text": "|*H* |*1.0* |*Shlcofideleg* |*1.0* |*Shvstvecd* |*1.0* |*Shcounterenw* |*1.0* |*Shvstvala* |*1.0* |*Shtvala* |*1.0* |*Shvsatpa* |*1.0* |*Shgatpa* |*1.0* |*Sha* |*1.0* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        52,
+        61
+      ]
+    },
+    {
+      "text": "The following changes have been made since version 20260120:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        63,
+        63
+      ]
+    },
+    {
+      "text": "Addition of extensions that have already been ratified as part of the profile specifications.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        65,
+        66
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 20260120*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        68,
+        68
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        70,
+        72
+      ]
+    },
+    {
+      "text": "It contains the following versions of the RISC-V ISA modules, all of which have been ratified:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        70,
+        72
+      ]
+    },
+    {
+      "text": "| |Module |Version |*Machine ISA* |*1.13* |*Smstateen Extension* |*1.0* |*Smcsrind/Sscsrind Extension* |*1.0* |*Smepmp Extension* |*1.0* |*Smcntrpmf Extension* |*1.0* |*Smrnmi Extension* |*1.0* |*Smcdeleg Extension* |*1.0* |*Smdbltrp Extension* |*1.0* |*Smctr Extension* |*1.0* |*Supervisor ISA* |*1.13* |*Svade Extension* |*1.0* |*Svnapot Extension* |*1.0* |*Svpbmt Extension* |*1.0* |*Svinval Extension* |*1.0* |*Svadu Extension* |*1.0* |*Svvptc Extension* |*1.0* |*Ssqosid Extension* |*1.0* |*Sstc Extension* |*1.0* |*Sscofpmf Extension* |*1.0* |*Ssdbltrp Extension* |*1.0* |*Hypervisor ISA* |*1.0* |*Shlcofideleg Extension* |*1.0* |*Svvptc Extension* |*1.0* |*Pointer-Masking Extensions* |*1.0* |*Svrsw60t59b Extension* |*1.0* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        74,
+        102
+      ]
+    },
+    {
+      "text": "The following changes have been made since version 20250508:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        104,
+        104
+      ]
+    },
+    {
+      "text": "Addition of the Svrsw60t59b extension for additional PTE reserved-for-software bits.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        106,
+        106
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 20250508*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        108,
+        108
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        110,
+        110
+      ]
+    },
+    {
+      "text": "The ISA modules marked *Ratified* have been ratified at this time.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        112,
+        115
+      ]
+    },
+    {
+      "text": "The modules marked Frozen are not expected to change significantly before being put up for ratification.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        112,
+        115
+      ]
+    },
+    {
+      "text": "The modules marked Draft are expected to change before ratification.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        112,
+        115
+      ]
+    },
+    {
+      "text": "The document contains the following versions of the RISC-V ISA modules:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        117,
+        117
+      ]
+    },
+    {
+      "text": "| |Module |Version |Status |*Machine ISA* |*1.13* |*Ratified* |*Smstateen Extension* |*1.0* |*Ratified* |*Smcsrind/Sscsrind Extension* |*1.0* |*Ratified* |*Smepmp Extension* |*1.0* |*Ratified* |*Smcntrpmf Extension* |*1.0* |*Ratified* |*Smrnmi Extension* |*1.0* |*Ratified* |*Smcdeleg Extension* |*1.0* |*Ratified* |*Smdbltrp Extension* |*1.0* |*Ratified* |*Smctr Extension* |*1.0* |*Ratified* |*Supervisor ISA* |*1.13* |*Ratified* |*Svade Extension* |*1.0* |*Ratified* |*Svnapot Extension* |*1.0* |*Ratified* |*Svpbmt Extension* |*1.0* |*Ratified* |*Svinval Extension* |*1.0* |*Ratified* |*Svadu Extension* |*1.0* |*Ratified* |*Svvptc Extension* |*1.0* |*Ratified* |*Ssqosid Extension* |*1.0* |*Ratified* |*Sstc Extension* |*1.0* |*Ratified* |*Sscofpmf Extension* |*1.0* |*Ratified* |*Ssdbltrp Extension* |*1.0* |*Ratified* |*Hypervisor ISA* |*1.0* |*Ratified* |*Shlcofideleg Extension* |*1.0* |*Ratified* |*Svvptc Extension* |*1.0* |*Ratified* |*Pointer-Masking Extensions* |*1.0* |*Ratified* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        119,
+        146
+      ]
+    },
+    {
+      "text": "The following changes have been made since version 20241101:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        148,
+        148
+      ]
+    },
+    {
+      "text": "Addition of the Smctr Control Transfer Records extension. * Addition of the Svvptc Extension for Obviating Memory-Management Instructions after Marking PTEs Valid. * Addition of the Ssqosid Extension for Quality-of-Service Identifiers. * Addition of the Pointer-Masking Extensions.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        150,
+        153
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 20241101*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        155,
+        155
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        157,
+        157
+      ]
+    },
+    {
+      "text": "The ISA modules marked *Ratified* have been ratified at this time.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "The modules marked Frozen are not expected to change significantly before being put up for ratification.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "The modules marked Draft are expected to change before ratification.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        159,
+        162
+      ]
+    },
+    {
+      "text": "The document contains the following versions of the RISC-V ISA modules:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        164,
+        164
+      ]
+    },
+    {
+      "text": "| |Module |Version |Status |*Machine ISA* |*1.13* |*Ratified* |*Smstateen Extension* |*1.0* |*Ratified* |*Smcsrind/Sscsrind Extension* |*1.0* |*Ratified* |*Smepmp Extension* |*1.0* |*Ratified* |*Smcntrpmf Extension* |*1.0* |*Ratified* |*Smrnmi Extension* |*1.0* |*Ratified* |*Smcdeleg Extension* |*1.0* |*Ratified* |*Smdbltrp Extension* |*1.0* |*Ratified* |*Supervisor ISA* |*1.13* |*Ratified* |*Svade Extension* |*1.0* |*Ratified* |*Svnapot Extension* |*1.0* |*Ratified* |*Svpbmt Extension* |*1.0* |*Ratified* |*Svinval Extension* |*1.0* |*Ratified* |*Svadu Extension* |*1.0* |*Ratified* |*Sstc Extension* |*1.0* |*Ratified* |*Sscofpmf Extension* |*1.0* |*Ratified* |*Ssdbltrp Extension* |*1.0* |*Ratified* |*Ssqosid Extension* |*1.0* |*Ratified* |*Hypervisor ISA* |*1.0* |*Ratified* |*Shlcofideleg Extension* |*1.0* |*Ratified* |*Svvptc Extension* |*1.0* |*Ratified* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        166,
+        190
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 20241017*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        192,
+        192
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        194,
+        196
+      ]
+    },
+    {
+      "text": "This release, version 20241017, contains the following versions of the RISC-V ISA modules:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        194,
+        196
+      ]
+    },
+    {
+      "text": "| |Module |Version |Status |*Machine ISA* |*1.13* |*Ratified* |*Smstateen Extension* |*1.0* |*Ratified* |*Smcsrind/Sscsrind Extension* |*1.0* |*Ratified* |*Smepmp* |*1.0* |*Ratified* |*Smcntrpmf* |*1.0* |*Ratified* |*Smrnmi Extension* |*1.0* |*Ratified* |*Smcdeleg* |*1.0* |*Ratified* |*Smdbltrp* |*1.0* |*Ratified* |*Supervisor ISA* |*1.13* |*Ratified* |*Svade Extension* |*1.0* |*Ratified* |*Svnapot Extension* |*1.0* |*Ratified* |*Svpbmt Extension* |*1.0* |*Ratified* |*Svinval Extension* |*1.0* |*Ratified* |*Svadu Extension* |*1.0* |*Ratified* |*Sstc* |*1.0* |*Ratified* |*Sscofpmf* |*1.0* |*Ratified* |*Ssdbltrp* |*1.0* |*Ratified* |*Hypervisor ISA* |*1.0* |*Ratified* |*Shlcofideleg* |*1.0* |*Ratified* |*Svvptc* |*1.0* |*Ratified* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        198,
+        221
+      ]
+    },
+    {
+      "text": "The following changes have been made since version 1.12 of the Machine and Supervisor ISAs, which, while not strictly backwards compatible, are not anticipated to cause software portability problems in practice:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        223,
+        225
+      ]
+    },
+    {
+      "text": "Redefined `misa`.MXL to be read-only, making MXLEN a constant. * Added the constraint that SXLEN{ge}UXLEN.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        227,
+        228
+      ]
+    },
+    {
+      "text": "Additionally, the following compatible changes have been made to the Machine and Supervisor ISAs since version 1.12:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        230,
+        231
+      ]
+    },
+    {
+      "text": "Defined the `misa`.B field to reflect that the B extension has been implemented. * Defined the `misa`.V field to reflect that the V extension has been implemented. * Defined the RV32-only `medelegh` and `hedelegh` CSRs. * Defined the misaligned atomicity granule PMA, superseding the proposed Zam extension. * Allocated interrupt 13 for Sscofpmf LCOFI interrupt. * Defined hardware-error and software-check exception codes. * Specified synchronization requirements when changing the PBMTE and ADUE fields in `menvcfg` and `henvcfg`. * Exposed count-overflow interrupts to VS-mode via the Shlcofideleg extension. * Relaxed behavior of some HINTs when MXLEN > XLEN. * Defined the format of the memory-mapped `msip` registers.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        233,
+        246
+      ]
+    },
+    {
+      "text": "Finally, the following clarifications and document improvements have been made since the last document release:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        248,
+        249
+      ]
+    },
+    {
+      "text": "Transliterated the document from LaTeX into AsciiDoc. * Included all ratified extensions through March 2024. * Clarified that \"platform- or custom-use\" interrupts are actually \"platform-use interrupts\", where the platform can choose to make some custom. * Clarified semantics of explicit accesses to CSRs wider than XLEN bits. * Clarified that MXLEN{ge}SXLEN. * Clarified that WFI is not a HINT instruction. * Clarified that VS-stage page-table accesses set G-stage A/D bits. * Clarified ordering rules when PBMT=IO is used on main-memory regions. * Clarified ordering rules for hardware A/D bit updates. * Clarified that, for a given exception cause, `xtval` might sometimes be set to a nonzero value but sometimes not. * Clarified exception behavior of unimplemented or inaccessible CSRs. * Clarified that Svpbmt allows implementations to override additional PMAs. * Replaced the concept of vacant memory regions with inaccessible memory or I/O regions. * Clarified that timer and count-overflow interrupts' arrival in interrupt-pending registers is not immediate. * Clarified that MXR affects only explicit memory accesses.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        251,
+        268
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 20211203*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        270,
+        270
+      ]
+    },
+    {
+      "text": "This document describes the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        272,
+        274
+      ]
+    },
+    {
+      "text": "This release, version 20211203, contains the following versions of the RISC-V ISA modules:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        272,
+        274
+      ]
+    },
+    {
+      "text": "| |Module |Version |Status |*Machine ISA* |*1.12* |*Ratified* |*Supervisor ISA* |*1.12* |*Ratified* |*Svnapot Extension* |*1.0* |*Ratified* |*Svpbmt Extension* |*1.0* |*Ratified* |*Svinval Extension* |*1.0* |*Ratified* |*Hypervisor ISA* |*1.0* |*Ratified* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        276,
+        285
+      ]
+    },
+    {
+      "text": "The following changes have been made since version 1.11, which, while not strictly backwards compatible, are not anticipated to cause software portability problems in practice:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        287,
+        289
+      ]
+    },
+    {
+      "text": "Changed MRET and SRET to clear `mstatus`.MPRV when leaving M-mode. * Reserved additional `satp` patterns for future use. * Stated that the `scause` Exception Code field must implement bits 4–0 at minimum. * Relaxed I/O regions have been specified to follow RVWMO.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        291,
+        305
+      ]
+    },
+    {
+      "text": "The previous specification implied that PPO rules other than fences and acquire/release annotations did not apply. * Constrained the LR/SC reservation set size and shape when using page-based virtual memory. * PMP changes require an SFENCE.VMA on any hart that implements page-based virtual memory, even if VM is not currently enabled. * Allowed for speculative updates of page table entry A bits. * Clarify that if the address-translation algorithm non-speculatively reaches a PTE in which a bit reserved for future standard use is set, a page-fault exception must be raised.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        291,
+        305
+      ]
+    },
+    {
+      "text": "Additionally, the following compatible changes have been made since version 1.11:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        307,
+        308
+      ]
+    },
+    {
+      "text": "Removed the N extension. * Defined the mandatory RV32-only CSR `mstatush`, which contains most of the same fields as the upper 32 bits of RV64’s `mstatus`. * Defined the mandatory CSR `mconfigptr`, which if nonzero contains the address of a configuration data structure. * Defined `mseccfg` and `mseccfgh` CSRs, which control the machine’s security configuration. * Defined `menvcfg`, `henvcfg`, and `senvcfg` CSRs (and RV32-only `menvcfgh` and `henvcfgh` CSRs), which control various characteristics of the execution environment. * Designated part of SYSTEM major opcode for custom use. * Permitted the unconditional delegation of less-privileged interrupts. * Added optional big-endian and bi-endian support. * Made priority of load/store/AMO address-misaligned exceptions implementation-defined relative to load/store/AMO page-fault and access-fault exceptions. * PMP reset values are now platform-defined. * An additional 48 optional PMP registers have been defined. * Slightly relaxed the atomicity requirement for A and D bit updates performed by the implementation. * Clarify the architectural behavior of address-translation caches * Added Sv57 and Sv57x4 address translation modes. * Software breakpoint exceptions are permitted to write either 0 or the `pc` to `xtval`. * Clarified that bare S-mode need not support the SFENCE.VMA instruction. * Specified relaxed constraints for implicit reads of non-idempotent regions. * Added the Svnapot Standard Extension, along with the N bit in Sv39, Sv48, and Sv57 PTEs. * Added the Svpbmt Standard Extension, along with the PBMT bits in Sv39, Sv48, and Sv57 PTEs. * Added the Svinval Standard Extension and associated instructions.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        310,
+        342
+      ]
+    },
+    {
+      "text": "Finally, the hypervisor architecture proposal has been extensively revised.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        344,
+        345
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 1.11*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        347,
+        347
+      ]
+    },
+    {
+      "text": "This is version 1.11 of the RISC-V privileged architecture.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        349,
+        350
+      ]
+    },
+    {
+      "text": "The document contains the following versions of the RISC-V ISA modules:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        349,
+        350
+      ]
+    },
+    {
+      "text": "| |Module |Version |Status |*Machine ISA* |*1.11* |*Ratified* |*Supervisor ISA* |*1.11* |*Ratified* |Hypervisor ISA |0.3 |Draft |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        352,
+        358
+      ]
+    },
+    {
+      "text": "Changes from version 1.10 include:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        360,
+        360
+      ]
+    },
+    {
+      "text": "Moved Machine and Supervisor spec to *Ratified* status. * Improvements to the description and commentary. * Added a draft proposal for a hypervisor extension. * Specified which interrupt sources are reserved for standard use. * Allocated some synchronous exception causes for custom use. * Specified the priority ordering of synchronous exceptions. * Added specification that xRET instructions may, but are not required to, clear LR reservations if A extension present. * The virtual-memory system no longer permits supervisor mode to execute instructions from user pages, regardless of the SUM setting. * Clarified that ASIDs are private to a hart, and added commentary about the possibility of a future global-ASID extension. * SFENCE.VMA semantics have been clarified. * Made the `mstatus`.MPP field *WARL*, rather than *WLRL*. * Made the unused `xip` fields *WPRI*, rather than *WIRI*. * Made the unused `misa` fields *WARL*, rather than *WIRI*. * Made the unused `pmpaddr` and `pmpcfg` fields *WARL*, rather than *WIRI*. * Required all harts in a system to employ the same PTE-update scheme as each other. * Rectified an editing error that misdescribed the mechanism by which `mstatus.xIE` is written upon an exception. * Described scheme for emulating misaligned AMOs. * Specified the behavior of the `misa` and `xepc` registers in systems with variable IALIGN. * Specified the behavior of writing self-contradictory values to the `misa` register. * Defined the `mcountinhibit` CSR, which stops performance counters from incrementing to reduce energy consumption. * Specified semantics for PMP regions coarser than four bytes. * Specified contents of CSRs across XLEN modification. * Moved PLIC chapter into its own document.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        362,
+        392
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 1.10*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        394,
+        394
+      ]
+    },
+    {
+      "text": "This is version 1.10 of the RISC-V privileged architecture proposal.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        396,
+        397
+      ]
+    },
+    {
+      "text": "Changes from version 1.9.1 include:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        396,
+        397
+      ]
+    },
+    {
+      "text": "The previous version of this document was released under a Creative Commons Attribution 4.0 International License by the original authors, and this and future versions of this document will be released under the same license. * The explicit convention on shadow CSR addresses has been removed to reclaim CSR space.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "Shadow CSRs can still be added as needed. * The `mvendorid` register now contains the JEDEC code of the core provider as opposed to a code supplied by the Foundation.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "This avoids redundancy and offloads work from the Foundation. * The interrupt-enable stack discipline has been simplified. * An optional mechanism to change the base ISA used by supervisor and user modes has been added to the `mstatus` CSR, and the field previously called Base in `misa` has been renamed to `MXL` for consistency. * Clarified expected use of XS to summarize additional extension state status fields in `mstatus`. * Optional vectored interrupt support has been added to the `mtvec` and `stvec` CSRs. * The SEIP and UEIP bits in the `mip` CSR have been redefined to support software injection of external interrupts. * The `mbadaddr` register has been subsumed by a more general `mtval` register that can now capture bad instruction bits on an illegal-instruction fault to speed instruction emulation. * The machine-mode base-and-bounds translation and protection schemes have been removed from the specification as part of moving the virtual memory configuration to `sptbr` (now `satp`).",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "Some of the motivation for the base and bound schemes are now covered by the PMP registers, but space remains available in `mstatus` to add these back at a later date if deemed useful. * In systems with only M-mode, or with both M-mode and U-mode but without U-mode trap support, the `medeleg` and `mideleg` registers now do not exist, whereas previously they returned zero. * Virtual-memory page faults now have `mcause` values distinct from physical-memory access faults.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "Page-fault exceptions can now be delegated to S-mode without delegating exceptions generated by PMA and PMP checks. * An optional physical-memory protection (PMP) scheme has been proposed. * The supervisor virtual memory configuration has been moved from the `mstatus` register to the `sptbr` register.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "Accordingly, the `sptbr` register has been renamed to `satp` (Supervisor Address Translation and Protection) to reflect its broadened role. * The SFENCE.VM instruction has been removed in favor of the improved SFENCE.VMA instruction. * The `mstatus` bit MXR has been exposed to S-mode via `sstatus`. * The polarity of the PUM bit in `sstatus` has been inverted to shorten code sequences involving MXR.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "The bit has been renamed to SUM. * Hardware management of page-table entry Accessed and Dirty bits has been made optional; simpler implementations may trap to software to set them. * The counter-enable scheme has changed, so that S-mode can control availability of counters to U-mode. * H-mode has been removed, as we are focusing on recursive virtualization support in S-mode.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "The encoding space has been reserved and may be repurposed at a later date. * A mechanism to improve virtualization performance by trapping S-mode virtual-memory management operations has been added. * The Supervisor Binary Interface (SBI) chapter has been removed, so that it can be maintained as a separate specification.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        399,
+        455
+      ]
+    },
+    {
+      "text": "[.big]*Preface to Version 1.9.1*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        457,
+        457
+      ]
+    },
+    {
+      "text": "This is version 1.9.1 of the RISC-V privileged architecture proposal.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        459,
+        460
+      ]
+    },
+    {
+      "text": "Changes from version 1.9 include:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        459,
+        460
+      ]
+    },
+    {
+      "text": "Numerous additions and improvements to the commentary sections. * Change configuration string proposal to be use a search process that supports various formats including Device Tree String and flattened Device Tree. * Made `misa` optionally writable to support modifying base and supported ISA extensions. CSR address of `misa` changed. * Added description of debug mode and debug CSRs. * Added a hardware performance monitoring scheme.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        462,
+        472
+      ]
+    },
+    {
+      "text": "Simplified the handling of existing hardware counters, removing privileged versions of the counters and the corresponding delta registers. * Fixed description of SPIE in presence of user-level interrupts.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        462,
+        472
+      ]
+    }
+  ]
+}
