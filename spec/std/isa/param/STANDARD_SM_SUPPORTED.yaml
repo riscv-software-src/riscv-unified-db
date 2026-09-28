@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: STANDARD_SM_SUPPORTED
+long_name: |
+  Whether or not a spec-compliant machine mode (`Sm` extension) is implemented
+description: |
+  Indicates whether the implementation provides a machine mode that conforms
+  to the RISC-V privileged specification for the `Sm` extension.
+
+  Options:
+
+    true::
+      Machine mode is implemented in a manner that conforms to the
+      RISC-V privileged specification for the `Sm` extension.
+
+    false::
+      Machine mode is not implemented in a spec-compliant manner.
+      This may indicate a non-conforming or custom machine-mode implementation
+      or no privileged features at all.
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Sm

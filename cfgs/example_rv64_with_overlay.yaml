@@ -305,6 +305,9 @@ params:
   # Whether or not the `misa` CSR returns zero or a non-zero value.
   MISA_CSR_IMPLEMENTED: true
 
+  # Whether or not the standard machine mode (`Sm`) is implemented.
+  STANDARD_SM_SUPPORTED: true
+
   # Whether or not the `mcountinhibit` CSR is implemented.
   MCOUNTINHIBIT_IMPLEMENTED: true
 
