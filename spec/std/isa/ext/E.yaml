@@ -7,6 +7,10 @@ $schema: "ext_schema.json#"
 kind: extension
 name: E
 type: unprivileged
+requirements:
+  not:
+    extension:
+      name: I
 long_name: Base integer ISA with 16 registers (RV32E or RV64E)
 versions:
   - version: "2.0.0"
