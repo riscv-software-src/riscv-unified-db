@@ -1,0 +1,887 @@
+<!--
+Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+SPDX-License-Identifier: BSD-3-Clause-Clear
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC-V Configuration Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@asciidoctor/core@3/dist/browser/asciidoctor.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        button.secondary {
+            background: #95a5a6;
+        }
+
+        button.secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .extension-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .extension-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .extension-item select {
+            width: 120px;
+        }
+
+        .extension-item button {
+            padding: 5px 10px;
+            font-size: 12px;
+            background: #e74c3c;
+        }
+
+        .extension-item button:hover {
+            background: #c0392b;
+        }
+
+        .add-extension {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-extension input {
+            flex: 1;
+        }
+
+        .parameter-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .param-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .param-item label {
+            color: #2c3e50;
+            font-family: monospace;
+        }
+
+        .param-help {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .validation-panel {
+            grid-column: 1 / -1;
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .validation-panel h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .validation-message {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .validation-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .validation-message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .validation-message.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        input.error, select.error, textarea.error {
+            border-color: #e74c3c;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f0f0;
+        }
+
+        .extension-name {
+            font-weight: 500;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RISC-V Configuration Editor</h1>
+            <div class="subtitle">Create and edit fully configured RISC-V architecture configurations</div>
+        </header>
+
+        <div class="toolbar">
+            <button onclick="app.importConfig()">Import YAML</button>
+            <button onclick="app.exportConfig()">Export YAML</button>
+            <button onclick="app.newConfig()" class="secondary">New Config</button>
+            <button onclick="app.validateConfig()" class="secondary">Validate</button>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>Configuration Metadata</h2>
+                <div class="form-group">
+                    <label for="config-name">Name *</label>
+                    <input type="text" id="config-name" placeholder="my-config" oninput="app.updateConfig()">
+                </div>
+                <div class="form-group">
+                    <label for="config-desc">Description *</label>
+                    <textarea id="config-desc" placeholder="Description of this configuration" oninput="app.updateConfig()"></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Implemented Extensions</h2>
+                <div class="add-extension">
+                    <div class="search-box" style="flex: 1;">
+                        <input type="text" id="ext-search" placeholder="Search extensions..."
+                               oninput="app.filterExtensions(this.value)"
+                               onfocus="app.showAutocomplete()"
+                               onblur="app.hideAutocomplete()">
+                        <div id="autocomplete" class="autocomplete-list hidden"></div>
+                    </div>
+                    <button onclick="app.addExtension()">Add</button>
+                </div>
+                <div id="extension-list" class="extension-list"></div>
+            </div>
+
+            <div class="panel" style="grid-column: 1 / -1;">
+                <h2>Parameters</h2>
+                <div id="parameter-list" class="parameter-list"></div>
+            </div>
+        </div>
+
+        <div class="validation-panel">
+            <h3>Validation</h3>
+            <div id="validation-messages"></div>
+        </div>
+    </div>
+
+    <input type="file" id="file-input" accept=".yaml,.yml" style="display: none;" onchange="app.handleFileImport(event)">
+
+    <script>
+        // Embedded database from resolved spec
+        const DATABASE = <%= database.to_json %>;
+
+        // Application state
+        const app = {
+            config: {
+                name: "",
+                description: "",
+                extensions: [],
+                params: {}
+            },
+
+            init() {
+                this.newConfig();
+                this.renderExtensions();
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            newConfig() {
+                this.config = {
+                    name: "",
+                    description: "",
+                    extensions: [],
+                    params: {}
+                };
+                document.getElementById('config-name').value = "";
+                document.getElementById('config-desc').value = "";
+                this.renderExtensions();
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            updateConfig() {
+                this.config.name = document.getElementById('config-name').value;
+                this.config.description = document.getElementById('config-desc').value;
+                this.validateConfig();
+            },
+
+            addExtension() {
+                const searchInput = document.getElementById('ext-search');
+                const extName = searchInput.value.trim();
+
+                if (!extName || !DATABASE.extensions[extName]) {
+                    alert('Please select a valid extension from the list');
+                    return;
+                }
+
+                if (this.config.extensions.find(e => e.name === extName)) {
+                    alert('Extension already added');
+                    return;
+                }
+
+                const ext = DATABASE.extensions[extName];
+                this.config.extensions.push({
+                    name: extName,
+                    version: ext.versions[ext.versions.length - 1]
+                });
+
+                searchInput.value = '';
+                this.renderExtensions();
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            removeExtension(name) {
+                this.config.extensions = this.config.extensions.filter(e => e.name !== name);
+                this.renderExtensions();
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            updateExtensionVersion(name, version) {
+                const ext = this.config.extensions.find(e => e.name === name);
+                if (ext) {
+                    ext.version = version;
+                    this.validateConfig();
+                }
+            },
+
+            renderExtensions() {
+                const list = document.getElementById('extension-list');
+                if (this.config.extensions.length === 0) {
+                    list.innerHTML = '<div style="color: #7f8c8d; padding: 20px; text-align: center;">No extensions added yet</div>';
+                    return;
+                }
+
+                list.innerHTML = this.config.extensions.map(ext => {
+                    const extData = DATABASE.extensions[ext.name];
+                    return `
+                        <div class="extension-item">
+                            <span class="extension-name">${ext.name} - ${extData.longName}</span>
+                            <select onchange="app.updateExtensionVersion('${ext.name}', this.value)">
+                                ${extData.versions.map(v =>
+                                    `<option value="${v}" ${v === ext.version ? 'selected' : ''}>${v}</option>`
+                                ).join('')}
+                            </select>
+                            <button onclick="app.removeExtension('${ext.name}')">Remove</button>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            filterExtensions(query) {
+                const autocomplete = document.getElementById('autocomplete');
+                if (!query) {
+                    autocomplete.classList.add('hidden');
+                    return;
+                }
+
+                const matches = Object.values(DATABASE.extensions)
+                    .filter(ext =>
+                        ext.name.toLowerCase().includes(query.toLowerCase()) ||
+                        ext.longName.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .slice(0, 10);
+
+                if (matches.length === 0) {
+                    autocomplete.classList.add('hidden');
+                    return;
+                }
+
+                autocomplete.innerHTML = matches.map(ext =>
+                    `<div class="autocomplete-item" onmousedown="app.selectExtension('${ext.name}')">
+                        <strong>${ext.name}</strong> - ${ext.longName}
+                    </div>`
+                ).join('');
+                autocomplete.classList.remove('hidden');
+            },
+
+            showAutocomplete() {
+                const input = document.getElementById('ext-search');
+                if (input.value) {
+                    this.filterExtensions(input.value);
+                }
+            },
+
+            hideAutocomplete() {
+                setTimeout(() => {
+                    document.getElementById('autocomplete').classList.add('hidden');
+                }, 200);
+            },
+
+            selectExtension(name) {
+                document.getElementById('ext-search').value = name;
+                document.getElementById('autocomplete').classList.add('hidden');
+            },
+
+            renderParameters() {
+                const list = document.getElementById('parameter-list');
+                const visibleParams = this.getVisibleParameters();
+
+                if (visibleParams.length === 0) {
+                    list.innerHTML = '<div style="color: #7f8c8d; padding: 20px; text-align: center;">Add extensions to see available parameters</div>';
+                    return;
+                }
+
+                list.innerHTML = visibleParams.map(param => {
+                    const currentValue = this.config.params[param.name];
+                    return `
+                        <div class="param-item">
+                            <label>${param.name}</label>
+                            <div class="param-help">${this.renderAsciidoc(param.description)}</div>
+                            ${this.renderParameterInput(param, currentValue)}
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            renderAsciidoc(text) {
+                if (!text) return '';
+
+                // Use Asciidoctor.js to convert AsciiDoc to HTML
+                try {
+                    // Check if Asciidoctor is loaded
+                    if (typeof Asciidoctor === 'undefined') {
+                        console.warn('Asciidoctor not loaded yet, using fallback');
+                        return this.renderAsciidocFallback(text);
+                    }
+
+                    const asciidoctor = Asciidoctor();
+                    const html = asciidoctor.convert(text, {
+                        safe: 'safe',
+                        attributes: { 'showtitle': true }
+                    });
+                    return html;
+                } catch (error) {
+                    console.error('Error rendering AsciiDoc:', error);
+                    return this.renderAsciidocFallback(text);
+                }
+            },
+
+            renderAsciidocFallback(text) {
+                // Simple AsciiDoc to HTML converter for common patterns
+                let html = text;
+
+                // Bold: *text* -> <strong>text</strong>
+                html = html.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+
+                // Italic: _text_ -> <em>text</em>
+                html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+                // Monospace: `text` -> <code>text</code>
+                html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+                // Line breaks
+                html = html.replace(/\n\n/g, '<br><br>');
+                html = html.replace(/\n/g, ' ');
+
+                return html;
+            },
+
+            renderParameterInput(param, currentValue) {
+                const schema = param.schema;
+
+                if (schema.type === 'boolean') {
+                    const checked = currentValue === true;
+                    return `
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="param-${param.name}"
+                                   ${checked ? 'checked' : ''}
+                                   onchange="app.updateBooleanParameter('${param.name}', this.checked)">
+                            <label for="param-${param.name}" style="display: inline; margin: 0; cursor: pointer;">
+                                <span id="param-${param.name}-label">${checked ? 'true' : 'false'}</span>
+                            </label>
+                        </div>
+                    `;
+                } else if (schema.enum) {
+                    if (schema.type === 'array') {
+                        // Multi-select for array enums
+                        const value = currentValue || [];
+                        return schema.items.enum.map(opt => `
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="param-${param.name}-${opt}"
+                                       ${value.includes(opt) ? 'checked' : ''}
+                                       onchange="app.updateArrayParameter('${param.name}', ${opt}, this.checked)">
+                                <label for="param-${param.name}-${opt}" style="display: inline; margin: 0;">${opt}</label>
+                            </div>
+                        `).join('');
+                    } else {
+                        return `
+                            <select id="param-${param.name}" onchange="app.updateParameter('${param.name}', this.value)">
+                                <option value="">-- Select --</option>
+                                ${schema.enum.map(opt =>
+                                    `<option value="${opt}" ${currentValue === opt ? 'selected' : ''}>${opt}</option>`
+                                ).join('')}
+                            </select>
+                        `;
+                    }
+                } else if (schema.type === 'integer') {
+                    const min = schema.minimum !== undefined ? `min="${schema.minimum}"` : '';
+                    const max = schema.maximum !== undefined ? `max="${schema.maximum}"` : '';
+                    return `
+                        <input type="number" id="param-${param.name}"
+                               value="${currentValue !== undefined ? currentValue : ''}"
+                               ${min} ${max}
+                               oninput="app.updateParameter('${param.name}', parseInt(this.value))">
+                    `;
+                } else if (schema.type === 'array' && schema.items.type === 'boolean') {
+                    const value = currentValue || Array(schema.minItems || 32).fill(false);
+                    return `
+                        <div style="font-size: 12px; color: #7f8c8d;">
+                            Array of ${schema.minItems || 32} booleans (edit in YAML)
+                        </div>
+                    `;
+                } else if (schema.type === 'array' && schema.items.type === 'integer') {
+                    const value = currentValue || [];
+                    return `
+                        <input type="text" id="param-${param.name}"
+                               value="${value.join(', ')}"
+                               placeholder="Comma-separated integers"
+                               oninput="app.updateArrayIntParameter('${param.name}', this.value)">
+                    `;
+                } else {
+                    return `
+                        <input type="text" id="param-${param.name}"
+                               value="${currentValue !== undefined ? currentValue : ''}"
+                               oninput="app.updateParameter('${param.name}', this.value)">
+                    `;
+                }
+            },
+
+            updateParameter(name, value) {
+                if (value === '' || value === undefined || value === null) {
+                    delete this.config.params[name];
+                } else {
+                    this.config.params[name] = value;
+                }
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            updateBooleanParameter(name, value) {
+                this.config.params[name] = value;
+                // Re-render parameters to show/hide dependent parameters
+                this.renderParameters();
+                this.validateConfig();
+            },
+
+            updateArrayParameter(name, value, checked) {
+                if (!this.config.params[name]) {
+                    this.config.params[name] = [];
+                }
+                if (checked && !this.config.params[name].includes(value)) {
+                    this.config.params[name].push(value);
+                } else if (!checked) {
+                    this.config.params[name] = this.config.params[name].filter(v => v !== value);
+                }
+                this.validateConfig();
+            },
+
+            updateArrayIntParameter(name, value) {
+                const values = value.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+                this.config.params[name] = values;
+                this.validateConfig();
+            },
+
+            getVisibleParameters() {
+                return Object.values(DATABASE.parameters).filter(param =>
+                    this.evaluateCondition(param.definedBy)
+                );
+            },
+
+            evaluateCondition(condition) {
+                if (!condition) return true;
+
+                if (condition.extension) {
+                    return this.evaluateExtensionCondition(condition.extension);
+                }
+
+                if (condition.param) {
+                    return this.evaluateParamCondition(condition.param);
+                }
+
+                if (condition.allOf) {
+                    return condition.allOf.every(c => this.evaluateCondition(c));
+                }
+
+                if (condition.anyOf) {
+                    return condition.anyOf.some(c => this.evaluateCondition(c));
+                }
+
+                if (condition.oneOf) {
+                    return condition.oneOf.filter(c => this.evaluateCondition(c)).length === 1;
+                }
+
+                if (condition.not) {
+                    return !this.evaluateCondition(condition.not);
+                }
+
+                return true;
+            },
+
+            evaluateExtensionCondition(extCondition) {
+                if (extCondition.name) {
+                    return this.config.extensions.some(e => e.name === extCondition.name);
+                }
+
+                if (extCondition.anyOf) {
+                    return extCondition.anyOf.some(c => this.evaluateExtensionCondition(c));
+                }
+
+                if (extCondition.allOf) {
+                    return extCondition.allOf.every(c => this.evaluateExtensionCondition(c));
+                }
+
+                if (extCondition.oneOf) {
+                    return extCondition.oneOf.filter(c => this.evaluateExtensionCondition(c)).length === 1;
+                }
+
+                if (extCondition.noneOf) {
+                    return !extCondition.noneOf.some(c => this.evaluateExtensionCondition(c));
+                }
+
+                return false;
+            },
+
+            evaluateParamCondition(paramCondition) {
+                const paramValue = this.config.params[paramCondition.name];
+
+                if (paramCondition.equal !== undefined) {
+                    return paramValue === paramCondition.equal;
+                }
+
+                if (paramCondition.notEqual !== undefined) {
+                    return paramValue !== paramCondition.notEqual;
+                }
+
+                if (paramCondition.greaterThan !== undefined) {
+                    return paramValue > paramCondition.greaterThan;
+                }
+
+                if (paramCondition.lessThan !== undefined) {
+                    return paramValue < paramCondition.lessThan;
+                }
+
+                return paramValue !== undefined;
+            },
+
+            validateConfig() {
+                const messages = [];
+
+                if (!this.config.name) {
+                    messages.push({ type: 'error', text: 'Configuration name is required' });
+                }
+
+                if (!this.config.description) {
+                    messages.push({ type: 'error', text: 'Configuration description is required' });
+                }
+
+                if (this.config.extensions.length === 0) {
+                    messages.push({ type: 'warning', text: 'No extensions added' });
+                }
+
+                // Validate parameters against their schemas
+                const visibleParams = this.getVisibleParameters();
+                visibleParams.forEach(param => {
+                    const value = this.config.params[param.name];
+                    if (value !== undefined) {
+                        const validation = this.validateParameterValue(param, value);
+                        if (!validation.valid) {
+                            messages.push({ type: 'error', text: `${param.name}: ${validation.error}` });
+                        }
+                    }
+                });
+
+                if (messages.length === 0) {
+                    messages.push({ type: 'success', text: 'Configuration is valid' });
+                }
+
+                this.renderValidation(messages);
+            },
+
+            validateParameterValue(param, value) {
+                const schema = param.schema;
+
+                if (schema.type === 'integer') {
+                    if (typeof value !== 'number' || !Number.isInteger(value)) {
+                        return { valid: false, error: 'Must be an integer' };
+                    }
+                    if (schema.minimum !== undefined && value < schema.minimum) {
+                        return { valid: false, error: `Must be >= ${schema.minimum}` };
+                    }
+                    if (schema.maximum !== undefined && value > schema.maximum) {
+                        return { valid: false, error: `Must be <= ${schema.maximum}` };
+                    }
+                    if (schema.enum && !schema.enum.includes(value)) {
+                        return { valid: false, error: `Must be one of: ${schema.enum.join(', ')}` };
+                    }
+                }
+
+                if (schema.type === 'boolean' && typeof value !== 'boolean') {
+                    return { valid: false, error: 'Must be a boolean' };
+                }
+
+                if (schema.type === 'string' && schema.enum && !schema.enum.includes(value)) {
+                    return { valid: false, error: `Must be one of: ${schema.enum.join(', ')}` };
+                }
+
+                if (schema.type === 'array') {
+                    if (!Array.isArray(value)) {
+                        return { valid: false, error: 'Must be an array' };
+                    }
+                    if (schema.minItems && value.length < schema.minItems) {
+                        return { valid: false, error: `Must have at least ${schema.minItems} items` };
+                    }
+                    if (schema.maxItems && value.length > schema.maxItems) {
+                        return { valid: false, error: `Must have at most ${schema.maxItems} items` };
+                    }
+                }
+
+                return { valid: true };
+            },
+
+            renderValidation(messages) {
+                const container = document.getElementById('validation-messages');
+                container.innerHTML = messages.map(msg =>
+                    `<div class="validation-message ${msg.type}">${msg.text}</div>`
+                ).join('');
+            },
+
+            exportConfig() {
+                const config = {
+                    $schema: "config_schema.json#",
+                    kind: "architecture configuration",
+                    type: "fully configured",
+                    name: this.config.name,
+                    description: this.config.description,
+                    implemented_extensions: this.config.extensions.map(e => [e.name, e.version]),
+                    params: this.config.params
+                };
+
+                const yaml = jsyaml.dump(config, { lineWidth: -1 });
+                const blob = new Blob([yaml], { type: 'text/yaml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${this.config.name || 'config'}.yaml`;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            importConfig() {
+                document.getElementById('file-input').click();
+            },
+
+            handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const config = jsyaml.load(e.target.result);
+
+                        this.config.name = config.name || '';
+                        this.config.description = config.description || '';
+                        this.config.extensions = (config.implemented_extensions || []).map(e => ({
+                            name: Array.isArray(e) ? e[0] : e.name,
+                            version: Array.isArray(e) ? e[1] : e.version
+                        }));
+                        this.config.params = config.params || {};
+
+                        document.getElementById('config-name').value = this.config.name;
+                        document.getElementById('config-desc').value = this.config.description;
+
+                        this.renderExtensions();
+                        this.renderParameters();
+                        this.validateConfig();
+
+                        alert('Configuration imported successfully');
+                    } catch (error) {
+                        alert('Error importing configuration: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
+        };
+
+        // Initialize app when page loads
+        window.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
