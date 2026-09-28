@@ -8,7 +8,45 @@ kind: extension
 name: Zbb
 long_name: Basic bit-manipulation
 description: |
-  Basic bit-manipulation
+  The `Zbb` extension provides basic bit-manipulation instructions that are commonly needed in
+  software but difficult to express efficiently using the base ISA. It is part of the `B`
+  extension suite (along with `Zba` and `Zbs`) and is mandatory in many RISC-V profiles
+  (e.g., RVA22, RVB23).
+
+  `Zbb` defines instructions in six functional categories:
+
+  **Count and Detect:**
+  * `CLZ` / `CLZW` — Count Leading Zeros: counts the number of zero bits before the first 1,
+    starting from the most-significant bit. Returns XLEN (or 32) if the input is zero.
+  * `CTZ` / `CTZW` — Count Trailing Zeros: counts the number of zero bits after the last 1,
+    starting from the least-significant bit.
+  * `CPOP` / `CPOPW` — Count Set Bits (population count / Hamming weight): counts the number
+    of 1-bits in the source register. Maps to `__builtin_popcount` and `__builtin_popcountl`.
+
+  **Integer Minimum/Maximum:**
+  * `MIN`, `MINU` — Signed and unsigned minimum of two registers.
+  * `MAX`, `MAXU` — Signed and unsigned maximum of two registers.
+    These eliminate branch instructions in comparison idioms.
+
+  **Sign and Zero Extension:**
+  * `SEXT.B`, `SEXT.H` — Sign-extends the low 8 or 16 bits of a register to XLEN.
+  * `ZEXT.H` — Zero-extends the low 16 bits of a register to XLEN.
+
+  **Bitwise Logical with Negate:**
+  * `ANDN`, `ORN`, `XNOR` — AND-NOT, OR-NOT, and XNOR: perform a bitwise operation between
+    a register and the bitwise complement of another register.
+
+  **Byte/Bit Manipulation:**
+  * `ROL`, `ROR`, `RORI`, `ROLW`, `RORW`, `RORIW` — Left and right rotation (by register or
+    immediate, with 32-bit word variants for RV64).
+  * `REV8` — Byte-reversal (endianness swap): reverses the byte order of a register.
+    Maps to compiler builtins like `__builtin_bswap64`.
+  * `ORC.B` — Bitwise OR-combine within bytes: sets all bits in each byte to 1 if any bit
+    in that byte is 1, and to 0 otherwise. Useful for SIMD-style byte-presence detection
+    (e.g., `strlen` acceleration).
+
+  Implementations that support the `B` extension (indicated by `misa.B`) must implement all
+  of `Zba`, `Zbb`, and `Zbs`.
 type: unprivileged
 company:
   name: RISC-V International
