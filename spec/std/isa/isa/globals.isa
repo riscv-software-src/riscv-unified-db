@@ -2727,7 +2727,7 @@ function read_memory {
       if (misaligned_is_atomic?(LEN, physical_address)) {
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
         result = read_physical_memory(LEN, physical_address);
-        if(LEN > 8 && endianness() == Endian::Big ) {
+        if (LEN > 8 && endianness() == Endian::Big) {
           U32 tmp;
           for (U32 i=0; i < LEN/2; i = i+8) {
             tmp = result[(i+7):i];
