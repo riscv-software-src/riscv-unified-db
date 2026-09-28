@@ -103,25 +103,6 @@ fields:
 
       # fall-through; write the intended value
       return csr_value.F;
-  G:
-    location: 6
-    description: |
-      Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, `D`.
-    type(): |
-      if ((implemented?(ExtensionName::A) && MUTABLE_MISA_A) ||
-          (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ||
-          (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ||
-          (implemented?(ExtensionName::D) && MUTABLE_MISA_D)) {
-        return CsrFieldType::ROH;
-      } else {
-        return CsrFieldType::RO;
-      }
-    reset_value(): |
-      return (
-        implemented?(ExtensionName::A) &&
-        implemented?(ExtensionName::M) &&
-        implemented?(ExtensionName::F) &&
-        implemented?(ExtensionName::D)) ? 1 : 0;
   H:
     location: 7
     description: |
@@ -243,7 +224,6 @@ sw_read(): |
     (CSR[misa].M `<< 12) |
     (CSR[misa].I `<< 7) |
     (CSR[misa].H `<< 6) |
-    ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) `<< 5) | # 'G'
     (CSR[misa].F `<< 4) |
     (CSR[misa].D `<< 3) |
     (CSR[misa].C `<< 2) |
