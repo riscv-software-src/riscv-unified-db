@@ -5,6 +5,7 @@
     { "include": "#keyword" },
     { "include": "#string" },
     { "include": "#hex" },
+    { "include": "#integer" },
     { "include": "#boolean" },
     { "include": "#comment" },
     { "include": "#ident" }
@@ -14,11 +15,15 @@
       "patterns": [
         {
           "name": "keyword.control.udb",
-          "match": "\\b(kind|name|long_name|address|writable|priv_mode|length|description|definedBy|fields|type|alias|sw_write\\(csr_value\\)|reset_value|location|location_rv32|location_rv64)\\b"
+          "match": "\\b(kind|name|long_name|address|virtual_address|indirect_address|indirect_slot|writable|priv_mode|length|description|definedBy|fields|type|alias|reset_value|location|location_rv32|location_rv64|affectedBy|xlen|company|versions|version|state|url|text_url|ratification_date|contributors|email|requirements|changes|doc_license|license|assembly|format|inherits|opcodes|funct7|funct3|display_name|value|access|access_detail|data_independent_timing|operation|operation_ast|encoding|match|variables|base|source|introduction|marketing_name|naming_scheme|processor_kind|register_length|register_class|registers|abi_mnemonics|caller_saved|callee_saved|roles|when|arch_read|arch_write|manual|marketing_version|uses_isa_manual|isa_manual_tree|volumes|chapters|authors|extensions|presence|parent_of|child_of|release|recommendations|extra_notes|mandatory_extensions|non_mandatory_extensions|prohibited_extensions|implemented_extensions|additional_extensions|arch_overlay|params|sections|references|hints|sign_extend|left_shift|pseudoinstructions|branch|num|index|size|equal|notEqual|greaterThan|lessThan|greaterThanOrEqual|lessThanOrEqual|includes|reason|cert_normative_rules|doc_links|rvi_jira_issue|id|register_file|schema|opcode)\\b"
         },
         {
           "name": "keyword.other.enum.udb",
-          "match": "\\b(csr|extension|U|S|M|VXRM|VXSAT)\\b"
+          "match": "\\b(csr|instruction|extension|profile|interrupt_code|exception_code|instruction_opcode|instruction_variable_type|register_file|manual|manual_version|profile_family|architecture_configuration|fully_configured|partially_configured|unconfigured|U|S|M|VS|D|Unpriv|VXRM|VXSAT|MXLEN|SXLEN|VSXLEN|XLEN|FLEN|VLEN|RO|RW|always|sometimes|never|mandatory|optional|development|frozen|ratified|expansion|localized|unprivileged|privileged|register_reference|immediate|X|F|V|zero|return_address|alternate_link_register|stack_pointer|global_pointer|thread_pointer|frame_pointer|return_value|argument|temporary|UNDEFINED_LEGAL|unknown|allOf|anyOf|oneOf|noneOf|not)\\b"
+        },
+        {
+          "name": "keyword.operator.udb",
+          "match": "\\b(?:sw_write|sw_read|reset_value|type|legal\\?|operation|arch_read|arch_write|when|idl)(?=\\s*\\()"
         }
       ]
     },
@@ -51,15 +56,21 @@
       ]
     },
     "comment": {
-      "patterns": [
-        { "name": "comment.line.double-slash.udb", "match": "//.*$" }
-      ]
+      "patterns": [{ "name": "comment.line.hashtag.udb", "match": "#.*$" }]
     },
     "ident": {
       "patterns": [
         {
           "name": "entity.name.type.udb",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+    "integer": {
+      "patterns": [
+        {
+          "name": "constant.numeric.integer.udb",
+          "match": "\\b[0-9]+\\b"
         }
       ]
     }

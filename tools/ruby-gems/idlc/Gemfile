@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gemspec
+
+platforms :jruby do
+  gem 'prism', '>= 1.9.0'  # JRuby ships prism internally
+end
+
+# ruby-prof requires native extensions incompatible with JRuby standalone bundling
+group :development do
+  gem 'ruby-prof'
+end

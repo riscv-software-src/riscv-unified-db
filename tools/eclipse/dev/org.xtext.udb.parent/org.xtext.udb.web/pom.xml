@@ -78,11 +78,13 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>org.xtext.udb</artifactId>
 			<version>${project.version}</version>
+			<type>eclipse-plugin</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>org.xtext.udb.ide</artifactId>
 			<version>${project.version}</version>
+			<type>eclipse-plugin</type>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.xtext</groupId>

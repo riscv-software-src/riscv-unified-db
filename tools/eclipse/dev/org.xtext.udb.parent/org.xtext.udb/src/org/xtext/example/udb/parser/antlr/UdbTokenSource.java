@@ -16,19 +16,16 @@ public class UdbTokenSource extends AbstractIndentationTokenSource {
 
 	@Override
 	protected boolean shouldSplitTokenImpl(Token token) {
-		// TODO Review assumption
 		return token.getType() == InternalUdbParser.RULE_WS;
 	}
 
 	@Override
 	protected int getBeginTokenType() {
-		// TODO Review assumption
 		return InternalUdbParser.RULE_INDENT;
 	}
 
 	@Override
 	protected int getEndTokenType() {
-		// TODO Review assumption
 		return InternalUdbParser.RULE_DEDENT;
 	}
 

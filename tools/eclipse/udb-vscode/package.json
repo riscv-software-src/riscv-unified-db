@@ -1,6 +1,8 @@
 {
-  "name": "udb-vscode",
-  "version": "0.0.1",
+  "name": "udb-schema-editor",
+  "displayName": "UDB Schema Editor",
+  "version": "4.0.8",
+  "publisher": "HarveyMuddClinicTeam",
   "private": true,
   "devEngines": {
     "runtime": {
@@ -12,6 +14,7 @@
   "engines": {
     "vscode": "^1.91.0"
   },
+  "description": "",
   "activationEvents": [],
   "contributes": {
     "languages": [
@@ -33,6 +36,118 @@
         "path": "./syntaxes/udb.tmLanguage.json"
       }
     ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "[*Dark*]": {
+          "textMateRules": [
+            {
+              "scope": "keyword.control.udb",
+              "settings": {
+                "foreground": "#7eb8d4",
+                "fontStyle": "bold"
+              }
+            },
+            {
+              "scope": "keyword.other.enum.udb",
+              "settings": {
+                "foreground": "#c3a6e8"
+              }
+            },
+            {
+              "scope": "constant.numeric.hex.udb",
+              "settings": {
+                "foreground": "#e8c97a"
+              }
+            },
+            {
+              "scope": "constant.numeric.integer.udb",
+              "settings": {
+                "foreground": "#e8c97a"
+              }
+            },
+            {
+              "scope": "constant.language.boolean.udb",
+              "settings": {
+                "foreground": "#e8c97a"
+              }
+            },
+            {
+              "scope": "string.quoted.double.udb",
+              "settings": {
+                "foreground": "#f0aa7c"
+              }
+            },
+            {
+              "scope": "comment.line.double-slash.udb",
+              "settings": {
+                "foreground": "#8abf8a",
+                "fontStyle": "italic"
+              }
+            },
+            {
+              "scope": "entity.name.type.udb",
+              "settings": {
+                "foreground": "#f28b9e"
+              }
+            }
+          ]
+        },
+        "[*Light*]": {
+          "textMateRules": [
+            {
+              "scope": "keyword.control.udb",
+              "settings": {
+                "foreground": "#195f8c",
+                "fontStyle": "bold"
+              }
+            },
+            {
+              "scope": "keyword.other.enum.udb",
+              "settings": {
+                "foreground": "#6033a0"
+              }
+            },
+            {
+              "scope": "constant.numeric.hex.udb",
+              "settings": {
+                "foreground": "#7a5800"
+              }
+            },
+            {
+              "scope": "constant.numeric.integer.udb",
+              "settings": {
+                "foreground": "#7a5800"
+              }
+            },
+            {
+              "scope": "constant.language.boolean.udb",
+              "settings": {
+                "foreground": "#7a5800"
+              }
+            },
+            {
+              "scope": "string.quoted.double.udb",
+              "settings": {
+                "foreground": "#8b3a00"
+              }
+            },
+            {
+              "scope": "comment.line.double-slash.udb",
+              "settings": {
+                "foreground": "#2e6b2e",
+                "fontStyle": "italic"
+              }
+            },
+            {
+              "scope": "entity.name.type.udb",
+              "settings": {
+                "foreground": "#9c2a4a"
+              }
+            }
+          ]
+        }
+      }
+    },
     "configuration": {
       "type": "object",
       "title": "UDB",

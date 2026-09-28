@@ -9,6 +9,13 @@
 	<artifactId>org.xtext.udb</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
+	<dependencies>
+		<dependency>
+		    <groupId>org.jruby</groupId>
+		    <artifactId>jruby-complete</artifactId>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

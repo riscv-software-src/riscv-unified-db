@@ -29,6 +29,12 @@ src-gen/
 target/
 build/
 .gradle/
+**/*.jar
+
+# Generated for treetop compatbility
+lib/
+vendor/
+idlc/
 
 node_modules/
 

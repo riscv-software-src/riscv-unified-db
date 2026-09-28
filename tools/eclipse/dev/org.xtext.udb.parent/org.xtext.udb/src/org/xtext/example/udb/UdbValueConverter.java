@@ -36,4 +36,29 @@ public class UdbValueConverter extends DefaultTerminalConverters {
 		}
 	}
 
+	@ValueConverter(rule = "BIN_VALUE")
+	public IValueConverter<Integer> BIN_VALUE() {
+		return new HexValueConverter();
+	}
+
+	public static class BinaryValueConverter implements IValueConverter<Integer> {
+
+		@Override
+		public Integer toValue(String string, INode node) throws ValueConverterException {
+			try {
+				// remove underscores
+				String normalized = string.replace("_", "");
+				return Integer.parseUnsignedInt(normalized.substring(2), 2);
+
+			} catch (NumberFormatException e) {
+				throw new ValueConverterException("Invalid integer literal: " + string, node, e);
+			}
+		}
+
+		@Override
+		public String toString(Integer value) throws ValueConverterException {
+			return "0b" + Integer.toHexString(value);
+		}
+	}
+
 }

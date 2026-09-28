@@ -1,0 +1,5 @@
+.vscode/**
+src/**
+test-fixtures/**
+tsconfig.json
+out/test/**

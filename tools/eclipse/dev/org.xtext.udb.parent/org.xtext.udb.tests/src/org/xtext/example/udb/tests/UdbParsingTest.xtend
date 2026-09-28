@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 import org.xtext.example.udb.udb.Model
+import org.xtext.example.udb.udb.ExtModel
+import org.xtext.example.udb.udb.CsrModel
 
 @ExtendWith(InjectionExtension)
 @InjectWith(UdbInjectorProvider)
@@ -21,35 +23,39 @@ class UdbParsingTest {
 	@Test
 	def void parsesValidCSR() {
 		val result = parseHelper.parse('''
-			$schema: "csr_schema.json#"
-			kind: csr
-			name: vcsr
-			long_name: "Vector Control and Status Register"
-			address: 0x00F
-			writable: true
-			priv_mode: U
-			length: MXLEN
-			description: "Contains aliases to vxrm and vxsat CSRs"
-			definedBy: "V"
-			fields:
-				VXRM:
-					location: 2-1
-					description: "See vxrm."
-					type: RW-RH
-					alias: vxrm.VALUE[1:0]
-					sw_write(csr_value): "|
-					  CSR[vxrm].VALUE = csr_value.VXRM;
-					  return csr_value.VXRM;"
-					reset_value: UNDEFINED_LEGAL
-				VXSAT:
-					location: 0
-					description: "See vxsat."
-					type: RW-RH
-					alias: vxsat.VALUE[0]
-					sw_write(csr_value): "|
-					  CSR[vxsat].VALUE = csr_value.VXSAT;
-					  return csr_value.VXSAT;"
-					reset_value: UNDEFINED_LEGAL
+		$schema: "csr_schema.json#"
+		kind: csr
+		name: "vcsr"
+		long_name: "Vector Control and Status Register"
+		address: 0x00F
+		writable: true
+		priv_mode: U
+		length: MXLEN
+		description: "Contains aliases to vxrm and vxsat CSRs"
+		definedBy:
+		  'extension:
+		    name: "V"'
+		fields:
+		  "VXRM":
+		    location: 2-1
+		    description: "See vxrm."
+		    type: RW-RH
+		    alias: "vxrm.VALUE[1:0]"
+		    sw_write(csr_value): | "
+		      CSR[vxrm].VALUE = csr_value.VXRM;
+		      return csr_value.VXRM;
+		    "
+		    reset_value: UNDEFINED_LEGAL
+		  "VXSAT":
+		    location: 0
+		    description: "See vxsat."
+		    type: RW-RH
+		    alias: "vxsat.VALUE[0]"
+		    sw_write(csr_value): | "
+		      CSR[vxsat].VALUE = csr_value.VXSAT;
+		      return csr_value.VXSAT;
+		    "
+		    reset_value: UNDEFINED_LEGAL
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -57,30 +63,30 @@ class UdbParsingTest {
 
 
 		// check basic inputs
-		var schema = result.getSchema().getSchema();
+		var csr = result as CsrModel
+
+		var schema = csr.getSchema().getSchema();
 		Assertions.assertEquals("csr_schema.json#", schema as String);
-		var k = result.getKind().getKind().getType();
+		var k = csr.getCsrKind().getKind();
 		Assertions.assertEquals("csr", k as String);
-		var n = result.getCsrName().getName().getType();
+		var n = csr.getCsrName().getName();
 		Assertions.assertEquals("vcsr", n as String);
-		var ln = result.getLongName().getLongName();
+		var ln = csr.getLongName().getLongName();
 		Assertions.assertEquals("Vector Control and Status Register", ln);
-		var add = result.getAddress().getAddress().getValue();
+		var add = csr.getAddress().getAddress().getValue();
 		Assertions.assertEquals(0x00F, add);
-		var writ = result.getWritable().isWritable();
+		var writ = csr.getWritable().isWritable();
 		Assertions.assertTrue(writ);
-		var priv = result.getPrivmode().getPrivMode().getType();
+		var priv = csr.getPrivmode().getPrivMode();
 		Assertions.assertEquals("U", priv);
-		var len = result.getLength().getLength().getParmType().getParmName();
+		var len = csr.getLength().getLength().getParmType().getParmName();
 		Assertions.assertEquals("MXLEN", len as String);
-		var desc = result.getDescription().getDescription();
+		var desc = csr.getDescription().getDescription().getValue();
 		Assertions.assertEquals("Contains aliases to vxrm and vxsat CSRs", desc);
-		var def = result.getDefinedBy().getExtensionName();
-		Assertions.assertEquals("V", def);
 
 		// test fields
-		var vxrm = result.getFields().getFields().get(0);
-		var vxsat = result.getFields().getFields().get(1);
+		var vxrm = csr.getCsrFields().getFields.get(0);
+		var vxsat = csr.getCsrFields().getFields().get(1);
 		Assertions.assertEquals("VXRM", vxrm.getName());
 		Assertions.assertEquals("VXSAT", vxsat.getName());
 
@@ -104,8 +110,8 @@ class UdbParsingTest {
 		Assertions.assertNotNull(satsw)
 
 		// testing description of fields
-		var rmdesc = vxrm.getDescription().getDescription();
-		var satdesc = vxsat.getDescription().getDescription();
+		var rmdesc = vxrm.getDescription().getDescription().getValue();
+		var satdesc = vxsat.getDescription().getDescription().getValue();
 		Assertions.assertEquals("See vxrm.", rmdesc);
 		Assertions.assertEquals("See vxsat.", satdesc);
 
@@ -116,12 +122,59 @@ class UdbParsingTest {
 		Assertions.assertEquals("RW-RH", sattype);
 
 		// testing alias
-		var vxalias = vxrm.getAlias().getAlias().getAlias().get(0);
-		var satalias = vxsat.getAlias().getAlias().getAlias().get(0);
+		var vxalias = vxrm.getAlias().getAliasName().getName();
+		var satalias = vxsat.getAlias().getAliasName().getName();
 		Assertions.assertEquals("vxrm.VALUE[1:0]", vxalias);
 		Assertions.assertEquals("vxsat.VALUE[0]", satalias);
-
-
 	}
 
+	@Test
+	def void parsesValidExtension() {
+		val result = parseHelper.parse('''
+		$schema: "ext_schema.json#"
+		kind: extension
+		name: "V"
+		type: unprivileged
+		long_name: "Vector Operations"
+		versions:
+		  - version: "1.0.0"
+		    state: ratified
+		    ratification_date: "2021-11"
+		description: | "
+		  General support for data-parallel execution."
+		requirements:
+		  'extension:
+		    allOf:
+		      - name: Zve64d
+		      - name: Zvl128b'
+		''')
+		Assertions.assertNotNull(result)
+		val errors = result.eResource.errors
+		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+
+		var ext = result as ExtModel
+
+		var schema = ext.getSchema().getSchema();
+		Assertions.assertEquals("ext_schema.json#", schema as String);
+		var kind = ext.getExtKind().getKind();
+		Assertions.assertEquals("extension", kind);
+		var name = ext.getExtName().getName();
+		Assertions.assertEquals("V", name);
+		var type = ext.getType().getPerms();
+		Assertions.assertEquals("unprivileged", type);
+		var longname = ext.getLongName().getLongName();
+		Assertions.assertEquals("Vector Operations", longname);
+		var description = ext.getDescription().getDescription().getValue();
+		Assertions.assertEquals("\n  General support for data-parallel execution.", description);
+
+		// version testing
+		var version = ext.getExtVersions().getElements().get(0);
+		Assertions.assertEquals("1.0.0", version.getVersion());
+		Assertions.assertEquals("ratified", version.getVersionState().getState());
+		Assertions.assertEquals("2021-11", version.getRatificationDate().getDate());
+
+		// requirements testing
+		var reqs = ext.getRequirements();
+		System.out.println(reqs.getRequirements());
+	}
 }

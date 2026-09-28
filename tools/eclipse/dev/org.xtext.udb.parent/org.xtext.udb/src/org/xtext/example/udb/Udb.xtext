@@ -4,199 +4,1513 @@ generate udb "http://www.xtext.org/example/udb/Udb"
 
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
-Model:
-	schema = Schema
-	kind = Kind &
-	csrName = Name &
-	base = Base? &
+Model
+	: CsrModel
+	| InstModel
+	| ExtModel
+	| ProfModel
+	| InterruptCodeModel
+	| ExceptionCodeModel
+	| InstOpcodeModel
+	| InstVarTypeModel
+	| RegisterModel
+	| ManualModel
+	| ManualVersionModel
+	| ProfFamModel
+	| ConfigModel
+	| NonIsaModel
+;
+
+
+
+CsrModel:
+	schema = Schema // must be "csr_schema.json#"
+	csrKind = CsrKind &
+	csrName = CsrName &
 	longName = LongName &
 	description = Description &
 	definedBy = DefinedBy &
-	address = Address &
-	indirectAddress = IndirectAddress? &
-	indirectSlot = IndirectSlot? &
-	writable = Writable &
-	privmode = PrivMode &
-	virtualAddress = VirtualAddress? &
-	length = Length &
-	requires = Requires? &
-	fields = Fields? &
-	swRead = SwRead? &
+	address = CsrAddress &
+	indirectAddress = CsrIndirectAddress? &
+	indirectSlot = CsrIndirectSlot? &
+	writable = CsrWritable &
+	privmode = CsrPrivMode &
+	virtualAddress = CsrVirtualAddress? &
+	length = CsrLength &
+	requires = CsrRequires? &
+	csrFields = CsrFields? &
+	swRead = CsrSwRead? &
 	source = Source? &
 	certNormativeRules = CertNormativeRules?
 ;
 
-// This is so we can directly copy+paste from a UDB .yaml file
+InstModel:
+	schema = Schema // must be "inst_schema.json#"
+	kind = InstKind &
+	instName = InstName &
+	longName = LongName &
+	description = Description &
+	definedBy = DefinedBy &
+	hints = InstHints? &
+	access = InstAccess &
+	accessDetail = InstAccessDetail? &
+	operation = InstOperation? &
+	operationAst = InstOperationAst? &
+	certNormativeRules = CertNormativeRules? &
+	assembly = InstAssembly &
+	dataIndependentTiming = InstDataIndependentTiming? &
+	pseudoInstructions = InstPseudoInstructions? &
+	source = Source? &
+	format = InstFormat? &
+	encoding = InstEncoding?
+;
+
+ExtModel:
+	schema = Schema // must be "ext_schema.json#"
+	extKind = ExtKind &
+	extName = ExtName &
+	longName = LongName &
+	description = Description &
+	rviJiraIssue = ExtRviJiraIssue? &
+	company = Company? &
+	docLicense = DocLicense? &
+	type = ExtType &
+	requirements = Requirements? &
+	extVersions = ExtVersions &
+	source = Source? &
+	certNormativeRules = CertNormativeRules?
+;
+
+ProfModel:
+	schema = Schema // must be "profile_schema.json#"
+	profKind = ProfKind &
+	profName = ProfName &
+	longName = LongName &
+	base = Base &
+	description = Description? &
+	inherits = ProfInherits? &
+	parentOf = ProfParentOf? &
+	childOf = ProfChildOf? &
+	certNormativeRules = CertNormativeRules? &
+	requirements = Requirements? &
+	marketingName = ProfMarketingName? &
+	mode = ProfMode? &
+	release = ProfRelease? &
+	introduction = Introduction? &
+	recommendations = ProfRecommendations? &
+	extraNotes = ProfExtraNotes? &
+	extensions = ProfExtensions? &
+	source = Source?
+;
+
+InterruptCodeModel:
+	schema = Schema // must be "interript_code_schema.json#"
+	intrptCodeKind = IntrptCodeKind &
+	intrptCodeName = IntrptCodeName &
+	displayName = DisplayName &
+	intrptNum = IntrptCodeNum &
+	definedBy = DefinedBy &
+	source = Source?
+;
+
+ExceptionCodeModel:
+	schema = Schema // must be "exception_code_schema.json#"
+	ecKind = ECKind &
+	ecName = ECName &
+	displayName = DisplayName &
+	num = Num &
+	definedBy = DefinedBy &
+	source = Source?
+;
+
+InstOpcodeModel:
+	schema = Schema // must be "inst_opcode_schema.json#"
+	instOpcodeKind = InstOpcodeKind &
+	instOpcodeName = InstOpcodeName? &
+	instOpcodedata = InstOpcodeData
+;
+
+InstVarTypeModel:
+	schema = Schema
+	instVarTypeKind = InstVarTypeKind &
+	instVarTypeName = InstVarTypeName &
+	instVarTypeType = InstVarTypeType &
+	registerFile = RegisterFile? &
+	access = InstVarTypeAccess?
+;
+
+RegisterModel:
+	schema = Schema // must be "register_file_schema.json#"
+	regKind = RegisterKind &
+	regName = RegisterName &
+	longName = LongName &
+	description = Description &
+	definedBy = RegisterDefinedBy? &
+	registerClass = RegisterClass? &
+	registerLength = RegisterLength &
+	registers = Registers &
+	source = Source?
+;
+
+ManualModel:
+	schema = Schema // must be "manual_schema.json#"
+	manualKind = ManualKind &
+	manualName = ManualName &
+	longName = LongName &
+	marketingName = MarketingName? &
+	state = SpecState? &
+	url = Url? &
+	license = License? &
+	source = Source?
+;
+
+ManualVersionModel:
+	schema = Schema // must be "manual_version_schema.json#"
+	manualVersionKind = ManualVersionKind &
+	manualVersionName = ManualVersionName &
+	longName = LongName &
+	manual = ManualVersionManual &
+	version = ManualVersionVersion &
+	marketingVersion = MarketingVersion &
+	state = ManualVersionState &
+	url = Url? &
+	usesIsaManual = UsesIsaManual? &
+	isaManualTree = IsaManualTree? &
+	volumes = ManualVersionVolumes &
+	source = Source?
+;
+
+ProfFamModel:
+	schema = Schema
+	profFamKind = PFKind
+	& processorKind = ProcessorKind?
+	& profFamName = PFName
+	& longName = LongName
+	& marketingName = PFMarketingName?
+	& introduction = Introduction?
+	& description = Description?
+	& namingScheme = PFNamingScheme?
+	& company = Company?
+	& docLicense = DocLicense?
+	& source = Source?
+;
+
+NonIsaModel:
+	schema=Schema
+	kind=NonIsaKind &
+	name=NonIsaName &
+	longName=LongName? &
+	version=NonIsaVersion? &
+	ratificationDate=NonIsaRatificationDate? &
+	description=Description &
+	sections=Sections &
+	references=References? &
+	authors=Authors? &
+	license=License?
+;
+
+
+
+/*
+ * Common stuff
+ */
 Schema: "$schema" ":" schema=STRING;
-
-/* Required fields for the CSR schema */
-Kind: 'kind' ':' kind=KindType ;
-Name: 'name' ':' name=NameType ;
-LongName: 'long_name' ':' longName=STRING ;
-Address: 'address' ':' address=Hex ;
-Writable: 'writable' ':' writable=Boolean ;
-PrivMode:'priv_mode' ':' privMode=PrivType ;
-Length: 'length' ':' length=LengthType ;
-Description: 'description' ':' description=STRING ;
-DefinedBy:'definedBy' ':'extensionName=STRING ;
-
-/* Optional fields for the CSR schema */
-Base: 'base' ':' base=INT ;
-IndirectAddress:'indirect_address' ':' indirectAddress=Hex;
-IndirectSlot:'indirect_slot' ':' indirectSlot=INT ; /* TODO: validator: min:1 max:6 */
-
-
-VirtualAddress:'virtual_address' ':' virtualAddress=Hex ;
-CertNormativeRules: 'cert_normative_rules' ':' certNormativeRules=CNRType ;
-
-// implement in validator?
-Requires:'requires' ':' requires=STRING ;
-SwRead:'sw_read()' ':' swRead=STRING ;
-Source:'$source' ':' source=STRING ;
-
-
-/* CSR Schema Types */
-KindType: type=('csr'|'extension');
-NameType: type=(CSR_NAME);
-PrivType: type=('M'|'S'|'U'|'VS'|'D');
-
-LengthType: intType = IntType | parmType = ParmType;
-IntType: intVal=INT; // must be either 32 or 64
-ParmType: parmName=('MXLEN'|'SXLEN'|'VSXLEN'|'XLEN');
-
-CNRType: '[' id=STRING ',' name=STRING ',' docLinks=StringArray ','
-			 description=STRING ']';
-CTPType: '[' id=STRING ',' name=STRING ',' description=STRING ','
-			 normativeRules=StringArray ',' list=STRING?']';
-
-
-
-/* Grammar for fields */
-Fields:
-	{Fields} 'fields' ':'
+LongName: 'long_name' ":" longName=STRING;
+Base: "base" ":" base=INT;
+Description: 'description' ':' description=StringType;
+Requirements: "requirements" ":"
 	INDENT
-    	fields += FieldDef+
+		requirements=Condition
+	DEDENT
+;
+DefinedBy: "definedBy" ":"
+	INDENT
+		definedBy=Condition
+	DEDENT
+;
+DisplayName:'display_name' ':' displayName=STRING;
+Source:'$source' ':' source=STRING;
+Number: intVal=INT | bin=Bin | hex=Hex;
+Range: upper=INT '-' lower=INT;
+UdbId: 'id' ':' id=STRING;
+Url: 'url' ':' url=STRING;
+TextUrl: 'text_url' ':' textUrl=STRING;
+Email: 'email' ':' email=STRING;
+ProcessorKind: 'processor_kind' ':'
+	processorKind=('Generic_Unprivileged' | "Microcontroller" | 'Apps_Processor');
+Introduction: 'introduction' ':' introduction=StringType;
+Company:
+	'company' ':'
+	INDENT (
+		('name' ':' name=STRING) &
+		 url=Url?
+	) DEDENT
+;
+
+// IDL gets passed off to ruby in the validator
+Idl: '|' idl=STRING;
+
+// see "cert_normative_rules" in schema_defs.json
+// TODO: not tested
+CertNormativeRules:
+	'cert_normative_rules' ':'
+	INDENT
+		rules += CNRuleArrayElement+
+	DEDENT
+;
+CNRuleArrayElement:
+	'-' id = UdbId
+	INDENT (
+		('name' ':' name = STRING) &
+		docLinks = DocLinks &
+		description = Description
+	) DEDENT
+;
+DocLinks:
+	"doc_links" ":"
+	INDENT
+		links += DocLinksArrayElement+
+	DEDENT
+;
+DocLinksArrayElement:
+	'-' link = STRING
+;
+
+// see "license" in schema_defs.json
+DocLicense:
+	'doc_license' ':'
+	INDENT (
+		('name' ':' name=STRING) &
+		id=UdbId? &
+		url=Url? &
+		textUrl=TextUrl?
+	) DEDENT
+;
+
+License:
+	'license' ':'
+	INDENT (
+		('name' ':' name=STRING) &
+		id=UdbId? &
+		url=Url? &
+		textUrl=TextUrl?
+	) DEDENT
+;
+
+
+
+/*
+ * CSR stuff (see csr_schema.json)
+ */
+CsrKind: 'kind' ':' kind="csr";
+CsrName: 'name' ':' name=STRING;
+CsrAddress: 'address' ':' address=Hex;
+CsrWritable: 'writable' ':' writable=Boolean;
+CsrIndirectAddress:'indirect_address' ':' indirectAddress=Hex;
+CsrIndirectSlot:'indirect_slot' ':' indirectSlot=INT;
+CsrVirtualAddress:'virtual_address' ':' virtualAddress=Hex;
+CsrSwRead:'sw_read()' ':' swRead=Idl;
+CsrPrivMode:'priv_mode' ':' privMode=("M"|"S"|"U"|"VS"|"D");
+CsrLength: 'length' ':' length=CsrLengthType;
+CsrLengthType: intType = CsrIntType | parmType = CsrParmType;
+CsrIntType: intVal=INT;
+CsrParmType: parmName=('MXLEN'|'SXLEN'|'VSXLEN'|'XLEN');
+
+// extension that must be implemented for this CSR to exist
+CsrRequires: 'requires' ':' requires=STRING;
+
+// grammar for csr_field
+CsrFields:
+	{CsrFields} 'fields' ':'
+	INDENT
+    	fields += CsrFieldDef+
     DEDENT
 ;
 
-FieldDef:
-	name=FIELD_NAME ':'
-	INDENT
-		('name' ':' fieldName = STRING ';')? &
+CsrFieldDef:
+	name=STRING ':'
+	INDENT (
+		displayName = CsrFieldDisplayName? &
 		longName = LongName? &
-		location = LocationType &
-		resetValue = ResetValueType &
-		swWriteFunc = SWWriteFunc? &
-		legalFunc = LegalFunc? &
-		base = Base? &
+		location = CsrFieldLocationType &
+		resetValue = CsrFieldResetValueType &
+		swWriteFunc = CsrFieldSWWriteFunc? &
+		legalFunc = CsrFieldLegalFunc? &
 		description = Description &
-		type = TypeType &
-		alias = Alias? &
+		type = CsrFieldTypeType &
+		alias = CsrFieldAlias? &
 		definedBy = DefinedBy? &
-		affectedBy = AffectedBy? &
+		affectedBy = CsrFieldAffectedBy? &
 		certNormativeRules = CertNormativeRules?
+	) DEDENT
+;
+
+
+CsrFieldDisplayName: 'name' ':' fieldName=STRING;
+
+CsrFieldLocationType: staticLoc = CsrStaticLocation | funcLoc = CsrVarLocation;
+CsrStaticLocation: 'location' ':' locValue=CsrFieldLocation;
+CsrVarLocation:
+	locationRV32=LocationRV32 &
+	locationRV64=LocationRV64
+;
+LocationRV32: "location_rv32" ":" locationRV32=CsrFieldLocation;
+LocationRV64: "location_rv64" ":" locationRV64=CsrFieldLocation;
+CsrFieldLocation: value=INT | range=Range;
+
+CsrFieldResetValueType: value=CsrFieldResetValue | function=CsrFieldResetValueFunc;
+CsrFieldResetValue: "reset_value" ":" resetValue=CsrFieldResetValueValue;
+CsrFieldResetValueValue: value=INT | undefinedLegal=UndefinedLegal;
+CsrFieldResetValueFunc: "reset_value()" ":" resetValueFunc=Idl;
+
+CsrFieldSWWriteFunc: "sw_write(csr_value)" ":" swWriteFunc=Idl;
+CsrFieldLegalFunc: "legal?(csr_value)" ":" legalFunc=Idl;
+
+CsrFieldTypeType: typeVal=CsrFieldType | typeFunc=CsrFieldTypeFunc;
+CsrFieldType: "type" ":" perms=("RO"|"RO-H"|"RW"|"RW-R"|"RW-H"|"RW-RH");
+CsrFieldTypeFunc: "type()" ":" idl=Idl;
+
+CsrFieldAlias: "alias" ":" (aliasName=CsrFieldAliasName | aliasArray=CsrFieldAliasArray);
+CsrFieldAliasName: name=STRING;
+CsrFieldAliasArray:
+	"items" ":"
+	INDENT
+		aliases += CsrAliasArrayElement+
+	DEDENT
+;
+CsrAliasArrayElement:
+	"-" alias = CsrFieldAliasName
+;
+
+
+CsrFieldAffectedBy:
+    "affectedBy" ":" value=CsrAffectedByValue
+;
+
+CsrAffectedByValue:
+    CsrAffectedBySingle | CsrAffectedByList
+;
+
+CsrAffectedBySingle:
+    ref=[ExtModel|STRING]
+;
+
+CsrAffectedByList:
+    "[" refs+=[ExtModel|STRING] ("," refs+=[ExtModel|STRING])* "]"
+;
+
+
+
+/*
+ * Instruction stuff (see inst_schema.json)
+ */
+InstKind: 'kind' ':' kind="instruction";
+InstName: 'name' ':' name=STRING;
+InstAccess:
+	'access' ':'
+	INDENT (
+	('m' ':' m=InstAccessType)? &
+	's' ':' s=InstAccessType &
+	'u' ':' u=InstAccessType &
+	'vs' ':' vs=InstAccessType &
+	'vu' ':' vu=InstAccessType
+	) DEDENT
+;
+InstAccessType:
+	accessLevel=('always'|'sometimes'|'never')
+;
+InstAssembly: 'assembly' ':' assembly=STRING;
+
+/* Optional fields for the INST schema */
+InstOperationAst: 'operation_ast' ':' operationAst=STRING;
+InstHints:
+	'hints' ':'
+	INDENT
+		hints += InstHintElement+
+	DEDENT
+;
+InstHintElement: '-' '{' '$ref' ':' hint = STRING '}';
+
+InstAccessDetail: 'access_detail' ':' accessDetail=STRING;
+InstOperation: 'operation()' ':' operation=Idl;
+InstDataIndependentTiming: 'data_independent_timing' ':' dataIndependentTiming=Boolean;
+InstPseudoInstructions: 'pseudoinstructions' ':' pseudoInstructions=StringArray;
+InstFormat: 'format' ':'
+	INDENT (
+		'$inherits' ':' inherits=InstInheritType &
+		'opcodes' ':' opcodes=InstOpcodeType
+	) DEDENT
+;
+InstInheritType:
+	INDENT
+		('-' reference += STRING)+
 	DEDENT
 ;
 
-FieldDisplayName: 'name' ':' fieldName=STRING ;
-
-
-
-/* fields for Fields */
-StaticLocation: 'location' ':' locValue=FieldLocation ;
-LocationRV32: "location_rv32" ":" locationRV32=FieldLocation ;
-LocationRV64: "location_rv64" ":" locationRV64=FieldLocation ;
-
-
-ResetValue: "reset_value" ":" resetValue=ResetValueValue ;
-ResetValueFunc: "reset_value()" ":" resetValueFunc=IDL ;
-SWWriteFunc: "sw_write(csr_value)" ":" swWriteFunc=IDL ;
-LegalFunc: "legal?(csr_value)" ":" legalFunc=IDL ;
-Type: "type" ":" perms=("RO"|"RO-H"|"RW"|"RW-R"|"RW-H"|"RW-RH") ;
-TypeFunc: "type()" ":" idl=IDL ;
-Alias: "alias" ":" alias=AliasType ;
-AffectedBy: "affectedBy" ":" affectedBy=AffectedByType ;
-
-/* Types for Fields */
-
-LocationType: staticLoc = StaticLocation | funcLoc = VarLocation;
-VarLocation:
-	locationRV32=LocationRV32
-	locationRV64=LocationRV64
+InstOpcodeType:
+	INDENT
+		opcode += InstOpcodeEntry+
+	DEDENT
 ;
-FieldLocation: value=INT | range=Range;
-Range: upper=INT '-' lower=INT;
-ResetValueType: value=ResetValue | function=ResetValueFunc;
-ResetValueValue: value=INT | undefinedLegal=UndefinedLegal;
-TypeType: typeVal=Type | typeFunc=TypeFunc;
-AliasType: alias+=(CSR_FIELD | CSR_FIELD_BITS)+;
+InstOpcodeEntry:
+	InstOpcodeField
+	| InstOpcodeInherits
+;
 
-// TODO: we probably will want a cross ref thing for this
-AffectedByType: affectedByName=STRING | affectedByArray=StringArray;
+InstOpcodeField:
+	name=STRING ':'
+	INDENT
+		(opcodeProperties += InstOpcodeProps)+
+	DEDENT
+;
+
+InstOpcodeProps:
+	'display_name' ':' displayName=STRING
+	| 'value' ':' value=Number
+;
+
+InstOpcodeInherits:
+	'opcode' ':' '{' '$inherits' ':' inheritsAddress=STRING '}'
+;
+
+
+InstEncoding:
+	'encoding' ':'
+	(
+		InstRvPairEncoding
+		| InstOldEncoding
+	)
+;
+
+InstOldEncoding:
+	{InstOldEncoding}
+	INDENT (
+	    match=InstEncodingMatch &
+	    variables=InstEncodingVariables?
+  	) DEDENT
+;
+InstEncodingMatch:
+	'match' ':' pattern=STRING
+;
+
+InstEncodingVariables:
+	'variables' ':'
+	  INDENT
+	    (vars += InstEncodingTwoKeyVar+ | vars += InstEncodingSevenKeyVar+)
+	  DEDENT
+;
+
+InstEncodingSevenKeyVar:
+  '-' 'name' ':' name=STRING
+  INDENT
+    (
+      'location' ':' location=Range &
+      ('$child_of' ':' childOf=STRING)? &
+      ('sign_extend' ':' signExtend=Boolean)? &
+      ('left_shift' ':' leftShift=INT)? &
+      ('alias' ':' alias=STRING)? &
+      ('not' ':' not=InstNotRule)?
+    )
+  DEDENT
+;
+
+InstNotRule:
+	{NotRule}
+	INT | IntArray
+;
+
+
+InstEncodingTwoKeyVar:
+	'-' 'name' ':' name=STRING
+	INDENT (
+		'$inherits' ':' inherits=STRING
+	) DEDENT
+;
+
+
+InstRvPairEncoding:
+	{InstRvPairEncoding}
+	INDENT (
+	'RV32' ':' rv32=InstOldEncoding
+	'RV64' ':' rv64=InstOldEncoding
+	) DEDENT
+;
 
 
 
-/* Conditions */
-//Condition: yamlCond=YAMLCondition | idlCond=IDLCondition;
+/*
+ * Extension stuff (see ext_schema.json)
+ */
+ExtKind: 'kind' ':' kind="extension";
+ExtName: 'name' ':' name=STRING;
+ExtType: 'type' ':' perms=('unprivileged' | 'privileged');
+ExtRviJiraIssue: 'rvi_jira_issue' ':' issue=STRING;
 
-//YAMLCondition:
-//	yaml = YAMLCondition (TODO: implement)
-//	  extensionCond = ExtensionCondition
-//	| paramCond = ParamCondition
-//	| xlenCond = XLenCondition
+
+// versions grammar (see ext_schema.json)
+ExtVersions:
+	"versions" ":"
+	INDENT
+		elements += ExtVersionArrayElement+
+	DEDENT
+;
+
+ExtVersionArrayElement:
+	'-' "version" ":" version=STRING
+	INDENT (
+		versionState = ExtVersionState &
+		repositories = ExtVersionRepositories? &
+		ratificationDate = ExtVersionRatificationDate? &
+		versionChanges = ExtVersionVersionChanges? &
+		url = Url? &
+		versionContributors = ExtVersionContributors? &
+		requirements = Requirements?
+	) DEDENT
+;
+
+ExtVersionState:
+	"state" ":"
+	state=("development" | "frozen" | "public-review" |
+		   "ratification-ready" | "ratified" | "nonstandard-released")
+;
+
+ExtVersionRepositories:
+	"repositories" ":"
+	INDENT
+		repositories += ExtVersionRepoArrayElement+
+	DEDENT
+;
+ExtVersionRepoArrayElement:
+	'-' url=Url
+	(INDENT
+		"branch" ":" branch=STRING
+	DEDENT)?
+;
+
+ExtVersionRatificationDate:
+	"ratification_date" ":"
+	date = (
+	   STRING		// when ratification date is known
+	| "unknown"		// when ratification date is unknown
+	| "null")		// when version isn't ratified
+;
+
+ExtVersionVersionChanges:
+	"changes" ":"
+	INDENT
+		changes += ExtVersionChangesArrayElement+
+	DEDENT
+;
+ExtVersionChangesArrayElement:
+	'-' change=STRING
+;
+
+ExtVersionContributors:
+	"contributors" ":"
+	INDENT
+		contributors += ExtVersionContributorsArrayElement+
+	DEDENT
+;
+ExtVersionContributorsArrayElement:
+	'-' name=ExtVersionContributorName
+	(INDENT (
+		("company" ":" company=STRING)? &
+		email=Email?
+	) DEDENT)?
+;
+ExtVersionContributorName:
+	"name" ":" name=STRING
+;
+
+/*
+ * Register File Stuff (see register_file_schema.json)
+ */
+RegisterKind: 'kind' ':' kind="register_file";
+RegisterName: 'name' ':' name=STRING;
+RegisterClass: 'register_class' ':' registerClass=STRING;
+RegisterDefinedBy: 'definedBy' ':' definedBy=Condition;
+RegisterLength: 'register_length' ':' registerLength=RegisterLengthType;
+RegisterLengthType: intVal=RegisterLengthInt | paramName=RegisterLengthEnum;
+
+enum RegisterLengthEnum:
+	mxlen ='MXLEN' |
+	flen = 'FLEN' |
+	vlen = 'VLEN'
+;
+
+RegisterLengthInt: val=INT;
+Registers:
+	'registers' ':'
+	INDENT
+		registers += RegisterEntry+
+	DEDENT
+;
+RegisterEntry:
+	'-' 'name' ':' name=STRING
+	INDENT (
+		abiMnemonics = RegisterAbiMnemonics? &
+		description = Description? &
+		when = RegisterWhen? &
+		archRead = RegisterArchRead? &
+		archWrite = RegisterArchWrite? &
+		callerSaved = RegisterCallerSaved? &
+		calleeSaved = RegisterCalleeSaved? &
+		roles = RegisterRoles?
+	) DEDENT
+;
+
+RegisterAbiMnemonics:'abi_mnemonics' ':' '[' mnemonics+=STRING (',' mnemonics+=STRING)* ']';
+
+RegisterWhen:
+	'when' ':' (
+		when=RequiresNot |
+		INDENT when=RequiresComposite DEDENT
+	)
+;
+
+RegisterArchRead:
+	'arch_read()' ':' archRead=Idl
+;
+
+RegisterArchWrite:
+	'arch_write(value)' ':' archWrite=Idl
+;
+
+RegisterCallerSaved:
+	'caller_saved' ':' callerSaved=Boolean
+;
+
+RegisterCalleeSaved:
+	'callee_saved' ':' calleeSaved=Boolean
+;
+
+RegisterRoles:'roles' ':' '[' roles+=RegisterRole (',' roles+=RegisterRole)* ']';
+
+RequiresEntry:
+	ExtensionRequirement | RequiresComposite
+;
+
+
+ExtensionRequirement:
+	'name' ':' name=STRING
+	(INDENT? 'version' ':' version=RegisterVersionRequirements DEDENT?)?
+;
+
+RegisterVersionRequirements:
+	versionSingle=RegVersionRequirementString | versionArray=RegVersionRequirementArray
+;
+
+RegVersionRequirementArray:
+	'[' versions+=RegVersionRequirementString (',' versions+=RegVersionRequirementString)* ']'
+;
+
+RegVersionRequirementString:
+	version=STRING
+;
+
+RequiresComposite:
+	RequiresAnyOf | RequiresAllOf | RequiresOneOf | RequiresNot
+;
+
+RequiresNot:
+	'not' ':' '{' 'name' ':' name=STRING '}'
+;
+RequiresAnyOf:
+	'anyOf' ':'
+	INDENT
+		('-' entries += RequiresEntry)+
+	DEDENT
+;
+
+RequiresAllOf:
+	'allOf' ':'
+	INDENT
+		('-' entries += RequiresEntry)+
+	DEDENT
+;
+
+RequiresOneOf:
+	'oneOf' ':'
+	INDENT
+		('-' entries += RequiresEntry)+
+	DEDENT
+;
+
+
+enum RegisterRole:
+	ZERO = 'zero' |
+	RETURN_ADDRESS = 'return_address' |
+	ALTERNATE_LINK_REGISTER = 'alternate_link_register' |
+	STACK_POINTER = 'stack_pointer' |
+	GLOBAL_POINTER = 'global_pointer' |
+	THREAD_POINTER = 'thread_pointer' |
+	FRAME_POINTER = 'frame_pointer' |
+	RETURN_VALUE = 'return_value' |
+	ARGUMENT = 'argument' |
+	TEMPORARY = 'temporary'
+;
+
+
+
+/*
+ * Profile stuff (see profile_schema.json)
+ */
+ProfKind: 'kind' ':' kind='profile';
+ProfName: 'name' ':' name=STRING;
+ProfInherits: '$inherits' ':' inherits=STRING;
+ProfParentOf: '$parent_of' ':' parent_of=STRING;
+ProfChildOf: '$child_of' ':' child_of=STRING;
+ProfMarketingName: 'marketing_name' ':' marketing_name=STRING;
+ProfMode: 'mode' ':' mode=('M' | 'S' | 'U' | 'Unpriv');
+ProfRelease:
+	'release' ':' '{' '$ref' ':' releaseAddress=STRING '}'
+;
+ProfRecommendations:
+	'recommendations' ':'
+	INDENT
+		recommendations += ProfRecommendationsArrayElement+
+	DEDENT
+;
+ProfRecommendationsArrayElement:
+	'-' 'text' ':' text=StringType
+;
+ProfExtraNotes:
+	'extra_notes' ':'
+	INDENT
+		extra_notes += ProfExtraNotesArrayElement+
+	DEDENT
+;
+ProfExtraNotesArrayElement:
+	'-' 'presence' ':' presence=("optional" | "mandatory")
+	INDENT
+		'text' ':' text=StringType
+	DEDENT
+;
+ProfExtensions:
+	{ProfExtensions} 'extensions' ':'
+	(INDENT (
+		inherits = ProfExtInherits? &
+		remove = ProfExtRemove? &
+		extensions += ProfExtArray?
+	) DEDENT)?
+;
+ProfExtInherits:
+	'$inherits' ':'
+		(inheritsString=ProfExtInheritsString
+		| inheritsArray=ProfExtInheritsArray)
+;
+ProfExtInheritsString:
+	extAddress=STRING
+;
+ProfExtInheritsArray:
+	INDENT
+		inherits += ProfExtensionsInheritsArrayElement+
+	DEDENT
+;
+ProfExtensionsInheritsArrayElement:
+	'-' ProfExtInheritsString
+;
+
+ProfExtRemove:
+	'$remove' ':'
+		(removeString = ProfExtRemoveString
+		| removeArray = ProfExtRemoveArray)
+;
+ProfExtRemoveString:
+	extName=STRING
+;
+ProfExtRemoveArray:
+	INDENT
+		extensions += ProfExtRemoveArrayElement+
+	DEDENT
+;
+
+ProfExtRemoveArrayElement:
+	'-' ProfExtRemoveString
+;
+
+ProfExtArray:
+	extension += ProfExtArrayElement+
+;
+ProfExtArrayElement:
+	name=STRING ':'
+	INDENT (
+		'presence' ':' presence=ProfExtPresence &
+		'version' ':' versionReqs=ProfExtVersionRequirements &
+		('note' ':' note=StringType)?
+	) DEDENT
+;
+
+ProfExtPresence
+	: ProfExtPresenceElement
+	| ProfExtPresenceOptElement
+;
+ProfExtPresenceElement: element=('mandatory' | 'optional');
+ProfExtPresenceOptElement:
+	INDENT
+		'optional' ':' optional=('expansion' | 'localized' | 'development')
+	DEDENT
+;
+
+ProfExtVersionRequirements
+	: extVersionReqString = ProfExtVersionReqString
+	| extVersonReqArray = ProfExtVersionReqArray
+;
+
+ProfExtVersionReqString: versionReq = STRING;
+ProfExtVersionReqArray:
+	INDENT
+		versionReqs += ProfExtVersionReqArrayElement+
+	DEDENT
+;
+ProfExtVersionReqArrayElement:
+	'-' ProfExtVersionReqString
+;
+
+
+
+
+/*
+ * Interrupt Code stuff (see interrupt_code_schema.json)
+ */
+IntrptCodeKind:'kind' ':' kind="interrupt_code";
+IntrptCodeName:'name' ':' name=STRING;
+IntrptCodeNum:'num' ':' num=INT;
+
+
+
+/*
+ * Exception Code stuff (see exception_code_schema.json)
+ */
+ECKind: 'kind' ':' kind="exception_code";
+ECName: 'name' ':' name=STRING;
+Num: 'num' ':' num=INT;
+
+
+
+/*
+ * Inst Opcode Code stuff (see inst_opcode_code_schema.json)
+ */
+InstOpcodeKind: 'kind' ':' kind="instruction_opcode";
+InstOpcodeName: 'name' ':' name=STRING;
+InstOpcodeData: 'data' ':'
+	INDENT (
+		('display_name' ':' displayName=STRING) &
+		('value' ':' (value=Bin | value=Hex | valueInt=INT)) &
+		('location' ':' (location=Range | locationInt=INT))? &
+		('parent_of' ':' (parentOf=StringArray | parentOfString=STRING))?
+	) DEDENT
+;
+
+
+
+/*
+ * Inst Var Type stuff (see inst_variable_type_schema.json)
+ */
+
+InstVarTypeKind:
+	'kind' ':' kind='instruction_variable_type'
+;
+InstVarTypeName:
+	'name' ':' name=STRING
+;
+InstVarTypeType:
+	'type' ':' type=VarTypeEnum
+;
+RegisterFile:
+	'register_file' ':' registerFile=RegisterFileEnum
+;
+InstVarTypeAccess:
+	'access' ':' access=AccessEnum
+;
+
+enum AccessEnum:
+	R = 'R' |
+	W = 'W' |
+	RW = 'RW'
+;
+enum VarTypeEnum:
+	REGISTER_REFERENCE = 'register_reference' |
+	IMMEDIATE = 'immediate'
+;
+enum RegisterFileEnum:
+	X = 'X' |
+	F = 'F' |
+	V = 'V'
+;
+
+
+
+/*
+ * Manual stuff (see manual_schema.json)
+ */
+
+SpecState: 'state' ':' state=stateEnum;
+
+enum stateEnum:
+	DEVELOPMENT = 'development' |
+	FROZEN = 'frozen' |
+	PUBLICREVIEW = 'public-review' |
+	RATIFICATIONREADY = 'ratification-ready' |
+	RATIFIED = 'ratified' |
+	NONSTANDARDRELEASED = 'nonstandard-released'
+;
+
+MarketingName: 'marketing_name' ':' marketingName=STRING;
+
+ManualName: 'name' ':' name=STRING;
+
+ManualKind: 'kind' ':' kind="manual";
+
+
+
+/*
+ * Manual Version stuff (see manual_version_schema.json)
+ */
+
+ManualVersionKind: 'kind' ':' kind="manual_version";
+ManualVersionName: 'name' ':' name=STRING;
+ManualVersionManual: 'manual' ':' '{' '$ref' ':' ref=STRING  '}';
+ManualVersionVersion: 'version' ':' version=STRING;
+MarketingVersion: 'marketing_version' ':' marketingVersion=STRING;
+ManualVersionState: 'state' ':' state=SpecStateEnum;
+
+enum SpecStateEnum:
+	DEVELOPMENT = 'development' |
+	FROZEN = 'frozen' |
+	PUBLIC_REVIEW = 'public-review' |
+	RATIFICATION_READY = 'ratification-ready' |
+	RATIFIED = 'ratified' |
+	NONSTANDARD_RELEASED = 'nonstandard-released'
+;
+
+ManualVersionVolumes:
+	'volumes' ':'
+	INDENT
+		volumes+=VolumesArr+
+	DEDENT
+;
+
+VolumesArr:
+	'-' 'title' ':' title=STRING
+	INDENT (
+		('description' ':' desc=STRING) &
+		('chapters' ':'
+			INDENT
+			(chapters+=ChapterElement+)
+			DEDENT)? &
+		('authors' ':'
+			INDENT
+			(authors+=AuthorElement+)
+			DEDENT) &
+		('extensions' ':'
+			INDENT
+			(extension+=ExtensionElement+)
+			DEDENT)? &
+		('changes' ':'
+			INDENT
+			(change+=ChangeString+)
+			DEDENT)?
+
+	) DEDENT
+;
+
+ChangeString:
+	'-' changeString=STRING
+;
+
+ExtensionElement:
+	'-' '{' 'name' ':' name=STRING ',' 'version' ':' version=STRING '}'
+;
+
+AuthorElement:
+	'-' 'name' ':' name=STRING
+	INDENT (
+		('email' ':' email=STRING)? &
+		('organization' ':'
+			INDENT
+				(org=OrgInfo)
+			DEDENT
+		)?
+	) DEDENT
+;
+
+OrgInfo:
+	'name' ':' name=STRING &
+	'url' ':' url=STRING
+;
+
+ChapterElement:	 '-' element=STRING;
+
+
+IsaManualTree: 'isa_manual_tree' ':' tree=STRING;
+
+UsesIsaManual: 'uses_isa_manual' ':' uses=Boolean;
+
+
+
+/*
+ * Profile_Family stuff (see profile_family_schema.json)
+ */
+
+PFKind:
+	'kind' ':' kind='profile_family'
+;
+
+PFName:
+	'name' ':' name=STRING
+;
+
+PFMarketingName:
+	'marketing_name' ':' marketingName=STRING
+;
+
+PFNamingScheme:
+	'naming_scheme' ':' namingScheme=STRING
+;
+
+/*
+ * Config stuff (see config_schema.json)
+ */
+ConfigModel:
+	FullConfiguration | PartialConfiguration | Unconfiguration
+;
+
+/*
+ * Full Config
+ */
+FullConfiguration:
+	schema = Schema // must be "config_schema.json#"
+	kind = ConfigKind &
+	type = FullConfigurationType &
+	name = ConfigName &
+	description = Description &
+	archOverlay = ArchOverlay? &
+	source = Source? &
+	params = ConfigParams &
+	implementedExtensions = ImplementedExtensions
+;
+
+FullConfigurationType: 'type' ':' type="fully_configured";
+
+ImplementedExtensions:
+	'implemented_extensions' ':'
+	INDENT
+		extensions += ImplementedExtensionElement+
+	DEDENT
+;
+ImplementedExtensionElement:
+	'-' '[' name=STRING ',' version=STRING ']'
+;
+
+
+/*
+ * Partial Config
+ */
+PartialConfiguration:
+	schema = Schema // must be "config_schema.json#"
+	kind = ConfigKind &
+	type = PartialConfigurationType &
+	name = ConfigName &
+	description = Description &
+	archOverlay = ArchOverlay? &
+	source = Source? &
+	params = ConfigParams? &
+	mandatoryExtensions = MandatoryExtensions &
+	nonMandatoryExtensions = NonMandatoryExtensions? &
+	prohibitedExtensions = ProhibitedExtensions? &
+	implementedExtensions = ImplementedExtensionsNull? &
+	additionalExtensions = AdditionalExtensions? &
+	requirements = Requirements?
+;
+
+PartialConfigurationType: 'type' ':' type="partially_configured";
+MandatoryExtensions:
+	'mandatory_extensions' ':'
+	INDENT
+		extensions += ConfigExtensionRequirement+
+	DEDENT
+;
+
+NonMandatoryExtensions:
+	'non_mandatory_extensions' ':'
+	INDENT
+		extensions += ConfigExtensionRequirement+
+	DEDENT
+;
+
+ProhibitedExtensions:
+	'prohibited_extensions' ':'
+	INDENT
+		extensions += ConfigExtensionRequirement+
+	DEDENT
+;
+
+ImplementedExtensionsNull:
+	'implemented_extensions' ':' ext='null'
+;
+
+ConfigExtensionRequirement:
+	'-' 'name' ':' name=STRING
+	(INDENT
+		version=ExtensionVersion?
+	DEDENT)?
+;
+
+ExtensionVersion:
+	'version' ':' version=STRING
+;
+AdditionalExtensions: 'additional_extensions' ':' additionalExtensions=Boolean;
+
+
+
+/*
+ * Unconfig
+ */
+Unconfiguration:
+	schema = Schema // must be "config_schema.json#"
+	kind = ConfigKind &
+	type = UnconfigurationType &
+	name = ConfigName &
+	description = Description &
+	archOverlay = ArchOverlay? &
+	source = Source?
+;
+
+UnconfigurationType: 'type' ':' type="unconfigured";
+
+// shared config rules
+ConfigKind: 'kind' ':' kind="architecture_configuration";
+
+ConfigName:'name' ':' name=STRING;
+
+ArchOverlay: 'arch_overlay' ':' archOverlay=STRING;
+
+// NOTE: The config schema has not implemented this field, so we
+// 		 leave it as a string for now (TODO)
+ConfigParams:
+	'params' ':' params=STRING
+//	INDENT
+//		params += ConfigParam*
+//	DEDENT
+;
+//ConfigParam: key=STRING ':' value=ConfigParamValue;
+//
+//ConfigParamValue:
+//	stringValue=STRING |
+//	intValue=INT |
+//	boolValue=Boolean |
+//	arrayValue=ConfigParamArray
+//
+//;
+//
+//ConfigParamArray:
+//	InlineArray | BulletedArray
+//;
+//
+//InlineArray:
+//	'['
+//		values+=ConfigParamArrayElement (',' values+=ConfigParamArrayElement)*
+//	']'
+//;
+//
+//BulletedArray:
+//	INDENT
+//		values+=ConfigParamArrayElement+
+//	DEDENT
+//;
+//
+//ConfigParamArrayElement:
+//	('-')? (
+//		stringValue=STRING |
+//		intValue=INT |
+//		boolValue=Boolean
+//	)
 //;
 
+
+
+/*
+ * Non ISA stuff (see "non_isa_schema.json#")
+ */
+Sections:
+	'sections' ':'
+	INDENT
+		sections+=Section+
+	DEDENT
+;
+Authors:
+	'authors' ':'
+	INDENT
+		authors+=AuthorElement+
+	DEDENT
+;
+NonIsaKind:
+	'kind' ':' kind="non-isa_specification"
+;
+
+NonIsaName:
+	'name' ':' name=STRING
+;
+NonIsaVersion:
+	'version' ':' version=STRING
+;
+Section:
+	'-' 'title' ':' title=STRING
+	INDENT (
+		('level' ':' level=INT)? &
+		'content' ':' content=StringType &
+		('when()' ':' when=Idl)?
+	) DEDENT
+;
+References:
+	'references' ':'
+	INDENT
+		references+=Reference+
+	DEDENT
+;
+Reference:
+	'-' 'title' ':' title=STRING
+	INDENT
+	'url' ':' url=STRING
+	('description' ':' description=STRING)?
+	DEDENT
+;
+
+NonIsaRatificationDate: "ratification_date" ":" date=STRING;
+
+Condition: placeholder=STRING;
+/*
+ * Conditions
+ * TODO: currently breaks syntax errors
+ */
+//Condition: YAMLCondition | IDLCondition | ConditionArray;
+
+ConditionArray: ConditionArrayList | ConditionNot;
+
+ConditionArrayList:
+	( 'allOf' ':'
+	| 'anyOf' ':'
+	| 'oneOf' ':'
+	| 'noneOf' ':') &
+	(INDENT
+		condArray+=ConditionElement+
+	DEDENT)
+;
+
+// Mandates only one element for 'not'
+ConditionNot:
+	'not' ':'
+	INDENT
+		condArray=ConditionElement
+	DEDENT
+;
+
+ConditionElement: '-' cond=Condition;
+
+YAMLCondition:
+	ExtensionCondition | XLenCondition | ParamCondition | YAMLArray | YAMLIfThen
+;
+
+YAMLArray: YAMLArrayList | YAMLNot;
+
+YAMLArrayList:
+	( 'allOf' ':'
+	| 'anyOf' ':'
+	| 'oneOf' ':'
+	| 'noneOf' ':') &
+	(INDENT
+		yamlArray+=YAMLElement+
+	DEDENT)
+;
+
+// Mandates only one element for 'not'
+YAMLNot:
+	'not' ':'
+	INDENT
+		yamlArray=YAMLElement
+	DEDENT
+;
+
+YAMLElement: '-' yamlArrayElement=YAMLCondition;
+
+YAMLIfThen:
+	('if' ':'
+	INDENT
+		ifCond=YAMLCondition
+	DEDENT) &
+	('then' ':'
+	INDENT
+		thenCond=YAMLCondition
+	DEDENT)
+;
+
 IDLCondition:
-	"idl()" ":" idl=IDL
-	reason?=Reason
+	'idl()' ':' idl=Idl
 ;
 
 ExtensionCondition:
-	STRING /* TODO */
+	'extension' ':'
+	INDENT
+		extCond=Extension
+	DEDENT
 ;
+
+Extension:
+	 requirement=ExtRequirement
+	| array=ExtArray
+	| ifThen=ExtIfThen
+;
+
+ExtRequirement:
+	'name' ':' name=STRING &
+	(version=ExtVersion)?
+;
+
+ExtVersion: IndentVersion | NoIndentVersion;
+IndentVersion:
+	INDENT
+		'version' ':' verReqs=VersionRequirements
+	DEDENT
+;
+NoIndentVersion: 'version' ':' verReqs=VersionRequirements;
+
+VersionRequirements:
+	versionReq=STRING
+;
+
+ExtArray: ExtArrayList | ExtNot;
+
+ExtArrayList:
+	( 'allOf' ':'
+	| 'anyOf' ':'
+	| 'oneOf' ':'
+	| 'noneOf' ':') &
+	(INDENT
+		extArray+=ExtArrayElement+
+	DEDENT)
+;
+
+// Mandates only one element for 'not'
+ExtNot:
+	'not' ':'
+	INDENT
+		extNotArray=ExtArrayElement
+	DEDENT
+;
+
+ExtArrayElement: '-' extConds=Extension;
+
+ExtIfThen:
+	('if' ':'
+	INDENT
+		ifCond=Condition
+	DEDENT) &
+	('then' ':'
+	INDENT
+		thenCond=ExtensionCondition
+	DEDENT)
+;
+
 
 ParamCondition:
-	STRING /* TODO */
+	'param' ':'
+	INDENT
+		param=Param
+	DEDENT
 ;
 
-XLenCondition: xlen=INT; /* can be 32 or 64 (TODO: implement in validator) */
+Param: ParamFieldsList | ParamArray;
 
-Reason: "reason" ":" reasonStr=STRING;
+ParamArray: ParamArrayList | ParamNot;
+
+ParamArrayList:
+	( 'allOf' ':'
+	| 'anyOf' ':'
+	| 'oneOf' ':'
+	| 'noneOf' ':') &
+	(INDENT
+		paramArray+=ParamArrayElement+
+	DEDENT)
+;
+
+// Mandates only one element for 'not'
+ParamNot:
+	'not' ':'
+	INDENT
+		paramArray=ParamArrayElement
+	DEDENT
+;
+
+ParamArrayElement: '-' paramElement=Param;
+
+ParamFieldsList:
+	'name' ':' name=STRING &
+	(INDENT
+		paramFieldsList+=ParamFields+
+	DEDENT)?
+;
+
+ParamFields:
+	(ParamIndex |
+	ParamSize |
+	ParamEqual |
+	ParamOneOf |
+	ParamNotEqual |
+	ParamGreaterThan |
+	ParamLessThan |
+	ParamGreaterEqual |
+	ParamLessEqual |
+	ParamIncludes |
+	ParamReason)
+;
+
+ParamIndex: 'index' ':' index=INT;
+ParamSize: 'size' ':' size=Boolean;
+ParamEqual: 'equal' ':' (equalInt=INT | equalBool=Boolean | equalStr=STRING);
+ParamOneOf:
+	'oneOf' ':'
+	INDENT
+		oneOf+=ParamOneOfElement+
+	DEDENT;
+ParamOneOfElement: '-' (paramInt=INT|paramStr=STRING);
+ParamNotEqual: 'notEqual' ':' (notEqualInt=INT | notEqualStr=STRING | notEqualBool=Boolean);
+ParamGreaterThan: 'greaterThan' ':' greaterThan=INT;
+ParamLessThan: 'lessThan' ':' lessThan=INT;
+ParamGreaterEqual: 'greaterThanOrEqual' ':' greaterEqual=INT;
+ParamLessEqual: 'lessThanOrEqual' ':' lessEqual=INT;
+ParamIncludes: 'includes' ':' (includeInt=INT | includeStr=STRING);
+ParamReason: 'reason' ':' reason=STRING;
+
+XLenCondition: 'xlen' ':' xlen=INT;
 
 
 
-/* IDL Grammar */
-IDL: idl=STRING;
-
-
-
-
-
-/* Keywords */
+/*
+ * Keywords
+ */
 UndefinedLegal: "UNDEFINED_LEGAL";
 Boolean returns ecore::EBoolean: "true" | "false";
 
-/* Helpers*/
-StringArray: '[' names+=STRING (',' names+=STRING)+ ']';
-
-/* Terminals */
-terminal CSR_NAME:
-	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
-;
-terminal FIELD_NAME:
-	('a'..'z' | 'A'..'Z')+
-;
-terminal CSR_FIELD:
-	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
-	('.')('A'..'Z' | '0'..'9')+
-;
-terminal CSR_FIELD_BITS:
-	('a'..'z')('a'..'z' | '0'..'9' | '_' | '.')+
-	'.'('A'..'Z' | '0'..'9')+
-	'[' ('0'..'9')+(':'('0'..'9')+)? ']'
-;
 
 
+/*
+ * Helpers
+ */
+IntArray: '[' element+=INT (',' element+=INT) + ']';
+
+
+StringArray: '[' item+=STRING (',' item+=STRING) + ']';
+
+// Single line or multi-line string
+StringType: (value=STRING) | MultilineString;
+MultilineString: '|' value=STRING;
+
+
+
+/*
+ * Hex & Binary
+ */
 Hex: value=HEX_VALUE;
 terminal HEX_VALUE returns ecore::EInt:
 	('0x' | '0X')
@@ -204,8 +1518,21 @@ terminal HEX_VALUE returns ecore::EInt:
 	(('0'..'9' | 'A'..'F' | 'a'..'f' | '_')*('0'..'9' | 'A'..'F' | 'a'..'f'))?
 ;
 
+Bin: value=BIN_VALUE;
+terminal BIN_VALUE returns ecore::EInt:
+	('0b' | '0B')
+	('0'|'1')
+	(('0' | '1' | '_')*('0' | '1'))?
+;
+
+/*
+ * Terminals
+ */
+
+// For whitespace awareness
 terminal INDENT: 'synthetic:INDENT';
 terminal DEDENT: 'synthetic:DEDENT';
+
 
 @Override
 terminal SL_COMMENT: '#' !('\n'|'\r')*;

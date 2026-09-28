@@ -4,14 +4,23 @@
 package org.xtext.example.udb;
 
 import org.eclipse.xtext.conversion.IValueConverterService;
+import org.eclipse.xtext.naming.IQualifiedNameProvider;
+import org.xtext.example.udb.naming.UdbQualifiedNameProvider;
 
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class UdbRuntimeModule extends AbstractUdbRuntimeModule {
+
 	@Override
 	public Class<? extends IValueConverterService> bindIValueConverterService() {
 	    return org.xtext.example.udb.UdbValueConverter.class;
 	}
+
+	@Override
+	public Class<? extends IQualifiedNameProvider> bindIQualifiedNameProvider() {
+		return UdbQualifiedNameProvider.class;
+	}
+
 }

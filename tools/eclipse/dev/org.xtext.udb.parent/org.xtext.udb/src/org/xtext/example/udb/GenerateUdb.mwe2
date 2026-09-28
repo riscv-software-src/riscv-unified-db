@@ -52,8 +52,11 @@ Workflow {
 			generator = {
 				generateXtendStub = true
 			}
-			junitSupport = {
-				junitVersion = "6"
+			parserGenerator = {
+				options = {
+					backtrack = true
+					skipUnusedRules = true
+				}
 			}
 		}
 	}
