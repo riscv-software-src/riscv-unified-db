@@ -1,0 +1,49 @@
+{
+  "chunk_id": "chunk_050",
+  "source_file": "smepmp.adoc",
+  "start_line": 1,
+  "end_line": 76,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "It is expected that BootROM will set ``mseccfg.MMWP`` and/or ``mseccfg.MML`` during early boot, before jumping to the firmware, so that the firmware will be able to determine the presence of Smepmp by reading ``mseccfg`` and checking the state of ``mseccfg.MMWP`` and ``mseccfg.MML``.",
+      "line_number": 75,
+      "parameter_name": "SMEPMP_BOOTROM_DISCOVERY_METHOD",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The specification expects but does not require that BootROM sets these fields for discovery. This is an implementation choice about how software discovery is facilitated, though the language is somewhat suggestive rather than definitively optional."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associated rules.",
+      "line_number": 44,
+      "reason": "This describes what the extension defines, not an implementation choice. The fields themselves are part of the extension specification."
+    },
+    {
+      "excerpt": "The physical memory protection rules when `mseccfg.MML` is set to 1 are summarized in the truth table below.",
+      "line_number": 48,
+      "reason": "This introduces behavioral specification (the truth table) that describes what happens when MML=1, not an implementation parameter."
+    },
+    {
+      "excerpt": "Since all fields defined in ``mseccfg`` as part of this extension are locked when set (``MMWP``/``MML``) or locked when cleared (``RLB``), software can't poll them for determining the presence of Smepmp.",
+      "line_number": 73,
+      "reason": "This describes the locking behavior of the fields, which is a fixed requirement of the extension, not an implementation choice."
+    },
+    {
+      "excerpt": "Without the Smepmp extension, it is not possible for a PMP rule to be *enforced* only on non-Machine modes and *denied* on Machine mode",
+      "line_number": 32,
+      "reason": "This describes the limitations of the base PMP mechanism without Smepmp, not an implementation parameter of Smepmp itself."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"It is expected that BootROM will set ``mseccfg.MMWP`` and/or ``mseccfg.MML`` during early boot, before jumping to the firmware, so that the firmware will be able to determine the presence of Smepmp by reading ``mseccfg`` and checking the state of ``mseccfg.MMWP`` and ``mseccfg.MML``.\",\n      \"line_number\": 75,\n      \"parameter_name\": \"SMEPMP_BOOTROM_DISCOVERY_METHOD\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The specification expects but does not require that BootROM sets these fields for discovery. This is an implementation choice about how software discovery is facilitated, though the language is somewhat suggestive rather than definitively optional.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associated rules.\",\n      \"line_number\": 44,\n      \"reason\": \"This describes what the extension defines, not an implementation choice. The fields themselves are part of the extension specification.\"\n    },\n    {\n      \"excerpt\": \"The physical memory protection rules when `mseccfg.MML` is set to 1 are summarized in the truth table below.\",\n      \"line_number\": 48,\n      \"reason\": \"This introduces behavioral specification (the truth table) that describes what happens when MML=1, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"Since all fields defined in ``mseccfg`` as part of this extension are locked when set (``MMWP``/``MML``) or locked when cleared (``RLB``), software can't poll them for determining the presence of Smepmp.\",\n      \"line_number\": 73,\n      \"reason\": \"This describes the locking behavior of the fields, which is a fixed requirement of the extension, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Without the Smepmp extension, it is not possible for a PMP rule to be *enforced* only on non-Machine modes and *denied* on Machine mode\",\n      \"line_number\": 32,\n      \"reason\": \"This describes the limitations of the base PMP mechanism without Smepmp, not an implementation parameter of Smepmp itself.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7443,
+  "output_tokens": 636,
+  "latency_ms": 12196,
+  "timestamp": "2026-05-25T20:48:53.232733+00:00",
+  "error": null,
+  "retry_count": 0
+}

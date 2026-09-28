@@ -1,0 +1,274 @@
+{
+  "chunk_id": "chunk_020",
+  "source_file": "machine.adoc",
+  "start_line": 1,
+  "end_line": 3359,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "a value of zero can be returned to indicate the `misa` register has not been implemented",
+      "line_number": 23,
+      "parameter_name": "MISA_CSR_IMPLEMENTED",
+      "existing_udb_name": "MISA_CSR_IMPLEMENTED",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether the misa register is implemented (returns actual values) or not implemented (returns zero). This is a binary choice about the register's functionality."
+    },
+    {
+      "excerpt": "The Extensions field is a *WARL* field that can contain writable bits where the implementation allows the supported ISA to be modified.",
+      "line_number": 60,
+      "parameter_name": "MUTABLE_MISA_EXTENSIONS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The Extensions field is WARL, and implementations can choose which extension bits are writable vs read-only. This defines the set of legal values for the Extensions field."
+    },
+    {
+      "excerpt": "This register must be readable in any implementation, but a value of 0 can be returned to indicate the field is not implemented",
+      "line_number": 179,
+      "parameter_name": "MARCHID_IMPLEMENTED",
+      "existing_udb_name": "MARCHID_IMPLEMENTED",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether marchid returns meaningful values or zero to indicate it's not implemented. This is a binary choice about register functionality."
+    },
+    {
+      "excerpt": "This register must be readable in any implementation, but a value of 0 can be returned to indicate that the field is not implemented.",
+      "line_number": 200,
+      "parameter_name": "MIMPID_IMPLEMENTED",
+      "existing_udb_name": "MIMPID_IMPLEMENTED",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether mimpid returns meaningful values or zero to indicate it's not implemented. This is a binary choice about register functionality."
+    },
+    {
+      "excerpt": "The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields that control the endianness of memory accesses other than instruction fetches.",
+      "line_number": 679,
+      "parameter_name": "M_MODE_ENDIANNESS",
+      "existing_udb_name": "M_MODE_ENDIANNESS",
+      "class": "NORM_CSR_WARL",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The MBE field is WARL, allowing implementations to choose which endianness values are supported (little-endian only, big-endian only, or both)."
+    },
+    {
+      "excerpt": "an implementation may make SBE be a read-only copy of MBE.",
+      "line_number": 724,
+      "parameter_name": "S_MODE_ENDIANNESS",
+      "existing_udb_name": "S_MODE_ENDIANNESS",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether SBE is independent, read-only copy of MBE, or has its own WARL behavior for endianness control."
+    },
+    {
+      "excerpt": "an implementation may make UBE be a read-only copy of either MBE or SBE.",
+      "line_number": 725,
+      "parameter_name": "U_MODE_ENDIANNESS",
+      "existing_udb_name": "U_MODE_ENDIANNESS",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether UBE is independent, read-only copy of MBE, read-only copy of SBE, or has its own WARL behavior."
+    },
+    {
+      "excerpt": "The TVM (Trap Virtual Memory) bit is a *WARL* field that supports intercepting supervisor virtual-memory management operations.",
+      "line_number": 773,
+      "parameter_name": "MSTATUS_TVM_IMPLEMENTED",
+      "existing_udb_name": "MSTATUS_TVM_IMPLEMENTED",
+      "class": "NORM_CSR_WARL",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "TVM is WARL, so implementations can choose whether to support TVM functionality or make it read-only zero."
+    },
+    {
+      "excerpt": "The TW (Timeout Wait) bit is a *WARL* field that supports intercepting the WFI instruction",
+      "line_number": 789,
+      "parameter_name": "MSTATUS_TW_WARL",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "TW is WARL, so implementations can choose which values are legal for the TW field."
+    },
+    {
+      "excerpt": "The TSR (Trap SRET) bit is a *WARL* field that supports intercepting the supervisor exception return instruction, SRET.",
+      "line_number": 804,
+      "parameter_name": "MSTATUS_TSR_WARL",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "TSR is WARL, so implementations can choose which values are legal for the TSR field."
+    },
+    {
+      "excerpt": "The FS[1:0] and VS[1:0] *WARL* fields",
+      "line_number": 825,
+      "parameter_name": "MSTATUS_FS_LEGAL_VALUES",
+      "existing_udb_name": "MSTATUS_FS_LEGAL_VALUES",
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "FS is WARL, so implementations choose which of the four status values (Off, Initial, Clean, Dirty) are legal."
+    },
+    {
+      "excerpt": "The FS[1:0] and VS[1:0] *WARL* fields",
+      "line_number": 825,
+      "parameter_name": "MSTATUS_VS_LEGAL_VALUES",
+      "existing_udb_name": "MSTATUS_VS_LEGAL_VALUES",
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "VS is WARL, so implementations choose which of the four status values (Off, Initial, Clean, Dirty) are legal."
+    },
+    {
+      "excerpt": "it is implementation-defined whether FS transitions to Dirty.",
+      "line_number": 1014,
+      "parameter_name": "HW_MSTATUS_FS_DIRTY_UPDATE",
+      "existing_udb_name": "HW_MSTATUS_FS_DIRTY_UPDATE",
+      "class": "SW_RULE",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "Whether hardware updates mstatus.FS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing FS state with proper fencing."
+    },
+    {
+      "excerpt": "it is implementation-defined whether an instruction that writes a vector register or vector CSR but does not alter its contents causes VS to transition to Dirty.",
+      "line_number": 1030,
+      "parameter_name": "HW_MSTATUS_VS_DIRTY_UPDATE",
+      "existing_udb_name": "HW_MSTATUS_VS_DIRTY_UPDATE",
+      "class": "SW_RULE",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "Whether hardware updates mstatus.VS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing VS state."
+    },
+    {
+      "excerpt": "The `mtvec` register must always be implemented, but can contain a read-only value.",
+      "line_number": 1217,
+      "parameter_name": "MTVEC_ACCESS",
+      "existing_udb_name": "MTVEC_ACCESS",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether mtvec is read-only or read-write. This is a binary choice about the mutability of the register."
+    },
+    {
+      "excerpt": "If `mtvec` is writable, the set of values the register may hold can vary by implementation.",
+      "line_number": 1219,
+      "parameter_name": "MTVEC_MODES",
+      "existing_udb_name": "MTVEC_MODES",
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The mtvec MODE field is WARL, and the set of supported mode values (Direct=0, Vectored=1) varies by implementation."
+    },
+    {
+      "excerpt": "An implementation can choose to subset the delegatable traps, with the supported delegatable bits found by writing one to every bit location, then reading back the value in `medeleg` or `mideleg` to see which bit positions hold a one.",
+      "line_number": 1310,
+      "parameter_name": "MEDELEG_MIDELEG_WARL",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Implementations can choose which trap delegation bits are supported in medeleg and mideleg. The WARL behavior determines which bits can be set."
+    },
+    {
+      "excerpt": "Each individual bit in register `mip` may be writable or may be read-only.",
+      "line_number": 1370,
+      "parameter_name": "MIP_BITS_WARL",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Implementations choose which bits in mip are writable vs read-only, controlling software's ability to set pending interrupts."
+    },
+    {
+      "excerpt": "The hardware performance monitor includes 29 additional 64-bit event counters, `mhpmcounter3`-`mhpmcounter31`.",
+      "line_number": 1550,
+      "parameter_name": "HPM_COUNTER_EN",
+      "existing_udb_name": "HPM_COUNTER_EN",
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Implementations choose which of the 29 hardware performance counters to implement. Each can be implemented or made read-only zero."
+    },
+    {
+      "excerpt": "The event selector CSRs, `mhpmevent3`-`mhpmevent31`, are 64-bit *WARL* registers that control which event causes the corresponding counter to increment.",
+      "line_number": 1552,
+      "parameter_name": "HPM_EVENTS",
+      "existing_udb_name": "HPM_EVENTS",
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The mhpmevent registers are WARL, and implementations define which event codes are supported for each counter."
+    },
+    {
+      "excerpt": "all fields are *WARL* and may be read-only zero, indicating reads to the corresponding counter will cause an illegal-instruction exception when executing in a less-privileged mode.",
+      "line_number": 1635,
+      "parameter_name": "MCOUNTEREN_EN",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The mcounteren fields are WARL, allowing implementations to choose which counters can be enabled for lower privilege modes."
+    },
+    {
+      "excerpt": "The counter-inhibit register `mcountinhibit` is a 32-bit *WARL* register that controls which of the hardware performance-monitoring counters increment.",
+      "line_number": 1647,
+      "parameter_name": "COUNTINHIBIT_EN",
+      "existing_udb_name": "COUNTINHIBIT_EN",
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The mcountinhibit register is WARL, allowing implementations to choose which counters can be inhibited."
+    },
+    {
+      "excerpt": "The granularity of PMP access control settings are platform-specific, but the standard PMP encoding supports regions as small as four bytes.",
+      "line_number": 3340,
+      "parameter_name": "PMP_GRANULARITY",
+      "existing_udb_name": "PMP_GRANULARITY",
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The PMP granularity is a platform-specific implementation choice that determines the minimum size of protected regions."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This register must be readable in any implementation",
+      "line_number": 22,
+      "reason": "This is a fixed requirement that applies to all implementations, not an implementation choice."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 1254,
+      "reason": "This describes behavior when mtvec.MODE has a specific value, not the parameter itself. The parameter is which MODE values are supported."
+    },
+    {
+      "excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "line_number": 3530,
+      "reason": "Here 'may' means permission for software to use a technique, not an implementation choice. This describes a software discovery method."
+    },
+    {
+      "excerpt": "The `mcycle` CSR counts the number of clock cycles executed by the processor core on which the hart is running.",
+      "line_number": 1540,
+      "reason": "This describes the fixed behavior of mcycle, not an implementation-defined parameter."
+    },
+    {
+      "excerpt": "All counters should be implemented",
+      "line_number": 1556,
+      "reason": "This is a recommendation ('should'), not a requirement, and the actual parameter is which counters are implemented vs read-only zero."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"a value of zero can be returned to indicate the `misa` register has not been implemented\",\n      \"line_number\": 23,\n      \"parameter_name\": \"MISA_CSR_IMPLEMENTED\",\n      \"existing_udb_name\": \"MISA_CSR_IMPLEMENTED\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether the misa register is implemented (returns actual values) or not implemented (returns zero). This is a binary choice about the register's functionality.\"\n    },\n    {\n      \"excerpt\": \"The Extensions field is a *WARL* field that can contain writable bits where the implementation allows the supported ISA to be modified.\",\n      \"line_number\": 60,\n      \"parameter_name\": \"MUTABLE_MISA_EXTENSIONS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The Extensions field is WARL, and implementations can choose which extension bits are writable vs read-only. This defines the set of legal values for the Extensions field.\"\n    },\n    {\n      \"excerpt\": \"This register must be readable in any implementation, but a value of 0 can be returned to indicate the field is not implemented\",\n      \"line_number\": 179,\n      \"parameter_name\": \"MARCHID_IMPLEMENTED\",\n      \"existing_udb_name\": \"MARCHID_IMPLEMENTED\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether marchid returns meaningful values or zero to indicate it's not implemented. This is a binary choice about register functionality.\"\n    },\n    {\n      \"excerpt\": \"This register must be readable in any implementation, but a value of 0 can be returned to indicate that the field is not implemented.\",\n      \"line_number\": 200,\n      \"parameter_name\": \"MIMPID_IMPLEMENTED\",\n      \"existing_udb_name\": \"MIMPID_IMPLEMENTED\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether mimpid returns meaningful values or zero to indicate it's not implemented. This is a binary choice about register functionality.\"\n    },\n    {\n      \"excerpt\": \"The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields that control the endianness of memory accesses other than instruction fetches.\",\n      \"line_number\": 679,\n      \"parameter_name\": \"M_MODE_ENDIANNESS\",\n      \"existing_udb_name\": \"M_MODE_ENDIANNESS\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The MBE field is WARL, allowing implementations to choose which endianness values are supported (little-endian only, big-endian only, or both).\"\n    },\n    {\n      \"excerpt\": \"an implementation may make SBE be a read-only copy of MBE.\",\n      \"line_number\": 724,\n      \"parameter_name\": \"S_MODE_ENDIANNESS\",\n      \"existing_udb_name\": \"S_MODE_ENDIANNESS\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether SBE is independent, read-only copy of MBE, or has its own WARL behavior for endianness control.\"\n    },\n    {\n      \"excerpt\": \"an implementation may make UBE be a read-only copy of either MBE or SBE.\",\n      \"line_number\": 725,\n      \"parameter_name\": \"U_MODE_ENDIANNESS\",\n      \"existing_udb_name\": \"U_MODE_ENDIANNESS\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether UBE is independent, read-only copy of MBE, read-only copy of SBE, or has its own WARL behavior.\"\n    },\n    {\n      \"excerpt\": \"The TVM (Trap Virtual Memory) bit is a *WARL* field that supports intercepting supervisor virtual-memory management operations.\",\n      \"line_number\": 773,\n      \"parameter_name\": \"MSTATUS_TVM_IMPLEMENTED\",\n      \"existing_udb_name\": \"MSTATUS_TVM_IMPLEMENTED\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"TVM is WARL, so implementations can choose whether to support TVM functionality or make it read-only zero.\"\n    },\n    {\n      \"excerpt\": \"The TW (Timeout Wait) bit is a *WARL* field that supports intercepting the WFI instruction\",\n      \"line_number\": 789,\n      \"parameter_name\": \"MSTATUS_TW_WARL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"TW is WARL, so implementations can choose which values are legal for the TW field.\"\n    },\n    {\n      \"excerpt\": \"The TSR (Trap SRET) bit is a *WARL* field that supports intercepting the supervisor exception return instruction, SRET.\",\n      \"line_number\": 804,\n      \"parameter_name\": \"MSTATUS_TSR_WARL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"TSR is WARL, so implementations can choose which values are legal for the TSR field.\"\n    },\n    {\n      \"excerpt\": \"The FS[1:0] and VS[1:0] *WARL* fields\",\n      \"line_number\": 825,\n      \"parameter_name\": \"MSTATUS_FS_LEGAL_VALUES\",\n      \"existing_udb_name\": \"MSTATUS_FS_LEGAL_VALUES\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"FS is WARL, so implementations choose which of the four status values (Off, Initial, Clean, Dirty) are legal.\"\n    },\n    {\n      \"excerpt\": \"The FS[1:0] and VS[1:0] *WARL* fields\",\n      \"line_number\": 825,\n      \"parameter_name\": \"MSTATUS_VS_LEGAL_VALUES\",\n      \"existing_udb_name\": \"MSTATUS_VS_LEGAL_VALUES\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"VS is WARL, so implementations choose which of the four status values (Off, Initial, Clean, Dirty) are legal.\"\n    },\n    {\n      \"excerpt\": \"it is implementation-defined whether FS transitions to Dirty.\",\n      \"line_number\": 1014,\n      \"parameter_name\": \"HW_MSTATUS_FS_DIRTY_UPDATE\",\n      \"existing_udb_name\": \"HW_MSTATUS_FS_DIRTY_UPDATE\",\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Whether hardware updates mstatus.FS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing FS state with proper fencing.\"\n    },\n    {\n      \"excerpt\": \"it is implementation-defined whether an instruction that writes a vector register or vector CSR but does not alter its contents causes VS to transition to Dirty.\",\n      \"line_number\": 1030,\n      \"parameter_name\": \"HW_MSTATUS_VS_DIRTY_UPDATE\",\n      \"existing_udb_name\": \"HW_MSTATUS_VS_DIRTY_UPDATE\",\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Whether hardware updates mstatus.VS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing VS state.\"\n    },\n    {\n      \"excerpt\": \"The `mtvec` register must always be implemented, but can contain a read-only value.\",\n      \"line_number\": 1217,\n      \"parameter_name\": \"MTVEC_ACCESS\",\n      \"existing_udb_name\": \"MTVEC_ACCESS\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether mtvec is read-only or read-write. This is a binary choice about the mutability of the register.\"\n    },\n    {\n      \"excerpt\": \"If `mtvec` is writable, the set of values the register may hold can vary by implementation.\",\n      \"line_number\": 1219,\n      \"parameter_name\": \"MTVEC_MODES\",\n      \"existing_udb_name\": \"MTVEC_MODES\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The mtvec MODE field is WARL, and the set of supported mode values (Direct=0, Vectored=1) varies by implementation.\"\n    },\n    {\n      \"excerpt\": \"An implementation can choose to subset the delegatable traps, with the supported delegatable bits found by writing one to every bit location, then reading back the value in `medeleg` or `mideleg` to see which bit positions hold a one.\",\n      \"line_number\": 1310,\n      \"parameter_name\": \"MEDELEG_MIDELEG_WARL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Implementations can choose which trap delegation bits are supported in medeleg and mideleg. The WARL behavior determines which bits can be set.\"\n    },\n    {\n      \"excerpt\": \"Each individual bit in register `mip` may be writable or may be read-only.\",\n      \"line_number\": 1370,\n      \"parameter_name\": \"MIP_BITS_WARL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Implementations choose which bits in mip are writable vs read-only, controlling software's ability to set pending interrupts.\"\n    },\n    {\n      \"excerpt\": \"The hardware performance monitor includes 29 additional 64-bit event counters, `mhpmcounter3`-`mhpmcounter31`.\",\n      \"line_number\": 1550,\n      \"parameter_name\": \"HPM_COUNTER_EN\",\n      \"existing_udb_name\": \"HPM_COUNTER_EN\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Implementations choose which of the 29 hardware performance counters to implement. Each can be implemented or made read-only zero.\"\n    },\n    {\n      \"excerpt\": \"The event selector CSRs, `mhpmevent3`-`mhpmevent31`, are 64-bit *WARL* registers that control which event causes the corresponding counter to increment.\",\n      \"line_number\": 1552,\n      \"parameter_name\": \"HPM_EVENTS\",\n      \"existing_udb_name\": \"HPM_EVENTS\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The mhpmevent registers are WARL, and implementations define which event codes are supported for each counter.\"\n    },\n    {\n      \"excerpt\": \"all fields are *WARL* and may be read-only zero, indicating reads to the corresponding counter will cause an illegal-instruction exception when executing in a less-privileged mode.\",\n      \"line_number\": 1635,\n      \"parameter_name\": \"MCOUNTEREN_EN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The mcounteren fields are WARL, allowing implementations to choose which counters can be enabled for lower privilege modes.\"\n    },\n    {\n      \"excerpt\": \"The counter-inhibit register `mcountinhibit` is a 32-bit *WARL* register that controls which of the hardware performance-monitoring counters increment.\",\n      \"line_number\": 1647,\n      \"parameter_name\": \"COUNTINHIBIT_EN\",\n      \"existing_udb_name\": \"COUNTINHIBIT_EN\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The mcountinhibit register is WARL, allowing implementations to choose which counters can be inhibited.\"\n    },\n    {\n      \"excerpt\": \"The granularity of PMP access control settings are platform-specific, but the standard PMP encoding supports regions as small as four bytes.\",\n      \"line_number\": 3340,\n      \"parameter_name\": \"PMP_GRANULARITY\",\n      \"existing_udb_name\": \"PMP_GRANULARITY\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The PMP granularity is a platform-specific implementation choice that determines the minimum size of protected regions.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This register must be readable in any implementation\",\n      \"line_number\": 22,\n      \"reason\": \"This is a fixed requirement that applies to all implementations, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 1254,\n      \"reason\": \"This describes behavior when mtvec.MODE has a specific value, not the parameter itself. The parameter is which MODE values are supported.\"\n    },\n    {\n      \"excerpt\": \"Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.\",\n      \"line_number\": 3530,\n      \"reason\": \"Here 'may' means permission for software to use a technique, not an implementation choice. This describes a software discovery method.\"\n    },\n    {\n      \"excerpt\": \"The `mcycle` CSR counts the number of clock cycles executed by the processor core on which the hart is running.\",\n      \"line_number\": 1540,\n      \"reason\": \"This describes the fixed behavior of mcycle, not an implementation-defined parameter.\"\n    },\n    {\n      \"excerpt\": \"All counters should be implemented\",\n      \"line_number\": 1556,\n      \"reason\": \"This is a recommendation ('should'), not a requirement, and the actual parameter is which counters are implemented vs read-only zero.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 51355,
+  "output_tokens": 4003,
+  "latency_ms": 62055,
+  "timestamp": "2026-05-25T20:31:39.879351+00:00",
+  "error": null,
+  "retry_count": 0
+}

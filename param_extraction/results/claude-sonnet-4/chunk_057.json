@@ -1,0 +1,74 @@
+{
+  "chunk_id": "chunk_057",
+  "source_file": "unpriv-cfi.adoc",
+  "start_line": 1,
+  "end_line": 894,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The Zicfilp extensions may be activated for use individually and independently for each privilege mode.",
+      "line_number": 139,
+      "parameter_name": "ZICFILP_PRIVILEGE_MODE_ENABLE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which privilege modes have Zicfilp activated. This is a per-privilege-mode boolean choice."
+    },
+    {
+      "excerpt": "The Zicfiss extension may be activated for use individually and independently for each privilege mode.",
+      "line_number": 334,
+      "parameter_name": "ZICFISS_PRIVILEGE_MODE_ENABLE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which privilege modes have Zicfiss activated. This is a per-privilege-mode boolean choice."
+    },
+    {
+      "excerpt": "The bits 1:0 of `ssp` are read-only zero. If the UXLEN or SXLEN may never be 32, then the bit 2 is also read-only zero.",
+      "line_number": 378,
+      "parameter_name": "SSP_ALIGNMENT_BITS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether ssp bit 2 is read-only zero based on whether UXLEN/SXLEN can be 32. This controls the RO nature of specific CSR bits."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "When the register source is a link register and the register destination is `x0`, then it's a return from a procedure and does not require a landing pad at the target.",
+      "line_number": 175,
+      "reason": "This is inside a [NOTE] block, which is non-normative. Parameters are not extracted from NOTE blocks."
+    },
+    {
+      "excerpt": "The `LPAD` instruction (See <<LP_INST>>) is encoded using the `AUIPC` major opcode with _rd_=`x0`.",
+      "line_number": 71,
+      "reason": "This describes a fixed encoding requirement that all implementations must follow, not an implementation choice."
+    },
+    {
+      "excerpt": "When `ELP` is set to `LP_EXPECTED`, if the next instruction in the instruction stream is not 4-byte aligned, or is not `LPAD`, or if the landing pad label encoded in `LPAD` is not zero and does not match the expected landing pad label in bits 31:12 of the `x7` register, then a software-check exception (cause=18) with `__x__tval` set to \"landing pad fault (code=2)\" is raised",
+      "line_number": 122,
+      "reason": "This describes behavioral requirements when ELP has a specific value, not an implementation choice. The behavior is determined by runtime state."
+    },
+    {
+      "excerpt": "The `ssp` CSR is an unprivileged read-write (URW) CSR that reads and writes `XLEN` low order bits of the shadow stack pointer (`ssp`).",
+      "line_number": 374,
+      "reason": "This is a fixed requirement that the ssp CSR must be URW - all implementations must follow this, it's not a choice."
+    },
+    {
+      "excerpt": "Only `x1` and `x5` registers are supported as `rs2` for `SSPUSH`.",
+      "line_number": 418,
+      "reason": "This is a fixed constraint on the instruction encoding, not an implementation choice. All implementations must enforce this restriction."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The Zicfilp extensions may be activated for use individually and independently for each privilege mode.\",\n      \"line_number\": 139,\n      \"parameter_name\": \"ZICFILP_PRIVILEGE_MODE_ENABLE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which privilege modes have Zicfilp activated. This is a per-privilege-mode boolean choice.\"\n    },\n    {\n      \"excerpt\": \"The Zicfiss extension may be activated for use individually and independently for each privilege mode.\",\n      \"line_number\": 334,\n      \"parameter_name\": \"ZICFISS_PRIVILEGE_MODE_ENABLE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which privilege modes have Zicfiss activated. This is a per-privilege-mode boolean choice.\"\n    },\n    {\n      \"excerpt\": \"The bits 1:0 of `ssp` are read-only zero. If the UXLEN or SXLEN may never be 32, then the bit 2 is also read-only zero.\",\n      \"line_number\": 378,\n      \"parameter_name\": \"SSP_ALIGNMENT_BITS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether ssp bit 2 is read-only zero based on whether UXLEN/SXLEN can be 32. This controls the RO nature of specific CSR bits.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"When the register source is a link register and the register destination is `x0`, then it's a return from a procedure and does not require a landing pad at the target.\",\n      \"line_number\": 175,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative. Parameters are not extracted from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"The `LPAD` instruction (See <<LP_INST>>) is encoded using the `AUIPC` major opcode with _rd_=`x0`.\",\n      \"line_number\": 71,\n      \"reason\": \"This describes a fixed encoding requirement that all implementations must follow, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When `ELP` is set to `LP_EXPECTED`, if the next instruction in the instruction stream is not 4-byte aligned, or is not `LPAD`, or if the landing pad label encoded in `LPAD` is not zero and does not match the expected landing pad label in bits 31:12 of the `x7` register, then a software-check exception (cause=18) with `__x__tval` set to \\\"landing pad fault (code=2)\\\" is raised\",\n      \"line_number\": 122,\n      \"reason\": \"This describes behavioral requirements when ELP has a specific value, not an implementation choice. The behavior is determined by runtime state.\"\n    },\n    {\n      \"excerpt\": \"The `ssp` CSR is an unprivileged read-write (URW) CSR that reads and writes `XLEN` low order bits of the shadow stack pointer (`ssp`).\",\n      \"line_number\": 374,\n      \"reason\": \"This is a fixed requirement that the ssp CSR must be URW - all implementations must follow this, it's not a choice.\"\n    },\n    {\n      \"excerpt\": \"Only `x1` and `x5` registers are supported as `rs2` for `SSPUSH`.\",\n      \"line_number\": 418,\n      \"reason\": \"This is a fixed constraint on the instruction encoding, not an implementation choice. All implementations must enforce this restriction.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 17591,
+  "output_tokens": 1010,
+  "latency_ms": 23873,
+  "timestamp": "2026-05-25T20:51:31.096150+00:00",
+  "error": null,
+  "retry_count": 0
+}

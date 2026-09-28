@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_072",
+  "source_file": "zicsr.adoc",
+  "start_line": 1,
+  "end_line": 254,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The hardware platform may define that accesses to certain CSRs are strongly ordered, as defined by the Memory-Ordering PMAs section in Volume II of this manual.",
+      "line_number": 244,
+      "parameter_name": "CSR_STRONG_ORDERING",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The platform chooses which CSRs have strongly ordered access semantics versus the default weakly ordered behavior. This is a direct implementation choice about which CSRs get special ordering treatment."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "While CSRs are primarily used by the privileged architecture, there are several uses in unprivileged code including for counters and timers, and for floating-point status.",
+      "line_number": 9,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "The CSRRW (Atomic Read/Write CSR) instruction atomically swaps values in the CSRs and integer registers.",
+      "line_number": 26,
+      "reason": "This describes the fixed behavior of the CSRRW instruction that all implementations must follow. It is not an implementation choice."
+    },
+    {
+      "excerpt": "If _rd_=`x0`, then the instruction shall not read the CSR and shall not cause any of the side effects that might occur on a CSR read.",
+      "line_number": 30,
+      "reason": "This describes conditional behavior based on register encoding, not an implementation parameter. The behavior is deterministic based on the instruction encoding."
+    },
+    {
+      "excerpt": "For both CSRRS and CSRRC, if _rs1_=`x0`, then the instruction will not write to the CSR at all",
+      "line_number": 55,
+      "reason": "This describes fixed instruction behavior based on register encoding. All implementations must behave this way - it's not a parameter."
+    },
+    {
+      "excerpt": "In particular, unless specified otherwise, a CSR access is performed after the execution of any prior instructions in program order",
+      "line_number": 175,
+      "reason": "This describes the default ordering requirement that all implementations must follow. It's a fixed rule, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The hardware platform may define that accesses to certain CSRs are strongly ordered, as defined by the Memory-Ordering PMAs section in Volume II of this manual.\",\n      \"line_number\": 244,\n      \"parameter_name\": \"CSR_STRONG_ORDERING\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The platform chooses which CSRs have strongly ordered access semantics versus the default weakly ordered behavior. This is a direct implementation choice about which CSRs get special ordering treatment.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"While CSRs are primarily used by the privileged architecture, there are several uses in unprivileged code including for counters and timers, and for floating-point status.\",\n      \"line_number\": 9,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"The CSRRW (Atomic Read/Write CSR) instruction atomically swaps values in the CSRs and integer registers.\",\n      \"line_number\": 26,\n      \"reason\": \"This describes the fixed behavior of the CSRRW instruction that all implementations must follow. It is not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"If _rd_=`x0`, then the instruction shall not read the CSR and shall not cause any of the side effects that might occur on a CSR read.\",\n      \"line_number\": 30,\n      \"reason\": \"This describes conditional behavior based on register encoding, not an implementation parameter. The behavior is deterministic based on the instruction encoding.\"\n    },\n    {\n      \"excerpt\": \"For both CSRRS and CSRRC, if _rs1_=`x0`, then the instruction will not write to the CSR at all\",\n      \"line_number\": 55,\n      \"reason\": \"This describes fixed instruction behavior based on register encoding. All implementations must behave this way - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"In particular, unless specified otherwise, a CSR access is performed after the execution of any prior instructions in program order\",\n      \"line_number\": 175,\n      \"reason\": \"This describes the default ordering requirement that all implementations must follow. It's a fixed rule, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9099,
+  "output_tokens": 618,
+  "latency_ms": 14268,
+  "timestamp": "2026-05-25T20:57:04.750117+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,38 @@
+{
+  "chunk_id": "chunk_053",
+  "source_file": "ssdbltrp.adoc",
+  "start_line": 1,
+  "end_line": 15,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.",
+      "line_number": 5,
+      "reason": "This describes functionality that the extension enables, not an implementation choice. The behavior is fixed when the extension is implemented."
+    },
+    {
+      "excerpt": "It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.",
+      "line_number": 6,
+      "reason": "This describes fixed functionality of the extension, not a parameter that implementers can choose."
+    },
+    {
+      "excerpt": "The Ssdbltrp extension adds the `menvcfg`.DTE",
+      "line_number": 10,
+      "reason": "This states that a CSR field is added by the extension, but doesn't specify any implementation choices about its behavior or legal values."
+    },
+    {
+      "excerpt": "If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE",
+      "line_number": 11,
+      "reason": "This is a conditional requirement based on whether the hypervisor extension is present, not an implementation parameter within the Ssdbltrp extension itself."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.\",\n      \"line_number\": 5,\n      \"reason\": \"This describes functionality that the extension enables, not an implementation choice. The behavior is fixed when the extension is implemented.\"\n    },\n    {\n      \"excerpt\": \"It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.\",\n      \"line_number\": 6,\n      \"reason\": \"This describes fixed functionality of the extension, not a parameter that implementers can choose.\"\n    },\n    {\n      \"excerpt\": \"The Ssdbltrp extension adds the `menvcfg`.DTE\",\n      \"line_number\": 10,\n      \"reason\": \"This states that a CSR field is added by the extension, but doesn't specify any implementation choices about its behavior or legal values.\"\n    },\n    {\n      \"excerpt\": \"If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE\",\n      \"line_number\": 11,\n      \"reason\": \"This is a conditional requirement based on whether the hypervisor extension is present, not an implementation parameter within the Ssdbltrp extension itself.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 5919,
+  "output_tokens": 341,
+  "latency_ms": 6398,
+  "timestamp": "2026-05-25T20:49:48.056777+00:00",
+  "error": null,
+  "retry_count": 0
+}

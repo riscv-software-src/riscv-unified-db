@@ -1,0 +1,114 @@
+{
+  "chunk_id": "chunk_040",
+  "source_file": "rv32.adoc",
+  "start_line": 1,
+  "end_line": 1105,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The EEI will define whether the memory system is little-endian or big-endian.",
+      "line_number": 651,
+      "parameter_name": "ENDIANNESS_LITTLE_OR_BIG",
+      "existing_udb_name": "ENDIANNESS_LITTLE_OR_BIG",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a platform-level choice about memory system endianness, which is outside the ISA scope and defined by the execution environment interface (EEI)."
+    },
+    {
+      "excerpt": "Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., the effective address is not divisible by the size of the access in bytes) have behavior dependent on the EEI.",
+      "line_number": 680,
+      "parameter_name": "MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR",
+      "existing_udb_name": "MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR",
+      "class": "NON_ISA",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The behavior of misaligned loads and stores is explicitly defined as EEI-dependent, making this a platform-level choice outside the ISA scope."
+    },
+    {
+      "excerpt": "misaligned loads and stores can be handled in hardware",
+      "line_number": 686,
+      "parameter_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED",
+      "existing_udb_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes one possible EEI choice for handling misaligned accesses - whether they are supported in hardware or not."
+    },
+    {
+      "excerpt": "via an invisible trap into the execution environment implementation",
+      "line_number": 687,
+      "parameter_name": "MISALIGNED_LDST_INVISIBLE_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_INVISIBLE_TRAP",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes another EEI choice for handling misaligned accesses through invisible traps."
+    },
+    {
+      "excerpt": "combination of hardware and invisible trap depending on address",
+      "line_number": 688,
+      "parameter_name": "MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR",
+      "existing_udb_name": "MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes a third EEI choice where misaligned access handling varies by address."
+    },
+    {
+      "excerpt": "loads and stores that are not naturally aligned may either complete execution successfully or raise an exception",
+      "line_number": 691,
+      "parameter_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes EEI choices when misaligned accesses are not guaranteed to be handled invisibly."
+    },
+    {
+      "excerpt": "When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must define if exceptions caused by address misalignment result in a contained trap (allowing software running inside the execution environment to handle the trap) or a fatal trap (terminating execution).",
+      "line_number": 700,
+      "parameter_name": "MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is an EEI-defined choice about trap handling behavior, which is outside the ISA scope."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "For RV32I, the 32 `x` registers are each 32 bits wide, i.e., `XLEN=32`.",
+      "line_number": 39,
+      "reason": "This is a fixed requirement for RV32I - XLEN is always 32 for this ISA variant, not an implementation choice."
+    },
+    {
+      "excerpt": "Register `x0` is hardwired with all bits equal to 0.",
+      "line_number": 40,
+      "reason": "This is a fixed architectural requirement that all implementations must satisfy, not a parameter."
+    },
+    {
+      "excerpt": "An instruction-address-misaligned exception is generated on a taken branch or unconditional jump if the target address is not `IALIGN-bit` aligned.",
+      "line_number": 156,
+      "reason": "This describes required behavior when a condition is met, not an implementation choice."
+    },
+    {
+      "excerpt": "ADDI adds the sign-extended 12-bit immediate to register _rs1_.",
+      "line_number": 284,
+      "reason": "This describes the fixed operation of the ADDI instruction, not an implementation parameter."
+    },
+    {
+      "excerpt": "HINTs do not change any architecturally visible state, except for advancing the `pc` and any applicable performance counters.",
+      "line_number": 1020,
+      "reason": "This describes the required behavior of HINT instructions, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The EEI will define whether the memory system is little-endian or big-endian.\",\n      \"line_number\": 651,\n      \"parameter_name\": \"ENDIANNESS_LITTLE_OR_BIG\",\n      \"existing_udb_name\": \"ENDIANNESS_LITTLE_OR_BIG\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a platform-level choice about memory system endianness, which is outside the ISA scope and defined by the execution environment interface (EEI).\"\n    },\n    {\n      \"excerpt\": \"Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., the effective address is not divisible by the size of the access in bytes) have behavior dependent on the EEI.\",\n      \"line_number\": 680,\n      \"parameter_name\": \"MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The behavior of misaligned loads and stores is explicitly defined as EEI-dependent, making this a platform-level choice outside the ISA scope.\"\n    },\n    {\n      \"excerpt\": \"misaligned loads and stores can be handled in hardware\",\n      \"line_number\": 686,\n      \"parameter_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes one possible EEI choice for handling misaligned accesses - whether they are supported in hardware or not.\"\n    },\n    {\n      \"excerpt\": \"via an invisible trap into the execution environment implementation\",\n      \"line_number\": 687,\n      \"parameter_name\": \"MISALIGNED_LDST_INVISIBLE_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_INVISIBLE_TRAP\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes another EEI choice for handling misaligned accesses through invisible traps.\"\n    },\n    {\n      \"excerpt\": \"combination of hardware and invisible trap depending on address\",\n      \"line_number\": 688,\n      \"parameter_name\": \"MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes a third EEI choice where misaligned access handling varies by address.\"\n    },\n    {\n      \"excerpt\": \"loads and stores that are not naturally aligned may either complete execution successfully or raise an exception\",\n      \"line_number\": 691,\n      \"parameter_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes EEI choices when misaligned accesses are not guaranteed to be handled invisibly.\"\n    },\n    {\n      \"excerpt\": \"When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must define if exceptions caused by address misalignment result in a contained trap (allowing software running inside the execution environment to handle the trap) or a fatal trap (terminating execution).\",\n      \"line_number\": 700,\n      \"parameter_name\": \"MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is an EEI-defined choice about trap handling behavior, which is outside the ISA scope.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"For RV32I, the 32 `x` registers are each 32 bits wide, i.e., `XLEN=32`.\",\n      \"line_number\": 39,\n      \"reason\": \"This is a fixed requirement for RV32I - XLEN is always 32 for this ISA variant, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Register `x0` is hardwired with all bits equal to 0.\",\n      \"line_number\": 40,\n      \"reason\": \"This is a fixed architectural requirement that all implementations must satisfy, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"An instruction-address-misaligned exception is generated on a taken branch or unconditional jump if the target address is not `IALIGN-bit` aligned.\",\n      \"line_number\": 156,\n      \"reason\": \"This describes required behavior when a condition is met, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"ADDI adds the sign-extended 12-bit immediate to register _rs1_.\",\n      \"line_number\": 284,\n      \"reason\": \"This describes the fixed operation of the ADDI instruction, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"HINTs do not change any architecturally visible state, except for advancing the `pc` and any applicable performance counters.\",\n      \"line_number\": 1020,\n      \"reason\": \"This describes the required behavior of HINT instructions, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 19371,
+  "output_tokens": 1568,
+  "latency_ms": 27597,
+  "timestamp": "2026-05-25T20:45:59.605608+00:00",
+  "error": null,
+  "retry_count": 0
+}

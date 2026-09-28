@@ -1,0 +1,79 @@
+{
+  "chunk_id": "chunk_011",
+  "source_file": "counters.adoc",
+  "start_line": 1,
+  "end_line": 236,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The implemented number and width of these additional counters, and the set of events they count, are platform-specific.",
+      "line_number": 189,
+      "parameter_name": "HPM_COUNTER_EN",
+      "existing_udb_name": "HPM_COUNTER_EN",
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The number of implemented hardware performance counters (0-29) is a direct implementation choice. This is not controlled by any CSR field."
+    },
+    {
+      "excerpt": "The implemented number and width of these additional counters, and the set of events they count, are platform-specific.",
+      "line_number": 189,
+      "parameter_name": "HPM_EVENTS",
+      "existing_udb_name": "HPM_EVENTS",
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The set of events that each hardware performance counter can count is platform-specific. This is a direct implementation choice of which events are supported."
+    },
+    {
+      "excerpt": "Accessing an unimplemented counter may cause an illegal-instruction exception or may return a constant value.",
+      "line_number": 190,
+      "parameter_name": "TRAP_ON_UNIMPLEMENTED_COUNTER",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether accessing an unimplemented counter causes an exception or returns a constant value. This is a binary choice in behavior."
+    },
+    {
+      "excerpt": "If the configuration used to select the events counted by a counter is misconfigured, the counter may return a constant value.",
+      "line_number": 191,
+      "parameter_name": "HPM_MISCONFIGURED_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "When a counter is misconfigured, the implementation may choose different behaviors (constant value, exception, undefined). The 'may' indicates this is implementation-defined."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "We recommend provision of these basic counters in implementations as they are essential for basic performance analysis",
+      "line_number": 14,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It's a recommendation, not a requirement."
+    },
+    {
+      "excerpt": "The RDCYCLE pseudoinstruction reads the low XLEN bits of the `cycle` CSR which holds a count of the number of clock cycles executed by the processor core",
+      "line_number": 48,
+      "reason": "This describes the fixed behavior of the RDCYCLE instruction. All implementations must provide this behavior - it's not a parameter."
+    },
+    {
+      "excerpt": "The real-time clocks of all harts must be synchronized to within one tick of the real-time clock.",
+      "line_number": 108,
+      "reason": "This is a fixed requirement ('must be synchronized') that all implementations must satisfy. There is no implementation choice here."
+    },
+    {
+      "excerpt": "Instructions that cause synchronous exceptions, including ECALL and EBREAK, are not considered to retire",
+      "line_number": 120,
+      "reason": "This text is inside a [NOTE] block and describes fixed behavior. It's not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The implemented number and width of these additional counters, and the set of events they count, are platform-specific.\",\n      \"line_number\": 189,\n      \"parameter_name\": \"HPM_COUNTER_EN\",\n      \"existing_udb_name\": \"HPM_COUNTER_EN\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The number of implemented hardware performance counters (0-29) is a direct implementation choice. This is not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"The implemented number and width of these additional counters, and the set of events they count, are platform-specific.\",\n      \"line_number\": 189,\n      \"parameter_name\": \"HPM_EVENTS\",\n      \"existing_udb_name\": \"HPM_EVENTS\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The set of events that each hardware performance counter can count is platform-specific. This is a direct implementation choice of which events are supported.\"\n    },\n    {\n      \"excerpt\": \"Accessing an unimplemented counter may cause an illegal-instruction exception or may return a constant value.\",\n      \"line_number\": 190,\n      \"parameter_name\": \"TRAP_ON_UNIMPLEMENTED_COUNTER\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether accessing an unimplemented counter causes an exception or returns a constant value. This is a binary choice in behavior.\"\n    },\n    {\n      \"excerpt\": \"If the configuration used to select the events counted by a counter is misconfigured, the counter may return a constant value.\",\n      \"line_number\": 191,\n      \"parameter_name\": \"HPM_MISCONFIGURED_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"When a counter is misconfigured, the implementation may choose different behaviors (constant value, exception, undefined). The 'may' indicates this is implementation-defined.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"We recommend provision of these basic counters in implementations as they are essential for basic performance analysis\",\n      \"line_number\": 14,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It's a recommendation, not a requirement.\"\n    },\n    {\n      \"excerpt\": \"The RDCYCLE pseudoinstruction reads the low XLEN bits of the `cycle` CSR which holds a count of the number of clock cycles executed by the processor core\",\n      \"line_number\": 48,\n      \"reason\": \"This describes the fixed behavior of the RDCYCLE instruction. All implementations must provide this behavior - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The real-time clocks of all harts must be synchronized to within one tick of the real-time clock.\",\n      \"line_number\": 108,\n      \"reason\": \"This is a fixed requirement ('must be synchronized') that all implementations must satisfy. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"Instructions that cause synchronous exceptions, including ECALL and EBREAK, are not considered to retire\",\n      \"line_number\": 120,\n      \"reason\": \"This text is inside a [NOTE] block and describes fixed behavior. It's not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8807,
+  "output_tokens": 924,
+  "latency_ms": 16386,
+  "timestamp": "2026-05-25T20:41:17.218525+00:00",
+  "error": null,
+  "retry_count": 0
+}

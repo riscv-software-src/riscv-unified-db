@@ -1,0 +1,134 @@
+{
+  "positive_examples": [
+    {
+      "_comment": "NORM_DIRECT: A fundamental implementation choice not tied to any CSR field",
+      "input_excerpt": "Implementations may implement zero, 16, or 64 PMP entries; the lowest-numbered PMP entries must be implemented first. All PMP CSR fields are WARL and may be read-only zero.",
+      "input_file": "machine.adoc",
+      "input_line": 3340,
+      "expected_output": {
+        "excerpt": "Implementations may implement zero, 16, or 64 PMP entries; the lowest-numbered PMP entries must be implemented first.",
+        "line_number": 3340,
+        "parameter_name": "NUM_PMP_ENTRIES",
+        "existing_udb_name": "NUM_PMP_ENTRIES",
+        "class": "NORM_DIRECT",
+        "value_type": "range",
+        "confidence": "high",
+        "reasoning": "The number of PMP entries is a direct implementation choice (0, 16, or 64). It is not controlled by any CSR field."
+      }
+    },
+    {
+      "_comment": "NORM_DIRECT: A vector extension parameter defined at implementation time",
+      "input_excerpt": ". The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ >= 8, which must be a power of 2.\n. The number of bits in a single vector register, _VLEN_ >= ELEN, which must be a power of 2, and must be no greater than 2^16.",
+      "input_file": "v-st-ext.adoc",
+      "input_line": 22,
+      "expected_output": {
+        "excerpt": "The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ >= 8, which must be a power of 2.",
+        "line_number": 22,
+        "parameter_name": "ELEN",
+        "existing_udb_name": "ELEN",
+        "class": "NORM_DIRECT",
+        "value_type": "value",
+        "confidence": "high",
+        "reasoning": "ELEN is a direct implementation parameter: the maximum element size. It has constraints (>= 8, power of 2) but the specific value is chosen by the implementer."
+      }
+    },
+    {
+      "_comment": "NORM_CSR_WARL: The legal values of a WARL CSR field",
+      "input_excerpt": "The `mtvec` register is an MXLEN-bit WARL read/write register that holds trap vector configuration, consisting of a vector base address (BASE) and a vector mode (MODE).\n...\nThe `mtvec` register must always be implemented, but can contain a read-only value. If `mtvec` is writable, the set of values the register may hold can vary by implementation.",
+      "input_file": "machine.adoc",
+      "input_line": 1209,
+      "expected_output": {
+        "excerpt": "If `mtvec` is writable, the set of values the register may hold can vary by implementation.",
+        "line_number": 1219,
+        "parameter_name": "MTVEC_MODES",
+        "existing_udb_name": "MTVEC_MODES",
+        "class": "NORM_CSR_WARL",
+        "value_type": "set",
+        "confidence": "high",
+        "reasoning": "The mtvec MODE field is WARL, and the set of supported mode values (Direct=0, Vectored=1) varies by implementation. The parameter is the set of legal MODE values."
+      }
+    },
+    {
+      "_comment": "NORM_CSR_RW: Controls whether CSR fields are read-only or read-write",
+      "input_excerpt": "The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are WARL fields that control the endianness of memory accesses other than instruction fetches.\n...\nIf S-mode is supported, an implementation may make SBE be a read-only copy of MBE.",
+      "input_file": "machine.adoc",
+      "input_line": 679,
+      "expected_output": {
+        "excerpt": "The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are WARL fields that control the endianness of memory accesses other than instruction fetches.",
+        "line_number": 679,
+        "parameter_name": "M_MODE_ENDIANNESS",
+        "existing_udb_name": "M_MODE_ENDIANNESS",
+        "class": "NORM_CSR_RW",
+        "value_type": "enum",
+        "confidence": "high",
+        "reasoning": "The implementation chooses whether MBE is read-only-0 (always little-endian), read-only-1 (always big-endian), or read-write (dynamic endianness). This controls the RO/RW nature of the field, not just which values are legal."
+      }
+    },
+    {
+      "_comment": "SW_RULE: Implementation-defined but deterministic with correct software",
+      "input_excerpt": "If an instruction explicitly or implicitly writes a floating-point register or the `fcsr` but does not alter its contents, and FS=Initial or FS=Clean, it is implementation-defined whether FS transitions to Dirty.",
+      "input_file": "machine.adoc",
+      "input_line": 1012,
+      "expected_output": {
+        "excerpt": "it is implementation-defined whether FS transitions to Dirty.",
+        "line_number": 1014,
+        "parameter_name": "HW_MSTATUS_FS_DIRTY_UPDATE",
+        "existing_udb_name": "HW_MSTATUS_FS_DIRTY_UPDATE",
+        "class": "SW_RULE",
+        "value_type": "enum",
+        "confidence": "medium",
+        "reasoning": "Whether hardware updates mstatus.FS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing FS state with proper fencing. The outcome is predictable if software follows the rules."
+      }
+    },
+    {
+      "_comment": "NORM_CSR_RW: Whether a CSR is read-only or read-write",
+      "input_excerpt": "The `mtvec` register must always be implemented, but can contain a read-only value.",
+      "input_file": "machine.adoc",
+      "input_line": 1217,
+      "expected_output": {
+        "excerpt": "The `mtvec` register must always be implemented, but can contain a read-only value.",
+        "line_number": 1217,
+        "parameter_name": "MTVEC_ACCESS",
+        "existing_udb_name": "MTVEC_ACCESS",
+        "class": "NORM_CSR_RW",
+        "value_type": "binary",
+        "confidence": "high",
+        "reasoning": "The implementation chooses whether mtvec is read-only or read-write. This is a binary choice about the mutability of the register."
+      }
+    }
+  ],
+  "negative_examples": [
+    {
+      "_comment": "FALSE POSITIVE: NOTE block discussing implementation options — non-normative",
+      "input_excerpt": "[NOTE]\n====\nSome platforms may choose to disallow speculatively writing FS to close a potential side channel.\n====",
+      "input_file": "machine.adoc",
+      "input_line": 1005,
+      "expected_output": null,
+      "reason_for_rejection": "This text is inside a [NOTE] block and is therefore non-normative. It describes a platform suggestion, not an architectural requirement. Do not extract parameters from NOTE, TIP, WARNING, or IMPORTANT blocks."
+    },
+    {
+      "_comment": "FALSE POSITIVE: Behavior controlled by a CSR field value, not a parameter itself",
+      "input_excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "input_file": "machine.adoc",
+      "input_line": 1254,
+      "expected_output": null,
+      "reason_for_rejection": "This describes what happens when mtvec.MODE has a specific value. The behavior is determined by the CSR field value at runtime, not by an implementation choice. The parameter is which MODE values are supported (MTVEC_MODES), not this behavioral description."
+    },
+    {
+      "_comment": "FALSE POSITIVE: Fixed architectural requirement, not an implementation choice",
+      "input_excerpt": "This register must be readable in any implementation.",
+      "input_file": "machine.adoc",
+      "input_line": 22,
+      "expected_output": null,
+      "reason_for_rejection": "This is a fixed requirement ('must be readable') that all implementations must satisfy. There is no implementation choice here — it is not a parameter."
+    },
+    {
+      "_comment": "FALSE POSITIVE: 'may' used as permission/capability, not as optionality",
+      "input_excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "input_file": "machine.adoc",
+      "input_line": 3530,
+      "expected_output": null,
+      "reason_for_rejection": "Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter."
+    }
+  ]
+}

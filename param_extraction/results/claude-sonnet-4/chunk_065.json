@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_065",
+  "source_file": "zalasr.adoc",
+  "start_line": 1,
+  "end_line": 137,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.",
+      "line_number": 21,
+      "parameter_name": "ZALASR_MISALIGNED_EXCEPTION_TYPE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses whether to generate an address-misaligned exception or an access-fault exception for misaligned Zalasr instructions. This is a direct implementation choice between two exception types."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The Zalasr extension builds on the atomic support provided by the Zaamo (Atomic Memory Operations), Zalrsc (Load-Reserved and Store-Conditional), and Zabha (Byte and Halfword Atomic Memory Operations) extensions by providing additional atomic operations (although it can be implemented independently of them).",
+      "line_number": 7,
+      "reason": "This describes the relationship between extensions but does not define an implementation choice or parameter."
+    },
+    {
+      "excerpt": "The Zalasr instructions are atomic loads and stores that support ordering annotations.",
+      "line_number": 14,
+      "reason": "This is a definitional statement about what the instructions do, not an implementation choice."
+    },
+    {
+      "excerpt": "The Zalasr instructions always sign-extend the value placed in rd",
+      "line_number": 18,
+      "reason": "This is a fixed requirement ('always') that all implementations must follow, not a parameter."
+    },
+    {
+      "excerpt": "The instructions in the Zalasr extension require that the address held in rs1 be naturally aligned to the size in bytes (2^width^) of the operand.",
+      "line_number": 19,
+      "reason": "This is a fixed requirement ('require') about alignment, not an implementation choice."
+    },
+    {
+      "excerpt": "The versions without the aq bit set are RESERVED.",
+      "line_number": 67,
+      "reason": "This states that certain encodings are reserved, which is a fixed specification rule, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.\",\n      \"line_number\": 21,\n      \"parameter_name\": \"ZALASR_MISALIGNED_EXCEPTION_TYPE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses whether to generate an address-misaligned exception or an access-fault exception for misaligned Zalasr instructions. This is a direct implementation choice between two exception types.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The Zalasr extension builds on the atomic support provided by the Zaamo (Atomic Memory Operations), Zalrsc (Load-Reserved and Store-Conditional), and Zabha (Byte and Halfword Atomic Memory Operations) extensions by providing additional atomic operations (although it can be implemented independently of them).\",\n      \"line_number\": 7,\n      \"reason\": \"This describes the relationship between extensions but does not define an implementation choice or parameter.\"\n    },\n    {\n      \"excerpt\": \"The Zalasr instructions are atomic loads and stores that support ordering annotations.\",\n      \"line_number\": 14,\n      \"reason\": \"This is a definitional statement about what the instructions do, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The Zalasr instructions always sign-extend the value placed in rd\",\n      \"line_number\": 18,\n      \"reason\": \"This is a fixed requirement ('always') that all implementations must follow, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The instructions in the Zalasr extension require that the address held in rs1 be naturally aligned to the size in bytes (2^width^) of the operand.\",\n      \"line_number\": 19,\n      \"reason\": \"This is a fixed requirement ('require') about alignment, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The versions without the aq bit set are RESERVED.\",\n      \"line_number\": 67,\n      \"reason\": \"This states that certain encodings are reserved, which is a fixed specification rule, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8063,
+  "output_tokens": 572,
+  "latency_ms": 14246,
+  "timestamp": "2026-05-25T20:55:14.734720+00:00",
+  "error": null,
+  "retry_count": 0
+}

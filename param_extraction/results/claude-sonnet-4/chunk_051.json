@@ -1,0 +1,184 @@
+{
+  "chunk_id": "chunk_051",
+  "source_file": "smstateen.adoc",
+  "start_line": 1,
+  "end_line": 383,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_AIA_TYPE",
+      "existing_udb_name": "MSTATEEN_AIA_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_AIA_TYPE",
+      "existing_udb_name": "HSTATEEN_AIA_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_CONTEXT_TYPE",
+      "existing_udb_name": "MSTATEEN_CONTEXT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_CONTEXT_TYPE",
+      "existing_udb_name": "HSTATEEN_CONTEXT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_CSRIND_TYPE",
+      "existing_udb_name": "MSTATEEN_CSRIND_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_CSRIND_TYPE",
+      "existing_udb_name": "HSTATEEN_CSRIND_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_ENVCFG_TYPE",
+      "existing_udb_name": "MSTATEEN_ENVCFG_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_ENVCFG_TYPE",
+      "existing_udb_name": "HSTATEEN_ENVCFG_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_IMSIC_TYPE",
+      "existing_udb_name": "MSTATEEN_IMSIC_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_IMSIC_TYPE",
+      "existing_udb_name": "HSTATEEN_IMSIC_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "MSTATEEN_JVT_TYPE",
+      "existing_udb_name": "MSTATEEN_JVT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "HSTATEEN_JVT_TYPE",
+      "existing_udb_name": "HSTATEEN_JVT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 119,
+      "parameter_name": "SSTATEEN_JVT_TYPE",
+      "existing_udb_name": "SSTATEEN_JVT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal."
+    },
+    {
+      "excerpt": "When a `stateen` CSR prevents access to state for a privilege mode, attempting to execute in that privilege mode an instruction that _implicitly_ updates the state without reading it may or may not raise an illegal-instruction or virtual-instruction exception.",
+      "line_number": 86,
+      "parameter_name": "STATEEN_IMPLICIT_UPDATE_EXCEPTION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses whether implicit state updates raise exceptions when stateen blocks access. This is a direct implementation choice not controlled by any CSR field."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The `stateen` registers at each level control access to state at all less-privileged levels, but not at its own level.",
+      "line_number": 73,
+      "reason": "This describes the fixed behavior of stateen registers - they control less-privileged access. This is a requirement that applies to all implementations, not a parameter."
+    },
+    {
+      "excerpt": "Just as with the `counteren` CSRs, when a `stateen` CSR prevents access to state by less-privileged levels, an attempt in one of those privilege modes to execute an instruction that would read or write the protected state raises an illegal-instruction exception",
+      "line_number": 75,
+      "reason": "This describes the required behavior when stateen blocks access - it must raise an exception. This is a fixed requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "On reset, all writable `mstateen` bits are initialized by the hardware to zeros.",
+      "line_number": 135,
+      "reason": "This is a fixed requirement for reset behavior - all implementations must initialize writable bits to zero. There is no implementation choice here."
+    },
+    {
+      "excerpt": "The C bit controls access to any and all custom state.",
+      "line_number": 201,
+      "reason": "This describes what the C bit does when it has certain values. The behavior is determined by the bit value at runtime, not by an implementation choice."
+    },
+    {
+      "excerpt": "The requirements that non-standard extensions must meet to be conforming are not relaxed due solely to changes in the value of this bit.",
+      "line_number": 207,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides guidance but is not an architectural requirement."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_AIA_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_AIA_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_AIA_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_AIA_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_CONTEXT_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_CONTEXT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_CONTEXT_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_CONTEXT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_CSRIND_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_CSRIND_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_CSRIND_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_CSRIND_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_ENVCFG_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_ENVCFG_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_ENVCFG_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_ENVCFG_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_IMSIC_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_IMSIC_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_IMSIC_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_IMSIC_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"MSTATEEN_JVT_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_JVT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"HSTATEEN_JVT_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_JVT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"SSTATEEN_JVT_TYPE\",\n      \"existing_udb_name\": \"SSTATEEN_JVT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs can be read-only zero, read-only one, or read-write. This is a choice about the mutability of CSR fields, not just which values are legal.\"\n    },\n    {\n      \"excerpt\": \"When a `stateen` CSR prevents access to state for a privilege mode, attempting to execute in that privilege mode an instruction that _implicitly_ updates the state without reading it may or may not raise an illegal-instruction or virtual-instruction exception.\",\n      \"line_number\": 86,\n      \"parameter_name\": \"STATEEN_IMPLICIT_UPDATE_EXCEPTION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses whether implicit state updates raise exceptions when stateen blocks access. This is a direct implementation choice not controlled by any CSR field.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The `stateen` registers at each level control access to state at all less-privileged levels, but not at its own level.\",\n      \"line_number\": 73,\n      \"reason\": \"This describes the fixed behavior of stateen registers - they control less-privileged access. This is a requirement that applies to all implementations, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"Just as with the `counteren` CSRs, when a `stateen` CSR prevents access to state by less-privileged levels, an attempt in one of those privilege modes to execute an instruction that would read or write the protected state raises an illegal-instruction exception\",\n      \"line_number\": 75,\n      \"reason\": \"This describes the required behavior when stateen blocks access - it must raise an exception. This is a fixed requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"On reset, all writable `mstateen` bits are initialized by the hardware to zeros.\",\n      \"line_number\": 135,\n      \"reason\": \"This is a fixed requirement for reset behavior - all implementations must initialize writable bits to zero. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"The C bit controls access to any and all custom state.\",\n      \"line_number\": 201,\n      \"reason\": \"This describes what the C bit does when it has certain values. The behavior is determined by the bit value at runtime, not by an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The requirements that non-standard extensions must meet to be conforming are not relaxed due solely to changes in the value of this bit.\",\n      \"line_number\": 207,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides guidance but is not an architectural requirement.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 11810,
+  "output_tokens": 2983,
+  "latency_ms": 36176,
+  "timestamp": "2026-05-25T20:49:29.935371+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_042",
+  "source_file": "rv64.adoc",
+  "start_line": 1,
+  "end_line": 260,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in <<gprs>>).",
+      "line_number": 10,
+      "reason": "This states a fixed requirement for RV64I - XLEN must be 64 bits. There is no implementation choice here."
+    },
+    {
+      "excerpt": "These \"*W\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values, sign-extending them to 64 bits",
+      "line_number": 16,
+      "reason": "This describes the fixed behavior of W-suffix instructions in RV64I. All implementations must behave this way - no parameter."
+    },
+    {
+      "excerpt": "The compiler and calling convention maintain an invariant that all 32-bit values are held in a sign-extended format in 64-bit registers.",
+      "line_number": 22,
+      "reason": "This text is inside a [NOTE] block, which is non-normative. Additionally, it describes software convention, not hardware implementation choices."
+    },
+    {
+      "excerpt": "SLLIW, SRLIW, and SRAIW encodings with _imm[5] {ne} 0_ are reserved.",
+      "line_number": 70,
+      "reason": "This states that certain encodings are reserved, which is a fixed requirement. There is no implementation choice about whether to reserve these encodings."
+    },
+    {
+      "excerpt": "In RV64I, only the low 6 bits of _rs2_ are considered for the shift amount.",
+      "line_number": 118,
+      "reason": "This describes the fixed behavior of shift instructions in RV64I. All implementations must use only the low 6 bits - no parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in <<gprs>>).\",\n      \"line_number\": 10,\n      \"reason\": \"This states a fixed requirement for RV64I - XLEN must be 64 bits. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"These \\\"*W\\\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values, sign-extending them to 64 bits\",\n      \"line_number\": 16,\n      \"reason\": \"This describes the fixed behavior of W-suffix instructions in RV64I. All implementations must behave this way - no parameter.\"\n    },\n    {\n      \"excerpt\": \"The compiler and calling convention maintain an invariant that all 32-bit values are held in a sign-extended format in 64-bit registers.\",\n      \"line_number\": 22,\n      \"reason\": \"This text is inside a [NOTE] block, which is non-normative. Additionally, it describes software convention, not hardware implementation choices.\"\n    },\n    {\n      \"excerpt\": \"SLLIW, SRLIW, and SRAIW encodings with _imm[5] {ne} 0_ are reserved.\",\n      \"line_number\": 70,\n      \"reason\": \"This states that certain encodings are reserved, which is a fixed requirement. There is no implementation choice about whether to reserve these encodings.\"\n    },\n    {\n      \"excerpt\": \"In RV64I, only the low 6 bits of _rs2_ are considered for the shift amount.\",\n      \"line_number\": 118,\n      \"reason\": \"This describes the fixed behavior of shift instructions in RV64I. All implementations must use only the low 6 bits - no parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9302,
+  "output_tokens": 470,
+  "latency_ms": 12372,
+  "timestamp": "2026-05-25T20:46:21.169200+00:00",
+  "error": null,
+  "retry_count": 0
+}

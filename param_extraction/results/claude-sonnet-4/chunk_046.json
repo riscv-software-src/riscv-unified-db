@@ -1,0 +1,79 @@
+{
+  "chunk_id": "chunk_046",
+  "source_file": "smcdeleg.adoc",
+  "start_line": 1,
+  "end_line": 140,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to delegate select counters to S-mode.",
+      "line_number": 32,
+      "parameter_name": "COUNTINHIBIT_EN",
+      "existing_udb_name": "COUNTINHIBIT_EN",
+      "class": "NORM_CSR_WARL",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The menvcfg.CDE field is a WARL field that enables/disables counter delegation. The implementation chooses whether this field is supported (read-write) or not (read-only zero)."
+    },
+    {
+      "excerpt": "For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed via `scountinhibit`. For counters not delegated to S-mode, the associated bits in `scountinhibit` are read-only zero.",
+      "line_number": 95,
+      "parameter_name": "SCOUNTINHIBIT_DELEGATED_MASK",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The implementation determines which counters are delegated (via mcounteren), which directly controls which bits in scountinhibit are read-write vs read-only zero. This is a direct implementation choice about the delegation mask."
+    },
+    {
+      "excerpt": "the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.",
+      "line_number": 107,
+      "parameter_name": "MVIP_MVIEN_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting the required extensions, the LCOFI bit must be implemented and writable in mvip/mvien. This is a direct implementation requirement when the extensions are present."
+    },
+    {
+      "excerpt": "the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.",
+      "line_number": 111,
+      "parameter_name": "HVIP_HVIEN_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting the required extensions including H extension, the LCOFI bit must be implemented and writable in hvip/hvien. This is a direct implementation requirement when the extensions are present."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "For a RISC-V hardware platform, Smcdeleg and Ssccfg must always be implemented in tandem.",
+      "line_number": 28,
+      "reason": "This is a fixed requirement ('must always') that applies to all implementations supporting these extensions. There is no implementation choice here."
+    },
+    {
+      "excerpt": "attempts to access any `sireg*` when `menvcfg`.CDE = 0;",
+      "line_number": 73,
+      "reason": "This describes behavior when a CSR field has a specific value (CDE=0). The behavior is determined by the field value at runtime, not by an implementation choice."
+    },
+    {
+      "excerpt": "When `menvcfg`.CDE=0, attempts to access `scountinhibit` raise an illegal-instruction exception.",
+      "line_number": 97,
+      "reason": "This describes runtime behavior based on a CSR field value (CDE=0), not an implementation-defined parameter."
+    },
+    {
+      "excerpt": "It is optional whether the LCOFI bit (bit 13) in each of `mideleg` and `hideleg`, which allows all LCOFIs to be delegated to S-mode and VS-mode, respectively, is implemented and writable.",
+      "line_number": 120,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to delegate select counters to S-mode.\",\n      \"line_number\": 32,\n      \"parameter_name\": \"COUNTINHIBIT_EN\",\n      \"existing_udb_name\": \"COUNTINHIBIT_EN\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The menvcfg.CDE field is a WARL field that enables/disables counter delegation. The implementation chooses whether this field is supported (read-write) or not (read-only zero).\"\n    },\n    {\n      \"excerpt\": \"For counters delegated to S-mode, the associated `mcountinhibit` bits can be accessed via `scountinhibit`. For counters not delegated to S-mode, the associated bits in `scountinhibit` are read-only zero.\",\n      \"line_number\": 95,\n      \"parameter_name\": \"SCOUNTINHIBIT_DELEGATED_MASK\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation determines which counters are delegated (via mcounteren), which directly controls which bits in scountinhibit are read-write vs read-only zero. This is a direct implementation choice about the delegation mask.\"\n    },\n    {\n      \"excerpt\": \"the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.\",\n      \"line_number\": 107,\n      \"parameter_name\": \"MVIP_MVIEN_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting the required extensions, the LCOFI bit must be implemented and writable in mvip/mvien. This is a direct implementation requirement when the extensions are present.\"\n    },\n    {\n      \"excerpt\": \"the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.\",\n      \"line_number\": 111,\n      \"parameter_name\": \"HVIP_HVIEN_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting the required extensions including H extension, the LCOFI bit must be implemented and writable in hvip/hvien. This is a direct implementation requirement when the extensions are present.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"For a RISC-V hardware platform, Smcdeleg and Ssccfg must always be implemented in tandem.\",\n      \"line_number\": 28,\n      \"reason\": \"This is a fixed requirement ('must always') that applies to all implementations supporting these extensions. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"attempts to access any `sireg*` when `menvcfg`.CDE = 0;\",\n      \"line_number\": 73,\n      \"reason\": \"This describes behavior when a CSR field has a specific value (CDE=0). The behavior is determined by the field value at runtime, not by an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When `menvcfg`.CDE=0, attempts to access `scountinhibit` raise an illegal-instruction exception.\",\n      \"line_number\": 97,\n      \"reason\": \"This describes runtime behavior based on a CSR field value (CDE=0), not an implementation-defined parameter.\"\n    },\n    {\n      \"excerpt\": \"It is optional whether the LCOFI bit (bit 13) in each of `mideleg` and `hideleg`, which allows all LCOFIs to be delegated to S-mode and VS-mode, respectively, is implemented and writable.\",\n      \"line_number\": 120,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8404,
+  "output_tokens": 1115,
+  "latency_ms": 18327,
+  "timestamp": "2026-05-25T20:47:40.517873+00:00",
+  "error": null,
+  "retry_count": 0
+}
