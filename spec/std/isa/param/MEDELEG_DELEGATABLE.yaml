@@ -29,14 +29,93 @@ definedBy:
   extension:
     name: S
 requirements:
-  idl(): |
-    implemented?(ExtensionName::S) -> !MEDELEG_DELEGATABLE[11];
-    implemented?(ExtensionName::S) -> !MEDELEG_DELEGATABLE[16];
-    !implemented?(ExtensionName::H) -> !MEDELEG_DELEGATABLE[10];
-    for (U32 i = 20; i < 24; i++) {
-      !implemented?(ExtensionName::H) -> !MEDELEG_DELEGATABLE[i];
-    }
-  reason: |
-    medeleg[11] is read-only zero because environment calls from M-mode cannot occur in a less-privileged mode.
-    medeleg[16] is read-only zero because double trap is not delegatable.
-    Exception codes 10 and 20-23 are defined by the H extension.
+  allOf:
+    # medeleg[11] (ECALL from M-mode) and medeleg[16] (double trap) are read-only zero
+    - param:
+        allOf:
+          - name: MEDELEG_DELEGATABLE
+            index: 11
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 16
+            equal: false
+    # Reserved exception codes (14, 17, 32-47) cannot be delegated
+    - param:
+        allOf:
+          - name: MEDELEG_DELEGATABLE
+            index: 14
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 17
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 32
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 33
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 34
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 35
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 36
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 37
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 38
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 39
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 40
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 41
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 42
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 43
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 44
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 45
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 46
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 47
+            equal: false
+    # Exception codes 10 and 20-23 are defined by H
+    - if:
+        not:
+          extension:
+            name: H
+      then:
+        param:
+          allOf:
+            - name: MEDELEG_DELEGATABLE
+              index: 10
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 20
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 21
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 22
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 23
+              equal: false

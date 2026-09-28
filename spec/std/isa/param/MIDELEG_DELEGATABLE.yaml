@@ -31,23 +31,125 @@ definedBy:
   extension:
     name: S
 requirements:
-  idl(): |
-    MIDELEG_DELEGATABLE[1] -> SSI_INTR_IMPL;
-    MIDELEG_DELEGATABLE[3] -> MSI_INTR_IMPL;
-    MIDELEG_DELEGATABLE[5] -> STI_INTR_IMPL;
-    MIDELEG_DELEGATABLE[7] -> MTI_INTR_IMPL;
-    MIDELEG_DELEGATABLE[9] -> SEI_INTR_IMPL;
-    MIDELEG_DELEGATABLE[11] -> MEI_INTR_IMPL;
-    !implemented?(ExtensionName::Sscofpmf) -> !MIDELEG_DELEGATABLE[13];
-    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[2];
-    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[6];
-    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[10];
-    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[12];
-    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[2];
-    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[6];
-    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[10];
-    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[12];
-  reason: |
-    An unimplemented interrupt cannot be delegated.
-    LCOFI (bit 13) is defined by Sscofpmf.
-    VSSI, VSTI, VSEI, and SGEI (bits 2, 6, 10, 12) are defined by H and are always delegated when H is implemented.
+  allOf:
+    # Reserved interrupt codes (0, 4, 8, 14, 15) cannot be delegated
+    - param:
+        allOf:
+          - name: MIDELEG_DELEGATABLE
+            index: 0
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 4
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 8
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 14
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 15
+            equal: false
+    # An unimplemented interrupt cannot be delegated
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 1
+          equal: true
+      then:
+        param:
+          name: SSI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 3
+          equal: true
+      then:
+        param:
+          name: MSI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 5
+          equal: true
+      then:
+        param:
+          name: STI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 7
+          equal: true
+      then:
+        param:
+          name: MTI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 9
+          equal: true
+      then:
+        param:
+          name: SEI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 11
+          equal: true
+      then:
+        param:
+          name: MEI_INTR_IMPL
+          equal: true
+    # LCOFI (bit 13) is defined by Sscofpmf
+    - if:
+        not:
+          extension:
+            name: Sscofpmf
+      then:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 13
+          equal: false
+    # VSSI, VSTI, VSEI, and SGEI are always delegated to HS-mode when H is implemented
+    - if:
+        extension:
+          name: H
+      then:
+        param:
+          allOf:
+            - name: MIDELEG_DELEGATABLE
+              index: 2
+              equal: true
+            - name: MIDELEG_DELEGATABLE
+              index: 6
+              equal: true
+            - name: MIDELEG_DELEGATABLE
+              index: 10
+              equal: true
+            - name: MIDELEG_DELEGATABLE
+              index: 12
+              equal: true
+    - if:
+        not:
+          extension:
+            name: H
+      then:
+        param:
+          allOf:
+            - name: MIDELEG_DELEGATABLE
+              index: 2
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 6
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 10
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 12
+              equal: false
