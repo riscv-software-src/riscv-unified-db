@@ -84,7 +84,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
   </thead>
   <tbody>
     <tr>
-      <td rowSpan={2}>0</td>
+      <td rowspan="2">0</td>
       <td><code>i[idx]</code></td>
       <td><code>Bits&lt;1&gt;</code></td>
       <td>Extract a single bit from bit position <code>idx</code>.<br/>
@@ -105,7 +105,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
       <td>Grouping.</td>
     </tr>
     <tr>
-      <td rowSpan={2}>2</td>
+      <td rowspan="2">2</td>
       <td><code>!i</code></td>
       <td><code>Boolean</code></td>
       <td>Logical negation. <code>i</code> must be a Boolean type.</td>
@@ -136,7 +136,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
           N must be a literal or compile-time constant.</td>
     </tr>
     <tr>
-      <td rowSpan={4}>6</td>
+      <td rowspan="4">6</td>
       <td><code>i * j</code></td>
       <td><code>Bits&lt;max(L(i), L(j))&gt;</code></td>
       <td>Multiply <code>i</code> times <code>j</code>. Result is the same width as the widest operand. Upper half of the result is discarded.</td>
@@ -161,7 +161,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
           When both are signed, signed overflow is undefined and must be avoided.</td>
     </tr>
     <tr>
-      <td rowSpan={4}>7</td>
+      <td rowspan="4">7</td>
       <td><code>i + j</code></td>
       <td><code>Bits&lt;max(L(i), L(j))&gt;</code></td>
       <td>Addition. Carry bit is discarded. To preserve carry, widen operands before adding.</td>
@@ -182,7 +182,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
       <td>Widening subtraction.</td>
     </tr>
     <tr>
-      <td rowSpan={4}>8</td>
+      <td rowspan="4">8</td>
       <td><code>i &lt;&lt; j</code></td>
       <td><code>typeof(i)</code></td>
       <td>Left logical shift.</td>
@@ -203,7 +203,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
       <td>Right arithmetic shift.</td>
     </tr>
     <tr>
-      <td rowSpan={4}>9</td>
+      <td rowspan="4">9</td>
       <td><code>i &gt; j</code></td>
       <td><code>Boolean</code></td>
       <td>Greater than. <code>i</code> and <code>j</code> must be integral.</td>
@@ -224,7 +224,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
       <td>Less than or equal. <code>i</code> and <code>j</code> must be integral.</td>
     </tr>
     <tr>
-      <td rowSpan={2}>10</td>
+      <td rowspan="2">10</td>
       <td><code>i == j</code></td>
       <td><code>Boolean</code></td>
       <td>Equality. <code>i</code> and <code>j</code> must be the same type: integral, boolean, or string.</td>
@@ -253,7 +253,7 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
       <td>Bitwise OR. <code>i</code> and <code>j</code> must be integral.</td>
     </tr>
     <tr>
-      <td rowSpan={2}>14</td>
+      <td rowspan="2">14</td>
       <td><code>i &amp;&amp; j</code></td>
       <td><code>Boolean</code></td>
       <td>Logical AND. <code>i</code> and <code>j</code> must be boolean.</td>
@@ -265,6 +265,12 @@ For an operand `i` (which may be an expression), `L(i)` is the number of bits in
     </tr>
     <tr>
       <td>15</td>
+      <td><code>a -&gt; c</code></td>
+      <td><code>Boolean</code></td>
+      <td>Logical implication. Both operands must be boolean. Use only in constraint bodies. See "Implication Operator" below.</td>
+    </tr>
+    <tr>
+      <td>16</td>
       <td><code>c ? t : f</code></td>
       <td><code>typeof(t)</code></td>
       <td>Ternary operator. Result is <code>t</code> if <code>c</code> is true, <code>f</code> otherwise.<br/>
@@ -284,3 +290,24 @@ if (b != 0) {
 }
 ```
 :::
+
+## Implication Operator
+
+The implication operator (`->`) is used in IDL constraint bodies, not in general IDL expressions. It expresses a boolean constraint of the form “if the
+antecedent is true, the consequent must also be true.”
+```idl
+antecedent -> consequent;
+```
+
+Both operands must be boolean expressions. The operator has lower precedence than logical OR (`||`) because each side of the implication is parsed as a full
+logical-OR-level expression. For clarity, use parentheses around complex antecedents or consequents:
+
+```idl
+(b0 && b1) -> b2;
+b3 -> (b4 || b5);
+```
+
+An omitted antecedent is treated as true, making the consequent an unconditional constraint:
+```idl
+-> c;
+```
