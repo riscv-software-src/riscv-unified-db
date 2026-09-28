@@ -76,8 +76,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[0] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[0]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   IAF:
     location: 1
     description: |
@@ -114,8 +120,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[1] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[1]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   II:
     location: 2
     description: |
@@ -151,8 +163,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[2] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[2]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   B:
     location: 3
     description: |
@@ -188,8 +206,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[3] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[3]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   LAM:
     location: 4
     description: |
@@ -230,8 +254,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[4] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[4]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   LAF:
     location: 5
     description: |
@@ -268,8 +298,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[5] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[5]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   SAM:
     location: 6
     description: |
@@ -310,8 +346,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[6] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[6]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   SAF:
     location: 7
     description: |
@@ -347,8 +389,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[7] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[7]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   EU:
     location: 8
     description: |
@@ -385,8 +433,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[8] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[8]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   ES:
     location: 9
     description: |
@@ -409,8 +463,14 @@ fields:
       ! 0 ! M ! M
       ! 1 ! M ! (H)S
       !===
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[9] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[9]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   EVS:
     location: 10
     description: |
@@ -433,8 +493,14 @@ fields:
       ! 0 ! M ! M
       ! 1 ! M ! (H)S
       !===
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[10] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[10]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
     definedBy:
       extension:
         name: H
@@ -483,8 +549,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[12] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[12]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   LPF:
     location: 13
     description: |
@@ -521,8 +593,14 @@ fields:
       !===
       <%- end -%>
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[13] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[13]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   SPF:
     location: 15
     description: |
@@ -558,8 +636,14 @@ fields:
       ! 1 ! M ! S
       !===
       <%- end -%>
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[15] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[15]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
   IGPF:
     location: 20
     description: |
@@ -582,8 +666,14 @@ fields:
       ! 0 ! M ! M
       ! 1 ! M ! HS
       !===
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[20] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[20]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
     definedBy:
       extension:
         name: H
@@ -610,8 +700,14 @@ fields:
       ! 1 ! M ! HS
       !===
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[21] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[21]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
     definedBy:
       extension:
         name: H
@@ -638,8 +734,14 @@ fields:
       ! 1 ! M ! HS
       !===
 
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[22] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[22]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
     definedBy:
       extension:
         name: H
@@ -665,8 +767,14 @@ fields:
       ! 0 ! M ! M
       ! 1 ! M ! HS
       !===
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      return MEDELEG_DELEGATABLE[23] ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      if (MEDELEG_DELEGATABLE[23]) {
+        return UNDEFINED_LEGAL;
+      } else {
+        return 0;
+      }
     definedBy:
       extension:
         name: H

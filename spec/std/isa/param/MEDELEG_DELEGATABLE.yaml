@@ -1,0 +1,42 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MEDELEG_DELEGATABLE
+description: |
+  Indicates which synchronous exceptions can be delegated via `medeleg`.
+
+  Entry _i_ corresponds to `medeleg` bit _i_, whose index is the exception code reported in `mcause`.
+  When an entry is true, the corresponding `medeleg` bit is writable.
+  When an entry is false, the corresponding `medeleg` bit is read-only zero.
+
+  An implementation may support any subset of the delegatable exceptions,
+  but no bit of `medeleg` may be read-only one.
+
+  `MEDELEG_DELEGATABLE[11]` (environment call from M-mode) and
+  `MEDELEG_DELEGATABLE[16]` (double trap) must always be false.
+long_name: Exceptions that can be delegated through medeleg
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 64
+  minItems: 64
+definedBy:
+  extension:
+    name: S
+requirements:
+  idl(): |
+    implemented?(ExtensionName::S) -> !MEDELEG_DELEGATABLE[11];
+    implemented?(ExtensionName::S) -> !MEDELEG_DELEGATABLE[16];
+    !implemented?(ExtensionName::H) -> !MEDELEG_DELEGATABLE[10];
+    for (U32 i = 20; i < 24; i++) {
+      !implemented?(ExtensionName::H) -> !MEDELEG_DELEGATABLE[i];
+    }
+  reason: |
+    medeleg[11] is read-only zero because environment calls from M-mode cannot occur in a less-privileged mode.
+    medeleg[16] is read-only zero because double trap is not delegatable.
+    Exception codes 10 and 20-23 are defined by the H extension.

@@ -1,0 +1,53 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MIDELEG_DELEGATABLE
+description: |
+  Indicates which interrupts can be delegated via `mideleg`.
+
+  Entry _i_ corresponds to `mideleg` bit _i_, which uses the same bit layout as `mip`.
+  When an entry is true, the corresponding interrupt can be delegated: the `mideleg` bit is writable,
+  except for bits that are always delegated, which are read-only one.
+  When an entry is false, the corresponding `mideleg` bit is read-only zero.
+
+  An unimplemented interrupt cannot be delegated, i.e., if `STI_INTR_IMPL` is false,
+  `MIDELEG_DELEGATABLE[5]` must be false.
+
+  When the H extension is implemented, VSSI, VSTI, VSEI, and SGEI are always delegated to HS-mode,
+  so `MIDELEG_DELEGATABLE[2]`, `[6]`, `[10]`, and `[12]` must be true.
+  When H is not implemented, they must be false.
+long_name: Interrupts that can be delegated through mideleg
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 64
+  minItems: 64
+definedBy:
+  extension:
+    name: S
+requirements:
+  idl(): |
+    MIDELEG_DELEGATABLE[1] -> SSI_INTR_IMPL;
+    MIDELEG_DELEGATABLE[3] -> MSI_INTR_IMPL;
+    MIDELEG_DELEGATABLE[5] -> STI_INTR_IMPL;
+    MIDELEG_DELEGATABLE[7] -> MTI_INTR_IMPL;
+    MIDELEG_DELEGATABLE[9] -> SEI_INTR_IMPL;
+    MIDELEG_DELEGATABLE[11] -> MEI_INTR_IMPL;
+    !implemented?(ExtensionName::Sscofpmf) -> !MIDELEG_DELEGATABLE[13];
+    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[2];
+    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[6];
+    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[10];
+    implemented?(ExtensionName::H) -> MIDELEG_DELEGATABLE[12];
+    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[2];
+    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[6];
+    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[10];
+    !implemented?(ExtensionName::H) -> !MIDELEG_DELEGATABLE[12];
+  reason: |
+    An unimplemented interrupt cannot be delegated.
+    LCOFI (bit 13) is defined by Sscofpmf.
+    VSSI, VSTI, VSEI, and SGEI (bits 2, 6, 10, 12) are defined by H and are always delegated when H is implemented.
