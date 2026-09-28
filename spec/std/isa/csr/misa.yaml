@@ -222,9 +222,9 @@ sw_read(): |
     (CSR[misa].S `<< 18) |
     (CSR[misa].Q `<< 16) |
     (CSR[misa].M `<< 12) |
-    (CSR[misa].I `<< 7) |
-    (CSR[misa].H `<< 6) |
-    (CSR[misa].F `<< 4) |
+    (CSR[misa].I `<< 8) |
+    (CSR[misa].H `<< 7) |
+    (CSR[misa].F `<< 5) |
     (CSR[misa].D `<< 3) |
     (CSR[misa].C `<< 2) |
     (CSR[misa].B `<< 1) |
