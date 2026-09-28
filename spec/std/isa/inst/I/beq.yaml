@@ -14,7 +14,9 @@ description: |
   Raise a `MisalignedAddress` exception if PC + imm is misaligned.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xs1, xs2, imm
 encoding:
   match: "-----------------000-----1100011"

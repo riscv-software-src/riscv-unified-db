@@ -18,7 +18,9 @@ definedBy:
     - allOf:
         - xlen: 64
         - extension:
-            name: I
+            anyOf:
+              - name: I
+              - name: E
     - allOf:
         - xlen: 32
         - extension:

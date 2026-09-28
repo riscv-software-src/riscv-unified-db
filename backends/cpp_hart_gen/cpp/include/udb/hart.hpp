@@ -326,6 +326,7 @@ namespace udb {
     // xlen of M-mode, i.e., MXLEN
     virtual unsigned mxlen() = 0;
 
+    virtual unsigned xreg_count() const = 0;
     virtual uint64_t xreg(unsigned num) const = 0;
     virtual void set_xreg(unsigned num, uint64_t value) = 0;
 

@@ -10,7 +10,9 @@ long_name: Add upper immediate to pc
 description: Add an immediate to the current PC.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, imm
 encoding:
   match: "-------------------------0010111"

@@ -46,15 +46,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:add_uw]
@@ -153,15 +148,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:addiw]
@@ -204,18 +194,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:addw]
@@ -260,18 +242,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:aes32dsi]
@@ -10372,15 +10346,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:andi]
@@ -10423,15 +10392,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:andn]
@@ -10521,15 +10485,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:bclr]
@@ -10705,15 +10664,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:beqi]
@@ -10948,15 +10902,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:bgeu]
@@ -11003,15 +10952,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:binv]
@@ -11187,15 +11131,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:bltu]
@@ -11242,15 +11181,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:bne]
@@ -11297,15 +11231,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:bnei]
@@ -17395,15 +17324,10 @@ ebreak has no decode variables.
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:ecall]
@@ -17455,15 +17379,10 @@ ecall has no decode variables.
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:fadd_d]
@@ -20777,15 +20696,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:fence_i]
@@ -20916,15 +20830,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:feq_d]
@@ -27517,15 +27426,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:jalr]
@@ -27572,15 +27476,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lb]
@@ -27626,15 +27525,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lb_aq]
@@ -27800,15 +27694,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:ld]
@@ -27883,8 +27772,9 @@ Included in::
 
 This instruction requires the following:
 
-++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
 ++(++xlen+++()+++ == 32 && xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
 
 
 [#udb:doc:inst:ld_aq]
@@ -28050,15 +27940,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lh_aq]
@@ -28224,15 +28109,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lpad]
@@ -29068,15 +28948,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lw]
@@ -29122,15 +28997,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:lw_aq]
@@ -29296,18 +29166,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:lxd]
@@ -33431,15 +33293,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:orc_b]
@@ -33535,15 +33392,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:orn]
@@ -34663,15 +34515,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sb_aqrl]
@@ -36131,8 +35978,9 @@ Included in::
 
 This instruction requires the following:
 
-++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
 ++(++xlen+++()+++ == 32 && xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
 
 
 [#udb:doc:inst:sd_aqrl]
@@ -36746,15 +36594,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sh_aqrl]
@@ -38043,15 +37886,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:slli]
@@ -38116,15 +37954,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:slli_uw]
@@ -38226,18 +38059,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:sllw]
@@ -38281,18 +38106,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:slt]
@@ -38337,15 +38154,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:slti]
@@ -38390,15 +38202,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sltiu]
@@ -38447,15 +38254,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sltu]
@@ -38500,15 +38302,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sm3p0]
@@ -38760,15 +38557,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:srai]
@@ -38835,15 +38627,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sraiw]
@@ -38888,18 +38675,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:sraw]
@@ -38943,18 +38722,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:sret]
@@ -39081,15 +38852,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:srli]
@@ -39154,15 +38920,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:srliw]
@@ -39205,18 +38966,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:srlw]
@@ -39260,18 +39013,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:ssamoswap_d]
@@ -39578,15 +39323,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:subw]
@@ -39629,18 +39369,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
-Additionally, this instruction requires the following:
-
-xlen+++()+++ == 64
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 64 && xref:exts:E.adoc#udb:doc:ext:E[E])
 
 
 [#udb:doc:inst:sw]
@@ -39685,15 +39417,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:sw_aqrl]
@@ -76032,15 +75759,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:xori]
@@ -76083,15 +75805,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *I*
-| any
-|===
-
-
+xref:exts:I.adoc#udb:doc:ext:I[I]
+xref:exts:E.adoc#udb:doc:ext:E[E]
 
 
 [#udb:doc:inst:xperm4]

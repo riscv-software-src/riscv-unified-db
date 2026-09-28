@@ -22,7 +22,9 @@ description: |
 
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: ""
 encoding:
   match: 100000110011-----000-----0001111

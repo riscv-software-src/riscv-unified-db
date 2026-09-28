@@ -12,7 +12,9 @@ description: |
   address formed by adding `xs1` to a signed offset.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xs2, imm(xs1)
 encoding:
   match: "-----------------000-----0100011"

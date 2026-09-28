@@ -11,7 +11,9 @@ description: |
   Shift the value in `xs1` left by the value in the lower 6 bits of `xs2`, and store the result in `xd`.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------001-----0110011

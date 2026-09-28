@@ -12,7 +12,11 @@ description: |
   is MXLEN bits wide, but will appear to be XLEN bits wide if XLEN<MXLEN. Register
   'x0' is hardwired to zero, while the remaining registers hold architecturally
   visible integer state used by the calling convention and execution environment.
-definedBy: I
+definedBy:
+  extension:
+    anyOf:
+      - name: I
+      - name: E
 register_class: general_purpose
 register_length(): return MXLEN;
 registers:
@@ -104,99 +108,115 @@ registers:
     roles: [argument]
     description: Function argument register 6.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x17
     abi_mnemonics: [a7]
     caller_saved: true
     roles: [argument]
     description: Function argument register 7 / syscall ID.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x18
     abi_mnemonics: [s2]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x19
     abi_mnemonics: [s3]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x20
     abi_mnemonics: [s4]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x21
     abi_mnemonics: [s5]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x22
     abi_mnemonics: [s6]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x23
     abi_mnemonics: [s7]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x24
     abi_mnemonics: [s8]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x25
     abi_mnemonics: [s9]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x26
     abi_mnemonics: [s10]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x27
     abi_mnemonics: [s11]
     callee_saved: true
     description: Callee-saved register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x28
     abi_mnemonics: [t3]
     caller_saved: true
     roles: [temporary]
     description: Temporary register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x29
     abi_mnemonics: [t4]
     caller_saved: true
     roles: [temporary]
     description: Temporary register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x30
     abi_mnemonics: [t5]
     caller_saved: true
     roles: [temporary]
     description: Temporary register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }
   - name: x31
     abi_mnemonics: [t6]
     caller_saved: true
     roles: [temporary]
     description: Temporary register.
     when:
-      not: { name: E }
+      not:
+        extension: { name: E }

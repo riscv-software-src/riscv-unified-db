@@ -12,7 +12,9 @@ description:
   xd
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, imm
 encoding:
   match: "-----------------000-----0010011"

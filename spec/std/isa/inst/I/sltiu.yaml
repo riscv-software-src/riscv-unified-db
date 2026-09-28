@@ -16,7 +16,9 @@ description: |
   (assembler pseudoinstruction `SEQZ xd, rs`).
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, imm
 encoding:
   match: "-----------------011-----0010011"

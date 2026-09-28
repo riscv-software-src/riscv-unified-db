@@ -9,7 +9,9 @@ long_name: Shift right logical immediate
 description: Shift the value in xs1 right by shamt, and store the result in xd
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, shamt
 encoding:
   RV32:

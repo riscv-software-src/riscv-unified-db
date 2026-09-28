@@ -12,7 +12,9 @@ description: |
   when both are treated as signed numbers, else 0 is written to `xd`.
 definedBy:
   extension:
-    name: I
+    anyOf:
+      - name: I
+      - name: E
 assembly: xd, xs1, imm
 encoding:
   match: "-----------------010-----0010011"

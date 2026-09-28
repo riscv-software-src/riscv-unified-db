@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: E
+type: unprivileged
+requirements:
+  not:
+    extension:
+      name: I
+long_name: Base integer ISA with 16 registers (RV32E or RV64E)
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2023-01
+description: |
+  Base integer instructions with 16 integer registers.

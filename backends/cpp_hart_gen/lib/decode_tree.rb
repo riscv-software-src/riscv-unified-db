@@ -230,6 +230,19 @@ class DecodeGen
     "(#{efs.join(' | ')})"
   end
 
+  def e_possible?
+    return @e_possible if defined?(@e_possible)
+
+    @e_possible = Udb::Condition.new({ "extension" => { "name" => "E" } }, @cfg_arch)
+      .could_be_satisfied_by_cfg_arch?(@cfg_arch)
+  end
+
+  def e_xreg_decode_variables(inst, xlen)
+    return [] unless e_possible?
+
+    inst.encoding(xlen).decode_variables.select { |dv| ["xd", "xs1", "xs2"].include?(dv.name) }
+  end
+
   # @return [Boolean] whether or not the instruction in node is a base of HINTs
   # that are decoded through the tree (exclusion-constrained hints are instead
   # dispatched at the parent's endpoint, so they don't count here)
@@ -281,9 +294,11 @@ class DecodeGen
     node.children.any? do |child|
       needs_to_check_dv = child.type == DecodeTreeNode::ENDPOINT_TYPE \
         && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
+      needs_to_check_e_regs = child.type == DecodeTreeNode::ENDPOINT_TYPE \
+        && e_xreg_decode_variables(child.insts[0], xlen).any?
       needs_to_check_hint = has_tree_decoded_hints?(child, inst_list, xlen)
 
-      needs_to_check_implemented?(child.insts[0]) || needs_to_check_dv || needs_to_check_hint
+      needs_to_check_implemented?(child.insts[0]) || needs_to_check_dv || needs_to_check_e_regs || needs_to_check_hint
     end
   end
   # @return [String] C++ decoder switch
@@ -311,6 +326,11 @@ class DecodeGen
 
               dv_val = extract_dv(dv, encoding_var_name)
               conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val}_b)" })
+            end
+          end
+          if child.type == DecodeTreeNode::ENDPOINT_TYPE
+            e_xreg_decode_variables(child.insts[0], xlen).each do |dv|
+              conds << "(!implemented_Q_(ExtensionName::E) || (#{extract_dv(dv, encoding_var_name)} < 16_b))"
             end
           end
           if has_guarded_hints
@@ -361,6 +381,9 @@ class DecodeGen
         conds = ["((#{encoding_var_name} & 0b#{mask}_b) == 0b#{value}_b)"]
         henc.decode_variables.each do |dv|
           conds << dv_allowed_cond(dv, encoding_var_name) unless dv.excludes.empty?
+        end
+        e_xreg_decode_variables(hint_inst, xlen).each do |dv|
+          conds << "(!implemented_Q_(ExtensionName::E) || (#{extract_dv(dv, encoding_var_name)} < 16_b))"
         end
         conds << implemented_cond_cxx(hint_inst) if needs_to_check_implemented?(hint_inst)
         code += <<~HINT_INST

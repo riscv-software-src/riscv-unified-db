@@ -104,7 +104,7 @@ namespace udb {
           <%- next unless width.is_a?(String) -%>
           <%- param_name = width -%>
           m_<%= rf_name %>regs {
-            <%- rf.registers.count.times do -%>
+            <%- applicable_registers(rf).count.times do -%>
             PossiblyUnknownRuntimeBits<<%= rf.max_register_length %>>{ WidthArg(m_params.<%= param_name %>.has_value() ? static_cast<uint64_t>(m_params.<%= param_name %>.value().get()) : static_cast<uint64_t>(<%= rf.max_register_length %>)) },
             <%- end -%>
           },
@@ -134,7 +134,7 @@ namespace udb {
       {
         <%- applicable_register_files.each do |rf| -%>
         <%- rf_name = rf.name.downcase -%>
-        <%- rf.registers.each do |r| -%>
+        <%- applicable_registers(rf).each do |r| -%>
         <%- next if r.reset_value.nil? -%>
         <%- reset_cpp = compile_idl_expr(r.reset_value).gen_cpp(cfg_arch.symtab, 0) -%>
         m_<%= rf_name %>regs[<%= r.index %>] = <%= reset_cpp %>;
@@ -343,12 +343,18 @@ namespace udb {
       <%- is_runtime_width = rf_width.is_a?(String) -%>
       <%- accessor_type = is_runtime_width ? "PossiblyUnknownRuntimeBits<#{rf.max_register_length}>" : "PossiblyUnknownBits<#{bits_width}>" -%>
       <%- setter_param_type = is_runtime_width ? "_PossiblyUnknownRuntimeBits<#{rf.max_register_length}, false>" : "_PossiblyUnknownBits<#{bits_width}, false>" -%>
-      <%- entries_with_read = rf.registers.select { |r| r.arch_read } -%>
-      <%- entries_with_write = rf.registers.select { |r| r.arch_write } -%>
+      <%- entries = applicable_registers(rf) -%>
+      <%- entries_with_read = entries.select { |r| r.arch_read } -%>
+      <%- entries_with_write = entries.select { |r| r.arch_write } -%>
+      <%- entry_count = rf.name == "X" ? "xreg_count()" : entries.count.to_s -%>
 
+      <%- if rf.name == "X" -%>
+      unsigned xreg_count() const override { return <%= register_count_expr(rf) %>; }
+
+      <%- end -%>
       uint64_t <%= rf_name %>reg(unsigned num) const override {
-        if (num >= <%= rf.registers.count %>) {
-          throw std::out_of_range("<%= rf.name %> register indices are 0 - <%= rf.registers.count - 1 %>, inclusive");
+        if (num >= <%= entry_count %>) {
+          throw std::out_of_range("<%= rf.name %> register index out of range");
         }
         <%- if is_runtime_width -%>
         return static_cast<uint64_t>(_<%= rf_name %>reg(num).get().get_ui());
@@ -377,8 +383,8 @@ namespace udb {
       }
 
       void set_<%= rf_name %>reg(unsigned num, uint64_t value) override {
-        if (num >= <%= rf.registers.count %>) {
-          throw std::out_of_range("<%= rf.name %> register indices are 0 - <%= rf.registers.count - 1 %>, inclusive");
+        if (num >= <%= entry_count %>) {
+          throw std::out_of_range("<%= rf.name %> register index out of range");
         }
         <%- if is_runtime_width -%>
         _set_<%= rf_name %>reg(Bits<8>{num}, <%= accessor_type %>{Bits<64>{value}});
@@ -552,7 +558,7 @@ namespace udb {
       <%- rf_name = rf.name.downcase -%>
       <%- width = rf.eval_register_length(cfg_arch) -%>
       <%- cpp_type = width.is_a?(String) ? "PossiblyUnknownRuntimeBits<#{rf.max_register_length}>" : "PossiblyUnknownBits<#{width}>" -%>
-      std::array<<%= cpp_type %>, <%= rf.registers.count %>> m_<%= rf_name %>regs;
+      std::array<<%= cpp_type %>, <%= applicable_registers(rf).count %>> m_<%= rf_name %>regs;
       <%- end -%>
 
       <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;

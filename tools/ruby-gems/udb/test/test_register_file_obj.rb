@@ -120,4 +120,13 @@ class TestRegisterFileObj < Minitest::Test
     assert_same rf, entry.register_file,
       "Expected register_file to return the parent RegisterFile"
   end
+
+  def test_registers_for_excludes_entries_with_unsatisfied_conditions
+    rf = make_rf
+    condition = Object.new
+    condition.define_singleton_method(:could_be_satisfied_by_cfg_arch?) { |_| false }
+    rf.registers[1].define_singleton_method(:when_condition) { condition }
+
+    assert_equal [rf.registers[0]], rf.registers_for(make_cfg_arch)
+  end
 end

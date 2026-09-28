@@ -40,6 +40,10 @@ operation(): |
     reserved_instruction($encoding);
   }
 
+  if (implemented?(ExtensionName::E) && (rlist > 6)) {
+    reserved_instruction($encoding);
+  }
+
   XReg size = xlen() / 8;
   XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
   XReg stack_aligned_adj = (nreg * 4 + 15) & ~0xF;
