@@ -53,9 +53,6 @@ definedBy:
 fields:
   CY:
     location: 0
-    definedBy:
-      extension:
-        name: Sm
     description: When set, `mcycle.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -63,9 +60,6 @@ fields:
       return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
   IR:
     location: 2
-    definedBy:
-      extension:
-        name: Sm
     description: When set, `minstret.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -74,9 +68,6 @@ fields:
   <%- (3..31).each do |hpm_num| -%>
   HPM<%= hpm_num %>:
     location: <%= hpm_num %>
-    definedBy:
-      extension:
-        name: Sm
     description: |
       [when="COUNTINHIBIT_EN[<%= hpm_num %>] == true"]
       When set, `hpmcounter<%= hpm_num %>.COUNT` stops counting in all privilege modes.
