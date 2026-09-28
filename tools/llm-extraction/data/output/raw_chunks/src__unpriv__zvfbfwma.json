@@ -1,0 +1,158 @@
+{
+  "source_file": "src/unpriv/zvfbfwma.adoc",
+  "total": 19,
+  "sentences": [
+    {
+      "text": "This extension adds vector instructions that multiply BF16 numbers and accumulate into FP32.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "This extension depends upon the `Zvfbfmin` extension and the `Zfbfmin` extension.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation",
+      "line_range": [
+        6,
+        6
+      ]
+    },
+    {
+      "text": "Synopsis:: Vector BF16 widening multiply-accumulate",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        10,
+        11
+      ]
+    },
+    {
+      "text": "Mnemonic:: vfwmaccbf16.vv vd, vs1, vs2, vm + vfwmaccbf16.vf vd, rs1, vs2, vm +",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        13,
+        15
+      ]
+    },
+    {
+      "text": "Encoding (Vector-Vector):: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010111', attr:['OP-V']}, {bits: 5, name: 'vd'}, {bits: 3, name: '001', attr:['OPFVV']}, {bits: 5, name: 'vs1'}, {bits: 5, name: 'vs2'}, {bits: 1, name: 'vm'}, {bits: 6, name: '111011', attr:['vfwmaccbf16']}, ]} ....",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        17,
+        29
+      ]
+    },
+    {
+      "text": "Encoding (Vector-Scalar):: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010111', attr:['OP-V']}, {bits: 5, name: 'vd'}, {bits: 3, name: '101', attr:['OPFVF']}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'vs2'}, {bits: 1, name: 'vm'}, {bits: 6, name: '111011', attr:['vfwmaccbf16']}, ]} ....",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        31,
+        43
+      ]
+    },
+    {
+      "text": "Reserved Encodings:: * `SEW` is any value other than 16",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        45,
+        47
+      ]
+    },
+    {
+      "text": "Arguments:: | |Register |Direction |EEW |Definition",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        49,
+        56
+      ]
+    },
+    {
+      "text": "| Vd | input | 32 | FP32 Accumulate | Vs1/rs1 | input | 16 | BF16 Source | Vs2 | input | 16 | BF16 Source | Vd | output | 32 | FP32 Result |",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        58,
+        62
+      ]
+    },
+    {
+      "text": "This instruction performs a widening fused multiply-accumulate operation, where each pair of BF16 values are multiplied and their unrounded product is added to the corresponding FP32 accumulate value.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        66,
+        70
+      ]
+    },
+    {
+      "text": "The sum is rounded according to the frm register.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        66,
+        70
+      ]
+    },
+    {
+      "text": "In the vector-vector version, the BF16 elements are read from `vs1` and `vs2` and FP32 accumulate value is read from `vd`.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        72,
+        75
+      ]
+    },
+    {
+      "text": "The FP32 result is written to the destination register `vd`.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        72,
+        75
+      ]
+    },
+    {
+      "text": "The vector-scalar version is similar, but instead of reading elements from `vs1`, a scalar BF16 value is read from the FPU register `rs1`.",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        77,
+        79
+      ]
+    },
+    {
+      "text": "Exceptions: Overflow, Underflow, Inexact, Invalid",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        81,
+        81
+      ]
+    },
+    {
+      "text": "This `vfwmaccbf16.vv` instruction is equivalent to widening each of the BF16 inputs to FP32 and then performing an FMACC as shown in the following instruction sequence:",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        85,
+        87
+      ]
+    },
+    {
+      "text": "[source,asm] -- vfwcvtbf16.f.f.v T1, vs1, vm vfwcvtbf16.f.f.v T2, vs2, vm vfmacc.vv vd, T1, T2, vm --",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        89,
+        94
+      ]
+    },
+    {
+      "text": "Likewise, `vfwmaccbf16.vf` is equivalent to the following instruction sequence:",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "[source,asm] -- fcvt.s.bf16 T1, rs1 vfwcvtbf16.f.f.v T2, vs2, vm vfmacc.vf vd, T1, T2, vm --",
+      "section": "Preamble > `Zvfbfwma` Extension for Vector BF16 Widening Multiply-Accumulation > vfwmaccbf16",
+      "line_range": [
+        98,
+        103
+      ]
+    }
+  ]
+}

@@ -1,0 +1,879 @@
+{
+  "global": {
+    "total_files": 136,
+    "processed_files": 131,
+    "skipped_files": 5,
+    "total_raw_chunks": 10529,
+    "total_final_chunks": 4311,
+    "reduction_percent": 59.06,
+    "isa_manual_commit": "dca12d638b140d86441ad0b067997c70d2017017"
+  },
+  "files": {
+    "src/b-st-ext.adoc": {
+      "raw_chunks": 591,
+      "final_chunks": 40,
+      "dropped": 551
+    },
+    "src/images/graphviz/litmus_sample.adoc": {
+      "raw_chunks": 4,
+      "final_chunks": 0,
+      "dropped": 4
+    },
+    "src/intro.adoc": {
+      "raw_chunks": 143,
+      "final_chunks": 5,
+      "dropped": 138
+    },
+    "src/naming.adoc": {
+      "raw_chunks": 82,
+      "final_chunks": 8,
+      "dropped": 74
+    },
+    "src/priv/cfi.adoc": {
+      "raw_chunks": 69,
+      "final_chunks": 44,
+      "dropped": 25
+    },
+    "src/priv/csrs.adoc": {
+      "raw_chunks": 126,
+      "final_chunks": 65,
+      "dropped": 61
+    },
+    "src/priv/hypervisor.adoc": {
+      "raw_chunks": 585,
+      "final_chunks": 426,
+      "dropped": 159
+    },
+    "src/priv/insns.adoc": {
+      "raw_chunks": 3,
+      "final_chunks": 0,
+      "dropped": 3
+    },
+    "src/priv/intro.adoc": {
+      "raw_chunks": 44,
+      "final_chunks": 0,
+      "dropped": 44
+    },
+    "src/priv/machine.adoc": {
+      "raw_chunks": 791,
+      "final_chunks": 590,
+      "dropped": 201
+    },
+    "src/priv/preface.adoc": {
+      "raw_chunks": 75,
+      "final_chunks": 5,
+      "dropped": 70
+    },
+    "src/priv/priv.adoc": {
+      "raw_chunks": 0,
+      "final_chunks": 0,
+      "dropped": 0
+    },
+    "src/priv/rationale.adoc": {
+      "raw_chunks": 35,
+      "final_chunks": 18,
+      "dropped": 17
+    },
+    "src/priv/sh.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/priv/sha.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/priv/shcounterenw.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/shgatpa.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/priv/shtvala.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/shvsatpa.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/shvstvala.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/shvstvecd.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/priv/sm.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/priv/smcdeleg.adoc": {
+      "raw_chunks": 39,
+      "final_chunks": 26,
+      "dropped": 13
+    },
+    "src/priv/smcntrpmf.adoc": {
+      "raw_chunks": 24,
+      "final_chunks": 15,
+      "dropped": 9
+    },
+    "src/priv/smcsrind.adoc": {
+      "raw_chunks": 58,
+      "final_chunks": 53,
+      "dropped": 5
+    },
+    "src/priv/smctr.adoc": {
+      "raw_chunks": 273,
+      "final_chunks": 209,
+      "dropped": 64
+    },
+    "src/priv/smdbltrp.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 3,
+      "dropped": 4
+    },
+    "src/priv/smepmp.adoc": {
+      "raw_chunks": 20,
+      "final_chunks": 6,
+      "dropped": 14
+    },
+    "src/priv/smrnmi.adoc": {
+      "raw_chunks": 50,
+      "final_chunks": 42,
+      "dropped": 8
+    },
+    "src/priv/smstateen.adoc": {
+      "raw_chunks": 94,
+      "final_chunks": 76,
+      "dropped": 18
+    },
+    "src/priv/ss.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/priv/ssccptr.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/sscofpmf.adoc": {
+      "raw_chunks": 39,
+      "final_chunks": 32,
+      "dropped": 7
+    },
+    "src/priv/sscounterenw.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/ssdbltrp.adoc": {
+      "raw_chunks": 6,
+      "final_chunks": 2,
+      "dropped": 4
+    },
+    "src/priv/ssqosid.adoc": {
+      "raw_chunks": 28,
+      "final_chunks": 12,
+      "dropped": 16
+    },
+    "src/priv/ssstrict.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/priv/sstc.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 5,
+      "dropped": 2
+    },
+    "src/priv/sstvala.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/priv/sstvecd.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/priv/ssu64xl.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/supervisor.adoc": {
+      "raw_chunks": 403,
+      "final_chunks": 286,
+      "dropped": 117
+    },
+    "src/priv/sv.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/priv/svadu.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 5,
+      "dropped": 2
+    },
+    "src/priv/svinval.adoc": {
+      "raw_chunks": 17,
+      "final_chunks": 9,
+      "dropped": 8
+    },
+    "src/priv/svnapot.adoc": {
+      "raw_chunks": 9,
+      "final_chunks": 5,
+      "dropped": 4
+    },
+    "src/priv/svpbmt.adoc": {
+      "raw_chunks": 29,
+      "final_chunks": 14,
+      "dropped": 15
+    },
+    "src/priv/svrsw60t59b.adoc": {
+      "raw_chunks": 3,
+      "final_chunks": 2,
+      "dropped": 1
+    },
+    "src/priv/svvptc.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/priv/zpm.adoc": {
+      "raw_chunks": 109,
+      "final_chunks": 35,
+      "dropped": 74
+    },
+    "src/profiles/intro.adoc": {
+      "raw_chunks": 116,
+      "final_chunks": 25,
+      "dropped": 91
+    },
+    "src/profiles/preface.adoc": {
+      "raw_chunks": 9,
+      "final_chunks": 1,
+      "dropped": 8
+    },
+    "src/profiles/profiles.adoc": {
+      "raw_chunks": 0,
+      "final_chunks": 0,
+      "dropped": 0
+    },
+    "src/profiles/rva20.adoc": {
+      "raw_chunks": 60,
+      "final_chunks": 2,
+      "dropped": 58
+    },
+    "src/profiles/rva22.adoc": {
+      "raw_chunks": 87,
+      "final_chunks": 3,
+      "dropped": 84
+    },
+    "src/profiles/rva23.adoc": {
+      "raw_chunks": 95,
+      "final_chunks": 3,
+      "dropped": 92
+    },
+    "src/profiles/rvb23.adoc": {
+      "raw_chunks": 84,
+      "final_chunks": 6,
+      "dropped": 78
+    },
+    "src/profiles/rvi20.adoc": {
+      "raw_chunks": 43,
+      "final_chunks": 1,
+      "dropped": 42
+    },
+    "src/rv32.adoc": {
+      "raw_chunks": 152,
+      "final_chunks": 71,
+      "dropped": 81
+    },
+    "src/rv32e.adoc": {
+      "raw_chunks": 5,
+      "final_chunks": 1,
+      "dropped": 4
+    },
+    "src/rv64.adoc": {
+      "raw_chunks": 50,
+      "final_chunks": 20,
+      "dropped": 30
+    },
+    "src/scalar-crypto.adoc": {
+      "raw_chunks": 1075,
+      "final_chunks": 233,
+      "dropped": 842
+    },
+    "src/symbols.adoc": {
+      "raw_chunks": 0,
+      "final_chunks": 0,
+      "dropped": 0
+    },
+    "src/unpriv.adoc": {
+      "raw_chunks": 0,
+      "final_chunks": 0,
+      "dropped": 0
+    },
+    "src/unpriv/a-st-ext.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 0,
+      "dropped": 1
+    },
+    "src/unpriv/bitmanip-examples.adoc": {
+      "raw_chunks": 16,
+      "final_chunks": 3,
+      "dropped": 13
+    },
+    "src/unpriv/c-st-ext.adoc": {
+      "raw_chunks": 6,
+      "final_chunks": 2,
+      "dropped": 4
+    },
+    "src/unpriv/cfi.adoc": {
+      "raw_chunks": 160,
+      "final_chunks": 64,
+      "dropped": 96
+    },
+    "src/unpriv/cmo.adoc": {
+      "raw_chunks": 202,
+      "final_chunks": 64,
+      "dropped": 138
+    },
+    "src/unpriv/code-examples.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 0,
+      "dropped": 1
+    },
+    "src/unpriv/d-st-ext.adoc": {
+      "raw_chunks": 27,
+      "final_chunks": 22,
+      "dropped": 5
+    },
+    "src/unpriv/f-st-ext.adoc": {
+      "raw_chunks": 84,
+      "final_chunks": 66,
+      "dropped": 18
+    },
+    "src/unpriv/m-st-ext.adoc": {
+      "raw_chunks": 18,
+      "final_chunks": 9,
+      "dropped": 9
+    },
+    "src/unpriv/memory-models.adoc": {
+      "raw_chunks": 4,
+      "final_chunks": 0,
+      "dropped": 4
+    },
+    "src/unpriv/mm-appendix.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 0,
+      "dropped": 1
+    },
+    "src/unpriv/mm-explanatory.adoc": {
+      "raw_chunks": 447,
+      "final_chunks": 171,
+      "dropped": 276
+    },
+    "src/unpriv/mm-formal.adoc": {
+      "raw_chunks": 248,
+      "final_chunks": 148,
+      "dropped": 100
+    },
+    "src/unpriv/preface.adoc": {
+      "raw_chunks": 75,
+      "final_chunks": 5,
+      "dropped": 70
+    },
+    "src/unpriv/q-st-ext.adoc": {
+      "raw_chunks": 19,
+      "final_chunks": 5,
+      "dropped": 14
+    },
+    "src/unpriv/rationale.adoc": {
+      "raw_chunks": 60,
+      "final_chunks": 14,
+      "dropped": 46
+    },
+    "src/unpriv/rv-32-64g.adoc": {
+      "raw_chunks": 38,
+      "final_chunks": 6,
+      "dropped": 32
+    },
+    "src/unpriv/rvwmo.adoc": {
+      "raw_chunks": 167,
+      "final_chunks": 99,
+      "dropped": 68
+    },
+    "src/unpriv/vector-examples.adoc": {
+      "raw_chunks": 27,
+      "final_chunks": 11,
+      "dropped": 16
+    },
+    "src/unpriv/za.adoc": {
+      "raw_chunks": 15,
+      "final_chunks": 3,
+      "dropped": 12
+    },
+    "src/unpriv/zaamo.adoc": {
+      "raw_chunks": 16,
+      "final_chunks": 8,
+      "dropped": 8
+    },
+    "src/unpriv/zabha.adoc": {
+      "raw_chunks": 20,
+      "final_chunks": 4,
+      "dropped": 16
+    },
+    "src/unpriv/zacas.adoc": {
+      "raw_chunks": 37,
+      "final_chunks": 19,
+      "dropped": 18
+    },
+    "src/unpriv/zalasr.adoc": {
+      "raw_chunks": 33,
+      "final_chunks": 7,
+      "dropped": 26
+    },
+    "src/unpriv/zalrsc.adoc": {
+      "raw_chunks": 34,
+      "final_chunks": 20,
+      "dropped": 14
+    },
+    "src/unpriv/zama.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 2,
+      "dropped": 0
+    },
+    "src/unpriv/zars.adoc": {
+      "raw_chunks": 3,
+      "final_chunks": 2,
+      "dropped": 1
+    },
+    "src/unpriv/zawrs.adoc": {
+      "raw_chunks": 26,
+      "final_chunks": 12,
+      "dropped": 14
+    },
+    "src/unpriv/zc.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 2,
+      "dropped": 5
+    },
+    "src/unpriv/zca.adoc": {
+      "raw_chunks": 159,
+      "final_chunks": 63,
+      "dropped": 96
+    },
+    "src/unpriv/zcb.adoc": {
+      "raw_chunks": 115,
+      "final_chunks": 13,
+      "dropped": 102
+    },
+    "src/unpriv/zcd.adoc": {
+      "raw_chunks": 14,
+      "final_chunks": 7,
+      "dropped": 7
+    },
+    "src/unpriv/zce.adoc": {
+      "raw_chunks": 4,
+      "final_chunks": 1,
+      "dropped": 3
+    },
+    "src/unpriv/zcf.adoc": {
+      "raw_chunks": 17,
+      "final_chunks": 8,
+      "dropped": 9
+    },
+    "src/unpriv/zclsd.adoc": {
+      "raw_chunks": 44,
+      "final_chunks": 9,
+      "dropped": 35
+    },
+    "src/unpriv/zcmop.adoc": {
+      "raw_chunks": 13,
+      "final_chunks": 1,
+      "dropped": 12
+    },
+    "src/unpriv/zcmp.adoc": {
+      "raw_chunks": 200,
+      "final_chunks": 51,
+      "dropped": 149
+    },
+    "src/unpriv/zcmt.adoc": {
+      "raw_chunks": 71,
+      "final_chunks": 23,
+      "dropped": 48
+    },
+    "src/unpriv/zf.adoc": {
+      "raw_chunks": 8,
+      "final_chunks": 0,
+      "dropped": 8
+    },
+    "src/unpriv/zfa.adoc": {
+      "raw_chunks": 49,
+      "final_chunks": 34,
+      "dropped": 15
+    },
+    "src/unpriv/zfbfmin.adoc": {
+      "raw_chunks": 22,
+      "final_chunks": 3,
+      "dropped": 19
+    },
+    "src/unpriv/zfh.adoc": {
+      "raw_chunks": 21,
+      "final_chunks": 10,
+      "dropped": 11
+    },
+    "src/unpriv/zfhmin.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 3,
+      "dropped": 4
+    },
+    "src/unpriv/zfinx.adoc": {
+      "raw_chunks": 27,
+      "final_chunks": 24,
+      "dropped": 3
+    },
+    "src/unpriv/zi.adoc": {
+      "raw_chunks": 4,
+      "final_chunks": 1,
+      "dropped": 3
+    },
+    "src/unpriv/zic64b.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/unpriv/ziccamoa.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/unpriv/ziccamoc.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/unpriv/ziccif.adoc": {
+      "raw_chunks": 11,
+      "final_chunks": 3,
+      "dropped": 8
+    },
+    "src/unpriv/zicclsm.adoc": {
+      "raw_chunks": 5,
+      "final_chunks": 2,
+      "dropped": 3
+    },
+    "src/unpriv/ziccrse.adoc": {
+      "raw_chunks": 1,
+      "final_chunks": 1,
+      "dropped": 0
+    },
+    "src/unpriv/zicntr.adoc": {
+      "raw_chunks": 22,
+      "final_chunks": 15,
+      "dropped": 7
+    },
+    "src/unpriv/zicond.adoc": {
+      "raw_chunks": 36,
+      "final_chunks": 17,
+      "dropped": 19
+    },
+    "src/unpriv/zicsr.adoc": {
+      "raw_chunks": 50,
+      "final_chunks": 43,
+      "dropped": 7
+    },
+    "src/unpriv/zifencei.adoc": {
+      "raw_chunks": 9,
+      "final_chunks": 2,
+      "dropped": 7
+    },
+    "src/unpriv/zihintntl.adoc": {
+      "raw_chunks": 21,
+      "final_chunks": 9,
+      "dropped": 12
+    },
+    "src/unpriv/zihintpause.adoc": {
+      "raw_chunks": 3,
+      "final_chunks": 3,
+      "dropped": 0
+    },
+    "src/unpriv/zihpm.adoc": {
+      "raw_chunks": 7,
+      "final_chunks": 6,
+      "dropped": 1
+    },
+    "src/unpriv/zilsd.adoc": {
+      "raw_chunks": 38,
+      "final_chunks": 15,
+      "dropped": 23
+    },
+    "src/unpriv/zimop.adoc": {
+      "raw_chunks": 17,
+      "final_chunks": 4,
+      "dropped": 13
+    },
+    "src/unpriv/zmmul.adoc": {
+      "raw_chunks": 3,
+      "final_chunks": 0,
+      "dropped": 3
+    },
+    "src/unpriv/zp.adoc": {
+      "raw_chunks": 2,
+      "final_chunks": 0,
+      "dropped": 2
+    },
+    "src/unpriv/ztso.adoc": {
+      "raw_chunks": 6,
+      "final_chunks": 3,
+      "dropped": 3
+    },
+    "src/unpriv/zvfbfmin.adoc": {
+      "raw_chunks": 23,
+      "final_chunks": 1,
+      "dropped": 22
+    },
+    "src/unpriv/zvfbfwma.adoc": {
+      "raw_chunks": 19,
+      "final_chunks": 1,
+      "dropped": 18
+    },
+    "src/v-st-ext.adoc": {
+      "raw_chunks": 1440,
+      "final_chunks": 625,
+      "dropped": 815
+    },
+    "src/vector-crypto.adoc": {
+      "raw_chunks": 670,
+      "final_chunks": 117,
+      "dropped": 553
+    }
+  },
+  "filters": {
+    "reasons": {
+      "non_normative": 461,
+      "low_signal": 3092,
+      "truncated": 897,
+      "soft_rationale": 85,
+      "bullet": 313,
+      "formal_reference_tag": 42,
+      "noise": 443,
+      "instruction_description": 139,
+      "synopsis_header": 81,
+      "note": 378,
+      "computation_description": 33,
+      "doc_filtered": 93,
+      "broken_reference": 66,
+      "profile_filtered": 83,
+      "formal_filtered": 12
+    },
+    "rules": [
+      "clean_note_blocks: Remove AsciiDoc [NOTE] delimited blocks",
+      "warl_detection",
+      "csr_context_boost",
+      "confidence_classification",
+      "clean_formatting: Strip AsciiDoc structural markup",
+      "clean_artifacts: Strip list bullets and inline symbols",
+      "split_sentences: Split on sentence boundaries",
+      "split_logical: Sub-split on conditional openers",
+      "split_conjunctions: Decouple and/or compound constraints",
+      "validate_complete: Reject very short non-terminal fragments",
+      "validate_bullets: Reject AsciiDoc list elements",
+      "validate_refs: Reject broken cross-reference artefacts"
+    ]
+  },
+  "file_classification": {
+    "processed": [
+      "src/b-st-ext.adoc",
+      "src/images/graphviz/litmus_sample.adoc",
+      "src/intro.adoc",
+      "src/naming.adoc",
+      "src/priv/cfi.adoc",
+      "src/priv/csrs.adoc",
+      "src/priv/hypervisor.adoc",
+      "src/priv/insns.adoc",
+      "src/priv/intro.adoc",
+      "src/priv/machine.adoc",
+      "src/priv/preface.adoc",
+      "src/priv/priv.adoc",
+      "src/priv/rationale.adoc",
+      "src/priv/sh.adoc",
+      "src/priv/sha.adoc",
+      "src/priv/shcounterenw.adoc",
+      "src/priv/shgatpa.adoc",
+      "src/priv/shtvala.adoc",
+      "src/priv/shvsatpa.adoc",
+      "src/priv/shvstvala.adoc",
+      "src/priv/shvstvecd.adoc",
+      "src/priv/sm.adoc",
+      "src/priv/smcdeleg.adoc",
+      "src/priv/smcntrpmf.adoc",
+      "src/priv/smcsrind.adoc",
+      "src/priv/smctr.adoc",
+      "src/priv/smdbltrp.adoc",
+      "src/priv/smepmp.adoc",
+      "src/priv/smrnmi.adoc",
+      "src/priv/smstateen.adoc",
+      "src/priv/ss.adoc",
+      "src/priv/ssccptr.adoc",
+      "src/priv/sscofpmf.adoc",
+      "src/priv/sscounterenw.adoc",
+      "src/priv/ssdbltrp.adoc",
+      "src/priv/ssqosid.adoc",
+      "src/priv/ssstrict.adoc",
+      "src/priv/sstc.adoc",
+      "src/priv/sstvala.adoc",
+      "src/priv/sstvecd.adoc",
+      "src/priv/ssu64xl.adoc",
+      "src/priv/supervisor.adoc",
+      "src/priv/sv.adoc",
+      "src/priv/svadu.adoc",
+      "src/priv/svinval.adoc",
+      "src/priv/svnapot.adoc",
+      "src/priv/svpbmt.adoc",
+      "src/priv/svrsw60t59b.adoc",
+      "src/priv/svvptc.adoc",
+      "src/priv/zpm.adoc",
+      "src/profiles/intro.adoc",
+      "src/profiles/preface.adoc",
+      "src/profiles/profiles.adoc",
+      "src/profiles/rva20.adoc",
+      "src/profiles/rva22.adoc",
+      "src/profiles/rva23.adoc",
+      "src/profiles/rvb23.adoc",
+      "src/profiles/rvi20.adoc",
+      "src/rv32.adoc",
+      "src/rv32e.adoc",
+      "src/rv64.adoc",
+      "src/scalar-crypto.adoc",
+      "src/symbols.adoc",
+      "src/unpriv.adoc",
+      "src/unpriv/a-st-ext.adoc",
+      "src/unpriv/bitmanip-examples.adoc",
+      "src/unpriv/c-st-ext.adoc",
+      "src/unpriv/cfi.adoc",
+      "src/unpriv/cmo.adoc",
+      "src/unpriv/code-examples.adoc",
+      "src/unpriv/d-st-ext.adoc",
+      "src/unpriv/f-st-ext.adoc",
+      "src/unpriv/m-st-ext.adoc",
+      "src/unpriv/memory-models.adoc",
+      "src/unpriv/mm-appendix.adoc",
+      "src/unpriv/mm-explanatory.adoc",
+      "src/unpriv/mm-formal.adoc",
+      "src/unpriv/preface.adoc",
+      "src/unpriv/q-st-ext.adoc",
+      "src/unpriv/rationale.adoc",
+      "src/unpriv/rv-32-64g.adoc",
+      "src/unpriv/rvwmo.adoc",
+      "src/unpriv/vector-examples.adoc",
+      "src/unpriv/za.adoc",
+      "src/unpriv/zaamo.adoc",
+      "src/unpriv/zabha.adoc",
+      "src/unpriv/zacas.adoc",
+      "src/unpriv/zalasr.adoc",
+      "src/unpriv/zalrsc.adoc",
+      "src/unpriv/zama.adoc",
+      "src/unpriv/zars.adoc",
+      "src/unpriv/zawrs.adoc",
+      "src/unpriv/zc.adoc",
+      "src/unpriv/zca.adoc",
+      "src/unpriv/zcb.adoc",
+      "src/unpriv/zcd.adoc",
+      "src/unpriv/zce.adoc",
+      "src/unpriv/zcf.adoc",
+      "src/unpriv/zclsd.adoc",
+      "src/unpriv/zcmop.adoc",
+      "src/unpriv/zcmp.adoc",
+      "src/unpriv/zcmt.adoc",
+      "src/unpriv/zf.adoc",
+      "src/unpriv/zfa.adoc",
+      "src/unpriv/zfbfmin.adoc",
+      "src/unpriv/zfh.adoc",
+      "src/unpriv/zfhmin.adoc",
+      "src/unpriv/zfinx.adoc",
+      "src/unpriv/zi.adoc",
+      "src/unpriv/zic64b.adoc",
+      "src/unpriv/ziccamoa.adoc",
+      "src/unpriv/ziccamoc.adoc",
+      "src/unpriv/ziccif.adoc",
+      "src/unpriv/zicclsm.adoc",
+      "src/unpriv/ziccrse.adoc",
+      "src/unpriv/zicntr.adoc",
+      "src/unpriv/zicond.adoc",
+      "src/unpriv/zicsr.adoc",
+      "src/unpriv/zifencei.adoc",
+      "src/unpriv/zihintntl.adoc",
+      "src/unpriv/zihintpause.adoc",
+      "src/unpriv/zihpm.adoc",
+      "src/unpriv/zilsd.adoc",
+      "src/unpriv/zimop.adoc",
+      "src/unpriv/zmmul.adoc",
+      "src/unpriv/zp.adoc",
+      "src/unpriv/ztso.adoc",
+      "src/unpriv/zvfbfmin.adoc",
+      "src/unpriv/zvfbfwma.adoc",
+      "src/v-st-ext.adoc",
+      "src/vector-crypto.adoc"
+    ],
+    "ignored": {
+      "formal": [],
+      "docs": [
+        "src/bibliography.adoc",
+        "src/contributors.adoc",
+        "src/index.adoc",
+        "src/license.adoc",
+        "src/riscv-spec.adoc"
+      ],
+      "profiles": []
+    }
+  },
+  "confidence_distribution": {
+    "very_high": 561,
+    "high": 3392,
+    "medium": 923,
+    "low": 2715
+  },
+  "classification": {
+    "class": {
+      "unknown": 1637,
+      "non_CSR_parameter": 1038,
+      "CSR_controlled": 1382,
+      "SW_rule": 254
+    },
+    "type": {
+      "enum": 2011,
+      "range": 569,
+      "unknown": 1374,
+      "binary": 357
+    },
+    "unknown_samples": [
+      "Thus, when implementing extensions with overlapping instructions, there is no redundancy in logic or encoding.",
+      "The slli.uw -- added in this extension -- can be used when the index is to be interpreted as an unsigned word.",
+      "However, where the shift-logical instructions shift in zeros, the rotate instructions shift in the bits that were shifted out of the other side of the value.",
+      "One use-case is string-processing functions, such as *strlen* and *strcpy*, which can use *orc.b* to test for the terminating zero byte by counting the set bits in leading non-zero bytes in a word.",
+      "Elements in rs1 are replaced by the indexed element in rs2, or zero if the index into rs2 is out of bounds.",
+      "foreach (i from 0 to (xlen - 1) by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val << i); else output; }",
+      "foreach (i from 1 to xlen by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val >> (xlen - i)); else output; }",
+      "foreach (i from 0 to (xlen - 1) by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val >> (xlen - i - 1)); else output; }",
+      "Accordingly, if the input is 0, the output is XLEN, and if the most-significant bit of the input is a 1, the output is 0.",
+      "function HighestSetBit x = { foreach (i from (xlen - 1) to 0 by 1 in dec) if [x[i]] 0b1 then return(i) else (); return -1; }"
+    ]
+  }
+}

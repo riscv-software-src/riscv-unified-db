@@ -1,0 +1,22 @@
+{
+  "source_file": "src/priv/ss.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "NOTE: This chapter is currently being restructured.",
+      "section": "Preamble > \"Ss\" Supervisor Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Its contents are normative, but the presentation might appear disjoint.",
+      "section": "Preamble > \"Ss\" Supervisor Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

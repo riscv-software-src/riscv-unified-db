@@ -1,0 +1,62 @@
+{
+  "source_file": "src/unpriv/zc.adoc",
+  "total": 7,
+  "sentences": [
+    {
+      "text": "This chapter describes the RISC-V compressed instruction-set extensions, which reduce static and dynamic code size by adding short 16-bit instruction encodings for common operations.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "Typically, 50%-60% of the RISC-V instructions in a program can be replaced with compressed instructions, resulting in a 25%-30% code-size reduction.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The extlink:zca[] extension forms the core of the compressed extensions; it provides compressed forms of integer loads, stores, branches, and computational instructions.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        9,
+        18
+      ]
+    },
+    {
+      "text": "The extlink:zcf[] extension is an XLEN=32-only extension that adds single-precision floating-point loads and stores.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        9,
+        18
+      ]
+    },
+    {
+      "text": "The extlink:zcd[] extension adds double-precision floating-point loads and stores.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        9,
+        18
+      ]
+    },
+    {
+      "text": "The extlink:c[] extension combines ext:zca[], ext:zcf[] if XLEN=32 and the F extension is present, and ext:zcd[] if the D extension is present.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        9,
+        18
+      ]
+    },
+    {
+      "text": "Various additional ext:Zc*[]` extensions are also defined.",
+      "section": "Preamble > Compressed Instructions",
+      "line_range": [
+        9,
+        18
+      ]
+    }
+  ]
+}

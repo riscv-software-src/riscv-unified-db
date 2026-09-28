@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/ziccamoa.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Ziccamoa extension is implemented, then main memory regions with both the cacheability and coherence PMAs must support all atomics in the Zaamo extension.",
+      "section": "Preamble > Ziccamoa Extension for Main Memory Atomics, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "source_file": "src/unpriv/ztso.adoc",
+  "total": 6,
+  "sentences": [
+    {
+      "text": "This chapter defines the \"Ztso\" extension for the RISC-V Total Store Ordering (RVTSO) memory consistency model. RVTSO is defined as a delta from RVWMO, which is defined in . RVTSO makes the following adjustments to RVWMO:",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "All load operations behave as if they have an acquire-RCpc annotation * All store operations behave as if they have a release-RCpc annotation. * All AMOs behave as if they have both acquire-RCsc and release-RCsc annotations.",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        9,
+        12
+      ]
+    },
+    {
+      "text": "Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extension and Zve family of extensions follow RVTSO at the instruction level.",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "The Ztso extension does not strengthen the ordering of intra-instruction element accesses.",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "In spite of the fact that Ztso adds no new instructions to the ISA, code written assuming RVTSO will not run correctly on implementations not supporting Ztso.",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        20,
+        24
+      ]
+    },
+    {
+      "text": "Binaries compiled to run only under Ztso should indicate as such via a flag in the binary, so that platforms which do not implement Ztso can simply refuse to run them.",
+      "section": "Preamble > \"Ztso\" Extension for Total Store Ordering, Version 1.0",
+      "line_range": [
+        20,
+        24
+      ]
+    }
+  ]
+}

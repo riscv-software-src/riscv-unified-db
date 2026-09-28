@@ -1,0 +1,78 @@
+{
+  "source_file": "src/priv/svnapot.adoc",
+  "total": 9,
+  "sentences": [
+    {
+      "text": "In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a translation that is part of a range of contiguous virtual-to-physical translations with the same values for PTE bits 5–0.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "Such ranges must be of a naturally aligned power-of-2 (NAPOT) granularity larger than the base page size.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The Svnapot extension depends on the Sv39 extension.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        10,
+        11
+      ]
+    },
+    {
+      "text": ".Page table entry encodings when pte.N=1 | |i |pte.ppn[i] |Description |pte.napotbits |0 + 0 + 0 + 0 + 0 + {ge}1 |`x xxxx xxx1` + `x xxxx xx1x` + `x xxxx x1xx` + `x xxxx 1000` + `x xxxx 0xxx` + `x xxxx xxxx` |Reserved + Reserved + Reserved + 64 KiB contiguous region + Reserved + Reserved | - + - + - + 4 + - + - |",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        13,
+        42
+      ]
+    },
+    {
+      "text": "NAPOT PTEs behave identically to non-NAPOT PTEs within the address-translation algorithm in , except that:",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        44,
+        46
+      ]
+    },
+    {
+      "text": "If the encoding in pte is valid according to , then instead of returning the original value of pte, implicit reads of a NAPOT PTE return a copy of pte in which pte.ppn[i][pte.napotbits-1:0] is replaced by vpn[i][pte.napotbits-1:0].",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        48,
+        56
+      ]
+    },
+    {
+      "text": "If the encoding in pte is reserved according to , then a page-fault exception must be raised.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        48,
+        56
+      ]
+    },
+    {
+      "text": "Implicit reads of NAPOT page table entries may create address-translation cache entries mapping a + j×PTESIZE to a copy of pte in which pte.ppn[i][pte.napotbits-1:0] is replaced by vpn[i][pte.napotbits-1:0], for any or all j such that j >> napotbits = vpn[i] >> napotbits, all for the address space identified in satp as loaded by step 1.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        58,
+        64
+      ]
+    },
+    {
+      "text": "If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.",
+      "section": "Preamble > \"Svnapot\" Extension for NAPOT Translation Contiguity, Version 1.0",
+      "line_range": [
+        66,
+        68
+      ]
+    }
+  ]
+}

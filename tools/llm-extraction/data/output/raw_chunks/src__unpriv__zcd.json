@@ -1,0 +1,118 @@
+{
+  "source_file": "src/unpriv/zcd.adoc",
+  "total": 14,
+  "sentences": [
+    {
+      "text": "The ext:zcd[] extension adds compressed double-precision floating-point load and store instructions.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "C.FLDSP is an RV32DC/RV64DC-only instruction that loads a double-precision floating-point value from memory into floating-point register rd.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "It computes its effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "It expands to `fld rd, offset(x2)`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "C.FSDSP is an RV32DC/RV64DC-only instruction that stores a double-precision floating-point value in floating-point register rs2 to memory.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "It expands to `fsd rs2, offset(x2)`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "These instructions encode their data source or destination as described in .",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        22,
+        23
+      ]
+    },
+    {
+      "text": "C.FLD is an RV32DC/RV64DC-only instruction that loads a double-precision floating-point value from memory into floating-point register `rd′`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        25,
+        30
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the base address in register `rs1′`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        25,
+        30
+      ]
+    },
+    {
+      "text": "It expands to `fld rd′, offset(rs1′)`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        25,
+        30
+      ]
+    },
+    {
+      "text": "C.FSD is an RV32DC/RV64DC-only instruction that stores a double-precision floating-point value in floating-point register `rs2′` to memory.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        32,
+        37
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the base address in register `rs1′`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        32,
+        37
+      ]
+    },
+    {
+      "text": "It expands to `fsd rs2′, offset(rs1′)`.",
+      "section": "Preamble > ext:zcd[] Double-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        32,
+        37
+      ]
+    }
+  ]
+}

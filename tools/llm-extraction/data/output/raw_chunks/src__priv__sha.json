@@ -1,0 +1,22 @@
+{
+  "source_file": "src/priv/sha.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "The Augmented Hypervisor Extension, Sha, adds several minor features to the hypervisor extension.",
+      "section": "Preamble > Sha Augmented Hypervisor Extension",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "It depends on the following extensions:",
+      "section": "Preamble > Sha Augmented Hypervisor Extension",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

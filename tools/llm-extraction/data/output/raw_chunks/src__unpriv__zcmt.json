@@ -1,0 +1,574 @@
+{
+  "source_file": "src/unpriv/zcmt.adoc",
+  "total": 71,
+  "sentences": [
+    {
+      "text": "The ext:zcmt[] extension adds table-jump instructions, which improve code density when procedures have many call sites.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "It also adds the csr:jvt[] CSR.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The csr:jvt[] CSR requires a state enable if Smstateen is implemented.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The ext:zcmt[] extension conflicts with the ext:zcd[] extension.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "NOTE: ext:zcmt[] is primarily targeted at embedded class CPUs due to implementation complexity.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        11,
+        12
+      ]
+    },
+    {
+      "text": "Additionally, it is not compatible with RVA profiles.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        11,
+        12
+      ]
+    },
+    {
+      "text": "The ext:zcmt[] extension depends on the extlink:zca[] and extlink:zicsr[] extensions.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        14,
+        14
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        16,
+        21
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.jalt index |",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        28,
+        31
+      ]
+    },
+    {
+      "text": "[insns-tablejump,reftext=\"Table Jump Overview\"]",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps",
+      "line_range": [
+        35,
+        35
+      ]
+    },
+    {
+      "text": "cm.jt () and cm.jalt () are referred to as table jump.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        38,
+        38
+      ]
+    },
+    {
+      "text": "Table jump uses a 256-entry XLEN wide table in instruction memory to contain function addresses.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        40,
+        41
+      ]
+    },
+    {
+      "text": "The table must be a minimum of 64-byte aligned.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        40,
+        41
+      ]
+    },
+    {
+      "text": "Table entries follow the current data endianness.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        43,
+        43
+      ]
+    },
+    {
+      "text": "This is different from normal instruction fetch which is always little-endian.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        43,
+        43
+      ]
+    },
+    {
+      "text": "cm.jt and cm.jalt encodings index the table, giving access to functions within the full XLEN wide address space.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        45,
+        45
+      ]
+    },
+    {
+      "text": "This is used as a form of dictionary compression to reduce the code size of jal / auipc+jalr / jr / auipc+jr instructions.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        47,
+        47
+      ]
+    },
+    {
+      "text": "Table jump allows the linker to replace the following instruction sequences with a cm.jt or cm.jalt encoding, and an entry in the table:",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        49,
+        49
+      ]
+    },
+    {
+      "text": "32-bit j calls * 32-bit jal ra calls * 64-bit auipc+jr calls to fixed locations * 64-bit auipc+jalr ra calls to fixed locations ** The auipc+jr/jalr sequence is used because the offset from the PC is out of the ±1{nbsp}MB range.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        51,
+        55
+      ]
+    },
+    {
+      "text": "If a return address stack is implemented, then as cm.jalt is equivalent to jal ra, it pushes to the stack.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview",
+      "line_range": [
+        57,
+        57
+      ]
+    },
+    {
+      "text": "The base of the table is in the jvt CSR (see ), each table entry is XLEN bits.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt",
+      "line_range": [
+        61,
+        61
+      ]
+    },
+    {
+      "text": "If the same function is called with and without linking then it must have two entries in the table.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt",
+      "line_range": [
+        63,
+        64
+      ]
+    },
+    {
+      "text": "This is typically caused by the same function being called with and without tail calling.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt",
+      "line_range": [
+        63,
+        64
+      ]
+    },
+    {
+      "text": "[tablejump-fault-handling]",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt",
+      "line_range": [
+        66,
+        66
+      ]
+    },
+    {
+      "text": "For a table jump instruction, the table entry that the instruction selects is considered an extension of the instruction itself.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        69,
+        72
+      ]
+    },
+    {
+      "text": "Hence, the execution of a table jump instruction involves two instruction fetches, the first to read the instruction (cm.jt/cm.jalt) and the second to read from the jump vector table (JVT).",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        69,
+        72
+      ]
+    },
+    {
+      "text": "Both instruction fetches are implicit reads, and both require execute permission; read permission is irrelevant.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        69,
+        72
+      ]
+    },
+    {
+      "text": "It is recommended that the second fetch be ignored for hardware triggers and breakpoints.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        69,
+        72
+      ]
+    },
+    {
+      "text": "Memory writes to the jump vector table require an instruction barrier (fence.i) to guarantee that they are visible to the instruction fetch.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        74,
+        74
+      ]
+    },
+    {
+      "text": "Multiple contexts may have different jump vector tables. JVT may be switched between them without an instruction barrier if the tables have not been updated in memory since the last fence.i.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        76,
+        77
+      ]
+    },
+    {
+      "text": "If an exception occurs on either instruction fetch, xEPC is set to the PC of the table jump instruction, xCAUSE is set as expected for the type of fault and xTVAL (if not set to zero) contains the fetch address which caused the fault.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        79,
+        79
+      ]
+    },
+    {
+      "text": "<<< [csrs-jvt,reftext=\"jvt CSR, table jump base vector and control register\"]",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        81,
+        82
+      ]
+    },
+    {
+      "text": "Table jump base vector and control register",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        87,
+        87
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 6, name: 'mode', attr: ['6'] }, { bits: 26, name: 'base[XLEN-1:6] (WARL)', attr: ['XLEN-6'] }, ],config:{bits:32}} ....",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        99,
+        105
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 6, name: 'mode', attr: ['6'] }, { bits: 58, name: 'base[XLEN-1:6] (WARL)', attr: ['XLEN-6'] }, ],config:{bits:64}} ....",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        109,
+        115
+      ]
+    },
+    {
+      "text": "The jvt register is an XLEN-bit *WARL* read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        119,
+        119
+      ]
+    },
+    {
+      "text": "If ext:zcmt[] is implemented then jvt must also be implemented, but can contain a read-only value.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        121,
+        122
+      ]
+    },
+    {
+      "text": "If jvt is writable, the set of values the register may hold can vary by implementation.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        121,
+        122
+      ]
+    },
+    {
+      "text": "The value in the BASE field must always be aligned on a 64-byte boundary.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        121,
+        122
+      ]
+    },
+    {
+      "text": "Note that the CSR contains only bits XLEN-1 through 6 of the address base.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        121,
+        122
+      ]
+    },
+    {
+      "text": "When computing jump-table accesses, the lower six bits of base are filled with zeroes to obtain an XLEN-bit jump-table base address jvt.base that is always aligned on a 64-byte boundary.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        121,
+        122
+      ]
+    },
+    {
+      "text": "jvt.base is a virtual address, whenever virtual memory is enabled.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        124,
+        124
+      ]
+    },
+    {
+      "text": "The memory pointed to by jvt.base is treated as instruction memory for the purpose of executing table jump instructions, implying execute access permission.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        126,
+        126
+      ]
+    },
+    {
+      "text": "[JVT-config-table] .jvt.mode definition [width=\"60%\",options=header] | | jvt.mode | Comment | 000000 | Jump table mode | others | *reserved for future standard use* |",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        128,
+        135
+      ]
+    },
+    {
+      "text": "jvt.mode is a *WARL* field, so can only be programmed to modes which are implemented.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        137,
+        138
+      ]
+    },
+    {
+      "text": "Therefore the discovery mechanism is to attempt to program different modes and read back the values to see which are available.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        137,
+        138
+      ]
+    },
+    {
+      "text": "Jump table mode must be implemented.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        137,
+        138
+      ]
+    },
+    {
+      "text": "jvt CSR adds architectural state to the system software context (such as an OS process), therefore must be saved/restored on context switches. <<< [insns-cmjt,reftext=\"Jump via table\"]",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > jvt CSR",
+      "line_range": [
+        142,
+        144
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 8, name: 'index', attr: [] }, { bits: 3, name: 0x0, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        157,
+        165
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.jt index ----",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        169,
+        172
+      ]
+    },
+    {
+      "text": "cm.jt reads an entry from the jump vector table in memory and jumps to the address that was read.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        176,
+        176
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        178,
+        178
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        186,
+        186
+      ]
+    },
+    {
+      "text": "[insns-cmjt-SAIL,reftext=\"cm.jt SAIL code\"] Operation::",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        190,
+        191
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        193,
+        195
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        193,
+        195
+      ]
+    },
+    {
+      "text": "tableaddress is temporary internal state, it doesn't represent a real register InstMemory is byte indexed",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        197,
+        198
+      ]
+    },
+    {
+      "text": "switch(XLEN) { 32: tableaddress[XLEN-1:0] = jvt.base + (index<<2); 64: tableaddress[XLEN-1:0] = jvt.base + (index<<3); }",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        200,
+        203
+      ]
+    },
+    {
+      "text": "<<< [insns-cmjalt,reftext=\"Jump and link via table\"]",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jt",
+      "line_range": [
+        210,
+        211
+      ]
+    },
+    {
+      "text": "jump via table with optional link",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        216,
+        216
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 8, name: 'index', attr: [] }, { bits: 3, name: 0x0, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        224,
+        232
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.jalt index ----",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        236,
+        239
+      ]
+    },
+    {
+      "text": "cm.jalt reads an entry from the jump vector table in memory and jumps to the address that was read, linking to ra.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        243,
+        243
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        245,
+        245
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        253,
+        253
+      ]
+    },
+    {
+      "text": "[insns-cmjalt-SAIL,reftext=\"cm.jalt SAIL code\"] Operation::",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        257,
+        258
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        260,
+        262
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        260,
+        262
+      ]
+    },
+    {
+      "text": "tableaddress is temporary internal state, it doesn't represent a real register InstMemory is byte indexed",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        264,
+        265
+      ]
+    },
+    {
+      "text": "switch(XLEN) { 32: tableaddress[XLEN-1:0] = jvt.base + (index<<2); 64: tableaddress[XLEN-1:0] = jvt.base + (index<<3); }",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        267,
+        270
+      ]
+    },
+    {
+      "text": "ra = pc+2; pc = InstMemory[tableaddress][XLEN-1:0]&~0x1; // Clear bit 0.",
+      "section": "Preamble > ext:zcmt[] Extension for Compressed Table Jumps > Table Jump Overview > cm.jalt",
+      "line_range": [
+        274,
+        275
+      ]
+    }
+  ]
+}

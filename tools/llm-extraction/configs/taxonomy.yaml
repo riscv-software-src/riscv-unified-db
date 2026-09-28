@@ -1,0 +1,94 @@
+# configs/taxonomy.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+# Structural taxonomy for the RISC-V UDB parameter-extraction pipeline.
+#
+# Three top-level sections:
+#   parameter_classes        — _classify_parameter_class() output labels
+#   parameter_types          — _classify_parameter_type() output labels
+#   ignore_file_categories   — file-classification rules for classify_file()
+#
+# Edit this file to add new labels or ignore-rules; no Python code changes needed.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── 1. Parameter classes ──────────────────────────────────────────────────────
+# Priority order is significant: first match wins in _classify_parameter_class().
+parameter_classes:
+  - name: CSR_controlled
+    description: >
+      Parameter value is controlled by a named CSR, or is a WARL/WPRI/WLRL
+      field with an explicit access-mode constraint.
+    priority: 1
+
+  - name: SW_rule
+    description: >
+      Software-visible rule: fence, ABI, calling-convention, supervisor/
+      machine-mode software, hypervisor, or OS constraint.
+    priority: 2
+
+  - name: non_CSR_parameter
+    description: >
+      Implementation-defined or architectural constraint not tied to a
+      specific CSR: instruction semantics, memory model rules,
+      unpredictable/unspecified behaviour, numeric hardware constraints.
+    priority: 3
+
+  - name: unknown
+    description: >
+      No recognisable classification signal; kept for human review.
+    priority: 4
+
+# ── 2. Parameter types ────────────────────────────────────────────────────────
+# Priority order: first match wins in _classify_parameter_type().
+parameter_types:
+  - name: binary
+    description: >
+      Explicit boolean state: enabled/disabled, hardwired-to-zero/one,
+      set-to-0/1, asserted/deasserted, active-low/high, read-only zero.
+
+  - name: range
+    description: >
+      Concrete numeric or bit-width bound: at-least/at-most, minimum/maximum,
+      in-the-range, XLEN-bit, no-greater/less-than.
+
+  - name: enum
+    description: >
+      Mode or encoding selection from a fixed enumerated set: privilege level,
+      access mode, addressing mode, CSR field encoding.
+
+  - name: unknown
+    description: >
+      No type signal found; kept for human review.
+
+# ── 3. File-classification rules ──────────────────────────────────────────────
+# Used by classify_file() in spec_chunker.py to decide how each .adoc is handled.
+ignore_file_categories:
+
+  # Files skipped entirely — no chunks emitted.
+  ignored_exact:
+    - bibliography.adoc
+    - contributors.adoc
+    - license.adoc
+    - index.adoc
+    - riscv-spec.adoc
+
+  # Memory-model / formal sections — processed in light mode.
+  formal_files:
+    - mm-formal.adoc
+    - mm-explanatory.adoc
+
+  # Files whose path includes this prefix → process_profile mode.
+  profile_prefix: "profiles/"
+
+  # Naming / intro / preface sections → process_docs mode.
+  doc_files:
+    - naming.adoc
+    - intro.adoc
+    - preface.adoc
+
+  # Mapping mode name → ignored-category bucket used in the report.
+  mode_to_category:
+    ignore:          docs
+    process_formal:  formal
+    process_profile: profiles
+    process_docs:    docs
+    process:         ~        # null → main corpus, not placed in an ignored bucket

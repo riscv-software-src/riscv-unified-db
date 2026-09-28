@@ -1,0 +1,166 @@
+{
+  "source_file": "src/priv/smepmp.adoc",
+  "total": 20,
+  "sentences": [
+    {
+      "text": "Being able to access the memory of a process running at a high privileged execution mode, such as the Supervisor or Machine mode, from a lower privileged mode such as the User mode, introduces an obvious attack vector since it allows for an attacker to perform privilege escalation, and tamper with the code and/or data of that process. A less obvious attack vector exists when the reverse happens, in which case an attacker instead of tampering with code and/or data that belong to a high-privileged process, can tamper with the memory of an unprivileged / less-privileged process and trick the high-privileged process to use or execute it.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0",
+      "line_range": [
+        3,
+        3
+      ]
+    },
+    {
+      "text": "Two mechanisms combine to prevent this attack vector.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0",
+      "line_range": [
+        5,
+        11
+      ]
+    },
+    {
+      "text": "The first one prevents the OS from accessing the memory of an unprivileged process unless a specific code path is followed, and the second one prevents the OS from executing the memory of an unprivileged process at all times. RISC-V already includes support for the former through the ``sstatus.SUM`` bit, and for the latter by always denying supervisor execution of virtual memory pages marked with the U bit.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0",
+      "line_range": [
+        5,
+        11
+      ]
+    },
+    {
+      "text": "The rationale that guided development of this extension is included in Section .",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        16,
+        17
+      ]
+    },
+    {
+      "text": "Without the Smepmp extension, it is not possible for a PMP rule to be *enforced* only on non-Machine modes and *denied* on Machine mode, in order to allow access to a memory region solely by less-privileged modes.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "It is only possible to have a *locked* rule that will be *enforced* on all modes, or a rule that will be *enforced* on non-Machine modes and be *ignored* by Machine mode.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "So for any physical memory region which is not protected with a Locked rule, Machine mode has unlimited access, including the ability to execute it.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "Without being able to protect less-privileged modes from Machine mode, it is not possible to prevent the mentioned attack vector.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "This becomes even more important for RISC-V than on other architectures, since implementations are allowed where a hart only has Machine and User modes available, so the whole OS will run on Machine mode instead of the non-existent Supervisor mode.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "In such implementations the attack surface is greatly increased, and the same kind of attacks performed on Supervisor mode and mitigated through the virtual-memory system, can be performed on Machine mode without any available mitigations.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "Even on implementations with Supervisor mode present attacks are still possible against the Firmware and/or the Secure Monitor running on Machine mode.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model",
+      "line_range": [
+        21,
+        21
+      ]
+    },
+    {
+      "text": "To address the threat model outlined in Section , this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associated rules.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        25,
+        28
+      ]
+    },
+    {
+      "text": "See for the detailed specification of these fields and the corresponding rules.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        25,
+        28
+      ]
+    },
+    {
+      "text": "The physical memory protection rules when `mseccfg.MML` is set to 1 are summarized in the truth table below.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        30,
+        30
+      ]
+    },
+    {
+      "text": "[cols=\"^1,^1,^1,^1,^3,^3\",stripes=even,options=\"header\"] | 4+|Bits on pmpcfg register {set:cellbgcolor:green} 2+|Result |L|R|W|X|M Mode|S/U Mode |{set:cellbgcolor:!} 0|0|0|0 2+|Inaccessible region (Access Exception) |0|0|0|1|Access Exception|Execute-only region |0|0|1|0 2+|Shared data region: Read/write on M mode, read-only on S/U mode |0|0|1|1 2+|Shared data region: Read/write for both M and S/U mode |0|1|0|0|Access Exception|Read-only region |0|1|0|1|Access Exception|Read/Execute region |0|1|1|0|Access Exception|Read/Write region |0|1|1|1|Access Exception|Read/Write/Execute region |1|0|0|0 2+|Locked inaccessible region* (Access Exception) |1|0|0|1|Locked Execute-only region*|Access Exception |1|0|1|0 2+|Locked Shared code region: Execute only on both M and S/U mode.* |1|0|1|1 2+|Locked Shared code region: Execute only on S/U mode, read/execute on M mode.* |1|1|0|0|Locked Read-only region*|Access Exception |1|1|0|1|Locked Read/Execute region*|Access Exception |1|1|1|0|Locked Read/Write region*|Access Exception |1|1|1|1 2+|Locked Shared data region: Read only on both M and S/U mode.* |",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        32,
+        52
+      ]
+    },
+    {
+      "text": "*: *Locked* rules cannot be removed or modified until a *PMP reset*, unless ``mseccfg.RLB`` is set.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        54,
+        54
+      ]
+    },
+    {
+      "text": "A visual representation of these rules is as follows:",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        56,
+        56
+      ]
+    },
+    {
+      "text": "image::smepmp-visual-representation.png[]",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp Physical Memory Protection Rules",
+      "line_range": [
+        58,
+        58
+      ]
+    },
+    {
+      "text": "Since all fields defined in ``mseccfg`` as part of this extension are locked when set (``MMWP``/``MML``) or locked when cleared (``RLB``), software can't poll them for determining the presence of Smepmp.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp software discovery",
+      "line_range": [
+        62,
+        62
+      ]
+    },
+    {
+      "text": "It is expected that BootROM will set ``mseccfg.MMWP`` and/or ``mseccfg.MML`` during early boot, before jumping to the firmware, so that the firmware will be able to determine the presence of Smepmp by reading ``mseccfg`` and checking the state of ``mseccfg.MMWP`` and ``mseccfg.MML``.",
+      "section": "Preamble > \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0 > Threat model > Smepmp software discovery",
+      "line_range": [
+        62,
+        62
+      ]
+    }
+  ]
+}

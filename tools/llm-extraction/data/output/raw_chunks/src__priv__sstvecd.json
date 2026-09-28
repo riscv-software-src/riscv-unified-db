@@ -1,0 +1,22 @@
+{
+  "source_file": "src/priv/sstvecd.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "If the Sstvecd extension is implemented, then `stvec.MODE` must be capable of holding the value 0 (Direct).",
+      "section": "Preamble > Sstvecd Extension for Direct Trap Vectoring, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "Furthermore, when `stvec.MODE=Direct`, `stvec.BASE` must be capable of holding any valid four-byte-aligned address.",
+      "section": "Preamble > Sstvecd Extension for Direct Trap Vectoring, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    }
+  ]
+}

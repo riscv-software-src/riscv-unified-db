@@ -1,0 +1,4734 @@
+{
+  "source_file": "src/b-st-ext.adoc",
+  "total": 591,
+  "sentences": [
+    {
+      "text": "The bit-manipulation (bitmanip) extension collection is comprised of several component extensions to the base RISC-V architecture that are intended to provide some combination of code-size reduction, performance improvement, and energy reduction.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "While the instructions are intended for general use, some instructions are more useful in certain domains than in others.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "Hence, several smaller bitmanip extensions are provided.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "Each of these smaller extensions is grouped by common function and use case, and each has its own Zb*-extension name.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "Each bitmanip extension includes a group of several bitmanip instructions that have similar purposes and can often share the same logic.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        7,
+        9
+      ]
+    },
+    {
+      "text": "Some instructions are available in only one extension, while others are available in several.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        7,
+        9
+      ]
+    },
+    {
+      "text": "The instructions have mnemonics and encodings that are independent of the extensions in which they appear.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        7,
+        9
+      ]
+    },
+    {
+      "text": "Thus, when implementing extensions with overlapping instructions, there is no redundancy in logic or encoding.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        7,
+        9
+      ]
+    },
+    {
+      "text": "The bitmanip extensions are defined for RV32 and RV64.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        11,
+        11
+      ]
+    },
+    {
+      "text": "The bitmanip extension follows the convention in RV64 that w-suffixed instructions (without a dot before the w) ignore the upper 32 bits of their inputs, operate on the least-significant 32 bits as signed values, and produce a 32-bit signed result that is sign-extended to XLEN.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        13,
+        13
+      ]
+    },
+    {
+      "text": "Bitmanip instructions with the suffix .uw have one operand that is an unsigned 32-bit value that is extracted from the least-significant 32 bits of the specified register.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        15,
+        15
+      ]
+    },
+    {
+      "text": "Other than that, these perform full-XLEN operations.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        15,
+        15
+      ]
+    },
+    {
+      "text": "Bitmanip instructions with the suffixes .b, .h, and .w only look at the least-significant 8 bits, 16 bits, and 32 bits of the input (respectively) and produce an XLEN-wide result that is sign-extended or zero-extended, based on the specific instruction.",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        17,
+        17
+      ]
+    },
+    {
+      "text": "The bit-manipulation instructions comprise the following extensions:",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        19,
+        19
+      ]
+    },
+    {
+      "text": "Zba: * Zbb: ext:zbb[] * Zbs: * Zbc: * Zbkb: * Zbkc: * Zbkx:",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        21,
+        27
+      ]
+    },
+    {
+      "text": "Below is a list of all of the instructions that are included in these extensions, along with their specific mapping:",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        29,
+        30
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction |Zbb |Zbkb |Zbc |Zbkc |{check}|{check}|andn rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|brev8 rd, rs | | |{check}| | |{check}|{check}|clmul rd, rs1, rs2 | | | |{check}|{check} |{check}|{check}|clmulh rd, rs1, rs2 | | | |{check}|{check} |{check}|{check}|clmulr rd, rs1, rs2 | | | |{check}| |{check}|{check}|clz rd, rs | |{check}| | | | |{check}|clzw rd, rs | |{check}| | | |{check}|{check}|cpop rd, rs | |{check}| | | | |{check}|cpopw rd, rs | |{check}| | | |{check}|{check}|ctz rd, rs | |{check}| | | | |{check}|ctzw rd, rs | |{check}| | | |{check}|{check}|max rd, rs1, rs2 | |{check}| | | |{check}|{check}|maxu rd, rs1, rs2 | |{check}| | | |{check}|{check}|min rd, rs1, rs2 | |{check}| | | |{check}|{check}|minu rd, rs1, rs2 | |{check}| | | |{check}|{check}|orc.b rd, rs | |{check}| | | |{check}|{check}|orn rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|pack rd, rs1, rs2 | | |{check}| | |{check}|{check}|packh rd, rs1, rs2 | | |{check}| | | |{check}|packw rd, rs1, rs2 | | |{check}| | |{check}|{check}|rev8 rd, rs | |{check}|{check}| | |{check}|{check}|rol rd, rs1, rs2 | |{check}|{check}| | | |{check}|rolw rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|ror rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|rori rd, rs1, shamt | |{check}|{check}| | | |{check}|roriw rd, rs1, shamt| |{check}|{check}| | | |{check}|rorw rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|sext.b rd, rs | |{check}| | | |{check}|{check}|sext.h rd, rs | |{check}| | | |{check}| |unzip rd, rs | | |{check}| | |{check}|{check}|xnor rd, rs1, rs2 | |{check}|{check}| | |{check}|{check}|zext.h rd, rs | |{check}| | | |{check}| |zip rd, rs | | |{check}| | |",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        32,
+        68
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction |Zba |Zbs | |{check}|add.uw rd, rs1, rs2 | |{check}| |{check}|{check}|bclr rd, rs1, rs2 | | |{check} |{check}|{check}|bclri rd, rs1, imm | | |{check} |{check}|{check}|bext rd, rs1, rs2 | | |{check} |{check}|{check}|bexti rd, rs1, imm | | |{check} |{check}|{check}|binv rd, rs1, rs2 | | |{check} |{check}|{check}|binvi rd, rs1, imm | | |{check} |{check}|{check}|bset rd, rs1, rs2 | | |{check} |{check}|{check}|bseti rd, rs1, imm | | |{check} |{check}|{check}|sh1add rd, rs1, rs2 | |{check}| | |{check}|sh1add.uw rd, rs1, rs2||{check}| |{check}|{check}|sh2add rd, rs1, rs2 | |{check}| | |{check}|sh2add.uw rd, rs1, rs2||{check}| |{check}|{check}|sh3add rd, rs1, rs2 | |{check}| | |{check}|sh3add.uw rd, rs1, rs2||{check}| | |{check}|slli.uw rd, rs1, imm | |{check}| |",
+      "section": "Preamble > Bit Manipulation Extensions",
+      "line_range": [
+        70,
+        89
+      ]
+    },
+    {
+      "text": "The B standard extension comprises instructions provided by the Zba, Zbb, and Zbs extensions.",
+      "section": "Preamble > Bit Manipulation Extensions > \"B\" Extension for Bit Manipulation, Version 1.0.0",
+      "line_range": [
+        93,
+        94
+      ]
+    },
+    {
+      "text": "[zba,reftext=Address generation instructions]",
+      "section": "Preamble > Bit Manipulation Extensions > \"B\" Extension for Bit Manipulation, Version 1.0.0",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "The Zba instructions can be used to accelerate the generation of addresses that index into arrays of basic types (halfword, word, doubleword) using both unsigned word-sized and XLEN-sized indices: a shifted index is added to a base address.",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "The shift and add instructions do a left shift of 1, 2, or 3 because these are commonly found in real-world code and because they can be implemented with a minimal amount of additional hardware beyond that of the simple adder.",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        100,
+        100
+      ]
+    },
+    {
+      "text": "This avoids lengthening the critical path in implementations.",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        100,
+        100
+      ]
+    },
+    {
+      "text": "While the shift and add instructions are limited to a maximum left shift of 3, the slli instruction (from the base ISA) can be used to perform similar shifts for indexing into arrays of wider elements.",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        102,
+        102
+      ]
+    },
+    {
+      "text": "The slli.uw -- added in this extension -- can be used when the index is to be interpreted as an unsigned word.",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        102,
+        102
+      ]
+    },
+    {
+      "text": "The following instructions comprise the Zba extension:",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        104,
+        104
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        106,
+        111
+      ]
+    },
+    {
+      "text": "| |{check} |add.uw rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        113,
+        116
+      ]
+    },
+    {
+      "text": "|{check} |{check} |sh1add rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        118,
+        121
+      ]
+    },
+    {
+      "text": "| |{check} |sh1add.uw rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        123,
+        126
+      ]
+    },
+    {
+      "text": "|{check} |{check} |sh2add rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        128,
+        131
+      ]
+    },
+    {
+      "text": "| |{check} |sh2add.uw rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        133,
+        136
+      ]
+    },
+    {
+      "text": "|{check} |{check} |sh3add rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        138,
+        141
+      ]
+    },
+    {
+      "text": "| |{check} |sh3add.uw rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        143,
+        146
+      ]
+    },
+    {
+      "text": "| |{check} |slli.uw rd, rs1, imm |",
+      "section": "Preamble > Bit Manipulation Extensions > Zba: Extension for Address generation, Version 1.0.0",
+      "line_range": [
+        148,
+        151
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        160,
+        165
+      ]
+    },
+    {
+      "text": "|{check} |{check} |andn rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        167,
+        170
+      ]
+    },
+    {
+      "text": "|{check} |{check} |orn rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        172,
+        175
+      ]
+    },
+    {
+      "text": "|{check} |{check} |xnor rd, rs1, rs2 | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        177,
+        181
+      ]
+    },
+    {
+      "text": ".Implementation Hint [NOTE, caption=\"Imp\" ] The Logical with Negate instructions can be implemented by inverting the rs2 inputs to the base-required AND, OR, and XOR logic instructions.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        183,
+        188
+      ]
+    },
+    {
+      "text": "In some implementations, the inverter on rs2 used for subtraction can be reused for this purpose.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Logical with negate",
+      "line_range": [
+        183,
+        188
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count leading/trailing zero bits",
+      "line_range": [
+        192,
+        197
+      ]
+    },
+    {
+      "text": "|{check} |{check} |clz rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count leading/trailing zero bits",
+      "line_range": [
+        199,
+        202
+      ]
+    },
+    {
+      "text": "|{check} |{check} |ctz rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count leading/trailing zero bits",
+      "line_range": [
+        209,
+        212
+      ]
+    },
+    {
+      "text": "| |{check} |ctzw rd, rs | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count leading/trailing zero bits",
+      "line_range": [
+        214,
+        218
+      ]
+    },
+    {
+      "text": "These instructions count the number of set bits (1-bits).",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count population",
+      "line_range": [
+        222,
+        223
+      ]
+    },
+    {
+      "text": "This is also commonly referred to as population count.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count population",
+      "line_range": [
+        222,
+        223
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count population",
+      "line_range": [
+        225,
+        230
+      ]
+    },
+    {
+      "text": "|{check} |{check} |cpop rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count population",
+      "line_range": [
+        232,
+        235
+      ]
+    },
+    {
+      "text": "| |{check} |cpopw rd, rs | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Count population",
+      "line_range": [
+        237,
+        241
+      ]
+    },
+    {
+      "text": "The integer minimum/maximum instructions are arithmetic R-type instructions that return the smaller/larger of two operands.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        245,
+        246
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        248,
+        253
+      ]
+    },
+    {
+      "text": "|{check} |{check} |max rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        255,
+        258
+      ]
+    },
+    {
+      "text": "|{check} |{check} |maxu rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        260,
+        263
+      ]
+    },
+    {
+      "text": "|{check} |{check} |min rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        265,
+        268
+      ]
+    },
+    {
+      "text": "|{check} |{check} |minu rd, rs1, rs2 | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Integer minimum/maximum",
+      "line_range": [
+        270,
+        274
+      ]
+    },
+    {
+      "text": "These instructions perform the sign extension or zero extension of the least-significant 8 bits or 16 bits of the source register.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        278,
+        278
+      ]
+    },
+    {
+      "text": "These instructions replace the generalized idioms `slli rd,rs,(XLEN-<size>) + srai` (for sign extension of 8-bit and 16-bit quantities) and `slli + srli` (for zero extension of 16-bit quantities).",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        280,
+        280
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        282,
+        287
+      ]
+    },
+    {
+      "text": "|{check} |{check} |sext.b rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        289,
+        292
+      ]
+    },
+    {
+      "text": "|{check} |{check} |sext.h rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        294,
+        297
+      ]
+    },
+    {
+      "text": "|{check} |{check} |zext.h rd, rs | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Sign extension and zero extension",
+      "line_range": [
+        299,
+        303
+      ]
+    },
+    {
+      "text": "Bitwise rotation instructions are similar to the shift-logical operations from the base spec.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        307,
+        309
+      ]
+    },
+    {
+      "text": "However, where the shift-logical instructions shift in zeros, the rotate instructions shift in the bits that were shifted out of the other side of the value.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        307,
+        309
+      ]
+    },
+    {
+      "text": "Such operations are also referred to as ‘circular shifts’.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        307,
+        309
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        311,
+        316
+      ]
+    },
+    {
+      "text": "|{check} |{check} |rol rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        318,
+        321
+      ]
+    },
+    {
+      "text": "| |{check} |rolw rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        323,
+        326
+      ]
+    },
+    {
+      "text": "|{check} |{check} |ror rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        328,
+        331
+      ]
+    },
+    {
+      "text": "|{check} |{check} |rori rd, rs1, shamt |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        333,
+        336
+      ]
+    },
+    {
+      "text": "| |{check} |roriw rd, rs1, shamt |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        338,
+        341
+      ]
+    },
+    {
+      "text": "| |{check} |rorw rd, rs1, rs2 | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        343,
+        347
+      ]
+    },
+    {
+      "text": ".Architecture Explanation [NOTE, caption=\"AE\" ] The rotate instructions were included to replace a common four-instruction sequence to achieve the same effect (neg; sll/srl; srl/sll; or)",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Bitwise rotation",
+      "line_range": [
+        349,
+        354
+      ]
+    },
+    {
+      "text": "*orc.b* sets the bits of each byte in the result rd to all zeros if no bit within the respective byte of rs is set, or to all ones if any bit within the respective byte of rs is set.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > OR Combine",
+      "line_range": [
+        360,
+        360
+      ]
+    },
+    {
+      "text": "One use-case is string-processing functions, such as *strlen* and *strcpy*, which can use *orc.b* to test for the terminating zero byte by counting the set bits in leading non-zero bytes in a word.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > OR Combine",
+      "line_range": [
+        362,
+        362
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > OR Combine",
+      "line_range": [
+        364,
+        369
+      ]
+    },
+    {
+      "text": "|{check} |{check} |orc.b rd, rs | |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > OR Combine",
+      "line_range": [
+        371,
+        375
+      ]
+    },
+    {
+      "text": "*rev8* reverses the byte-ordering of rs.",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Byte-reverse",
+      "line_range": [
+        379,
+        379
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Byte-reverse",
+      "line_range": [
+        381,
+        386
+      ]
+    },
+    {
+      "text": "|{check} |{check} |rev8 rd, rs |",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Byte-reverse",
+      "line_range": [
+        388,
+        391
+      ]
+    },
+    {
+      "text": "[zbc,reftext=\"Carry-less multiplication\"]",
+      "section": "Preamble > Bit Manipulation Extensions > ext:zbb[] Extension for Basic bit-manipulation, Version 1.0.0 > Byte-reverse",
+      "line_range": [
+        395,
+        395
+      ]
+    },
+    {
+      "text": "Carry-less multiplication is the multiplication in the polynomial ring over GF(2).",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        398,
+        398
+      ]
+    },
+    {
+      "text": "*clmul* produces the lower half of the carry-less product and *clmulh* produces the upper half of the 2{times}XLEN carry-less product.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        400,
+        400
+      ]
+    },
+    {
+      "text": "*clmulr* produces bits 2{times}XLEN−2:XLEN-1 of the 2{times}XLEN carry-less product.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        402,
+        402
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        404,
+        409
+      ]
+    },
+    {
+      "text": "|{check} |{check} |clmul rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        411,
+        414
+      ]
+    },
+    {
+      "text": "|{check} |{check} |clmulh rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        416,
+        419
+      ]
+    },
+    {
+      "text": "|{check} |{check} |clmulr rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        421,
+        424
+      ]
+    },
+    {
+      "text": "[zbs,reftext=\"Single-bit instructions\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+      "line_range": [
+        428,
+        428
+      ]
+    },
+    {
+      "text": "The single-bit instructions provide a mechanism to set, clear, invert, or extract a single bit in a register.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        431,
+        432
+      ]
+    },
+    {
+      "text": "The bit is specified by its index.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        431,
+        432
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        434,
+        439
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bclr rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        441,
+        444
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bclri rd, rs1, imm |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        446,
+        449
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bext rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        451,
+        454
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bexti rd, rs1, imm |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        456,
+        459
+      ]
+    },
+    {
+      "text": "|{check} |{check} |binv rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        461,
+        464
+      ]
+    },
+    {
+      "text": "|{check} |{check} |binvi rd, rs1, imm |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        466,
+        469
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bset rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        471,
+        474
+      ]
+    },
+    {
+      "text": "|{check} |{check} |bseti rd, rs1, imm |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbs: Extension for Single-bit instructions, Version 1.0.0",
+      "line_range": [
+        476,
+        479
+      ]
+    },
+    {
+      "text": "This extension contains instructions essential for implementing common operations in cryptographic workloads.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        486,
+        487
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        489,
+        494
+      ]
+    },
+    {
+      "text": "| {check} | {check} | rol |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        496,
+        499
+      ]
+    },
+    {
+      "text": "| {check} | {check} | ror |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        506,
+        509
+      ]
+    },
+    {
+      "text": "| {check} | {check} | rori |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        511,
+        514
+      ]
+    },
+    {
+      "text": "| {check} | {check} | andn |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        526,
+        529
+      ]
+    },
+    {
+      "text": "| {check} | {check} | orn |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        531,
+        534
+      ]
+    },
+    {
+      "text": "| {check} | {check} | xnor |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        536,
+        539
+      ]
+    },
+    {
+      "text": "| {check} | {check} | pack |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        541,
+        544
+      ]
+    },
+    {
+      "text": "| {check} | {check} | packh |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        546,
+        549
+      ]
+    },
+    {
+      "text": "| {check} | {check} | brev8 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        556,
+        559
+      ]
+    },
+    {
+      "text": "| {check} | {check} | rev8 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+      "line_range": [
+        561,
+        564
+      ]
+    },
+    {
+      "text": "Carry-less multiplication is the multiplication in the polynomial ring over GF(2).",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkc: Extension for Carry-less multiplication for Cryptography, Version 1.0.0",
+      "line_range": [
+        582,
+        587
+      ]
+    },
+    {
+      "text": "This extension is a subset of the Zbc extension, and only provides `clmul` and `clmulh`.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkc: Extension for Carry-less multiplication for Cryptography, Version 1.0.0",
+      "line_range": [
+        582,
+        587
+      ]
+    },
+    {
+      "text": "These are the crucial instructions needed to efficiently implement the GHASH operation, a critical operation in some cryptographic workloads such as the AES-GCM authenticated encryption scheme.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkc: Extension for Carry-less multiplication for Cryptography, Version 1.0.0",
+      "line_range": [
+        582,
+        587
+      ]
+    },
+    {
+      "text": "See Zbc for further instruction details for these two instructions.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkc: Extension for Carry-less multiplication for Cryptography, Version 1.0.0",
+      "line_range": [
+        582,
+        587
+      ]
+    },
+    {
+      "text": "These instructions implement a \"lookup table\" for 4 and 8 bit elements inside the general purpose registers. rs1 is used as a vector of N-bit words, and rs2 as a vector of N-bit indices into rs1.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        593,
+        598
+      ]
+    },
+    {
+      "text": "Elements in rs1 are replaced by the indexed element in rs2, or zero if the index into rs2 is out of bounds.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        593,
+        598
+      ]
+    },
+    {
+      "text": "These instructions are useful for expressing N-bit to N-bit boolean operations, and implementing cryptographic code with secret dependent memory accesses (particularly SBoxes) such that the execution latency does not depend on the (secret) data being operated on.",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        600,
+        603
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        605,
+        610
+      ]
+    },
+    {
+      "text": "|{check} |{check} |xperm4 rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        612,
+        615
+      ]
+    },
+    {
+      "text": "|{check} |{check} |xperm8 rd, rs1, rs2 |",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        617,
+        620
+      ]
+    },
+    {
+      "text": "[insns-b,reftext=\"Instructions (in alphabetical order)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+      "line_range": [
+        626,
+        626
+      ]
+    },
+    {
+      "text": "The semantics of each instruction is expressed in a SAIL-like syntax.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order)",
+      "line_range": [
+        629,
+        629
+      ]
+    },
+    {
+      "text": "[insns-adduw,reftext=Add unsigned word]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order)",
+      "line_range": [
+        631,
+        631
+      ]
+    },
+    {
+      "text": "Synopsis:: Add unsigned word",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        634,
+        635
+      ]
+    },
+    {
+      "text": "Mnemonic:: add.uw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        637,
+        638
+      ]
+    },
+    {
+      "text": "Pseudoinstructions:: zext.w rd, rs1 {rightarrow} add.uw rd, rs1, zero",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        640,
+        641
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x0, attr: ['ADD.UW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x04, attr: ['ADD.UW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        643,
+        655
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs an XLEN-wide addition between rs2 and the zero-extended least-significant word of rs1.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        657,
+        658
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let base = X(rs2); let index = EXTZ(X(rs1)[31..0]);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        660,
+        665
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        670,
+        675
+      ]
+    },
+    {
+      "text": "<<< [insns-andn,reftext=\"AND with inverted operand\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > add.uw",
+      "line_range": [
+        682,
+        683
+      ]
+    },
+    {
+      "text": "Synopsis:: AND with inverted operand",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        687,
+        688
+      ]
+    },
+    {
+      "text": "Mnemonic:: andn rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        690,
+        691
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x7, attr: ['ANDN']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x20, attr: ['ANDN'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        693,
+        705
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs the bitwise logical AND operation between rs1 and the bitwise inversion of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        707,
+        708
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = X(rs1) & ~X(rs2); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        710,
+        715
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        717,
+        722
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        724,
+        726
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        728,
+        731
+      ]
+    },
+    {
+      "text": "<<< [insns-bclr,reftext=\"Single-Bit Clear (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > andn",
+      "line_range": [
+        733,
+        734
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Clear (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        737,
+        738
+      ]
+    },
+    {
+      "text": "Mnemonic:: bclr rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        740,
+        741
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BCLR'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x24, attr: ['BCLR/BEXT'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        743,
+        755
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit cleared at the index specified in rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        757,
+        759
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        757,
+        759
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = X(rs2) & (XLEN - 1); X(rd) = X(rs1) & ~(1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        761,
+        767
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        769,
+        774
+      ]
+    },
+    {
+      "text": "<<< [insns-bclri,reftext=\"Single-Bit Clear (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclr",
+      "line_range": [
+        781,
+        782
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Clear (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        785,
+        786
+      ]
+    },
+    {
+      "text": "Mnemonic:: bclri rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        788,
+        789
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BCLRI'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x24, attr: ['BCLRI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        791,
+        803
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BCLRI'] }, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x12, attr: ['BCLRI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        805,
+        817
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit cleared at the index specified in shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        819,
+        822
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        819,
+        822
+      ]
+    },
+    {
+      "text": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        819,
+        822
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = shamt & (XLEN - 1); X(rd) = X(rs1) & ~(1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        824,
+        830
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        832,
+        837
+      ]
+    },
+    {
+      "text": "<<< [insns-bext,reftext=\"Single-Bit Extract (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bclri",
+      "line_range": [
+        844,
+        845
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Extract (Register) // Should we describe this as a Set-if-bit-is-set?",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        848,
+        850
+      ]
+    },
+    {
+      "text": "Mnemonic:: bext rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        852,
+        853
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['BEXT'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x24, attr: ['BCLR/BEXT'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        855,
+        867
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns a single bit extracted from rs1 at the index specified in rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        869,
+        871
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        869,
+        871
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = X(rs2) & (XLEN - 1); X(rd) = (X(rs1) >> index) & 1; --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        873,
+        879
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        881,
+        886
+      ]
+    },
+    {
+      "text": "<<< [insns-bexti,reftext=\"Single-Bit Extract (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bext",
+      "line_range": [
+        893,
+        894
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Extract (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        897,
+        898
+      ]
+    },
+    {
+      "text": "Mnemonic:: bexti rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        900,
+        901
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['BEXTI'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x24, attr: ['BEXTI/BCLRI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        903,
+        915
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['BEXTI'] }, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x12, attr: ['BEXTI/BCLRI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        917,
+        929
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns a single bit extracted from rs1 at the index specified in shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        931,
+        934
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        931,
+        934
+      ]
+    },
+    {
+      "text": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        931,
+        934
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = shamt & (XLEN - 1); X(rd) = (X(rs1) >> index) & 1; --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        936,
+        942
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        944,
+        949
+      ]
+    },
+    {
+      "text": "<<< [insns-binv,reftext=\"Single-Bit Invert (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bexti",
+      "line_range": [
+        956,
+        957
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Invert (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        960,
+        961
+      ]
+    },
+    {
+      "text": "Mnemonic:: binv rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        963,
+        964
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BINV'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x34, attr: ['BINV'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        966,
+        978
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit inverted at the index specified in rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        980,
+        982
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        980,
+        982
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = X(rs2) & (XLEN - 1); X(rd) = X(rs1) ^ (1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        984,
+        990
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        992,
+        997
+      ]
+    },
+    {
+      "text": "<<< [insns-binvi,reftext=\"Single-Bit Invert (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binv",
+      "line_range": [
+        1004,
+        1005
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Invert (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1008,
+        1009
+      ]
+    },
+    {
+      "text": "Mnemonic:: binvi rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1011,
+        1012
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BINV'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x34, attr: ['BINVI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1014,
+        1026
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BINV'] }, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x1a, attr: ['BINVI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1028,
+        1040
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit inverted at the index specified in shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1042,
+        1045
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1042,
+        1045
+      ]
+    },
+    {
+      "text": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1042,
+        1045
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = shamt & (XLEN - 1); X(rd) = X(rs1) ^ (1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1047,
+        1053
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1055,
+        1060
+      ]
+    },
+    {
+      "text": "<<< [insns-bset,reftext=\"Single-Bit Set (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > binvi",
+      "line_range": [
+        1067,
+        1068
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Set (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1071,
+        1072
+      ]
+    },
+    {
+      "text": "Mnemonic:: bset rd, rs1,rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1074,
+        1075
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BSET'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x14, attr: ['BSET'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1077,
+        1089
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit set at the index specified in rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1091,
+        1093
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1091,
+        1093
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = X(rs2) & (XLEN - 1); X(rd) = X(rs1) | (1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1095,
+        1101
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1103,
+        1108
+      ]
+    },
+    {
+      "text": "<<< [insns-bseti,reftext=\"Single-Bit Set (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bset",
+      "line_range": [
+        1115,
+        1116
+      ]
+    },
+    {
+      "text": "Synopsis:: Single-Bit Set (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1119,
+        1120
+      ]
+    },
+    {
+      "text": "Mnemonic:: bseti rd, rs1,shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1122,
+        1123
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BSETI'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x14, attr: ['BSETI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1125,
+        1137
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['BSETI'] }, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x0a, attr: ['BSETI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1139,
+        1151
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns rs1 with a single bit set at the index specified in shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1153,
+        1156
+      ]
+    },
+    {
+      "text": "The index is read from the lower log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1153,
+        1156
+      ]
+    },
+    {
+      "text": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1153,
+        1156
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let index = shamt & (XLEN - 1); X(rd) = X(rs1) | (1 << index) --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1158,
+        1164
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1166,
+        1171
+      ]
+    },
+    {
+      "text": "<<< [insns-clmul,reftext=\"Carry-less multiply (low-part)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > bseti",
+      "line_range": [
+        1178,
+        1179
+      ]
+    },
+    {
+      "text": "Synopsis:: Carry-less multiply (low-part)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1182,
+        1183
+      ]
+    },
+    {
+      "text": "Mnemonic:: clmul rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1185,
+        1186
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CLMUL'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x5, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1188,
+        1200
+      ]
+    },
+    {
+      "text": "Description:: clmul produces the lower half of the 2·XLEN carry-less product.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1202,
+        1203
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2); let output : xlenbits = 0;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1205,
+        1211
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to (xlen - 1) by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val << i); else output; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1213,
+        1217
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1222,
+        1227
+      ]
+    },
+    {
+      "text": "|Zbkc () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1233,
+        1236
+      ]
+    },
+    {
+      "text": "<<< [insns-clmulh,reftext=\"Carry-less multiply (high-part)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmul",
+      "line_range": [
+        1238,
+        1239
+      ]
+    },
+    {
+      "text": "Synopsis:: Carry-less multiply (high-part)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1242,
+        1243
+      ]
+    },
+    {
+      "text": "Mnemonic:: clmulh rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1245,
+        1246
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x3, attr: ['CLMULH'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x5, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1248,
+        1260
+      ]
+    },
+    {
+      "text": "Description:: clmulh produces the upper half of the 2·XLEN carry-less product.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1262,
+        1263
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2); let output : xlenbits = 0;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1265,
+        1271
+      ]
+    },
+    {
+      "text": "foreach (i from 1 to xlen by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val >> (xlen - i)); else output; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1273,
+        1277
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1282,
+        1287
+      ]
+    },
+    {
+      "text": "|Zbkc () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1293,
+        1296
+      ]
+    },
+    {
+      "text": "<<< [insns-clmulr,reftext=\"Carry-less multiply (reversed)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulh",
+      "line_range": [
+        1298,
+        1299
+      ]
+    },
+    {
+      "text": "Synopsis:: Carry-less multiply (reversed)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1303,
+        1304
+      ]
+    },
+    {
+      "text": "Mnemonic:: clmulr rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1306,
+        1307
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x2, attr: ['CLMULR'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x5, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1309,
+        1321
+      ]
+    },
+    {
+      "text": "Description:: *clmulr* produces bits 2·XLEN−2:XLEN-1 of the 2·XLEN carry-less product.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1323,
+        1325
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2); let output : xlenbits = 0;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1327,
+        1333
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to (xlen - 1) by 1) { output = if ((rs2val >> i) & 1) then output ^ (rs1val >> (xlen - i - 1)); else output; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1335,
+        1339
+      ]
+    },
+    {
+      "text": ".Note [NOTE, caption=\"A\" ] The *clmulr* instruction is used to accelerate CRC calculations.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1344,
+        1351
+      ]
+    },
+    {
+      "text": "The *r* in the instruction's mnemonic stands for reversed, as the instruction is equivalent to bit-reversing the inputs, performing a *clmul*, then bit-reversing the output.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1344,
+        1351
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1353,
+        1358
+      ]
+    },
+    {
+      "text": "<<< [insns-clz,reftext=\"Count leading zero bits\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clmulr",
+      "line_range": [
+        1365,
+        1366
+      ]
+    },
+    {
+      "text": "Synopsis:: Count leading zero bits",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1369,
+        1370
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CLZ'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x0, attr: ['CLZ'] }, { bits: 7, name: 0x30, attr: ['CLZ'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1375,
+        1387
+      ]
+    },
+    {
+      "text": "Description:: This instruction counts the number of 0's before the first 1, starting at the most-significant bit (i.e., XLEN-1) and progressing to bit 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1389,
+        1390
+      ]
+    },
+    {
+      "text": "Accordingly, if the input is 0, the output is XLEN, and if the most-significant bit of the input is a 1, the output is 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1389,
+        1390
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val HighestSetBit : forall ('N : Int), 'N >= 0. bits('N) -> int",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1392,
+        1396
+      ]
+    },
+    {
+      "text": "function HighestSetBit x = { foreach (i from (xlen - 1) to 0 by 1 in dec) if [x[i]] 0b1 then return(i) else (); return -1; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1398,
+        1402
+      ]
+    },
+    {
+      "text": "let rs = X(rs); X[rd] = (xlen - 1) - HighestSetBit(rs); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1404,
+        1406
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1408,
+        1413
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1415,
+        1418
+      ]
+    },
+    {
+      "text": "<<< [insns-clzw,reftext=\"Count leading zero bits in word\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clz",
+      "line_range": [
+        1420,
+        1421
+      ]
+    },
+    {
+      "text": "Synopsis:: Count leading zero bits in word",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1424,
+        1425
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x1b, attr: ['OP-IMM-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CLZW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x0, attr: ['CLZW'] }, { bits: 7, name: 0x30, attr: ['CLZW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1430,
+        1442
+      ]
+    },
+    {
+      "text": "Description:: This instruction counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1444,
+        1446
+      ]
+    },
+    {
+      "text": "Accordingly, if the least-significant word is 0, the output is 32, and if the most-significant bit of the word (i.e., bit 31) is a 1, the output is 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1444,
+        1446
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val HighestSetBit32 : forall ('N : Int), 'N >= 0. bits('N) -> int",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1448,
+        1452
+      ]
+    },
+    {
+      "text": "function HighestSetBit32 x = { foreach (i from 31 to 0 by 1 in dec) if [x[i]] 0b1 then return(i) else (); return -1; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1454,
+        1458
+      ]
+    },
+    {
+      "text": "let rs = X(rs); X[rd] = 31 - HighestSetBit(rs); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1460,
+        1462
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1464,
+        1469
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1471,
+        1474
+      ]
+    },
+    {
+      "text": "<<< [insns-cpop,reftext=\"Count set bits\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > clzw",
+      "line_range": [
+        1476,
+        1477
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CPOP'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x2, attr: ['CPOP'] }, { bits: 7, name: 0x30, attr: ['CPOP'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1486,
+        1500
+      ]
+    },
+    {
+      "text": "Description:: This instructions counts the number of 1's (i.e., set bits) in the source register.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1486,
+        1500
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let bitcount = 0; let rs = X(rs);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1502,
+        1507
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to (xlen - 1) in inc) if rs[i] 0b1 then bitcount = bitcount + 1 else ();",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1509,
+        1510
+      ]
+    },
+    {
+      "text": ".Software Hint [NOTE, caption=\"SH\" ] This operation is known as population count, popcount, sideways sum, bit summation, or Hamming weight.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1515,
+        1518
+      ]
+    },
+    {
+      "text": "The GCC builtin function `+builtinpopcount (unsigned int x)+` is implemented by cpop on RV32 and by *cpopw* on RV64.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1520,
+        1522
+      ]
+    },
+    {
+      "text": "The GCC builtin function `+builtinpopcountl (unsigned long x)+` for LP64 is implemented by *cpop* on RV64.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1520,
+        1522
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1524,
+        1529
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1531,
+        1534
+      ]
+    },
+    {
+      "text": "<<< [insns-cpopw,reftext=\"Count set bits in word\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpop",
+      "line_range": [
+        1536,
+        1537
+      ]
+    },
+    {
+      "text": "Synopsis:: Count set bits in word",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1540,
+        1541
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x1b, attr: ['OP-IMM-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CPOPW'] }, { bits: 5, name: 'rs' }, { bits: 5, name: 0x2, attr: ['CPOPW'] }, { bits: 7, name: 0x30, attr: ['CPOPW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1546,
+        1560
+      ]
+    },
+    {
+      "text": "Description:: This instructions counts the number of 1's (i.e., set bits) in the least-significant word of the source register.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1546,
+        1560
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let bitcount = 0; let val = X(rs);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1562,
+        1567
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to 31 in inc) if val[i] 0b1 then bitcount = bitcount + 1 else ();",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1569,
+        1570
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1575,
+        1580
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1582,
+        1585
+      ]
+    },
+    {
+      "text": "<<< [insns-ctz,reftext=\"Count trailing zero bits\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > cpopw",
+      "line_range": [
+        1587,
+        1588
+      ]
+    },
+    {
+      "text": "Synopsis:: Count trailing zeros",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1591,
+        1592
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CTZ/CTZW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x1, attr: ['CTZ/CTZW'] }, { bits: 7, name: 0x30, attr: ['CTZ/CTZW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1597,
+        1609
+      ]
+    },
+    {
+      "text": "Description:: This instruction counts the number of 0's before the first 1, starting at the least-significant bit (i.e., 0) and progressing to the most-significant bit (i.e., XLEN-1).",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1611,
+        1613
+      ]
+    },
+    {
+      "text": "Accordingly, if the input is 0, the output is XLEN, and if the least-significant bit of the input is a 1, the output is 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1611,
+        1613
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val LowestSetBit : forall ('N : Int), 'N >= 0. bits('N) -> int",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1615,
+        1619
+      ]
+    },
+    {
+      "text": "function LowestSetBit x = { foreach (i from 0 to (xlen - 1) by 1 in dec) if [x[i]] 0b1 then return(i) else (); return xlen; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1621,
+        1625
+      ]
+    },
+    {
+      "text": "let rs = X(rs); X[rd] = LowestSetBit(rs); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1627,
+        1629
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1631,
+        1636
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1638,
+        1641
+      ]
+    },
+    {
+      "text": "<<< [insns-ctzw,reftext=\"Count trailing zero bits in word\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctz",
+      "line_range": [
+        1643,
+        1644
+      ]
+    },
+    {
+      "text": "Synopsis:: Count trailing zero bits in word",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1647,
+        1648
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x1b, attr: ['OP-IMM-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['CTZ/CTZW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x1, attr: ['CTZ/CTZW'] }, { bits: 7, name: 0x30, attr: ['CTZ/CTZW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1653,
+        1665
+      ]
+    },
+    {
+      "text": "Description:: This instruction counts the number of 0's before the first 1, starting at the least-significant bit (i.e., 0) and progressing to the most-significant bit of the least-significant word (i.e., 31).",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1667,
+        1668
+      ]
+    },
+    {
+      "text": "Accordingly, if the least-significant word is 0, the output is 32, and if the least-significant bit of the input is a 1, the output is 0.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1667,
+        1668
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val LowestSetBit32 : forall ('N : Int), 'N >= 0. bits('N) -> int",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1670,
+        1674
+      ]
+    },
+    {
+      "text": "function LowestSetBit32 x = { foreach (i from 0 to 31 by 1 in dec) if [x[i]] 0b1 then return(i) else (); return 32; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1676,
+        1680
+      ]
+    },
+    {
+      "text": "let rs = X(rs); X[rd] = LowestSetBit32(rs); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1682,
+        1684
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1686,
+        1691
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1693,
+        1696
+      ]
+    },
+    {
+      "text": "<<< [insns-max,reftext=\"Maximum\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ctzw",
+      "line_range": [
+        1698,
+        1699
+      ]
+    },
+    {
+      "text": "Mnemonic:: max rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1705,
+        1706
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x6, attr: ['MAX']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x05, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1708,
+        1720
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns the larger of two signed integers.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1722,
+        1723
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1725,
+        1730
+      ]
+    },
+    {
+      "text": "let result = if rs1val <s rs2val then rs2val else rs1val;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1732,
+        1734
+      ]
+    },
+    {
+      "text": ".Software Hint [NOTE, caption=\"SW\"] Calculating the absolute value of a signed integer can be performed using the following sequence: *neg rD,rS* followed by *max rD,rS,rD*.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1739,
+        1747
+      ]
+    },
+    {
+      "text": "When using this common sequence, it is suggested that they are scheduled with no intervening instructions so that implementations that are so optimized can fuse them together.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1739,
+        1747
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1749,
+        1754
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1756,
+        1759
+      ]
+    },
+    {
+      "text": "<<< [insns-maxu,reftext=\"Unsigned maximum\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > max",
+      "line_range": [
+        1761,
+        1762
+      ]
+    },
+    {
+      "text": "Synopsis:: Unsigned maximum",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1765,
+        1766
+      ]
+    },
+    {
+      "text": "Mnemonic:: maxu rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1768,
+        1769
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x7, attr: ['MAXU']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x05, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1771,
+        1783
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns the larger of two unsigned integers.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1785,
+        1786
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1788,
+        1793
+      ]
+    },
+    {
+      "text": "let result = if rs1val <u rs2val then rs2val else rs1val;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1795,
+        1797
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1802,
+        1807
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1809,
+        1812
+      ]
+    },
+    {
+      "text": "<<< [insns-min,reftext=\"Minimum\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > maxu",
+      "line_range": [
+        1814,
+        1815
+      ]
+    },
+    {
+      "text": "Mnemonic:: min rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1821,
+        1822
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['MIN']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x05, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1824,
+        1836
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns the smaller of two signed integers.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1838,
+        1839
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1841,
+        1846
+      ]
+    },
+    {
+      "text": "let result = if rs1val <s rs2val then rs1val else rs2val;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1848,
+        1850
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1855,
+        1860
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1862,
+        1865
+      ]
+    },
+    {
+      "text": "<<< [insns-minu,reftext=\"Unsigned minimum\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > min",
+      "line_range": [
+        1867,
+        1868
+      ]
+    },
+    {
+      "text": "Synopsis:: Unsigned minimum",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1871,
+        1872
+      ]
+    },
+    {
+      "text": "Mnemonic:: minu rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1874,
+        1875
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['MINU']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x05, attr: ['MINMAX/CLMUL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1877,
+        1889
+      ]
+    },
+    {
+      "text": "Description:: This instruction returns the smaller of two unsigned integers.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1891,
+        1892
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1val = X(rs1); let rs2val = X(rs2);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1894,
+        1899
+      ]
+    },
+    {
+      "text": "let result = if rs1val <u rs2val then rs1val else rs2val;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1901,
+        1903
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1908,
+        1913
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1915,
+        1918
+      ]
+    },
+    {
+      "text": "<<< [insns-orcb,reftext=\"Bitwise OR-Combine, byte granule\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > minu",
+      "line_range": [
+        1920,
+        1921
+      ]
+    },
+    {
+      "text": "Synopsis:: Bitwise OR-Combine, byte granule",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1924,
+        1925
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5 }, { bits: 5, name: 'rs' }, { bits: 12, name: 0x287 } ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1930,
+        1941
+      ]
+    },
+    {
+      "text": "Description:: Combines the bits within each byte using bitwise logical OR.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1943,
+        1945
+      ]
+    },
+    {
+      "text": "This sets the bits of each byte in the result rd to all zeros if no bit within the respective byte of rs is set, or to all ones if any bit within the respective byte of rs is set.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1943,
+        1945
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let input = X(rs); let output : xlenbits = 0;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1947,
+        1952
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to (xlen - 8) by 8) { output[(i + 7)..i] = if input[(i + 7)..i] 0 then 0b00000000 else 0b11111111; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1954,
+        1958
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1963,
+        1968
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1970,
+        1973
+      ]
+    },
+    {
+      "text": "<<< [insns-orn,reftext=\"OR with inverted operand\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orc.b",
+      "line_range": [
+        1975,
+        1976
+      ]
+    },
+    {
+      "text": "Synopsis:: OR with inverted operand",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        1979,
+        1980
+      ]
+    },
+    {
+      "text": "Mnemonic:: orn rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        1982,
+        1983
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x6, attr: ['ORN']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x20, attr: ['ORN'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        1985,
+        1997
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        1999,
+        2000
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = X(rs1) | ~X(rs2); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        2002,
+        2007
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        2009,
+        2014
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        2016,
+        2018
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        2020,
+        2023
+      ]
+    },
+    {
+      "text": "<<< [insns-pack,reftext=\"Pack low halves of registers\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > orn",
+      "line_range": [
+        2025,
+        2026
+      ]
+    },
+    {
+      "text": "Synopsis:: Pack the low halves of rs1 and rs2 into rd.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2029,
+        2030
+      ]
+    },
+    {
+      "text": "Mnemonic:: pack rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2032,
+        2033
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x33, attr: ['OP'] }, {bits: 5, name: 'rd'}, {bits: 3, name: 0x4, attr:['PACK']}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'rs2'}, {bits: 7, name: 0x4, attr:['PACK']}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2035,
+        2047
+      ]
+    },
+    {
+      "text": "Description:: The pack instruction packs the XLEN/2-bit lower halves of rs1 and rs2 into rd, with rs1 in the lower half and rs2 in the upper half.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2049,
+        2051
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let lohalf : bits(xlen/2) = X(rs1)[xlen/2-1..0]; let hihalf : bits(xlen/2) = X(rs2)[xlen/2-1..0]; X(rd) = EXTZ(hihalf @ lohalf); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2053,
+        2060
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2062,
+        2067
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2069,
+        2072
+      ]
+    },
+    {
+      "text": "NOTE: For RV32, the `pack` instruction with rs2=`x0` is the `zext.h` instruction.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2074,
+        2079
+      ]
+    },
+    {
+      "text": "Hence, for RV32, any extension that contains the `pack` instruction also contains the `zext.h` instruction (but not necessarily the `c.zext.h` instruction, which is only guaranteed to exist if both the Zcb and Zbb extensions are implemented).",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2074,
+        2079
+      ]
+    },
+    {
+      "text": "<<< [insns-packh,reftext=\"Pack low bytes of registers\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > pack",
+      "line_range": [
+        2081,
+        2082
+      ]
+    },
+    {
+      "text": "Synopsis:: Pack the low bytes of rs1 and rs2 into rd.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2085,
+        2086
+      ]
+    },
+    {
+      "text": "Mnemonic:: packh rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2088,
+        2089
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x33, attr: ['OP'] }, {bits: 5, name: 'rd'}, {bits: 3, name: 0x7, attr: ['PACKH']}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'rs2'}, {bits: 7, name: 0x4, attr: ['PACKH']}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2091,
+        2103
+      ]
+    },
+    {
+      "text": "Description:: The packh instruction packs the least-significant bytes of rs1 and rs2 into the 16 least-significant bits of rd, zero extending the rest of rd.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2105,
+        2108
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let lohalf : bits(8) = X(rs1)[7..0]; let hihalf : bits(8) = X(rs2)[7..0]; X(rd) = EXTZ(hihalf @ lohalf); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2110,
+        2117
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2119,
+        2124
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2126,
+        2129
+      ]
+    },
+    {
+      "text": "<<< [insns-packw,reftext=\"Pack low 16-bits of registers (RV64)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packh",
+      "line_range": [
+        2131,
+        2132
+      ]
+    },
+    {
+      "text": "Synopsis:: Pack the low 16-bits of rs1 and rs2 into rd on RV64.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2135,
+        2136
+      ]
+    },
+    {
+      "text": "Mnemonic:: packw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2138,
+        2139
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x3b, attr: ['OP-32']}, {bits: 5, name: 'rd'}, {bits: 3, name: 0x4}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'rs2'}, {bits: 7, name: 0x4}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2141,
+        2153
+      ]
+    },
+    {
+      "text": "Description:: This instruction packs the low 16 bits of rs1 and rs2 into the 32 least-significant bits of rd, sign extending the 32-bit result to the rest of rd.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2155,
+        2159
+      ]
+    },
+    {
+      "text": "This instruction only exists on RV64 based systems.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2155,
+        2159
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let lohalf : bits(16) = X(rs1)[15..0]; let hihalf : bits(16) = X(rs2)[15..0]; X(rd) = EXTS(hihalf @ lohalf); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2161,
+        2168
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2170,
+        2175
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2177,
+        2180
+      ]
+    },
+    {
+      "text": "NOTE: For RV64, the `packw` instruction with rs2=`x0` is the `zext.h` instruction.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2182,
+        2187
+      ]
+    },
+    {
+      "text": "Hence, for RV64, any extension that contains the `packw` instruction also contains the `zext.h` instruction (but not necessarily the `c.zext.h` instruction, which is only guaranteed to exist if both the Zcb and Zbb extensions are implemented).",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2182,
+        2187
+      ]
+    },
+    {
+      "text": "<<< [insns-rev8,reftext=\"Byte-reverse register\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > packw",
+      "line_range": [
+        2189,
+        2190
+      ]
+    },
+    {
+      "text": "Synopsis:: Byte-reverse register",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2193,
+        2194
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5 }, { bits: 5, name: 'rs' }, { bits: 12, name: 0x698 } ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2199,
+        2210
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5 }, { bits: 5, name: 'rs' }, { bits: 12, name: 0x6b8 } ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2212,
+        2223
+      ]
+    },
+    {
+      "text": "Description:: This instruction reverses the order of the bytes in rs.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let input = X(rs); let output : xlenbits = 0; let j = xlen - 1;",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2228,
+        2234
+      ]
+    },
+    {
+      "text": "foreach (i from 0 to (xlen - 8) by 8) { output[i..(i + 7)] = input[(j - 7)..j]; j = j - 8; }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2236,
+        2239
+      ]
+    },
+    {
+      "text": ".Note [NOTE, caption=\"A\" ] The *rev8* mnemonic corresponds to different instruction encodings in RV32 and RV64.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2244,
+        2248
+      ]
+    },
+    {
+      "text": ".Software Hint [NOTE, caption=\"SH\" ] The byte-reverse operation is only available for the full register width.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2250,
+        2257
+      ]
+    },
+    {
+      "text": "To emulate word-sized and halfword-sized byte-reversal, perform a `rev8 rd,rs` followed by a `srai rd,rd,K`, where K is XLEN-32 and XLEN-16, respectively.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2250,
+        2257
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2259,
+        2264
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |v1.0 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2266,
+        2268
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2270,
+        2273
+      ]
+    },
+    {
+      "text": "<<< [insns-brev8,reftext=\"Reverse bits in bytes\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rev8",
+      "line_range": [
+        2275,
+        2276
+      ]
+    },
+    {
+      "text": "Synopsis:: Reverse the bits in each byte of a source register.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2279,
+        2280
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5 }, { bits: 5, name: 'rs' }, { bits: 12, name: 0x687 } ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2285,
+        2296
+      ]
+    },
+    {
+      "text": "Description:: This instruction reverses the order of the bits in every byte of a register.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2298,
+        2299
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- result : xlenbits = EXTZ(0b0); foreach (i from 0 to sizeof(xlen) by 8) { result[i+7..i] = reversebitsinbyte(X(rs1)[i+7..i]); }; X(rd) = result; --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2301,
+        2310
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2312,
+        2317
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2319,
+        2322
+      ]
+    },
+    {
+      "text": "<<< [insns-rol,reftext=\"Rotate left (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > brev8",
+      "line_range": [
+        2324,
+        2325
+      ]
+    },
+    {
+      "text": "Synopsis:: Rotate Left (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2328,
+        2329
+      ]
+    },
+    {
+      "text": "Mnemonic:: rol rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2331,
+        2332
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['ROL']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x30, attr: ['ROL'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2334,
+        2346
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate left of rs1 by the amount in least-significant log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2348,
+        2349
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let shamt = if xlen 32 then X(rs2)[4..0] else X(rs2)[5..0]; let result = (X(rs1) (xlen - shamt));",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2351,
+        2358
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2363,
+        2368
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2370,
+        2372
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2374,
+        2377
+      ]
+    },
+    {
+      "text": "<<< [insns-rolw,reftext=\"Rotate Left Word (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rol",
+      "line_range": [
+        2379,
+        2380
+      ]
+    },
+    {
+      "text": "Synopsis:: Rotate Left Word (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2383,
+        2384
+      ]
+    },
+    {
+      "text": "Mnemonic:: rolw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2386,
+        2387
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['ROLW']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x30, attr: ['ROLW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2389,
+        2401
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate left on the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2403,
+        2405
+      ]
+    },
+    {
+      "text": "The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2403,
+        2405
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1 = EXTZ(X(rs1)[31..0]) let shamt = X(rs2)[4..0]; let result = (rs1 (32 - shamt)); X(rd) = EXTS(result[31..0]); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2407,
+        2415
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2417,
+        2422
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2424,
+        2426
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2428,
+        2431
+      ]
+    },
+    {
+      "text": "<<< [insns-ror,reftext=\"Rotate right (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rolw",
+      "line_range": [
+        2433,
+        2434
+      ]
+    },
+    {
+      "text": "Mnemonic:: ror rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2440,
+        2441
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['ROR']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x30, attr: ['ROR'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2443,
+        2455
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate right of rs1 by the amount in least-significant log2(XLEN) bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2457,
+        2458
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let shamt = if xlen 32 then X(rs2)[4..0] else X(rs2)[5..0]; let result = (X(rs1) >> shamt) | (X(rs1) << (xlen - shamt));",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2460,
+        2467
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2472,
+        2477
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2479,
+        2481
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2483,
+        2486
+      ]
+    },
+    {
+      "text": "<<< [insns-rori,reftext=\"Rotate right (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > ror",
+      "line_range": [
+        2488,
+        2489
+      ]
+    },
+    {
+      "text": "Synopsis:: Rotate Right (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2492,
+        2493
+      ]
+    },
+    {
+      "text": "Mnemonic:: rori rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2495,
+        2496
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['RORI']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x30, attr: ['RORI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2498,
+        2510
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['RORI']}, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x18, attr: ['RORI'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2512,
+        2524
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2526,
+        2528
+      ]
+    },
+    {
+      "text": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2526,
+        2528
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let shamt = if xlen 32 then shamt[4..0] else shamt[5..0]; let result = (X(rs1) >> shamt) | (X(rs1) << (xlen - shamt));",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2530,
+        2537
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2542,
+        2547
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2549,
+        2551
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2553,
+        2556
+      ]
+    },
+    {
+      "text": "<<< [insns-roriw,reftext=\"Rotate right Word (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rori",
+      "line_range": [
+        2558,
+        2559
+      ]
+    },
+    {
+      "text": "Synopsis:: Rotate Right Word by Immediate",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2562,
+        2563
+      ]
+    },
+    {
+      "text": "Mnemonic:: roriw rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2565,
+        2566
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x1b, attr: ['OP-IMM-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['RORIW']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'shamt' }, { bits: 7, name: 0x30, attr: ['RORIW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2568,
+        2580
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate right on the least-significant word of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2582,
+        2587
+      ]
+    },
+    {
+      "text": "The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2582,
+        2587
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1data = EXTZ(X(rs1)[31..0]; let result = (rs1data >> shamt) | (rs1data << (32 - shamt)); X(rd) = EXTS(result[31..0]); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2589,
+        2596
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2598,
+        2603
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2605,
+        2607
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2609,
+        2612
+      ]
+    },
+    {
+      "text": "<<< [insns-rorw,reftext=\"Rotate right Word (Register)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > roriw",
+      "line_range": [
+        2614,
+        2615
+      ]
+    },
+    {
+      "text": "Synopsis:: Rotate Right Word (Register)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2619,
+        2620
+      ]
+    },
+    {
+      "text": "Mnemonic:: rorw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2622,
+        2623
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x5, attr: ['RORW']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x30, attr: ['RORW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2625,
+        2637
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs a rotate right on the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2639,
+        2641
+      ]
+    },
+    {
+      "text": "The resultant word is sign-extended by copying bit 31 to all of the more-significant bits.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2639,
+        2641
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let rs1 = EXTZ(X(rs1)[31..0]) let shamt = X(rs2)[4..0]; let result = (rs1 >> shamt) | (rs1 << (32 - shamt)); X(rd) = EXTS(result); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2643,
+        2651
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2653,
+        2658
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2660,
+        2662
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2664,
+        2667
+      ]
+    },
+    {
+      "text": "<<< [insns-sextb,reftext=\"Sign-extend byte\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > rorw",
+      "line_range": [
+        2669,
+        2670
+      ]
+    },
+    {
+      "text": "Synopsis:: Sign-extend byte",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2673,
+        2674
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['SEXT.B/SEXT.H'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x04, attr: ['SEXT.B'] }, { bits: 7, name: 0x30 }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2679,
+        2691
+      ]
+    },
+    {
+      "text": "Description:: This instruction sign-extends the least-significant byte in the source to XLEN by copying the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2693,
+        2694
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = EXTS(X(rs)[7..0]); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2696,
+        2701
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2703,
+        2708
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2710,
+        2713
+      ]
+    },
+    {
+      "text": "<<< [insns-sexth,reftext=\"Sign-extend halfword\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.b",
+      "line_range": [
+        2715,
+        2716
+      ]
+    },
+    {
+      "text": "Synopsis:: Sign-extend halfword",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2719,
+        2720
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['SEXT.B/SEXT.H'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 0x05, attr: ['SEXT.H'] }, { bits: 7, name: 0x30 }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2725,
+        2737
+      ]
+    },
+    {
+      "text": "Description:: This instruction sign-extends the least-significant halfword in rs to XLEN by copying the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2739,
+        2740
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = EXTS(X(rs)[15..0]); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2742,
+        2747
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2749,
+        2754
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2756,
+        2759
+      ]
+    },
+    {
+      "text": "<<< [insns-sh1add,reftext=Shift left by 1 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sext.h",
+      "line_range": [
+        2761,
+        2762
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift left by 1 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2766,
+        2767
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh1add rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2769,
+        2770
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x2, attr: ['SH1ADD'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH1ADD'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2772,
+        2784
+      ]
+    },
+    {
+      "text": "Description:: This instruction shifts rs1 to the left by 1 bit and adds it to rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2786,
+        2787
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = X(rs2) + (X(rs1) << 1); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2789,
+        2794
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2796,
+        2801
+      ]
+    },
+    {
+      "text": "<<< [insns-sh1adduw,reftext=Shift unsigned word left by 1 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add",
+      "line_range": [
+        2811,
+        2812
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift unsigned word left by 1 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2815,
+        2816
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh1add.uw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2818,
+        2819
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x2, attr: ['SH1ADD.UW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH1ADD.UW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2821,
+        2833
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs an XLEN-wide addition of two addends.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2835,
+        2837
+      ]
+    },
+    {
+      "text": "The second addend is the unsigned value formed by extracting the least-significant word of rs1 and shifting it left by 1 place.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2835,
+        2837
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let base = X(rs2); let index = EXTZ(X(rs1)[31..0]);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2839,
+        2844
+      ]
+    },
+    {
+      "text": "X(rd) = base + (index << 1); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2846,
+        2847
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2849,
+        2854
+      ]
+    },
+    {
+      "text": "<<< [insns-sh2add,reftext=Shift left by 2 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh1add.uw",
+      "line_range": [
+        2861,
+        2862
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift left by 2 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2865,
+        2866
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh2add rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2868,
+        2869
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['SH2ADD'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH2ADD'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2871,
+        2883
+      ]
+    },
+    {
+      "text": "Description:: This instruction shifts rs1 to the left by 2 places and adds it to rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2885,
+        2886
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = X(rs2) + (X(rs1) << 2); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2888,
+        2893
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2895,
+        2900
+      ]
+    },
+    {
+      "text": "<<< [insns-sh2adduw,reftext=Shift unsigned word left by 2 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add",
+      "line_range": [
+        2907,
+        2908
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift unsigned word left by 2 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2911,
+        2912
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh2add.uw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2914,
+        2915
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['SH2ADD.UW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH2ADD.UW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2917,
+        2929
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs an XLEN-wide addition of two addends.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2931,
+        2934
+      ]
+    },
+    {
+      "text": "The second addend is the unsigned value formed by extracting the least-significant word of rs1 and shifting it left by 2 places.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2931,
+        2934
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let base = X(rs2); let index = EXTZ(X(rs1)[31..0]);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2936,
+        2941
+      ]
+    },
+    {
+      "text": "X(rd) = base + (index << 2); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2943,
+        2944
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2946,
+        2951
+      ]
+    },
+    {
+      "text": "<<< [insns-sh3add,reftext=Shift left by 3 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh2add.uw",
+      "line_range": [
+        2958,
+        2959
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift left by 3 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2962,
+        2963
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh3add rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2965,
+        2966
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x6, attr: ['SH3ADD'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH3ADD'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2968,
+        2980
+      ]
+    },
+    {
+      "text": "Description:: This instruction shifts rs1 to the left by 3 places and adds it to rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2982,
+        2983
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = X(rs2) + (X(rs1) << 3); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2985,
+        2990
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        2992,
+        2997
+      ]
+    },
+    {
+      "text": "<<< [insns-sh3adduw,reftext=Shift unsigned word left by 3 and add]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add",
+      "line_range": [
+        3004,
+        3005
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift unsigned word left by 3 and add",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3008,
+        3009
+      ]
+    },
+    {
+      "text": "Mnemonic:: sh3add.uw rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3011,
+        3012
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x6, attr: ['SH3ADD.UW'] }, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x10, attr: ['SH3ADD.UW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3014,
+        3026
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs an XLEN-wide addition of two addends.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3028,
+        3029
+      ]
+    },
+    {
+      "text": "The second addend is the unsigned value formed by extracting the least-significant word of rs1 and shifting it left by 3 places.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3028,
+        3029
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- let base = X(rs2); let index = EXTZ(X(rs1)[31..0]);",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3031,
+        3036
+      ]
+    },
+    {
+      "text": "X(rd) = base + (index << 3); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3038,
+        3039
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3041,
+        3046
+      ]
+    },
+    {
+      "text": "<<< [insns-slliuw,reftext=\"Shift-left unsigned word (Immediate)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > sh3add.uw",
+      "line_range": [
+        3053,
+        3054
+      ]
+    },
+    {
+      "text": "Synopsis:: Shift-left unsigned word (Immediate)",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3057,
+        3058
+      ]
+    },
+    {
+      "text": "Mnemonic:: slli.uw rd, rs1, shamt",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3060,
+        3061
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x1b, attr: ['OP-IMM-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x1, attr: ['SLLI.UW'] }, { bits: 5, name: 'rs1' }, { bits: 6, name: 'shamt' }, { bits: 6, name: 0x02, attr: ['SLLI.UW'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3063,
+        3075
+      ]
+    },
+    {
+      "text": "Description:: This instruction takes the least-significant word of rs1, zero-extends it, and shifts it left by the immediate.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3077,
+        3078
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = (EXTZ(X(rs)[31..0]) << shamt); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3080,
+        3085
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3087,
+        3092
+      ]
+    },
+    {
+      "text": ".Architecture Explanation [NOTE, caption=\"A\" ] This instruction is the same as *slli* with *zext.w* performed on rs1 before shifting.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3099,
+        3103
+      ]
+    },
+    {
+      "text": "<<< [insns-unzip,reftext=\"Bit deinterleave\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > slli.uw",
+      "line_range": [
+        3105,
+        3106
+      ]
+    },
+    {
+      "text": "Synopsis:: Place odd and even bits of the source register into upper and lower halves of the destination register, respectively.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3109,
+        3111
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x13, attr: ['OP-IMM']}, {bits: 5, name: 'rd'}, {bits: 3, name: 0x5}, {bits: 5, name: 'rs1'}, {bits: 5, name: 0xf}, {bits: 7, name: 0x4}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3116,
+        3128
+      ]
+    },
+    {
+      "text": "Description:: This instruction scatters all of the odd and even bits of a source word into the high and low halves of a destination word.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3130,
+        3134
+      ]
+    },
+    {
+      "text": "It is the inverse of the instruction.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3130,
+        3134
+      ]
+    },
+    {
+      "text": "This instruction is available only on RV32.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3130,
+        3134
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- foreach (i from 0 to xlen/2-1) { X(rd)[i] = X(rs1)[2*i] X(rd)[i+xlen/2] = X(rs1)[2*i+1] } --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3136,
+        3144
+      ]
+    },
+    {
+      "text": ".Software Hint [NOTE, caption=\"SH\" ] This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture, as it implements the bit-interleaving operation used to speed up the 64-bit rotations directly.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3146,
+        3153
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3155,
+        3160
+      ]
+    },
+    {
+      "text": "|Zbkb () (RV32) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3162,
+        3165
+      ]
+    },
+    {
+      "text": "<<< [insns-xnor,reftext=\"Exclusive NOR\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > unzip",
+      "line_range": [
+        3167,
+        3168
+      ]
+    },
+    {
+      "text": "Mnemonic:: xnor rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3174,
+        3175
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['XNOR']}, { bits: 5, name: 'rs1' }, { bits: 5, name: 'rs2' }, { bits: 7, name: 0x20, attr: ['XNOR'] }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3177,
+        3189
+      ]
+    },
+    {
+      "text": "Description:: This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3191,
+        3192
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = ~(X(rs1) ^ X(rs2)); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3194,
+        3199
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3201,
+        3206
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3208,
+        3210
+      ]
+    },
+    {
+      "text": "|Zbkb () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3212,
+        3215
+      ]
+    },
+    {
+      "text": "<<< [insns-xperm8,reftext=\"Crossbar permutation (bytes)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xnor",
+      "line_range": [
+        3217,
+        3218
+      ]
+    },
+    {
+      "text": "Synopsis:: Byte-wise lookup of indices into a vector in registers.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3221,
+        3222
+      ]
+    },
+    {
+      "text": "Mnemonic:: xperm8 rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3224,
+        3225
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x33, attr: ['OP'] }, {bits: 5, name: 'rd'}, {bits: 3, name: 0x4}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'rs2'}, {bits: 7, name: 0x14}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3227,
+        3239
+      ]
+    },
+    {
+      "text": "Description:: The xperm8 instruction operates on bytes.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3241,
+        3246
+      ]
+    },
+    {
+      "text": "The rs1 register contains a vector of XLEN/8 8-bit elements.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3241,
+        3246
+      ]
+    },
+    {
+      "text": "The rs2 register contains a vector of XLEN/8 8-bit indexes.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3241,
+        3246
+      ]
+    },
+    {
+      "text": "The result is each element in rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3241,
+        3246
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val xperm8lookup : (bits(8), xlenbits) -> bits(8) function xperm8lookup (idx, lut) = { (lut >> (idx @ 0b000))[7..0] }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3248,
+        3255
+      ]
+    },
+    {
+      "text": "function clause execute ( XPERM8 (rs2,rs1,rd)) = { result : xlenbits = EXTZ(0b0); foreach(i from 0 to xlen by 8) { result[i+7..i] = xperm8lookup(X(rs2)[i+7..i], X(rs1)); }; X(rd) = result; RETIRESUCCESS } --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3257,
+        3265
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3267,
+        3272
+      ]
+    },
+    {
+      "text": "|Zbkx () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3274,
+        3277
+      ]
+    },
+    {
+      "text": "<<< [insns-xperm4,reftext=\"Crossbar permutation (nibbles)\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm8",
+      "line_range": [
+        3279,
+        3280
+      ]
+    },
+    {
+      "text": "Synopsis:: Nibble-wise lookup of indices into a vector.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3283,
+        3284
+      ]
+    },
+    {
+      "text": "Mnemonic:: xperm4 rd, rs1, rs2",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3286,
+        3287
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x33, attr: ['OP'] }, {bits: 5, name: 'rd'}, {bits: 3, name: 0x2}, {bits: 5, name: 'rs1'}, {bits: 5, name: 'rs2'}, {bits: 7, name: 0x14}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3289,
+        3301
+      ]
+    },
+    {
+      "text": "Description:: The xperm4 instruction operates on nibbles.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3303,
+        3308
+      ]
+    },
+    {
+      "text": "The rs1 register contains a vector of XLEN/4 4-bit elements.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3303,
+        3308
+      ]
+    },
+    {
+      "text": "The rs2 register contains a vector of XLEN/4 4-bit indexes.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3303,
+        3308
+      ]
+    },
+    {
+      "text": "The result is each element in rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3303,
+        3308
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- val xperm4lookup : (bits(4), xlenbits) -> bits(4) function xperm4lookup (idx, lut) = { (lut >> (idx @ 0b00))[3..0] }",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3310,
+        3317
+      ]
+    },
+    {
+      "text": "function clause execute ( XPERM4 (rs2,rs1,rd)) = { result : xlenbits = EXTZ(0b0); foreach(i from 0 to xlen by 4) { result[i+3..i] = xperm4lookup(X(rs2)[i+3..i], X(rs1)); }; X(rd) = result; RETIRESUCCESS } --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3319,
+        3327
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3329,
+        3334
+      ]
+    },
+    {
+      "text": "|Zbkx () |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3336,
+        3339
+      ]
+    },
+    {
+      "text": "<<< [insns-zexth,reftext=\"Zero-extend halfword\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > xperm4",
+      "line_range": [
+        3341,
+        3342
+      ]
+    },
+    {
+      "text": "Synopsis:: Zero-extend halfword",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3345,
+        3346
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x33, attr: ['OP'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['ZEXT.H']}, { bits: 5, name: 'rs' }, { bits: 5, name: 0x00 }, { bits: 7, name: 0x04 }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3351,
+        3363
+      ]
+    },
+    {
+      "text": "Encoding (RV64):: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x3b, attr: ['OP-32'] }, { bits: 5, name: 'rd' }, { bits: 3, name: 0x4, attr: ['ZEXT.H']}, { bits: 5, name: 'rs' }, { bits: 5, name: 0x00 }, { bits: 7, name: 0x04 }, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3365,
+        3377
+      ]
+    },
+    {
+      "text": "Description:: This instruction zero-extends the least-significant halfword of the source to XLEN by inserting 0's into all of the bits more significant than 15.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3379,
+        3380
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- X(rd) = EXTZ(X(rs)[15..0]); --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3382,
+        3387
+      ]
+    },
+    {
+      "text": ".Note [NOTE, caption=\"A\" ] The *zext.h* mnemonic corresponds to different instruction encodings in RV32 and RV64.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3389,
+        3393
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3395,
+        3400
+      ]
+    },
+    {
+      "text": "|Zbb (ext:zbb[]) |0.93 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3402,
+        3405
+      ]
+    },
+    {
+      "text": "<<< [insns-zip,reftext=\"Bit interleave\"]",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zext.h",
+      "line_range": [
+        3407,
+        3408
+      ]
+    },
+    {
+      "text": "Synopsis:: Interleave upper and lower halves of the source register into odd and even bits of the destination register, respectively.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3411,
+        3413
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 0x13, attr: ['OP-IMM']}, {bits: 5, name: 'rd'}, {bits: 3, name: 0x1}, {bits: 5, name: 'rs1'}, {bits: 5, name: 0xf}, {bits: 7, name: 0x4}, ]} ....",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3418,
+        3430
+      ]
+    },
+    {
+      "text": "Description:: This instruction gathers bits from the high and low halves of the source word into odd/even bit positions in the destination word.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3432,
+        3436
+      ]
+    },
+    {
+      "text": "It is the inverse of the instruction.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3432,
+        3436
+      ]
+    },
+    {
+      "text": "This instruction is available only on RV32.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3432,
+        3436
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] -- foreach (i from 0 to xlen/2-1) { X(rd)[2*i] = X(rs1)[i] X(rd)[2*i+1] = X(rs1)[i+xlen/2] } --",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3438,
+        3446
+      ]
+    },
+    {
+      "text": ".Software Hint [NOTE, caption=\"SH\" ] This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture, as it implements the bit-interleaving operation used to speed up the 64-bit rotations directly.",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3448,
+        3455
+      ]
+    },
+    {
+      "text": "Included in:: | |Extension |Minimum version |Lifecycle state",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3457,
+        3462
+      ]
+    },
+    {
+      "text": "|Zbkb () (RV32) |v1.0 |Ratified |",
+      "section": "Preamble > Bit Manipulation Extensions > Instructions (in alphabetical order) > zip",
+      "line_range": [
+        3464,
+        3467
+      ]
+    }
+  ]
+}

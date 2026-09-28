@@ -1,0 +1,406 @@
+{
+  "source_file": "src/rv64.adoc",
+  "total": 50,
+  "sentences": [
+    {
+      "text": "This chapter describes the RV64I base integer instruction set, which builds upon the RV32I variant described in .",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "This chapter presents only the differences with RV32I, so should be read in conjunction with the earlier chapter.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in ).",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Register State",
+      "line_range": [
+        10,
+        11
+      ]
+    },
+    {
+      "text": "Most integer computational instructions operate on XLEN-bit values.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        15,
+        20
+      ]
+    },
+    {
+      "text": "Additional instruction variants are provided to manipulate 32-bit values in RV64I, indicated by a 'W' suffix to the opcode.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        15,
+        20
+      ]
+    },
+    {
+      "text": "These \"*W\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values, sign-extending them to 64 bits, i.e. bits XLEN-1 through 31 are equal.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions",
+      "line_range": [
+        15,
+        20
+      ]
+    },
+    {
+      "text": "ADDIW is an RV64I instruction that adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign extension of a 32-bit result in rd.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        31,
+        36
+      ]
+    },
+    {
+      "text": "Overflows are ignored and the result is the low 32 bits of the result sign-extended to 64 bits.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        31,
+        36
+      ]
+    },
+    {
+      "text": "Note, ADDIW rd, rs1, 0 writes the sign extension of the lower 32 bits of register rs1 into register rd (assembler pseudoinstruction SEXT.W).",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        31,
+        36
+      ]
+    },
+    {
+      "text": "Shifts by a constant are encoded as a specialization of the I-type format using the same instruction opcode as RV32I.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        42,
+        53
+      ]
+    },
+    {
+      "text": "The operand to be shifted is in rs1, and the shift amount is encoded in the lower 6 bits of the I-immediate field for RV64I.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        42,
+        53
+      ]
+    },
+    {
+      "text": "The right-shift type is encoded in bit 30. SLLI is a logical left shift (zeros are shifted into the lower bits); SRLI is a logical right shift (zeros are shifted into the upper bits); and SRAI is an arithmetic right shift (the original sign bit is copied into the vacated upper bits).",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        42,
+        53
+      ]
+    },
+    {
+      "text": "SLLIW, SRLIW, and SRAIW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits. SLLIW, SRLIW, and SRAIW encodings with imm[5] {ne} 0 are reserved.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "LUI (load upper immediate) uses the same opcode as RV32I. LUI places the 32-bit U-immediate into register rd, filling in the lowest 12 bits with zeros.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        67,
+        71
+      ]
+    },
+    {
+      "text": "The 32-bit result is sign-extended to 64 bits.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        67,
+        71
+      ]
+    },
+    {
+      "text": "AUIPC (add upper immediate to `pc`) uses the same opcode as RV32I. AUIPC is used to build `pc`-relative addresses and uses the U-type format. AUIPC forms a 32-bit offset from the U-immediate, filling in the lowest 12 bits with zeros, sign-extends the result to 64 bits, adds it to the address of the AUIPC instruction, then places the result in register rd.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Immediate Instructions",
+      "line_range": [
+        73,
+        77
+      ]
+    },
+    {
+      "text": "ADDW and SUBW are RV64I-only instructions that are defined analogously to ADD and SUB but operate on 32-bit values and produce signed 32-bit results.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        86,
+        91
+      ]
+    },
+    {
+      "text": "Overflows are ignored, and the low 32-bits of the result is sign-extended to 64-bits and written to the destination register.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        86,
+        91
+      ]
+    },
+    {
+      "text": "SLL, SRL, and SRA perform logical left, logical right, and arithmetic right shifts on the value in register rs1 by the shift amount held in register rs2.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        93,
+        96
+      ]
+    },
+    {
+      "text": "In RV64I, only the low 6 bits of rs2 are considered for the shift amount.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        93,
+        96
+      ]
+    },
+    {
+      "text": "SLLW, SRLW, and SRAW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        98,
+        103
+      ]
+    },
+    {
+      "text": "The shift amount is given by rs2[4:0].",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Integer Computational Instructions > Integer Register-Register Operations",
+      "line_range": [
+        98,
+        103
+      ]
+    },
+    {
+      "text": "RV64I extends the address space to 64 bits.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        107,
+        108
+      ]
+    },
+    {
+      "text": "The execution environment will define what portions of the address space are legal to access.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        107,
+        108
+      ]
+    },
+    {
+      "text": "The LD instruction loads a 64-bit value from memory into register rd for RV64I.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        114,
+        116
+      ]
+    },
+    {
+      "text": "The LW instruction loads a 32-bit value from memory and sign-extends this to 64 bits before storing it in register rd for RV64I.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        118,
+        124
+      ]
+    },
+    {
+      "text": "The LWU instruction, on the other hand, zero-extends the 32-bit value from memory for RV64I. LH and LHU are defined analogously for 16-bit values, as are LB and LBU for 8-bit values.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        118,
+        124
+      ]
+    },
+    {
+      "text": "The SD, SW, SH, and SB instructions store 64-bit, 32-bit, 16-bit, and 8-bit values from the low bits of register rs2 to memory respectively.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > Load and Store Instructions",
+      "line_range": [
+        118,
+        124
+      ]
+    },
+    {
+      "text": "All instructions that are microarchitectural HINTs in RV32I (see ) are also HINTs in RV64I.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        129,
+        133
+      ]
+    },
+    {
+      "text": "The additional computational instructions in RV64I expand both the standard and custom HINT encoding spaces.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        129,
+        133
+      ]
+    },
+    {
+      "text": "lists all RV64I HINT code points. 91% of the HINT space is reserved for standard HINTs.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        135,
+        138
+      ]
+    },
+    {
+      "text": "The remainder of the HINT space is designated for custom HINTs; no standard HINTs will ever be defined in this subspace.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        135,
+        138
+      ]
+    },
+    {
+      "text": ".RV64I HINT instructions. [float=\"center\",align=\"center\",cols=\"<,<,^,<\", options=\"header\", grid=\"all\"] | |Instruction |Constraints |Code Points |Purpose |LUI |rd=`x0` |2^20^ .9+.^|Designated for future standard use",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        140,
+        145
+      ]
+    },
+    {
+      "text": "|ADDI |rd=`x0`, and either rs1{ne}`x0` or imm{ne}0 |2^17^−1",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        149,
+        149
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1{ne}`x0` |2^10^−32",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        159,
+        159
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1=`x0`, rs2{ne}x2-x5 | 28",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        161,
+        161
+      ]
+    },
+    {
+      "text": "|ADD |rd=`x0`, rs1=`x0`, rs2=x2-x5| 4 | (rs2=x2) NTL.P1 + (rs2=x3) NTL.PALL + (rs2=x4) NTL.S1 + (rs2=x5) NTL.ALL",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        163,
+        166
+      ]
+    },
+    {
+      "text": "|SLLI |rd=`x0`, rs1=`x0`, shamt=31 |1|Semihosting entry marker",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        168,
+        168
+      ]
+    },
+    {
+      "text": "|SRAI |rd=`x0`, rs1=`x0`, shamt=7 |1|Semihosting exit marker",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        170,
+        170
+      ]
+    },
+    {
+      "text": "|SUB |rd=`x0` |2^10^ .16+.^| Designated for future standard use",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        172,
+        172
+      ]
+    },
+    {
+      "text": "|FENCE |rd=`x0`, rs1{ne}``x0``, fm=0, and either pred=0 or succ=0| 2^10^−63",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        196,
+        196
+      ]
+    },
+    {
+      "text": "|FENCE |rd{ne}``x0``, rs1=`x0`, fm=0, and either pred=0 or succ=0| 2^10^−63",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        198,
+        198
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred=0, succ{ne}0 |15",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        200,
+        200
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred{ne}W, succ=0 |15",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        202,
+        202
+      ]
+    },
+    {
+      "text": "|FENCE |rd=rs1=`x0`, fm=0, pred=W, succ=0 |1 |PAUSE",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        204,
+        204
+      ]
+    },
+    {
+      "text": "|SLTI |rd=`x0` |2^17^ .10+.^|Designated for custom use",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        206,
+        206
+      ]
+    },
+    {
+      "text": "|SLLI |rd=`x0`, and either rs1{ne}``x0`` or shamt{ne}31 |2^11^−1",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        210,
+        210
+      ]
+    },
+    {
+      "text": "|SRAI |rd=`x0`, and either rs1{ne}``x0`` or shamt{ne}7 |2^11^−1",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        214,
+        214
+      ]
+    },
+    {
+      "text": "NOTE: `slli x0, x0, 0x1f` and `srai x0, x0, 7` were previously designated as custom HINTs, but they have been appropriated for use in semihosting calls, as described in .",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        227,
+        231
+      ]
+    },
+    {
+      "text": "To reflect their usage in practice, the base ISA spec has been changed to designate them as standard HINTs.",
+      "section": "Preamble > RV64I Base Integer Instruction Set, Version 2.1 > HINT Instructions",
+      "line_range": [
+        227,
+        231
+      ]
+    }
+  ]
+}

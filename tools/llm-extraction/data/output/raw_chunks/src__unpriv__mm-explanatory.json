@@ -1,0 +1,3582 @@
+{
+  "source_file": "src/unpriv/mm-explanatory.adoc",
+  "total": 447,
+  "sentences": [
+    {
+      "text": "This section provides more explanation for RVWMO , using more informal language and concrete examples.",
+      "section": "Preamble > RVWMO Explanatory Material",
+      "line_range": [
+        3,
+        11
+      ]
+    },
+    {
+      "text": "These are intended to clarify the meaning and intent of the axioms and preserved program order rules.",
+      "section": "Preamble > RVWMO Explanatory Material",
+      "line_range": [
+        3,
+        11
+      ]
+    },
+    {
+      "text": "This appendix should be treated as commentary; all normative material is provided in and in the rest of the main body of the ISA specification.",
+      "section": "Preamble > RVWMO Explanatory Material",
+      "line_range": [
+        3,
+        11
+      ]
+    },
+    {
+      "text": "All currently known discrepancies are listed in .",
+      "section": "Preamble > RVWMO Explanatory Material",
+      "line_range": [
+        3,
+        11
+      ]
+    },
+    {
+      "text": "Any other discrepancies are unintentional.",
+      "section": "Preamble > RVWMO Explanatory Material",
+      "line_range": [
+        3,
+        11
+      ]
+    },
+    {
+      "text": "Memory consistency models fall along a loose spectrum from weak to strong.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        16,
+        25
+      ]
+    },
+    {
+      "text": "Weak memory models allow more hardware implementation flexibility and deliver arguably better performance, performance per watt, power, scalability, and hardware verification overheads than strong models, at the expense of a more complex programming model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        16,
+        25
+      ]
+    },
+    {
+      "text": "Strong models provide simpler programming models, but at the cost of imposing more restrictions on the kinds of (non-speculative) hardware optimizations that can be performed in the pipeline and in the memory system, and in turn imposing some cost in terms of power, area overhead, and verification burden.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        16,
+        25
+      ]
+    },
+    {
+      "text": "RISC-V has chosen the RVWMO memory model, a variant of release consistency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        27,
+        34
+      ]
+    },
+    {
+      "text": "This places it in between the two extremes of the memory model spectrum.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        27,
+        34
+      ]
+    },
+    {
+      "text": "The RVWMO memory model enables architects to build simple implementations, aggressive implementations, implementations embedded deeply inside a much larger system and subject to complex memory system interactions, or any number of other possibilities, all while simultaneously being strong enough to support programming language memory models at high performance.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        27,
+        34
+      ]
+    },
+    {
+      "text": "To facilitate the porting of code from other architectures, some hardware implementations may choose to implement the Ztso extension, which provides stricter RVTSO ordering semantics by default.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        36,
+        45
+      ]
+    },
+    {
+      "text": "Code written for RVWMO is automatically and inherently compatible with RVTSO, but code written assuming RVTSO is not guaranteed to run correctly on RVWMO implementations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        36,
+        45
+      ]
+    },
+    {
+      "text": "In fact, most RVWMO implementations will (and should) simply refuse to run RVTSO-only binaries.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        36,
+        45
+      ]
+    },
+    {
+      "text": "Each implementation must therefore choose whether to prioritize compatibility with RVTSO code (e.g., to facilitate porting from x86) or whether to instead prioritize compatibility with other RISC-V cores implementing RVWMO.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        36,
+        45
+      ]
+    },
+    {
+      "text": "Some fences and/or memory ordering annotations in code written for RVWMO may become redundant under RVTSO; the cost that the default of RVWMO imposes on Ztso implementations is the incremental overhead of fetching those fences (e.g., FENCE R,RW and FENCE RW,W) which become no-ops on that implementation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        47,
+        52
+      ]
+    },
+    {
+      "text": "However, these fences must remain present in the code if compatibility with non-Ztso implementations is desired.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO?",
+      "line_range": [
+        47,
+        52
+      ]
+    },
+    {
+      "text": "The explanations in this chapter make use of litmus tests, or small programs designed to test or highlight one particular aspect of a memory model. shows an example of a litmus test with two harts.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "As a convention for this figure and for all figures that follow in this chapter, we assume that `s0-s2` are pre-set to the same value in all harts and that `s0` holds the address labeled `x`, `s1` holds `y`, and `s2` holds `z`, where `x`, `y`, and `z` are disjoint memory locations aligned to 8 byte boundaries.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "All other registers and all referenced memory locations are presumed to be initialized to zero.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "Each figure shows the litmus test code on the left, and a visualization of one particular valid or invalid execution on the right.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        57,
+        66
+      ]
+    },
+    {
+      "text": "[float=\"center\",align=\"center\",cols=\"1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] .A sample litmus test and one forbidden execution (`a0=1`). | | [.left] ! 2+!Hart 0 2+!Hart 1 ! !{vertical-ellipsis} ! !{vertical-ellipsis} ! !li t1,1 ! !li t4,4 !(a) !sw t1,0(s0) !(e) !sw t4,0(s0) ! !{vertical-ellipsis} ! !{vertical-ellipsis} ! !li t2,2 ! ! !(b) !sw t2,0(s0) ! ! ! !{vertical-ellipsis} ! !{vertical-ellipsis} !(c) !lw a0,0(s0) ! ! ! !{vertical-ellipsis} ! !{vertical-ellipsis} ! !li t3,3 ! !li t5,5 !(d) !sw t3,0(s0) !(f) !sw t5,0(s0) ! !{vertical-ellipsis} ! !{vertical-ellipsis} ! | ! //a! graphviz::images/graphviz/litmussample.txt[] a! image::graphviz/litmussample.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        68,
+        95
+      ]
+    },
+    {
+      "text": "Litmus tests are used to understand the implications of the memory model in specific concrete situations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        97,
+        105
+      ]
+    },
+    {
+      "text": "For example, in the litmus test of , the final value of `a0` in the first hart can be either 2, 4, or 5, depending on the dynamic interleaving of the instruction stream from each hart at runtime.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        97,
+        105
+      ]
+    },
+    {
+      "text": "However, in this example, the final value of `a0` in Hart 0 will never be 1 or 3; intuitively, the value 1 will no longer be visible at the time the load executes, and the value 3 will not yet be visible by the time the load executes.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        97,
+        105
+      ]
+    },
+    {
+      "text": "We analyze this test and many others below.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        97,
+        105
+      ]
+    },
+    {
+      "text": "<<< .A key for the litmus test diagrams drawn in this appendix | |Edge |Full Name (and explanation) |rf |Reads From (from each store to the loads that return a value written by that store)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        107,
+        114
+      ]
+    },
+    {
+      "text": "|co |Coherence (a total order on the stores to each address)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        116,
+        116
+      ]
+    },
+    {
+      "text": "|fr |From-Reads (from each load to co-successors of the store from which the load returned a value)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        118,
+        119
+      ]
+    },
+    {
+      "text": "|ppo |Preserved Program Order",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        121,
+        121
+      ]
+    },
+    {
+      "text": "|fence |Orderings enforced by a FENCE instruction",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        123,
+        123
+      ]
+    },
+    {
+      "text": "The diagram shown to the right of each litmus test shows a visual representation of the particular execution candidate being considered.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "These diagrams use a notation that is common in the memory model literature for constraining the set of possible global memory orders that could produce the execution in question.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "It is also the basis for the herd models presented in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "This notation is explained in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "Of the listed relations, rf edges between harts, co edges, fr edges, and ppo edges directly constrain the global memory order (as do fence, addr, data, and some ctrl edges, via ppo).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "Other edges (such as intra-hart rf edges) are informative but do not constrain the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        132,
+        143
+      ]
+    },
+    {
+      "text": "For example, in , `a0=1` could occur only if one of the following were true:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        145,
+        146
+      ]
+    },
+    {
+      "text": "(b) appears before (a) in global memory order (and in the coherence order co).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        148,
+        156
+      ]
+    },
+    {
+      "text": "However, this violates RVWMO PPO rule `ppo:->st`.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        148,
+        156
+      ]
+    },
+    {
+      "text": "The co edge from (b) to (a) highlights this contradiction. * (a) appears before (b) in global memory order (and in the coherence order co).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        148,
+        156
+      ]
+    },
+    {
+      "text": "However, in this case, the Load Value Axiom would be violated, because (a) is not the latest matching store prior to (c) in program order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        148,
+        156
+      ]
+    },
+    {
+      "text": "The fr edge from (c) to (b) highlights this contradiction.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        148,
+        156
+      ]
+    },
+    {
+      "text": "Since neither of these scenarios satisfies the RVWMO axioms, the outcome `a0=1` is forbidden.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        158,
+        159
+      ]
+    },
+    {
+      "text": "Beyond what is described in this appendix, a suite of more than seven thousand litmus tests is available at https://github.com/litmus-tests/litmus-tests-riscv.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Litmus Tests",
+      "line_range": [
+        161,
+        163
+      ]
+    },
+    {
+      "text": "In this section, we provide explanation and examples for all of the RVWMO rules and axioms.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules",
+      "line_range": [
+        166,
+        167
+      ]
+    },
+    {
+      "text": "Preserved program order represents the subset of program order that must be respected within the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        171,
+        177
+      ]
+    },
+    {
+      "text": "Conceptually, events from the same hart that are ordered by preserved program order must appear in that order from the perspective of other harts and/or observers.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        171,
+        177
+      ]
+    },
+    {
+      "text": "Events from the same hart that are not ordered by preserved program order, on the other hand, may appear reordered from the perspective of other harts and/or observers.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        171,
+        177
+      ]
+    },
+    {
+      "text": "Informally, the global memory order represents the order in which loads and stores perform.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        179,
+        189
+      ]
+    },
+    {
+      "text": "The formal memory model literature has moved away from specifications built around the concept of performing, but the idea is still useful for building up informal intuition. A load is said to have performed when its return value is determined. A store is said to have performed not when it has executed inside the pipeline, but rather only when its value has been propagated to globally visible memory.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        179,
+        189
+      ]
+    },
+    {
+      "text": "In this sense, the global memory order also represents the contribution of the coherence protocol and/or the rest of the memory system to interleave the (possibly reordered) memory accesses being issued by each hart into a single total order agreed upon by all harts.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        179,
+        189
+      ]
+    },
+    {
+      "text": "The order in which loads perform does not always directly correspond to the relative age of the values those two loads return.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        191,
+        205
+      ]
+    },
+    {
+      "text": "In particular, a load b may perform before another load a to the same address (i.e., b may execute before a, and b may appear before a in the global memory order), but a may nevertheless return an older value than b.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        191,
+        205
+      ]
+    },
+    {
+      "text": "This discrepancy captures (among other things) the reordering effects of buffering placed between the core and memory.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        191,
+        205
+      ]
+    },
+    {
+      "text": "For example, b may have returned a value from a store in the store buffer, while a may have ignored that younger store and read an older value from memory instead.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        191,
+        205
+      ]
+    },
+    {
+      "text": "To account for this, at the time each load performs, the value it returns is determined by the load value axiom, not just strictly by determining the most recent store to the same address in the global memory order, as described below.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Preserved Program Order and Global Memory Order",
+      "line_range": [
+        191,
+        205
+      ]
+    },
+    {
+      "text": "[IMPORTANT] : Each byte of each load i returns the value written to that byte by the store that is the latest in global memory order among the following stores:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        210,
+        214
+      ]
+    },
+    {
+      "text": "Stores that write that byte and that precede i in the global memory order .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        216,
+        219
+      ]
+    },
+    {
+      "text": "Stores that write that byte and that precede i in program order",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        216,
+        219
+      ]
+    },
+    {
+      "text": "Preserved program order is not required to respect the ordering of a store followed by a load to an overlapping address.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        221,
+        228
+      ]
+    },
+    {
+      "text": "This complexity arises due to the ubiquity of store buffers in nearly all implementations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        221,
+        228
+      ]
+    },
+    {
+      "text": "Informally, the load may perform (return a value) by forwarding from the store while the store is still in the store buffer, and hence before the store itself performs (writes back to globally visible memory).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        221,
+        228
+      ]
+    },
+    {
+      "text": "Any other hart will therefore observe the load as performing before the store.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        221,
+        228
+      ]
+    },
+    {
+      "text": "When running this program on an implementation with store buffers, it is possible to arrive at the final outcome `a0=1, a1=0, a2=1, a3=0` as follows:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        230,
+        231
+      ]
+    },
+    {
+      "text": ".A store buffer forwarding litmus test (outcome permitted) [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+^!Hart 0 2+^!Hart 1 2+^!li t1, 1 2+^!li t1, 1 2+<!(a) sw t1,0(s0) 2+!(e) sw t1,0(s1) 2+<!(b) lw a0,0(s0) 2+!(f) lw a2,0(s1) 2+<!(c) fence r,r 2+!(g) fence r,r 2+<!(d) lw a1,0(s1) 2+!(h) lw a3,0(s0) 4+^!Outcome: `a0=1`, `a1=0`, `a2=1`, `a3=0` ! | ! //a! graphviz::images/graphviz/litmussbfwd.txt[] a! image::graphviz/litmussbfwd.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        233,
+        253
+      ]
+    },
+    {
+      "text": "(a) executes and enters the first hart's private store buffer * (b) executes and forwards its return value 1 from (a) in the store buffer * (c) executes since all previous loads (i.e., (b)) have completed * (d) executes and reads the value 0 from memory * (e) executes and enters the second hart's private store buffer * (f) executes and forwards its return value 1 from (e) in the store buffer * (g) executes since all previous loads (i.e., (f)) have completed * (h) executes and reads the value 0 from memory * (a) drains from the first hart's store buffer to memory * (e) drains from the second hart's store buffer to memory",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        255,
+        268
+      ]
+    },
+    {
+      "text": "Therefore, the memory model must be able to account for this behavior.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        270,
+        270
+      ]
+    },
+    {
+      "text": "To put it another way, suppose the definition of preserved program order did include the following hypothetical rule: memory access a precedes memory access b in preserved program order (and hence also in the global memory order) if a precedes b in program order and a and b are accesses to the same memory location, a is a write, and b is a read.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        272,
+        279
+      ]
+    },
+    {
+      "text": "Then we get the following:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        272,
+        279
+      ]
+    },
+    {
+      "text": "(a) precedes (b): by rule X * (b) precedes (d): by rule * (d) precedes (e): by the load value axiom.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        281,
+        288
+      ]
+    },
+    {
+      "text": "Otherwise, if (e) preceded (d), then (d) would be required to return the value 1. (This is a perfectly legal execution; it's just not the one in question) * (e) precedes (f): by rule X * (f) precedes (h): by rule * (h) precedes (a): by the load value axiom, as above.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        281,
+        288
+      ]
+    },
+    {
+      "text": "The global memory order must be a total order and cannot be cyclic, because a cycle would imply that every event in the cycle happens before itself, which is impossible.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        290,
+        295
+      ]
+    },
+    {
+      "text": "Therefore, the execution proposed above would be forbidden, and hence the addition of rule X would forbid implementations with store buffer forwarding, which would clearly be undesirable.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        290,
+        295
+      ]
+    },
+    {
+      "text": "Nevertheless, even if (b) precedes (a) and/or (f) precedes (e) in the global memory order, the only sensible possibility in this example is for (b) to return the value written by (a), and likewise for (f) and (e).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        297,
+        306
+      ]
+    },
+    {
+      "text": "This combination of circumstances is what leads to the second option in the definition of the load value axiom.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        297,
+        306
+      ]
+    },
+    {
+      "text": "Even though (b) precedes (a) in the global memory order, (a) will still be visible to (b) by virtue of sitting in the store buffer at the time (b) executes.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        297,
+        306
+      ]
+    },
+    {
+      "text": "Therefore, even if (b) precedes (a) in the global memory order, (b) should return the value written by (a) because (a) precedes (b) in program order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        297,
+        306
+      ]
+    },
+    {
+      "text": ".Key for test that highlights the behavior of store buffers [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] .The \"PPOCA\" store buffer forwarding litmus test (outcome permitted) | | ! 2+^!Hart 0 2+^!Hart 1 ! !li t1, 1 !!li t1, 1 !(a) !sw t1,0(s0) !!LOOP: !(b) !fence w,w !(d) !lw a0,0(s1) !(c) !sw t1,0(s1) !!beqz a0, LOOP 2+! !(e) !sw t1,0(s2) 2+! !(f) !lw a1,0(s2) 2+! ! !xor a2,a1,a1 2+! ! !add s0,s0,a2 2+! !(g) !lw a2,0(s0) 4+!Outcome: `a0=1`, `a1=1`, `a2=0` ! | ! //a! graphviz::images/graphviz/litmusppoca.txt[] a! image::graphviz/litmusppoca.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        308,
+        333
+      ]
+    },
+    {
+      "text": "Another test that highlights the behavior of store buffers is shown in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        335,
+        341
+      ]
+    },
+    {
+      "text": "In this example, (d) is ordered before (e) because of the control dependency, and (f) is ordered before (g) because of the address dependency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        335,
+        341
+      ]
+    },
+    {
+      "text": "However, (e) is not necessarily ordered before (f), even though (f) returns the value written by (e).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        335,
+        341
+      ]
+    },
+    {
+      "text": "This could correspond to the following sequence of events:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        335,
+        341
+      ]
+    },
+    {
+      "text": "(e) executes speculatively and enters the second hart's private store buffer (but does not drain to memory) * (f) executes speculatively and forwards its return value 1 from (e) in the store buffer * (g) executes speculatively and reads the value 0 from memory * (a) executes, enters the first hart's private store buffer, and drains to memory * (b) executes and retires * (c) executes, enters the first hart's private store buffer, and drains to memory * (d) executes and reads the value 1 from memory * (e), (f), and (g) commit, since the speculation turned out to be correct * (e) drains from the store buffer to memory",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Load value axiom",
+      "line_range": [
+        343,
+        356
+      ]
+    },
+    {
+      "text": "[IMPORTANT] (for Aligned Atomics):",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        361,
+        369
+      ]
+    },
+    {
+      "text": "If r and w are paired load and store operations generated by aligned LR and SC instructions in a hart h, s is a store to byte x, and r returns a value written by s, then s must precede w in the global memory order, and there can be no store from a hart other than h to byte x following s and preceding w in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        361,
+        369
+      ]
+    },
+    {
+      "text": "The RISC-V architecture decouples the notion of atomicity from the notion of ordering.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        371,
+        374
+      ]
+    },
+    {
+      "text": "Unlike architectures such as TSO, RISC-V atomics under RVWMO do not impose any ordering requirements by default.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        371,
+        374
+      ]
+    },
+    {
+      "text": "Ordering semantics are only guaranteed by the PPO rules that otherwise apply.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        371,
+        374
+      ]
+    },
+    {
+      "text": "RISC-V contains two types of atomics: AMOs and LR/SC pairs.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        376,
+        384
+      ]
+    },
+    {
+      "text": "These conceptually behave differently, in the following way. LR/SC behave as if the old value is brought up to the core, modified, and written back to memory, all while a reservation is held on that memory location. AMOs on the other hand conceptually behave as if they are performed directly in memory. AMOs are therefore inherently atomic, while LR/SC pairs are atomic in the slightly different sense that the memory location in question will not be modified by another hart during the time the original hart holds the reservation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        376,
+        384
+      ]
+    },
+    {
+      "text": "[frame=none] .In all four (independent) instances, the final store-conditional instruction is permitted but not guaranteed to succeed. | |(a) lr.d a0, 0(s0) |(a) lr.d a0, 0(s0) |(a) lr.w a0, 0(s0) |(a) lr.w a0, 0(s0)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        388,
+        391
+      ]
+    },
+    {
+      "text": "|(b) sd t1, 0(s0) |(b) sw t1, 4(s0) |(b) sw t1, 4(s0) |(b) sw t1, 4(s0)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        393,
+        393
+      ]
+    },
+    {
+      "text": "|(c) sc.d t3, t2, 0(s0) |(c) sc.d t3, t2, 0(s0) |(c) sc.w t3, t2, 0(s0) |(c) addi s0, s0, 8",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        395,
+        395
+      ]
+    },
+    {
+      "text": "||||(d) sc.w t3, t2, 0(s0) |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        397,
+        398
+      ]
+    },
+    {
+      "text": "The atomicity axiom forbids stores from other harts from being interleaved in global memory order between an LR and the SC paired with that LR.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        400,
+        416
+      ]
+    },
+    {
+      "text": "The atomicity axiom does not forbid loads from being interleaved between the paired operations in program order or in the global memory order, nor does it forbid stores from the same hart or stores to non-overlapping locations from appearing between the paired operations in either program order or in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        400,
+        416
+      ]
+    },
+    {
+      "text": "For example, the SC instructions in may (but are not guaranteed to) succeed.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        400,
+        416
+      ]
+    },
+    {
+      "text": "None of those successes would violate the atomicity axiom, because the intervening non-conditional stores are from the same hart as the paired load-reserved and store-conditional instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        400,
+        416
+      ]
+    },
+    {
+      "text": "This way, a memory system that tracks memory accesses at cache line granularity (and which therefore will see the four snippets of as identical) will not be forced to fail a store-conditional instruction that happens to (falsely) share another portion of the same cache line as the memory location being held by the reservation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        400,
+        416
+      ]
+    },
+    {
+      "text": "The atomicity axiom also technically supports cases in which the LR and SC touch different addresses and/or use different access sizes; however, use cases for such behaviors are expected to be rare in practice.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        418,
+        424
+      ]
+    },
+    {
+      "text": "Likewise, scenarios in which stores from the same hart between an LR/SC pair actually overlap the memory location(s) referenced by the LR or SC are expected to be rare compared to scenarios where the intervening store may simply fall onto the same cache line.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Atomicity axiom",
+      "line_range": [
+        418,
+        424
+      ]
+    },
+    {
+      "text": "[IMPORTANT] : No memory operation may be preceded in the global memory order by an infinite sequence of other memory operations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        429,
+        433
+      ]
+    },
+    {
+      "text": "The progress axiom ensures a minimal forward progress guarantee.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        435,
+        441
+      ]
+    },
+    {
+      "text": "It ensures that stores from one hart will eventually be made visible to other harts in the system in a finite amount of time, and that loads from other harts will eventually be able to read those values (or successors thereof).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        435,
+        441
+      ]
+    },
+    {
+      "text": "Without this rule, it would be legal, for example, for a spinlock to spin infinitely on a value, even with a store from another hart unlocking the spinlock.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        435,
+        441
+      ]
+    },
+    {
+      "text": "The progress axiom is intended not to impose any other notion of fairness, latency, or quality of service onto the harts in a RISC-V implementation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        443,
+        446
+      ]
+    },
+    {
+      "text": "Any stronger notions of fairness are up to the rest of the ISA and/or up to the platform and/or device to define and implement.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        443,
+        446
+      ]
+    },
+    {
+      "text": "The forward progress axiom will in almost all cases be naturally satisfied by any standard cache coherence protocol.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        448,
+        452
+      ]
+    },
+    {
+      "text": "Implementations with non-coherent caches may have to provide some other mechanism to ensure the eventual visibility of all stores (or successors thereof) to all harts.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Progress axiom",
+      "line_range": [
+        448,
+        452
+      ]
+    },
+    {
+      "text": "Same-address orderings where the latter is a store are straightforward: a load or store can never be reordered with a later store to an overlapping memory location.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        457,
+        467
+      ]
+    },
+    {
+      "text": "From a microarchitecture perspective, generally speaking, it is difficult or impossible to undo a speculatively reordered store if the speculation turns out to be invalid, so such behavior is simply disallowed by the model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        457,
+        467
+      ]
+    },
+    {
+      "text": "Same-address orderings from a store to a later load, on the other hand, do not need to be enforced.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        457,
+        467
+      ]
+    },
+    {
+      "text": "As discussed in , this reflects the observable behavior of implementations that forward values from buffered stores to later loads.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        457,
+        467
+      ]
+    },
+    {
+      "text": "Same-address load-load ordering requirements are far more subtle.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        469,
+        481
+      ]
+    },
+    {
+      "text": "The basic requirement is that a younger load must not return a value that is older than a value returned by an older load in the same hart to the same address.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        469,
+        481
+      ]
+    },
+    {
+      "text": "This is often known as \"CoRR\" (Coherence for Read-Read pairs), or as part of a broader \"coherence\" or \"sequential consistency per location\" requirement.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        469,
+        481
+      ]
+    },
+    {
+      "text": "Some architectures in the past have relaxed same-address load-load ordering, but in hindsight this is generally considered to complicate the programming model too much, and so RVWMO requires CoRR ordering to be enforced.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        469,
+        481
+      ]
+    },
+    {
+      "text": "However, because the global memory order corresponds to the order in which loads perform rather than the ordering of the values being returned, capturing CoRR requirements in terms of the global memory order requires a bit of indirection.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        469,
+        481
+      ]
+    },
+    {
+      "text": ".A litmus test MP+fence.w.w+fri-rfi-addr (outcome permitted)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        483,
+        484
+      ]
+    },
+    {
+      "text": "[float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] .Litmus test MP+fence.w.w+fre-rfi-addr (outcome permitted) | | ! 2+!Hart 0 2+^!Hart 1 !!li t1, 1 !!li t2, 2 >!(a) !sw t1,0(s0) >!(d) !lw a0,0(s1) >!(b) !fence w, w >!(e) !sw t2,0(s1) >!(c) !sw t1,0(s1) >!(f) !lw a1,0(s1) ! ! >!(g) !xor t3,a1,a1 ! ! >!(h) !add s0,s0,t3 ! ! >!(i) !lw a2,0(s0) 4+^!Outcome: `a0=1`, `a1=2`, `a2=0` ! | ! //a! graphviz::images/graphviz/litmusmpfencewwfrirfiaddr.txt[] a! image::graphviz/litmusmpfencewwfrirfiaddr.png[] ! | Consider the litmus test of , which is one particular instance of the more general \"fri-rfi\" pattern.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        486,
+        512
+      ]
+    },
+    {
+      "text": "The term \"fri-rfi\" refers to the sequence (d), (e), (f): (d) \"from-reads\" (i.e., reads from an earlier write than) (e) which is the same hart, and (f) reads from (e) which is in the same hart.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        486,
+        512
+      ]
+    },
+    {
+      "text": "From a microarchitectural perspective, outcome `a0=1`, `a1=2`, `a2=0` is legal (as are various other less subtle outcomes).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        514,
+        516
+      ]
+    },
+    {
+      "text": "Intuitively, the following would produce the outcome in question:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        514,
+        516
+      ]
+    },
+    {
+      "text": "(d) stalls (for whatever reason; perhaps it's stalled waiting for some other preceding instruction) * (e) executes and enters the store buffer (but does not yet drain to memory) * (f) executes and forwards from (e) in the store buffer * (g), (h), and (i) execute * (a) executes and drains to memory, (b) executes, and (c) executes and drains to memory * (d) unstalls and executes * (e) drains from the store buffer to memory",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        518,
+        527
+      ]
+    },
+    {
+      "text": "This corresponds to a global memory order of (f), (i), (a), (c), (d), (e).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        529,
+        532
+      ]
+    },
+    {
+      "text": "Note that even though (f) performs before (d), the value returned by (f) is newer than the value returned by (d).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        529,
+        532
+      ]
+    },
+    {
+      "text": "Therefore, this execution is legal and does not violate the CoRR requirements.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        529,
+        532
+      ]
+    },
+    {
+      "text": "Likewise, if two back-to-back loads return the values written by the same store, then they may also appear out-of-order in the global memory order without violating CoRR.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        534,
+        538
+      ]
+    },
+    {
+      "text": "Note that this is not the same as saying that the two loads return the same value, since two different stores may write the same value.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        534,
+        538
+      ]
+    },
+    {
+      "text": ".Litmus test RSW (outcome permitted)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        540,
+        541
+      ]
+    },
+    {
+      "text": "[float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+!Hart 0 2+^!Hart 1 2+!li t1, 1 >!(d) <!lw a0,0(s1) >!(a) <!sw t1,0(s0) >!(e) !xor t2,a0,a0 >!(b) <!fence w, w >!(f) !add s4,s2,t2 >!(c) <!sw t1,0(s1) >!(g) !lw a1,0(s4) ! ! >!(h) !lw a2,0(s2) ! ! >!(i) !xor t3,a2,a2 ! ! >!(j) !add s0,s0,t3 ! ! >!(k) !lw a3,0(s0) 4+!Outcome: `a0=1`, `a1=v`, `a2=v`, `a3=0` ! | ! //a! graphviz::images/graphviz/litmusrsw.txt[] a! image::graphviz/litmusrsw.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        543,
+        564
+      ]
+    },
+    {
+      "text": "Consider the litmus test of .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        566,
+        576
+      ]
+    },
+    {
+      "text": "The outcome `a0=1`, `a1=v`, `a2=v`, `a3=0` (where v is some value written by another hart) can be observed by allowing (g) and (h) to be reordered.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        566,
+        576
+      ]
+    },
+    {
+      "text": "This might be done speculatively, and the speculation can be justified by the microarchitecture (e.g., by snooping for cache invalidations and finding none) because replaying (h) after (g) would return the value written by the same store anyway.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        566,
+        576
+      ]
+    },
+    {
+      "text": "Hence assuming `a1` and `a2` would end up with the same value written by the same store anyway, (g) and (h) can be legally reordered.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        566,
+        576
+      ]
+    },
+    {
+      "text": "The global memory order corresponding to this execution would be (h),(k),(a),(c),(d),(g).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        566,
+        576
+      ]
+    },
+    {
+      "text": "Executions of the test in in which `a1` does not equal `a2` do in fact require that (g) appears before (h) in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        578,
+        587
+      ]
+    },
+    {
+      "text": "Allowing (h) to appear before (g) in the global memory order would in that case result in a violation of CoRR, because then (h) would return an older value than that returned by (g).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        578,
+        587
+      ]
+    },
+    {
+      "text": "Therefore, forbids this CoRR violation from occurring.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        578,
+        587
+      ]
+    },
+    {
+      "text": "As such, strikes a careful balance between enforcing CoRR in all cases while simultaneously being weak enough to permit \"RSW\" and \"fri-rfi\" patterns that commonly appear in real microarchitectures.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        578,
+        587
+      ]
+    },
+    {
+      "text": "There is one more overlapping-address rule: simply states that a value cannot be returned from an AMO or SC to a subsequent load until the AMO or SC has (in the case of the SC, successfully) performed globally.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        589,
+        601
+      ]
+    },
+    {
+      "text": "This follows somewhat naturally from the conceptual view that both AMOs and SC instructions are meant to be performed atomically in memory.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        589,
+        601
+      ]
+    },
+    {
+      "text": "However, notably, states that hardware may not even non-speculatively forward the value being stored by an AMOSWAP to a subsequent load, even though for AMOSWAP that store value is not actually semantically dependent on the previous value in memory, as is the case for the other AMOs.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        589,
+        601
+      ]
+    },
+    {
+      "text": "The same holds true even when forwarding from SC store values that are not semantically dependent on the value returned by the paired LR.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        589,
+        601
+      ]
+    },
+    {
+      "text": "The three PPO rules above also apply when the memory accesses in question only overlap partially.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        603,
+        609
+      ]
+    },
+    {
+      "text": "This can occur, for example, when accesses of different sizes are used to access the same object.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        603,
+        609
+      ]
+    },
+    {
+      "text": "Note also that the base addresses of two overlapping memory operations need not necessarily be the same for two memory accesses to overlap.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        603,
+        609
+      ]
+    },
+    {
+      "text": "When misaligned memory accesses are being used, the overlapping-address PPO rules apply to each of the component memory accesses independently.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+      "line_range": [
+        603,
+        609
+      ]
+    },
+    {
+      "text": "[IMPORTANT] Rule : There is a FENCE instruction that orders a before b",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        614,
+        617
+      ]
+    },
+    {
+      "text": "By default, the FENCE instruction ensures that all memory accesses from instructions preceding the fence in program order (the \"predecessor set\") appear earlier in the global memory order than memory accesses from instructions appearing after the fence in program order (the \"successor set\").",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        619,
+        629
+      ]
+    },
+    {
+      "text": "However, fences can optionally further restrict the predecessor set and/or the successor set to a smaller set of memory accesses in order to provide some speedup.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        619,
+        629
+      ]
+    },
+    {
+      "text": "Specifically, fences have PR, PW, SR, and SW bits which restrict the predecessor and/or successor sets.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        619,
+        629
+      ]
+    },
+    {
+      "text": "The predecessor set includes loads (resp.stores) if and only if PR (resp.PW) is set.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        619,
+        629
+      ]
+    },
+    {
+      "text": "Similarly, the successor set includes loads (resp.stores) if and only if SR (resp.SW) is set.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        619,
+        629
+      ]
+    },
+    {
+      "text": "The FENCE encoding currently has nine non-trivial combinations of the four bits PR, PW, SR, and SW, plus one extra encoding FENCE.TSO which facilitates mapping of \"acquire+release\" or RVTSO semantics.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        631,
+        636
+      ]
+    },
+    {
+      "text": "The remaining seven combinations have empty predecessor and/or successor sets and hence are no-ops.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        631,
+        636
+      ]
+    },
+    {
+      "text": "Of the ten non-trivial options, six are commonly used in practice:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        631,
+        636
+      ]
+    },
+    {
+      "text": "FENCE RW,RW * FENCE.TSO * FENCE RW,W * FENCE R,RW * FENCE R,R * FENCE W,W",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        638,
+        643
+      ]
+    },
+    {
+      "text": "FENCE instructions using other combinations of PR, PW, SR, and SW are not normally used in the Linux or C++ memory models but are otherwise well defined.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        645,
+        647
+      ]
+    },
+    {
+      "text": "Finally, we note that since RISC-V uses a multi-copy atomic memory model, programmers can reason about fences bits in a thread-local manner.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        649,
+        652
+      ]
+    },
+    {
+      "text": "Fences in RISC-V are not cumulative, as they are in some non-multi-copy-atomic memory models.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Fences (<<overlapping-ordering, Rule 4>>)",
+      "line_range": [
+        649,
+        652
+      ]
+    },
+    {
+      "text": "[IMPORTANT] : a has an acquire annotation",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        657,
+        659
+      ]
+    },
+    {
+      "text": ": b has a release annotation",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        661,
+        661
+      ]
+    },
+    {
+      "text": ": a and b both have RCsc annotations",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        663,
+        663
+      ]
+    },
+    {
+      "text": "An acquire operation, as would be used at the start of a critical section, requires all memory operations following the acquire in program order to also follow the acquire in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        668,
+        676
+      ]
+    },
+    {
+      "text": "This ensures, for example, that all loads and stores inside the critical section are up to date with respect to the synchronization variable being used to protect it.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        668,
+        676
+      ]
+    },
+    {
+      "text": "Acquire ordering can be enforced in one of two ways: with an acquire annotation, which enforces ordering with respect to just the synchronization variable itself, or with a FENCE R,RW, which enforces ordering with respect to all previous loads.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        668,
+        676
+      ]
+    },
+    {
+      "text": ".A spinlock with atomics [source%linenums,asm] .... sd x1, (a1) Arbitrary unrelated store ld x2, (a2) Arbitrary unrelated load li t0, 1 Initialize swap value. again: amoswap.w.aq t0, t0, (a0) Attempt to acquire lock. bnez t0, again Retry if held. ...",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        678,
+        694
+      ]
+    },
+    {
+      "text": "Critical section. ... amoswap.w.rl x0, x0, (a0) Release lock by storing 0. sd x3, (a3) Arbitrary unrelated store ld x4, (a4) Arbitrary unrelated load ....",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        678,
+        694
+      ]
+    },
+    {
+      "text": "Because this example uses aq, the loads and stores in the critical section are guaranteed to appear in the global memory order after the AMOSWAP used to acquire the lock.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        696,
+        702
+      ]
+    },
+    {
+      "text": "However, assuming `a0`, `a1`, and `a2` point to different memory locations, the loads and stores in the critical section may or may not appear after the \"Arbitrary unrelated load\" at the beginning of the example in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        696,
+        702
+      ]
+    },
+    {
+      "text": ".A spinlock with fences [source%linenums,asm] .... sd x1, (a1) Arbitrary unrelated store ld x2, (a2) Arbitrary unrelated load li t0, 1 Initialize swap value. again: amoswap.w t0, t0, (a0) Attempt to acquire lock. fence r, rw Enforce \"acquire\" memory ordering bnez t0, again Retry if held. ...",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        704,
+        722
+      ]
+    },
+    {
+      "text": "Critical section. ... fence rw, w Enforce \"release\" memory ordering amoswap.w x0, x0, (a0) Release lock by storing 0. sd x3, (a3) Arbitrary unrelated store ld x4, (a4) Arbitrary unrelated load ....",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        704,
+        722
+      ]
+    },
+    {
+      "text": "Now, consider the alternative in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        724,
+        735
+      ]
+    },
+    {
+      "text": "In this case, even though the AMOSWAP does not enforce ordering with an aq bit, the fence nevertheless enforces that the acquire AMOSWAP appears earlier in the global memory order than all loads and stores in the critical section.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        724,
+        735
+      ]
+    },
+    {
+      "text": "Note, however, that in this case, the fence also enforces additional orderings: it also requires that the \"Arbitrary unrelated load\" at the start of the program appears earlier in the global memory order than the loads and stores of the critical section. (This particular fence does not, however, enforce any ordering with respect to the \"Arbitrary unrelated store\" at the start of the snippet.) In this way, fence-enforced orderings are slightly coarser than orderings enforced by .aq.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        724,
+        735
+      ]
+    },
+    {
+      "text": "Release orderings work exactly the same as acquire orderings, just in the opposite direction.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        737,
+        748
+      ]
+    },
+    {
+      "text": "Release semantics require all loads and stores preceding the release operation in program order to also precede the release operation in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        737,
+        748
+      ]
+    },
+    {
+      "text": "This ensures, for example, that memory accesses in a critical section appear before the lock-releasing store in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        737,
+        748
+      ]
+    },
+    {
+      "text": "Just as for acquire semantics, release semantics can be enforced using release annotations or with a FENCE RW,W operation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        737,
+        748
+      ]
+    },
+    {
+      "text": "Using the same examples, the ordering between the loads and stores in the critical section and the \"Arbitrary unrelated store\" at the end of the code snippet is enforced only by the FENCE RW,W in , not by the rl in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        737,
+        748
+      ]
+    },
+    {
+      "text": "With RCpc annotations alone, store-release-to-load-acquire ordering is not enforced.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        750,
+        757
+      ]
+    },
+    {
+      "text": "This facilitates the porting of code written under the TSO and/or RCpc memory models.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        750,
+        757
+      ]
+    },
+    {
+      "text": "To enforce store-release-to-load-acquire ordering, the code must use store-release-RCsc and load-acquire-RCsc operations so that PPO rule 7 applies. RCpc alone is sufficient for many use cases in C/C\\++ but is insufficient for many other use cases in C/C++, Java, and Linux, to name just a few examples; see for details.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        750,
+        757
+      ]
+    },
+    {
+      "text": "PPO rule 8 indicates that an SC must appear after its paired LR in the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        759,
+        764
+      ]
+    },
+    {
+      "text": "This will follow naturally from the common use of LR/SC to perform an atomic read-modify-write operation due to the inherent data dependency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        759,
+        764
+      ]
+    },
+    {
+      "text": "However, PPO rule 8 also applies even when the value being stored does not syntactically depend on the value returned by the paired LR.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        759,
+        764
+      ]
+    },
+    {
+      "text": "Lastly, we note that, as with fences, ordering annotations are not cumulative.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Explicit Synchronization (<<overlapping-ordering, Rules 5-8>>)",
+      "line_range": [
+        766,
+        767
+      ]
+    },
+    {
+      "text": "[IMPORTANT] : b has a syntactic address dependency on a",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        772,
+        775
+      ]
+    },
+    {
+      "text": ": b has a syntactic data dependency on a",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        777,
+        777
+      ]
+    },
+    {
+      "text": ": b is a store, and b has a syntactic control dependency on a",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        779,
+        780
+      ]
+    },
+    {
+      "text": "Dependencies from a load to a later memory operation in the same hart are respected by the RVWMO memory model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        782,
+        789
+      ]
+    },
+    {
+      "text": "The Alpha memory model was notable for choosing not to enforce the ordering of such dependencies, but most modern hardware and software memory models consider allowing dependent instructions to be reordered too confusing and counterintuitive.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        782,
+        789
+      ]
+    },
+    {
+      "text": "Furthermore, modern code sometimes intentionally uses such dependencies as a particularly lightweight ordering enforcement mechanism.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        782,
+        789
+      ]
+    },
+    {
+      "text": "The terms in work as follows.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": "Instructions are said to carry dependencies from their source register(s) to their destination register(s) whenever the value written into each destination register is a function of the source register(s).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": "For most instructions, this means that the destination register(s) carry a dependency from all source register(s).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": "However, there are a few notable exceptions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": "In the case of memory instructions, the value written into the destination register ultimately comes from the memory system rather than from the source register(s) directly, and so this breaks the chain of dependencies carried from the source register(s).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": "In the case of unconditional jumps, the value written into the destination register comes from the current `pc` (which is never considered a source register by the memory model), and so likewise, JALR (the only jump with a source register) does not carry a dependency from rs1 to rd.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        791,
+        805
+      ]
+    },
+    {
+      "text": ".(c) has a syntactic dependency on both (a) and (b) via fflags, a destination register that both (a) and (b) implicitly accumulate into [.text-center,source%linenums,asm] ---- (a) fadd f3,f1,f2 (b) fadd f6,f4,f5 (c) csrrs a0,fflags,x0 ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        807,
+        814
+      ]
+    },
+    {
+      "text": "The notion of accumulating into a destination register rather than writing into it reflects the behavior of CSRs such as `fflags`.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        816,
+        820
+      ]
+    },
+    {
+      "text": "In particular, an accumulation into a register does not clobber any previous writes or accumulations into the same register.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        816,
+        820
+      ]
+    },
+    {
+      "text": "For example, in , (c) has a syntactic dependency on both (a) and (b).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        816,
+        820
+      ]
+    },
+    {
+      "text": "Like other modern memory models, the RVWMO memory model uses syntactic rather than semantic dependencies.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        822,
+        829
+      ]
+    },
+    {
+      "text": "In other words, this definition depends on the identities of the registers being accessed by different instructions, not the actual contents of those registers.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        822,
+        829
+      ]
+    },
+    {
+      "text": "This means that an address, control, or data dependency must be enforced even if the calculation could seemingly be `optimized away`.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        822,
+        829
+      ]
+    },
+    {
+      "text": "This choice ensures that RVWMO remains compatible with code that uses these false syntactic dependencies as a lightweight ordering mechanism.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        822,
+        829
+      ]
+    },
+    {
+      "text": ".A syntactic address dependency [.text-center, source%linenums, asm] ---- ld a1,0(s0) xor a2,a1,a1 add s1,s1,a2 ld a5,0(s1) ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        831,
+        839
+      ]
+    },
+    {
+      "text": "For example, there is a syntactic address dependency from the memory operation generated by the first instruction to the memory operation generated by the last instruction in , even though `a1` XOR `a1` is zero and hence has no effect on the address accessed by the second load.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        841,
+        846
+      ]
+    },
+    {
+      "text": "The benefit of using dependencies as a lightweight synchronization mechanism is that the ordering enforcement requirement is limited only to the specific two instructions in question.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        848,
+        856
+      ]
+    },
+    {
+      "text": "Other non-dependent instructions may be freely reordered by aggressive implementations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        848,
+        856
+      ]
+    },
+    {
+      "text": "One alternative would be to use a load-acquire, but this would enforce ordering for the first load with respect to all subsequent instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        848,
+        856
+      ]
+    },
+    {
+      "text": "Another would be to use a FENCE R,R, but this would include all previous and all subsequent loads, making this option more expensive.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        848,
+        856
+      ]
+    },
+    {
+      "text": ".A syntactic control dependency [.text-center, source%linenums, asm] ---- lw x1,0(x2) bne x1,x0,next sw x3,0(x4) next: sw x5,0(x6) ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        858,
+        866
+      ]
+    },
+    {
+      "text": "Control dependencies behave differently from address and data dependencies in the sense that a control dependency always extends to all instructions following the original target in program order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        868,
+        874
+      ]
+    },
+    {
+      "text": "Consider the instruction at `next` will always execute, but the memory operation generated by that last instruction nevertheless still has a control dependency from the memory operation generated by the first instruction.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        868,
+        874
+      ]
+    },
+    {
+      "text": ".Another syntactic control dependency [.text-center,source%linenums,asm] ---- lw x1,0(x2) bne x1,x0,next next: sw x3,0(x4) ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        876,
+        883
+      ]
+    },
+    {
+      "text": "Even though both branch outcomes have the same target, there is still a control dependency from the memory operation generated by the first instruction in this snippet to the memory operation generated by the last instruction.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        885,
+        892
+      ]
+    },
+    {
+      "text": "This definition of control dependency is subtly stronger than what might be seen in other contexts (e.g., C++), but it conforms with standard definitions of control dependencies in the literature.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        885,
+        892
+      ]
+    },
+    {
+      "text": "Notably, PPO rules are also intentionally designed to respect dependencies that originate from the output of a successful store-conditional instruction.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        894,
+        909
+      ]
+    },
+    {
+      "text": "Typically, an SC instruction will be followed by a conditional branch checking whether the outcome was successful; this implies that there will be a control dependency from the store operation generated by the SC instruction to any memory operations following the branch. PPO rule in turn implies that any subsequent store operations will appear later in the global memory order than the store operation generated by the SC.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        894,
+        909
+      ]
+    },
+    {
+      "text": "However, since control, address, and data dependencies are defined over memory operations, and since an unsuccessful SC does not generate a memory operation, no order is enforced between unsuccessful SC and its dependent instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        894,
+        909
+      ]
+    },
+    {
+      "text": "Moreover, since SC is defined to carry dependencies from its source registers to rd only when the SC is successful, an unsuccessful SC has no effect on the global memory order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        894,
+        909
+      ]
+    },
+    {
+      "text": ".A variant of the LB litmus test (outcome forbidden) [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 4+!Initial values: 0(s0)=1; 0(s2)=1 4+! 2+^!Hart 0 2+^!Hart 1 !(a) !ld a0,0(s0) !(e) !ld a3,0(s2) !(b) !lr a1,0(s1) !(f) !sd a3,0(s0) !(c) !sc a2,a0,0(s1) ! ! !(d) !sd a2,0(s2) ! ! 4+!Outcome: `a0=0`, `a3=0` ! | ! //a! graphviz::images/graphviz/litmuslblrsc.txt[] a! image::graphviz/litmuslblrsc.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        911,
+        932
+      ]
+    },
+    {
+      "text": "In addition, the choice to respect dependencies originating at store-conditional instructions ensures that certain out-of-thin-air-like behaviors will be prevented.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        934,
+        946
+      ]
+    },
+    {
+      "text": "Suppose a hypothetical implementation could occasionally make some early guarantee that a store-conditional operation will succeed.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        934,
+        946
+      ]
+    },
+    {
+      "text": "In this case, (c) could return 0 to `a2` early (before actually executing), allowing the sequence (d), (e), (f), (a), and then (b) to execute, and then (c) might execute (successfully) only at that point.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        934,
+        946
+      ]
+    },
+    {
+      "text": "This would imply that (c) writes its own success value to `0(s1)`! Fortunately, this situation and others like it are prevented by the fact that RVWMO respects dependencies originating at the stores generated by successful SC instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        934,
+        946
+      ]
+    },
+    {
+      "text": "We also note that syntactic dependencies between instructions only have any force when they take the form of a syntactic address, control, and/or data dependency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        948,
+        956
+      ]
+    },
+    {
+      "text": "For example: a syntactic dependency between two `F` instructions via one of the `accumulating CSRs` in does not imply that the two `F` instructions must be executed in order.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        948,
+        956
+      ]
+    },
+    {
+      "text": "Such a dependency would only serve to ultimately set up later a dependency from both `F` instructions to a later CSR instruction accessing the CSR flag in question.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Syntactic Dependencies (<<overlapping-ordering, Rules 9-11>>)",
+      "line_range": [
+        948,
+        956
+      ]
+    },
+    {
+      "text": "[IMPORTANT] : b is a load, and there exists some store m between a and b in program order such that m has an address or data dependency on a, and b returns a value written by m",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        962,
+        967
+      ]
+    },
+    {
+      "text": ": b is a store, and there exists some instruction m between a and b in program order such that m has an address dependency on a",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        969,
+        971
+      ]
+    },
+    {
+      "text": ".Because of PPO and the data dependency from (d) to (e), (d) must also precede (f) in the global memory order (outcome forbidden) [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+!Hart 0 2+! Hart 1 ! !li t1, 1 !(d) !lw a0, 0(s1) !(a) !sw t1,0(s0) !(e) !sw a0, 0(s2) !(b) !fence w, w !(f) !lw a1, 0(s2) !(c) !sw t1,0(s1) ! !xor a2,a1,a1 ! ! ! !add s0,s0,a2 ! ! !(g) !lw a3,0(s0) 4+!Outcome: `a0=1`, `a3=0` ! | ! //a! graphviz::images/graphviz/litmusdatarfi.txt[] a! image::graphviz/litmusdatarfi.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        973,
+        994
+      ]
+    },
+    {
+      "text": "PPO rules and reflect behaviors of almost all real processor pipeline implementations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        996,
+        1004
+      ]
+    },
+    {
+      "text": "Rule states that a load cannot forward from a store until the address and data for that store are known.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        996,
+        1004
+      ]
+    },
+    {
+      "text": "Consider (f) cannot be executed until the data for (e) has been resolved, because (f) must return the value written by (e) (or by something even later in the global memory order), and the old value must not be clobbered by the write-back of (e) before (d) has had a chance to perform.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        996,
+        1004
+      ]
+    },
+    {
+      "text": "Therefore, (f) will never perform before (d) has performed.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        996,
+        1004
+      ]
+    },
+    {
+      "text": ".Because of the extra store between (e) and (g), (d) no longer necessarily precedes (g) (outcome permitted)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1006,
+        1006
+      ]
+    },
+    {
+      "text": "[float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+!Hart 0 2+!Hart 1 2+!li t1, 1 2+^!li t1, 1 !(a) !sw t1,0(s0) !(d) !lw a0, 0(s1) !(b) !fence w, w !(e) !sw a0, 0(s2) !(c) !sw t1,0(s1) !(f) !sw t1, 0(s2) ! ! !(g) !lw a1, 0(s2) ! ! ! !xor a2,a1,a1 ! ! ! !add s0,s0,a2 ! ! !(h) !lw a3,0(s0) 4+!Outcome: `a0=1`, `a3=0` ! | ! //a! graphviz::images/graphviz/litmusdatacoirfi.txt[] a! image::graphviz/litmusdatacoirfi.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1008,
+        1029
+      ]
+    },
+    {
+      "text": "If there were another store to the same address in between (e) and (f), as in , then (f) would no longer be dependent on the data of (e) being resolved, and hence the dependency of (f) on (d), which produces the data for (e), would be broken.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1031,
+        1035
+      ]
+    },
+    {
+      "text": "Rule makes a similar observation to the previous rule: a store cannot be performed at memory until all previous loads that might access the same address have themselves been performed.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1037,
+        1046
+      ]
+    },
+    {
+      "text": "Such a load must appear to execute before the store, but it cannot do so if the store were to overwrite the value in memory before the load had a chance to read the old value.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1037,
+        1046
+      ]
+    },
+    {
+      "text": "Likewise, a store generally cannot be performed until it is known that preceding instructions will not cause an exception due to failed address resolution, and in this sense, rule 13 can be seen as somewhat of a special case of rule .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1037,
+        1046
+      ]
+    },
+    {
+      "text": ".Because of the address dependency from (d) to (e), (d) also precedes (f) (outcome forbidden) [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+!Hart 0 2+^!Hart 1 2+! 2+^!li t1, 1 !(a) !lw a0,0(s0) !(d) !lw a1, 0(s1) !(b) !fence rw,rw !(e) !lw a2, 0(a1) !(c) !sw s2,0(s1) !(f) !sw t1, 0(s0) 4+!Outcome: `a0=1`, `a1=t` ! | ! //a! graphviz::images/graphviz/litmusaddrpo.txt[] a! image:graphviz/litmusaddrpo.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1048,
+        1067
+      ]
+    },
+    {
+      "text": "Consider (f) cannot be executed until the address for (e) is resolved, because it may turn out that the addresses match; i.e., that `a1=s0`.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1069,
+        1073
+      ]
+    },
+    {
+      "text": "Therefore, (f) cannot be sent to memory before (d) has executed and confirmed whether the addresses do indeed overlap.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Explaining the RVWMO Rules > Pipeline Dependencies (<<overlapping-ordering, Rules 12-13>>)",
+      "line_range": [
+        1069,
+        1073
+      ]
+    },
+    {
+      "text": "RVWMO does not currently attempt to formally describe how FENCE.I, SFENCE.VMA, I/O fences, and PMAs behave.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory",
+      "line_range": [
+        1078,
+        1084
+      ]
+    },
+    {
+      "text": "All of these behaviors will be described by future formalizations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory",
+      "line_range": [
+        1078,
+        1084
+      ]
+    },
+    {
+      "text": "In the meantime, the behavior of FENCE.I is described in , the behavior of SFENCE.VMA is described in the RISC-V Instruction Set Privileged Architecture Manual, and the behavior of I/O fences and the effects of PMAs are described below.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory",
+      "line_range": [
+        1078,
+        1084
+      ]
+    },
+    {
+      "text": "The RISC-V Privileged ISA defines Physical Memory Attributes (PMAs) which specify, among other things, whether portions of the address space are coherent and/or cacheable.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1088,
+        1092
+      ]
+    },
+    {
+      "text": "See the RISC-V Privileged ISA Specification for the complete details.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1088,
+        1092
+      ]
+    },
+    {
+      "text": "Here, we simply discuss how the various details in each PMA relate to the memory model:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1088,
+        1092
+      ]
+    },
+    {
+      "text": "Main memory vs.I/O, and I/O memory ordering PMAs: the memory model as defined applies to main memory regions. I/O ordering is discussed below. * Supported access types and atomicity PMAs: the memory model is simply applied on top of whatever primitives each region supports. * Cacheability PMAs: the cacheability PMAs in general do not affect the memory model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "Non-cacheable regions may have more restrictive behavior than cacheable regions, but the set of allowed behaviors does not change regardless.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "However, some platform-specific and/or device-specific cacheability settings may differ. * Coherence PMAs: The memory consistency model for memory regions marked as non-coherent in PMAs is currently platform-specific and/or device-specific: the load-value axiom, the atomicity axiom, and the progress axiom all may be violated with non-coherent memory.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "Note however that coherent memory does not require a hardware cache coherence protocol.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "The RISC-V Privileged ISA Specification suggests that hardware-incoherent regions of main memory are discouraged, but the memory model is compatible with hardware coherence, software coherence, implicit coherence due to read-only memory, implicit coherence due to only one agent having access, or otherwise. * Idempotency PMAs: Idempotency PMAs are used to specify memory regions for which loads and/or stores may have side effects, and this in turn is used by the microarchitecture to determine, e.g., whether prefetches are legal.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "This distinction does not affect the memory model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > Coherence and Cacheability",
+      "line_range": [
+        1094,
+        1116
+      ]
+    },
+    {
+      "text": "For I/O, the load value axiom and atomicity axiom in general do not apply, as both reads and writes might have device-specific side effects and may return values other than the value \"written\" by the most recent store to the same address.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1120,
+        1127
+      ]
+    },
+    {
+      "text": "Nevertheless, the following preserved program order rules still generally apply for accesses to I/O memory: memory access a precedes memory access b in global memory order if a precedes b in program order and one or more of the following holds:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1120,
+        1127
+      ]
+    },
+    {
+      "text": ". a precedes b in preserved program order as defined in , with the exception that acquire and release ordering annotations apply only from one memory operation to another memory operation and from one I/O operation to another I/O operation, but not from a memory operation to an I/O nor vice versa . a and b are accesses to overlapping addresses in an I/O region . a and b are accesses to the same strongly ordered I/O region . a and b are accesses to I/O regions, and the channel associated with the I/O region accessed by either a or b is channel 1 . a and b are accesses to I/O regions associated with the same channel (except for channel 0)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1129,
+        1143
+      ]
+    },
+    {
+      "text": "Note that the FENCE instruction distinguishes between main memory operations and I/O operations in its predecessor and successor sets.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1145,
+        1158
+      ]
+    },
+    {
+      "text": "To enforce ordering between I/O operations and main memory operations, code must use a FENCE with PI, PO, SI, and/or SO, plus PR, PW, SR, and/or SW.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1145,
+        1158
+      ]
+    },
+    {
+      "text": "For example, to enforce ordering between a write to main memory and an I/O write to a device register, a FENCE W,O or stronger is needed. .Ordering memory and I/O accesses [.text-center,source%linenums,asm] ---- sd t0, 0(a0) fence w,o sd a0, 0(a1) ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1145,
+        1158
+      ]
+    },
+    {
+      "text": "When a fence is in fact used, implementations must assume that the device may attempt to access memory immediately after receiving the MMIO signal, and subsequent memory accesses from that device to memory must observe the effects of all accesses ordered prior to that MMIO operation.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "In other words, in , suppose `0(a0)` is in main memory and `0(a1)` is the address of a device register in I/O memory.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "If the device accesses `0(a0)` upon receiving the MMIO write, then that load must conceptually appear after the first store to `0(a0)` according to the rules of the RVWMO memory model.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "In some implementations, the only way to ensure this will be to require that the first store does in fact complete before the MMIO write is issued.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "Other implementations may find ways to be more aggressive, while others still may not need to do anything different at all for I/O and main memory accesses.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "Nevertheless, the RVWMO memory model does not distinguish between these options; it simply provides an implementation-agnostic mechanism to specify the orderings that must be enforced.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1160,
+        1176
+      ]
+    },
+    {
+      "text": "Many architectures include separate notions of \"ordering\" and \"completion\" fences, especially as it relates to I/O (as opposed to regular main memory).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1178,
+        1185
+      ]
+    },
+    {
+      "text": "Ordering fences simply ensure that memory operations stay in order, while completion fences ensure that predecessor accesses have all completed before any successors are made visible. RISC-V does not explicitly distinguish between ordering and completion fences.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1178,
+        1185
+      ]
+    },
+    {
+      "text": "Instead, this distinction is simply inferred from different uses of the FENCE bits.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1178,
+        1185
+      ]
+    },
+    {
+      "text": "For implementations that conform to the RISC-V Unix Platform Specification, I/O devices and DMA operations are required to access memory coherently and via strongly ordered I/O channels.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1187,
+        1195
+      ]
+    },
+    {
+      "text": "Therefore, accesses to regular main memory regions that are concurrently accessed by external devices can also use the standard synchronization mechanisms.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1187,
+        1195
+      ]
+    },
+    {
+      "text": "Implementations that do not conform to the Unix Platform Specification and/or in which devices do not access memory coherently will need to use mechanisms (which are currently platform-specific or device-specific) to enforce coherency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1187,
+        1195
+      ]
+    },
+    {
+      "text": "I/O regions in the address space should be considered non-cacheable regions in the PMAs for those regions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1197,
+        1199
+      ]
+    },
+    {
+      "text": "Such regions can be considered coherent by the PMA if they are not cached by any agent.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1197,
+        1199
+      ]
+    },
+    {
+      "text": "The ordering guarantees in this section may not apply beyond a platform-specific boundary between the RISC-V cores and the device.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1201,
+        1206
+      ]
+    },
+    {
+      "text": "In particular, I/O accesses sent across an external bus (e.g., PCIe) may be reordered before they reach their ultimate destination.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1201,
+        1206
+      ]
+    },
+    {
+      "text": "Ordering must be enforced in such situations according to the platform-specific rules of those external devices and buses.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Beyond Main Memory > I/O Ordering",
+      "line_range": [
+        1201,
+        1206
+      ]
+    },
+    {
+      "text": ".Mappings from TSO operations to RISC-V operations | !x86/TSO Operation !RVWMO Mapping !Load ! `l{b|h|w|d}; fence r,rw` !Store !`fence rw,w; s{b|h|w|d}` !Atomic RMW !`amo<op>.{w|d}.aqrl OR` + `loop:lr.{w|d}.aq; <op>; sc.{w|d}.aqrl; bnez loop` !Fence !`fence rw,rw` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1211,
+        1221
+      ]
+    },
+    {
+      "text": "provides a mapping from TSO memory operations onto RISC-V memory instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1223,
+        1235
+      ]
+    },
+    {
+      "text": "Normal x86 loads and stores are all inherently acquire-RCpc and release-RCpc operations: TSO enforces all load-load, load-store, and store-store ordering by default.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1223,
+        1235
+      ]
+    },
+    {
+      "text": "Therefore, under RVWMO, all TSO loads must be mapped onto a load followed by FENCE R,RW, and all TSO stores must be mapped onto FENCE RW,W followed by a store. TSO atomic read-modify-writes and x86 instructions using the LOCK prefix are fully ordered and can be implemented either via an AMO with both aq and rl set, or via an LR with aq set, the arithmetic operation in question, an SC with both aq and rl set, and a conditional branch checking the success condition.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1223,
+        1235
+      ]
+    },
+    {
+      "text": "In the latter case, the rl annotation on the LR turns out (for non-obvious reasons) to be redundant and can be omitted.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1223,
+        1235
+      ]
+    },
+    {
+      "text": "Alternatives to are also possible. A TSO store can be mapped onto AMOSWAP with rl set.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1237,
+        1245
+      ]
+    },
+    {
+      "text": "However, since RVWMO PPO Rule forbids forwarding of values from AMOs to subsequent loads, the use of AMOSWAP for stores may negatively affect performance. A TSO load can be mapped using LR with aq set: all such LR instructions will be unpaired, but that fact in and of itself does not preclude the use of LR for loads.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1237,
+        1245
+      ]
+    },
+    {
+      "text": "However, again, this mapping may also negatively affect performance if it puts more pressure on the reservation mechanism than was originally intended.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1237,
+        1245
+      ]
+    },
+    {
+      "text": ".Mappings from Power operations to RISC-V operations | !Power Operation !RVWMO Mapping !Load !`l{b|h|w|d}` !Load-Reserve !`lr.{w|d}` !Store !`s{b|h|w|d}` !Store-Conditional !`sc.{w|d}` !`lwsync` !`fence.tso` !`sync` !`fence rw,rw` !`isync` !`fence.i; fence r,r` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1247,
+        1259
+      ]
+    },
+    {
+      "text": "provides a mapping from Power memory operations onto RISC-V memory instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1261,
+        1265
+      ]
+    },
+    {
+      "text": "Power ISYNC maps on RISC-V to a FENCE.I followed by a FENCE R,R; the latter fence is needed because ISYNC is used to define a \"control+control fence\" dependency that is not present in RVWMO.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1261,
+        1265
+      ]
+    },
+    {
+      "text": ".Mappings from ARM operations to RISC-V operations | !ARM Operation !RVWMO Mapping !Load !`l{b|h|w|d}` !Load-Acquire !`fence rw, rw; l{b|h|w|d}; fence r,rw` !Load-Exclusive !`lr.{w|d}` !Load-Acquire-Exclusive !`lr.{w|d}.aqrl` !Store !`s{b|h|w|d}` !Store-Release !`fence rw,w; s{b|h|w|d}` !Store-Exclusive !`sc.{w|d}` !Store-Release-Exclusive !`sc.{w|d}.rl` !`dmb` !`fence rw,rw` !`dmb.ld` !`fence r,rw` !`dmb.st` !`fence w,w` !`isb` !`fence.i; fence r,r` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1267,
+        1284
+      ]
+    },
+    {
+      "text": "provides a mapping from ARM memory operations onto RISC-V memory instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1286,
+        1298
+      ]
+    },
+    {
+      "text": "Since RISC-V does not currently have plain load and store opcodes with aq or rl annotations, ARM load-acquire and store-release operations should be mapped using fences instead.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1286,
+        1298
+      ]
+    },
+    {
+      "text": "Furthermore, in order to enforce store-release-to-load-acquire ordering, there must be a FENCE RW,RW between the store-release and load-acquire; enforces this by always placing the fence in front of each acquire operation. ARM load-exclusive and store-exclusive instructions can likewise map onto their RISC-V LR and SC equivalents, but instead of placing a FENCE RW,RW in front of an LR with aq set, we simply also set rl instead. ARM ISB maps on RISC-V to FENCE.I followed by FENCE R,R similarly to how ISYNC maps for Power.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1286,
+        1298
+      ]
+    },
+    {
+      "text": ".Mappings from Linux memory primitives to RISC-V primitives. | !Linux Operation !RVWMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1300,
+        1304
+      ]
+    },
+    {
+      "text": "!`mb()` !`fence iorw,iorw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1316,
+        1316
+      ]
+    },
+    {
+      "text": "!`smploadacquire()` !`l{b|h|w|d}; fence r,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1322,
+        1322
+      ]
+    },
+    {
+      "text": "!`smpstorerelease()` !`fence.tso; s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1324,
+        1324
+      ]
+    },
+    {
+      "text": "!Linux Construct !RVWMO AMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1326,
+        1326
+      ]
+    },
+    {
+      "text": "!`atomic <op> relaxed` !`amo <op>.{w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1328,
+        1328
+      ]
+    },
+    {
+      "text": "!`atomic <op> acquire` !`amo <op>.{w|d}.aq`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1330,
+        1330
+      ]
+    },
+    {
+      "text": "!`atomic <op> release` !`amo <op>.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1332,
+        1332
+      ]
+    },
+    {
+      "text": "!`atomic <op>` !`amo <op>.{w|d}.aqrl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1334,
+        1334
+      ]
+    },
+    {
+      "text": "!Linux Construct !RVWMO LR/SC Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1336,
+        1336
+      ]
+    },
+    {
+      "text": "!`atomic <op> relaxed` !`loop:lr.{w|d}; <op>; sc.{w|d}; bnez loop`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1338,
+        1338
+      ]
+    },
+    {
+      "text": "!`atomic <op> acquire` !`loop:lr.{w|d}.aq; <op>; sc.{w|d}; bnez loop`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1340,
+        1340
+      ]
+    },
+    {
+      "text": "!`atomic <op> release` !`loop:lr.{w|d}; <op>; sc.{w|d}.aqrl^*^; bnez loop OR`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1342,
+        1342
+      ]
+    },
+    {
+      "text": "! !`fence.tso; loop:lr.{w|d}; <op >; sc.{w|d}^*^; bnez loop`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1344,
+        1344
+      ]
+    },
+    {
+      "text": "!`atomic <op>` !`loop:lr.{w|d}.aq;` `<op>; sc.{w|d}.aqrl; bnez loop`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1346,
+        1346
+      ]
+    },
+    {
+      "text": "With regards to , other constructs (such as spinlocks) should follow accordingly.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1350,
+        1354
+      ]
+    },
+    {
+      "text": "Platforms or devices with non-coherent DMA may need additional synchronization (such as cache flush or invalidate mechanisms); currently any such extra synchronization will be device-specific.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1350,
+        1354
+      ]
+    },
+    {
+      "text": "provides a mapping of Linux memory ordering macros onto RISC-V memory instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1356,
+        1364
+      ]
+    },
+    {
+      "text": "The Linux fences `dmarmb()` and `dmawmb()` map onto FENCE R,R and FENCE W,W, respectively, since the RISC-V Unix Platform requires coherent DMA, but would be mapped onto FENCE RI,RI and FENCE WO,WO, respectively, on a platform with non-coherent DMA.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1356,
+        1364
+      ]
+    },
+    {
+      "text": "Platforms with non-coherent DMA may also require a mechanism by which cache lines can be flushed and/or invalidated.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1356,
+        1364
+      ]
+    },
+    {
+      "text": "Such mechanisms will be device-specific and/or standardized in a future extension to the ISA.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1356,
+        1364
+      ]
+    },
+    {
+      "text": "The Linux mappings for release operations may seem stronger than necessary, but these mappings are needed to cover some cases in which Linux requires stronger orderings than the more intuitive mappings would provide.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1366,
+        1376
+      ]
+    },
+    {
+      "text": "In particular, as of the time this text is being written, Linux is actively debating whether to require load-load, load-store, and store-store orderings between accesses in one critical section and accesses in a subsequent critical section in the same hart and protected by the same synchronization object.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1366,
+        1376
+      ]
+    },
+    {
+      "text": "Not all combinations of FENCE RW,W/FENCE R,RW mappings with aq/rl mappings combine to provide such orderings.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1366,
+        1376
+      ]
+    },
+    {
+      "text": "There are a few ways around this problem, including:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1366,
+        1376
+      ]
+    },
+    {
+      "text": "Always use FENCE RW,W/FENCE R,RW, and never use aq/rl.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "This suffices but is undesirable, as it defeats the purpose of the aq/rl modifiers. .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "Always use aq/rl, and never use FENCE RW,W/FENCE R,RW.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "This does not currently work due to the lack of load and store opcodes with aq and rl modifiers. .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "Strengthen the mappings of release operations such that they would enforce sufficient orderings in the presence of either type of acquire mapping.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "This is the currently recommended solution, and the one shown in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1378,
+        1387
+      ]
+    },
+    {
+      "text": "RVWMO Mapping: (a) lw a0, 0(s0) (b) fence.tso // vs. fence rw,w (c) sd x0,0(s1) ... loop: (d) amoswap.d.aq a1,t1,0(s1) bnez a1,loop (e) lw a2,0(s2)",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1389,
+        1391
+      ]
+    },
+    {
+      "text": "For example, the critical section ordering rule currently being debated by the Linux community would require (a) to be ordered before (e) in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1393,
+        1398
+      ]
+    },
+    {
+      "text": "If that will indeed be required, then it would be insufficient for (b) to map as FENCE RW,W.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1393,
+        1398
+      ]
+    },
+    {
+      "text": "That said, these mappings are subject to change as the Linux Kernel Memory Model evolves.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1393,
+        1398
+      ]
+    },
+    {
+      "text": ".Orderings between critical sections in Linux [source%linenums,asm] ---- Linux Code: (a) int r0 = *x; (bc) spinunlock(y, 0); .... .... (d) spinlock(y); (e) int r1 = *z;",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1400,
+        1410
+      ]
+    },
+    {
+      "text": "RVWMO Mapping: (a) lw a0, 0(s0) (b) fence.tso // vs. fence rw,w (c) sd x0,0(s1) .... loop: (d) lr.d.aq a1,(s1) bnez a1,loop sc.d a1,t1,(s1) bnez a1,loop (e) lw a2,0(s2) ----",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1412,
+        1423
+      ]
+    },
+    {
+      "text": "provides a mapping of C11/C++11 atomic operations onto RISC-V memory instructions.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1425,
+        1436
+      ]
+    },
+    {
+      "text": "If load and store opcodes with aq and rl modifiers are introduced, then the mappings in will suffice.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1425,
+        1436
+      ]
+    },
+    {
+      "text": "Note however that the two mappings only interoperate correctly if `atomic<op>(memoryorderseqcst)` is mapped using an LR that has both aq and rl set.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1425,
+        1436
+      ]
+    },
+    {
+      "text": "Even more importantly, a sequentially consistent store, followed by a sequentially consistent load can be reordered unless the mapping of stores is strengthened by either adding a second fence or mapping the store to `amoswap.rl` instead.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1425,
+        1436
+      ]
+    },
+    {
+      "text": ".Mappings from C/C++ primitives to RISC-V primitives. |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1438,
+        1441
+      ]
+    },
+    {
+      "text": "!C/C++ Construct ! RVWMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1443,
+        1443
+      ]
+    },
+    {
+      "text": "!Non-atomic load ! `l{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1445,
+        1445
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderrelaxed)` !`l{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1447,
+        1447
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderacquire)` !`l{b|h|w|d}; fence r,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1449,
+        1449
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderseqcst)` !`fence rw,rw; l{b|h|w|d}; fence r,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1451,
+        1451
+      ]
+    },
+    {
+      "text": "!Non-atomic store !`s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1453,
+        1453
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderrelaxed)` !`s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1455,
+        1455
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderrelease)` !`fence rw,w; s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1457,
+        1457
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderseqcst)` !`fence rw,w; s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1459,
+        1459
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderacquire)` !`fence r,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1461,
+        1461
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderrelease)` !`fence rw,w`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1463,
+        1463
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderacqrel)` !`fence.tso`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1465,
+        1465
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderseqcst)` !`fence rw,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1467,
+        1467
+      ]
+    },
+    {
+      "text": "!C/C++ Construct !RVWMO AMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1469,
+        1469
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelaxed)` !`amo<op>.{w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1471,
+        1471
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacquire)` !`amo<op>.{w|d}.aq`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1473,
+        1473
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelease)` !`amo<op>.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1475,
+        1475
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacqrel)` !`amo<op>.{w|d}.aqrl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1477,
+        1477
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderseqcst)` !`amo<op>.{w|d}.aqrl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1479,
+        1479
+      ]
+    },
+    {
+      "text": "!C/C++ Construct !RVWMO LR/SC Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1481,
+        1481
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelaxed)` !`loop:lr.{w|d}; <op>; sc.{w|d};`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1483,
+        1483
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacquire)` !`loop:lr.{w|d}.aq; <op>; sc.{w|d};`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1487,
+        1487
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelease)` !`loop:lr.{w|d}; <op>; sc.{w|d}.rl;`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1491,
+        1491
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacqrel)` !`loop:lr.{w|d}.aq; <op>; sc.{w|d}.rl;`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1495,
+        1495
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderseqcst)` !`loop:lr.{w|d}.aqrl; <op>;`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1499,
+        1499
+      ]
+    },
+    {
+      "text": "! !`sc.{w|d}.rl; bnez loop`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1501,
+        1501
+      ]
+    },
+    {
+      "text": ".Hypothetical mappings from C/C++ primitives to RISC-V primitives, if native load-acquire and store-release opcodes are introduced. | !C/C++ Construct !RVWMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1505,
+        1509
+      ]
+    },
+    {
+      "text": "!Non-atomic load !`l{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1511,
+        1511
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderrelaxed)` !`l{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1513,
+        1513
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderacquire)` !`l{b|h|w|d}.aq`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1515,
+        1515
+      ]
+    },
+    {
+      "text": "!`atomicload(memoryorderseqcst)` !`l{b|h|w|d}.aq`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1517,
+        1517
+      ]
+    },
+    {
+      "text": "!Non-atomic store !`s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1519,
+        1519
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderrelaxed)` !`s{b|h|w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1521,
+        1521
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderrelease)` !`s{b|h|w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1523,
+        1523
+      ]
+    },
+    {
+      "text": "!`atomicstore(memoryorderseqcst)` !`s{b|h|w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1525,
+        1525
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderacquire)` !`fence r,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1527,
+        1527
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderrelease)` !`fence rw,w`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1529,
+        1529
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderacqrel)` !`fence.tso`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1531,
+        1531
+      ]
+    },
+    {
+      "text": "!`atomicthreadfence(memoryorderseqcst)` !`fence rw,rw`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1533,
+        1533
+      ]
+    },
+    {
+      "text": "!C/C++ Construct !RVWMO AMO Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1535,
+        1535
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelaxed)` !`amo<op>.{w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1537,
+        1537
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacquire)` !`amo<op>.{w|d}.aq`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1539,
+        1539
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelease)` !`amo<op>.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1541,
+        1541
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacqrel)` !`amo<op>.{w|d}.aqrl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1543,
+        1543
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderseqcst)` !`amo<op>.{w|d}.aqrl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1545,
+        1545
+      ]
+    },
+    {
+      "text": "!C/C++ Construct !RVWMO LR/SC Mapping",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1547,
+        1547
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelaxed)` !`lr.{w|d}; <op>; sc.{w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1549,
+        1549
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacquire)` !`lr.{w|d}.aq; <op>; sc.{w|d}`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1551,
+        1551
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderrelease)` !`lr.{w|d}; <op>; sc.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1553,
+        1553
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderacqrel)` !`lr.{w|d}.aq; <op>; sc.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1555,
+        1555
+      ]
+    },
+    {
+      "text": "!`atomic<op>(memoryorderseqcst)` !`lr.{w|d}.aq^*^ <op>; sc.{w|d}.rl`",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1557,
+        1557
+      ]
+    },
+    {
+      "text": "2+!^*^ must be `lr.{w|d}.aqrl` in order to interoperate with code mapped per |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1559,
+        1560
+      ]
+    },
+    {
+      "text": "Any AMO can be emulated by an LR/SC pair, but care must be taken to ensure that any PPO orderings that originate from the LR are also made to originate from the SC, and that any PPO orderings that terminate at the SC are also made to terminate at the LR.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1562,
+        1572
+      ]
+    },
+    {
+      "text": "For example, the LR must also be made to respect any data dependencies that the AMO has, given that load operations do not otherwise have any notion of a data dependency.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1562,
+        1572
+      ]
+    },
+    {
+      "text": "Likewise, the effect a FENCE R,R elsewhere in the same hart must also be made to apply to the SC, which would not otherwise respect that fence.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1562,
+        1572
+      ]
+    },
+    {
+      "text": "The emulator may achieve this effect by simply mapping AMOs onto `lr.aq; <op>; sc.aqrl`, matching the mapping used elsewhere for fully ordered atomics.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1562,
+        1572
+      ]
+    },
+    {
+      "text": "These C11/C++11 mappings require the platform to provide the following Physical Memory Attributes (as defined in the RISC-V Privileged ISA) for all memory:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1574,
+        1576
+      ]
+    },
+    {
+      "text": "main memory * coherent * AMOArithmetic * RsrvEventual",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1578,
+        1581
+      ]
+    },
+    {
+      "text": "Platforms with different attributes may require different mappings, or require platform-specific SW (e.g., memory-mapped I/O).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Code Porting and Mapping Guidelines",
+      "line_range": [
+        1583,
+        1584
+      ]
+    },
+    {
+      "text": "The RVWMO and RVTSO memory models by no means preclude microarchitectures from employing sophisticated speculation techniques or other forms of optimization in order to deliver higher performance.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1588,
+        1600
+      ]
+    },
+    {
+      "text": "The models also do not impose any requirement to use any one particular cache hierarchy, nor even to use a cache coherence protocol at all.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1588,
+        1600
+      ]
+    },
+    {
+      "text": "Instead, these models only specify the behaviors that can be exposed to software.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1588,
+        1600
+      ]
+    },
+    {
+      "text": "Microarchitectures are free to use any pipeline design, any coherent or non-coherent cache hierarchy, any on-chip interconnect, etc., as long as the design only admits executions that satisfy the memory model rules.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1588,
+        1600
+      ]
+    },
+    {
+      "text": "That said, to help people understand the actual implementations of the memory model, in this section we provide some guidelines on how architects and programmers should interpret the models' rules.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1588,
+        1600
+      ]
+    },
+    {
+      "text": "Both RVWMO and RVTSO are multi-copy atomic (or other-multi-copy-atomic): any store value that is visible to a hart other than the one that originally issued it must also be conceptually visible to all other harts in the system.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1602,
+        1611
+      ]
+    },
+    {
+      "text": "In other words, harts may forward from their own previous stores before those stores have become globally visible to all harts, but no early inter-hart forwarding is permitted.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1602,
+        1611
+      ]
+    },
+    {
+      "text": "Multi-copy atomicity may be enforced in a number of ways.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1602,
+        1611
+      ]
+    },
+    {
+      "text": "It might hold inherently due to the physical design of the caches and store buffers, it may be enforced via a single-writer/multiple-reader cache coherence protocol, or it might hold due to some other mechanism.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1602,
+        1611
+      ]
+    },
+    {
+      "text": "Although multi-copy atomicity does impose some restrictions on the microarchitecture, it is one of the key properties keeping the memory model from becoming extremely complicated.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1613,
+        1624
+      ]
+    },
+    {
+      "text": "For example, a hart may not legally forward a value from a neighbor hart's private store buffer (unless of course it is done in such a way that no new illegal behaviors become architecturally visible).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1613,
+        1624
+      ]
+    },
+    {
+      "text": "Nor may a cache coherence protocol forward a value from one hart to another until the coherence protocol has invalidated all older copies from other caches.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1613,
+        1624
+      ]
+    },
+    {
+      "text": "Of course, microarchitectures may (and high-performance implementations likely will) violate these rules under the covers through speculation or other optimizations, as long as any non-compliant behaviors are not exposed to the programmer.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1613,
+        1624
+      ]
+    },
+    {
+      "text": "As a rough guideline for interpreting the PPO rules in RVWMO, we expect the following from the software perspective:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1626,
+        1627
+      ]
+    },
+    {
+      "text": "programmers will use PPO rules and regularly and actively. * expert programmers will use PPO rules to speed up critical paths of important data structures. * even expert programmers will rarely if ever use PPO rules and directly.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1629,
+        1639
+      ]
+    },
+    {
+      "text": "These are included to facilitate common microarchitectural optimizations (rule ) and the operational formal modeling approach (rules and ) described in .",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1629,
+        1639
+      ]
+    },
+    {
+      "text": "They also facilitate the process of porting code from other architectures that have similar rules.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1629,
+        1639
+      ]
+    },
+    {
+      "text": "We also expect the following from the hardware perspective:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1641,
+        1641
+      ]
+    },
+    {
+      "text": "PPO rules and reflect well-understood rules that should pose few surprises to architects. * PPO rule reflects a natural and common hardware optimization, but one that is very subtle and hence is worth double checking carefully. * PPO rule may not be immediately obvious to architects, but it is a standard memory model requirement * The load value axiom, the atomicity axiom, and PPO rules reflect rules that most hardware implementations will enforce naturally, unless they contain extreme optimizations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1643,
+        1655
+      ]
+    },
+    {
+      "text": "Of course, implementations should make sure to double check these rules nevertheless.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1643,
+        1655
+      ]
+    },
+    {
+      "text": "Hardware must also ensure that syntactic dependencies are not `optimized away`.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1643,
+        1655
+      ]
+    },
+    {
+      "text": "Architectures are free to implement any of the memory model rules as conservatively as they choose.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1657,
+        1659
+      ]
+    },
+    {
+      "text": "For example, a hardware implementation may choose to do any or all of the following:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1657,
+        1659
+      ]
+    },
+    {
+      "text": "interpret all fences as if they were FENCE RW,RW (or FENCE IORW,IORW, if I/O is involved), regardless of the bits actually set * implement all fences with PW and SR as if they were FENCE RW,RW (or FENCE IORW,IORW, if I/O is involved), as PW with SR is the most expensive of the four possible main memory ordering components anyway * emulate aq and rl as described in * enforcing all same-address load-load ordering, even in the presence of patterns such as `fri-rfi` and `RSW` * forbid any forwarding of a value from a store in the store buffer to a subsequent AMO or LR to the same address * forbid any forwarding of a value from an AMO or SC in the store buffer to a subsequent load to the same address * implement TSO on all memory accesses, and ignore any main memory fences that do not include PW and SR ordering (e.g., as Ztso implementations will do) * implement all atomics to be RCsc or even fully ordered, regardless of annotation",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1661,
+        1677
+      ]
+    },
+    {
+      "text": "Architectures that implement RVTSO can safely do the following:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1679,
+        1679
+      ]
+    },
+    {
+      "text": "Ignore all fences that do not have both PW and SR (unless the fence also orders I/O) * Ignore all PPO rules except for rules through , since the rest are redundant with other PPO rules under RVTSO assumptions",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1681,
+        1684
+      ]
+    },
+    {
+      "text": "Silent stores (i.e., stores that write the same value that already exists at a memory location) behave like any other store from a memory model point of view.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1688,
+        1700
+      ]
+    },
+    {
+      "text": "Likewise, AMOs which do not actually change the value in memory (e.g., an AMOMAX for which the value in rs2 is smaller than the value currently in memory) are still semantically considered store operations.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1688,
+        1700
+      ]
+    },
+    {
+      "text": "Microarchitectures that attempt to implement silent stores must take care to ensure that the memory model is still obeyed, particularly in cases such as RSW which tend to be incompatible with silent stores. * Writes may be merged (i.e., two consecutive writes to the same address may be merged) or subsumed (i.e., the earlier of two back-to-back writes to the same address may be elided) as long as the resulting behavior does not otherwise violate the memory model semantics.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1688,
+        1700
+      ]
+    },
+    {
+      "text": "The question of write subsumption can be understood from the following example:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1702,
+        1703
+      ]
+    },
+    {
+      "text": ".Write subsumption litmus test, allowed execution [float=\"center\",align=\"center\",cols=\".^1a,.^1a\",frame=\"none\",grid=\"none\",options=\"noheader\"] | | ! 2+!Hart 0 2+^!Hart 1 2+!li t1, 3 2+^!li t3, 2 ! !li t2, 1 ! ! !(a) !sw t1,0(s0) !(d) !lw a0,0(s1) !(b) !fence w, w !(e) !sw a0,0(s0) !(c) !sw t2,0(s1) !(f) !sw t3,0(s0) ! | ! //a! graphviz::images/graphviz/litmussubsumption.txt[] a! image::graphviz/litmussubsumption.png[] ! |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1705,
+        1723
+      ]
+    },
+    {
+      "text": "As written, if the load (d) reads value 1, then (a) must precede (f) in the global memory order:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1725,
+        1726
+      ]
+    },
+    {
+      "text": "(a) precedes (c) in the global memory order because of rule 4 * (c) precedes (d) in the global memory order because of the Load Value axiom * (d) precedes (e) in the global memory order because of rule 10 * (e) precedes (f) in the global memory order because of rule 1",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1728,
+        1732
+      ]
+    },
+    {
+      "text": "In other words the final value of the memory location whose address is in `s0` must be 2 (the value written by the store (f)) and cannot be 3 (the value written by the store (a)).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1734,
+        1736
+      ]
+    },
+    {
+      "text": "A very aggressive microarchitecture might erroneously decide to discard (e), as (f) supersedes it, and this may in turn lead the microarchitecture to break the now-eliminated dependency between (d) and (f) (and hence also between (a) and (f)).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1738,
+        1744
+      ]
+    },
+    {
+      "text": "This would violate the memory model rules, and hence it is forbidden.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1738,
+        1744
+      ]
+    },
+    {
+      "text": "Write subsumption may in other cases be legal, if for example there were no data dependency between (d) and (e).",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines",
+      "line_range": [
+        1738,
+        1744
+      ]
+    },
+    {
+      "text": "We expect that any or all of the following possible future extensions would be compatible with the RVWMO memory model:",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines > Possible Future Extensions",
+      "line_range": [
+        1748,
+        1749
+      ]
+    },
+    {
+      "text": "\"V\" vector ISA extensions * \"J\" JIT extension * Native encodings for load and store opcodes with aq and rl set * Fences limited to certain addresses * Cache write-back/flush/invalidate/etc.instructions",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Implementation Guidelines > Possible Future Extensions",
+      "line_range": [
+        1751,
+        1755
+      ]
+    },
+    {
+      "text": ".Mixed-size discrepancy (permitted by axiomatic models, forbidden by operational model) | 2+|Hart 0 2+^|Hart 1 2+|li t1, 1 2+^|li t1, 1 |(a) |lw a0,0(s0) |(d) |lw a1,0(s1) |(b) |fence rw,rw |(e) |amoswap.w.rl a2,t1,0(s2) |(c) |sw t1,0(s1) |(f) |ld a3,0(s2) | | |(g) |lw a4,4(s2) | | | |xor a5,a4,a4 | | | |add s0,s0,a5 | | |(h) |sw t1,0(s0) 4+|Outcome: `a0=1`, `a1=1`, `a2=0`, `a3=1`, `a4=0` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1763,
+        1777
+      ]
+    },
+    {
+      "text": ".Mixed-size discrepancy (permitted by axiomatic models, forbidden by operational model) | 2+|Hart 0 2+^|Hart 1 2+|li t1, 1 2+^|li t1, 1 |(a) |lw a0,0(s0) |(d) |ld a1,0(s1) |(b) |fence rw,rw |(e) |lw a2,4(s1) |(c) |sw t1,0(s1) | |xor a3,a2,a2 | | | |add s0,s0,a3 | | |(f) |sw t1,0(s0) 4+|Outcome: `a0=1`, `a1=1`, `a2=0` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1779,
+        1791
+      ]
+    },
+    {
+      "text": ".Mixed-size discrepancy (permitted by axiomatic models, forbidden by operational model) | 2+|Hart 0 2+^|Hart 1 2+|li t1, 1 2+^|li t1, 1 |(a) |lw a0,0(s0) |(d) |sw t1,4(s1) |(b) |fence rw,rw |(e) |ld a1,0(s1) |(c) |sw t1,0(s1) |(f) |lw a2,4(s1) | | | |xor a3,a2,a2 | | | |add s0,s0,a3 | | |(g) |sw t1,0(s0) 4+|Outcome: `a0=1`, `a1=0x100000001`, `a2=1` |",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1793,
+        1806
+      ]
+    },
+    {
+      "text": "There is a known discrepancy between the operational and axiomatic specifications within the family of mixed-size RSW variants shown in -.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1808,
+        1827
+      ]
+    },
+    {
+      "text": "To address this, we may choose to add something like the following new PPO rule: Memory operation a precedes memory operation b in preserved program order (and hence also in the global memory order) if a precedes b in program order, a and b both access regular main memory (rather than I/O regions), a is a load, b is a store, there is a load m between a and b, there is a byte x that both a and m read, there is no store between a and m that writes to x, and m precedes b in PPO.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1808,
+        1827
+      ]
+    },
+    {
+      "text": "In other words, in herd syntax, we may choose to add `(po-loc & rsw);ppo;[W]` to PPO.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1808,
+        1827
+      ]
+    },
+    {
+      "text": "Many implementations will already enforce this ordering naturally.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1808,
+        1827
+      ]
+    },
+    {
+      "text": "As such, even though this rule is not official, we recommend that implementers enforce it nevertheless in order to ensure forwards compatibility with the possible future addition of this rule to RVWMO.",
+      "section": "Preamble > RVWMO Explanatory Material > Why RVWMO? > Known Issues > Mixed-size RSW",
+      "line_range": [
+        1808,
+        1827
+      ]
+    }
+  ]
+}

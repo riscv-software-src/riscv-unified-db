@@ -1,0 +1,3230 @@
+{
+  "source_file": "src/priv/supervisor.adoc",
+  "total": 403,
+  "sentences": [
+    {
+      "text": "This chapter describes the RISC-V supervisor-level architecture, which contains a common core that is used with various supervisor-level address translation and protection schemes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "A number of CSRs are provided for the supervisor.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "The `sstatus` register is an SXLEN-bit read/write register formatted as shown in when SXLEN=32 and when SXLEN=64.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": "The `sstatus` register keeps track of the processor's current operating state.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        14,
+        18
+      ]
+    },
+    {
+      "text": ".Supervisor-mode status (`sstatus`) register when SXLEN=32. [wavedrom, ,svg] .... {reg: [ {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SIE'}, {bits: 3, name: 'WPRI'}, {bits: 1, name: 'SPIE'}, {bits: 1, name: 'UBE'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SPP'}, {bits: 2, name: 'VS[1:0]'}, {bits: 2, name: 'WPRI'}, {bits: 2, name: 'FS[1:0]'}, {bits: 2, name: 'XS[1:0]'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SUM'}, {bits: 1, name: 'MXR'}, {bits: 3, name: 'WPRI'}, {bits: 1, name: 'SPELP'}, {bits: 1, name: 'SDT'}, {bits: 6, name: 'WPRI'}, {bits: 1, name: 'SD'}, ], config:{lanes: 2, hspace:1024}} ....",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        20,
+        45
+      ]
+    },
+    {
+      "text": ".Supervisor-mode status (`sstatus`) register when SXLEN=64. [wavedrom, ,svg] .... {reg: [ {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SIE'}, {bits: 3, name: 'WPRI'}, {bits: 1, name: 'SPIE'}, {bits: 1, name: 'UBE'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SPP'}, {bits: 2, name: 'VS[1:0]'}, {bits: 2, name: 'WPRI'}, {bits: 2, name: 'FS[1:0]'}, {bits: 2, name: 'XS[1:0]'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'SUM'}, {bits: 1, name: 'MXR'}, {bits: 3, name: 'WPRI'}, {bits: 1, name: 'SPELP'}, {bits: 1, name: 'SDT'}, {bits: 7, name: 'WPRI'}, {bits: 2, name: 'UXL[1:0]'}, {bits: 29, name: 'WPRI'}, {bits: 1, name: 'SD'}, ], config:{lanes: 4, hspace:1024}} ....",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        47,
+        74
+      ]
+    },
+    {
+      "text": "The SPP bit indicates the privilege level at which a hart was executing before entering supervisor mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        76,
+        83
+      ]
+    },
+    {
+      "text": "When a trap is taken, SPP is set to 0 if the trap originated from user mode, or 1 otherwise.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        76,
+        83
+      ]
+    },
+    {
+      "text": "When an SRET instruction (see ) is executed to return from the trap handler, the privilege level is set to user mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then set to 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        76,
+        83
+      ]
+    },
+    {
+      "text": "The SIE bit enables or disables all interrupts in supervisor mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        85,
+        90
+      ]
+    },
+    {
+      "text": "When SIE is clear, interrupts are not taken while in supervisor mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        85,
+        90
+      ]
+    },
+    {
+      "text": "When the hart is running in user-mode, the value in SIE is ignored, and supervisor-level interrupts are enabled.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        85,
+        90
+      ]
+    },
+    {
+      "text": "The supervisor can disable individual interrupt sources using the `sie` CSR.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        85,
+        90
+      ]
+    },
+    {
+      "text": "The SPIE bit indicates whether supervisor interrupts were enabled prior to trapping into supervisor mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        92,
+        96
+      ]
+    },
+    {
+      "text": "When a trap is taken into supervisor mode, SPIE is set to SIE, and SIE is set to 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        92,
+        96
+      ]
+    },
+    {
+      "text": "When an SRET instruction is executed, SIE is set to SPIE, then SPIE is set to 1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        92,
+        96
+      ]
+    },
+    {
+      "text": "The `sstatus` register is a subset of the `mstatus` register.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may differ from the value of XLEN for S-mode, termed SXLEN.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        102,
+        106
+      ]
+    },
+    {
+      "text": "The encoding of UXL is the same as that of the MXL field of `misa`, shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        102,
+        106
+      ]
+    },
+    {
+      "text": "When SXLEN=32, the UXL field does not exist, and UXLEN=32.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        108,
+        112
+      ]
+    },
+    {
+      "text": "When SXLEN=64, it is a *WARL* field that encodes the current value of UXLEN.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        108,
+        112
+      ]
+    },
+    {
+      "text": "In particular, an implementation may make UXL be a read-only field whose value always ensures that UXLEN=SXLEN.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        108,
+        112
+      ]
+    },
+    {
+      "text": "If UXLEN!=SXLEN, instructions executed in the narrower mode must ignore source register operand bits above the configured XLEN, and must sign-extend results to fill the widest supported XLEN in the destination register.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        114,
+        118
+      ]
+    },
+    {
+      "text": "If UXLEN < SXLEN, user-mode instruction-fetch addresses and load and store effective addresses are taken modulo 2^UXLEN^.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        120,
+        123
+      ]
+    },
+    {
+      "text": "For example, when UXLEN=32 and SXLEN=64, user-mode memory accesses reference the lowest 4 GiB of the address space.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        120,
+        123
+      ]
+    },
+    {
+      "text": "Some HINT instructions are encoded as integer computational instructions that overwrite their destination register with its current value, e.g., `c.addi x8, 0`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        125,
+        132
+      ]
+    },
+    {
+      "text": "When such a HINT is executed with XLEN < SXLEN and bits SXLEN..XLEN of the destination register not all equal to bit XLEN-1, it is implementation-defined whether bits SXLEN..XLEN of the destination register are unchanged or are overwritten with copies of bit XLEN-1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        125,
+        132
+      ]
+    },
+    {
+      "text": "NOTE: This definition allows implementations to elide register write-back for some HINTs, while allowing them to execute other HINTs in the same manner as other integer computational instructions.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        134,
+        138
+      ]
+    },
+    {
+      "text": "The implementation choice is observable only by S-mode with SXLEN > UXLEN; it is invisible to U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Base ISA Control in `sstatus` Register",
+      "line_range": [
+        134,
+        138
+      ]
+    },
+    {
+      "text": "The MXR (Make eXecutable Readable) bit modifies the privilege with which loads access virtual memory.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        143,
+        149
+      ]
+    },
+    {
+      "text": "When MXR=0, only loads from pages marked readable (R=1 in ) will succeed.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        143,
+        149
+      ]
+    },
+    {
+      "text": "When MXR=1, loads from pages marked either readable or executable (R=1 or X=1) will succeed. MXR has no effect when page-based virtual memory is not in effect.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        143,
+        149
+      ]
+    },
+    {
+      "text": "The SUM (permit Supervisor User Memory access) bit modifies the privilege with which S-mode loads and stores access virtual memory.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        151,
+        159
+      ]
+    },
+    {
+      "text": "When SUM=0, S-mode memory accesses to pages that are accessible by U-mode (U=1 in ) will fault.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        151,
+        159
+      ]
+    },
+    {
+      "text": "When SUM=1, these accesses are permitted. SUM has no effect when page-based virtual memory is not in effect, nor when executing in U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        151,
+        159
+      ]
+    },
+    {
+      "text": "Note that S-mode can never execute instructions from user pages, regardless of the state of SUM.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        151,
+        159
+      ]
+    },
+    {
+      "text": "SUM is read-only 0 if `satp`.MODE is read-only 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Memory Privilege in `sstatus` Register",
+      "line_range": [
+        161,
+        162
+      ]
+    },
+    {
+      "text": "The UBE bit is a *WARL* field that controls the endianness of explicit memory accesses made from U-mode, which may differ from the endianness of memory accesses in S-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Endianness Control in `sstatus` Register",
+      "line_range": [
+        166,
+        170
+      ]
+    },
+    {
+      "text": "An implementation may make UBE be a read-only field that always specifies the same endianness as for S-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Endianness Control in `sstatus` Register",
+      "line_range": [
+        166,
+        170
+      ]
+    },
+    {
+      "text": "UBE controls whether explicit load and store memory accesses made from U-mode are little-endian (UBE=0) or big-endian (UBE=1).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Endianness Control in `sstatus` Register",
+      "line_range": [
+        172,
+        173
+      ]
+    },
+    {
+      "text": "UBE has no effect on instruction fetches, which are implicit memory accesses that are always little-endian.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Endianness Control in `sstatus` Register",
+      "line_range": [
+        175,
+        177
+      ]
+    },
+    {
+      "text": "For implicit accesses to supervisor-level memory management data structures, such as page tables, S-mode endianness always applies and UBE is ignored.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Endianness Control in `sstatus` Register",
+      "line_range": [
+        179,
+        181
+      ]
+    },
+    {
+      "text": "Access to the `SPELP` field, added by Zicfilp, accesses the homonymous fields of `mstatus` when `V=0`, and the homonymous fields of `vsstatus` when `V=1`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Previous Expected Landing Pad (ELP) State in `sstatus` Register",
+      "line_range": [
+        185,
+        188
+      ]
+    },
+    {
+      "text": "The S-mode-disable-trap (`SDT`) bit is a WARL field introduced by the Ssdbltrp extension to address double trap (See ) at privilege modes lower than M.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        193,
+        196
+      ]
+    },
+    {
+      "text": "When the `SDT` bit is set to 1 by an explicit CSR write, the `SIE` (Supervisor Interrupt Enable) bit is cleared to 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        198,
+        203
+      ]
+    },
+    {
+      "text": "This clearing occurs regardless of the value written, if any, to the `SIE` bit by the same write.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        198,
+        203
+      ]
+    },
+    {
+      "text": "The `SIE` bit can only be set to 1 by an explicit CSR write if the `SDT` bit is being set to 0 by the same write or is already 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        198,
+        203
+      ]
+    },
+    {
+      "text": "When a trap is to be taken into S-mode, if the `SDT` bit is currently 0, it is then set to 1, and the trap is delivered as expected.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "However, if `SDT` is already set to 1, then this is an unexpected trap.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "In the event of an unexpected trap, a double-trap exception trap is delivered into M-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "To deliver this trap, the hart writes registers, except `mcause` and `mtval2`, with the same information that the unexpected trap would have written if it was taken into M-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "The `mtval2` register is then set to what would be otherwise written into the `mcause` register by the unexpected trap.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "The `mcause` register is set to 16, the double-trap exception code.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        205,
+        214
+      ]
+    },
+    {
+      "text": "An `SRET` instruction sets the `SDT` bit to 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Status (`sstatus`) Register > Double Trap Control in `sstatus` Register",
+      "line_range": [
+        216,
+        217
+      ]
+    },
+    {
+      "text": "The `stvec` register is an SXLEN-bit read/write register that holds trap vector configuration, consisting of a vector base address (BASE) and a vector mode (MODE).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        221,
+        224
+      ]
+    },
+    {
+      "text": ".Supervisor trap vector base address (`stvec`) register. include::images/bytefield/stvec.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        226,
+        228
+      ]
+    },
+    {
+      "text": "The BASE field in `stvec` is a field that can hold any valid virtual or physical address, subject to the following alignment constraints: the address must be 4-byte aligned, and MODE settings other than Direct might impose additional alignment constraints on the value in the BASE field.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        230,
+        239
+      ]
+    },
+    {
+      "text": "Note that the CSR contains only bits XLEN-1 through 2 of the address BASE.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        230,
+        239
+      ]
+    },
+    {
+      "text": "When used as an address, the lower two bits are filled with zeroes to obtain an XLEN-bit address that is always aligned on a 4-byte boundary.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        230,
+        239
+      ]
+    },
+    {
+      "text": ".Encoding of `stvec` MODE field. | |Value |Name |Description |0 + 1 + {ge}2 |Direct + Vectored |All exceptions set `pc` to BASE. + Asynchronous interrupts set `pc` to BASE+4{times}cause. + Reserved |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        241,
+        254
+      ]
+    },
+    {
+      "text": "The encoding of the MODE field is shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        256,
+        265
+      ]
+    },
+    {
+      "text": "When MODE=Direct, all traps into supervisor mode cause the `pc` to be set to the address in the BASE field.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        256,
+        265
+      ]
+    },
+    {
+      "text": "When MODE=Vectored, all synchronous exceptions into supervisor mode cause the `pc` to be set to the address in the BASE field, whereas interrupts cause the `pc` to be set to the address in the BASE field plus four times the interrupt cause number.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        256,
+        265
+      ]
+    },
+    {
+      "text": "For example, a supervisor-mode timer interrupt (see ) causes the `pc` to be set to BASE+`0x14`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        256,
+        265
+      ]
+    },
+    {
+      "text": "Setting MODE=Vectored may impose a stricter alignment constraint on BASE.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Vector Base Address (`stvec`)  Register",
+      "line_range": [
+        256,
+        265
+      ]
+    },
+    {
+      "text": "The `sip` register is an SXLEN-bit read/write register containing information on pending interrupts, while `sie` is the corresponding SXLEN-bit read/write register containing interrupt enable bits.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        269,
+        276
+      ]
+    },
+    {
+      "text": "Interrupt cause number i (as reported in CSR `scause`, ) corresponds with bit i in both `sip` and `sie`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        269,
+        276
+      ]
+    },
+    {
+      "text": "Bits 15:0 are allocated to standard interrupt causes only, while bits 16 and above are designated for platform use.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        269,
+        276
+      ]
+    },
+    {
+      "text": ".Supervisor interrupt-pending register (`sip`). include::images/bytefield/sip.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        278,
+        279
+      ]
+    },
+    {
+      "text": ".Supervisor interrupt-enable register (`sie`). include::images/bytefield/sie.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        281,
+        282
+      ]
+    },
+    {
+      "text": "An interrupt i will trap to S-mode if both of the following are true: (a) either the current privilege mode is S and the SIE bit in the `sstatus` register is set, or the current privilege mode has less privilege than S-mode; and (b) bit i is set in both `sip` and `sie`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        284,
+        288
+      ]
+    },
+    {
+      "text": "These conditions for an interrupt trap to occur must be evaluated in a bounded amount of time from when an interrupt becomes, or ceases to be, pending in `sip`, and must also be evaluated immediately following the execution of an SRET instruction or an explicit write to a CSR on which these interrupt trap conditions expressly depend (including `sip`, `sie` and `sstatus`).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        290,
+        296
+      ]
+    },
+    {
+      "text": "Interrupts to S-mode take priority over any interrupts to lower privilege modes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        298,
+        300
+      ]
+    },
+    {
+      "text": "Each individual bit in register `sip` may be writable or may be read-only.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        302,
+        307
+      ]
+    },
+    {
+      "text": "When bit i in `sip` is writable, a pending interrupt i can be cleared by writing 0 to this bit.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        302,
+        307
+      ]
+    },
+    {
+      "text": "If interrupt i can become pending but bit i in `sip` is read-only, the implementation must provide some other mechanism for clearing the pending interrupt (which may involve a call to the execution environment).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        302,
+        307
+      ]
+    },
+    {
+      "text": "A bit in `sie` must be writable if the corresponding interrupt can ever become pending.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        309,
+        310
+      ]
+    },
+    {
+      "text": "Bits of `sie` that are not writable are read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        309,
+        310
+      ]
+    },
+    {
+      "text": "The standard portions (bits 15:0) of registers `sip` and `sie` are formatted as shown in Figures and respectively.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        312,
+        315
+      ]
+    },
+    {
+      "text": ".Standard portion (bits 15:0) of `sip`. include::images/bytefield/sipreg-standard.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        317,
+        319
+      ]
+    },
+    {
+      "text": ".Standard portion (bits 15:0) of `sie`. include::images/bytefield/siereg-standard.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        321,
+        323
+      ]
+    },
+    {
+      "text": "Bits `sip`.SEIP and `sie`.SEIE are the interrupt-pending and interrupt-enable bits for supervisor-level external interrupts.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        325,
+        330
+      ]
+    },
+    {
+      "text": "If implemented, SEIP is read-only in `sip`, and is set and cleared by the execution environment, typically through a platform-specific interrupt controller.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        325,
+        330
+      ]
+    },
+    {
+      "text": "Bits `sip`.STIP and `sie`.STIE are the interrupt-pending and interrupt-enable bits for supervisor-level timer interrupts.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        332,
+        340
+      ]
+    },
+    {
+      "text": "If implemented, STIP is read-only in `sip`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        332,
+        340
+      ]
+    },
+    {
+      "text": "When the Sstc extension is not implemented, STIP is set and cleared by the execution environment.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        332,
+        340
+      ]
+    },
+    {
+      "text": "When the Sstc extension is implemented, STIP reflects the timer interrupt signal resulting from `stimecmp`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        332,
+        340
+      ]
+    },
+    {
+      "text": "The `sip`.STIP bit, in response to timer interrupts generated by `stimecmp`, is set by writing `stimecmp` with a value that is less than or equal to `time`, and is cleared by writing `stimecmp` with a value greater than `time`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        332,
+        340
+      ]
+    },
+    {
+      "text": "Bits `sip`.SSIP and `sie`.SSIE are the interrupt-pending and interrupt-enable bits for supervisor-level software interrupts.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        342,
+        346
+      ]
+    },
+    {
+      "text": "If implemented, SSIP is writable in `sip` and may also be set to 1 by a platform-specific interrupt controller.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        342,
+        346
+      ]
+    },
+    {
+      "text": "If the Sscofpmf extension is implemented, bits `sip`.LCOFIP and `sie`.LCOFIE are the interrupt-pending and interrupt-enable bits for local-counter-overflow interrupts. LCOFIP is read-write in `sip` and reflects the occurrence of a local counter-overflow overflow interrupt request resulting from any of the `mhpmeventn`.OF bits being set.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        348,
+        356
+      ]
+    },
+    {
+      "text": "If the Sscofpmf extension is not implemented, `sip`.LCOFIP and `sie`.LCOFIE are read-only zeros.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        348,
+        356
+      ]
+    },
+    {
+      "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented, in which case the corresponding interrupt-pending and interrupt-enable bits are read-only zeros.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        358,
+        363
+      ]
+    },
+    {
+      "text": "All bits in `sip` and `sie` are *WARL* fields.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        358,
+        363
+      ]
+    },
+    {
+      "text": "The implemented interrupts may be found by writing one to every bit location in `sie`, then reading back to see which bit positions hold a one.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        358,
+        363
+      ]
+    },
+    {
+      "text": "Multiple simultaneous interrupts destined for supervisor mode are handled in the following decreasing priority order: SEI, SSI, STI, LCOFI.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Interrupt (`sip` and `sie`) Registers",
+      "line_range": [
+        365,
+        367
+      ]
+    },
+    {
+      "text": "Supervisor software uses the same hardware performance monitoring facility as user-mode software, including the `time`, `cycle`, and `instret` CSRs.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timers and Performance Counters",
+      "line_range": [
+        372,
+        375
+      ]
+    },
+    {
+      "text": "The implementation should provide a mechanism to modify the counter values.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timers and Performance Counters",
+      "line_range": [
+        372,
+        375
+      ]
+    },
+    {
+      "text": "The implementation must provide a facility for scheduling timer interrupts in terms of the real-time counter, `time`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timers and Performance Counters",
+      "line_range": [
+        377,
+        379
+      ]
+    },
+    {
+      "text": ".Counter-enable (`scounteren`) register include::images/bytefield/scounteren.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        383,
+        384
+      ]
+    },
+    {
+      "text": "The counter-enable (`scounteren`) CSR is a 32-bit register that controls the availability of the hardware performance monitoring counters to U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        386,
+        389
+      ]
+    },
+    {
+      "text": "When the CY, TM, IR, or HPMn bit in the `scounteren` register is clear, attempts to read the `cycle`, `time`, `instret`, or `hpmcountern` register while executing in U-mode will cause an illegal-instruction exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        391,
+        396
+      ]
+    },
+    {
+      "text": "When one of these bits is set, access to the corresponding register is permitted.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        391,
+        396
+      ]
+    },
+    {
+      "text": "`scounteren` must be implemented.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        398,
+        402
+      ]
+    },
+    {
+      "text": "However, any of the bits may be read-only zero, indicating reads to the corresponding counter will cause an exception when executing in U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        398,
+        402
+      ]
+    },
+    {
+      "text": "Hence, they are effectively *WARL* fields.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Counter-Enable (`scounteren`) Register",
+      "line_range": [
+        398,
+        402
+      ]
+    },
+    {
+      "text": "The `sscratch` CSR is an SXLEN-bit read/write register, dedicated for use by the supervisor.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Scratch (`sscratch`) Register",
+      "line_range": [
+        406,
+        413
+      ]
+    },
+    {
+      "text": "Typically, `sscratch` is used to hold a pointer to the hart-local supervisor context while the hart is executing user code.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Scratch (`sscratch`) Register",
+      "line_range": [
+        406,
+        413
+      ]
+    },
+    {
+      "text": "At the beginning of a trap handler, software normally uses a CSRRW instruction to swap `sscratch` with an integer register to obtain an initial working register.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Scratch (`sscratch`) Register",
+      "line_range": [
+        406,
+        413
+      ]
+    },
+    {
+      "text": ".Supervisor Scratch Register include::images/bytefield/sscratch.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Scratch (`sscratch`) Register",
+      "line_range": [
+        415,
+        416
+      ]
+    },
+    {
+      "text": "`sepc` is an SXLEN-bit read/write CSR formatted as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        420,
+        422
+      ]
+    },
+    {
+      "text": "The low bit of `sepc` (`sepc[0]`) is always zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        420,
+        422
+      ]
+    },
+    {
+      "text": "On implementations that support only IALIGN=32, the two low bits (`sepc[1:0]`) are always zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        420,
+        422
+      ]
+    },
+    {
+      "text": "If an implementation allows IALIGN to be either 16 or 32 (by changing CSR `misa`, for example), then, whenever IALIGN=32, bit `sepc[1]` is masked on reads so that it appears to be 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        424,
+        429
+      ]
+    },
+    {
+      "text": "This masking occurs also for the implicit read by the SRET instruction.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        424,
+        429
+      ]
+    },
+    {
+      "text": "Though masked, `sepc[1]` remains writable when IALIGN=32.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        424,
+        429
+      ]
+    },
+    {
+      "text": "`sepc` is a *WARL* register that must be able to hold all valid virtual addresses.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        431,
+        436
+      ]
+    },
+    {
+      "text": "It need not be capable of holding all possible invalid addresses.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        431,
+        436
+      ]
+    },
+    {
+      "text": "Prior to writing `sepc`, implementations may convert an invalid address into some other invalid address that `sepc` is capable of holding.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        431,
+        436
+      ]
+    },
+    {
+      "text": "When a trap is taken into S-mode, `sepc` is written with the virtual address of the instruction that was interrupted or that encountered the exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        438,
+        442
+      ]
+    },
+    {
+      "text": "Otherwise, `sepc` is never written by the implementation, though it may be explicitly written by software.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        438,
+        442
+      ]
+    },
+    {
+      "text": ".Supervisor exception program counter register. include::images/bytefield/epcreg.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Exception Program Counter (`sepc`) Register",
+      "line_range": [
+        444,
+        446
+      ]
+    },
+    {
+      "text": "The `scause` CSR is an SXLEN-bit read-write register formatted as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        451,
+        456
+      ]
+    },
+    {
+      "text": "When a trap is taken into S-mode, `scause` is written with a code indicating the event that caused the trap.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        451,
+        456
+      ]
+    },
+    {
+      "text": "Otherwise, `scause` is never written by the implementation, though it may be explicitly written by software.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        451,
+        456
+      ]
+    },
+    {
+      "text": "The Interrupt bit in the `scause` register is set if the trap was caused by an interrupt.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        458,
+        465
+      ]
+    },
+    {
+      "text": "The Exception Code field contains a code identifying the last exception or interrupt. lists the possible exception codes for the current supervisor ISAs.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        458,
+        465
+      ]
+    },
+    {
+      "text": "The Exception Code is a *WLRL* field.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        458,
+        465
+      ]
+    },
+    {
+      "text": "It is required to hold the values 0–31 (i.e., bits 4–0 must be implemented), but otherwise it is only guaranteed to hold supported exception codes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        458,
+        465
+      ]
+    },
+    {
+      "text": ".Supervisor Cause (`scause`) register. include::images/bytefield/scausereg.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        467,
+        469
+      ]
+    },
+    {
+      "text": ".Supervisor cause (`scause`) register values after trap.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        471,
+        505
+      ]
+    },
+    {
+      "text": "Synchronous exception priorities are given by . | |Interrupt |Exception Code |Description |1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 |0 + 1 + 2-4 + 5 + 6-8 + 9 + 10-12 + 13 + 14-15 + {ge}16 |Reserved + Supervisor software interrupt + Reserved + Supervisor timer interrupt + Reserved + Supervisor external interrupt + Reserved + Counter-overflow interrupt + Reserved + Designated for platform use",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        471,
+        505
+      ]
+    },
+    {
+      "text": "|0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 |0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10-11 + 12 + 13 + 14 + 15 + 16-17 + 18 + 19 + 20-23 + 24-31 + 32-47 + 48-63 + {ge}64 |Instruction address misaligned + Instruction access fault + Illegal instruction + Breakpoint + Load address misaligned + Load access fault + Store/AMO address misaligned + Store/AMO access fault + Environment call from U-mode + Environment call from S-mode + Reserved + Instruction page fault + Load page fault + Reserved + Store/AMO page fault + Reserved + Software check + Hardware error + Reserved + Designated for custom use + Reserved + Designated for custom use + Reserved |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Cause (`scause`) Register",
+      "line_range": [
+        507,
+        576
+      ]
+    },
+    {
+      "text": "The `stval` CSR is an SXLEN-bit read-write register formatted as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        580,
+        589
+      ]
+    },
+    {
+      "text": "When a trap is taken into S-mode, `stval` is written with exception-specific information to assist software in handling the trap.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        580,
+        589
+      ]
+    },
+    {
+      "text": "Otherwise, `stval` is never written by the implementation, though it may be explicitly written by software.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        580,
+        589
+      ]
+    },
+    {
+      "text": "The hardware platform will specify which exceptions must set `stval` informatively, which may unconditionally set it to zero, and which may exhibit either behavior, depending on the underlying event that caused the exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        580,
+        589
+      ]
+    },
+    {
+      "text": "If `stval` is written with a nonzero value when a breakpoint, address-misaligned, access-fault, page-fault, or hardware-error exception occurs on an instruction fetch, load, or store, then `stval` will contain the faulting virtual address.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        591,
+        596
+      ]
+    },
+    {
+      "text": "On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, `stval` is written with either zero or the virtual address of the instruction.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        598,
+        600
+      ]
+    },
+    {
+      "text": ".Supervisor Trap Value register. include::images/bytefield/stvalreg.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        602,
+        604
+      ]
+    },
+    {
+      "text": "If `stval` is written with a nonzero value when a misaligned load or store causes an access-fault, page-fault, or hardware-error exception, then `stval` will contain the virtual address of the portion of the access that caused the fault.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        606,
+        611
+      ]
+    },
+    {
+      "text": "If `stval` is written with a nonzero value when an instruction access-fault, page-fault, or hardware-error exception occurs on a hart with variable-length instructions, then `stval` will contain the virtual address of the portion of the instruction that caused the fault, while `sepc` will point to the beginning of the instruction.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        613,
+        618
+      ]
+    },
+    {
+      "text": "The `stval` register can optionally also be used to return the faulting instruction bits on an illegal-instruction exception (`sepc` points to the faulting instruction in memory).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        620,
+        625
+      ]
+    },
+    {
+      "text": "If `stval` is written with a nonzero value when an illegal-instruction exception occurs, then `stval` will contain the shortest of:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        620,
+        625
+      ]
+    },
+    {
+      "text": "the actual faulting instruction * the first ILEN bits of the faulting instruction * the first SXLEN bits of the faulting instruction",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        627,
+        629
+      ]
+    },
+    {
+      "text": "The value loaded into `stval` on an illegal-instruction exception is right-justified and all unused upper bits are cleared to zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        631,
+        633
+      ]
+    },
+    {
+      "text": "On a trap caused by a software-check exception, the `stval` register holds the cause for the exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        635,
+        637
+      ]
+    },
+    {
+      "text": "The following encodings are defined:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        635,
+        637
+      ]
+    },
+    {
+      "text": "0 - No information provided. * 2 - Landing Pad Fault.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        639,
+        641
+      ]
+    },
+    {
+      "text": "Defined by the Zicfilp extension (). * 3 - Shadow Stack Fault.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        639,
+        641
+      ]
+    },
+    {
+      "text": "Defined by the Zicfiss extension ().",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        639,
+        641
+      ]
+    },
+    {
+      "text": "For other traps, `stval` is set to zero, but a future standard may redefine `stval`’s setting for other traps.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        643,
+        645
+      ]
+    },
+    {
+      "text": "`stval` is a *WARL* register that must be able to hold all valid virtual addresses and the value 0.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        647,
+        655
+      ]
+    },
+    {
+      "text": "It need not be capable of holding all possible invalid addresses.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        647,
+        655
+      ]
+    },
+    {
+      "text": "Prior to writing `stval`, implementations may convert an invalid address into some other invalid address that `stval` is capable of holding.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        647,
+        655
+      ]
+    },
+    {
+      "text": "If the feature to return the faulting instruction bits is implemented, `stval` must also be able to hold all values less than 2^N^, where N is the smaller of SXLEN and ILEN.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Trap Value (`stval`) Register",
+      "line_range": [
+        647,
+        655
+      ]
+    },
+    {
+      "text": "The `senvcfg` CSR is an SXLEN-bit read/write register, formatted as shown in , that controls certain characteristics of the U-mode execution environment.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        660,
+        663
+      ]
+    },
+    {
+      "text": ".Supervisor environment configuration register (`senvcfg`) for RV64. [wavedrom, ,svg] .... {reg: [ {bits: 1, name: 'FIOM'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'LPE'}, {bits: 1, name: 'SSE'}, {bits: 2, name: 'CBIE'}, {bits: 1, name: 'CBCFE'}, {bits: 1, name: 'CBZE'}, {bits: 24, name: 'WPRI'}, {bits: 2, name: 'PMM'}, {bits: 30, name: 'WPRI'}, ], config:{lanes: 4, hspace:1024}} ....",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        665,
+        681
+      ]
+    },
+    {
+      "text": ".Supervisor environment configuration register (`senvcfg`) for RV32. [wavedrom, ,svg] .... {reg: [ {bits: 1, name: 'FIOM'}, {bits: 1, name: 'WPRI'}, {bits: 1, name: 'LPE'}, {bits: 1, name: 'SSE'}, {bits: 2, name: 'CBIE'}, {bits: 1, name: 'CBCFE'}, {bits: 1, name: 'CBZE'}, {bits: 24, name: 'WPRI'}, ], config:{lanes: 2, hspace:1024}} ....",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        683,
+        696
+      ]
+    },
+    {
+      "text": "If bit FIOM (Fence of I/O implies Memory) is set to one in `senvcfg`, FENCE instructions executed in U-mode are modified so the requirement to order accesses to device I/O implies also the requirement to order main memory accesses. details the modified interpretation of FENCE instruction bits PI, PO, SI, and SO in U-mode when FIOM=1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        698,
+        704
+      ]
+    },
+    {
+      "text": "Similarly, for U-mode when FIOM=1, if an atomic instruction that accesses a region ordered as device I/O has its aq and/or rl bit set, then that instruction is ordered as though it accesses both device I/O and memory.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        706,
+        710
+      ]
+    },
+    {
+      "text": "If `satp`.MODE is read-only zero (always Bare), the implementation may make FIOM read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        712,
+        714
+      ]
+    },
+    {
+      "text": ".Modified interpretation of FENCE predecessor and successor sets in U-mode when FIOM=1. | |Instruction bit |Meaning when set |PI + PO |Predecessor device input and memory reads (PR implied) + Predecessor device output and memory writes (PW implied) |SI + SO |Successor device input and memory reads (SR implied) + Successor device output and memory writes (SW implied) |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        716,
+        729
+      ]
+    },
+    {
+      "text": "The Zicboz extension adds the `CBZE` (Cache Block Zero instruction enable) field to `senvcfg`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        731,
+        737
+      ]
+    },
+    {
+      "text": "The `CBZE` field controls execution of the cache block zero instruction (`CBO.ZERO`) in U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        731,
+        737
+      ]
+    },
+    {
+      "text": "Execution of `CBO.ZERO` in U-mode is enabled only if execution of the instruction is enabled for use in S-mode and `CBZE` is set to 1; otherwise, an illegal-instruction exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        731,
+        737
+      ]
+    },
+    {
+      "text": "When the Zicboz extension is not implemented, `CBZE` is read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        731,
+        737
+      ]
+    },
+    {
+      "text": "The Zicbom extension adds the `CBCFE` (Cache Block Clean and Flush instruction Enable) field to `senvcfg` to control execution of the `CBO.CLEAN` and `CBO.FLUSH` instructions in U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        739,
+        745
+      ]
+    },
+    {
+      "text": "Execution of these instructions in U-mode is enabled only if execution of these instructions is enabled for use in S-mode and `CBCFE` is set to 1; otherwise, an illegal-instruction exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        739,
+        745
+      ]
+    },
+    {
+      "text": "When the Zicbom extension is not implemented, `CBCFE` is read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        739,
+        745
+      ]
+    },
+    {
+      "text": "The Zicbom extension adds the `CBIE` (Cache Block Invalidate instruction Enable) WARL field to `senvcfg` to control execution of the `CBO.INVAL` instruction in U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        747,
+        754
+      ]
+    },
+    {
+      "text": "The encoding `10b` is reserved.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        747,
+        754
+      ]
+    },
+    {
+      "text": "When the Zicbom extension is not implemented, `CBIE` is read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        747,
+        754
+      ]
+    },
+    {
+      "text": "Execution of `CBO.INVAL` in U-mode is enabled only if execution of the instruction is enabled for use in S-mode and `CBIE` is set to `01b` or `11b`; otherwise, an illegal-instruction exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        747,
+        754
+      ]
+    },
+    {
+      "text": "If `CBO.INVAL` is enabled in S-mode to perform a flush operation, then when the instruction is enabled in U-mode it performs a flush operation, even if `CBIE` is set to `11b`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        756,
+        759
+      ]
+    },
+    {
+      "text": "Otherwise, the instruction behaves as follows, depending on the `CBIE` encoding:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        756,
+        759
+      ]
+    },
+    {
+      "text": "`01b` -- The instruction is executed and performs a flush operation. * `11b` -- The instruction is executed and performs an invalidate operation.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        761,
+        762
+      ]
+    },
+    {
+      "text": "If the Ssnpm extension is implemented, the `PMM` field enables or disables pointer masking (see ) for the next-lower privilege mode (U/VU), according to the values in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        764,
+        769
+      ]
+    },
+    {
+      "text": "If Ssnpm is not implemented, `PMM` is read-only zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        764,
+        769
+      ]
+    },
+    {
+      "text": "The `PMM` field is read-only zero for RV32.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        764,
+        769
+      ]
+    },
+    {
+      "text": ".Legal values of `PMM` WARL field | |Value|Description |00|Pointer masking is disabled (PMLEN = 0) |01|Reserved |10|Pointer masking is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64) |11|Pointer masking is enabled with PMLEN = XLEN - 48 (PMLEN = 16 on RV64) |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        773,
+        781
+      ]
+    },
+    {
+      "text": "The Zicfilp extension adds the `LPE` field in `senvcfg`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        783,
+        787
+      ]
+    },
+    {
+      "text": "When the `LPE` field is set to 1, the Zicfilp extension is enabled in VU/U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        783,
+        787
+      ]
+    },
+    {
+      "text": "When the `LPE` field is 0, the Zicfilp extension is not enabled in VU/U-mode and the following rules apply to VU/U-mode:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        783,
+        787
+      ]
+    },
+    {
+      "text": "The hart does not update the `ELP` state; it remains as `NOLPEXPECTED`. * The `LPAD` instruction operates as a no-op.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        789,
+        790
+      ]
+    },
+    {
+      "text": "The Zicfiss extension adds the `SSE` field in `senvcfg`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        792,
+        796
+      ]
+    },
+    {
+      "text": "When the `SSE` field is set to 1, the Zicfiss extension is activated in VU/U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        792,
+        796
+      ]
+    },
+    {
+      "text": "When the `SSE` field is 0, the Zicfiss extension remains inactive in VU/U-mode, and the following rules apply:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        792,
+        796
+      ]
+    },
+    {
+      "text": "32-bit Zicfiss instructions will revert to their behavior as defined by Zimop. * 16-bit Zicfiss instructions will revert to their behavior as defined by Zcmop. *",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        798,
+        801
+      ]
+    },
+    {
+      "text": "When `menvcfg.SSE` is one, `SSAMOSWAP.W/D` raises an illegal-instruction exception in U-mode and a virtual-instruction exception in VU-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Environment Configuration (`senvcfg`) Register",
+      "line_range": [
+        798,
+        801
+      ]
+    },
+    {
+      "text": "The `satp` CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32 and for SXLEN=64, which controls supervisor-mode address translation and protection.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        806,
+        816
+      ]
+    },
+    {
+      "text": "This register holds the physical page number (PPN) of the root page table, i.e., its supervisor physical address divided by 4 KiB; an address space identifier (ASID), which facilitates address-translation fences on a per-address-space basis; and the MODE field, which selects the current address-translation scheme.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        806,
+        816
+      ]
+    },
+    {
+      "text": "Further details on the access to this register are described in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        806,
+        816
+      ]
+    },
+    {
+      "text": ".Supervisor address translation and protection (`satp`) register when SXLEN=32. include::images/bytefield/rv32satp.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        818,
+        820
+      ]
+    },
+    {
+      "text": ".Supervisor address translation and protection (`satp`) register when SXLEN=64, for MODE values Bare, Sv39, Sv48, and Sv57. include::images/bytefield/rv64satp.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        822,
+        824
+      ]
+    },
+    {
+      "text": "shows the encodings of the MODE field when SXLEN=32 and SXLEN=64.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        826,
+        836
+      ]
+    },
+    {
+      "text": "When MODE=Bare, supervisor virtual addresses are equal to supervisor physical addresses, and there is no additional memory protection beyond the physical memory protection scheme described in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        826,
+        836
+      ]
+    },
+    {
+      "text": "To select MODE=Bare, software must write zero to the remaining fields of `satp` (bits 30–0 when SXLEN=32, or bits 59–0 when SXLEN=64).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        826,
+        836
+      ]
+    },
+    {
+      "text": "Attempting to select MODE=Bare with a nonzero pattern in the remaining fields has an UNSPECIFIED effect on the value that the remaining fields assume and an UNSPECIFIED effect on address translation and protection behavior.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        826,
+        836
+      ]
+    },
+    {
+      "text": "When SXLEN=32, the `satp` encodings corresponding to MODE=Bare and ASID[8:7]=3 are designated for custom use, whereas the encodings corresponding to MODE=Bare and ASID[8:7]!=3 are reserved for future standard use.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        838,
+        842
+      ]
+    },
+    {
+      "text": "When SXLEN=64, all `satp` encodings corresponding to MODE=Bare are reserved for future standard use.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        838,
+        842
+      ]
+    },
+    {
+      "text": "If an implementation supports the Svbare extension, then the `satp` register's MODE field must be capable of holding the value Bare.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        844,
+        846
+      ]
+    },
+    {
+      "text": "When SXLEN=32, the only other valid setting for MODE is Sv32, a paged virtual-memory scheme described in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        848,
+        850
+      ]
+    },
+    {
+      "text": "When SXLEN=64, three paged virtual-memory schemes are defined: Sv39, Sv48, and Sv57, described in , , and , respectively.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        852,
+        858
+      ]
+    },
+    {
+      "text": "One additional scheme, Sv64, will be defined in a later version of this specification.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        852,
+        858
+      ]
+    },
+    {
+      "text": "The remaining MODE settings are reserved for future use and may define different interpretations of the other fields in `satp`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        852,
+        858
+      ]
+    },
+    {
+      "text": "Implementations are not required to support all MODE settings, and if `satp` is written with an unsupported MODE, the entire write has no effect; no fields in `satp` are modified.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        860,
+        863
+      ]
+    },
+    {
+      "text": "The number of ASID bits is UNSPECIFIED and may be zero.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        865,
+        873
+      ]
+    },
+    {
+      "text": "The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in the ASID field, then reading back the value in `satp` to see which bit positions in the ASID field hold a one.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        865,
+        873
+      ]
+    },
+    {
+      "text": "The least-significant bits of ASID are implemented first: that is, if ASIDLEN > 0, ASID[ASIDLEN-1:0] is writable.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        865,
+        873
+      ]
+    },
+    {
+      "text": "The maximal value of ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for Sv39, Sv48, and Sv57.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        865,
+        873
+      ]
+    },
+    {
+      "text": ".Encoding of `satp` MODE field. | 3+|SXLEN=32 |Value |Name |Description |0 + 1 |Bare + Sv32 |No translation or protection. + Page-based 32-bit virtual addressing (see ). 3+|*SXLEN=64* |Value |Name |Description |0 + 1-7 + 8 + 9 + 10 + 11 + 12-13 + 14-15 |Bare + - + Sv39 + Sv48 + Sv57 + Sv64 + - + - |No translation or protection. + Reserved for standard use + Page-based 39-bit virtual addressing (see ). + Page-based 48-bit virtual addressing (see ). + Page-based 57-bit virtual addressing (see ). + Reserved for page-based 64-bit virtual addressing. + Reserved for standard use + Designated for custom use |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        877,
+        915
+      ]
+    },
+    {
+      "text": "The `satp` CSR is considered active when the effective privilege mode is S-mode or U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        917,
+        921
+      ]
+    },
+    {
+      "text": "Executions of the address-translation algorithm may only begin using a given value of `satp` when `satp` is active.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        917,
+        921
+      ]
+    },
+    {
+      "text": "Note that writing `satp` does not imply any ordering constraints between page-table updates and subsequent address translations, nor does it imply any invalidation of address-translation caches.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        923,
+        930
+      ]
+    },
+    {
+      "text": "If the new address space’s page tables have been modified, or if an ASID is reused, it may be necessary to execute an SFENCE.VMA instruction (see ) after, or in some cases before, writing `satp`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Address Translation and Protection (`satp`) Register",
+      "line_range": [
+        923,
+        930
+      ]
+    },
+    {
+      "text": "The `stimecmp` CSR is a 64-bit register and has 64-bit precision on all RV32 and RV64 systems.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        935,
+        938
+      ]
+    },
+    {
+      "text": "In RV32 only, accesses to the `stimecmp` CSR access the low 32 bits, while accesses to the `stimecmph` CSR access the high 32 bits of `stimecmp`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        935,
+        938
+      ]
+    },
+    {
+      "text": "A supervisor timer interrupt becomes pending, as reflected in the STIP bit in the `mip` and `sip` registers whenever `time` contains a value greater than or equal to `stimecmp`, treating the values as unsigned integers.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        940,
+        949
+      ]
+    },
+    {
+      "text": "If the result of this comparison changes, it is guaranteed to be reflected in STIP eventually, but not necessarily immediately.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        940,
+        949
+      ]
+    },
+    {
+      "text": "The interrupt remains posted until `stimecmp` becomes greater than `time`, typically as a result of writing `stimecmp`.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        940,
+        949
+      ]
+    },
+    {
+      "text": "The interrupt will be taken based on the standard interrupt enable and delegation rules.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor CSRs > Supervisor Timer (`stimecmp`) Register",
+      "line_range": [
+        940,
+        949
+      ]
+    },
+    {
+      "text": "In addition to the SRET instruction defined in , one new supervisor-level instruction is provided.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions",
+      "line_range": [
+        953,
+        953
+      ]
+    },
+    {
+      "text": "The supervisor memory-management fence instruction SFENCE.VMA is used to synchronize updates to in-memory memory-management data structures with current execution.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        960,
+        972
+      ]
+    },
+    {
+      "text": "Instruction execution causes implicit reads and writes to these data structures; however, these implicit references are ordinarily not ordered with respect to explicit loads and stores.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        960,
+        972
+      ]
+    },
+    {
+      "text": "Executing an SFENCE.VMA instruction guarantees that any previous stores already visible to the current RISC-V hart are ordered before certain implicit references by subsequent instructions in that hart to the memory-management data structures.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        960,
+        972
+      ]
+    },
+    {
+      "text": "The specific set of operations ordered by SFENCE.VMA is determined by rs1 and rs2, as described below. SFENCE.VMA is also used to invalidate entries in the address-translation cache associated with a hart (see ).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        960,
+        972
+      ]
+    },
+    {
+      "text": "Further details on the behavior of this instruction are described in and .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        960,
+        972
+      ]
+    },
+    {
+      "text": "SFENCE.VMA orders only the local hart’s implicit references to the memory-management data structures.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        974,
+        975
+      ]
+    },
+    {
+      "text": "For the common case that the translation data structures have only been modified for a single address mapping (i.e., one page or superpage), rs1 can specify a virtual address within that mapping to effect a translation fence for that mapping only.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        977,
+        983
+      ]
+    },
+    {
+      "text": "Furthermore, for the common case that the translation data structures have only been modified for a single address-space identifier, rs2 can specify the address space.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        977,
+        983
+      ]
+    },
+    {
+      "text": "The behavior of SFENCE.VMA depends on rs1 and rs2 as follows:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        977,
+        983
+      ]
+    },
+    {
+      "text": "If rs1=`x0` and rs2=`x0`, the fence orders all reads and writes made to any level of the page tables, for all address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        985,
+        988
+      ]
+    },
+    {
+      "text": "The fence also invalidates all address-translation cache entries, for all address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        985,
+        988
+      ]
+    },
+    {
+      "text": "If rs1=`x0` and rs2{ne}``x0``, the fence orders all reads and writes made to any level of the page tables, but only for the address space identified by integer register rs2.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        990,
+        996
+      ]
+    },
+    {
+      "text": "Accesses to global mappings (see ) are not ordered.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        990,
+        996
+      ]
+    },
+    {
+      "text": "The fence also invalidates all address-translation cache entries matching the address space identified by integer register rs2, except for entries containing global mappings.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        990,
+        996
+      ]
+    },
+    {
+      "text": "If rs1{ne}``x0`` and rs2=`x0`, the fence orders only reads and writes made to leaf page table entries corresponding to the virtual address in rs1, for all address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        998,
+        1003
+      ]
+    },
+    {
+      "text": "The fence also invalidates all address-translation cache entries that contain leaf page table entries corresponding to the virtual address in rs1, for all address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        998,
+        1003
+      ]
+    },
+    {
+      "text": "If rs1{ne}``x0`` and rs2{ne}``x0``, the fence orders only reads and writes made to leaf page table entries corresponding to the virtual address in rs1, for the address space identified by integer register rs2.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1005,
+        1012
+      ]
+    },
+    {
+      "text": "Accesses to global mappings are not ordered.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1005,
+        1012
+      ]
+    },
+    {
+      "text": "The fence also invalidates all address-translation cache entries that contain leaf page table entries corresponding to the virtual address in rs1 and that match the address space identified by integer register rs2, except for entries containing global mappings.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1005,
+        1012
+      ]
+    },
+    {
+      "text": "If the value held in rs1 is not a valid virtual address, then the SFENCE.VMA instruction has no effect.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1014,
+        1017
+      ]
+    },
+    {
+      "text": "No exception is raised in this case.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1014,
+        1017
+      ]
+    },
+    {
+      "text": "When rs2{ne}``x0``, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for future standard use.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1019,
+        1025
+      ]
+    },
+    {
+      "text": "Until their use is defined by a standard extension, they should be zeroed by software and ignored by current implementations.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1019,
+        1025
+      ]
+    },
+    {
+      "text": "Furthermore, if ASIDLEN<ASIDMAX, the implementation shall ignore bits ASIDMAX-1:ASIDLEN of the value held in rs2.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1019,
+        1025
+      ]
+    },
+    {
+      "text": "An implicit read of the memory-management data structures may return any translation for an address that was valid at any time since the most recent SFENCE.VMA that subsumes that address.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1027,
+        1040
+      ]
+    },
+    {
+      "text": "The ordering implied by SFENCE.VMA does not place implicit reads and writes to the memory-management data structures into the global memory order in a way that interacts cleanly with the standard RVWMO ordering rules.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1027,
+        1040
+      ]
+    },
+    {
+      "text": "In particular, even though an SFENCE.VMA orders prior explicit accesses before subsequent implicit accesses, and those implicit accesses are ordered before their associated explicit accesses, SFENCE.VMA does not necessarily place prior explicit accesses before subsequent explicit accesses in the global memory order.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1027,
+        1040
+      ]
+    },
+    {
+      "text": "These implicit loads also need not otherwise obey normal program order semantics with respect to prior loads or stores to the same address.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1027,
+        1040
+      ]
+    },
+    {
+      "text": "Implementations must only perform implicit reads of the translation data structures pointed to by the current contents of the `satp` register or a subsequent valid (V=1) translation data structure entry, and must only raise exceptions for implicit accesses that are generated as a result of instruction execution, not those that are performed speculatively.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1042,
+        1047
+      ]
+    },
+    {
+      "text": "Changes to the `sstatus` fields SUM and MXR take effect immediately, without the need to execute an SFENCE.VMA instruction.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1049,
+        1054
+      ]
+    },
+    {
+      "text": "Changing `satp`.MODE from Bare to other modes and vice versa also takes effect immediately, without the need to execute an SFENCE.VMA instruction.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1049,
+        1054
+      ]
+    },
+    {
+      "text": "Likewise, changes to `satp`.ASID take effect immediately.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1049,
+        1054
+      ]
+    },
+    {
+      "text": "If a hart employs an address-translation cache, that cache must appear to be private to that hart.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1056,
+        1060
+      ]
+    },
+    {
+      "text": "In particular, the meaning of an ASID is local to a hart; software may choose to use the same ASID to refer to different address spaces on different harts.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1056,
+        1060
+      ]
+    },
+    {
+      "text": "For implementations that make `satp`.MODE read-only zero (always Bare), attempts to execute an SFENCE.VMA instruction might raise an illegal-instruction exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1062,
+        1065
+      ]
+    },
+    {
+      "text": "No SFENCE.VMA is required after enabling or disabling pointer masking (see ), as pointer masking applies to the effective address only and does not affect any memory-management data structures.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Supervisor Instructions > Supervisor Memory-Management Fence Instruction",
+      "line_range": [
+        1067,
+        1069
+      ]
+    },
+    {
+      "text": "When Sv32 is written to the MODE field in the `satp` register (see ), the supervisor operates in a 32-bit paged virtual-memory system.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems",
+      "line_range": [
+        1075,
+        1081
+      ]
+    },
+    {
+      "text": "In this mode, supervisor and user virtual addresses are translated into supervisor physical addresses by traversing a radix-tree page table.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems",
+      "line_range": [
+        1075,
+        1081
+      ]
+    },
+    {
+      "text": "Sv32 is supported when SXLEN=32 and is designed to include mechanisms sufficient for supporting modern Unix-based operating systems.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems",
+      "line_range": [
+        1075,
+        1081
+      ]
+    },
+    {
+      "text": "Sv32 implementations support a 32-bit virtual address space, divided into 4 KiB pages.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": "An Sv32 virtual address is partitioned into a virtual page number (VPN) and page offset, as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": "When Sv32 virtual memory mode is selected in the MODE field of the `satp` register, supervisor virtual addresses are translated into supervisor physical addresses via a two-level page table.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": "The 20-bit VPN is translated into a 22-bit physical page number (PPN), while the 12-bit page offset is untranslated.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": "The resulting supervisor-level physical addresses are then checked using any physical memory protection structures (), before being directly converted to machine-level physical addresses.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": "If necessary, supervisor-level physical addresses are zero-extended to the number of physical address bits found in the implementation.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1086,
+        1098
+      ]
+    },
+    {
+      "text": ".Sv32 virtual address. include::images/bytefield/sv32va.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1100,
+        1102
+      ]
+    },
+    {
+      "text": "Sv32 page tables consist of 2^10^ page-table entries (PTEs), each of four bytes. A page table is exactly the size of a page and must always be aligned to a page boundary.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1104,
+        1107
+      ]
+    },
+    {
+      "text": "The physical page number of the root page table is stored in the `satp` register.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1104,
+        1107
+      ]
+    },
+    {
+      "text": ".SV32 physical address. include::images/bytefield/sv32pa.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1109,
+        1111
+      ]
+    },
+    {
+      "text": ".Sv32 page table entry. include::images/bytefield/sv32pte.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1113,
+        1115
+      ]
+    },
+    {
+      "text": "The PTE format for Sv32 is shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1117,
+        1125
+      ]
+    },
+    {
+      "text": "The V bit indicates whether the PTE is valid; if it is 0, all other bits in the PTE are don’t-cares and may be used freely by software.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1117,
+        1125
+      ]
+    },
+    {
+      "text": "The permission bits, R, W, and X, indicate whether the page is readable, writable, and executable, respectively.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1117,
+        1125
+      ]
+    },
+    {
+      "text": "When all three are zero, the PTE is a pointer to the next level of the page table; otherwise, it is a leaf PTE.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1117,
+        1125
+      ]
+    },
+    {
+      "text": "Writable pages must also be marked readable; the contrary combinations are reserved for future use. summarizes the encoding of the permission bits.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1117,
+        1125
+      ]
+    },
+    {
+      "text": ".Encoding of PTE R/W/X fields. | |X |W |R |Meaning |0 + 0 + 0 + 0 + 1 + 1 + 1 + 1 |0 + 0 + 1 + 1 + 0 + 0 + 1 + 1 |0 + 1 + 0 + 1 + 0 + 1 + 0 + 1 |Pointer to next level of page table. + Read-only page. + Reserved for future use. + Read-write page. + Execute-only page. + Read-execute page. + Reserved for future use. + Read-write-execute page. |",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1127,
+        1164
+      ]
+    },
+    {
+      "text": "Attempting to fetch an instruction from a page that does not have execute permissions raises a fetch page-fault exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1166,
+        1173
+      ]
+    },
+    {
+      "text": "Attempting to execute a load, load-reserved, or cache-block management instruction whose effective address lies within a page without read permissions raises a load page-fault exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1166,
+        1173
+      ]
+    },
+    {
+      "text": "Attempting to execute a store, store-conditional, AMO, or cache-block zero instruction instruction whose effective address lies within a page without write permissions raises a store page-fault exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1166,
+        1173
+      ]
+    },
+    {
+      "text": "The U bit indicates whether the page is accessible to user mode. U-mode software may only access the page when U=1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1175,
+        1181
+      ]
+    },
+    {
+      "text": "If the SUM bit in the `sstatus` register is set, supervisor mode software may also access pages with U=1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1175,
+        1181
+      ]
+    },
+    {
+      "text": "However, supervisor code normally operates with the SUM bit clear, in which case, supervisor code will fault on accesses to user-mode pages.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1175,
+        1181
+      ]
+    },
+    {
+      "text": "Irrespective of SUM, the supervisor may not execute code on pages with U=1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1175,
+        1181
+      ]
+    },
+    {
+      "text": "The G bit designates a global mapping.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1183,
+        1190
+      ]
+    },
+    {
+      "text": "Global mappings are those that exist in all address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1183,
+        1190
+      ]
+    },
+    {
+      "text": "For non-leaf PTEs, the global setting implies that all mappings in the subsequent levels of the page table are global.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1183,
+        1190
+      ]
+    },
+    {
+      "text": "Note that failing to mark a global mapping as global merely reduces performance, whereas marking a non-global mapping as global is a software bug that, after switching to an address space with a different non-global mapping for that address range, can unpredictably result in either mapping being used.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1183,
+        1190
+      ]
+    },
+    {
+      "text": "The RSW field is reserved for use by supervisor software; the implementation shall ignore this field.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1192,
+        1193
+      ]
+    },
+    {
+      "text": "Each leaf PTE contains an accessed (A) and dirty (D) bit.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1195,
+        1198
+      ]
+    },
+    {
+      "text": "The A bit indicates the virtual page has been read, written, or fetched from since the last time the A bit was cleared.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1195,
+        1198
+      ]
+    },
+    {
+      "text": "The D bit indicates the virtual page has been written since the last time the D bit was cleared.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1195,
+        1198
+      ]
+    },
+    {
+      "text": "Two schemes to manage the A and D bits are defined:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1200,
+        1200
+      ]
+    },
+    {
+      "text": "* The Svade extension: when a virtual page is accessed and the A bit is clear, or is written and the D bit is clear, a page-fault exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1202,
+        1205
+      ]
+    },
+    {
+      "text": "When the Svade extension is not implemented, the following scheme applies. + +",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "When a virtual page is accessed and the A bit is clear, the PTE is updated to set the A bit.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "When the virtual page is written and the D bit is clear, the PTE is updated to set the D bit.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "When G-stage address translation is in use and is not Bare, the G-stage virtual pages may be accessed or written by implicit accesses to VS-level memory management data structures, such as page tables. + +",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "When two-stage address translation is in use, an explicit access may cause both VS-stage and G-stage PTEs to be updated.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "The following rules apply to all PTE updates caused by an explicit or an implicit memory accesses. + + The PTE update must be atomic with respect to other accesses to the PTE, and must atomically perform all page-table walk checks for that leaf PTE as part of, and before, conditionally updating the PTE value.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "Updates of the A bit may be performed as a result of speculation, even if the associated memory access ultimately is not performed architecturally.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "However, updates to the D bit, resulting from an explicit store, must be exact (i.e., non-speculative), and observed in program order by the local hart.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "When two-stage address translation is active, updates to the D bit in G-stage PTEs may be performed by an implicit access to a VS-stage PTE, if the G-stage PTE provides write permission, before any speculative access to the VS-stage PTE. + + The PTE update must appear in the global memory order before the memory access that caused the PTE update and before any subsequent explicit memory access to that virtual page by the local hart.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "The ordering on loads and stores provided by FENCE instructions and the acquire/release bits on atomic instructions also orders the PTE updates associated with those loads and stores as observed by remote harts. + + The PTE update is not required to be atomic with respect to the memory access that caused the update and a trap may occur between the PTE update and the memory access that caused the PTE update.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "If a trap occurs then the A and/or D bit may be updated but the memory access that caused the PTE update might not occur.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "The hart must not perform the memory access that caused the PTE update before the PTE update is globally visible. + + The page tables must be located in memory with hardware page-table write access and RsrvEventual PMA.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1207,
+        1249
+      ]
+    },
+    {
+      "text": "All harts in a system must employ the same PTE-update scheme as each other.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1251,
+        1252
+      ]
+    },
+    {
+      "text": "Any level of PTE may be a leaf PTE, so in addition to 4 KiB pages, Sv32 supports 4 MiB megapages. A megapage must be virtually and physically aligned to a 4 MiB boundary; a page-fault exception is raised if the physical address is insufficiently aligned.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1254,
+        1257
+      ]
+    },
+    {
+      "text": "For non-leaf PTEs, the D, A, and U bits are reserved for future standard use.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1259,
+        1261
+      ]
+    },
+    {
+      "text": "Until their use is defined by a standard extension, they must be cleared by software for forward compatibility.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1259,
+        1261
+      ]
+    },
+    {
+      "text": "For implementations with both page-based virtual memory and the \"A\" standard extension, the LR/SC reservation set must lie completely within a single base physical page (i.e., a naturally aligned 4 KiB physical-memory region).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1263,
+        1266
+      ]
+    },
+    {
+      "text": "On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed into multiple accesses, some of which may succeed before a page-fault exception occurs.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1268,
+        1274
+      ]
+    },
+    {
+      "text": "In particular, a portion of a misaligned store that passes the exception check may become visible, even if another portion fails the exception check.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1268,
+        1274
+      ]
+    },
+    {
+      "text": "The same behavior may manifest for stores wider than XLEN bits (e.g., the FSD instruction in RV32D), even when the store address is naturally aligned.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Addressing and Memory Protection",
+      "line_range": [
+        1268,
+        1274
+      ]
+    },
+    {
+      "text": "A virtual address va is translated into a physical address pa as follows:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1281,
+        1281
+      ]
+    },
+    {
+      "text": "Let a be ``satp``.ppn×PAGESIZE, and let i=LEVELS-1. (For Sv32, PAGESIZE=2^12^ and LEVELS=2.) The `satp` register must be active, i.e., the effective privilege mode must be S-mode or U-mode.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1283,
+        1284
+      ]
+    },
+    {
+      "text": "Let pte be the value of the PTE at address a+va.vpn[i]×PTESIZE. (For Sv32, PTESIZE=4.)",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1286,
+        1286
+      ]
+    },
+    {
+      "text": "If accessing pte violates a PMA or PMP check, raise an access-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1286,
+        1286
+      ]
+    },
+    {
+      "text": "If pte.v=0, or if pte.r=0 and pte.w=1, or if any bits or encodings that are reserved for future standard use are set within pte, stop and raise a page-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1288,
+        1288
+      ]
+    },
+    {
+      "text": "Otherwise, the PTE is valid.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1290,
+        1291
+      ]
+    },
+    {
+      "text": "If pte.r=1 or pte.x=1, go to step 5.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1290,
+        1291
+      ]
+    },
+    {
+      "text": "Otherwise, this PTE is a pointer to the next level of the page table.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1290,
+        1291
+      ]
+    },
+    {
+      "text": "If i<0, stop and raise a page-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1290,
+        1291
+      ]
+    },
+    {
+      "text": "Otherwise, let a=pte.ppn×PAGESIZE and go to step 2.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1290,
+        1291
+      ]
+    },
+    {
+      "text": ". A leaf PTE has been reached.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1293,
+        1293
+      ]
+    },
+    {
+      "text": "If i>0 and pte.ppn[i-1:0] != 0, this is a misaligned superpage; stop and raise a page-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1293,
+        1293
+      ]
+    },
+    {
+      "text": "Determine if the requested memory access is allowed by the pte.u bit, given the current privilege mode and the value of the SUM and MXR fields of the *mstatus* register.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1295,
+        1295
+      ]
+    },
+    {
+      "text": "If not, stop and raise a page-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1295,
+        1295
+      ]
+    },
+    {
+      "text": "Determine if the requested memory access is allowed by the pte.r, pte.w, and pte.x bits, given the Shadow Stack Memory Protection rules.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1297,
+        1297
+      ]
+    },
+    {
+      "text": "If not, stop and raise an access-fault exception.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1297,
+        1297
+      ]
+    },
+    {
+      "text": "Determine if the requested memory access is allowed by the pte.r, pte.w, and pte.x bits.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1299,
+        1299
+      ]
+    },
+    {
+      "text": "If not, stop and raise a page-fault exception corresponding to the original access type.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1299,
+        1299
+      ]
+    },
+    {
+      "text": "If pte.a=0, or if the original memory access is a store and pte.d=0:",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1301,
+        1301
+      ]
+    },
+    {
+      "text": "If the Svade extension is implemented, stop and raise a page-fault exception corresponding to the original access type. *",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1303,
+        1311
+      ]
+    },
+    {
+      "text": "If a store to the PTE at address a+va.vpn[i]×PTESIZE would violate a PMA or PMP check, raise an access-fault exception corresponding to the original access type. * Perform the following steps atomically: ** Compare pte to the value of the PTE at address a+va.vpn[i]×PTESIZE. **",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1303,
+        1311
+      ]
+    },
+    {
+      "text": "If the values match, set pte.a to 1 and, if the original memory access is a store, also set pte.d to 1.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1303,
+        1311
+      ]
+    },
+    {
+      "text": "Then store pte to the PTE at address a+va.vpn[i]×PTESIZE. **",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1303,
+        1311
+      ]
+    },
+    {
+      "text": "If the comparison fails, return to step 2.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1303,
+        1311
+      ]
+    },
+    {
+      "text": "The translation is successful.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1313,
+        1317
+      ]
+    },
+    {
+      "text": "The translated physical address is given as follows: * pa.pgoff = va.pgoff. *",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1313,
+        1317
+      ]
+    },
+    {
+      "text": "If i>0, then this is a superpage translation and pa.ppn[i-1:0] = va.vpn[i-1:0]. * pa.ppn[LEVELS-1:i] = pte.ppn[LEVELS-1:i].",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1313,
+        1317
+      ]
+    },
+    {
+      "text": "All implicit accesses to the address-translation data structures in this algorithm are performed using width PTESIZE.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1319,
+        1320
+      ]
+    },
+    {
+      "text": "The results of implicit address-translation reads in step 2 may be held in a read-only, incoherent address-translation cache but not shared with other harts.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1322,
+        1331
+      ]
+    },
+    {
+      "text": "The address-translation cache may hold an arbitrary number of entries, including an arbitrary number of entries for the same address and ASID.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1322,
+        1331
+      ]
+    },
+    {
+      "text": "Entries in the address-translation cache may then satisfy subsequent step 2 reads if the ASID associated with the entry matches the ASID loaded in step 0 or if the entry is associated with a global mapping.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1322,
+        1331
+      ]
+    },
+    {
+      "text": "To ensure that implicit reads observe writes to the same memory locations, an SFENCE.VMA instruction must be executed after the writes to flush the relevant cached translations.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1322,
+        1331
+      ]
+    },
+    {
+      "text": "The address-translation cache cannot be used in step 9; accessed and dirty bits may only be updated in memory directly.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1333,
+        1339
+      ]
+    },
+    {
+      "text": "Implementations may also execute the address-translation algorithm speculatively at any time, for any virtual address, as long as `satp` is active (as defined in ).",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1333,
+        1339
+      ]
+    },
+    {
+      "text": "Such speculative executions have the effect of pre-populating the address-translation cache.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1333,
+        1339
+      ]
+    },
+    {
+      "text": "Speculative executions of the address-translation algorithm behave as non-speculative executions of the algorithm do, except that they must not set the dirty bit for a PTE, they must not trigger an exception, and they must not create address-translation cache entries if those entries would have been invalidated by any SFENCE.VMA instruction executed by the hart since the speculative execution of the algorithm began.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv32: Page-Based 32-bit Virtual-Memory Systems > Virtual Address Translation Process",
+      "line_range": [
+        1341,
+        1346
+      ]
+    },
+    {
+      "text": "This section describes a simple paged virtual-memory system for SXLEN=64, which supports 39-bit virtual address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System",
+      "line_range": [
+        1351,
+        1354
+      ]
+    },
+    {
+      "text": "The design of Sv39 follows the overall scheme of Sv32, and this section details only the differences between the schemes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System",
+      "line_range": [
+        1351,
+        1354
+      ]
+    },
+    {
+      "text": "Sv39 implementations support a 39-bit virtual address space, divided into 4 KiB pages.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1359,
+        1368
+      ]
+    },
+    {
+      "text": "An Sv39 address is partitioned as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1359,
+        1368
+      ]
+    },
+    {
+      "text": "Instruction fetch addresses and load and store effective addresses, which are 64 bits, must have bits 63–39 all equal to bit 38, or else a page-fault exception will occur.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1359,
+        1368
+      ]
+    },
+    {
+      "text": "The 27-bit VPN is translated into a 44-bit PPN via a three-level page table, while the 12-bit page offset is untranslated.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1359,
+        1368
+      ]
+    },
+    {
+      "text": ".Sv39 virtual address. include::images/bytefield/sv39va.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1370,
+        1372
+      ]
+    },
+    {
+      "text": ".Sv39 physical address. include::images/bytefield/sv39pa.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1374,
+        1376
+      ]
+    },
+    {
+      "text": ".Sv39 page table entry. include::images/bytefield/sv39pte.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1378,
+        1380
+      ]
+    },
+    {
+      "text": "Sv39 page tables contain 2^9^ page table entries (PTEs), eight bytes each. A page table is exactly the size of a page and must always be aligned to a page boundary.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1382,
+        1387
+      ]
+    },
+    {
+      "text": "The physical page number of the root page table is stored in the `satp` register's PPN field.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1382,
+        1387
+      ]
+    },
+    {
+      "text": "The PTE format for Sv39 is shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "Bits 9-0 have the same meaning as for Sv32.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "Bit 63 is reserved for use by the Svnapot extension in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "If Svnapot is not implemented, bit 63 remains reserved and must be zeroed by software for forward compatibility, or else a page-fault exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "Bits 62-61 are reserved for use by the Svpbmt extension in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "If Svpbmt is not implemented, bits 62-61 remain reserved and must be zeroed by software for forward compatibility, or else a page-fault exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "Bits 60-54 are reserved for future standard use and, until their use is defined by some standard extension, must be zeroed by software for forward compatibility.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "If any of these bits are set, a page-fault exception is raised.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1389,
+        1403
+      ]
+    },
+    {
+      "text": "Any level of PTE may be a leaf PTE, so in addition to 4 KiB pages, Sv39 supports 2 MiB megapages and 1 GiB gigapages, each of which must be virtually and physically aligned to a boundary equal to its size. A page-fault exception is raised if the physical address is insufficiently aligned.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1405,
+        1411
+      ]
+    },
+    {
+      "text": "The algorithm for virtual-to-physical address translation is the same as in , except LEVELS equals 3 and PTESIZE equals 8.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv39: Page-Based 39-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1413,
+        1416
+      ]
+    },
+    {
+      "text": "This section describes a simple paged virtual-memory system for SXLEN=64, which supports 48-bit virtual address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System",
+      "line_range": [
+        1421,
+        1427
+      ]
+    },
+    {
+      "text": "Sv48 is intended for systems for which a 39-bit virtual address space is insufficient.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System",
+      "line_range": [
+        1421,
+        1427
+      ]
+    },
+    {
+      "text": "It closely follows the design of Sv39, simply adding an additional level of page table, and so this chapter only details the differences between the two schemes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System",
+      "line_range": [
+        1421,
+        1427
+      ]
+    },
+    {
+      "text": "Implementations that support Sv48 must also support Sv39.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System",
+      "line_range": [
+        1429,
+        1430
+      ]
+    },
+    {
+      "text": "Sv48 implementations support a 48-bit virtual address space, divided into 4 KiB pages.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1435,
+        1444
+      ]
+    },
+    {
+      "text": "An Sv48 address is partitioned as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1435,
+        1444
+      ]
+    },
+    {
+      "text": "Instruction fetch addresses and load and store effective addresses, which are 64 bits, must have bits 63–48 all equal to bit 47, or else a page-fault exception will occur.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1435,
+        1444
+      ]
+    },
+    {
+      "text": "The 36-bit VPN is translated into a 44-bit PPN via a four-level page table, while the 12-bit page offset is untranslated.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1435,
+        1444
+      ]
+    },
+    {
+      "text": ".Sv48 virtual address. include::images/bytefield/sv48va.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1446,
+        1448
+      ]
+    },
+    {
+      "text": ".Sv48 physical address. include::images/bytefield/sv48pa.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1450,
+        1452
+      ]
+    },
+    {
+      "text": ".Sv48 page table entry. include::images/bytefield/sv48pte.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1454,
+        1456
+      ]
+    },
+    {
+      "text": "The PTE format for Sv48 is shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1458,
+        1467
+      ]
+    },
+    {
+      "text": "Bits 63-54 and 9-0 have the same meaning as for Sv39.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1458,
+        1467
+      ]
+    },
+    {
+      "text": "Any level of PTE may be a leaf PTE, so in addition to 4 KiB pages, Sv48 supports 2 MiB megapages, 1 GiB gigapages, and 512 GiB terapages, each of which must be virtually and physically aligned to a boundary equal to its size. A page-fault exception is raised if the physical address is insufficiently aligned.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1458,
+        1467
+      ]
+    },
+    {
+      "text": "The algorithm for virtual-to-physical address translation is the same as in , except LEVELS equals 4 and PTESIZE equals 8.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv48: Page-Based 48-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1469,
+        1472
+      ]
+    },
+    {
+      "text": "This section describes a simple paged virtual-memory system designed for RV64 systems, which supports 57-bit virtual address spaces.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System",
+      "line_range": [
+        1478,
+        1484
+      ]
+    },
+    {
+      "text": "Sv57 is intended for systems for which a 48-bit virtual address space is insufficient.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System",
+      "line_range": [
+        1478,
+        1484
+      ]
+    },
+    {
+      "text": "It closely follows the design of Sv48, simply adding an additional level of page table, and so this chapter only details the differences between the two schemes.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System",
+      "line_range": [
+        1478,
+        1484
+      ]
+    },
+    {
+      "text": "Implementations that support Sv57 must also support Sv48.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System",
+      "line_range": [
+        1486,
+        1487
+      ]
+    },
+    {
+      "text": "Sv57 implementations support a 57-bit virtual address space, divided into 4 KiB pages.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1492,
+        1501
+      ]
+    },
+    {
+      "text": "An Sv57 address is partitioned as shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1492,
+        1501
+      ]
+    },
+    {
+      "text": "Instruction fetch addresses and load and store effective addresses, which are 64 bits, must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1492,
+        1501
+      ]
+    },
+    {
+      "text": "The 45-bit VPN is translated into a 44-bit PPN via a five-level page table, while the 12-bit page offset is untranslated.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1492,
+        1501
+      ]
+    },
+    {
+      "text": ".Sv57 virtual address. include::images/bytefield/sv57va.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1503,
+        1505
+      ]
+    },
+    {
+      "text": ".Sv57 physical address. include::images/bytefield/sv57pa.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1507,
+        1509
+      ]
+    },
+    {
+      "text": ".Sv57 page table entry. include::images/bytefield/sv57pte.edn[]",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1511,
+        1513
+      ]
+    },
+    {
+      "text": "The PTE format for Sv57 is shown in .",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1515,
+        1524
+      ]
+    },
+    {
+      "text": "Bits 63–54 and 9–0 have the same meaning as for Sv39.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1515,
+        1524
+      ]
+    },
+    {
+      "text": "Any level of PTE may be a leaf PTE, so in addition to 4 KiB pages, Sv57 supports 2 MiB megapages, 1 GiB gigapages, 512 GiB terapages, and 256 TiB petapages, each of which must be virtually and physically aligned to a boundary equal to its size. A page-fault exception is raised if the physical address is insufficiently aligned.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1515,
+        1524
+      ]
+    },
+    {
+      "text": "The algorithm for virtual-to-physical address translation is the same as in , except LEVELS equals 5 and PTESIZE equals 8.",
+      "section": "Preamble > Supervisor-Level ISA, Version 1.13 > Sv57: Page-Based 57-bit Virtual-Memory System > Addressing and Memory Protection",
+      "line_range": [
+        1526,
+        1529
+      ]
+    }
+  ]
+}

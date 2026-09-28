@@ -1,0 +1,78 @@
+{
+  "source_file": "src/profiles/preface.adoc",
+  "total": 9,
+  "sentences": [
+    {
+      "text": "This document describes the RISC-V architecture profiles.",
+      "section": "Preamble > Preface",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "It contains the following profiles, all of which have been ratified:",
+      "section": "Preamble > Preface",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "| |Profile |*RVI20U32* |*RVI20U64* |*RVA20U64* |*RVA20S64* |*RVA22U64* |*RVA22S64* |*RVA23U64* |*RVA23S64* |*RVB23U64* |*RVB23S64* |",
+      "section": "Preamble > Preface",
+      "line_range": [
+        7,
+        20
+      ]
+    },
+    {
+      "text": "[.big]*Changes made since ratification of RVA23 and RVB23 profiles*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        22,
+        22
+      ]
+    },
+    {
+      "text": "Removed outdated text in existing profiles - Removed duplicated definitions of Sha",
+      "section": "Preamble > Preface",
+      "line_range": [
+        24,
+        25
+      ]
+    },
+    {
+      "text": "[.big]*Changes made since ratification of RVA22 profiles*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        27,
+        27
+      ]
+    },
+    {
+      "text": "Clarified that Zihpm was optional in RVA20U64 and became mandatory in RVA22U64",
+      "section": "Preamble > Preface",
+      "line_range": [
+        29,
+        29
+      ]
+    },
+    {
+      "text": "[.big]*Changes made since public review of RVA22 profiles*",
+      "section": "Preamble > Preface",
+      "line_range": [
+        31,
+        31
+      ]
+    },
+    {
+      "text": "Clarified that profile name can be used as ISA base string - Renamed Ssptead to Svade - Fixed Ssu64xl to make supporting UXL=64 mandatory - Added section listing new extension names in profiles document - Added new extension name Sscounterenw - Removed outdated text on Zicntr/Zihpm ratification plan",
+      "section": "Preamble > Preface",
+      "line_range": [
+        33,
+        38
+      ]
+    }
+  ]
+}

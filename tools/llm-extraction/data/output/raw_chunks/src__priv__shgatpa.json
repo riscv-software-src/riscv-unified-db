@@ -1,0 +1,22 @@
+{
+  "source_file": "src/priv/shgatpa.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "If the Shgatpa extension is implemented, then for each supported virtual memory scheme SvNN supported in `satp`, the corresponding hgatp SvNNx4 mode must be supported.",
+      "section": "Preamble > Shgatpa Extension for Translation Mode Support, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "Furthermore, the `hgatp` mode Bare must also be supported.",
+      "section": "Preamble > Shgatpa Extension for Translation Mode Support, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    }
+  ]
+}

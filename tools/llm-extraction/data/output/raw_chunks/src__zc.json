@@ -1,0 +1,3438 @@
+{
+  "source_file": "src/zc.adoc",
+  "total": 429,
+  "sentences": [
+    {
+      "text": "Zc* is a group of extensions that define subsets of the existing C extension (Zca, Zcd, Zcf) and new extensions which only contain 16-bit encodings.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc* Overview",
+      "line_range": [
+        5,
+        5
+      ]
+    },
+    {
+      "text": "Zcm* all reuse the encodings for c.fld, c.fsd, c.fldsp, c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc* Overview",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": ".Zc* extension overview [width=\"100%\",options=header,cols=\"3,1,1,1,1,1,1\"] | |Instruction |Zca |Zcf |Zcd |Zcb |Zcmp |Zcmt 7+|*The Zca extension is added as way to refer to instructions in the C extension that do not include the floating-point loads and stores* |C excl. c.f* |yes | | | | | 7+|*The Zcf extension is added as a way to refer to compressed single-precision floating-point load/stores* |c.flw | |rv32 | | | | |c.flwsp | |rv32 | | | | |c.fsw | |rv32 | | | | |c.fswsp | |rv32 | | | | 7+|*The Zcd extension is added as a way to refer to compressed double-precision floating-point load/stores* |c.fld | | |yes | | | |c.fldsp | | |yes | | | |c.fsd | | |yes | | | |c.fsdsp | | |yes | | | 7+|*Simple operations for use on all architectures* |c.lbu | | | |yes | | |c.lh | | | |yes | | |c.lhu | | | |yes | | |c.sb | | | |yes | | |c.sh | | | |yes | | |c.zext.b | | | |yes | | |c.sext.b | | | |yes | | |c.zext.h | | | |yes | | |c.sext.h | | | |yes | | |c.zext.w | | | |yes | | |c.mul | | | |yes | | |c.not | | | |yes | | 7+|*PUSH/POP and double move which overlap with c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc* Overview",
+      "line_range": [
+        9,
+        48
+      ]
+    },
+    {
+      "text": "Complex operations intended for embedded CPUs* |cm.push | | | | |yes | |cm.pop | | | | |yes | |cm.popret | | | | |yes | |cm.popretz | | | | |yes | |cm.mva01s | | | | |yes | |cm.mvsa01 | | | | |yes | 7+|*Table jump which overlaps with c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc* Overview",
+      "line_range": [
+        9,
+        48
+      ]
+    },
+    {
+      "text": "Complex operations intended for embedded CPUs* |cm.jt | | | | | |yes |cm.jalt | | | | | |yes |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc* Overview",
+      "line_range": [
+        9,
+        48
+      ]
+    },
+    {
+      "text": "The C extension is the superset of the following extensions:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > C",
+      "line_range": [
+        53,
+        53
+      ]
+    },
+    {
+      "text": "Zca * Zcf if F is specified (RV32 only) * Zcd if D is specified",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > C",
+      "line_range": [
+        55,
+        57
+      ]
+    },
+    {
+      "text": "As C defines the same instructions as Zca, Zcf, and Zcd, the rule is that:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > C",
+      "line_range": [
+        59,
+        59
+      ]
+    },
+    {
+      "text": "C always implies Zca * C+F implies Zcf (RV32 only) * C+D implies Zcd",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > C",
+      "line_range": [
+        61,
+        63
+      ]
+    },
+    {
+      "text": "The Zce extension is intended to be used for microcontrollers, and includes all relevant Zc extensions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zce",
+      "line_range": [
+        68,
+        68
+      ]
+    },
+    {
+      "text": "Specifying Zce on RV32 without F includes Zca, Zcb, Zcmp, Zcmt * Specifying Zce on RV32 with F includes Zca, Zcb, Zcmp, Zcmt and Zcf * Specifying Zce on RV64 always includes Zca, Zcb, Zcmp, Zcmt ** Zcf doesn't exist for RV64",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zce",
+      "line_range": [
+        70,
+        73
+      ]
+    },
+    {
+      "text": "Therefore common ISA strings can be updated as follows to include the relevant Zc extensions, for example:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zce",
+      "line_range": [
+        75,
+        75
+      ]
+    },
+    {
+      "text": "RV32IMCZcbZcmpZcmt is equivalent to RV32IMZce * RV32IMFCZcbZcmpZcmt is equivalent to RV32IMFZce",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zce",
+      "line_range": [
+        77,
+        78
+      ]
+    },
+    {
+      "text": "MISA.C is set if the following extensions are selected:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > MISA.C",
+      "line_range": [
+        83,
+        83
+      ]
+    },
+    {
+      "text": "* Zca and not F * Zca, Zcf and F (but not D) is specified (RV32 only) * Zca, Zcf and Zcd if D is specified (RV32 only) ** this configuration excludes Zcmp, Zcmt * Zca, Zcd if D is specified (RV64 only) ** this configuration excludes Zcmp, Zcmt",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > MISA.C",
+      "line_range": [
+        85,
+        91
+      ]
+    },
+    {
+      "text": "The Zca extension is added as way to refer to instructions in the C extension that do not include the floating-point loads and stores.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zca",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "Therefore it excluded all 16-bit floating point loads and stores: c.flw, c.flwsp, c.fsw, c.fswsp, c.fld, c.fldsp, c.fsd, c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zca",
+      "line_range": [
+        98,
+        98
+      ]
+    },
+    {
+      "text": "Zcf is the existing set of compressed single precision floating point loads and stores: c.flw, c.flwsp, c.fsw, c.fswsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcf (RV32 only)",
+      "line_range": [
+        103,
+        103
+      ]
+    },
+    {
+      "text": "Zcf is only relevant to RV32, it cannot be specified for RV64.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcf (RV32 only)",
+      "line_range": [
+        105,
+        105
+      ]
+    },
+    {
+      "text": "The Zcf extension depends on the and F extensions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcf (RV32 only)",
+      "line_range": [
+        107,
+        107
+      ]
+    },
+    {
+      "text": "Zcd is the existing set of compressed double precision floating point loads and stores: c.fld, c.fldsp, c.fsd, c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcd",
+      "line_range": [
+        112,
+        112
+      ]
+    },
+    {
+      "text": "The Zcd extension depends on the and D extensions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcd",
+      "line_range": [
+        114,
+        114
+      ]
+    },
+    {
+      "text": "Zcb has simple code-size saving instructions which are easy to implement on all CPUs.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        119,
+        119
+      ]
+    },
+    {
+      "text": "All encodings are currently reserved for all architectures, and have no conflicts with any existing extensions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        121,
+        121
+      ]
+    },
+    {
+      "text": "NOTE: Zcb can be implemented on any CPU as the instructions are 16-bit versions of existing 32-bit instructions from the application class profile.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        123,
+        123
+      ]
+    },
+    {
+      "text": "The Zcb extension depends on the extension.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        125,
+        125
+      ]
+    },
+    {
+      "text": "As shown on the individual instruction pages, many of the instructions in Zcb depend upon another extension being implemented.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        127,
+        127
+      ]
+    },
+    {
+      "text": "For example, c.mul is only implemented if M or Zmmul is implemented, and c.sext.b is only implemented if Zbb is implemented.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        127,
+        127
+      ]
+    },
+    {
+      "text": "The c.mul encoding uses the CA register format along with other instructions such as c.sub, c.xor etc.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        129,
+        129
+      ]
+    },
+    {
+      "text": "c.sext.w is a pseudoinstruction for c.addiw rd, 0 (RV64)",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        133,
+        133
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        135,
+        140
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lbu rd', uimm(rs1') |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        142,
+        145
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lhu rd', uimm(rs1') |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        147,
+        150
+      ]
+    },
+    {
+      "text": "|yes |yes |c.lh rd', uimm(rs1') |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        152,
+        155
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sb rs2', uimm(rs1') |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        157,
+        160
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sh rs2', uimm(rs1') |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        162,
+        165
+      ]
+    },
+    {
+      "text": "|yes |yes |c.zext.b rsd' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        167,
+        170
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sext.b rsd' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        172,
+        175
+      ]
+    },
+    {
+      "text": "|yes |yes |c.zext.h rsd' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        177,
+        180
+      ]
+    },
+    {
+      "text": "|yes |yes |c.sext.h rsd' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        182,
+        185
+      ]
+    },
+    {
+      "text": "|yes |yes |c.mul rsd', rs2' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb",
+      "line_range": [
+        197,
+        200
+      ]
+    },
+    {
+      "text": "The Zcmp extension is a set of instructions which may be executed as a series of existing 32-bit RISC-V instructions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        209,
+        209
+      ]
+    },
+    {
+      "text": "This extension reuses some encodings from c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        211,
+        212
+      ]
+    },
+    {
+      "text": "Therefore it is incompatible with , which is included when C and D extensions are both present.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        211,
+        212
+      ]
+    },
+    {
+      "text": "NOTE: Zcmp is primarily targeted at embedded class CPUs due to implementation complexity.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        214,
+        214
+      ]
+    },
+    {
+      "text": "Additionally, it is not compatible with application class profiles.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        214,
+        214
+      ]
+    },
+    {
+      "text": "The Zcmp extension depends on the extension.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        216,
+        216
+      ]
+    },
+    {
+      "text": "The PUSH/POP assembly syntax uses several variables, the meaning of which are:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        218,
+        218
+      ]
+    },
+    {
+      "text": "reglist is a list containing 1 to 13 registers (ra and 0 to 12 s registers) ** valid values: \\{ra}, \\{ra, s0}, \\{ra, s0-s1}, \\{ra, s0-s2}, ..., \\{ra, s0-s8}, \\{ra, s0-s9}, \\{ra, s0-s11} ** note that \\{ra, s0-s10} is not valid, giving 12 lists not 13 for better encoding * stackadj is the total size of the stack frame. ** valid values vary with register list length and the specific encoding, see the instruction pages for details.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        220,
+        224
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        226,
+        231
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.push \\{reglist}, -stackadj |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        233,
+        236
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.pop \\{reglist}, stackadj |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        238,
+        241
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.popret \\{reglist}, stackadj |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        243,
+        246
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.popretz \\{reglist}, stackadj |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        248,
+        251
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.mva01s rs1', rs2' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        253,
+        256
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.mvsa01 r1s', r2s' |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmp",
+      "line_range": [
+        258,
+        261
+      ]
+    },
+    {
+      "text": "Zcmt adds the table jump instructions and also adds the jvt CSR.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        270,
+        271
+      ]
+    },
+    {
+      "text": "The jvt CSR requires a state enable if Smstateen is implemented.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        270,
+        271
+      ]
+    },
+    {
+      "text": "This extension reuses some encodings from c.fsdsp.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        273,
+        274
+      ]
+    },
+    {
+      "text": "Therefore it is incompatible with , which is included when C and D extensions are both present.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        273,
+        274
+      ]
+    },
+    {
+      "text": "NOTE: Zcmt is primarily targeted at embedded class CPUs due to implementation complexity.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        276,
+        276
+      ]
+    },
+    {
+      "text": "Additionally, it is not compatible with RVA profiles.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        276,
+        276
+      ]
+    },
+    {
+      "text": "The Zcmt extension depends on the and Zicsr extensions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        278,
+        278
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        280,
+        285
+      ]
+    },
+    {
+      "text": "|yes |yes |cm.jalt index |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcmt",
+      "line_range": [
+        292,
+        295
+      ]
+    },
+    {
+      "text": "Several instructions in this specification use the following new instruction formats.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc instruction formats",
+      "line_range": [
+        302,
+        302
+      ]
+    },
+    {
+      "text": "| | Format | instructions | 15:10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | CLB | c.lbu | funct6 3+| rs1' 2+| uimm 3+| rd' 2+| op | CSB | c.sb | funct6 3+| rs1' 2+| uimm 3+| rs2' 2+| op | CLH | c.lhu, c.lh | funct6 3+| rs1' | funct1 | uimm 3+| rd' 2+| op | CSH | c.sh | funct6 3+| rs1' | funct1 | uimm 3+| rs2' 2+| op | CU | c.[sz]ext.*, c.not | funct6 3+| rd'/rs1' 5+| funct5 2+| op | CMMV | cm.mvsa01 cm.mva01s| funct6 3+| r1s' 2+| funct2 3+| r2s' 2+| op | CMJT | cm.jt cm.jalt | funct6 8+| index 2+| op | CMPP | cm.push*, cm.pop* | funct6 2+| funct2 4+| urlist 2+| spimm 2+| op |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zc instruction formats",
+      "line_range": [
+        304,
+        315
+      ]
+    },
+    {
+      "text": "[insns-clbu,reftext=\"Load unsigned byte, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions",
+      "line_range": [
+        322,
+        322
+      ]
+    },
+    {
+      "text": "Load unsigned byte, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        327,
+        327
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 2, name: 'uimm[0|1]' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x0 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        335,
+        345
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        347,
+        347
+      ]
+    },
+    {
+      "text": "[source,sail] -- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = encoding[6]; --",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        349,
+        354
+      ]
+    },
+    {
+      "text": "This instruction loads a byte from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        358,
+        358
+      ]
+    },
+    {
+      "text": "The resulting byte is zero extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        358,
+        358
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        362,
+        364
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        368,
+        370
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        368,
+        370
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTZ(mem[X(rs1c)+EXTZ(uimm)][7..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        372,
+        373
+      ]
+    },
+    {
+      "text": "<<< [insns-clhu,reftext=\"Load unsigned halfword, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lbu",
+      "line_range": [
+        375,
+        376
+      ]
+    },
+    {
+      "text": "Load unsigned halfword, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        381,
+        381
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: 0x0 }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x1 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        389,
+        400
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        402,
+        402
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        404,
+        409
+      ]
+    },
+    {
+      "text": "This instruction loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        413,
+        413
+      ]
+    },
+    {
+      "text": "The resulting halfword is zero extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        413,
+        413
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: // //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        417,
+        420
+      ]
+    },
+    {
+      "text": "[source,sail] -- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        424,
+        426
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        424,
+        426
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTZ(loadmem[X(rs1c)+EXTZ(uimm)][15..0]); --",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        428,
+        429
+      ]
+    },
+    {
+      "text": "<<< [insns-clh,reftext=\"Load signed halfword, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lhu",
+      "line_range": [
+        431,
+        432
+      ]
+    },
+    {
+      "text": "Load signed halfword, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        437,
+        437
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rd\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: 0x1 }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x1 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        445,
+        456
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        458,
+        458
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        460,
+        465
+      ]
+    },
+    {
+      "text": "This instruction loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        469,
+        469
+      ]
+    },
+    {
+      "text": "The resulting halfword is sign extended to XLEN bits and is written to rd'.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        469,
+        469
+      ]
+    },
+    {
+      "text": "None //32-bit equivalent: // //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        473,
+        476
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        480,
+        482
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        480,
+        482
+      ]
+    },
+    {
+      "text": "X(rdc) = EXTS(loadmem[X(rs1c)+EXTZ(uimm)][15..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        484,
+        485
+      ]
+    },
+    {
+      "text": "<<< [insns-csb,reftext=\"Store byte, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.lh",
+      "line_range": [
+        487,
+        488
+      ]
+    },
+    {
+      "text": "Store byte, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        493,
+        493
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rs2\\'' }, { bits: 2, name: 'uimm[0|1]' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x2 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        501,
+        511
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        513,
+        513
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = encoding[6]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        515,
+        520
+      ]
+    },
+    {
+      "text": "This instruction stores the least significant byte of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        524,
+        524
+      ]
+    },
+    {
+      "text": "None // //32-bit equivalent: // //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        528,
+        532
+      ]
+    },
+    {
+      "text": "[source,sail] -- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        536,
+        538
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        536,
+        538
+      ]
+    },
+    {
+      "text": "mem[X(rs1c)+EXTZ(uimm)][7..0] = X(rs2c) --",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        540,
+        541
+      ]
+    },
+    {
+      "text": "<<< [insns-csh,reftext=\"Store halfword, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sb",
+      "line_range": [
+        543,
+        544
+      ]
+    },
+    {
+      "text": "Store halfword, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        549,
+        549
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x0, attr: ['C0'] }, { bits: 3, name: 'rs2\\'' }, { bits: 1, name: 'uimm[1]' }, { bits: 1, name: '0' }, { bits: 3, name: 'rs1\\'' }, { bits: 3, name: 0x3 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        557,
+        568
+      ]
+    },
+    {
+      "text": "The immediate offset is formed as follows:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        570,
+        570
+      ]
+    },
+    {
+      "text": "[source,sail] ---- uimm[31:2] = 0; uimm[1] = encoding[5]; uimm[0] = 0; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        572,
+        577
+      ]
+    },
+    {
+      "text": "This instruction stores the least significant halfword of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        581,
+        581
+      ]
+    },
+    {
+      "text": "None // //32-bit equivalent: // //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        585,
+        589
+      ]
+    },
+    {
+      "text": "Operation:: [source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        591,
+        594
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        591,
+        594
+      ]
+    },
+    {
+      "text": "mem[X(rs1c)+EXTZ(uimm)][15..0] = X(rs2c) ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        596,
+        597
+      ]
+    },
+    {
+      "text": "<<< [insns-czextb,reftext=\"Zero extend byte, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sh",
+      "line_range": [
+        599,
+        600
+      ]
+    },
+    {
+      "text": "Zero extend byte, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        605,
+        605
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x0, attr: ['C.ZEXT.B'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        613,
+        623
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        627,
+        629
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant byte of the operand to XLEN bits by inserting zeros into all of the bits more significant than 7.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        627,
+        629
+      ]
+    },
+    {
+      "text": "[source,asm] ---- andi rd'/rs1', rd'/rs1', 0xff ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        637,
+        640
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[7..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        644,
+        647
+      ]
+    },
+    {
+      "text": "<<< [insns-csextb,reftext=\"Sign extend byte, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.b",
+      "line_range": [
+        649,
+        650
+      ]
+    },
+    {
+      "text": "Sign extend byte, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        655,
+        655
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x1, attr: ['C.SEXT.B'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        663,
+        673
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        677,
+        679
+      ]
+    },
+    {
+      "text": "It sign-extends the least-significant byte in the operand to XLEN bits by copying the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        677,
+        679
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        683,
+        687
+      ]
+    },
+    {
+      "text": "The SAIL module variable for rd'/rs1' is called rsdc.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        691,
+        691
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTS(X(rsdc)[7..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        695,
+        698
+      ]
+    },
+    {
+      "text": "<<< [insns-czexth,reftext=\"Zero extend halfword, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.b",
+      "line_range": [
+        700,
+        701
+      ]
+    },
+    {
+      "text": "Zero extend halfword, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        706,
+        706
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x2, attr: ['C.ZEXT.H'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        714,
+        724
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        728,
+        730
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant halfword of the operand to XLEN bits by inserting zeros into all of the bits more significant than 15.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        728,
+        730
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        734,
+        738
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[15..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        742,
+        745
+      ]
+    },
+    {
+      "text": "<<< [insns-csexth,reftext=\"Sign extend halfword, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.h",
+      "line_range": [
+        747,
+        748
+      ]
+    },
+    {
+      "text": "Sign extend halfword, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        753,
+        753
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x3, attr: ['C.SEXT.H'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        761,
+        771
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        775,
+        777
+      ]
+    },
+    {
+      "text": "It sign-extends the least-significant halfword in the operand to XLEN bits by copying the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        775,
+        777
+      ]
+    },
+    {
+      "text": "Zbb is also required. // //32-bit equivalent: // // from Zbb",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        781,
+        785
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTS(X(rsdc)[15..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        789,
+        792
+      ]
+    },
+    {
+      "text": "<<< [insns-czextw,reftext=\"Zero extend word, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.sext.h",
+      "line_range": [
+        794,
+        795
+      ]
+    },
+    {
+      "text": "Zero extend word, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        800,
+        800
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x4, attr: ['C.ZEXT.W'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        808,
+        818
+      ]
+    },
+    {
+      "text": "This instruction takes a single source/destination operand.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        822,
+        824
+      ]
+    },
+    {
+      "text": "It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        822,
+        824
+      ]
+    },
+    {
+      "text": "[source,asm] ---- add.uw rd'/rs1', rd'/rs1', zero ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        832,
+        835
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = EXTZ(X(rsdc)[31..0]); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        839,
+        842
+      ]
+    },
+    {
+      "text": "<<< [insns-cnot,reftext=\"Bitwise not, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.zext.w",
+      "line_range": [
+        844,
+        845
+      ]
+    },
+    {
+      "text": "Bitwise not, 16-bit encoding",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        850,
+        850
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 0x5, attr: ['C.NOT'] }, { bits: 2, name: 0x3, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        858,
+        868
+      ]
+    },
+    {
+      "text": "This instruction takes the one's complement of rd'/rs1' and writes the result to the same register.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        872,
+        872
+      ]
+    },
+    {
+      "text": "[source,asm] ---- xori rd'/rs1', rd'/rs1', -1 ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        880,
+        883
+      ]
+    },
+    {
+      "text": "[source,sail] ---- X(rsdc) = X(rsdc) XOR -1; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        887,
+        890
+      ]
+    },
+    {
+      "text": "<<< [insns-cmul,reftext=\"Multiply, 16-bit encoding\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.not",
+      "line_range": [
+        892,
+        893
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x1, attr: ['C1'] }, { bits: 3, name: 'rs2\\'', attr: ['SRC2'] }, { bits: 2, name: 0x2, attr: ['FUNCT2'] }, { bits: 3, name: 'rd\\'/rs1\\'', attr: ['SRCDST'] }, { bits: 3, name: 0x7 }, { bits: 3, name: 0x4, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.mul",
+      "line_range": [
+        906,
+        916
+      ]
+    },
+    {
+      "text": "This instruction multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.mul",
+      "line_range": [
+        920,
+        920
+      ]
+    },
+    {
+      "text": "M or Zmmul must be configured. // //32-bit equivalent: // //",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.mul",
+      "line_range": [
+        924,
+        928
+      ]
+    },
+    {
+      "text": "[source,sail] ---- let resultwide = tobits(2 * sizeof(xlen), signed(X(rsdc)) * signed(X(rs2c))); X(rsdc) = resultwide[(sizeof(xlen) - 1) .. 0]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.mul",
+      "line_range": [
+        932,
+        936
+      ]
+    },
+    {
+      "text": "[insns-pushpop,reftext=\"PUSH/POP Register Instructions\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Zcb instructions > c.mul",
+      "line_range": [
+        940,
+        940
+      ]
+    },
+    {
+      "text": "These instructions are collectively referred to as PUSH/POP:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions",
+      "line_range": [
+        943,
+        943
+      ]
+    },
+    {
+      "text": "The term PUSH refers to cm.push.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions",
+      "line_range": [
+        950,
+        950
+      ]
+    },
+    {
+      "text": "The term POP refers to cm.pop.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions",
+      "line_range": [
+        952,
+        952
+      ]
+    },
+    {
+      "text": "The term POPRET refers to cm.popret and cm.popretz.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions",
+      "line_range": [
+        954,
+        954
+      ]
+    },
+    {
+      "text": "Common details for these instructions are in this section.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions",
+      "line_range": [
+        956,
+        956
+      ]
+    },
+    {
+      "text": "PUSH, POP, POPRET are used to reduce the size of function prologues and epilogues.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP functional overview",
+      "line_range": [
+        960,
+        960
+      ]
+    },
+    {
+      "text": "The PUSH instruction ** adjusts the stack pointer to create the stack frame ** pushes (stores) the registers specified in the register list to the stack frame",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP functional overview",
+      "line_range": [
+        962,
+        964
+      ]
+    },
+    {
+      "text": "The POP instruction ** pops (loads) the registers in the register list from the stack frame ** adjusts the stack pointer to destroy the stack frame",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP functional overview",
+      "line_range": [
+        966,
+        968
+      ]
+    },
+    {
+      "text": "The POPRET instructions ** pop (load) the registers in the register list from the stack frame ** cm.popretz also moves zero into a0 as the return value ** adjust the stack pointer to destroy the stack frame ** execute a ret instruction to return from the function",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP functional overview",
+      "line_range": [
+        970,
+        974
+      ]
+    },
+    {
+      "text": "This example gives an illustration of the use of PUSH and POPRET.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        979,
+        979
+      ]
+    },
+    {
+      "text": "The function processMarkers in the EMBench benchmark picojpeg in the following file on github: https://github.com/embench/embench-iot/blob/master/src/picojpeg/libpicojpeg.c[libpicojpeg.c]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        981,
+        981
+      ]
+    },
+    {
+      "text": "The prologue and epilogue compile with GCC10 to:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        983,
+        983
+      ]
+    },
+    {
+      "text": "0001098a <processMarkers>: 1098a: 711d addi sp,sp,-96 ;cm.push(1) 1098c: c8ca sw s2,80(sp) ;cm.push(2) 1098e: c6ce sw s3,76(sp) ;cm.push(3) 10990: c4d2 sw s4,72(sp) ;cm.push(4) 10992: ce86 sw ra,92(sp) ;cm.push(5) 10994: cca2 sw s0,88(sp) ;cm.push(6) 10996: caa6 sw s1,84(sp) ;cm.push(7) 10998: c2d6 sw s5,68(sp) ;cm.push(8) 1099a: c0da sw s6,64(sp) ;cm.push(9) 1099c: de5e sw s7,60(sp) ;cm.push(10) 1099e: dc62 sw s8,56(sp) ;cm.push(11) 109a0: da66 sw s9,52(sp) ;cm.push(12) 109a2: d86a sw s10,48(sp);cm.push(13) 109a4: d66e sw s11,44(sp);cm.push(14) ... 109f4: 4501 li a0,0 ;cm.popretz(1) 109f6: 40f6 lw ra,92(sp) ;cm.popretz(2) 109f8: 4466 lw s0,88(sp) ;cm.popretz(3) 109fa: 44d6 lw s1,84(sp) ;cm.popretz(4) 109fc: 4946 lw s2,80(sp) ;cm.popretz(5) 109fe: 49b6 lw s3,76(sp) ;cm.popretz(6) 10a00: 4a26 lw s4,72(sp) ;cm.popretz(7) 10a02: 4a96 lw s5,68(sp) ;cm.popretz(8) 10a04: 4b06 lw s6,64(sp) ;cm.popretz(9) 10a06: 5bf2 lw s7,60(sp) ;cm.popretz(10) 10a08: 5c62 lw s8,56(sp) ;cm.popretz(11) 10a0a: 5cd2 lw s9,52(sp) ;cm.popretz(12) 10a0c: 5d42 lw s10,48(sp);cm.popretz(13) 10a0e: 5db2 lw s11,44(sp);cm.popretz(14) 10a10: 6125 addi sp,sp,96 ;cm.popretz(15) 10a12: 8082 ret ;cm.popretz(16) ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        988,
+        1020
+      ]
+    },
+    {
+      "text": "with the GCC option -msave-restore the output is the following:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "text": "[source,asm] ---- 0001080e <processMarkers>: 1080e: 73a012ef jal t0,11f48 <riscvsave12> 10812: 1101 addi sp,sp,-32 ... 10862: 4501 li a0,0 10864: 6105 addi sp,sp,32 10866: 71e0106f j 11f84 <riscvrestore12> ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1026,
+        1035
+      ]
+    },
+    {
+      "text": "with PUSH/POPRET this reduces to",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1037,
+        1037
+      ]
+    },
+    {
+      "text": "[source,asm] ---- 0001080e <processMarkers>: 1080e: b8fa cm.push \\{ra,s0-s11},-96 ... 10866: bcfa cm.popretz \\{ra,s0-s11}, 96 ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1039,
+        1045
+      ]
+    },
+    {
+      "text": "The prologue / epilogue reduce from 60-bytes in the original code, to 14-bytes with -msave-restore, and to 4-bytes with PUSH and POPRET.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1047,
+        1050
+      ]
+    },
+    {
+      "text": "As well as reducing the code-size PUSH and POPRET eliminate the branches from calling the millicode save/restore routines and so may also perform better.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage",
+      "line_range": [
+        1047,
+        1050
+      ]
+    },
+    {
+      "text": "The instructions all automatically adjust the stack pointer by enough to cover the memory required for the registers being saved or restored.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Stack pointer adjustment handling",
+      "line_range": [
+        1056,
+        1058
+      ]
+    },
+    {
+      "text": "Additionally the spimm field in the encoding allows the stack pointer to be adjusted in additional increments of 16-bytes.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Stack pointer adjustment handling",
+      "line_range": [
+        1056,
+        1058
+      ]
+    },
+    {
+      "text": "There is only a small restricted range available in the encoding; if the range is insufficient then a separate c.addi16sp can be used to increase the range.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Stack pointer adjustment handling",
+      "line_range": [
+        1056,
+        1058
+      ]
+    },
+    {
+      "text": "There is no support for the \\{ra, s0-s10} register list without also adding s11.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Register list handling",
+      "line_range": [
+        1062,
+        1062
+      ]
+    },
+    {
+      "text": "Therefore the \\{ra, s0-s11} register list must be used in this case.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Register list handling",
+      "line_range": [
+        1062,
+        1062
+      ]
+    },
+    {
+      "text": "[pushpop-idempotent-memory]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example usage > Register list handling",
+      "line_range": [
+        1064,
+        1064
+      ]
+    },
+    {
+      "text": "Correct execution requires that sp refers to idempotent memory (also see ), because the core must be able to handle traps detected during the sequence.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP Fault handling",
+      "line_range": [
+        1067,
+        1070
+      ]
+    },
+    {
+      "text": "The entire PUSH/POP sequence is re-executed after returning from the trap handler, and multiple traps are possible during the sequence.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP Fault handling",
+      "line_range": [
+        1067,
+        1070
+      ]
+    },
+    {
+      "text": "If a trap occurs during the sequence then xEPC is updated with the PC of the instruction, xTVAL (if not read-only-zero) updated with the bad address if it was an access fault and xCAUSE updated with the type of trap.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP Fault handling",
+      "line_range": [
+        1072,
+        1072
+      ]
+    },
+    {
+      "text": "NOTE: It is implementation defined whether interrupts can also be taken during the sequence execution.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > PUSH/POP Fault handling",
+      "line_range": [
+        1074,
+        1075
+      ]
+    },
+    {
+      "text": "From a software perspective the PUSH sequence appears as:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1082,
+        1082
+      ]
+    },
+    {
+      "text": "A sequence of stores writing the bytes required by the pseudocode ** The bytes may be written in any order. ** The bytes may be grouped into larger accesses. ** Any of the bytes may be written multiple times. * A stack pointer adjustment",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1084,
+        1088
+      ]
+    },
+    {
+      "text": "The stack pointer adjustment must only be committed only when it is certain that the entire PUSH instruction will commit.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1090,
+        1090
+      ]
+    },
+    {
+      "text": "Stores may also return imprecise faults from the bus.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1092,
+        1095
+      ]
+    },
+    {
+      "text": "It is platform defined whether the core implementation waits for the bus responses before continuing to the final stage of the sequence, or handles errors responses after completing the PUSH instruction.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1092,
+        1095
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.push \\{ra, s0-s5}, -64 ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1101,
+        1104
+      ]
+    },
+    {
+      "text": "[source,asm] ---- any bytes from sp-1 to sp-28 may be written multiple times before the instruction completes therefore these updates may be visible in the interrupt/exception handler below the stack pointer sw s5, -4(sp) sw s4, -8(sp) sw s3,-12(sp) sw s2,-16(sp) sw s1,-20(sp) sw s0,-24(sp) sw ra,-28(sp)",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1108,
+        1119
+      ]
+    },
+    {
+      "text": "this must only execute once, and will only execute after all stores completed without any precise faults, therefore this update is only visible in the interrupt/exception handler if cm.push has completed addi sp, sp, -64 ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the PUSH sequence",
+      "line_range": [
+        1121,
+        1125
+      ]
+    },
+    {
+      "text": "From a software perspective the POP/POPRET sequence appears as:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1129,
+        1129
+      ]
+    },
+    {
+      "text": "A sequence of loads reading the bytes required by the pseudocode. ** The bytes may be loaded in any order. ** The bytes may be grouped into larger accesses. ** Any of the bytes may be loaded multiple times. * A stack pointer adjustment * An optional `li a0, 0` * An optional `ret`",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1131,
+        1137
+      ]
+    },
+    {
+      "text": "If a trap occurs during the sequence, then any loads which were executed before the trap may update architectural state.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1139,
+        1141
+      ]
+    },
+    {
+      "text": "The loads will be re-executed once the trap handler completes, so the values will be overwritten.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1139,
+        1141
+      ]
+    },
+    {
+      "text": "Therefore it is permitted for an implementation to update some of the destination registers before taking a fault.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1139,
+        1141
+      ]
+    },
+    {
+      "text": "The optional `li a0, 0`, stack pointer adjustment and optional `ret` must only be committed only when it is certain that the entire POP/POPRET instruction will commit.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1143,
+        1143
+      ]
+    },
+    {
+      "text": "For POPRET once the stack pointer adjustment has been committed the `ret` must execute.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1145,
+        1145
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.popretz \\{ra, s0-s3}, 32; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1150,
+        1153
+      ]
+    },
+    {
+      "text": "[source,asm] ---- any or all of these load instructions may execute multiple times therefore these updates may be visible in the interrupt/exception handler lw s3, 28(sp) lw s2, 24(sp) lw s1, 20(sp) lw s0, 16(sp) lw ra, 12(sp)",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1157,
+        1165
+      ]
+    },
+    {
+      "text": "these must only execute once, will only execute after all loads complete successfully all instructions must execute atomically therefore these updates are not visible in the interrupt/exception handler li a0, 0 addi sp, sp, 32 ret ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Software view of execution > Software view of the POP/POPRET sequence",
+      "line_range": [
+        1167,
+        1173
+      ]
+    },
+    {
+      "text": "An implementation may have a requirement to issue a PUSH/POP instruction to non-idempotent memory.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Non-idempotent memory handling",
+      "line_range": [
+        1178,
+        1178
+      ]
+    },
+    {
+      "text": "If the core implementation does not support PUSH/POP to non-idempotent memories, the core may use an idempotency PMA to detect it and take a load (POP/POPRET) or store (PUSH) access-fault exception in order to avoid unpredictable results.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Non-idempotent memory handling",
+      "line_range": [
+        1180,
+        1181
+      ]
+    },
+    {
+      "text": "Software should only use these instructions on non-idempotent memory regions when software can tolerate the required memory accesses being issued repeatedly in the case that they cause exceptions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Non-idempotent memory handling",
+      "line_range": [
+        1183,
+        1184
+      ]
+    },
+    {
+      "text": "The examples are included show the load/store series expansion and the stack adjustment.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences",
+      "line_range": [
+        1190,
+        1191
+      ]
+    },
+    {
+      "text": "Examples of cm.popret and cm.popretz are not included, as the difference in the expanded sequence from cm.pop is trivial in all cases.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences",
+      "line_range": [
+        1190,
+        1191
+      ]
+    },
+    {
+      "text": "Encoding: rlist=7, spimm=3",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.push  \\{ra, s0-s2}, -64",
+      "line_range": [
+        1195,
+        1195
+      ]
+    },
+    {
+      "text": "[source,asm] ---- sw s2, -4(sp); sw s1, -8(sp); sw s0, -12(sp); sw ra, -16(sp); addi sp, sp, -64; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.push  \\{ra, s0-s2}, -64",
+      "line_range": [
+        1199,
+        1206
+      ]
+    },
+    {
+      "text": "Encoding: rlist=15, spimm=3",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.push \\{ra, s0-s11}, -112",
+      "line_range": [
+        1210,
+        1210
+      ]
+    },
+    {
+      "text": "[source,asm] ---- sw s11, -4(sp); sw s10, -8(sp); sw s9, -12(sp); sw s8, -16(sp); sw s7, -20(sp); sw s6, -24(sp); sw s5, -28(sp); sw s4, -32(sp); sw s3, -36(sp); sw s2, -40(sp); sw s1, -44(sp); sw s0, -48(sp); sw ra, -52(sp); addi sp, sp, -112; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.push \\{ra, s0-s11}, -112",
+      "line_range": [
+        1214,
+        1230
+      ]
+    },
+    {
+      "text": "Encoding: rlist=4, spimm=0",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop   \\{ra}, 16",
+      "line_range": [
+        1236,
+        1236
+      ]
+    },
+    {
+      "text": "[source,asm] ---- lw ra, 12(sp); addi sp, sp, 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop   \\{ra}, 16",
+      "line_range": [
+        1240,
+        1244
+      ]
+    },
+    {
+      "text": "Encoding: rlist=8, spimm=1",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop \\{ra, s0-s3}, 48",
+      "line_range": [
+        1248,
+        1248
+      ]
+    },
+    {
+      "text": "[source,asm] ---- lw s3, 44(sp); lw s2, 40(sp); lw s1, 36(sp); lw s0, 32(sp); lw ra, 28(sp); addi sp, sp, 48; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop \\{ra, s0-s3}, 48",
+      "line_range": [
+        1252,
+        1260
+      ]
+    },
+    {
+      "text": "Encoding: rlist=9, spimm=2",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop \\{ra, s0-s4}, 64",
+      "line_range": [
+        1264,
+        1264
+      ]
+    },
+    {
+      "text": "[source,asm] ---- lw s4, 60(sp); lw s3, 56(sp); lw s2, 52(sp); lw s1, 48(sp); lw s0, 44(sp); lw ra, 40(sp); addi sp, sp, 64; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop \\{ra, s0-s4}, 64",
+      "line_range": [
+        1268,
+        1277
+      ]
+    },
+    {
+      "text": "<<< [insns-cmpush,reftext=\"cm.push\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > Example RV32I PUSH/POP sequences > cm.pop \\{ra, s0-s4}, 64",
+      "line_range": [
+        1279,
+        1280
+      ]
+    },
+    {
+      "text": "Create stack frame: store ra and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1286,
+        1286
+      ]
+    },
+    {
+      "text": "cm.push \\{reglist}, -stackadj",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1290,
+        1290
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 2, name: 'spimm', attr: [] }, { bits: 4, name: 'rlist', attr: [] }, { bits: 5, name: 0x18, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1294,
+        1303
+      ]
+    },
+    {
+      "text": "[source,asm] -- cm.push \\{reglist}, -stackadj cm.push {xreglist}, -stackadj --",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1307,
+        1311
+      ]
+    },
+    {
+      "text": "The variables used in the assembly syntax are defined below.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1313,
+        1313
+      ]
+    },
+    {
+      "text": "switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1319,
+        1326
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32I, RV64: switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} case 7: \\{reglist=\"ra, s0-s2\"; xreglist=\"x1, x8-x9, x18\";} case 8: \\{reglist=\"ra, s0-s3\"; xreglist=\"x1, x8-x9, x18-x19\";} case 9: \\{reglist=\"ra, s0-s4\"; xreglist=\"x1, x8-x9, x18-x20\";} case 10: \\{reglist=\"ra, s0-s5\"; xreglist=\"x1, x8-x9, x18-x21\";} case 11: \\{reglist=\"ra, s0-s6\"; xreglist=\"x1, x8-x9, x18-x22\";} case 12: \\{reglist=\"ra, s0-s7\"; xreglist=\"x1, x8-x9, x18-x23\";} case 13: \\{reglist=\"ra, s0-s8\"; xreglist=\"x1, x8-x9, x18-x24\";} case 14: \\{reglist=\"ra, s0-s9\"; xreglist=\"x1, x8-x9, x18-x25\";} //note - to include s10, s11 must also be included case 15: \\{reglist=\"ra, s0-s11\"; xreglist=\"x1, x8-x9, x18-x27\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1328,
+        1348
+      ]
+    },
+    {
+      "text": "Valid values: stackadj = [16|32|48|64]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1354,
+        1357
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 7: stackadjbase = 16; case 8..11: stackadjbase = 32; case 12..14: stackadjbase = 48; case 15: stackadjbase = 64; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1363,
+        1368
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 7: stackadj = [16|32|48| 64]; case 8..11: stackadj = [32|48|64| 80]; case 12..14: stackadj = [48|64|80| 96]; case 15: stackadj = [64|80|96|112]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1370,
+        1377
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 5: stackadjbase = 16; case 6.. 7: stackadjbase = 32; case 8.. 9: stackadjbase = 48; case 10..11: stackadjbase = 64; case 12..13: stackadjbase = 80; case 14: stackadjbase = 96; case 15: stackadjbase = 112; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1383,
+        1391
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 5: stackadj = [ 16| 32| 48| 64]; case 6.. 7: stackadj = [ 32| 48| 64| 80]; case 8.. 9: stackadj = [ 48| 64| 80| 96]; case 10..11: stackadj = [ 64| 80| 96|112]; case 12..13: stackadj = [ 80| 96|112|128]; case 14: stackadj = [ 96|112|128|144]; case 15: stackadj = [112|128|144|160]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1393,
+        1403
+      ]
+    },
+    {
+      "text": "This instruction pushes (stores) the registers in reglist to the memory below the stack pointer, and then creates the stack frame by decrementing the stack pointer by stackadj, including any additional stack space requested by the value of spimm.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1408,
+        1410
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1412,
+        1412
+      ]
+    },
+    {
+      "text": "Stack Adjustment Calculation:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1414,
+        1414
+      ]
+    },
+    {
+      "text": "stackadjbase is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1416,
+        1416
+      ]
+    },
+    {
+      "text": "spimm is the number of additional 16-byte address increments allocated for the stack frame.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1418,
+        1418
+      ]
+    },
+    {
+      "text": "The total stack adjustment represents the total size of the stack frame, which is stackadjbase added to spimm scaled by 16, as defined above.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1420,
+        1421
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1429,
+        1429
+      ]
+    },
+    {
+      "text": "The first section of pseudocode may be executed multiple times before the instruction successfully completes.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1433,
+        1433
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1435,
+        1437
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1435,
+        1437
+      ]
+    },
+    {
+      "text": "if (XLEN32) bytes=4; else bytes=8;",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1439,
+        1439
+      ]
+    },
+    {
+      "text": "addr=sp-bytes; for(i in 27,26,25,24,23,22,21,20,19,18,9,8,1) { //if register i is in xreglist if (xreglist[i]) { switch(bytes) { 4: asm(\"sw x[i], 0(addr)\"); 8: asm(\"sd x[i], 0(addr)\"); } addr-=bytes; } } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1441,
+        1452
+      ]
+    },
+    {
+      "text": "The final section of pseudocode executes atomically, and only executes if the section above completes without any exceptions or interrupts.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1454,
+        1454
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1456,
+        1458
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1456,
+        1458
+      ]
+    },
+    {
+      "text": "<<< [insns-cmpop,reftext=\"cm.pop\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.push",
+      "line_range": [
+        1463,
+        1464
+      ]
+    },
+    {
+      "text": "Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1470,
+        1470
+      ]
+    },
+    {
+      "text": "cm.pop \\{reglist}, stackadj",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1474,
+        1474
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 2, name: 'spimm', attr: [] }, { bits: 4, name: 'rlist', attr: [] }, { bits: 5, name: 0x1a, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1478,
+        1487
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.pop \\{reglist}, stackadj cm.pop {xreglist}, stackadj ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1491,
+        1495
+      ]
+    },
+    {
+      "text": "The variables used in the assembly syntax are defined below.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1497,
+        1497
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32E: switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1499,
+        1509
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32I, RV64: switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} case 7: \\{reglist=\"ra, s0-s2\"; xreglist=\"x1, x8-x9, x18\";} case 8: \\{reglist=\"ra, s0-s3\"; xreglist=\"x1, x8-x9, x18-x19\";} case 9: \\{reglist=\"ra, s0-s4\"; xreglist=\"x1, x8-x9, x18-x20\";} case 10: \\{reglist=\"ra, s0-s5\"; xreglist=\"x1, x8-x9, x18-x21\";} case 11: \\{reglist=\"ra, s0-s6\"; xreglist=\"x1, x8-x9, x18-x22\";} case 12: \\{reglist=\"ra, s0-s7\"; xreglist=\"x1, x8-x9, x18-x23\";} case 13: \\{reglist=\"ra, s0-s8\"; xreglist=\"x1, x8-x9, x18-x24\";} case 14: \\{reglist=\"ra, s0-s9\"; xreglist=\"x1, x8-x9, x18-x25\";} //note - to include s10, s11 must also be included case 15: \\{reglist=\"ra, s0-s11\"; xreglist=\"x1, x8-x9, x18-x27\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1511,
+        1531
+      ]
+    },
+    {
+      "text": "Valid values: stackadj = [16|32|48|64]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1537,
+        1540
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 7: stackadjbase = 16; case 8..11: stackadjbase = 32; case 12..14: stackadjbase = 48; case 15: stackadjbase = 64; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1546,
+        1551
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 7: stackadj = [16|32|48| 64]; case 8..11: stackadj = [32|48|64| 80]; case 12..14: stackadj = [48|64|80| 96]; case 15: stackadj = [64|80|96|112]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1553,
+        1560
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 5: stackadjbase = 16; case 6.. 7: stackadjbase = 32; case 8.. 9: stackadjbase = 48; case 10..11: stackadjbase = 64; case 12..13: stackadjbase = 80; case 14: stackadjbase = 96; case 15: stackadjbase = 112; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1566,
+        1574
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 5: stackadj = [ 16| 32| 48| 64]; case 6.. 7: stackadj = [ 32| 48| 64| 80]; case 8.. 9: stackadj = [ 48| 64| 80| 96]; case 10..11: stackadj = [ 64| 80| 96|112]; case 12..13: stackadj = [ 80| 96|112|128]; case 14: stackadj = [ 96|112|128|144]; case 15: stackadj = [112|128|144|160]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1576,
+        1586
+      ]
+    },
+    {
+      "text": "This instruction pops (loads) the registers in reglist from stack memory, and then adjusts the stack pointer by stackadj.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1592,
+        1593
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1595,
+        1595
+      ]
+    },
+    {
+      "text": "Stack Adjustment Calculation:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1597,
+        1597
+      ]
+    },
+    {
+      "text": "stackadjbase is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1599,
+        1599
+      ]
+    },
+    {
+      "text": "spimm is the number of additional 16-byte address increments allocated for the stack frame.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1601,
+        1601
+      ]
+    },
+    {
+      "text": "The total stack adjustment represents the total size of the stack frame, which is stackadjbase added to spimm scaled by 16, as defined above.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1603,
+        1604
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1612,
+        1612
+      ]
+    },
+    {
+      "text": "The first section of pseudocode may be executed multiple times before the instruction successfully completes.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1616,
+        1616
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1618,
+        1620
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1618,
+        1620
+      ]
+    },
+    {
+      "text": "if (XLEN32) bytes=4; else bytes=8;",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1622,
+        1622
+      ]
+    },
+    {
+      "text": "addr=sp+stackadj-bytes; for(i in 27,26,25,24,23,22,21,20,19,18,9,8,1) { //if register i is in xreglist if (xreglist[i]) { switch(bytes) { 4: asm(\"lw x[i], 0(addr)\"); 8: asm(\"ld x[i], 0(addr)\"); } addr-=bytes; } } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1624,
+        1635
+      ]
+    },
+    {
+      "text": "The final section of pseudocode executes atomically, and only executes if the section above completes without any exceptions or interrupts.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1637,
+        1637
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1639,
+        1641
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1639,
+        1641
+      ]
+    },
+    {
+      "text": "<<< [insns-cmpopretz,reftext=\"cm.popretz\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.pop",
+      "line_range": [
+        1646,
+        1647
+      ]
+    },
+    {
+      "text": "Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame, move zero into a0, return to ra.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1652,
+        1652
+      ]
+    },
+    {
+      "text": "cm.popretz \\{reglist}, stackadj",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1656,
+        1656
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 2, name: 'spimm\\[5:4\\]', attr: [] }, { bits: 4, name: 'rlist', attr: [] }, { bits: 5, name: 0x1c, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1660,
+        1669
+      ]
+    },
+    {
+      "text": "[source,sail] ---- cm.popretz \\{reglist}, stackadj cm.popretz {xreglist}, stackadj ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1673,
+        1677
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32E: switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1679,
+        1689
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32I, RV64:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1691,
+        1693
+      ]
+    },
+    {
+      "text": "switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} case 7: \\{reglist=\"ra, s0-s2\"; xreglist=\"x1, x8-x9, x18\";} case 8: \\{reglist=\"ra, s0-s3\"; xreglist=\"x1, x8-x9, x18-x19\";} case 9: \\{reglist=\"ra, s0-s4\"; xreglist=\"x1, x8-x9, x18-x20\";} case 10: \\{reglist=\"ra, s0-s5\"; xreglist=\"x1, x8-x9, x18-x21\";} case 11: \\{reglist=\"ra, s0-s6\"; xreglist=\"x1, x8-x9, x18-x22\";} case 12: \\{reglist=\"ra, s0-s7\"; xreglist=\"x1, x8-x9, x18-x23\";} case 13: \\{reglist=\"ra, s0-s8\"; xreglist=\"x1, x8-x9, x18-x24\";} case 14: \\{reglist=\"ra, s0-s9\"; xreglist=\"x1, x8-x9, x18-x25\";} //note - to include s10, s11 must also be included case 15: \\{reglist=\"ra, s0-s11\"; xreglist=\"x1, x8-x9, x18-x27\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1695,
+        1712
+      ]
+    },
+    {
+      "text": "Valid values: stackadj = [16|32|48|64]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1718,
+        1721
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 7: stackadjbase = 16; case 8..11: stackadjbase = 32; case 12..14: stackadjbase = 48; case 15: stackadjbase = 64; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1727,
+        1732
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 7: stackadj = [16|32|48| 64]; case 8..11: stackadj = [32|48|64| 80]; case 12..14: stackadj = [48|64|80| 96]; case 15: stackadj = [64|80|96|112]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1734,
+        1741
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 5: stackadjbase = 16; case 6.. 7: stackadjbase = 32; case 8.. 9: stackadjbase = 48; case 10..11: stackadjbase = 64; case 12..13: stackadjbase = 80; case 14: stackadjbase = 96; case 15: stackadjbase = 112; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1747,
+        1755
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 5: stackadj = [ 16| 32| 48| 64]; case 6.. 7: stackadj = [ 32| 48| 64| 80]; case 8.. 9: stackadj = [ 48| 64| 80| 96]; case 10..11: stackadj = [ 64| 80| 96|112]; case 12..13: stackadj = [ 80| 96|112|128]; case 14: stackadj = [ 96|112|128|144]; case 15: stackadj = [112|128|144|160]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1757,
+        1767
+      ]
+    },
+    {
+      "text": "This instruction pops (loads) the registers in reglist from stack memory, adjusts the stack pointer by stackadj, moves zero into a0 and then returns to ra.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1773,
+        1773
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1775,
+        1775
+      ]
+    },
+    {
+      "text": "Stack Adjustment Calculation:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1777,
+        1777
+      ]
+    },
+    {
+      "text": "stackadjbase is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1779,
+        1779
+      ]
+    },
+    {
+      "text": "spimm is the number of additional 16-byte address increments allocated for the stack frame.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1781,
+        1781
+      ]
+    },
+    {
+      "text": "The total stack adjustment represents the total size of the stack frame, which is stackadjbase added to spimm scaled by 16, as defined above.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1783,
+        1783
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1791,
+        1791
+      ]
+    },
+    {
+      "text": "The first section of pseudocode may be executed multiple times before the instruction successfully completes.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1795,
+        1795
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1797,
+        1799
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1797,
+        1799
+      ]
+    },
+    {
+      "text": "if (XLEN32) bytes=4; else bytes=8;",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1801,
+        1801
+      ]
+    },
+    {
+      "text": "addr=sp+stackadj-bytes; for(i in 27,26,25,24,23,22,21,20,19,18,9,8,1) { //if register i is in xreglist if (xreglist[i]) { switch(bytes) { 4: asm(\"lw x[i], 0(addr)\"); 8: asm(\"ld x[i], 0(addr)\"); } addr-=bytes; } } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1803,
+        1814
+      ]
+    },
+    {
+      "text": "The final section of pseudocode executes atomically, and only executes if the section above completes without any exceptions or interrupts.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1816,
+        1816
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1818,
+        1820
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1818,
+        1820
+      ]
+    },
+    {
+      "text": "asm(\"li a0, 0\"); sp+=stackadj; asm(\"ret\"); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1822,
+        1825
+      ]
+    },
+    {
+      "text": "<<< [insns-cmpopret,reftext=\"cm.popret\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popretz",
+      "line_range": [
+        1827,
+        1828
+      ]
+    },
+    {
+      "text": "Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to ra.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1834,
+        1834
+      ]
+    },
+    {
+      "text": "cm.popret \\{reglist}, stackadj",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1838,
+        1838
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 2, name: 'spimm', attr: [] }, { bits: 4, name: 'rlist', attr: [] }, { bits: 5, name: 0x1e, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1842,
+        1851
+      ]
+    },
+    {
+      "text": "[source,sail] ---- cm.popret \\{reglist}, stackadj cm.popret {xreglist}, stackadj ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1855,
+        1859
+      ]
+    },
+    {
+      "text": "The variables used in the assembly syntax are defined below.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1861,
+        1861
+      ]
+    },
+    {
+      "text": "switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1867,
+        1874
+      ]
+    },
+    {
+      "text": "[source,sail] ---- RV32I, RV64:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1876,
+        1878
+      ]
+    },
+    {
+      "text": "switch (rlist){ case 4: \\{reglist=\"ra\"; xreglist=\"x1\";} case 5: \\{reglist=\"ra, s0\"; xreglist=\"x1, x8\";} case 6: \\{reglist=\"ra, s0-s1\"; xreglist=\"x1, x8-x9\";} case 7: \\{reglist=\"ra, s0-s2\"; xreglist=\"x1, x8-x9, x18\";} case 8: \\{reglist=\"ra, s0-s3\"; xreglist=\"x1, x8-x9, x18-x19\";} case 9: \\{reglist=\"ra, s0-s4\"; xreglist=\"x1, x8-x9, x18-x20\";} case 10: \\{reglist=\"ra, s0-s5\"; xreglist=\"x1, x8-x9, x18-x21\";} case 11: \\{reglist=\"ra, s0-s6\"; xreglist=\"x1, x8-x9, x18-x22\";} case 12: \\{reglist=\"ra, s0-s7\"; xreglist=\"x1, x8-x9, x18-x23\";} case 13: \\{reglist=\"ra, s0-s8\"; xreglist=\"x1, x8-x9, x18-x24\";} case 14: \\{reglist=\"ra, s0-s9\"; xreglist=\"x1, x8-x9, x18-x25\";} //note - to include s10, s11 must also be included case 15: \\{reglist=\"ra, s0-s11\"; xreglist=\"x1, x8-x9, x18-x27\";} default: reserved(); } stackadj = stackadjbase + spimm * 16; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1880,
+        1897
+      ]
+    },
+    {
+      "text": "Valid values: stackadj = [16|32|48|64]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1903,
+        1906
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 7: stackadjbase = 16; case 8..11: stackadjbase = 32; case 12..14: stackadjbase = 48; case 15: stackadjbase = 64; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1912,
+        1917
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 7: stackadj = [16|32|48| 64]; case 8..11: stackadj = [32|48|64| 80]; case 12..14: stackadj = [48|64|80| 96]; case 15: stackadj = [64|80|96|112]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1919,
+        1926
+      ]
+    },
+    {
+      "text": "switch (rlist) { case 4.. 5: stackadjbase = 16; case 6.. 7: stackadjbase = 32; case 8.. 9: stackadjbase = 48; case 10..11: stackadjbase = 64; case 12..13: stackadjbase = 80; case 14: stackadjbase = 96; case 15: stackadjbase = 112; }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1932,
+        1940
+      ]
+    },
+    {
+      "text": "Valid values: switch (rlist) { case 4.. 5: stackadj = [ 16| 32| 48| 64]; case 6.. 7: stackadj = [ 32| 48| 64| 80]; case 8.. 9: stackadj = [ 48| 64| 80| 96]; case 10..11: stackadj = [ 64| 80| 96|112]; case 12..13: stackadj = [ 80| 96|112|128]; case 14: stackadj = [ 96|112|128|144]; case 15: stackadj = [112|128|144|160]; } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1942,
+        1952
+      ]
+    },
+    {
+      "text": "This instruction pops (loads) the registers in reglist from stack memory, adjusts the stack pointer by stackadj and then returns to ra.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1958,
+        1958
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1960,
+        1960
+      ]
+    },
+    {
+      "text": "Stack Adjustment Calculation:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1962,
+        1962
+      ]
+    },
+    {
+      "text": "stackadjbase is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1964,
+        1964
+      ]
+    },
+    {
+      "text": "spimm is the number of additional 16-byte address increments allocated for the stack frame.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1966,
+        1966
+      ]
+    },
+    {
+      "text": "The total stack adjustment represents the total size of the stack frame, which is stackadjbase added to spimm scaled by 16, as defined above.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1968,
+        1968
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1976,
+        1976
+      ]
+    },
+    {
+      "text": "The first section of pseudocode may be executed multiple times before the instruction successfully completes.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1980,
+        1980
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1982,
+        1984
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1982,
+        1984
+      ]
+    },
+    {
+      "text": "if (XLEN32) bytes=4; else bytes=8;",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1986,
+        1986
+      ]
+    },
+    {
+      "text": "addr=sp+stackadj-bytes; for(i in 27,26,25,24,23,22,21,20,19,18,9,8,1) { //if register i is in xreglist if (xreglist[i]) { switch(bytes) { 4: asm(\"lw x[i], 0(addr)\"); 8: asm(\"ld x[i], 0(addr)\"); } addr-=bytes; } } ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        1988,
+        1999
+      ]
+    },
+    {
+      "text": "The final section of pseudocode executes atomically, and only executes if the section above completes without any exceptions or interrupts.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        2001,
+        2001
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        2003,
+        2005
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        2003,
+        2005
+      ]
+    },
+    {
+      "text": "sp+=stackadj; asm(\"ret\"); ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        2007,
+        2009
+      ]
+    },
+    {
+      "text": "[insns-cmmvsa01,reftext=\"Move a0-a1 into two different s0-s7 registers\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.popret",
+      "line_range": [
+        2013,
+        2013
+      ]
+    },
+    {
+      "text": "Move a0-a1 into two registers of s0-s7",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2018,
+        2018
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 3, name: 'r2s\\'', attr: [] }, { bits: 2, name: 0x1, attr: [] }, { bits: 3, name: 'r1s\\'', attr: [] }, { bits: 3, name: 0x3, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2026,
+        2036
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.mvsa01 r1s', r2s' ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2040,
+        2043
+      ]
+    },
+    {
+      "text": "Description:: This instruction moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2045,
+        2047
+      ]
+    },
+    {
+      "text": "The execution is atomic, so it is not possible to observe state where only one of r1s' or r2s' has been updated.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2045,
+        2047
+      ]
+    },
+    {
+      "text": "The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2049,
+        2050
+      ]
+    },
+    {
+      "text": "The mapping between them is specified in the pseudocode below.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2049,
+        2050
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2058,
+        2058
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2062,
+        2072
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet. if (RV32E && (r1sc>1 || r2sc>1)) { reserved(); } xreg1 = {r1sc[2:1]>0,r1sc[2:1]0,r1sc[2:0]}; xreg2 = {r2sc[2:1]>0,r2sc[2:1]0,r2sc[2:0]}; X[xreg1] = X[10]; X[xreg2] = X[11]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2062,
+        2072
+      ]
+    },
+    {
+      "text": "[insns-cmmva01s,reftext=\"Move two s0-s7 registers into a0-a1\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mvsa01",
+      "line_range": [
+        2076,
+        2076
+      ]
+    },
+    {
+      "text": "Move two s0-s7 registers into a0-a1",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2081,
+        2081
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 3, name: 'r2s\\'', attr: [] }, { bits: 2, name: 0x3, attr: [] }, { bits: 3, name: 'r1s\\'', attr: [] }, { bits: 3, name: 0x3, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2089,
+        2099
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.mva01s r1s', r2s' ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2103,
+        2106
+      ]
+    },
+    {
+      "text": "Description:: This instruction moves r1s' into a0 and r2s' into a1.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2108,
+        2110
+      ]
+    },
+    {
+      "text": "The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2108,
+        2110
+      ]
+    },
+    {
+      "text": "The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2112,
+        2113
+      ]
+    },
+    {
+      "text": "The mapping between them is specified in the pseudocode below.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2112,
+        2113
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2121,
+        2121
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2125,
+        2135
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet. if (RV32E && (r1sc>1 || r2sc>1)) { reserved(); } xreg1 = {r1sc[2:1]>0,r1sc[2:1]0,r1sc[2:0]}; xreg2 = {r2sc[2:1]>0,r2sc[2:1]0,r2sc[2:0]}; X[10] = X[xreg1]; X[11] = X[xreg2]; ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2125,
+        2135
+      ]
+    },
+    {
+      "text": "[insns-tablejump,reftext=\"Table Jump Overview\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > PUSH/POP register instructions > cm.mva01s",
+      "line_range": [
+        2139,
+        2139
+      ]
+    },
+    {
+      "text": "cm.jt () and cm.jalt () are referred to as table jump.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2142,
+        2142
+      ]
+    },
+    {
+      "text": "Table jump uses a 256-entry XLEN wide table in instruction memory to contain function addresses.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2144,
+        2145
+      ]
+    },
+    {
+      "text": "The table must be a minimum of 64-byte aligned.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2144,
+        2145
+      ]
+    },
+    {
+      "text": "Table entries follow the current data endianness.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2147,
+        2147
+      ]
+    },
+    {
+      "text": "This is different from normal instruction fetch which is always little-endian.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2147,
+        2147
+      ]
+    },
+    {
+      "text": "cm.jt and cm.jalt encodings index the table, giving access to functions within the full XLEN wide address space.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2149,
+        2149
+      ]
+    },
+    {
+      "text": "This is used as a form of dictionary compression to reduce the code size of jal / auipc+jalr / jr / auipc+jr instructions.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2151,
+        2151
+      ]
+    },
+    {
+      "text": "Table jump allows the linker to replace the following instruction sequences with a cm.jt or cm.jalt encoding, and an entry in the table:",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2153,
+        2153
+      ]
+    },
+    {
+      "text": "32-bit j calls * 32-bit jal ra calls * 64-bit auipc+jr calls to fixed locations * 64-bit auipc+jalr ra calls to fixed locations ** The auipc+jr/jalr sequence is used because the offset from the PC is out of the ±1{nbsp}MB range.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2155,
+        2159
+      ]
+    },
+    {
+      "text": "If a return address stack is implemented, then as cm.jalt is equivalent to jal ra, it pushes to the stack.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview",
+      "line_range": [
+        2161,
+        2161
+      ]
+    },
+    {
+      "text": "The base of the table is in the jvt CSR (see ), each table entry is XLEN bits.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt",
+      "line_range": [
+        2165,
+        2165
+      ]
+    },
+    {
+      "text": "If the same function is called with and without linking then it must have two entries in the table.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt",
+      "line_range": [
+        2167,
+        2168
+      ]
+    },
+    {
+      "text": "This is typically caused by the same function being called with and without tail calling.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt",
+      "line_range": [
+        2167,
+        2168
+      ]
+    },
+    {
+      "text": "[tablejump-fault-handling]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt",
+      "line_range": [
+        2170,
+        2170
+      ]
+    },
+    {
+      "text": "For a table jump instruction, the table entry that the instruction selects is considered an extension of the instruction itself.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2173,
+        2176
+      ]
+    },
+    {
+      "text": "Hence, the execution of a table jump instruction involves two instruction fetches, the first to read the instruction (cm.jt/cm.jalt) and the second to read from the jump vector table (JVT).",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2173,
+        2176
+      ]
+    },
+    {
+      "text": "Both instruction fetches are implicit reads, and both require execute permission; read permission is irrelevant.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2173,
+        2176
+      ]
+    },
+    {
+      "text": "It is recommended that the second fetch be ignored for hardware triggers and breakpoints.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2173,
+        2176
+      ]
+    },
+    {
+      "text": "Memory writes to the jump vector table require an instruction barrier (fence.i) to guarantee that they are visible to the instruction fetch.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2178,
+        2178
+      ]
+    },
+    {
+      "text": "Multiple contexts may have different jump vector tables. JVT may be switched between them without an instruction barrier if the tables have not been updated in memory since the last fence.i.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2180,
+        2181
+      ]
+    },
+    {
+      "text": "If an exception occurs on either instruction fetch, xEPC is set to the PC of the table jump instruction, xCAUSE is set as expected for the type of fault and xTVAL (if not set to zero) contains the fetch address which caused the fault.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2183,
+        2183
+      ]
+    },
+    {
+      "text": "<<< [csrs-jvt,reftext=\"jvt CSR, table jump base vector and control register\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > Table Jump Fault handling",
+      "line_range": [
+        2185,
+        2186
+      ]
+    },
+    {
+      "text": "Table jump base vector and control register",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2191,
+        2191
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 6, name: 'mode', attr: ['6'] }, { bits: 26, name: 'base[XLEN-1:6] (WARL)', attr: ['XLEN-6'] }, ],config:{bits:32}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2203,
+        2209
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 6, name: 'mode', attr: ['6'] }, { bits: 58, name: 'base[XLEN-1:6] (WARL)', attr: ['XLEN-6'] }, ],config:{bits:64}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2213,
+        2219
+      ]
+    },
+    {
+      "text": "The jvt register is an XLEN-bit *WARL* read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2223,
+        2223
+      ]
+    },
+    {
+      "text": "If is implemented then jvt must also be implemented, but can contain a read-only value.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "If jvt is writable, the set of values the register may hold can vary by implementation.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "The value in the BASE field must always be aligned on a 64-byte boundary.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "Note that the CSR contains only bits XLEN-1 through 6 of the address base.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "When computing jump-table accesses, the lower six bits of base are filled with zeroes to obtain an XLEN-bit jump-table base address jvt.base that is always aligned on a 64-byte boundary.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2225,
+        2226
+      ]
+    },
+    {
+      "text": "jvt.base is a virtual address, whenever virtual memory is enabled.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2228,
+        2228
+      ]
+    },
+    {
+      "text": "The memory pointed to by jvt.base is treated as instruction memory for the purpose of executing table jump instructions, implying execute access permission.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2230,
+        2230
+      ]
+    },
+    {
+      "text": "[JVT-config-table] .jvt.mode definition [width=\"60%\",options=header] | | jvt.mode | Comment | 000000 | Jump table mode | others | *reserved for future standard use* |",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2232,
+        2239
+      ]
+    },
+    {
+      "text": "jvt.mode is a *WARL* field, so can only be programmed to modes which are implemented.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2241,
+        2242
+      ]
+    },
+    {
+      "text": "Therefore the discovery mechanism is to attempt to program different modes and read back the values to see which are available.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2241,
+        2242
+      ]
+    },
+    {
+      "text": "Jump table mode must be implemented.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2241,
+        2242
+      ]
+    },
+    {
+      "text": "jvt CSR adds architectural state to the system software context (such as an OS process), therefore must be saved/restored on context switches. <<< [insns-cmjt,reftext=\"Jump via table\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > jvt CSR",
+      "line_range": [
+        2246,
+        2248
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 8, name: 'index', attr: [] }, { bits: 3, name: 0x0, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2261,
+        2269
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.jt index ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2273,
+        2276
+      ]
+    },
+    {
+      "text": "cm.jt reads an entry from the jump vector table in memory and jumps to the address that was read.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2280,
+        2280
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2282,
+        2282
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2290,
+        2290
+      ]
+    },
+    {
+      "text": "[insns-cmjt-SAIL,reftext=\"cm.jt SAIL code\"] Operation::",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2294,
+        2295
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2297,
+        2299
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2297,
+        2299
+      ]
+    },
+    {
+      "text": "tableaddress is temporary internal state, it doesn't represent a real register InstMemory is byte indexed",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2301,
+        2302
+      ]
+    },
+    {
+      "text": "switch(XLEN) { 32: tableaddress[XLEN-1:0] = jvt.base + (index<<2); 64: tableaddress[XLEN-1:0] = jvt.base + (index<<3); }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2304,
+        2307
+      ]
+    },
+    {
+      "text": "<<< [insns-cmjalt,reftext=\"Jump and link via table\"]",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jt",
+      "line_range": [
+        2314,
+        2315
+      ]
+    },
+    {
+      "text": "jump via table with optional link",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2320,
+        2320
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 2, name: 0x2, attr: ['C2'] }, { bits: 8, name: 'index', attr: [] }, { bits: 3, name: 0x0, attr: [] }, { bits: 3, name: 0x5, attr: ['FUNCT3'] }, ],config:{bits:16}} ....",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2328,
+        2336
+      ]
+    },
+    {
+      "text": "[source,asm] ---- cm.jalt index ----",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2340,
+        2343
+      ]
+    },
+    {
+      "text": "cm.jalt reads an entry from the jump vector table in memory and jumps to the address that was read, linking to ra.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2347,
+        2347
+      ]
+    },
+    {
+      "text": "For further information see .",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2349,
+        2349
+      ]
+    },
+    {
+      "text": "No direct equivalent encoding exists.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2357,
+        2357
+      ]
+    },
+    {
+      "text": "[insns-cmjalt-SAIL,reftext=\"cm.jalt SAIL code\"] Operation::",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2361,
+        2362
+      ]
+    },
+    {
+      "text": "[source,sail] ---- //This is not SAIL, it's pseudocode.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2364,
+        2366
+      ]
+    },
+    {
+      "text": "The SAIL hasn't been written yet.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2364,
+        2366
+      ]
+    },
+    {
+      "text": "tableaddress is temporary internal state, it doesn't represent a real register InstMemory is byte indexed",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2368,
+        2369
+      ]
+    },
+    {
+      "text": "switch(XLEN) { 32: tableaddress[XLEN-1:0] = jvt.base + (index<<2); 64: tableaddress[XLEN-1:0] = jvt.base + (index<<3); }",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2371,
+        2374
+      ]
+    },
+    {
+      "text": "ra = pc+2; pc = InstMemory[tableaddress][XLEN-1:0]&~0x1; // Clear bit 0.",
+      "section": "Preamble > \"Zc*\" Extension for Code Size Reduction, Version 1.0.0 > Table Jump Overview > cm.jalt",
+      "line_range": [
+        2378,
+        2379
+      ]
+    }
+  ]
+}
