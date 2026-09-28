@@ -1,0 +1,244 @@
+{
+  "chunk_id": "chunk_055",
+  "source_file": "supervisor.adoc",
+  "start_line": 1,
+  "end_line": 2697,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "When SXLEN=64, it is a *WARL* field that encodes the current value of UXLEN. In particular, an implementation may make UXL be a read-only field whose value always ensures that UXLEN=SXLEN.",
+      "line_number": 119,
+      "parameter_name": "SSTATUS_UXL_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The UXL field is WARL and implementations may make it read-only with a fixed value. The parameter is the set of legal values for this WARL field."
+    },
+    {
+      "excerpt": "When such a HINT is executed with XLEN < SXLEN and bits SXLEN..XLEN of the destination register not all equal to bit XLEN-1, it is implementation-defined whether bits SXLEN..XLEN of the destination register are unchanged or are overwritten with copies of bit XLEN-1.",
+      "line_number": 133,
+      "parameter_name": "HW_HINT_REGISTER_WRITEBACK",
+      "existing_udb_name": null,
+      "class": "SW_RULE",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This is implementation-defined behavior for HINT instruction register writeback. Software can handle this deterministically by checking register state, making it a SW_RULE parameter."
+    },
+    {
+      "excerpt": "SUM is read-only 0 if `satp`.MODE is read-only 0.",
+      "line_number": 162,
+      "parameter_name": "SSTATUS_SUM_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether the SUM bit is read-only or read-write based on satp.MODE capabilities. This controls the mutability of the field."
+    },
+    {
+      "excerpt": "The UBE bit is a *WARL* field that controls the endianness of explicit memory accesses made from U-mode, which may differ from the endianness of memory accesses in S-mode. An implementation may make UBE be a read-only field that always specifies the same endianness as for S-mode.",
+      "line_number": 185,
+      "parameter_name": "U_MODE_ENDIANNESS",
+      "existing_udb_name": "U_MODE_ENDIANNESS",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The UBE field can be read-only (fixed endianness) or read-write (dynamic endianness). This is a choice about field mutability and supported endianness values."
+    },
+    {
+      "excerpt": "The S-mode-disable-trap (`SDT`) bit is a WARL field introduced by the Ssdbltrp extension to address double trap",
+      "line_number": 207,
+      "parameter_name": "SSTATUS_SDT_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The SDT field is explicitly described as WARL, meaning implementations can restrict which values are legal."
+    },
+    {
+      "excerpt": "If `satp`.MODE is read-only zero (always Bare), the implementation may make FIOM read-only zero.",
+      "line_number": 1050,
+      "parameter_name": "SENVCFG_FIOM_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether FIOM is read-only zero or writable based on satp.MODE capabilities. This controls field mutability."
+    },
+    {
+      "excerpt": "When the Zicboz extension is not implemented, `CBZE` is read-only zero.",
+      "line_number": 1081,
+      "parameter_name": "SENVCFG_CBZE_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether CBZE is implemented (writable) or read-only zero based on Zicboz extension support."
+    },
+    {
+      "excerpt": "When the Zicbom extension is not implemented, `CBCFE` is read-only zero.",
+      "line_number": 1088,
+      "parameter_name": "SENVCFG_CBCFE_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether CBCFE is implemented (writable) or read-only zero based on Zicbom extension support."
+    },
+    {
+      "excerpt": "The Zicbom extension adds the `CBIE` (Cache Block Invalidate instruction Enable) WARL field to `senvcfg` to control execution of the `CBO.INVAL` instruction in U-mode. The encoding `10b` is reserved. When the Zicbom extension is not implemented, `CBIE` is read-only zero.",
+      "line_number": 1091,
+      "parameter_name": "SENVCFG_CBIE_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The CBIE field is explicitly WARL with specific reserved encodings. The parameter is the set of legal values (00b, 01b, 11b when Zicbom is implemented, or just 00b when not)."
+    },
+    {
+      "excerpt": "If Ssnpm is not implemented, `PMM` is read-only zero. The `PMM` field is read-only zero for RV32.",
+      "line_number": 1105,
+      "parameter_name": "SENVCFG_PMM_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether PMM is implemented (writable) or read-only zero based on Ssnpm extension support and XLEN."
+    },
+    {
+      "excerpt": "Implementations are not required to support all MODE settings, and if `satp` is written with an unsupported MODE, the entire write has no effect; no fields in `satp` are modified.",
+      "line_number": 1234,
+      "parameter_name": "SATP_MODE_BARE",
+      "existing_udb_name": "SATP_MODE_BARE",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Implementations choose which satp.MODE values to support. This is a direct implementation choice about supporting Bare mode."
+    },
+    {
+      "excerpt": "The number of ASID bits is UNSPECIFIED and may be zero. The number of implemented ASID bits, termed _ASIDLEN_, may be determined by writing one to every bit position in the ASID field, then reading back the value in `satp` to see which bit positions in the ASID field hold a one.",
+      "line_number": 1237,
+      "parameter_name": "ASID_WIDTH",
+      "existing_udb_name": "ASID_WIDTH",
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "ASIDLEN is an implementation choice with specified bounds (0 to ASIDMAX). This is a direct parameter for the number of implemented ASID bits."
+    },
+    {
+      "excerpt": "Each individual bit in register `sip` may be writable or may be read-only.",
+      "line_number": 456,
+      "parameter_name": "SIP_FIELD_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Each bit in sip can independently be writable or read-only. This is a per-bit choice about field mutability."
+    },
+    {
+      "excerpt": "A bit in `sie` must be writable if the corresponding interrupt can ever become pending. Bits of `sie` that are not writable are read-only zero.",
+      "line_number": 463,
+      "parameter_name": "SIE_FIELD_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Each bit in sie can be writable or read-only zero based on whether the corresponding interrupt is implemented. This is a per-bit choice about field mutability."
+    },
+    {
+      "excerpt": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented, in which case the corresponding interrupt-pending and interrupt-enable bits are read-only zeros. All bits in `sip` and `sie` are *WARL* fields.",
+      "line_number": 540,
+      "parameter_name": "SIP_SIE_INTERRUPT_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The sip and sie fields are WARL, and implementations choose which interrupt types to support. The parameter is the set of supported interrupt types."
+    },
+    {
+      "excerpt": "`scounteren` must be implemented. However, any of the bits may be read-only zero, indicating reads to the corresponding counter will cause an exception when executing in U-mode. Hence, they are effectively *WARL* fields.",
+      "line_number": 583,
+      "parameter_name": "SCOUNTEREN_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The scounteren bits are effectively WARL - each bit can be writable or read-only zero. The parameter is which bits are implemented as writable."
+    },
+    {
+      "excerpt": "`sepc` is a *WARL* register that must be able to hold all valid virtual addresses. It need not be capable of holding all possible invalid addresses.",
+      "line_number": 625,
+      "parameter_name": "SEPC_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "sepc is explicitly WARL and need not hold all possible invalid addresses. The parameter is the set of addresses it can hold."
+    },
+    {
+      "excerpt": "The Exception Code is a *WLRL* field. It is required to hold the values 0\u201331 (i.e., bits 4\u20130 must be implemented), but otherwise it is only guaranteed to hold supported exception codes.",
+      "line_number": 651,
+      "parameter_name": "SCAUSE_EXCEPTION_CODE_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The Exception Code field is WLRL with specific requirements. The parameter is the set of exception codes it can hold beyond the required 0-31."
+    },
+    {
+      "excerpt": "`stval` is a *WARL* register that must be able to hold all valid virtual addresses and the value 0. It need not be capable of holding all possible invalid addresses.",
+      "line_number": 774,
+      "parameter_name": "STVAL_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "stval is explicitly WARL and need not hold all possible invalid addresses. The parameter is the set of values it can hold."
+    },
+    {
+      "excerpt": "For implementations that make `satp`.MODE read-only zero (always Bare), attempts to execute an SFENCE.VMA instruction might raise an illegal-instruction exception.",
+      "line_number": 1456,
+      "parameter_name": "TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY",
+      "existing_udb_name": "TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Implementations with read-only satp.MODE=Bare may choose whether to trap on SFENCE.VMA. This is a direct implementation choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The SPP bit indicates the privilege level at which a hart was executing before entering supervisor mode.",
+      "line_number": 75,
+      "reason": "This describes the behavior/meaning of the SPP bit, not an implementation choice. The bit's operation is fixed by the specification."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into supervisor mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 334,
+      "reason": "This describes what happens when stvec.MODE has a specific value. The behavior is determined by the CSR field value at runtime, not by an implementation choice."
+    },
+    {
+      "excerpt": "An interrupt _i_ will trap to S-mode if both of the following are true: (a) either the current privilege mode is S and the SIE bit in the `sstatus` register is set, or the current privilege mode has less privilege than S-mode; and (b) bit _i_ is set in both `sip` and `sie`.",
+      "line_number": 413,
+      "reason": "This describes the fixed conditions for interrupt trapping. It is a behavioral requirement that applies to all implementations, not a parameter."
+    },
+    {
+      "excerpt": "The implementation must provide a facility for scheduling timer interrupts in terms of the real-time counter, `time`.",
+      "line_number": 564,
+      "reason": "This is a fixed requirement ('must provide') that all implementations must satisfy. There is no implementation choice here."
+    },
+    {
+      "excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "line_number": 1237,
+      "reason": "Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"When SXLEN=64, it is a *WARL* field that encodes the current value of UXLEN. In particular, an implementation may make UXL be a read-only field whose value always ensures that UXLEN=SXLEN.\",\n      \"line_number\": 119,\n      \"parameter_name\": \"SSTATUS_UXL_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The UXL field is WARL and implementations may make it read-only with a fixed value. The parameter is the set of legal values for this WARL field.\"\n    },\n    {\n      \"excerpt\": \"When such a HINT is executed with XLEN < SXLEN and bits SXLEN..XLEN of the destination register not all equal to bit XLEN-1, it is implementation-defined whether bits SXLEN..XLEN of the destination register are unchanged or are overwritten with copies of bit XLEN-1.\",\n      \"line_number\": 133,\n      \"parameter_name\": \"HW_HINT_REGISTER_WRITEBACK\",\n      \"existing_udb_name\": null,\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This is implementation-defined behavior for HINT instruction register writeback. Software can handle this deterministically by checking register state, making it a SW_RULE parameter.\"\n    },\n    {\n      \"excerpt\": \"SUM is read-only 0 if `satp`.MODE is read-only 0.\",\n      \"line_number\": 162,\n      \"parameter_name\": \"SSTATUS_SUM_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether the SUM bit is read-only or read-write based on satp.MODE capabilities. This controls the mutability of the field.\"\n    },\n    {\n      \"excerpt\": \"The UBE bit is a *WARL* field that controls the endianness of explicit memory accesses made from U-mode, which may differ from the endianness of memory accesses in S-mode. An implementation may make UBE be a read-only field that always specifies the same endianness as for S-mode.\",\n      \"line_number\": 185,\n      \"parameter_name\": \"U_MODE_ENDIANNESS\",\n      \"existing_udb_name\": \"U_MODE_ENDIANNESS\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The UBE field can be read-only (fixed endianness) or read-write (dynamic endianness). This is a choice about field mutability and supported endianness values.\"\n    },\n    {\n      \"excerpt\": \"The S-mode-disable-trap (`SDT`) bit is a WARL field introduced by the Ssdbltrp extension to address double trap\",\n      \"line_number\": 207,\n      \"parameter_name\": \"SSTATUS_SDT_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The SDT field is explicitly described as WARL, meaning implementations can restrict which values are legal.\"\n    },\n    {\n      \"excerpt\": \"If `satp`.MODE is read-only zero (always Bare), the implementation may make FIOM read-only zero.\",\n      \"line_number\": 1050,\n      \"parameter_name\": \"SENVCFG_FIOM_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether FIOM is read-only zero or writable based on satp.MODE capabilities. This controls field mutability.\"\n    },\n    {\n      \"excerpt\": \"When the Zicboz extension is not implemented, `CBZE` is read-only zero.\",\n      \"line_number\": 1081,\n      \"parameter_name\": \"SENVCFG_CBZE_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether CBZE is implemented (writable) or read-only zero based on Zicboz extension support.\"\n    },\n    {\n      \"excerpt\": \"When the Zicbom extension is not implemented, `CBCFE` is read-only zero.\",\n      \"line_number\": 1088,\n      \"parameter_name\": \"SENVCFG_CBCFE_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether CBCFE is implemented (writable) or read-only zero based on Zicbom extension support.\"\n    },\n    {\n      \"excerpt\": \"The Zicbom extension adds the `CBIE` (Cache Block Invalidate instruction Enable) WARL field to `senvcfg` to control execution of the `CBO.INVAL` instruction in U-mode. The encoding `10b` is reserved. When the Zicbom extension is not implemented, `CBIE` is read-only zero.\",\n      \"line_number\": 1091,\n      \"parameter_name\": \"SENVCFG_CBIE_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CBIE field is explicitly WARL with specific reserved encodings. The parameter is the set of legal values (00b, 01b, 11b when Zicbom is implemented, or just 00b when not).\"\n    },\n    {\n      \"excerpt\": \"If Ssnpm is not implemented, `PMM` is read-only zero. The `PMM` field is read-only zero for RV32.\",\n      \"line_number\": 1105,\n      \"parameter_name\": \"SENVCFG_PMM_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether PMM is implemented (writable) or read-only zero based on Ssnpm extension support and XLEN.\"\n    },\n    {\n      \"excerpt\": \"Implementations are not required to support all MODE settings, and if `satp` is written with an unsupported MODE, the entire write has no effect; no fields in `satp` are modified.\",\n      \"line_number\": 1234,\n      \"parameter_name\": \"SATP_MODE_BARE\",\n      \"existing_udb_name\": \"SATP_MODE_BARE\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Implementations choose which satp.MODE values to support. This is a direct implementation choice about supporting Bare mode.\"\n    },\n    {\n      \"excerpt\": \"The number of ASID bits is UNSPECIFIED and may be zero. The number of implemented ASID bits, termed _ASIDLEN_, may be determined by writing one to every bit position in the ASID field, then reading back the value in `satp` to see which bit positions in the ASID field hold a one.\",\n      \"line_number\": 1237,\n      \"parameter_name\": \"ASID_WIDTH\",\n      \"existing_udb_name\": \"ASID_WIDTH\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"ASIDLEN is an implementation choice with specified bounds (0 to ASIDMAX). This is a direct parameter for the number of implemented ASID bits.\"\n    },\n    {\n      \"excerpt\": \"Each individual bit in register `sip` may be writable or may be read-only.\",\n      \"line_number\": 456,\n      \"parameter_name\": \"SIP_FIELD_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in sip can independently be writable or read-only. This is a per-bit choice about field mutability.\"\n    },\n    {\n      \"excerpt\": \"A bit in `sie` must be writable if the corresponding interrupt can ever become pending. Bits of `sie` that are not writable are read-only zero.\",\n      \"line_number\": 463,\n      \"parameter_name\": \"SIE_FIELD_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in sie can be writable or read-only zero based on whether the corresponding interrupt is implemented. This is a per-bit choice about field mutability.\"\n    },\n    {\n      \"excerpt\": \"Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented, in which case the corresponding interrupt-pending and interrupt-enable bits are read-only zeros. All bits in `sip` and `sie` are *WARL* fields.\",\n      \"line_number\": 540,\n      \"parameter_name\": \"SIP_SIE_INTERRUPT_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The sip and sie fields are WARL, and implementations choose which interrupt types to support. The parameter is the set of supported interrupt types.\"\n    },\n    {\n      \"excerpt\": \"`scounteren` must be implemented. However, any of the bits may be read-only zero, indicating reads to the corresponding counter will cause an exception when executing in U-mode. Hence, they are effectively *WARL* fields.\",\n      \"line_number\": 583,\n      \"parameter_name\": \"SCOUNTEREN_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The scounteren bits are effectively WARL - each bit can be writable or read-only zero. The parameter is which bits are implemented as writable.\"\n    },\n    {\n      \"excerpt\": \"`sepc` is a *WARL* register that must be able to hold all valid virtual addresses. It need not be capable of holding all possible invalid addresses.\",\n      \"line_number\": 625,\n      \"parameter_name\": \"SEPC_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"sepc is explicitly WARL and need not hold all possible invalid addresses. The parameter is the set of addresses it can hold.\"\n    },\n    {\n      \"excerpt\": \"The Exception Code is a *WLRL* field. It is required to hold the values 0\u201331 (i.e., bits 4\u20130 must be implemented), but otherwise it is only guaranteed to hold supported exception codes.\",\n      \"line_number\": 651,\n      \"parameter_name\": \"SCAUSE_EXCEPTION_CODE_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The Exception Code field is WLRL with specific requirements. The parameter is the set of exception codes it can hold beyond the required 0-31.\"\n    },\n    {\n      \"excerpt\": \"`stval` is a *WARL* register that must be able to hold all valid virtual addresses and the value 0. It need not be capable of holding all possible invalid addresses.\",\n      \"line_number\": 774,\n      \"parameter_name\": \"STVAL_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"stval is explicitly WARL and need not hold all possible invalid addresses. The parameter is the set of values it can hold.\"\n    },\n    {\n      \"excerpt\": \"For implementations that make `satp`.MODE read-only zero (always Bare), attempts to execute an SFENCE.VMA instruction might raise an illegal-instruction exception.\",\n      \"line_number\": 1456,\n      \"parameter_name\": \"TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY\",\n      \"existing_udb_name\": \"TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Implementations with read-only satp.MODE=Bare may choose whether to trap on SFENCE.VMA. This is a direct implementation choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The SPP bit indicates the privilege level at which a hart was executing before entering supervisor mode.\",\n      \"line_number\": 75,\n      \"reason\": \"This describes the behavior/meaning of the SPP bit, not an implementation choice. The bit's operation is fixed by the specification.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into supervisor mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 334,\n      \"reason\": \"This describes what happens when stvec.MODE has a specific value. The behavior is determined by the CSR field value at runtime, not by an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"An interrupt _i_ will trap to S-mode if both of the following are true: (a) either the current privilege mode is S and the SIE bit in the `sstatus` register is set, or the current privilege mode has less privilege than S-mode; and (b) bit _i_ is set in both `sip` and `sie`.\",\n      \"line_number\": 413,\n      \"reason\": \"This describes the fixed conditions for interrupt trapping. It is a behavioral requirement that applies to all implementations, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The implementation must provide a facility for scheduling timer interrupts in terms of the real-time counter, `time`.\",\n      \"line_number\": 564,\n      \"reason\": \"This is a fixed requirement ('must provide') that all implementations must satisfy. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.\",\n      \"line_number\": 1237,\n      \"reason\": \"Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 39910,
+  "output_tokens": 3985,
+  "latency_ms": 71250,
+  "timestamp": "2026-05-25T20:51:06.703846+00:00",
+  "error": null,
+  "retry_count": 0
+}

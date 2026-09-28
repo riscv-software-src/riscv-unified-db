@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_068",
+  "source_file": "zfa.adoc",
+  "start_line": 1,
+  "end_line": 261,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Other _rm_ values are _reserved_.",
+      "line_number": 178,
+      "parameter_name": "FCVTMOD_RM_RESERVED_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "The behavior when reserved rm values are used in FCVTMOD.W.D is implementation-defined. The spec states they are reserved but doesn't specify what happens, leaving it to the implementation."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The FLI.S instruction loads one of 32 single-precision floating-point constants, encoded in the _rs1_ field, into floating-point register _rd_.",
+      "line_number": 14,
+      "reason": "This describes the fixed behavior of the FLI.S instruction. The 32 constants and their encodings are specified in the table - there is no implementation choice."
+    },
+    {
+      "excerpt": "Zero and infinite inputs are copied to _rd_ unmodified.",
+      "line_number": 119,
+      "reason": "This describes the required behavior for FROUND.S with zero and infinite inputs. All implementations must behave this way - it's not a parameter."
+    },
+    {
+      "excerpt": "The preferred assembly syntax for entries 1, 30, and 31 is `min`, `inf`, and `nan`, respectively.",
+      "line_number": 58,
+      "reason": "This text is inside a [NOTE] block, making it non-normative. It describes assembly syntax preferences, not architectural requirements."
+    },
+    {
+      "excerpt": "If the D extension is implemented, FLI.D performs the analogous operation",
+      "line_number": 68,
+      "reason": "This describes conditional behavior based on whether the D extension is present. The presence of extensions is determined by other parts of the spec, not an implementation choice within this extension."
+    },
+    {
+      "excerpt": "FCVTMOD.W.D always rounds towards zero.",
+      "line_number": 154,
+      "reason": "This is a fixed requirement for the FCVTMOD.W.D instruction. All implementations must round towards zero - there is no choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Other _rm_ values are _reserved_.\",\n      \"line_number\": 178,\n      \"parameter_name\": \"FCVTMOD_RM_RESERVED_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The behavior when reserved rm values are used in FCVTMOD.W.D is implementation-defined. The spec states they are reserved but doesn't specify what happens, leaving it to the implementation.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The FLI.S instruction loads one of 32 single-precision floating-point constants, encoded in the _rs1_ field, into floating-point register _rd_.\",\n      \"line_number\": 14,\n      \"reason\": \"This describes the fixed behavior of the FLI.S instruction. The 32 constants and their encodings are specified in the table - there is no implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Zero and infinite inputs are copied to _rd_ unmodified.\",\n      \"line_number\": 119,\n      \"reason\": \"This describes the required behavior for FROUND.S with zero and infinite inputs. All implementations must behave this way - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The preferred assembly syntax for entries 1, 30, and 31 is `min`, `inf`, and `nan`, respectively.\",\n      \"line_number\": 58,\n      \"reason\": \"This text is inside a [NOTE] block, making it non-normative. It describes assembly syntax preferences, not architectural requirements.\"\n    },\n    {\n      \"excerpt\": \"If the D extension is implemented, FLI.D performs the analogous operation\",\n      \"line_number\": 68,\n      \"reason\": \"This describes conditional behavior based on whether the D extension is present. The presence of extensions is determined by other parts of the spec, not an implementation choice within this extension.\"\n    },\n    {\n      \"excerpt\": \"FCVTMOD.W.D always rounds towards zero.\",\n      \"line_number\": 154,\n      \"reason\": \"This is a fixed requirement for the FCVTMOD.W.D instruction. All implementations must round towards zero - there is no choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9511,
+  "output_tokens": 590,
+  "latency_ms": 13794,
+  "timestamp": "2026-05-25T20:56:11.860069+00:00",
+  "error": null,
+  "retry_count": 0
+}

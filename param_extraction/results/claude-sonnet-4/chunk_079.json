@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_079",
+  "source_file": "ztso-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 49,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "_The Ztso extension is meant to facilitate the porting of code originally written for the x86 or SPARC architectures, both of which use TSO by default. It also supports implementations which inherently provide RVTSO behavior and want to expose that fact to software._",
+      "line_number": 8,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "All load operations behave as if they have an acquire-RCpc annotation",
+      "line_number": 17,
+      "reason": "This is a fixed requirement that all implementations supporting Ztso must satisfy. There is no implementation choice - it defines what the extension means, not a parameter."
+    },
+    {
+      "excerpt": "All store operations behave as if they have a release-RCpc annotation.",
+      "line_number": 18,
+      "reason": "This is a fixed requirement that all implementations supporting Ztso must satisfy. There is no implementation choice - it defines what the extension means, not a parameter."
+    },
+    {
+      "excerpt": "Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extension and Zve family of extensions follow RVTSO at the instruction level.",
+      "line_number": 34,
+      "reason": "This is a fixed requirement ('if Ztso is implemented, then...') that applies to all implementations. There is no implementation choice here."
+    },
+    {
+      "excerpt": "The Ztso extension does not strengthen the ordering of intra-instruction element accesses.",
+      "line_number": 36,
+      "reason": "This is a fixed specification of what the extension does not do. There is no implementation choice or parameter here."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"_The Ztso extension is meant to facilitate the porting of code originally written for the x86 or SPARC architectures, both of which use TSO by default. It also supports implementations which inherently provide RVTSO behavior and want to expose that fact to software._\",\n      \"line_number\": 8,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"All load operations behave as if they have an acquire-RCpc annotation\",\n      \"line_number\": 17,\n      \"reason\": \"This is a fixed requirement that all implementations supporting Ztso must satisfy. There is no implementation choice - it defines what the extension means, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"All store operations behave as if they have a release-RCpc annotation.\",\n      \"line_number\": 18,\n      \"reason\": \"This is a fixed requirement that all implementations supporting Ztso must satisfy. There is no implementation choice - it defines what the extension means, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extension and Zve family of extensions follow RVTSO at the instruction level.\",\n      \"line_number\": 34,\n      \"reason\": \"This is a fixed requirement ('if Ztso is implemented, then...') that applies to all implementations. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"The Ztso extension does not strengthen the ordering of intra-instruction element accesses.\",\n      \"line_number\": 36,\n      \"reason\": \"This is a fixed specification of what the extension does not do. There is no implementation choice or parameter here.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 6260,
+  "output_tokens": 468,
+  "latency_ms": 8849,
+  "timestamp": "2026-05-25T20:58:43.721064+00:00",
+  "error": null,
+  "retry_count": 0
+}

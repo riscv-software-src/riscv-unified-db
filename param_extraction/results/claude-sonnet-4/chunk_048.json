@@ -1,0 +1,134 @@
+{
+  "chunk_id": "chunk_048",
+  "source_file": "smctr.adoc",
+  "start_line": 1,
+  "end_line": 763,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The number of records that can be held in the buffer depends upon both the implementation (the maximum supported depth) and the CTR configuration (the software selected depth).",
+      "line_number": 9,
+      "parameter_name": "CTR_MAX_DEPTH",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The implementation chooses the maximum supported depth for the CTR buffer. This is a direct architectural parameter not controlled by any CSR field."
+    },
+    {
+      "excerpt": "All fields are optional except for M, S, U, and BPFRZ. All unimplemented fields are read-only 0, while all implemented fields are writable. If the Sscofpmf extension is implemented, LCOFIFRZ must be writable.",
+      "line_number": 103,
+      "parameter_name": "MCTRCTL_FIELD_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which mctrctl fields to implement as writable vs read-only-0. This controls the RO/RW nature of individual fields."
+    },
+    {
+      "excerpt": "It is implementation-specific which DEPTH value(s) are supported.",
+      "line_number": 175,
+      "parameter_name": "SCTRDEPTH_SUPPORTED_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The DEPTH field is WARL and the set of legal values (which depths are supported) varies by implementation. This is the classic WARL parameter pattern."
+    },
+    {
+      "excerpt": "The optional MISP bit is set by the hardware when the recorded transfer is an instruction whose target or taken/not-taken direction was mispredicted by the branch predictor. MISP is read-only 0 when not implemented.",
+      "line_number": 244,
+      "parameter_name": "CTRTARGET_MISP_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to implement the MISP bit as functional or read-only-0. This is a binary choice about field implementation."
+    },
+    {
+      "excerpt": "This register must be implemented, though all fields within it are optional. Unimplemented fields are read-only 0.",
+      "line_number": 264,
+      "parameter_name": "CTRDATA_FIELD_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which ctrdata fields to implement as functional vs read-only-0. This controls the RO/RW nature of individual fields."
+    },
+    {
+      "excerpt": "The `ctrdata` register may optionally include a count of CPU cycles elapsed since the prior CTR record.",
+      "line_number": 549,
+      "parameter_name": "CTR_CYCLE_COUNTING_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to support cycle counting functionality. This is a direct implementation choice, not controlled by a CSR field."
+    },
+    {
+      "excerpt": "An implementation that supports cycle counting must implement CCV and all CCM bits, but may implement 0..4 exponent bits in CCE. Unimplemented CCE bits are read-only 0.",
+      "line_number": 565,
+      "parameter_name": "CTR_CCE_WIDTH",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "The implementation chooses how many CCE bits to implement (0-4), with unimplemented bits being read-only-0. This controls the width of a functional field."
+    },
+    {
+      "excerpt": "When the optional `__x__ctrctl`.RASEMU bit is implemented and set to 1, transfer recording behavior is altered to emulate the behavior of a return-address stack (RAS).",
+      "line_number": 598,
+      "parameter_name": "CTR_RASEMU_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to implement the RASEMU bit as functional or read-only-0. This is a binary choice about field implementation."
+    },
+    {
+      "excerpt": "If external trap recording is implemented, `mctrctl`.MTE and `sctrctl`.STE must be implemented, while `vsctrctl`.STE must be implemented if the H extension is implemented.",
+      "line_number": 485,
+      "parameter_name": "CTR_EXTERNAL_TRAP_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to support external trap recording functionality. This is a direct implementation choice that affects which CSR fields must be implemented."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Only qualified transfers are recorded. Qualified transfers are those that meet the filtering criteria, which include the privilege mode and the transfer type.",
+      "line_number": 11,
+      "reason": "This describes the behavior of qualified transfers, not an implementation choice. The filtering criteria are controlled by CSR field values at runtime."
+    },
+    {
+      "excerpt": "The machine-level extension, *Smctr*, encompasses all newly added Control Status Registers (CSRs), instructions, and behavior modifications for a hart across all privilege levels.",
+      "line_number": 17,
+      "reason": "This is a definition of what the Smctr extension includes, not an implementation parameter. It's a fixed requirement for the extension."
+    },
+    {
+      "excerpt": "Enable transfer recording in the selected privileged mode(s).",
+      "line_number": 56,
+      "reason": "This describes what the M/S/U fields do when set by software at runtime, not an implementation choice about the fields themselves."
+    },
+    {
+      "excerpt": "CTR records qualified control transfers. Control transfers are qualified if they meet the following criteria:",
+      "line_number": 395,
+      "reason": "This describes the runtime behavior for determining qualified transfers, not an implementation parameter. The criteria are evaluated at execution time."
+    },
+    {
+      "excerpt": "Recording in Debug Mode is always inhibited. Transfers into and out of Debug Mode are never recorded.",
+      "line_number": 421,
+      "reason": "This is a fixed requirement ('always inhibited', 'never recorded') that applies to all implementations. There is no implementation choice here."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The number of records that can be held in the buffer depends upon both the implementation (the maximum supported depth) and the CTR configuration (the software selected depth).\",\n      \"line_number\": 9,\n      \"parameter_name\": \"CTR_MAX_DEPTH\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses the maximum supported depth for the CTR buffer. This is a direct architectural parameter not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"All fields are optional except for M, S, U, and BPFRZ. All unimplemented fields are read-only 0, while all implemented fields are writable. If the Sscofpmf extension is implemented, LCOFIFRZ must be writable.\",\n      \"line_number\": 103,\n      \"parameter_name\": \"MCTRCTL_FIELD_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which mctrctl fields to implement as writable vs read-only-0. This controls the RO/RW nature of individual fields.\"\n    },\n    {\n      \"excerpt\": \"It is implementation-specific which DEPTH value(s) are supported.\",\n      \"line_number\": 175,\n      \"parameter_name\": \"SCTRDEPTH_SUPPORTED_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The DEPTH field is WARL and the set of legal values (which depths are supported) varies by implementation. This is the classic WARL parameter pattern.\"\n    },\n    {\n      \"excerpt\": \"The optional MISP bit is set by the hardware when the recorded transfer is an instruction whose target or taken/not-taken direction was mispredicted by the branch predictor. MISP is read-only 0 when not implemented.\",\n      \"line_number\": 244,\n      \"parameter_name\": \"CTRTARGET_MISP_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to implement the MISP bit as functional or read-only-0. This is a binary choice about field implementation.\"\n    },\n    {\n      \"excerpt\": \"This register must be implemented, though all fields within it are optional. Unimplemented fields are read-only 0.\",\n      \"line_number\": 264,\n      \"parameter_name\": \"CTRDATA_FIELD_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which ctrdata fields to implement as functional vs read-only-0. This controls the RO/RW nature of individual fields.\"\n    },\n    {\n      \"excerpt\": \"The `ctrdata` register may optionally include a count of CPU cycles elapsed since the prior CTR record.\",\n      \"line_number\": 549,\n      \"parameter_name\": \"CTR_CYCLE_COUNTING_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to support cycle counting functionality. This is a direct implementation choice, not controlled by a CSR field.\"\n    },\n    {\n      \"excerpt\": \"An implementation that supports cycle counting must implement CCV and all CCM bits, but may implement 0..4 exponent bits in CCE. Unimplemented CCE bits are read-only 0.\",\n      \"line_number\": 565,\n      \"parameter_name\": \"CTR_CCE_WIDTH\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses how many CCE bits to implement (0-4), with unimplemented bits being read-only-0. This controls the width of a functional field.\"\n    },\n    {\n      \"excerpt\": \"When the optional `__x__ctrctl`.RASEMU bit is implemented and set to 1, transfer recording behavior is altered to emulate the behavior of a return-address stack (RAS).\",\n      \"line_number\": 598,\n      \"parameter_name\": \"CTR_RASEMU_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to implement the RASEMU bit as functional or read-only-0. This is a binary choice about field implementation.\"\n    },\n    {\n      \"excerpt\": \"If external trap recording is implemented, `mctrctl`.MTE and `sctrctl`.STE must be implemented, while `vsctrctl`.STE must be implemented if the H extension is implemented.\",\n      \"line_number\": 485,\n      \"parameter_name\": \"CTR_EXTERNAL_TRAP_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to support external trap recording functionality. This is a direct implementation choice that affects which CSR fields must be implemented.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Only qualified transfers are recorded. Qualified transfers are those that meet the filtering criteria, which include the privilege mode and the transfer type.\",\n      \"line_number\": 11,\n      \"reason\": \"This describes the behavior of qualified transfers, not an implementation choice. The filtering criteria are controlled by CSR field values at runtime.\"\n    },\n    {\n      \"excerpt\": \"The machine-level extension, *Smctr*, encompasses all newly added Control Status Registers (CSRs), instructions, and behavior modifications for a hart across all privilege levels.\",\n      \"line_number\": 17,\n      \"reason\": \"This is a definition of what the Smctr extension includes, not an implementation parameter. It's a fixed requirement for the extension.\"\n    },\n    {\n      \"excerpt\": \"Enable transfer recording in the selected privileged mode(s).\",\n      \"line_number\": 56,\n      \"reason\": \"This describes what the M/S/U fields do when set by software at runtime, not an implementation choice about the fields themselves.\"\n    },\n    {\n      \"excerpt\": \"CTR records qualified control transfers. Control transfers are qualified if they meet the following criteria:\",\n      \"line_number\": 395,\n      \"reason\": \"This describes the runtime behavior for determining qualified transfers, not an implementation parameter. The criteria are evaluated at execution time.\"\n    },\n    {\n      \"excerpt\": \"Recording in Debug Mode is always inhibited. Transfers into and out of Debug Mode are never recorded.\",\n      \"line_number\": 421,\n      \"reason\": \"This is a fixed requirement ('always inhibited', 'never recorded') that applies to all implementations. There is no implementation choice here.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 20577,
+  "output_tokens": 1872,
+  "latency_ms": 37412,
+  "timestamp": "2026-05-25T20:48:29.919524+00:00",
+  "error": null,
+  "retry_count": 0
+}

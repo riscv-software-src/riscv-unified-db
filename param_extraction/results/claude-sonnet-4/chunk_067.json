@@ -1,0 +1,89 @@
+{
+  "chunk_id": "chunk_067",
+  "source_file": "zc.adoc",
+  "start_line": 1,
+  "end_line": 2582,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "It is implementation defined whether interrupts can also be taken during the sequence execution.",
+      "line_number": 1439,
+      "parameter_name": "INTERRUPTS_ALLOWED_IN_PUSHPOP",
+      "existing_udb_name": null,
+      "class": "SW_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether interrupts are allowed during PUSH/POP sequence execution is implementation-defined. This affects timing but software can handle it deterministically by following proper interrupt handling rules."
+    },
+    {
+      "excerpt": "It is platform defined whether the core implementation waits for the bus responses before continuing to the final stage of the sequence, or handles errors responses after completing the PUSH instruction.",
+      "line_number": 1463,
+      "parameter_name": "PUSHPOP_BUS_ERROR_HANDLING",
+      "existing_udb_name": null,
+      "class": "SW_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The timing of bus error handling during PUSH/POP is platform-defined. Software can handle this deterministically by proper error handling and memory management."
+    },
+    {
+      "excerpt": "The jvt register is an XLEN-bit WARL read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).",
+      "line_number": 2398,
+      "parameter_name": "JVT_BASE_MASK",
+      "existing_udb_name": "JVT_BASE_MASK",
+      "class": "NORM_CSR_WARL",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The jvt CSR is WARL, and the set of legal values for the BASE field (bits XLEN-1:6) varies by implementation. The parameter is which BASE addresses are supported."
+    },
+    {
+      "excerpt": "If jvt is writable, the set of values the register may hold can vary by implementation.",
+      "line_number": 2401,
+      "parameter_name": "JVT_READ_ONLY",
+      "existing_udb_name": "JVT_READ_ONLY",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether the jvt CSR is read-only or read-write. This is a binary choice about the mutability of the register."
+    },
+    {
+      "excerpt": "jvt.mode is a WARL field, so can only be programmed to modes which are implemented.",
+      "line_number": 2420,
+      "parameter_name": "JVT_MODES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The jvt.mode field is WARL, and the set of supported mode values varies by implementation. Jump table mode (000000) must be implemented, but other modes are optional."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "NOTE: Zcb can be implemented on any CPU as the instructions are 16-bit versions of existing 32-bit instructions from the application class profile.",
+      "line_number": 127,
+      "reason": "This is inside a NOTE block and is therefore non-normative. It provides implementation guidance but is not an architectural requirement."
+    },
+    {
+      "excerpt": "This instruction loads a byte from the memory address formed by adding rs1' to the zero extended immediate uimm.",
+      "line_number": 295,
+      "reason": "This describes the operation of c.lbu instruction, which is fixed behavior, not an implementation choice."
+    },
+    {
+      "excerpt": "All ABI register mappings are for the UABI. An EABI version is planned once the EABI is frozen.",
+      "line_number": 1720,
+      "reason": "This describes which ABI is currently used, but is not an implementation-defined parameter. It's a specification choice about register naming conventions."
+    },
+    {
+      "excerpt": "For the encoding to be legal r1s' != r2s'.",
+      "line_number": 2178,
+      "reason": "This is a fixed encoding constraint that all implementations must follow, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"It is implementation defined whether interrupts can also be taken during the sequence execution.\",\n      \"line_number\": 1439,\n      \"parameter_name\": \"INTERRUPTS_ALLOWED_IN_PUSHPOP\",\n      \"existing_udb_name\": null,\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether interrupts are allowed during PUSH/POP sequence execution is implementation-defined. This affects timing but software can handle it deterministically by following proper interrupt handling rules.\"\n    },\n    {\n      \"excerpt\": \"It is platform defined whether the core implementation waits for the bus responses before continuing to the final stage of the sequence, or handles errors responses after completing the PUSH instruction.\",\n      \"line_number\": 1463,\n      \"parameter_name\": \"PUSHPOP_BUS_ERROR_HANDLING\",\n      \"existing_udb_name\": null,\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The timing of bus error handling during PUSH/POP is platform-defined. Software can handle this deterministically by proper error handling and memory management.\"\n    },\n    {\n      \"excerpt\": \"The jvt register is an XLEN-bit WARL read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).\",\n      \"line_number\": 2398,\n      \"parameter_name\": \"JVT_BASE_MASK\",\n      \"existing_udb_name\": \"JVT_BASE_MASK\",\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The jvt CSR is WARL, and the set of legal values for the BASE field (bits XLEN-1:6) varies by implementation. The parameter is which BASE addresses are supported.\"\n    },\n    {\n      \"excerpt\": \"If jvt is writable, the set of values the register may hold can vary by implementation.\",\n      \"line_number\": 2401,\n      \"parameter_name\": \"JVT_READ_ONLY\",\n      \"existing_udb_name\": \"JVT_READ_ONLY\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether the jvt CSR is read-only or read-write. This is a binary choice about the mutability of the register.\"\n    },\n    {\n      \"excerpt\": \"jvt.mode is a WARL field, so can only be programmed to modes which are implemented.\",\n      \"line_number\": 2420,\n      \"parameter_name\": \"JVT_MODES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The jvt.mode field is WARL, and the set of supported mode values varies by implementation. Jump table mode (000000) must be implemented, but other modes are optional.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"NOTE: Zcb can be implemented on any CPU as the instructions are 16-bit versions of existing 32-bit instructions from the application class profile.\",\n      \"line_number\": 127,\n      \"reason\": \"This is inside a NOTE block and is therefore non-normative. It provides implementation guidance but is not an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"This instruction loads a byte from the memory address formed by adding rs1' to the zero extended immediate uimm.\",\n      \"line_number\": 295,\n      \"reason\": \"This describes the operation of c.lbu instruction, which is fixed behavior, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"All ABI register mappings are for the UABI. An EABI version is planned once the EABI is frozen.\",\n      \"line_number\": 1720,\n      \"reason\": \"This describes which ABI is currently used, but is not an implementation-defined parameter. It's a specification choice about register naming conventions.\"\n    },\n    {\n      \"excerpt\": \"For the encoding to be legal r1s' != r2s'.\",\n      \"line_number\": 2178,\n      \"reason\": \"This is a fixed encoding constraint that all implementations must follow, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 31444,
+  "output_tokens": 1139,
+  "latency_ms": 26185,
+  "timestamp": "2026-05-25T20:55:57.542114+00:00",
+  "error": null,
+  "retry_count": 0
+}

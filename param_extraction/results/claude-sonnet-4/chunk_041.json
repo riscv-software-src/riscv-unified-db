@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_041",
+  "source_file": "rv32e.adoc",
+  "start_line": 1,
+  "end_line": 47,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "RV32E and RV64E reduce the integer register count to 16 general-purpose registers, (`x0-x15`), where `x0` is a dedicated zero register.",
+      "line_number": 21,
+      "reason": "This is a fixed requirement of the RV32E/RV64E specification, not an implementation choice. All RV32E/RV64E implementations must have exactly 16 registers."
+    },
+    {
+      "excerpt": "RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that only registers `x0-x15` are provided.",
+      "line_number": 33,
+      "reason": "This describes the fixed encoding rules for RV32E/RV64E, not an implementation parameter. The encoding is mandated by the specification."
+    },
+    {
+      "excerpt": "All encodings specifying the other registers `x16-x31` are reserved.",
+      "line_number": 35,
+      "reason": "This is a fixed requirement that all implementations must follow - reserved encodings are not implementation-defined choices."
+    },
+    {
+      "excerpt": "We have found that in the small RV32I core implementations, the upper 16 registers consume around one quarter of the total area of the core excluding memories, thus their removal saves around 25% core area with a corresponding core power reduction.",
+      "line_number": 25,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides background information but does not define any architectural parameters."
+    },
+    {
+      "excerpt": "The previous draft of this chapter made all encodings using the `x16-x31` registers available as custom. This version takes a more conservative approach, making these reserved so that they can be allocated between custom space or new standard encodings at a later date.",
+      "line_number": 38,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define any implementation choices."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"RV32E and RV64E reduce the integer register count to 16 general-purpose registers, (`x0-x15`), where `x0` is a dedicated zero register.\",\n      \"line_number\": 21,\n      \"reason\": \"This is a fixed requirement of the RV32E/RV64E specification, not an implementation choice. All RV32E/RV64E implementations must have exactly 16 registers.\"\n    },\n    {\n      \"excerpt\": \"RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that only registers `x0-x15` are provided.\",\n      \"line_number\": 33,\n      \"reason\": \"This describes the fixed encoding rules for RV32E/RV64E, not an implementation parameter. The encoding is mandated by the specification.\"\n    },\n    {\n      \"excerpt\": \"All encodings specifying the other registers `x16-x31` are reserved.\",\n      \"line_number\": 35,\n      \"reason\": \"This is a fixed requirement that all implementations must follow - reserved encodings are not implementation-defined choices.\"\n    },\n    {\n      \"excerpt\": \"We have found that in the small RV32I core implementations, the upper 16 registers consume around one quarter of the total area of the core excluding memories, thus their removal saves around 25% core area with a corresponding core power reduction.\",\n      \"line_number\": 25,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides background information but does not define any architectural parameters.\"\n    },\n    {\n      \"excerpt\": \"The previous draft of this chapter made all encodings using the `x16-x31` registers available as custom. This version takes a more conservative approach, making these reserved so that they can be allocated between custom space or new standard encodings at a later date.\",\n      \"line_number\": 38,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define any implementation choices.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 6156,
+  "output_tokens": 531,
+  "latency_ms": 8147,
+  "timestamp": "2026-05-25T20:46:08.273192+00:00",
+  "error": null,
+  "retry_count": 0
+}

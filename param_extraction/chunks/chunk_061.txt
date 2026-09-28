@@ -1,0 +1,1673 @@
+# Chunk: chunk_061
+# Source: vector-crypto.adoc
+# Lines: 3311-4966 (of 4966)
+# Content starts: line 3341
+# Line count: 1656
+# Overlap from line: 3311
+# Sections: 9
+#   ==== vsha2ms.vv
+#   ==== vsm3c.vi
+#   ==== vsm3me.vv
+#   ==== vsm4k.vi
+#   ==== vsm4r.[vv,vs]
+#   ==== vwsll.[vv,vx,vi]
+#   === Crypto Vector Cryptographic Instructions
+#   === Vector Bitmanip and Carry-less Multiply Instructions
+#   === Supporting Sail Code
+#
+
+function sum0(x) = {
+ match SEW {
+  32 => rotr(x,2)  XOR rotr(x,13) XOR rotr(x,22),
+  64 => rotr(x,28) XOR rotr(x,34) XOR rotr(x,39)
+ }
+}
+
+function sum1(x) = {
+ match SEW {
+  32 => rotr(x,6)  XOR rotr(x,11) XOR rotr(x,25),
+  64 => rotr(x,14) XOR rotr(x,18) XOR rotr(x,41)
+ }
+}
+
+function ch(x, y, z) = ((x & y) ^ ((~x) & z))
+
+
+function maj(x, y, z) =  ((x & y) ^ (x & z) ^ (y & z))
+
+function ROTR(x,n) = (x >> n) | (x << SEW - n)
+
+--
+
+Included in::
+<<zvkn>>, <<zvknc>>, <<zvkng>>, <<zvknh, zvknh[ab]>>
+
+<<<
+
+[[insns-vsha2ms, Vector SHA-2 Message Schedule]]
+==== vsha2ms.vv
+
+Synopsis::
+Vector SHA-2 message schedule.
+
+Mnemonic::
+vsha2ms.vv vd, vs2, vs1
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '101101'},
+]}
+....
+Reserved Encodings::
+* [#norm:vsha2ms-vv_Zvknha_sewn32_rsv]#`zvknha`: `SEW` is any value other than 32#
+* [#norm:vsha2ms-vv_Zvknhb_sewn32or64_rsv]#`zvknhb`: `SEW` is any value other than 32 or 64#
+* [#norm:vsha2ms-vv_vdoverlapvs1vs2_rsv]#The `vd` register group overlaps with either `vs1` or `vs2`#
+Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2,2,2"]
+|===
+|Register
+|Direction
+|EGW
+|EGS
+|EEW
+|Definition
+
+| Vd  | input  | 4*SEW  | 4 | SEW | Message words {W[3],  W[2],  W[1],  W[0]}
+| Vs2 | input  | 4*SEW  | 4 | SEW | Message words {W[11], W[10], W[9],  W[4]}
+| Vs1 | input  | 4*SEW  | 4 | SEW | Message words {W[15], W[14], -, W[12]}
+| Vd  | output | 4*SEW  | 4 | SEW | Message words {W[19], W[18], W[17], W[16]}
+|===
+
+Description::
+- [#norm:vsha2ms-vv_op_sew32]#`SEW`=32: Four rounds of SHA-256 message schedule expansion are performed (`zvknha` and `zvknhb`)#
+- [#norm:vsha2ms-vv_op_sew64]#`SEW`=64: Four rounds of SHA-512 message schedule expansion are performed (`zvknhb`)#
+
+[#norm:vsha2ms-vv_op]#Eleven of the last 16 `SEW`-sized message-schedule words from `vd` (oldest), `vs2`,
+and `vs1` (most recent) are processed to produce the
+next 4 message-schedule words.#
+
+[NOTE]
+.Note to software developers
+====
+The first 16 SEW-sized words of the message schedule come from the _message block_
+in big-endian byte order. Since this instruction treats all words as little endian,
+software is required to endian swap these words.
+
+All of the subsequent message schedule words are produced by this instruction and
+therefore do not require an endian swap.
+====
+
+[NOTE]
+.Note to software developers
+====
+Software is required to pack the words into element groups
+as shown above in the arguments table. The indices indicate the relate age with
+lower indices indicating older words.
+====
+// [NOTE]
+// ====
+// W~13~ is not used by the instruction.
+// ====
+
+// Four `SEW` message schedule words are packed into each element group of the
+// source and destination registers. From a vector register point of view,
+// the message schedule words are packed into the
+// element groups from the left to the right with the most significant word on the left
+// and the least significant word on the right.
+
+// `{W~3~, W~2~, W~1~, W~0~} +
+// {W~7~, W~6~, W~5~, W~4~} +
+// {W~11~, W~10~, W~9~, W~8~} +
+// {W~15~, W~14~, W~13~, W~12~}`
+
+// Since W~5~ through W~8~ are not needed in these calculations, we are able to compact these into
+// three element groups
+//
+// `{W~3~, W~2~, W~1~, W~0~} +
+// {W~11~, W~10~, W~9~, W~4~} +
+// {W~15~, W~14~, W~13~, W~12~}`
+
+[NOTE]
+.Note to software developers
+====
+The {W~11~, W~10~, W~9~, W~4~} element group can easily be formed by using a vector
+vmerge instruction with the appropriate mask (for example with `vl=4` and `4b0001`
+as the 4 mask bits)
+
+`vmerge.vvm {W~11~, W~10~, W~9~, W~4~}, {W~11~, W~10~, W~9~, W~8~}, {W~7~, W~6~, W~5~, W~4~}, V0`
+====
+
+// The number of words to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW` elements to be processed and
+// therefore must be a multiple of `EGS=4`. +
+// Likewise, `vstart` must be a multiple of `EGS=4`
+
+[NOTE]
+====
+Preventing overlap between `vd` and `vs1` or `vs2` simplifies implementation with `VLEN < EGW`.
+This restriction does not have any coding impact since proper implementation of the algorithm requires
+that `vd`, `vs1` and `vs2` each contain different portions of the message schedule.
+====
+
+// This instruction is not masked. If any element groups are not to be processed, the _vl_
+// must be set accordingly. It is not possible to skip an intermediary element group.
+// `VLMUL` must be at least 1. In typical usage it is expected to be 1.
+// There are three source operands: `vd`, `vs1` and `vs2`. The result
+// is written to `vd`.
+
+// NB:: for implementations with `VLEN < EGW`, the minimal `VLMUL` is `EGW / VLEN`.
+
+// In this code the input elements are numbered from 0 (16 words ago) to 15 (most recent message-schedule word).
+// The outputs are numbered from 16 to 19.
+
+// The number of element groups to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW=32` elements to be processed and
+// therefore must be a multiple of `EGS=4`. +
+// Likewise, `vstart` must be a multiple of `EGS=4`.
+
+Operation::
+[source,sail]
+--
+function clause execute (VSHA2ms(vs2, vs1, vd)) = {
+  // SEW32 = SHA-256
+  // SEW64 =  SHA-512
+  if(LMUL*VLEN < EGW)  then {
+    handle_illegal();  // illegal-instruction exception
+    RETIRE_FAIL
+  } else {
+
+  eg_len = (vl/EGS)
+  eg_start = (vstart/EGS)
+
+  foreach (i from eg_start to eg_len-1) {
+    {W[3] @  W[2] @  W[1] @  W[0]}  : bits(EGW) = get_velem(vd, EGW, i);
+    {W[11] @ W[10] @ W[9] @  W[4]}  : bits(EGW) = get_velem(vs2, EGW, i);
+    {W[15] @ W[14] @ W[13] @ W[12]} : bits(EGW) = get_velem(vs1, EGW, i);
+
+    W[16] = sig1(W[14]) + W[9]  + sig0(W[1]) + W[0];
+    W[17] = sig1(W[15]) + W[10] + sig0(W[2]) + W[1];
+    W[18] = sig1(W[16]) + W[11] + sig0(W[3]) + W[2];
+    W[19] = sig1(W[17]) + W[12] + sig0(W[4]) + W[3];
+
+    set_velem(vd, EGW, i, {W[19] @ W[18] @ W[17] @ W[16]});
+  }
+  RETIRE_SUCCESS
+  }
+}
+
+function sig0(x) = {
+ match SEW {
+  32 => (ROTR(x,7) XOR ROTR(x,18) XOR SHR(x,3)),
+  64 => (ROTR(x,1) XOR ROTR(x,8) XOR SHR(x,7)));
+ }
+}
+
+function sig1(x) = {
+ match SEW {
+  32 => (ROTR(x,17) XOR ROTR(x,19) XOR SHR(x,10),
+  64 => ROTR(x,19) XOR ROTR(x,61) XOR SHR(x,6));
+ }
+}
+
+function ROTR(x,n) = (x >> n) | (x << SEW - n)
+function SHR (x,n) = x >> n
+
+--
+
+Included in::
+ <<zvkn>>, <<zvknc>>, <<zvkng>>, <<zvknh, zvknh[ab]>>
+
+<<<
+
+[[insns-vsm3c, SM3 Compression]]
+==== vsm3c.vi
+
+Synopsis::
+Vector SM3 Compression
+
+Mnemonic::
+vsm3c.vi vd, vs2, uimm
+
+Encoding::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: 'uimm'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '101011'},
+]}
+....
+Reserved Encodings::
+* [#norm:vsm3c-vi_sewn32_rsv]#`SEW` is any value other than 32#
+* [#norm:vsm3c-vi_vdoverlapvs2_rsv]#The `vd` register group overlaps with the `vs2` register group#
+
+Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2,2,2"]
+|===
+|Register
+|Direction
+|EGW
+|EGS
+|EEW
+|Definition
+
+| Vd   | input  | 256  | 8 | 32 | Current state {H,G.F,E,D,C,B,A}
+| uimm | input  | -    | - | -  | round number (rnds)
+| Vs2  | input  | 256  | 8 | 32 | Message words {-,-,w[5],w[4],-,-,w[1],w[0]}
+| Vd   | output | 256  | 8 | 32 | Next state {H,G.F,E,D,C,B,A}
+|===
+
+Description::
+[#norm:vsm3c-vi_op]#Two rounds of SM3 compression are performed.#
+
+[#norm:vsm3c-vi_op_sm3]#The current state of eight 32-bit words is read in as an element group from `vd`. Eight 32-bit
+message words are read in as an element group from `vs2`, although only four of them are used.
+All of the 32-bit input words are byte-swapped from big endian to little endian.
+These inputs are processed somewhat differently based on the round group (as specified in rnds),
+and the next state is generated as an element group of eight 32-bit words.
+The next state of eight 32-bit words are generated,
+swapped from little endian to big endian, and are returned in
+an eight-element group.#
+
+[#norm:vsm3c-vi_op_rnd]#The round number is provided by the 5-bit `rnds` unsigned immediate. Legal values are 0 - 31
+and indicate which group of two rounds are being performed. For example, if rnds=1,
+then rounds 2 and 3 are being performed.#
+
+[NOTE]
+====
+The round number is used in the rotation of the constant as well to inform the
+behavior which differs between rounds 0-15 and rounds 16-63.
+====
+
+[NOTE]
+====
+The endian byte swapping of the input and output words enables us to align with the SM3
+specification without requiring that software perform these swaps.
+====
+
+[NOTE]
+====
+Preventing overlap between `vd` and `vs2` simplifies implementation with `VLEN < EGW`.
+This restriction does not have any coding impact since proper implementation of the algorithm requires
+that `vd` and `vs2` each are different registers.
+====
+
+// The elements are listed here in the order they appear in the register, with the most significant
+// element on the left, and the least significant on the right.
+
+// vs2 = {w[7], w[6], w[5], w[4], w[3], w[2], w[1], w[0]}
+
+// The values consumed by the instruction are
+
+// vs2 = {- , - , w[5], w[4], -, -, w[1], w[0]}
+
+// Where the "-" characters are not consumed and are therefore don't cares.
+
+// This instruction consumes the "W" message schedule inputs and internally generates the "W'" values as needed
+
+// The number of element groups to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW=32` elements to be processed and
+// therefore must be a multiple of `EGS=8`. +
+// Likewise, `vstart` must be a multiple of `EGS=8`.
+
+Operation::
+[source,sail]
+--
+function clause execute (VSM3C(rnds, vs2, vd)) = {
+  if(LMUL*VLEN < EGW)  then {
+    handle_illegal();  // illegal-instruction exception
+    RETIRE_FAIL
+  } else {
+
+  eg_len = (vl/EGS)
+  eg_start = (vstart/EGS)
+
+  foreach (i from eg_start to eg_len-1) {
+
+  // load state
+  let {Hi @ Gi @ Fi @ Ei @ Di @ Ci @ Bi @ Ai} : bits(256) : bits(256) = (get_velem(vd, 256, i));
+  //load message schedule
+  let {u_w7 @ u_w6 @ w5i @ w4i @ u_w3 @ u_w2 @ w1i @ w0i} : bits(256) = (get_velem(vs2, 256, i));
+  // u_w inputs are unused
+
+// perform endian swap
+let H : bits(32) = rev8(Hi);
+let G : bits(32) = rev8(Gi);
+let F : bits(32) = rev8(Fi);
+let E : bits(32) = rev8(Ei);
+let D : bits(32) = rev8(Di);
+let C : bits(32) = rev8(Ci);
+let B : bits(32) = rev8(Bi);
+let A : bits(32) = rev8(Ai);
+
+let w5 = : bits(32) rev8(w5i);
+let w4 = : bits(32) rev8(w4i);
+let w1 = : bits(32) rev8(w1i);
+let w0 = : bits(32) rev8(w0i);
+
+let x0 :bits(32) = w0 ^ w4;  // W'[0]
+let x1 :bits(32) = w1 ^ w5;  // W'[1]
+
+let j = 2 * rnds;
+let ss1 : bits(32) = ROL32(ROL32(A, 12) + E + ROL32(T_j(j), j % 32), 7);
+let ss2 : bits(32) = ss1 ^ ROL32(A, 12);
+let tt1 : bits(32) = FF_j(A, B, C, j) + D + ss2 + x0;
+let tt2 : bits(32) = GG_j(E, F, G, j) + H + ss1 + w0;
+D = C;
+let : bits(32) C1 = ROL32(B, 9);
+B = A;
+let A1 : bits(32) = tt1;
+H = G;
+let G1 : bits(32) = ROL32(F, 19);
+F = E;
+let E1 : bits(32) = P_0(tt2);
+
+j = 2 * rnds + 1;
+ss1 = ROL32(ROL32(A1, 12) + E1 + ROL32(T_j(j), j % 32), 7);
+ss2 = ss1 ^ ROL32(A1, 12);
+tt1 = FF_j(A1, B, C1, j) + D + ss2 + x1;
+tt2 = GG_j(E1, F, G1, j) + H + ss1 + w1;
+D = C1;
+let C2 : bits(32) = ROL32(B, 9);
+B = A1;
+let A2 : bits(32) = tt1;
+H = G1;
+let G2 = : bits(32) ROL32(F, 19);
+F = E1;
+let E2 = : bits(32) P_0(tt2);
+
+// Update the destination register - swap back to big endian
+let result : bits(256) = {rev8(G1) @ rev8(G2) @ rev8(E1) @ rev8(E2) @ rev8(C1) @ rev8(C2) @ rev8(A1) @ rev8(A2)};
+set_velem(vd, 256, i, result);
+      }
+
+RETIRE_SUCCESS
+  }
+}
+
+function FF1(X, Y, Z) = ((X) ^ (Y) ^ (Z))
+function FF2(X, Y, Z) = (((X) & (Y)) | ((X) & (Z)) | ((Y) & (Z)))
+
+function FF_j(X, Y, Z, J) = (((J) <= 15) ? FF1(X, Y, Z) : FF2(X, Y, Z))
+
+function GG1(X, Y, Z) = ((X) ^ (Y) ^ (Z))
+function GG2(X, Y, Z) = (((X) & (Y)) | ((~(X)) & (Z)))
+.
+function GG_j(X, Y, Z, J) = (((J) <= 15) ? GG1(X, Y, Z) : GG2(X, Y, Z))
+
+function T_j(J) = (((J) <= 15) ? (0x79CC4519) : (0x7A879D8A))
+
+function P_0(X) = ((X) ^ ROL32((X),  9) ^ ROL32((X), 17))
+
+--
+
+Included in::
+<<zvks>>, <<zvksc>>, <<zvksg>>, <<zvksh>>
+
+<<<
+
+[[insns-vsm3me, SM3 Message Expansion]]
+==== vsm3me.vv
+
+Synopsis::
+Vector SM3 Message Expansion
+
+Mnemonic::
+vsm3me.vv vd, vs2, vs1
+
+Encoding::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '100000'},
+]}
+....
+Reserved Encodings::
+* [#norm:vsm3me-vv_sewn32_rsv]#`SEW` is any value other than 32#
+* [#norm:vsm3me-vv_vdoverlapvs2_rsv]#The `vd` register group overlaps with the `vs2` register group.#
+
+Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2,2,2"]
+|===
+|Register
+|Direction
+|EGW
+|EGS
+|EEW
+|Definition
+
+| Vs1 | input  | 256  | 8 | 32 | Message words W[7:0]
+| Vs2 | input  | 256  | 8 | 32 | Message words W[15:8]
+| Vd  | output | 256  | 8 | 32 | Message words W[23:16]
+|===
+
+Description::
+[#norm:vsm3me-vv_op]#Eight rounds of SM3 message expansion are performed.#
+
+
+[#norm:vsm3me-vv_op_sm3]#The sixteen most recent 32-bit message words are read in as two
+eight-element groups from `vs1` and `vs2`. Each of these words is
+swapped from big endian to little endian.
+The next eight 32-bit message words are generated,
+swapped from little endian to big endian, and are returned in
+an eight-element group.#
+
+[NOTE]
+====
+The endian byte swapping of the input and output words enables us to align with the SM3
+specification without requiring that software perform these swaps.
+====
+
+// NOTE
+// ====
+// For the best performance, it is recommended that implementations have VLEN{ge}256.
+// When VLEN<EGW, an appropriate LMUL needs to be used by software so that elements from the
+// specified register groups can be combined to form the full element group.
+// ====
+
+// The number of element groups to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW=32` elements to be processed and
+// therefore must be a multiple of `EGS=8`. +
+// Likewise, `vstart` must be a multiple of `EGS=8`.
+
+[NOTE]
+====
+Preventing overlap between `vd` and `vs2` simplifies implementations with `VLEN < EGW`.
+This restriction should not have any coding impact since the algorithm requires these
+values to be preserved for generating the next 8 words.
+====
+
+Operation::
+[source,sail]
+--
+function clause execute (VSM3ME(vs2, vs1)) = {
+  if(LMUL*VLEN < EGW)  then {
+    handle_illegal();  // illegal-instruction exception
+    RETIRE_FAIL
+  } else {
+
+  eg_len = (vl/EGS)
+  eg_start = (vstart/EGS)
+
+  foreach (i from eg_start to eg_len-1) {
+    let w[7:0]  : bits(256) = get_velem(vs1, 256, i);
+    let w[15:8] : bits(256) = get_velem(vs2, 256, i);
+
+    // Byte Swap inputs from big-endian to little-endian
+    let w15 = rev8(w[15]);
+    let w14 = rev8(w[14]);
+    let w13 = rev8(w[13]);
+    let w12 = rev8(w[12]);
+    let w11 = rev8(w[11]);
+    let w10 = rev8(w[10]);
+    let w9  = rev8(w[9]);
+    let w8  = rev8(w[8]);
+    let w7  = rev8(w[7]);
+    let w6  = rev8(w[6]);
+    let w5  = rev8(w[5]);
+    let w4  = rev8(w[4]);
+    let w3  = rev8(w[3]);
+    let w2  = rev8(w[2]);
+    let w1  = rev8(w[1]);
+    let w0  = rev8(w[0]);
+
+    // Note that some of the newly computed words are used in later invocations.
+    let w[16] = ZVKSH_W(w0 @  w7 @  w13 @   w3 @  w10);
+    let w[17] = ZVKSH_W(w1 @  w8 @  w14 @   w4 @  w11);
+    let w[18] = ZVKSH_W(w2 @  w9 @  w15 @   w5 @  w12);
+    let w[19] = ZVKSH_W(w3 @ w10 @  w16 @   w6 @  w13);
+    let w[20] = ZVKSH_W(w4 @ w11 @  w17 @   w7 @  w14);
+    let w[21] = ZVKSH_W(w5 @ w12 @  w18 @   w8 @  w15);
+    let w[22] = ZVKSH_W(w6 @ w13 @  w19 @   w9 @  w16);
+    let w[23] = ZVKSH_W(w7 @ w14 @  w20 @  w10 @  w17);
+
+  // Byte swap outputs from little-endian back to big-endian
+    let w16 : Bits(32) = rev8(W[16]);
+    let w17 : Bits(32) = rev8(W[17]);
+    let w18 : Bits(32) = rev8(W[18]);
+    let w19 : Bits(32) = rev8(W[19]);
+    let w20 : Bits(32) = rev8(W[20]);
+    let w21 : Bits(32) = rev8(W[21]);
+    let w22 : Bits(32) = rev8(W[22]);
+    let w23 : Bits(32) = rev8(W[23]);
+
+
+    // Update the destination register.
+    set_velem(vd, 256, i, {w23 @ w22 @ w21 @ w20 @ w19 @ w18 @ w17 @ w16});
+  }
+  RETIRE_SUCCESS
+  }
+}
+
+  function P_1(X) ((X) ^ ROL32((X), 15) ^ ROL32((X), 23))
+
+  function ZVKSH_W(M16, M9, M3, M13, M6) = \
+  (P1( (M16) ^  (M9) ^ ROL32((M3), 15) ) ^ ROL32((M13), 7) ^ (M6))
+--
+
+Included in::
+<<zvks>>, <<zvksc>>, <<zvksg>>, <<zvksh>>
+
+<<<
+
+[[insns-vsm4k, Vector SM4 Key Expansion]]
+==== vsm4k.vi
+
+Synopsis::
+Vector SM4 KeyExpansion
+
+Mnemonic::
+vsm4k.vi vd, vs2, uimm
+
+Encoding::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: 'uimm'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '100001'},
+]}
+....
+Reserved Encodings::
+* [#norm:vsm4k-vi_sewn32_rsv]#`SEW` is any value other than 32#
+
+Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2,2,2"]
+|===
+|Register
+|Direction
+|EGW
+|EGS
+|EEW
+|Definition
+
+| uimm | input  | -    | - | -  | Round group (rnd)
+| Vs2  | input  | 128  | 4 | 32 | Current 4 round keys rK[0:3]
+| Vd   | output | 128  | 4 | 32 | Next 4 round keys rK'[0:3]
+|===
+
+Description::
+[#norm:vsm4k-vi_op]#Four rounds of the SM4 Key Expansion are performed.#
+
+[#norm:vsm4k-vi_op_sm4k]#Four round keys are read in as a 4-element group from `vs2`. Each of the next four round keys are generated
+by iteratively XORing the last three round keys with a constant that is indexed by the Round Group Number,
+performing a byte-wise substitution, and then performing XORs between rotated versions of this value
+and the corresponding current round key.#
+
+[#norm:vsm4k-vi_op_rnd]#The Round group number (`rnd`) comes from `uimm[2:0]`; the bits in `uimm[4:3]` are ignored.
+Round group numbers range from 0 to 7 and indicate which
+group of four round keys are being generated. Round Keys range from 0-31.
+For example, if `rnd`=1, then round keys 4, 5, 6, and 7 are being generated.#
+
+//  vs2 = {rK[i-4], rK[i-3],rK[i-2], rK[i-1]} // last 4 round keys
+//  rnd = 0 to 7; // group of 4 rounds
+//  vd (out) = {rK[i], rK[i+1],rK[i+2], rK[i+3]} // next 4 rounds keys
+
+// Each of the 32 rounds consumes the last 4 32-bit keys along with a round constant and
+// produces the next 32-bit key.
+
+
+[NOTE]
+====
+Software needs to generate the initial round keys. This is done by XORing the 128-bit encryption key with
+the system parameters: FK[0:3]
+====
+
+.System Parameters
+[%autowidth]
+[%header,cols="^2,^2"]
+|===
+|FK
+|constant
+
+| 0 | A3B1BAC6
+| 1 | 56AA3350
+| 2 | 677D9197
+| 3 | B27022DC
+|===
+
+
+////
+.System Parameters
+[%autowidth]
+[%header,cols="^2,^2"]
+|===
+|FK
+|constant
+
+| 0 | A3B1BAC6
+| 1 | 56AA3350
+| 2 | 677D9197
+| 3 | B27022DC
+|===
+////
+
+//  MK = {MK[0], MK[1], MK[2], MK[3]} // Encryption Key
+//  rK[-4,-1] = K[0:3] = MK[0:3] ^ FK[0:3]
+
+
+// The round keys are rK[0] to rK[31]
+//  B = (rK[i-3] XOR rK[i-2] XOR rK[i-1] XOR CK[round]); +
+//  S = subBytes(B); +
+//  rK[i]= rK[i-4] XOR S XOR ROTL13(S) XOR ROTR23(S); +
+//
+// The round constants and the S-box are described below and can be found at https://datatracker.ietf.org/doc/id/// draft-crypto-sm4-00
+
+[NOTE]
+====
+Implementation Hint
+
+The round constants (CK) can be generated on the fly fairly cheaply.
+If the bytes of the constants are assigned an incrementing index from 0 to 127, the value of each byte is equal to its index multiplied by 7 modulo 256.
+Since the results are all limited to 8 bits, the modulo operation occurs for free:
+
+ B[n] = n + 2n + 4n;
+       = 8n + ~n + 1;
+====
+
+// This instruction only returns the generated keys to the same element group as the source.
+// If it is desired to have the same key in all vector groups, either the input vector groups
+// need to contain the same values, or the output from a particular group needs to be "broadcast"
+// to the other groups using an instruction such as vrgather.
+
+// The number of element groups to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW=32` elements to be processed and
+// therefore must be a multiple of `EGS=4`. +
+// Likewise, `vstart` must be a multiple of `EGS=4`.
+
+////
+.System Parameters
+[%autowidth]
+[%header,cols="^2,^2"]
+|===
+|FK
+|constant
+
+| 0 | A3B1BAC6
+| 1 | 56AA3350
+| 2 | 677D9197
+| 3 | B27022DC
+|===
+////
+
+Operation::
+[source,sail]
+--
+
+function clause execute (vsm4k(uimm, vs2)) = {
+  if(LMUL*VLEN < EGW)  then {
+    handle_illegal();  // illegal-instruction exception
+    RETIRE_FAIL
+  } else {
+
+  eg_len = (vl/EGS)
+  eg_start = (vstart/EGS)
+
+  let B : bits(32) = 0;
+  let S : bits(32) = 0;
+  let rk4 : bits(32) = 0;
+  let rk5 : bits(32) = 0;
+  let rk6 : bits(32) = 0;
+  let rk7 : bits(32) = 0;
+  let rnd : bits(3) = uimm[2:0]; // Lower 3 bits
+
+  foreach (i from eg_start to eg_len-1) {
+    let (rk3 @ rk2 @ rk1 @ rk0) : bits(128) = get_velem(vs2, 128, i);
+
+    B = rk1 ^ rk2 ^ rk3 ^ ck(4 * rnd);
+    S = sm4_subword(B);
+    rk4 = ROUND_KEY(rk0, S);
+
+    B = rk2 ^ rk3 ^ rk4 ^ ck(4 * rnd + 1);
+    S = sm4_subword(B);
+    rk5 = ROUND_KEY(rk1, S);
+
+    B = rk3 ^ rk4 ^ rk5 ^ ck(4 * rnd + 2);
+    S = sm4_subword(B);
+    rk6 = ROUND_KEY(rk2, S);
+
+    B = rk4 ^ rk5 ^ rk6 ^ ck(4 * rnd + 3);
+    S = sm4_subword(B);
+    rk7 = ROUND_KEY(rk3, S);
+
+    // Update the destination register.
+   set_velem(vd, EGW=128, i, (rk7 @ rk6 @ rk5 @ rk4));
+  }
+  RETIRE_SUCCESS
+  }
+}
+
+val round_key : bits(32) -> bits(32)
+function ROUND_KEY(X, S) = ((X) ^ ((S) ^ ROL32((S), 13) ^ ROL32((S), 23)))
+
+// SM4 Constant Key (CK)
+let ck : list(bits(32)) = [|
+ 0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
+ 0x70777E85, 0x8C939AA1, 0xA8AFB6BD, 0xC4CBD2D9,
+ 0xE0E7EEF5, 0xFC030A11, 0x181F262D, 0x343B4249,
+ 0x50575E65, 0x6C737A81, 0x888F969D, 0xA4ABB2B9,
+ 0xC0C7CED5, 0xDCE3EAF1, 0xF8FF060D, 0x141B2229,
+ 0x30373E45, 0x4C535A61, 0x686F767D, 0x848B9299,
+ 0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
+ 0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279
+  |]
+};
+
+
+--
+
+Included in::
+<<zvks>>, <<zvksc>>, <<zvksed>>, <<zvksg>>
+
+<<<
+
+[[insns-vsm4r, SM4 Block Cipher Rounds]]
+==== vsm4r.[vv,vs]
+
+Synopsis::
+Vector SM4 Rounds
+
+Mnemonic::
+vsm4r.vv vd, vs2 +
+vsm4r.vs vd, vs2
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: '10000'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '101000'},
+]}
+....
+
+Encoding (Vector-Scalar)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-VE'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPMVV'},
+{bits: 5, name: '10000'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: '1'},
+{bits: 6, name: '101001'},
+]}
+....
+Reserved Encodings::
+* [#norm:vsm4r_sewn32_rsv]#`SEW` is any value other than 32#
+* [#norm:vsm4r-vs_vdoverlapvs2_rsv]#Only for the `.vs` form: the `vd` register group overlaps the `vs2` register#
+
+Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2,2,2"]
+|===
+|Register
+|Direction
+|EGW
+|EGS
+|EEW
+|Definition
+
+| Vd   | input  | 128  | 4 | 32 | Current state X[0:3]
+| Vs2  | input  | 128  | 4 | 32 | Round keys rk[0:3]
+| Vd   | output | 128  | 4 | 32 | Next state X'[0:3]
+|===
+
+Description::
+[#norm:vsm4r_op]#Four rounds of SM4 Encryption/Decryption are performed.#
+
+[#norm:vsm4r_op_sm4encdec]#The four words of current state are read as a 4-element group from `vd`
+and the round keys are read from either the corresponding 4-element group
+in `vs2` (vector-vector form) or the scalar element group in `vs2`
+(vector-scalar form).
+The next four words of state are generated
+by iteratively XORing the last three words of the state with
+the corresponding round key, performing
+a byte-wise substitution, and then performing XORs between rotated
+versions of this value and the corresponding current state.#
+
+[NOTE]
+====
+In SM4, encryption and decryption are identical except that decryption consumes the round keys in the reverse order.
+====
+
+[NOTE]
+====
+For the first  four rounds of encryption, the _current state_ is the plain text.
+For the first four rounds of decryption, the _current state_ is the cipher text.
+For all subsequent rounds, the _current state_ is the _next state_ from the
+previous four rounds.
+====
+
+// The number of element groups to be processed is `vl`/`EGS`.
+// `vl` must be set to the number of `SEW=32` elements to be processed and
+// therefore must be a multiple of `EGS=4`. +
+// Likewise, `vstart` must be a multiple of `EGS=4`.
+
+Operation::
+[source,pseudocode]
+--
+function clause execute (VSM4R(vd, vs2)) = {
+  if(LMUL*VLEN < EGW)  then {
+    handle_illegal();  // illegal-instruction exception
+    RETIRE_FAIL
+  } else {
+
+  eg_len = (vl/EGS)
+  eg_start = (vstart/EGS)
+
+ let B  : bits(32) = 0;
+ let S  : bits(32) = 0;
+ let rk0 : bits(32) = 0;
+ let rk1 : bits(32) = 0;
+ let rk2 : bits(32) = 0;
+ let rk3 : bits(32) = 0;
+ let x0 : bits(32) = 0;
+ let x1 : bits(32) = 0;
+ let x2 : bits(32) = 0;
+ let x3 : bits(32) = 0;
+ let x4 : bits(32) = 0;
+ let x5 : bits(32) = 0;
+ let x6 : bits(32) = 0;
+ let x7 : bits(32) = 0;
+
+ let keyelem : bits(32) = 0;
+
+  foreach (i from eg_start to eg_len-1) {
+    keyelem = if suffix == "vv" then i else 0;
+    {rk3 @ rk2 @ rk1 @ rk0} : bits(128) = get_velem(vs2, EGW=128, keyelem);
+    {x3 @ x2 @ x1 @ x0} : bits(128) = get_velem(vd, EGW=128, i);
+
+    B  = x1 ^ x2 ^ x3 ^ rk0;
+    S = sm4_subword(B);
+    x4 = sm4_round(x0, S);
+
+    B = x2 ^ x3 ^ x4 ^ rk1;
+    S = sm4_subword(B);
+    x5= sm4_round(x1, S);
+
+    B = x3 ^ x4 ^ x5 ^ rk2;
+    S = sm4_subword(B);
+    x6 = sm4_round(x2, S);
+
+    B = x4 ^ x5 ^ x6 ^ rk3;
+    S = sm4_subword(B);
+    x7 = sm4_round(x3, S);
+
+    set_velem(vd, EGW=128, i, (x7 @ x6 @ x5 @ x4));
+
+  }
+  RETIRE_SUCCESS
+  }
+}
+
+val sm4_round : bits(32) -> bits(32)
+function sm4_round(X, S) = \
+  ((X) ^ ((S) ^ ROL32((S), 2) ^ ROL32((S), 10) ^ ROL32((S), 18) ^ ROL32((S), 24)))
+
+--
+
+Included in::
+<<zvks>>, <<zvksc>>, <<zvksed>>, <<zvksg>>
+
+<<<
+
+[[insns-vwsll, Vector Widening Shift Left Logical]]
+==== vwsll.[vv,vx,vi]
+
+Synopsis::
+Vector widening shift left logical by vector/scalar/immediate.
+
+Mnemonic::
+vwsll.vv vd, vs2, vs1, vm +
+vwsll.vx vd, vs2, rs1, vm +
+vwsll.vi vd, vs2, uimm, vm
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Encoding (Vector-Scalar)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVX'},
+{bits: 5, name: 'rs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Encoding (Vector-Immediate)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVI'},
+{bits: 5, name: 'uimm[4:0]'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Vector-Vector Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Vs1 | input  | Shift amount
+| Vs2 | input  | Data
+| Vd  | output | Shifted data
+|===
+
+Vector-Scalar/Immediate Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2"]
+|===
+|Register
+|Direction
+|EEW
+|Definition
+
+| Rs1/imm | input  | SEW   | Shift amount
+| Vs2     | input  | SEW   | Data
+| Vd      | output | 2*SEW | Shifted data
+|===
+
+
+Description::
+A widening logical shift left is performed on each element of `vs2`.
+
+[#norm:vwsll_op]#The elements in `vs2` are zero-extended to 2*`SEW` bits, then shifted left
+by the shift amount specified by either
+the corresponding elements of `vs1` (vector-vector), integer register `rs1`
+(vector-scalar), or an immediate value (vector-immediate).
+Only the low log2(2*`SEW`) bits of the shift-amount value are used, all other
+bits are ignored.#
+
+Operation::
+[source,sail]
+--
+function clause execute (VWSLL_VV(vs2, vs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i,
+      get_velem(vs2, i) << (get_velem(vs1, i) & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VWSLL_VX(vs2, rs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i,
+      get_velem(vs2, i) << (X(rs1) & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VWSLL_VI(vs2, uimm[4:0], vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i,
+      get_velem(vs2, i) << (uimm[4:0] & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+--
+
+Included in::
+<<zvbb>>
+
+<<<
+
+
+[[crypto_vector_instructions]]
+=== Crypto Vector Cryptographic Instructions
+
+OP-VE (0x77)
+Crypto Vector instructions except Zvbb and Zvbc
+
+// [cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+[cols="4,1,1,1,1,4,1,1,1,4,1,1,1"]
+|===
+5+^|Integer 4+^|Integer 4+^| FP
+
+| funct3 | | | |            | funct3 | | |             | funct3 | | |
+| OPIVV  |V| | |            | OPMVV  |V| |             | OPFVV  |V| |
+| OPIVX  | |X| |            | OPMVX  | |X|             | OPFVF  | |F|
+| OPIVI  | | |I|            |        | | |             |        | | |
+|===
+
+// [cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+[cols="6,1,1,1,1,6,1,1,6,6,1,1,1"]
+
+|===
+5+^| funct6                  4+^| funct6                 4+^| funct6
+
+|100000||||| 100000 |V| | vsm3me      | 100000 | | |
+| 100001 | | | |            | 100001 |V| | vsm4k.vi    | 100001 | | |
+| 100010 | | | |            | 100010 |V| | vaeskf1.vi  | 100010 | | |
+| 100011 | | | |            | 100011 | | |             | 100011 | | |
+| 100100 | | | |            | 100100 | | |             | 100100 | | |
+| 100101 | | | |            | 100101 | | |             | 100101 | | |
+| 100110 | | | |            | 100110 | | |             | 100110 | | |
+| 100111 | | | |            | 100111 | | |             | 100111 | | |
+|        | | | |            |        | | |             |        | | |
+| 101000 | | | |            | 101000 |V| | *VAES.vv*   | 101000 | | |
+| 101001 | | | |            | 101001 |V| | *VAES.vs*   | 101001 | | |
+| 101010 | | | |            | 101010 |V| | vaeskf2.vi  | 101010 | | |
+| 101011 | | | |            | 101011 |V| | vsm3c.vi    | 101011 | | |
+| 101100 | | | |            | 101100 |V| | vghsh      | 101100 | | |
+| 101101 | | | |            | 101101 |V| | vsha2ms     | 101101 | | |
+| 101110 | | | |            | 101110 |V| | vsha2ch     | 101110 | | |
+| 101111 | | | |            | 101111 |V| | vsha2cl     | 101111 | | |
+|===
+
+<<<
+
+.VAES.vv and VAES.vs encoding space
+[cols="2,14"]
+|===
+|vs1|
+
+| 00000 | vaesdm
+| 00001 | vaesdf
+| 00010 | vaesem
+| 00011 | vaesef
+| 00111 | vaesz
+| 10000 | vsm4r
+| 10001 | vgmul
+|===
+
+[[crypto_vector_instructions_Zvbb_Zvbc]]
+=== Vector Bitmanip and Carry-less Multiply Instructions
+
+OP-V (0x57)
+*Zvbb*, *Zvkb*, and *Zvbc* Vector instructions *in bold*
+//[%auto-width]
+[%autowidth,cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+|===
+5+| Integer               4+| Integer               4+| FP
+
+| funct3 | | | |            | funct3 | | |             | funct3 | | |
+| OPIVV  |V| | |            | OPMVV  |V| |             | OPFVV  |V| |
+| OPIVX  | |X| |            | OPMVX  | |X|             | OPFVF  | |F|
+| OPIVI  | | |I|            |        | | |             |        | | |
+|===
+
+//[%auto-width]
+[%autowidth,cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+|===
+5+| funct6                  4+| funct6                 4+| funct6
+
+| 000000 |V|X|I| vadd       | 000000 |V| | vredsum     | 000000 |V|F| vfadd
+| 000001 |V|X| | *vandn*    | 000001 |V| | vredand     | 000001 |V| | vfredusum
+| 000010 |V|X| | vsub       | 000010 |V| | vredor      | 000010 |V|F| vfsub
+| 000011 | |X|I| vrsub      | 000011 |V| | vredxor     | 000011 |V| | vfredosum
+| 000100 |V|X| | vminu      | 000100 |V| | vredminu    | 000100 |V|F| vfmin
+| 000101 |V|X| | vmin       | 000101 |V| | vredmin     | 000101 |V| | vfredmin
+| 000110 |V|X| | vmaxu      | 000110 |V| | vredmaxu    | 000110 |V|F| vfmax
+| 000111 |V|X| | vmax       | 000111 |V| | vredmax     | 000111 |V| | vfredmax
+| 001000 | | | |            | 001000 |V|X| vaaddu      | 001000 |V|F| vfsgnj
+| 001001 |V|X|I| vand       | 001001 |V|X| vaadd       | 001001 |V|F| vfsgnjn
+| 001010 |V|X|I| vor        | 001010 |V|X| vasubu      | 001010 |V|F| vfsgnjx
+| 001011 |V|X|I| vxor       | 001011 |V|X| vasub       | 001011 | | |
+| 001100 |V|X|I| vrgather   | 001100 |V|X| *vclmul*    | 001100 | | |
+| 001101 | | | |            | 001101 |V|X| *vclmulh*   | 001101 | | |
+| 001110 | |X|I| vslideup   | 001110 | |X| vslide1up   | 001110 | |F| vfslide1up
+| 001110 |V| | | vrgatherei16|        | | |             |        | | |
+| 001111 | |X|I| vslidedown | 001111 | |X| vslide1down | 001111 | |F| vfslide1down
+|===
+
+[%autowidth,cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+|===
+5+| funct6                  4+| funct6                 4+| funct6
+
+| 010000 |V|X|I| vadc       | 010000 |V| | VWXUNARY0   | 010000 |V| | VWFUNARY0
+|        | | | |            | 010000 | |X| VRXUNARY0   | 010000 | |F| VRFUNARY0
+| 010001 |V|X|I| vmadc      | 010001 | | |             | 010001 | | |
+| 010010 |V|X| | vsbc       | 010010 |V| | VXUNARY0    | 010010 |V| | VFUNARY0
+| 010011 |V|X| | vmsbc      | 010011 | | |             | 010011 |V| | VFUNARY1
+| 010100 |V|X| | *vror*     | 010100 |V| | VMUNARY0    | 010100 | | |
+| 010101 |V|X| | *vrol*     | 010101 | | |             | 010101 | | |
+| 01010x | | |I| *vror*     |        | | |             |        | | |
+| 010110 | | | |            | 010110 | | |             | 010110 | | |
+| 010111 |V|X|I| vmerge/vmv | 010111 |V| | vcompress   | 010111 | |F| vfmerge/vfmv
+| 011000 |V|X|I| vmseq      | 011000 |V| | vmandn      | 011000 |V|F| vmfeq
+| 011001 |V|X|I| vmsne      | 011001 |V| | vmand       | 011001 |V|F| vmfle
+| 011010 |V|X| | vmsltu     | 011010 |V| | vmor        | 011010 | | |
+| 011011 |V|X| | vmslt      | 011011 |V| | vmxor       | 011011 |V|F| vmflt
+| 011100 |V|X|I| vmsleu     | 011100 |V| | vmorn       | 011100 |V|F| vmfne
+| 011101 |V|X|I| vmsle      | 011101 |V| | vmnand      | 011101 | |F| vmfgt
+| 011110 | |X|I| vmsgtu     | 011110 |V| | vmnor       | 011110 | | |
+| 011111 | |X|I| vmsgt      | 011111 |V| | vmxnor      | 011111 | |F| vmfge
+|===
+
+[%autowidth,cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+|===
+5+| funct6                  4+| funct6                 4+| funct6
+
+| 100000 |V|X|I| vsaddu     | 100000 |V|X| vdivu       | 100000 |V|F| vfdiv
+| 100001 |V|X|I| vsadd      | 100001 |V|X| vdiv        | 100001 | |F| vfrdiv
+| 100010 |V|X| | vssubu     | 100010 |V|X| vremu       | 100010 | | |
+| 100011 |V|X| | vssub      | 100011 |V|X| vrem        | 100011 | | |
+| 100100 | | | |            | 100100 |V|X| vmulhu      | 100100 |V|F| vfmul
+| 100101 |V|X|I| vsll       | 100101 |V|X| vmul        | 100101 | | |
+| 100110 | | | |            | 100110 |V|X| vmulhsu     | 100110 | | |
+| 100111 |V|X| | vsmul      | 100111 |V|X| vmulh       | 100111 | |F| vfrsub
+|        | | |I| vmv<nr>r   |        | | |             |        | | |
+| 101000 |V|X|I| vsrl       | 101000 | | |             | 101000 |V|F| vfmadd
+| 101001 |V|X|I| vsra       | 101001 |V|X| vmadd       | 101001 |V|F| vfnmadd
+| 101010 |V|X|I| vssrl      | 101010 | | |             | 101010 |V|F| vfmsub
+| 101011 |V|X|I| vssra      | 101011 |V|X| vnmsub      | 101011 |V|F| vfnmsub
+| 101100 |V|X|I| vnsrl      | 101100 | | |             | 101100 |V|F| vfmacc
+| 101101 |V|X|I| vnsra      | 101101 |V|X| vmacc       | 101101 |V|F| vfnmacc
+| 101110 |V|X|I| vnclipu    | 101110 | | |             | 101110 |V|F| vfmsac
+| 101111 |V|X|I| vnclip     | 101111 |V|X| vnmsac      | 101111 |V|F| vfnmsac
+|===
+
+[%autowidth,cols="4,1,1,1,8,4,1,1,8,4,1,1,8"]
+|===
+5+| funct6                  4+| funct6                 4+| funct6
+
+| 110000 |V| | | vwredsumu  | 110000 |V|X| vwaddu      | 110000 |V|F| vfwadd
+| 110001 |V| | | vwredsum   | 110001 |V|X| vwadd       | 110001 |V| | vfwredusum
+| 110010 | | | |            | 110010 |V|X| vwsubu      | 110010 |V|F| vfwsub
+| 110011 | | | |            | 110011 |V|X| vwsub       | 110011 |V| | vfwredosum
+| 110100 | | | |            | 110100 |V|X| vwaddu.w    | 110100 |V|F| vfwadd.w
+| 110101 |V|X|I| *vwsll*    | 110101 |V|X| vwadd.w     | 110101 | | |
+| 110110 | | | |            | 110110 |V|X| vwsubu.w    | 110110 |V|F| vfwsub.w
+| 110111 | | | |            | 110111 |V|X| vwsub.w     | 110111 | | |
+| 111000 | | | |            | 111000 |V|X| vwmulu      | 111000 |V|F| vfwmul
+| 111001 | | | |            | 111001 | | |             | 111001 | | |
+| 111010 | | | |            | 111010 |V|X| vwmulsu     | 111010 | | |
+| 111011 | | | |            | 111011 |V|X| vwmul       | 111011 | | |
+| 111100 | | | |            | 111100 |V|X| vwmaccu     | 111100 |V|F| vfwmacc
+| 111101 | | | |            | 111101 |V|X| vwmacc      | 111101 |V|F| vfwnmacc
+| 111110 | | | |            | 111110 | |X| vwmaccus    | 111110 |V|F| vfwmsac
+| 111111 | | | |            | 111111 |V|X| vwmaccsu    | 111111 |V|F| vfwnmsac
+|===
+
+<<<
+
+//[%auto-width]
+.VXUNARY0 encoding space
+[%autowidth,cols="2,14"]
+|===
+|  vs1  |
+
+| 00010 | vzext.vf8
+| 00011 | vsext.vf8
+| 00100 | vzext.vf4
+| 00101 | vsext.vf4
+| 00110 | vzext.vf2
+| 00111 | vsext.vf2
+| 01000 | *vbrev8*
+| 01001 | *vrev8*
+| 01010 | *vbrev*
+| 01100 | *vclz*
+| 01101 | *vctz*
+| 01110 | *vcpop*
+
+|===
+
+[[crypto_vector_appx_sail]]
+=== Supporting Sail Code
+
+This section contains the supporting Sail code referenced by the
+instruction descriptions throughout the specification.
+The
+link:https://alasdair.github.io/manual.html[Sail Manual]
+is recommended reading in order to best understand the supporting code.
+
+[source,sail]
+----
+/* Auxiliary function for performing GF multiplication */
+val xt2 : bits(8) -> bits(8)
+function xt2(x) = {
+  (x << 1) ^ (if bit_to_bool(x[7]) then 0x1b else 0x00)
+}
+
+val xt3 : bits(8) -> bits(8)
+function xt3(x) = x ^ xt2(x)
+
+/* Multiply 8-bit field element by 4-bit value for AES MixCols step */
+val gfmul : (bits(8), bits(4)) -> bits(8)
+function gfmul( x, y) = {
+  (if bit_to_bool(y[0]) then             x    else 0x00) ^
+  (if bit_to_bool(y[1]) then xt2(        x)   else 0x00) ^
+  (if bit_to_bool(y[2]) then xt2(xt2(    x))  else 0x00) ^
+  (if bit_to_bool(y[3]) then xt2(xt2(xt2(x))) else 0x00)
+}
+
+/* 8-bit to 32-bit partial AES Mix Column - forwards */
+val aes_mixcolumn_byte_fwd : bits(8) -> bits(32)
+function aes_mixcolumn_byte_fwd(so) = {
+  gfmul(so, 0x3) @ so @ so @ gfmul(so, 0x2)
+}
+
+/* 8-bit to 32-bit partial AES Mix Column - inverse*/
+val aes_mixcolumn_byte_inv : bits(8) -> bits(32)
+function aes_mixcolumn_byte_inv(so) = {
+  gfmul(so, 0xb) @ gfmul(so, 0xd) @ gfmul(so, 0x9) @ gfmul(so, 0xe)
+}
+
+/* 32-bit to 32-bit AES forward MixColumn */
+val aes_mixcolumn_fwd : bits(32) -> bits(32)
+function aes_mixcolumn_fwd(x) = {
+  let s0 : bits (8) = x[ 7.. 0];
+  let s1 : bits (8) = x[15.. 8];
+  let s2 : bits (8) = x[23..16];
+  let s3 : bits (8) = x[31..24];
+  let b0 : bits (8) = xt2(s0) ^ xt3(s1) ^    (s2) ^    (s3);
+  let b1 : bits (8) =    (s0) ^ xt2(s1) ^ xt3(s2) ^    (s3);
+  let b2 : bits (8) =    (s0) ^    (s1) ^ xt2(s2) ^ xt3(s3);
+  let b3 : bits (8) = xt3(s0) ^    (s1) ^    (s2) ^ xt2(s3);
+  b3 @ b2 @ b1 @ b0 /* Return value */
+}
+
+/* 32-bit to 32-bit AES inverse MixColumn */
+val aes_mixcolumn_inv : bits(32) -> bits(32)
+function aes_mixcolumn_inv(x) = {
+  let s0 : bits (8) = x[ 7.. 0];
+  let s1 : bits (8) = x[15.. 8];
+  let s2 : bits (8) = x[23..16];
+  let s3 : bits (8) = x[31..24];
+  let b0 : bits (8) = gfmul(s0, 0xE) ^ gfmul(s1, 0xB) ^ gfmul(s2, 0xD) ^ gfmul(s3, 0x9);
+  let b1 : bits (8) = gfmul(s0, 0x9) ^ gfmul(s1, 0xE) ^ gfmul(s2, 0xB) ^ gfmul(s3, 0xD);
+  let b2 : bits (8) = gfmul(s0, 0xD) ^ gfmul(s1, 0x9) ^ gfmul(s2, 0xE) ^ gfmul(s3, 0xB);
+  let b3 : bits (8) = gfmul(s0, 0xB) ^ gfmul(s1, 0xD) ^ gfmul(s2, 0x9) ^ gfmul(s3, 0xE);
+  b3 @ b2 @ b1 @ b0 /* Return value */
+}
+
+val aes_decode_rcon : bits(4) -> bits(32)
+function aes_decode_rcon(r) = {
+  match r {
+    0x0 => 0x00000001,
+    0x1 => 0x00000002,
+    0x2 => 0x00000004,
+    0x3 => 0x00000008,
+    0x4 => 0x00000010,
+    0x5 => 0x00000020,
+    0x6 => 0x00000040,
+    0x7 => 0x00000080,
+    0x8 => 0x0000001b,
+    0x9 => 0x00000036,
+    0xA => 0x00000000,
+    0xB => 0x00000000,
+    0xC => 0x00000000,
+    0xD => 0x00000000,
+    0xE => 0x00000000,
+    0xF => 0x00000000
+  }
+}
+
+/* SM4 SBox - only one sbox for forwards and inverse */
+let sm4_sbox_table : list(bits(8)) = [|
+0xD6, 0x90, 0xE9, 0xFE, 0xCC, 0xE1, 0x3D, 0xB7, 0x16, 0xB6, 0x14, 0xC2, 0x28,
+0xFB, 0x2C, 0x05, 0x2B, 0x67, 0x9A, 0x76, 0x2A, 0xBE, 0x04, 0xC3, 0xAA, 0x44,
+0x13, 0x26, 0x49, 0x86, 0x06, 0x99, 0x9C, 0x42, 0x50, 0xF4, 0x91, 0xEF, 0x98,
+0x7A, 0x33, 0x54, 0x0B, 0x43, 0xED, 0xCF, 0xAC, 0x62, 0xE4, 0xB3, 0x1C, 0xA9,
+0xC9, 0x08, 0xE8, 0x95, 0x80, 0xDF, 0x94, 0xFA, 0x75, 0x8F, 0x3F, 0xA6, 0x47,
+0x07, 0xA7, 0xFC, 0xF3, 0x73, 0x17, 0xBA, 0x83, 0x59, 0x3C, 0x19, 0xE6, 0x85,
+0x4F, 0xA8, 0x68, 0x6B, 0x81, 0xB2, 0x71, 0x64, 0xDA, 0x8B, 0xF8, 0xEB, 0x0F,
+0x4B, 0x70, 0x56, 0x9D, 0x35, 0x1E, 0x24, 0x0E, 0x5E, 0x63, 0x58, 0xD1, 0xA2,
+0x25, 0x22, 0x7C, 0x3B, 0x01, 0x21, 0x78, 0x87, 0xD4, 0x00, 0x46, 0x57, 0x9F,
+0xD3, 0x27, 0x52, 0x4C, 0x36, 0x02, 0xE7, 0xA0, 0xC4, 0xC8, 0x9E, 0xEA, 0xBF,
+0x8A, 0xD2, 0x40, 0xC7, 0x38, 0xB5, 0xA3, 0xF7, 0xF2, 0xCE, 0xF9, 0x61, 0x15,
+0xA1, 0xE0, 0xAE, 0x5D, 0xA4, 0x9B, 0x34, 0x1A, 0x55, 0xAD, 0x93, 0x32, 0x30,
+0xF5, 0x8C, 0xB1, 0xE3, 0x1D, 0xF6, 0xE2, 0x2E, 0x82, 0x66, 0xCA, 0x60, 0xC0,
+0x29, 0x23, 0xAB, 0x0D, 0x53, 0x4E, 0x6F, 0xD5, 0xDB, 0x37, 0x45, 0xDE, 0xFD,
+0x8E, 0x2F, 0x03, 0xFF, 0x6A, 0x72, 0x6D, 0x6C, 0x5B, 0x51, 0x8D, 0x1B, 0xAF,
+0x92, 0xBB, 0xDD, 0xBC, 0x7F, 0x11, 0xD9, 0x5C, 0x41, 0x1F, 0x10, 0x5A, 0xD8,
+0x0A, 0xC1, 0x31, 0x88, 0xA5, 0xCD, 0x7B, 0xBD, 0x2D, 0x74, 0xD0, 0x12, 0xB8,
+0xE5, 0xB4, 0xB0, 0x89, 0x69, 0x97, 0x4A, 0x0C, 0x96, 0x77, 0x7E, 0x65, 0xB9,
+0xF1, 0x09, 0xC5, 0x6E, 0xC6, 0x84, 0x18, 0xF0, 0x7D, 0xEC, 0x3A, 0xDC, 0x4D,
+0x20, 0x79, 0xEE, 0x5F, 0x3E, 0xD7, 0xCB, 0x39, 0x48
+|]
+
+let aes_sbox_fwd_table : list(bits(8)) = [|
+0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe,
+0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4,
+0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7,
+0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3,
+0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09,
+0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3,
+0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe,
+0x39, 0x4a, 0x4c, 0x58, 0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85,
+0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92,
+0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c,
+0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19,
+0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14,
+0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2,
+0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5,
+0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08, 0xba, 0x78, 0x25,
+0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a,
+0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86,
+0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e,
+0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42,
+0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
+|]
+
+let aes_sbox_inv_table : list(bits(8)) = [|
+0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81,
+0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e,
+0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23,
+0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e, 0x08, 0x2e, 0xa1, 0x66,
+0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25, 0x72,
+0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65,
+0xb6, 0x92, 0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46,
+0x57, 0xa7, 0x8d, 0x9d, 0x84, 0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a,
+0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06, 0xd0, 0x2c, 0x1e, 0x8f, 0xca,
+0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, 0x3a, 0x91,
+0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6,
+0x73, 0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8,
+0x1c, 0x75, 0xdf, 0x6e, 0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f,
+0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, 0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2,
+0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4, 0x1f, 0xdd, 0xa8,
+0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f,
+0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93,
+0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb,
+0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, 0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6,
+0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
+|]
+
+/* Lookup function - takes an index and a list, and retrieves the
+ * x'th element of that list.
+ */
+val sbox_lookup : (bits(8), list(bits(8))) -> bits(8)
+function sbox_lookup(x, table) = {
+  match (x, table) {
+    (0x00, t0::tn) => t0,
+    (   y, t0::tn) => sbox_lookup(x - 0x01, tn)
+  }
+}
+
+/* Easy function to perform a forward AES SBox operation on 1 byte. */
+val aes_sbox_fwd : bits(8) -> bits(8)
+function aes_sbox_fwd(x) = sbox_lookup(x, aes_sbox_fwd_table)
+
+/* Easy function to perform an inverse AES SBox operation on 1 byte. */
+val aes_sbox_inv : bits(8) -> bits(8)
+function aes_sbox_inv(x) = sbox_lookup(x, aes_sbox_inv_table)
+
+/* AES SubWord function used in the key expansion
+ * - Applies the forward sbox to each byte in the input word.
+ */
+val aes_subword_fwd : bits(32) -> bits(32)
+function aes_subword_fwd(x) = {
+  aes_sbox_fwd(x[31..24]) @
+  aes_sbox_fwd(x[23..16]) @
+  aes_sbox_fwd(x[15.. 8]) @
+  aes_sbox_fwd(x[ 7.. 0])
+}
+
+/* AES Inverse SubWord function.
+ * - Applies the inverse sbox to each byte in the input word.
+ */
+val aes_subword_inv : bits(32) -> bits(32)
+function aes_subword_inv(x) = {
+  aes_sbox_inv(x[31..24]) @
+  aes_sbox_inv(x[23..16]) @
+  aes_sbox_inv(x[15.. 8]) @
+  aes_sbox_inv(x[ 7.. 0])
+}
+
+/* Easy function to perform an SM4 SBox operation on 1 byte. */
+val sm4_sbox : bits(8) -> bits(8)
+function sm4_sbox(x) = sbox_lookup(x, sm4_sbox_table)
+
+val aes_get_column : (bits(128), nat) -> bits(32)
+function aes_get_column(state,c) = (state >> (to_bits(7, 32 * c)))[31..0]
+
+/* 64-bit to 64-bit function which applies the AES forward sbox to each byte
+ * in a 64-bit word.
+ */
+val aes_apply_fwd_sbox_to_each_byte : bits(64) -> bits(64)
+function aes_apply_fwd_sbox_to_each_byte(x) = {
+  aes_sbox_fwd(x[63..56]) @
+  aes_sbox_fwd(x[55..48]) @
+  aes_sbox_fwd(x[47..40]) @
+  aes_sbox_fwd(x[39..32]) @
+  aes_sbox_fwd(x[31..24]) @
+  aes_sbox_fwd(x[23..16]) @
+  aes_sbox_fwd(x[15.. 8]) @
+  aes_sbox_fwd(x[ 7.. 0])
+}
+
+/* 64-bit to 64-bit function which applies the AES inverse sbox to each byte
+ * in a 64-bit word.
+ */
+val aes_apply_inv_sbox_to_each_byte : bits(64) -> bits(64)
+function aes_apply_inv_sbox_to_each_byte(x) = {
+  aes_sbox_inv(x[63..56]) @
+  aes_sbox_inv(x[55..48]) @
+  aes_sbox_inv(x[47..40]) @
+  aes_sbox_inv(x[39..32]) @
+  aes_sbox_inv(x[31..24]) @
+  aes_sbox_inv(x[23..16]) @
+  aes_sbox_inv(x[15.. 8]) @
+  aes_sbox_inv(x[ 7.. 0])
+}
+
+/*
+ * AES full-round transformation functions.
+ */
+
+val getbyte : (bits(64), int) -> bits(8)
+function getbyte(x, i) = (x >> to_bits(6, i * 8))[7..0]
+
+val aes_rv64_shiftrows_fwd : (bits(64), bits(64)) -> bits(64)
+function aes_rv64_shiftrows_fwd(rs2, rs1) = {
+  getbyte(rs1, 3) @
+  getbyte(rs2, 6) @
+  getbyte(rs2, 1) @
+  getbyte(rs1, 4) @
+  getbyte(rs2, 7) @
+  getbyte(rs2, 2) @
+  getbyte(rs1, 5) @
+  getbyte(rs1, 0)
+}
+
+val aes_rv64_shiftrows_inv : (bits(64), bits(64)) -> bits(64)
+function aes_rv64_shiftrows_inv(rs2, rs1) = {
+  getbyte(rs2, 3) @
+  getbyte(rs2, 6) @
+  getbyte(rs1, 1) @
+  getbyte(rs1, 4) @
+  getbyte(rs1, 7) @
+  getbyte(rs2, 2) @
+  getbyte(rs2, 5) @
+  getbyte(rs1, 0)
+}
+
+/* 128-bit to 128-bit implementation of the forward AES ShiftRows transform.
+ * Byte 0 of state is input column 0, bits  7..0.
+ * Byte 5 of state is input column 1, bits 15..8.
+ */
+val aes_shift_rows_fwd : bits(128) -> bits(128)
+function aes_shift_rows_fwd(x) = {
+  let ic3 : bits(32) = aes_get_column(x, 3);
+  let ic2 : bits(32) = aes_get_column(x, 2);
+  let ic1 : bits(32) = aes_get_column(x, 1);
+  let ic0 : bits(32) = aes_get_column(x, 0);
+  let oc0 : bits(32) = ic3[31..24] @ ic2[23..16] @ ic1[15.. 8] @ ic0[ 7.. 0];
+  let oc1 : bits(32) = ic0[31..24] @ ic3[23..16] @ ic2[15.. 8] @ ic1[ 7.. 0];
+  let oc2 : bits(32) = ic1[31..24] @ ic0[23..16] @ ic3[15.. 8] @ ic2[ 7.. 0];
+  let oc3 : bits(32) = ic2[31..24] @ ic1[23..16] @ ic0[15.. 8] @ ic3[ 7.. 0];
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* 128-bit to 128-bit implementation of the inverse AES ShiftRows transform.
+ * Byte 0 of state is input column 0, bits  7..0.
+ * Byte 5 of state is input column 1, bits 15..8.
+ */
+val aes_shift_rows_inv : bits(128) -> bits(128)
+function aes_shift_rows_inv(x) = {
+  let ic3 : bits(32) = aes_get_column(x, 3); /* In column 3 */
+  let ic2 : bits(32) = aes_get_column(x, 2);
+  let ic1 : bits(32) = aes_get_column(x, 1);
+  let ic0 : bits(32) = aes_get_column(x, 0);
+  let oc0 : bits(32) = ic1[31..24] @ ic2[23..16] @ ic3[15.. 8] @ ic0[ 7.. 0];
+  let oc1 : bits(32) = ic2[31..24] @ ic3[23..16] @ ic0[15.. 8] @ ic1[ 7.. 0];
+  let oc2 : bits(32) = ic3[31..24] @ ic0[23..16] @ ic1[15.. 8] @ ic2[ 7.. 0];
+  let oc3 : bits(32) = ic0[31..24] @ ic1[23..16] @ ic2[15.. 8] @ ic3[ 7.. 0];
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* Applies the forward sub-bytes step of AES to a 128-bit vector
+ * representation of its state.
+ */
+val aes_subbytes_fwd : bits(128) -> bits(128)
+function aes_subbytes_fwd(x) = {
+  let oc0 : bits(32) = aes_subword_fwd(aes_get_column(x, 0));
+  let oc1 : bits(32) = aes_subword_fwd(aes_get_column(x, 1));
+  let oc2 : bits(32) = aes_subword_fwd(aes_get_column(x, 2));
+  let oc3 : bits(32) = aes_subword_fwd(aes_get_column(x, 3));
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* Applies the inverse sub-bytes step of AES to a 128-bit vector
+ * representation of its state.
+ */
+val aes_subbytes_inv : bits(128) -> bits(128)
+function aes_subbytes_inv(x) = {
+  let oc0 : bits(32) = aes_subword_inv(aes_get_column(x, 0));
+  let oc1 : bits(32) = aes_subword_inv(aes_get_column(x, 1));
+  let oc2 : bits(32) = aes_subword_inv(aes_get_column(x, 2));
+  let oc3 : bits(32) = aes_subword_inv(aes_get_column(x, 3));
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* Applies the forward MixColumns step of AES to a 128-bit vector
+ * representation of its state.
+ */
+val aes_mixcolumns_fwd : bits(128) -> bits(128)
+function aes_mixcolumns_fwd(x) = {
+  let oc0 : bits(32) = aes_mixcolumn_fwd(aes_get_column(x, 0));
+  let oc1 : bits(32) = aes_mixcolumn_fwd(aes_get_column(x, 1));
+  let oc2 : bits(32) = aes_mixcolumn_fwd(aes_get_column(x, 2));
+  let oc3 : bits(32) = aes_mixcolumn_fwd(aes_get_column(x, 3));
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* Applies the inverse MixColumns step of AES to a 128-bit vector
+ * representation of its state.
+ */
+val aes_mixcolumns_inv : bits(128) -> bits(128)
+function aes_mixcolumns_inv(x) = {
+  let oc0 : bits(32) = aes_mixcolumn_inv(aes_get_column(x, 0));
+  let oc1 : bits(32) = aes_mixcolumn_inv(aes_get_column(x, 1));
+  let oc2 : bits(32) = aes_mixcolumn_inv(aes_get_column(x, 2));
+  let oc3 : bits(32) = aes_mixcolumn_inv(aes_get_column(x, 3));
+  (oc3 @ oc2 @ oc1 @ oc0) /* Return value */
+}
+
+/* Performs the word rotation for AES key schedule
+*/
+
+val aes_rotword : bits(32) -> bits(32)
+function aes_rotword(x) = {
+  let a0 : bits (8) = x[ 7.. 0];
+  let a1 : bits (8) = x[15.. 8];
+  let a2 : bits (8) = x[23..16];
+  let a3 : bits (8) = x[31..24];
+  (a0 @ a3 @ a2 @ a1) /* Return Value */
+}
+
+val brev : bits(SEW) -> bits(SEW)
+function brev(x) = {
+  let output : bits(SEW) = 0;
+  foreach (i from 0 to SEW-8 by 8)
+    output[i+7..i] = reverse_bits_in_byte(input[i+7..i]);
+  output /* Return Value */
+}
+
+val reverse_bits_in_byte : bits(8) -> bits(8)
+function reverse_bits_in_byte(x) = {
+  let output : bits(8) = 0;
+  foreach (i from 0 to 7)
+    output[i] = x[7-i]);
+  output /* Return Value */
+}
+
+val rev8 : bits(SEW) -> bits(SEW)
+function rev8(x) = {     // endian swap
+  let output : bits(SEW) = 0;
+    let j = SEW - 1;
+    foreach (k from 0 to (SEW - 8) by 8) {
+      output[k..(k + 7)] = x[(j - 7)..j];
+      j = j - 8;
+  output /* Return Value */
+  }
+  RETIRE_SUCCESS
+
+
+val rol32 : bits(32) -> bits(32)
+function ROL32(x,n) = (X << N) | (X >> (32 - N))
+
+val sm4_subword : bits(32) -> bits(32)
+function sm4_subword(x) = {
+  sm4_sbox(x[31..24]) @
+  sm4_sbox(x[23..16]) @
+  sm4_sbox(x[15.. 8]) @
+  sm4_sbox(x[ 7.. 0])
+}
+----

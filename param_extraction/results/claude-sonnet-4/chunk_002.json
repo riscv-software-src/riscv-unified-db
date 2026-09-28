@@ -1,0 +1,84 @@
+{
+  "chunk_id": "chunk_002",
+  "source_file": "b-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 3426,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1088,
+      "parameter_name": "BCLRI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1158,
+      "parameter_name": "BEXTI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1228,
+      "parameter_name": "BINVI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1298,
+      "parameter_name": "BSETI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The bitmanip extensions are defined for RV32 and RV64.",
+      "line_number": 12,
+      "reason": "This is a fixed requirement that applies to all implementations - not an implementation choice."
+    },
+    {
+      "excerpt": "The bitmanip extension follows the convention in RV64 that _w_-suffixed instructions (without a dot before the _w_) ignore the upper 32 bits of their inputs, operate on the least-significant 32 bits as signed values, and produce a 32-bit signed result that is sign-extended to XLEN.",
+      "line_number": 14,
+      "reason": "This describes fixed semantic behavior that all implementations must follow - not a parameter."
+    },
+    {
+      "excerpt": "The B standard extension comprises instructions provided by the Zba, Zbb, and Zbs extensions.",
+      "line_number": 75,
+      "reason": "This is a fixed definition of what the B extension includes - not an implementation choice."
+    },
+    {
+      "excerpt": "While the shift and add instructions are limited to a maximum left shift of 3, the slli instruction (from the base ISA) can be used to perform similar shifts for indexing into arrays of wider elements.",
+      "line_number": 83,
+      "reason": "This describes fixed instruction behavior and suggests software usage - not an implementation parameter."
+    },
+    {
+      "excerpt": "These instructions perform the sign extension or zero extension of the least-significant 8 bits or 16 bits of the source register.",
+      "line_number": 244,
+      "reason": "This describes what the instructions do functionally - fixed behavior, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1088,\n      \"parameter_name\": \"BCLRI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1158,\n      \"parameter_name\": \"BEXTI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1228,\n      \"parameter_name\": \"BINVI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1298,\n      \"parameter_name\": \"BSETI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to reserve these encodings or define behavior for them. This is a direct architectural choice about instruction encoding validity.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The bitmanip extensions are defined for RV32 and RV64.\",\n      \"line_number\": 12,\n      \"reason\": \"This is a fixed requirement that applies to all implementations - not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The bitmanip extension follows the convention in RV64 that _w_-suffixed instructions (without a dot before the _w_) ignore the upper 32 bits of their inputs, operate on the least-significant 32 bits as signed values, and produce a 32-bit signed result that is sign-extended to XLEN.\",\n      \"line_number\": 14,\n      \"reason\": \"This describes fixed semantic behavior that all implementations must follow - not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The B standard extension comprises instructions provided by the Zba, Zbb, and Zbs extensions.\",\n      \"line_number\": 75,\n      \"reason\": \"This is a fixed definition of what the B extension includes - not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"While the shift and add instructions are limited to a maximum left shift of 3, the slli instruction (from the base ISA) can be used to perform similar shifts for indexing into arrays of wider elements.\",\n      \"line_number\": 83,\n      \"reason\": \"This describes fixed instruction behavior and suggests software usage - not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"These instructions perform the sign extension or zero extension of the least-significant 8 bits or 16 bits of the source register.\",\n      \"line_number\": 244,\n      \"reason\": \"This describes what the instructions do functionally - fixed behavior, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 35253,
+  "output_tokens": 1008,
+  "latency_ms": 19188,
+  "timestamp": "2026-05-25T20:39:05.335106+00:00",
+  "error": null,
+  "retry_count": 0
+}

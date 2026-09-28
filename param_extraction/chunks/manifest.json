@@ -1,0 +1,1477 @@
+{
+  "total_chunks": 79,
+  "total_files": 74,
+  "total_lines": 53006,
+  "chunks": [
+    {
+      "chunk_id": "chunk_001",
+      "source_file": "a-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 484,
+      "content_start_line": 1,
+      "total_source_lines": 484,
+      "section_headings": [
+        "== \"A\" Extension for Atomic Instructions, Version 2.1",
+        "=== Specifying Ordering of Atomic Instructions",
+        "=== \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+        "=== Eventual Success of Store-Conditional Instructions",
+        "=== \"Zaamo\" Extension for Atomic Memory Operations"
+      ],
+      "overlap_from_line": null,
+      "line_count": 484
+    },
+    {
+      "chunk_id": "chunk_002",
+      "source_file": "b-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 3426,
+      "content_start_line": 1,
+      "total_source_lines": 3485,
+      "section_headings": [
+        "== Bit Manipulation Extensions",
+        "=== \"B\" Extension for Bit Manipulation, Version 1.0.0",
+        "=== Zba: Extension for Address generation, Version 1.0.0",
+        "=== Zbb: Extension for Basic bit-manipulation, Version 1.0.0",
+        "==== Logical with negate",
+        "==== Count leading/trailing zero bits",
+        "==== Count population",
+        "==== Integer minimum/maximum",
+        "==== Sign extension and zero extension",
+        "==== Bitwise rotation",
+        "==== OR Combine",
+        "==== Byte-reverse",
+        "=== Zbc: Extension for Carry-less multiplication, Version 1.0.0",
+        "=== Zbs: Extension for Single-bit instructions, Version 1.0.0",
+        "=== Zbkb: Extension for Bit-manipulation for Cryptography, Version 1.0.0",
+        "=== Zbkc: Extension for Carry-less multiplication for Cryptography, Version 1.0.0",
+        "=== Zbkx: Extension for Crossbar permutations, Version 1.0.0",
+        "=== Instructions (in alphabetical order)",
+        "==== add.uw",
+        "==== andn"
+      ],
+      "overlap_from_line": null,
+      "line_count": 3426
+    },
+    {
+      "chunk_id": "chunk_003",
+      "source_file": "b-st-ext.adoc",
+      "start_line": 3397,
+      "end_line": 3485,
+      "content_start_line": 3427,
+      "total_source_lines": 3485,
+      "section_headings": [
+        "==== zip"
+      ],
+      "overlap_from_line": 3397,
+      "line_count": 89
+    },
+    {
+      "chunk_id": "chunk_004",
+      "source_file": "bfloat16.adoc",
+      "start_line": 1,
+      "end_line": 790,
+      "content_start_line": 1,
+      "total_source_lines": 790,
+      "section_headings": [
+        "== \"BF16\" Extensions for BFloat16-precision Floating-Point, Version 1.0",
+        "=== Introduction",
+        "=== Intended Audience",
+        "=== Number Format",
+        "==== BF16 Operand Format",
+        "==== BF16 Behavior",
+        "===== Subnormal Numbers:",
+        "===== Infinities:",
+        "===== NaNs",
+        "===== Scalar NaN Boxing"
+      ],
+      "overlap_from_line": null,
+      "line_count": 790
+    },
+    {
+      "chunk_id": "chunk_005",
+      "source_file": "bibliography.adoc",
+      "start_line": 1,
+      "end_line": 4,
+      "content_start_line": 1,
+      "total_source_lines": 4,
+      "section_headings": [
+        "== Bibliography"
+      ],
+      "overlap_from_line": null,
+      "line_count": 4
+    },
+    {
+      "chunk_id": "chunk_006",
+      "source_file": "bitmanip-examples.adoc",
+      "start_line": 1,
+      "end_line": 145,
+      "content_start_line": 1,
+      "total_source_lines": 145,
+      "section_headings": [
+        "== Bit Manipulation Extensions Assembly Code Examples",
+        "=== strlen",
+        "=== strcmp"
+      ],
+      "overlap_from_line": null,
+      "line_count": 145
+    },
+    {
+      "chunk_id": "chunk_007",
+      "source_file": "c-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 931,
+      "content_start_line": 1,
+      "total_source_lines": 931,
+      "section_headings": [
+        "== \"C\" Extension for Compressed Instructions, Version 2.0",
+        "=== Overview",
+        "=== Compressed Instruction Formats",
+        "=== Load and Store Instructions",
+        "==== Stack-Pointer-Based Loads and Stores",
+        "==== Register-Based Loads and Stores",
+        "=== Control Transfer Instructions",
+        "=== Integer Computational Instructions",
+        "==== Integer Constant-Generation Instructions",
+        "==== Integer Register-Immediate Operations"
+      ],
+      "overlap_from_line": null,
+      "line_count": 931
+    },
+    {
+      "chunk_id": "chunk_008",
+      "source_file": "calling-convention.adoc",
+      "start_line": 1,
+      "end_line": 29,
+      "content_start_line": 1,
+      "total_source_lines": 29,
+      "section_headings": [
+        "== Calling Convention for Vector State (Not authoritative - Placeholder Only)"
+      ],
+      "overlap_from_line": null,
+      "line_count": 29
+    },
+    {
+      "chunk_id": "chunk_009",
+      "source_file": "cmo.adoc",
+      "start_line": 1,
+      "end_line": 1094,
+      "content_start_line": 1,
+      "total_source_lines": 1094,
+      "section_headings": [
+        "== \"CMO\" Extensions for Base Cache Management Operation ISA, Version 1.0.0",
+        "=== Pseudocode for instruction semantics",
+        "=== Introduction",
+        "=== Background",
+        "==== Memory and Caches",
+        "==== Cache-Block Operations",
+        "=== Coherent Agents and Caches",
+        "==== Memory Ordering",
+        "===== Preserved Program Order",
+        "===== Load Values"
+      ],
+      "overlap_from_line": null,
+      "line_count": 1094
+    },
+    {
+      "chunk_id": "chunk_010",
+      "source_file": "colophon.adoc",
+      "start_line": 1,
+      "end_line": 528,
+      "content_start_line": 1,
+      "total_source_lines": 528,
+      "section_headings": [
+        "== Preface"
+      ],
+      "overlap_from_line": null,
+      "line_count": 528
+    },
+    {
+      "chunk_id": "chunk_011",
+      "source_file": "counters.adoc",
+      "start_line": 1,
+      "end_line": 236,
+      "content_start_line": 1,
+      "total_source_lines": 236,
+      "section_headings": [
+        "== \"Zicntr\" and \"Zihpm\" Extensions for Counters, Version 2.0",
+        "=== \"Zicntr\" Extension for Base Counters and Timers",
+        "=== \"Zihpm\" Extension for Hardware Performance Counters"
+      ],
+      "overlap_from_line": null,
+      "line_count": 236
+    },
+    {
+      "chunk_id": "chunk_012",
+      "source_file": "d-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 239,
+      "content_start_line": 1,
+      "total_source_lines": 239,
+      "section_headings": [
+        "== \"D\" Extension for Double-Precision Floating-Point, Version 2.2",
+        "=== D Register State",
+        "=== NaN Boxing of Narrower Values",
+        "=== Double-Precision Load and Store Instructions",
+        "=== Double-Precision Floating-Point Computational Instructions",
+        "=== Double-Precision Floating-Point Conversion and Move Instructions",
+        "=== Double-Precision Floating-Point Compare Instructions",
+        "=== Double-Precision Floating-Point Classify Instruction"
+      ],
+      "overlap_from_line": null,
+      "line_count": 239
+    },
+    {
+      "chunk_id": "chunk_013",
+      "source_file": "f-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 524,
+      "content_start_line": 1,
+      "total_source_lines": 524,
+      "section_headings": [
+        "== \"F\" Extension for Single-Precision Floating-Point, Version 2.2",
+        "=== F Register State",
+        "=== Floating-Point Control and Status Register",
+        "=== NaN Generation and Propagation",
+        "=== Subnormal Arithmetic",
+        "=== Single-Precision Load and Store Instructions",
+        "=== Single-Precision Floating-Point Computational Instructions",
+        "=== Single-Precision Floating-Point Conversion and Move Instructions",
+        "=== Single-Precision Floating-Point Compare Instructions",
+        "=== Single-Precision Floating-Point Classify Instruction"
+      ],
+      "overlap_from_line": null,
+      "line_count": 524
+    },
+    {
+      "chunk_id": "chunk_014",
+      "source_file": "fraclmul.adoc",
+      "start_line": 1,
+      "end_line": 175,
+      "content_start_line": 1,
+      "total_source_lines": 175,
+      "section_headings": [
+        "=== Fractional Lmul example"
+      ],
+      "overlap_from_line": null,
+      "line_count": 175
+    },
+    {
+      "chunk_id": "chunk_015",
+      "source_file": "hypervisor.adoc",
+      "start_line": 1,
+      "end_line": 2932,
+      "content_start_line": 1,
+      "total_source_lines": 2932,
+      "section_headings": [
+        "== \"H\" Extension for Hypervisor Support, Version 1.0",
+        "=== Privilege Modes",
+        "=== Hypervisor and Virtual Supervisor CSRs",
+        "==== Hypervisor Status (`hstatus`) Register",
+        "==== Hypervisor Trap Delegation (`hedeleg` and `hideleg`) Registers",
+        "==== Hypervisor Interrupt (`hvip`, `hip`, and `hie`) Registers",
+        "==== Hypervisor Guest External Interrupt Registers (`hgeip` and `hgeie`)",
+        "==== Hypervisor Environment Configuration Register (`henvcfg`)",
+        "==== Hypervisor Counter-Enable (`hcounteren`) Register",
+        "==== Hypervisor Time Delta (`htimedelta`) Register",
+        "==== Hypervisor Trap Value (`htval`) Register",
+        "==== Hypervisor Trap Instruction (`htinst`) Register",
+        "==== Hypervisor Guest Address Translation and Protection (`hgatp`) Register",
+        "==== Virtual Supervisor Status (`vsstatus`) Register",
+        "==== Virtual Supervisor Interrupt (`vsip` and `vsie`) Registers",
+        "==== Virtual Supervisor Trap Vector Base Address (`vstvec`) Register",
+        "==== Virtual Supervisor Scratch (`vsscratch`) Register",
+        "==== Virtual Supervisor Exception Program Counter (`vsepc`) Register",
+        "==== Virtual Supervisor Cause (`vscause`) Register",
+        "==== Virtual Supervisor Trap Value (`vstval`) Register"
+      ],
+      "overlap_from_line": null,
+      "line_count": 2932
+    },
+    {
+      "chunk_id": "chunk_016",
+      "source_file": "index.adoc",
+      "start_line": 1,
+      "end_line": 2,
+      "content_start_line": 1,
+      "total_source_lines": 2,
+      "section_headings": [
+        "== Index"
+      ],
+      "overlap_from_line": null,
+      "line_count": 2
+    },
+    {
+      "chunk_id": "chunk_017",
+      "source_file": "indirect-csr.adoc",
+      "start_line": 1,
+      "end_line": 344,
+      "content_start_line": 1,
+      "total_source_lines": 344,
+      "section_headings": [
+        "== \"Smcsrind/Sscsrind\" Indirect CSR Access, Version 1.0",
+        "=== Introduction",
+        "=== Machine-level CSRs",
+        "=== Supervisor-level CSRs",
+        "=== Virtual Supervisor-level CSRs",
+        "=== Access control by the state-enable CSRs"
+      ],
+      "overlap_from_line": null,
+      "line_count": 344
+    },
+    {
+      "chunk_id": "chunk_018",
+      "source_file": "intro.adoc",
+      "start_line": 1,
+      "end_line": 696,
+      "content_start_line": 1,
+      "total_source_lines": 696,
+      "section_headings": [
+        "== Introduction",
+        "=== RISC-V Hardware Platform Terminology",
+        "=== RISC-V Software Execution Environments and Harts",
+        "=== RISC-V ISA Overview",
+        "=== Memory",
+        "=== Base Instruction-Length Encoding",
+        "=== Exceptions, Traps, and Interrupts",
+        "=== UNSPECIFIED Behaviors and Values"
+      ],
+      "overlap_from_line": null,
+      "line_count": 696
+    },
+    {
+      "chunk_id": "chunk_019",
+      "source_file": "m-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 157,
+      "content_start_line": 1,
+      "total_source_lines": 157,
+      "section_headings": [
+        "== \"M\" Extension for Integer Multiplication and Division, Version 2.0",
+        "=== Multiplication Operations",
+        "=== Division Operations",
+        "=== `Zmmul` Extension, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 157
+    },
+    {
+      "chunk_id": "chunk_020",
+      "source_file": "machine.adoc",
+      "start_line": 1,
+      "end_line": 3359,
+      "content_start_line": 1,
+      "total_source_lines": 3655,
+      "section_headings": [
+        "== Machine-Level ISA, Version 1.13",
+        "=== Machine-Level CSRs",
+        "==== Machine ISA (`misa`) Register",
+        "==== Machine Vendor ID (`mvendorid`) Register",
+        "==== Machine Architecture ID (`marchid`) Register",
+        "==== Machine Implementation ID (`mimpid`) Register",
+        "==== Hart ID (`mhartid`) Register",
+        "==== Machine Status (`mstatus` and `mstatush`) Registers",
+        "===== Privilege and Global Interrupt-Enable Stack in `mstatus` register",
+        "===== Double Trap Control in `mstatus` Register",
+        "===== Base ISA Control in `mstatus` Register",
+        "===== Memory Privilege in `mstatus` Register",
+        "===== Endianness Control in `mstatus` and `mstatush` Registers",
+        "===== Virtualization Support in `mstatus` Register",
+        "===== Extension Context Status in `mstatus` Register",
+        "===== Previous Expected Landing Pad (ELP) State in `mstatus` Register",
+        "==== Machine Trap-Vector Base-Address (`mtvec`) Register",
+        "==== Machine Trap Delegation (`medeleg` and `mideleg`) Registers",
+        "==== Machine Interrupt (`mip` and `mie`) Registers",
+        "==== Hardware Performance Monitor"
+      ],
+      "overlap_from_line": null,
+      "line_count": 3359
+    },
+    {
+      "chunk_id": "chunk_021",
+      "source_file": "machine.adoc",
+      "start_line": 3330,
+      "end_line": 3655,
+      "content_start_line": 3360,
+      "total_source_lines": 3655,
+      "section_headings": [
+        "==== Physical Memory Protection CSRs",
+        "===== Address Matching",
+        "===== Locking and Privilege Mode",
+        "===== Priority and Matching Logic",
+        "==== Physical Memory Protection and Paging"
+      ],
+      "overlap_from_line": 3330,
+      "line_count": 326
+    },
+    {
+      "chunk_id": "chunk_022",
+      "source_file": "mm-alloy.adoc",
+      "start_line": 1,
+      "end_line": 239,
+      "content_start_line": 1,
+      "total_source_lines": 239,
+      "section_headings": [
+        "== Formal Axiomatic Specification in Alloy"
+      ],
+      "overlap_from_line": null,
+      "line_count": 239
+    },
+    {
+      "chunk_id": "chunk_023",
+      "source_file": "mm-eplan.adoc",
+      "start_line": 1,
+      "end_line": 1850,
+      "content_start_line": 1,
+      "total_source_lines": 1850,
+      "section_headings": [
+        "== RVWMO Explanatory Material, Version 0.1",
+        "=== Why RVWMO?",
+        "=== Litmus Tests",
+        "=== Explaining the RVWMO Rules",
+        "==== Preserved Program Order and Global Memory Order",
+        "==== Load value axiom",
+        "==== Atomicity axiom",
+        "==== Progress axiom",
+        "==== Overlapping-Address Orderings (<<overlapping-ordering, Rules 1-3>>)",
+        "==== Fences (<<overlapping-ordering, Rule 4>>)"
+      ],
+      "overlap_from_line": null,
+      "line_count": 1850
+    },
+    {
+      "chunk_id": "chunk_024",
+      "source_file": "mm-formal.adoc",
+      "start_line": 1,
+      "end_line": 1425,
+      "content_start_line": 1,
+      "total_source_lines": 1425,
+      "section_headings": [
+        "== Formal Memory Model Specifications, Version 0.1",
+        "=== Formal Axiomatic Specification in Alloy",
+        "=== Formal Axiomatic Specification in Herd",
+        "=== An Operational Memory Model",
+        "==== Intra-instruction Pseudocode Execution",
+        "==== Instruction Instance State",
+        "==== Hart State",
+        "==== Shared Memory State",
+        "==== Transitions",
+        "===== Fetch instruction"
+      ],
+      "overlap_from_line": null,
+      "line_count": 1425
+    },
+    {
+      "chunk_id": "chunk_025",
+      "source_file": "mm-herd.adoc",
+      "start_line": 1,
+      "end_line": 155,
+      "content_start_line": 1,
+      "total_source_lines": 155,
+      "section_headings": [
+        "== Formal Axiomatic Specification in Herd"
+      ],
+      "overlap_from_line": null,
+      "line_count": 155
+    },
+    {
+      "chunk_id": "chunk_026",
+      "source_file": "naming.adoc",
+      "start_line": 1,
+      "end_line": 222,
+      "content_start_line": 1,
+      "total_source_lines": 222,
+      "section_headings": [
+        "== ISA Extension Naming Conventions",
+        "=== Case Sensitivity",
+        "=== Base Integer ISA",
+        "=== Instruction-Set Extension Names",
+        "=== Underscores",
+        "=== Additional Standard Unprivileged Extension Names",
+        "=== Supervisor-level Instruction-Set Extension Names",
+        "=== Hypervisor-level Instruction-Set Extension Names",
+        "=== Machine-level Instruction-Set Extension Names",
+        "=== Non-Standard Extension Names"
+      ],
+      "overlap_from_line": null,
+      "line_count": 222
+    },
+    {
+      "chunk_id": "chunk_027",
+      "source_file": "priv-cfi.adoc",
+      "start_line": 1,
+      "end_line": 373,
+      "content_start_line": 1,
+      "total_source_lines": 373,
+      "section_headings": [
+        "== Control-flow Integrity (CFI)",
+        "=== Landing Pad (Zicfilp)",
+        "==== Landing-Pad-Enabled (LPE) State",
+        "==== Preserving Expected Landing Pad State on Traps",
+        "=== Shadow Stack (Zicfiss)",
+        "==== Shadow Stack Pointer (`ssp`) CSR access control",
+        "==== Shadow-Stack-Enabled (SSE) State",
+        "==== Shadow Stack Memory Protection"
+      ],
+      "overlap_from_line": null,
+      "line_count": 373
+    },
+    {
+      "chunk_id": "chunk_028",
+      "source_file": "priv-csrs.adoc",
+      "start_line": 1,
+      "end_line": 1273,
+      "content_start_line": 1,
+      "total_source_lines": 1273,
+      "section_headings": [
+        "== Control and Status Registers (CSRs)",
+        "=== CSR Address Mapping Conventions",
+        "=== CSR Listing",
+        "==== Currently allocated RISC-V unprivileged CSR addresses",
+        "==== Currently allocated RISC-V supervisor-level CSR addresses",
+        "==== Currently allocated RISC-V hypervisor and VS CSR addresses",
+        "==== Currently allocated RISC-V machine-level CSR addresses",
+        "==== Currently allocated RISC-V indirect CSR (Smcsrind) mappings",
+        "=== CSR Field Specifications",
+        "==== Reserved Writes Preserve Values, Reads Ignore Values (WPRI)"
+      ],
+      "overlap_from_line": null,
+      "line_count": 1273
+    },
+    {
+      "chunk_id": "chunk_029",
+      "source_file": "priv-history.adoc",
+      "start_line": 1,
+      "end_line": 22,
+      "content_start_line": 1,
+      "total_source_lines": 22,
+      "section_headings": [
+        "== History",
+        "=== Research Funding at UC Berkeley"
+      ],
+      "overlap_from_line": null,
+      "line_count": 22
+    },
+    {
+      "chunk_id": "chunk_030",
+      "source_file": "priv-insns.adoc",
+      "start_line": 1,
+      "end_line": 12,
+      "content_start_line": 1,
+      "total_source_lines": 12,
+      "section_headings": [
+        "== RISC-V Privileged Instruction Set Listings"
+      ],
+      "overlap_from_line": null,
+      "line_count": 12
+    },
+    {
+      "chunk_id": "chunk_031",
+      "source_file": "priv-intro.adoc",
+      "start_line": 1,
+      "end_line": 217,
+      "content_start_line": 1,
+      "total_source_lines": 217,
+      "section_headings": [
+        "== Introduction",
+        "=== RISC-V Privileged Software Stack Terminology",
+        "=== Privilege Levels",
+        "=== Debug Mode"
+      ],
+      "overlap_from_line": null,
+      "line_count": 217
+    },
+    {
+      "chunk_id": "chunk_032",
+      "source_file": "priv-preface.adoc",
+      "start_line": 1,
+      "end_line": 598,
+      "content_start_line": 1,
+      "total_source_lines": 598,
+      "section_headings": [
+        "== Preface"
+      ],
+      "overlap_from_line": null,
+      "line_count": 598
+    },
+    {
+      "chunk_id": "chunk_033",
+      "source_file": "priv-rationale.adoc",
+      "start_line": 1,
+      "end_line": 80,
+      "content_start_line": 1,
+      "total_source_lines": 80,
+      "section_headings": [
+        "== Historical Rationale for Extensions",
+        "=== \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode"
+      ],
+      "overlap_from_line": null,
+      "line_count": 80
+    },
+    {
+      "chunk_id": "chunk_034",
+      "source_file": "q-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 120,
+      "content_start_line": 1,
+      "total_source_lines": 120,
+      "section_headings": [
+        "== \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2",
+        "=== Quad-Precision Load and Store Instructions",
+        "=== Quad-Precision Computational Instructions",
+        "=== Quad-Precision Convert and Move Instructions",
+        "=== Quad-Precision Floating-Point Compare Instructions",
+        "=== Quad-Precision Floating-Point Classify Instruction"
+      ],
+      "overlap_from_line": null,
+      "line_count": 120
+    },
+    {
+      "chunk_id": "chunk_035",
+      "source_file": "rationale.adoc",
+      "start_line": 1,
+      "end_line": 107,
+      "content_start_line": 1,
+      "total_source_lines": 107,
+      "section_headings": [
+        "== Historical Rationale for Extensions",
+        "=== \"Zihintpause\" Extension for Pause Hint",
+        "=== \"Zicond\" Extension for Integer Conditional Operations",
+        "=== \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+        "=== \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 107
+    },
+    {
+      "chunk_id": "chunk_036",
+      "source_file": "riscv-privileged.adoc",
+      "start_line": 1,
+      "end_line": 136,
+      "content_start_line": 1,
+      "total_source_lines": 136,
+      "section_headings": [],
+      "overlap_from_line": null,
+      "line_count": 136
+    },
+    {
+      "chunk_id": "chunk_037",
+      "source_file": "riscv-unprivileged.adoc",
+      "start_line": 1,
+      "end_line": 206,
+      "content_start_line": 1,
+      "total_source_lines": 206,
+      "section_headings": [],
+      "overlap_from_line": null,
+      "line_count": 206
+    },
+    {
+      "chunk_id": "chunk_038",
+      "source_file": "rnmi.adoc",
+      "start_line": 1,
+      "end_line": 166,
+      "content_start_line": 1,
+      "total_source_lines": 166,
+      "section_headings": [
+        "== \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0",
+        "=== RNMI Interrupt Signals",
+        "=== RNMI Handler Addresses",
+        "=== RNMI CSRs",
+        "=== MNRET Instruction",
+        "=== RNMI Operation"
+      ],
+      "overlap_from_line": null,
+      "line_count": 166
+    },
+    {
+      "chunk_id": "chunk_039",
+      "source_file": "rv-32-64g.adoc",
+      "start_line": 1,
+      "end_line": 461,
+      "content_start_line": 1,
+      "total_source_lines": 461,
+      "section_headings": [
+        "== RV32/64G Instruction Set Listings"
+      ],
+      "overlap_from_line": null,
+      "line_count": 461
+    },
+    {
+      "chunk_id": "chunk_040",
+      "source_file": "rv32.adoc",
+      "start_line": 1,
+      "end_line": 1105,
+      "content_start_line": 1,
+      "total_source_lines": 1105,
+      "section_headings": [
+        "== RV32I Base Integer Instruction Set, Version 2.1",
+        "=== Programmers' Model for Base Integer ISA",
+        "=== Base Instruction Formats",
+        "=== Immediate Encoding Variants",
+        "=== Integer Computational Instructions",
+        "==== Integer Register-Immediate Instructions",
+        "==== Integer Register-Register Instructions",
+        "==== NOP Instruction",
+        "=== Control Transfer Instructions",
+        "==== Unconditional Jumps"
+      ],
+      "overlap_from_line": null,
+      "line_count": 1105
+    },
+    {
+      "chunk_id": "chunk_041",
+      "source_file": "rv32e.adoc",
+      "start_line": 1,
+      "end_line": 47,
+      "content_start_line": 1,
+      "total_source_lines": 47,
+      "section_headings": [
+        "== RV32E and RV64E Base Integer Instruction Sets, Version 2.0",
+        "=== RV32E and RV64E Programmers\u2019 Model",
+        "=== RV32E and RV64E Instruction Set Encoding"
+      ],
+      "overlap_from_line": null,
+      "line_count": 47
+    },
+    {
+      "chunk_id": "chunk_042",
+      "source_file": "rv64.adoc",
+      "start_line": 1,
+      "end_line": 260,
+      "content_start_line": 1,
+      "total_source_lines": 260,
+      "section_headings": [
+        "== RV64I Base Integer Instruction Set, Version 2.1",
+        "=== Register State",
+        "=== Integer Computational Instructions",
+        "==== Integer Register-Immediate Instructions",
+        "==== Integer Register-Register Operations",
+        "=== Load and Store Instructions",
+        "=== HINT Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 260
+    },
+    {
+      "chunk_id": "chunk_043",
+      "source_file": "rvwmo.adoc",
+      "start_line": 1,
+      "end_line": 807,
+      "content_start_line": 1,
+      "total_source_lines": 807,
+      "section_headings": [
+        "== RVWMO Memory Consistency Model, Version 2.0",
+        "=== Definition of the RVWMO Memory Model",
+        "==== Memory Model Primitives",
+        "==== Syntactic Dependencies",
+        "==== Preserved Program Order",
+        "==== Memory Model Axioms",
+        "===== Load Value Axiom",
+        "===== Atomicity Axiom",
+        "===== Progress Axiom",
+        "=== CSR Dependency Tracking Granularity"
+      ],
+      "overlap_from_line": null,
+      "line_count": 807
+    },
+    {
+      "chunk_id": "chunk_044",
+      "source_file": "scalar-crypto.adoc",
+      "start_line": 1,
+      "end_line": 3452,
+      "content_start_line": 1,
+      "total_source_lines": 5594,
+      "section_headings": [
+        "== Cryptography Extensions: Scalar & Entropy Source Instructions, Version 1.0.1",
+        "=== Introduction",
+        "==== Intended Audience",
+        "==== Sail Specifications",
+        "==== Policies",
+        "=== Extensions Overview",
+        "==== `Zbkb` - Bitmanip instructions for Cryptography",
+        "==== `Zbkc` - Carry-less multiply instructions",
+        "==== `Zbkx` - Crossbar permutation instructions",
+        "==== `Zknd` - NIST Suite: AES Decryption",
+        "==== `Zkne` - NIST Suite: AES Encryption",
+        "==== `Zknh` - NIST Suite: Hash Function Instructions",
+        "==== `Zksed` - ShangMi Suite: SM4 Block Cipher Instructions",
+        "==== `Zksh` - ShangMi Suite: SM3 Hash Function Instructions",
+        "==== `Zkr` - Entropy Source Extension",
+        "==== `Zkn` - NIST Algorithm Suite",
+        "==== `Zks` - ShangMi Algorithm Suite",
+        "==== `Zk` - Standard scalar cryptography extension",
+        "==== `Zkt` - Data Independent Execution Latency",
+        "=== Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 3452
+    },
+    {
+      "chunk_id": "chunk_045",
+      "source_file": "scalar-crypto.adoc",
+      "start_line": 3423,
+      "end_line": 5594,
+      "content_start_line": 3453,
+      "total_source_lines": 5594,
+      "section_headings": [
+        "==== zip",
+        "=== Entropy Source",
+        "==== The `seed` CSR",
+        "==== Entropy Source Requirements",
+        "===== NIST SP 800-90B / FIPS 140-3 Requirements",
+        "===== BSI AIS-31 PTG.2 / Common Criteria Requirements",
+        "===== Virtual Sources: Security Requirement",
+        "==== Access Control to `seed`",
+        "=== Data Independent Execution Latency Subset: Zkt",
+        "==== Scope and Goal",
+        "==== Background",
+        "==== Specific Instruction Rationale",
+        "==== Programming Information",
+        "==== Zkt listings",
+        "===== RVI (Base Instruction Set)",
+        "===== RVM (Multiply)",
+        "===== RVC (Compressed)",
+        "===== Zcb Extension",
+        "===== RVK (Scalar Cryptography)",
+        "===== RVB (Bitmanip)"
+      ],
+      "overlap_from_line": 3423,
+      "line_count": 2172
+    },
+    {
+      "chunk_id": "chunk_046",
+      "source_file": "smcdeleg.adoc",
+      "start_line": 1,
+      "end_line": 140,
+      "content_start_line": 1,
+      "total_source_lines": 140,
+      "section_headings": [
+        "== \"Smcdeleg/Ssccfg\" Counter Delegation Extensions, Version 1.0",
+        "=== Counter Delegation",
+        "=== Supervisor Counter Inhibit (`scountinhibit`) Register",
+        "=== Virtualizing `scountovf`",
+        "=== Virtualizing Local-Counter-Overflow Interrupts"
+      ],
+      "overlap_from_line": null,
+      "line_count": 140
+    },
+    {
+      "chunk_id": "chunk_047",
+      "source_file": "smcntrpmf.adoc",
+      "start_line": 1,
+      "end_line": 72,
+      "content_start_line": 1,
+      "total_source_lines": 72,
+      "section_headings": [
+        "== \"Smcntrpmf\" Cycle and Instret Privilege Mode Filtering, Version 1.0",
+        "=== Introduction",
+        "=== CSRs",
+        "==== Machine Counter Configuration (`mcyclecfg`, `minstretcfg`) Registers",
+        "=== Counter Behavior"
+      ],
+      "overlap_from_line": null,
+      "line_count": 72
+    },
+    {
+      "chunk_id": "chunk_048",
+      "source_file": "smctr.adoc",
+      "start_line": 1,
+      "end_line": 763,
+      "content_start_line": 1,
+      "total_source_lines": 763,
+      "section_headings": [
+        "== \"Smctr\" Control Transfer Records Extension, Version 1.0",
+        "=== CSRs",
+        "==== Machine Control Transfer Records Control Register (`mctrctl`)",
+        "==== Supervisor Control Transfer Records Control Register (`sctrctl`)",
+        "==== Virtual Supervisor Control Transfer Records Control Register (`vsctrctl`)",
+        "==== Supervisor Control Transfer Records Depth Register (`sctrdepth`)",
+        "==== Supervisor Control Transfer Records Status Register (`sctrstatus`)",
+        "=== Entry Registers",
+        "==== Control Transfer Record Source Register (`ctrsource`)",
+        "==== Control Transfer Record Target Register (`ctrtarget`)"
+      ],
+      "overlap_from_line": null,
+      "line_count": 763
+    },
+    {
+      "chunk_id": "chunk_049",
+      "source_file": "smdbltrp.adoc",
+      "start_line": 1,
+      "end_line": 17,
+      "content_start_line": 1,
+      "total_source_lines": 17,
+      "section_headings": [
+        "== \"Smdbltrp\" Double Trap Extension, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 17
+    },
+    {
+      "chunk_id": "chunk_050",
+      "source_file": "smepmp.adoc",
+      "start_line": 1,
+      "end_line": 76,
+      "content_start_line": 1,
+      "total_source_lines": 76,
+      "section_headings": [
+        "== \"Smepmp\" Extension for PMP Enhancements for memory access and execution prevention in Machine mode, Version 1.0",
+        "=== Threat model",
+        "=== Smepmp Physical Memory Protection Rules",
+        "=== Smepmp software discovery"
+      ],
+      "overlap_from_line": null,
+      "line_count": 76
+    },
+    {
+      "chunk_id": "chunk_051",
+      "source_file": "smstateen.adoc",
+      "start_line": 1,
+      "end_line": 383,
+      "content_start_line": 1,
+      "total_source_lines": 383,
+      "section_headings": [
+        "== \"Smstateen/Ssstateen\" Extensions, Version 1.0",
+        "=== State Enable Extensions",
+        "=== State Enable 0 Registers",
+        "=== Usage"
+      ],
+      "overlap_from_line": null,
+      "line_count": 383
+    },
+    {
+      "chunk_id": "chunk_052",
+      "source_file": "sscofpmf.adoc",
+      "start_line": 1,
+      "end_line": 129,
+      "content_start_line": 1,
+      "total_source_lines": 129,
+      "section_headings": [
+        "== \"Sscofpmf\" Extension for Count Overflow and Mode-Based Filtering, Version 1.0",
+        "=== Count Overflow Control",
+        "=== Supervisor Count Overflow (`scountovf`) Register"
+      ],
+      "overlap_from_line": null,
+      "line_count": 129
+    },
+    {
+      "chunk_id": "chunk_053",
+      "source_file": "ssdbltrp.adoc",
+      "start_line": 1,
+      "end_line": 15,
+      "content_start_line": 1,
+      "total_source_lines": 15,
+      "section_headings": [
+        "== \"Ssdbltrp\" Double Trap Extension, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 15
+    },
+    {
+      "chunk_id": "chunk_054",
+      "source_file": "sstc.adoc",
+      "start_line": 1,
+      "end_line": 24,
+      "content_start_line": 1,
+      "total_source_lines": 24,
+      "section_headings": [
+        "== \"Sstc\" Extension for Supervisor-mode Timer Interrupts, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 24
+    },
+    {
+      "chunk_id": "chunk_055",
+      "source_file": "supervisor.adoc",
+      "start_line": 1,
+      "end_line": 2697,
+      "content_start_line": 1,
+      "total_source_lines": 2697,
+      "section_headings": [
+        "== Supervisor-Level ISA, Version 1.13",
+        "=== Supervisor CSRs",
+        "==== Supervisor Status (`sstatus`) Register",
+        "===== Base ISA Control in `sstatus` Register",
+        "===== Memory Privilege in `sstatus` Register",
+        "===== Endianness Control in `sstatus` Register",
+        "===== Previous Expected Landing Pad (ELP) State in `sstatus` Register",
+        "===== Double Trap Control in `sstatus` Register",
+        "==== Supervisor Trap Vector Base Address (`stvec`)  Register",
+        "==== Supervisor Interrupt (`sip` and `sie`) Registers",
+        "==== Supervisor Timers and Performance Counters",
+        "==== Counter-Enable (`scounteren`) Register",
+        "==== Supervisor Scratch (`sscratch`) Register",
+        "==== Supervisor Exception Program Counter (`sepc`) Register",
+        "==== Supervisor Cause (`scause`) Register",
+        "==== Supervisor Trap Value (`stval`) Register",
+        "==== Supervisor Environment Configuration (`senvcfg`) Register",
+        "==== Supervisor Address Translation and Protection (`satp`) Register",
+        "==== Supervisor Timer (`stimecmp`) Register",
+        "=== Supervisor Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 2697
+    },
+    {
+      "chunk_id": "chunk_056",
+      "source_file": "symbols.adoc",
+      "start_line": 1,
+      "end_line": 17,
+      "content_start_line": 1,
+      "total_source_lines": 17,
+      "section_headings": [],
+      "overlap_from_line": null,
+      "line_count": 17
+    },
+    {
+      "chunk_id": "chunk_057",
+      "source_file": "unpriv-cfi.adoc",
+      "start_line": 1,
+      "end_line": 894,
+      "content_start_line": 1,
+      "total_source_lines": 894,
+      "section_headings": [
+        "== Control-flow Integrity (CFI)",
+        "=== Landing Pad (Zicfilp)",
+        "==== Landing Pad Enforcement",
+        "==== Landing Pad Instruction",
+        "=== Shadow Stack (Zicfiss)",
+        "==== Zicfiss Instructions Summary",
+        "==== Shadow Stack Pointer (`ssp`)",
+        "==== Zicfiss Instructions",
+        "==== Push to the Shadow Stack",
+        "==== Pop from the Shadow Stack"
+      ],
+      "overlap_from_line": null,
+      "line_count": 894
+    },
+    {
+      "chunk_id": "chunk_058",
+      "source_file": "v-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 3393,
+      "content_start_line": 1,
+      "total_source_lines": 5396,
+      "section_headings": [
+        "== \"V\" Standard Extension for Vector Operations, Version 1.0",
+        "=== Introduction",
+        "=== Implementation-defined Constant Parameters",
+        "=== Vector Extension Programmer's Model",
+        "==== Vector Registers",
+        "==== Vector Context Status in `mstatus`",
+        "==== Vector Context Status in `vsstatus`",
+        "==== Vector Type (`vtype`) Register",
+        "===== Vector Selected Element Width (`vsew[2:0]`)",
+        "===== Vector Register Grouping (`vlmul[2:0]`)",
+        "===== Vector Tail Agnostic and Vector Mask Agnostic `vta` and `vma`",
+        "===== Vector Type Illegal (`vill`)",
+        "==== Vector Length (`vl`) Register",
+        "==== Vector Byte Length (`vlenb`) Register",
+        "==== Vector Start Index (`vstart`) Register",
+        "==== Vector Fixed-Point Rounding Mode (`vxrm`) Register",
+        "==== Vector Fixed-Point Saturation Flag (`vxsat`)",
+        "==== Vector Control and Status (`vcsr`) Register",
+        "==== State of Vector Extension at Reset",
+        "=== Mapping of Vector Elements to Vector Register State"
+      ],
+      "overlap_from_line": null,
+      "line_count": 3393
+    },
+    {
+      "chunk_id": "chunk_059",
+      "source_file": "v-st-ext.adoc",
+      "start_line": 3386,
+      "end_line": 5396,
+      "content_start_line": 3394,
+      "total_source_lines": 5396,
+      "section_headings": [
+        "==== Vector Single-Width Floating-Point Fused Multiply-Add Instructions",
+        "==== Vector Widening Floating-Point Fused Multiply-Add Instructions",
+        "==== Vector Floating-Point Square-Root Instruction",
+        "==== Vector Floating-Point Reciprocal Square-Root Estimate Instruction",
+        "==== Vector Floating-Point Reciprocal Estimate Instruction",
+        "==== Vector Floating-Point MIN/MAX Instructions",
+        "==== Vector Floating-Point Sign-Injection Instructions",
+        "==== Vector Floating-Point Compare Instructions",
+        "==== Vector Floating-Point Classify Instruction",
+        "==== Vector Floating-Point Merge Instruction",
+        "==== Vector Floating-Point Move Instruction",
+        "==== Single-Width Floating-Point/Integer Type-Convert Instructions",
+        "==== Widening Floating-Point/Integer Type-Convert Instructions",
+        "==== Narrowing Floating-Point/Integer Type-Convert Instructions",
+        "=== Vector Reduction Operations",
+        "==== Vector Single-Width Integer Reduction Instructions",
+        "==== Vector Widening Integer Reduction Instructions",
+        "==== Vector Single-Width Floating-Point Reduction Instructions",
+        "===== Vector Ordered Single-Width Floating-Point Sum Reduction",
+        "===== Vector Unordered Single-Width Floating-Point Sum Reduction"
+      ],
+      "overlap_from_line": 3386,
+      "line_count": 2011
+    },
+    {
+      "chunk_id": "chunk_060",
+      "source_file": "vector-crypto.adoc",
+      "start_line": 1,
+      "end_line": 3340,
+      "content_start_line": 1,
+      "total_source_lines": 4966,
+      "section_headings": [
+        "== Cryptography Extensions: Vector Instructions, Version 1.0",
+        "=== Introduction",
+        "==== Intended Audience",
+        "==== Sail Specifications",
+        "==== Policies",
+        "==== Element Groups",
+        "==== Instruction Constraints",
+        "==== Vector-Scalar Instructions",
+        "==== Software Portability",
+        "=== Extensions Overview",
+        "==== `Zvbb` - Vector Basic Bit-manipulation",
+        "==== `Zvbc` - Vector Carry-less Multiplication",
+        "==== `Zvkb` - Vector Cryptography Bit-manipulation",
+        "==== `Zvkg` - Vector GCM/GMAC",
+        "==== `Zvkned` - NIST Suite: Vector AES Block Cipher",
+        "==== `Zvknh[ab]` - NIST Suite: Vector SHA-2 Secure Hash",
+        "==== `Zvksed` - ShangMi Suite: SM4 Block Cipher",
+        "==== `Zvksh` - ShangMi Suite: SM3 Secure Hash",
+        "==== `Zvkn` - NIST Algorithm Suite",
+        "==== `Zvknc` - NIST Algorithm Suite with carry-less multiply"
+      ],
+      "overlap_from_line": null,
+      "line_count": 3340
+    },
+    {
+      "chunk_id": "chunk_061",
+      "source_file": "vector-crypto.adoc",
+      "start_line": 3311,
+      "end_line": 4966,
+      "content_start_line": 3341,
+      "total_source_lines": 4966,
+      "section_headings": [
+        "==== vsha2ms.vv",
+        "==== vsm3c.vi",
+        "==== vsm3me.vv",
+        "==== vsm4k.vi",
+        "==== vsm4r.[vv,vs]",
+        "==== vwsll.[vv,vx,vi]",
+        "=== Crypto Vector Cryptographic Instructions",
+        "=== Vector Bitmanip and Carry-less Multiply Instructions",
+        "=== Supporting Sail Code"
+      ],
+      "overlap_from_line": 3311,
+      "line_count": 1656
+    },
+    {
+      "chunk_id": "chunk_062",
+      "source_file": "vector-examples.adoc",
+      "start_line": 1,
+      "end_line": 125,
+      "content_start_line": 1,
+      "total_source_lines": 125,
+      "section_headings": [
+        "== Vector Assembly Code Examples",
+        "=== Vector-vector add example",
+        "=== Example with mixed-width mask and compute.",
+        "=== Memcpy example",
+        "=== Conditional example",
+        "=== SAXPY example",
+        "=== SGEMM example",
+        "=== Division approximation example",
+        "=== Square root approximation example",
+        "=== C standard library strcmp example"
+      ],
+      "overlap_from_line": null,
+      "line_count": 125
+    },
+    {
+      "chunk_id": "chunk_063",
+      "source_file": "zabha.adoc",
+      "start_line": 1,
+      "end_line": 68,
+      "content_start_line": 1,
+      "total_source_lines": 68,
+      "section_headings": [
+        "== \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+        "=== Byte and Halfword Atomic Memory Operation Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 68
+    },
+    {
+      "chunk_id": "chunk_064",
+      "source_file": "zacas.adoc",
+      "start_line": 1,
+      "end_line": 225,
+      "content_start_line": 1,
+      "total_source_lines": 225,
+      "section_headings": [
+        "== \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions, Version 1.0.0",
+        "=== Word/Doubleword/Quadword CAS (AMOCAS.W/D/Q) Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 225
+    },
+    {
+      "chunk_id": "chunk_065",
+      "source_file": "zalasr.adoc",
+      "start_line": 1,
+      "end_line": 137,
+      "content_start_line": 1,
+      "total_source_lines": 137,
+      "section_headings": [
+        "== \"Zalasr\" Atomic Load-Acquire and Store-Release Instructions, Version 1.0",
+        "=== Load-Acquire and Store-Release Instructions",
+        "=== Load Acquire",
+        "=== Store Release"
+      ],
+      "overlap_from_line": null,
+      "line_count": 137
+    },
+    {
+      "chunk_id": "chunk_066",
+      "source_file": "zawrs.adoc",
+      "start_line": 1,
+      "end_line": 103,
+      "content_start_line": 1,
+      "total_source_lines": 103,
+      "section_headings": [
+        "== \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+        "=== Wait-on-Reservation-Set Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 103
+    },
+    {
+      "chunk_id": "chunk_067",
+      "source_file": "zc.adoc",
+      "start_line": 1,
+      "end_line": 2582,
+      "content_start_line": 1,
+      "total_source_lines": 2582,
+      "section_headings": [
+        "== \"Zc*\" Extension for Code Size Reduction, Version 1.0.0",
+        "=== Zc* Overview",
+        "=== C",
+        "=== Zce",
+        "=== MISA.C",
+        "=== Zca",
+        "=== Zcf (RV32 only)",
+        "=== Zcd",
+        "=== Zcb",
+        "=== Zcmp",
+        "=== Zcmt",
+        "=== Zc instruction formats",
+        "=== Zcb instructions",
+        "==== c.lbu",
+        "==== c.lhu",
+        "==== c.lh",
+        "==== c.sb",
+        "==== c.sh",
+        "==== c.zext.b",
+        "==== c.sext.b"
+      ],
+      "overlap_from_line": null,
+      "line_count": 2582
+    },
+    {
+      "chunk_id": "chunk_068",
+      "source_file": "zfa.adoc",
+      "start_line": 1,
+      "end_line": 261,
+      "content_start_line": 1,
+      "total_source_lines": 261,
+      "section_headings": [
+        "== \"Zfa\" Extension for Additional Floating-Point Instructions, Version 1.0",
+        "=== Load-Immediate Instructions",
+        "=== Minimum and Maximum Instructions",
+        "=== Round-to-Integer Instructions",
+        "=== Modular Convert-to-Integer Instruction",
+        "=== Move Instructions",
+        "=== Comparison Instructions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 261
+    },
+    {
+      "chunk_id": "chunk_069",
+      "source_file": "zfh.adoc",
+      "start_line": 1,
+      "end_line": 186,
+      "content_start_line": 1,
+      "total_source_lines": 186,
+      "section_headings": [
+        "== \"Zfh\" and \"Zfhmin\" Extensions for Half-Precision Floating-Point, Version 1.0",
+        "=== Half-Precision Load and Store Instructions",
+        "=== Half-Precision Computational Instructions",
+        "=== Half-Precision Conversion and Move Instructions",
+        "=== Half-Precision Floating-Point Compare Instructions",
+        "=== Half-Precision Floating-Point Classify Instruction",
+        "=== \"Zfhmin\" Standard Extension for Minimal Half-Precision Floating-Point"
+      ],
+      "overlap_from_line": null,
+      "line_count": 186
+    },
+    {
+      "chunk_id": "chunk_070",
+      "source_file": "zfinx.adoc",
+      "start_line": 1,
+      "end_line": 162,
+      "content_start_line": 1,
+      "total_source_lines": 162,
+      "section_headings": [
+        "== \"Zfinx\", \"Zdinx\", \"Zhinx\", \"Zhinxmin\" Extensions for Floating-Point in Integer Registers, Version 1.0",
+        "=== Processing of Narrower Values",
+        "=== Zdinx",
+        "=== Processing of Wider Values",
+        "=== Zhinx",
+        "=== Zhinxmin",
+        "=== Privileged Architecture Implications"
+      ],
+      "overlap_from_line": null,
+      "line_count": 162
+    },
+    {
+      "chunk_id": "chunk_071",
+      "source_file": "zicond.adoc",
+      "start_line": 1,
+      "end_line": 187,
+      "content_start_line": 1,
+      "total_source_lines": 187,
+      "section_headings": [
+        "== \"Zicond\" Extension for Integer Conditional Operations, Version 1.0.0",
+        "=== Instructions (in alphabetical order)",
+        "==== czero.eqz",
+        "==== czero.nez",
+        "=== Usage examples",
+        "==== Instruction sequences"
+      ],
+      "overlap_from_line": null,
+      "line_count": 187
+    },
+    {
+      "chunk_id": "chunk_072",
+      "source_file": "zicsr.adoc",
+      "start_line": 1,
+      "end_line": 254,
+      "content_start_line": 1,
+      "total_source_lines": 254,
+      "section_headings": [
+        "== \"Zicsr\" Extension for Control and Status Register (CSR) Instructions, Version 2.0",
+        "=== CSR Instructions",
+        "==== CSR Access Ordering"
+      ],
+      "overlap_from_line": null,
+      "line_count": 254
+    },
+    {
+      "chunk_id": "chunk_073",
+      "source_file": "zifencei.adoc",
+      "start_line": 1,
+      "end_line": 129,
+      "content_start_line": 1,
+      "total_source_lines": 129,
+      "section_headings": [
+        "== \"Zifencei\" Extension for Instruction-Fetch Fence, Version 2.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 129
+    },
+    {
+      "chunk_id": "chunk_074",
+      "source_file": "zihintntl.adoc",
+      "start_line": 1,
+      "end_line": 189,
+      "content_start_line": 1,
+      "total_source_lines": 189,
+      "section_headings": [
+        "== \"Zihintntl\" Extension for Non-Temporal Locality Hints, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 189
+    },
+    {
+      "chunk_id": "chunk_075",
+      "source_file": "zihintpause.adoc",
+      "start_line": 1,
+      "end_line": 56,
+      "content_start_line": 1,
+      "total_source_lines": 56,
+      "section_headings": [
+        "== \"Zihintpause\" Extension for Pause Hint, Version 2.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 56
+    },
+    {
+      "chunk_id": "chunk_076",
+      "source_file": "zilsd.adoc",
+      "start_line": 1,
+      "end_line": 315,
+      "content_start_line": 1,
+      "total_source_lines": 315,
+      "section_headings": [
+        "== \"Zilsd\", \"Zclsd\" Extensions for Load/Store pair for RV32, Version 1.0",
+        "=== Load/Store pair instructions (Zilsd)",
+        "=== Compressed Load/Store pair instructions (Zclsd)",
+        "=== Use of x0 as operand",
+        "=== Exception Handling",
+        "=== Instructions",
+        "==== ld",
+        "==== sd",
+        "==== c.ldsp",
+        "==== c.sdsp"
+      ],
+      "overlap_from_line": null,
+      "line_count": 315
+    },
+    {
+      "chunk_id": "chunk_077",
+      "source_file": "zimop.adoc",
+      "start_line": 1,
+      "end_line": 113,
+      "content_start_line": 1,
+      "total_source_lines": 113,
+      "section_headings": [
+        "== \"Zimop\" Extension for May-Be-Operations, Version 1.0",
+        "=== \"Zcmop\" Compressed May-Be-Operations Extension, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 113
+    },
+    {
+      "chunk_id": "chunk_078",
+      "source_file": "zpm.adoc",
+      "start_line": 1,
+      "end_line": 223,
+      "content_start_line": 1,
+      "total_source_lines": 223,
+      "section_headings": [
+        "== Pointer Masking Extensions, Version 1.0.0",
+        "=== Introduction",
+        "=== Background",
+        "==== Definitions",
+        "==== The \u201cIgnore\u201d Transformation",
+        "==== Example",
+        "==== Determining the Value of PMLEN",
+        "==== Pointer Masking and Privilege Modes",
+        "==== Memory Accesses Subject to Pointer Masking",
+        "==== Pointer Masking Extensions"
+      ],
+      "overlap_from_line": null,
+      "line_count": 223
+    },
+    {
+      "chunk_id": "chunk_079",
+      "source_file": "ztso-st-ext.adoc",
+      "start_line": 1,
+      "end_line": 49,
+      "content_start_line": 1,
+      "total_source_lines": 49,
+      "section_headings": [
+        "== \"Ztso\" Extension for Total Store Ordering, Version 1.0"
+      ],
+      "overlap_from_line": null,
+      "line_count": 49
+    }
+  ]
+}

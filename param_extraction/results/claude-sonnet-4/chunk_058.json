@@ -1,0 +1,194 @@
+{
+  "chunk_id": "chunk_058",
+  "source_file": "v-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 3393,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ >= 8, which must be a power of 2.",
+      "line_number": 22,
+      "parameter_name": "ELEN",
+      "existing_udb_name": "ELEN",
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "ELEN is a direct implementation parameter: the maximum element size. It has constraints (>= 8, power of 2) but the specific value is chosen by the implementer."
+    },
+    {
+      "excerpt": "The number of bits in a single vector register, _VLEN_ >= ELEN, which must be a power of 2, and must be no greater than 2^16.",
+      "line_number": 24,
+      "parameter_name": "VLEN",
+      "existing_udb_name": "VLEN",
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "VLEN is a direct implementation parameter: the vector register length. It has constraints (>= ELEN, power of 2, <= 2^16) but the specific value is chosen by the implementer."
+    },
+    {
+      "excerpt": "Implementations may have a writable `misa.V` field.",
+      "line_number": 108,
+      "parameter_name": "MUTABLE_MISA_V",
+      "existing_udb_name": "MUTABLE_MISA_V",
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether misa.V is read-only or read-write. This is a binary choice about the mutability of the field."
+    },
+    {
+      "excerpt": "Analogous to the way in which the floating-point unit is handled, the `mstatus.VS` field may exist even if `misa.V` is clear.",
+      "line_number": 109,
+      "parameter_name": "MSTATUS_VS_EXISTS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether mstatus.VS field exists when misa.V is clear. This is a direct implementation choice."
+    },
+    {
+      "excerpt": "Implementations may also change `mstatus.VS` or `vsstatus.VS` from Initial or Clean to Dirty at any time, even when there is no change in vector state.",
+      "line_number": 127,
+      "parameter_name": "HW_MSTATUS_VS_DIRTY_UPDATE",
+      "existing_udb_name": "HW_MSTATUS_VS_DIRTY_UPDATE",
+      "class": "SW_RULE",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "Whether hardware updates mstatus.VS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing VS state with proper fencing. The outcome is predictable if software follows the rules."
+    },
+    {
+      "excerpt": "A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits for `vlmul[2:0]`. The illegal value represented by `vill` can be internally encoded using the illegal 64-bit combination in `vsew[1:0]` without requiring an additional storage bit to hold `vill`.",
+      "line_number": 168,
+      "parameter_name": "VILL_IMPLICIT_ENCODING",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The implementation can choose whether to use implicit encoding for vill using illegal vsew combinations or explicit storage. This is an internal implementation choice."
+    },
+    {
+      "excerpt": "Implementations may set `vill` in either case.",
+      "line_number": 1095,
+      "parameter_name": "RESERVED_VILL_SET",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "When reserved vsetvl operations are used, implementations can choose whether to set vill or not. This is an implementation choice for handling reserved cases."
+    },
+    {
+      "excerpt": "All vector loads and stores may generate and accept a non-zero `vstart` value.",
+      "line_number": 1139,
+      "parameter_name": "VECTOR_LS_VSTART",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether vector load/store instructions support non-zero vstart values. This is an implementation choice about instruction capabilities."
+    },
+    {
+      "excerpt": "Load instructions may overwrite active destination vector register group elements past the element index at which the trap is reported.",
+      "line_number": 1456,
+      "parameter_name": "VECTOR_LS_OVERWRITE_PAST_TRAP",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether load instructions may overwrite elements past trap points. This is an implementation choice about memory operation behavior."
+    },
+    {
+      "excerpt": "Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming of the vector length (but not past the original vector length). The values of these spurious updates do not have to correspond to the values in memory at the addressed memory locations.",
+      "line_number": 1457,
+      "parameter_name": "VECTOR_FF_PAST_TRAP",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether fault-only-first loads may update elements past the trimming point. This is an implementation choice about memory operation behavior."
+    },
+    {
+      "excerpt": "If a trap occurs during access to a segment, it is implementation-defined whether a subset of the faulting segment's accesses are performed before the trap is taken.",
+      "line_number": 1651,
+      "parameter_name": "VECTOR_LS_SEG_PARTIAL_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether partial segment accesses occur before traps. This is an implementation choice about memory operation atomicity."
+    },
+    {
+      "excerpt": "In both cases, it is implementation-defined whether a subset of the segment is loaded.",
+      "line_number": 1703,
+      "parameter_name": "VECTOR_FF_SEG_PARTIAL_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether partial segment loads occur in fault-only-first operations. This is an implementation choice about memory operation atomicity."
+    },
+    {
+      "excerpt": "These instructions may overwrite destination vector register group elements past the point at which a trap is reported or past the point at which vector length is trimmed.",
+      "line_number": 1705,
+      "parameter_name": "VECTOR_LS_SEG_FF_OVERLOAD",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether fault-only-first segment loads may overwrite elements past trap/trim points. This is an implementation choice about memory operation behavior."
+    },
+    {
+      "excerpt": "Implementations are allowed to raise a misaligned address exception on whole register loads and stores if the base address is not naturally aligned to the larger of the size of the encoded EEW in bytes (EEW/8) or the implementation's smallest supported SEW size in bytes (SEW_MIN/8).",
+      "line_number": 1825,
+      "parameter_name": "VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether to raise misaligned exceptions for whole register loads/stores. This is an implementation choice about alignment requirements."
+    },
+    {
+      "excerpt": "If an element accessed by a vector memory instruction is not naturally aligned to the size of the element, either the element is transferred successfully or an address-misaligned exception is raised on that element.",
+      "line_number": 1862,
+      "parameter_name": "VECTOR_LS_MISSALIGNED_EXCEPTION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Implementations can choose whether to support misaligned vector memory accesses or raise exceptions. This is an implementation choice about alignment handling."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The base vector extension is intended to provide general support for data-parallel execution within the 32-bit instruction encoding space, with later vector extensions supporting richer functionality for certain domains.",
+      "line_number": 5,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "The vector extension adds 32 architectural vector registers, `v0`-`v31` to the base scalar RISC-V ISA.",
+      "line_number": 73,
+      "reason": "This is a fixed requirement that all implementations must satisfy. There is no implementation choice here."
+    },
+    {
+      "excerpt": "When `mstatus.VS` is set to Initial or Clean, executing any instruction that changes vector state, including the vector CSRs, will change `mstatus.VS` to Dirty.",
+      "line_number": 85,
+      "reason": "This describes what happens when mstatus.VS has specific values. The behavior is determined by the CSR field value at runtime, not by an implementation choice."
+    },
+    {
+      "excerpt": "The `vtype` register has five fields, `vill`, `vma`, `vta`, `vsew[2:0]`, and `vlmul[2:0]`.",
+      "line_number": 155,
+      "reason": "This is a fixed architectural requirement about the vtype register structure. All implementations must have these fields."
+    },
+    {
+      "excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "line_number": 1000,
+      "reason": "Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The maximum size in bits of a vector element that any operation can produce or consume, _ELEN_ >= 8, which must be a power of 2.\",\n      \"line_number\": 22,\n      \"parameter_name\": \"ELEN\",\n      \"existing_udb_name\": \"ELEN\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"ELEN is a direct implementation parameter: the maximum element size. It has constraints (>= 8, power of 2) but the specific value is chosen by the implementer.\"\n    },\n    {\n      \"excerpt\": \"The number of bits in a single vector register, _VLEN_ >= ELEN, which must be a power of 2, and must be no greater than 2^16.\",\n      \"line_number\": 24,\n      \"parameter_name\": \"VLEN\",\n      \"existing_udb_name\": \"VLEN\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"VLEN is a direct implementation parameter: the vector register length. It has constraints (>= ELEN, power of 2, <= 2^16) but the specific value is chosen by the implementer.\"\n    },\n    {\n      \"excerpt\": \"Implementations may have a writable `misa.V` field.\",\n      \"line_number\": 108,\n      \"parameter_name\": \"MUTABLE_MISA_V\",\n      \"existing_udb_name\": \"MUTABLE_MISA_V\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether misa.V is read-only or read-write. This is a binary choice about the mutability of the field.\"\n    },\n    {\n      \"excerpt\": \"Analogous to the way in which the floating-point unit is handled, the `mstatus.VS` field may exist even if `misa.V` is clear.\",\n      \"line_number\": 109,\n      \"parameter_name\": \"MSTATUS_VS_EXISTS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether mstatus.VS field exists when misa.V is clear. This is a direct implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Implementations may also change `mstatus.VS` or `vsstatus.VS` from Initial or Clean to Dirty at any time, even when there is no change in vector state.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HW_MSTATUS_VS_DIRTY_UPDATE\",\n      \"existing_udb_name\": \"HW_MSTATUS_VS_DIRTY_UPDATE\",\n      \"class\": \"SW_RULE\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Whether hardware updates mstatus.VS to Dirty is implementation-defined, but software can handle this deterministically by checking and managing VS state with proper fencing. The outcome is predictable if software follows the rules.\"\n    },\n    {\n      \"excerpt\": \"A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits for `vlmul[2:0]`. The illegal value represented by `vill` can be internally encoded using the illegal 64-bit combination in `vsew[1:0]` without requiring an additional storage bit to hold `vill`.\",\n      \"line_number\": 168,\n      \"parameter_name\": \"VILL_IMPLICIT_ENCODING\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation can choose whether to use implicit encoding for vill using illegal vsew combinations or explicit storage. This is an internal implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Implementations may set `vill` in either case.\",\n      \"line_number\": 1095,\n      \"parameter_name\": \"RESERVED_VILL_SET\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"When reserved vsetvl operations are used, implementations can choose whether to set vill or not. This is an implementation choice for handling reserved cases.\"\n    },\n    {\n      \"excerpt\": \"All vector loads and stores may generate and accept a non-zero `vstart` value.\",\n      \"line_number\": 1139,\n      \"parameter_name\": \"VECTOR_LS_VSTART\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether vector load/store instructions support non-zero vstart values. This is an implementation choice about instruction capabilities.\"\n    },\n    {\n      \"excerpt\": \"Load instructions may overwrite active destination vector register group elements past the element index at which the trap is reported.\",\n      \"line_number\": 1456,\n      \"parameter_name\": \"VECTOR_LS_OVERWRITE_PAST_TRAP\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether load instructions may overwrite elements past trap points. This is an implementation choice about memory operation behavior.\"\n    },\n    {\n      \"excerpt\": \"Similarly, fault-only-first load instructions may update active destination elements past the element that causes trimming of the vector length (but not past the original vector length). The values of these spurious updates do not have to correspond to the values in memory at the addressed memory locations.\",\n      \"line_number\": 1457,\n      \"parameter_name\": \"VECTOR_FF_PAST_TRAP\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether fault-only-first loads may update elements past the trimming point. This is an implementation choice about memory operation behavior.\"\n    },\n    {\n      \"excerpt\": \"If a trap occurs during access to a segment, it is implementation-defined whether a subset of the faulting segment's accesses are performed before the trap is taken.\",\n      \"line_number\": 1651,\n      \"parameter_name\": \"VECTOR_LS_SEG_PARTIAL_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether partial segment accesses occur before traps. This is an implementation choice about memory operation atomicity.\"\n    },\n    {\n      \"excerpt\": \"In both cases, it is implementation-defined whether a subset of the segment is loaded.\",\n      \"line_number\": 1703,\n      \"parameter_name\": \"VECTOR_FF_SEG_PARTIAL_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether partial segment loads occur in fault-only-first operations. This is an implementation choice about memory operation atomicity.\"\n    },\n    {\n      \"excerpt\": \"These instructions may overwrite destination vector register group elements past the point at which a trap is reported or past the point at which vector length is trimmed.\",\n      \"line_number\": 1705,\n      \"parameter_name\": \"VECTOR_LS_SEG_FF_OVERLOAD\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether fault-only-first segment loads may overwrite elements past trap/trim points. This is an implementation choice about memory operation behavior.\"\n    },\n    {\n      \"excerpt\": \"Implementations are allowed to raise a misaligned address exception on whole register loads and stores if the base address is not naturally aligned to the larger of the size of the encoded EEW in bytes (EEW/8) or the implementation's smallest supported SEW size in bytes (SEW_MIN/8).\",\n      \"line_number\": 1825,\n      \"parameter_name\": \"VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether to raise misaligned exceptions for whole register loads/stores. This is an implementation choice about alignment requirements.\"\n    },\n    {\n      \"excerpt\": \"If an element accessed by a vector memory instruction is not naturally aligned to the size of the element, either the element is transferred successfully or an address-misaligned exception is raised on that element.\",\n      \"line_number\": 1862,\n      \"parameter_name\": \"VECTOR_LS_MISSALIGNED_EXCEPTION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Implementations can choose whether to support misaligned vector memory accesses or raise exceptions. This is an implementation choice about alignment handling.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The base vector extension is intended to provide general support for data-parallel execution within the 32-bit instruction encoding space, with later vector extensions supporting richer functionality for certain domains.\",\n      \"line_number\": 5,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"The vector extension adds 32 architectural vector registers, `v0`-`v31` to the base scalar RISC-V ISA.\",\n      \"line_number\": 73,\n      \"reason\": \"This is a fixed requirement that all implementations must satisfy. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"When `mstatus.VS` is set to Initial or Clean, executing any instruction that changes vector state, including the vector CSRs, will change `mstatus.VS` to Dirty.\",\n      \"line_number\": 85,\n      \"reason\": \"This describes what happens when mstatus.VS has specific values. The behavior is determined by the CSR field value at runtime, not by an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The `vtype` register has five fields, `vill`, `vma`, `vta`, `vsew[2:0]`, and `vlmul[2:0]`.\",\n      \"line_number\": 155,\n      \"reason\": \"This is a fixed architectural requirement about the vtype register structure. All implementations must have these fields.\"\n    },\n    {\n      \"excerpt\": \"Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.\",\n      \"line_number\": 1000,\n      \"reason\": \"Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 53128,
+  "output_tokens": 2929,
+  "latency_ms": 56627,
+  "timestamp": "2026-05-25T20:52:28.243554+00:00",
+  "error": null,
+  "retry_count": 0
+}

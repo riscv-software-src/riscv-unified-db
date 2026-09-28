@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_073",
+  "source_file": "zifencei.adoc",
+  "start_line": 1,
+  "end_line": 129,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "For forward compatibility, base implementations shall ignore these fields, and standard software shall zero these fields.",
+      "line_number": 103,
+      "parameter_name": "FENCE_I_RESERVED_FIELD_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation must choose whether to ignore reserved fields in FENCE.I or trap on non-zero values. The spec requires ignoring them, but this is still an implementation choice about how to handle reserved encodings."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "We considered but did not include a \"store instruction word\" instruction as in cite:[majc]. JIT compilers may generate a large trace of instructions before a single FENCE.I, and amortize any instruction cache snooping/invalidation overhead by writing translated instructions to memory regions that are known not to reside in the I-cache.",
+      "line_number": 12,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It describes design rationale, not an architectural requirement."
+    },
+    {
+      "excerpt": "The FENCE.I instruction was designed to support a wide variety of implementations. A simple implementation can flush the local instruction cache and the instruction pipeline when the FENCE.I is executed.",
+      "line_number": 20,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It describes possible implementation strategies but does not define a parameter."
+    },
+    {
+      "excerpt": "RISC-V does not guarantee that stores to instruction memory will be made visible to instruction fetches on a RISC-V hart until that hart executes a FENCE.I instruction.",
+      "line_number": 66,
+      "reason": "This describes the required behavior of FENCE.I that all implementations must follow. It is a fixed requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "A FENCE.I instruction orders all explicit memory accesses that precede the FENCE.I in program order before all instruction fetches that follow the FENCE.I in program order.",
+      "line_number": 74,
+      "reason": "This defines the normative ordering semantics of FENCE.I that all implementations must provide. It is a fixed requirement, not a parameter."
+    },
+    {
+      "excerpt": "Because FENCE.I only orders stores with a hart's own instruction fetches, application code should only rely upon FENCE.I if the application thread will not be migrated to a different hart.",
+      "line_number": 107,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides guidance to software developers, not an architectural parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"For forward compatibility, base implementations shall ignore these fields, and standard software shall zero these fields.\",\n      \"line_number\": 103,\n      \"parameter_name\": \"FENCE_I_RESERVED_FIELD_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation must choose whether to ignore reserved fields in FENCE.I or trap on non-zero values. The spec requires ignoring them, but this is still an implementation choice about how to handle reserved encodings.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"We considered but did not include a \\\"store instruction word\\\" instruction as in cite:[majc]. JIT compilers may generate a large trace of instructions before a single FENCE.I, and amortize any instruction cache snooping/invalidation overhead by writing translated instructions to memory regions that are known not to reside in the I-cache.\",\n      \"line_number\": 12,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It describes design rationale, not an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"The FENCE.I instruction was designed to support a wide variety of implementations. A simple implementation can flush the local instruction cache and the instruction pipeline when the FENCE.I is executed.\",\n      \"line_number\": 20,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It describes possible implementation strategies but does not define a parameter.\"\n    },\n    {\n      \"excerpt\": \"RISC-V does not guarantee that stores to instruction memory will be made visible to instruction fetches on a RISC-V hart until that hart executes a FENCE.I instruction.\",\n      \"line_number\": 66,\n      \"reason\": \"This describes the required behavior of FENCE.I that all implementations must follow. It is a fixed requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"A FENCE.I instruction orders all explicit memory accesses that precede the FENCE.I in program order before all instruction fetches that follow the FENCE.I in program order.\",\n      \"line_number\": 74,\n      \"reason\": \"This defines the normative ordering semantics of FENCE.I that all implementations must provide. It is a fixed requirement, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"Because FENCE.I only orders stores with a hart's own instruction fetches, application code should only rely upon FENCE.I if the application thread will not be migrated to a different hart.\",\n      \"line_number\": 107,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides guidance to software developers, not an architectural parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7072,
+  "output_tokens": 703,
+  "latency_ms": 15560,
+  "timestamp": "2026-05-25T20:57:20.831761+00:00",
+  "error": null,
+  "retry_count": 0
+}
