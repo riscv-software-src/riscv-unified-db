@@ -2700,8 +2700,8 @@ function read_memory {
     XReg result;
 
     if (aligned) {
-      result =  read_memory_aligned(LEN, virtual_address, encoding, 1'b0, 1'b0);
-      if(LEN > 8 && endianness() == Endian::Big ) {
+      result = read_memory_aligned(LEN, virtual_address, encoding, 1'b0, 1'b0);
+      if (LEN > 8 && endianness() == Endian::Big ) {
         U32 tmp;
         for (U32 i=0; i < LEN/2; i = i+8) {
           tmp = result[(i+7):i];
