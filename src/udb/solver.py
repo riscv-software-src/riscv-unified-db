@@ -735,7 +735,10 @@ def implies(
         return finite_status is SolverStatus.UNSAT
     solver = ConditionSolver(context)
     solver.add(counterexample)
-    return solver.check() is SolverStatus.UNSAT
+    status = solver.check()
+    if status is SolverStatus.UNKNOWN:
+        raise SolverUnknownError("implication depends on an unresolved condition")
+    return status is SolverStatus.UNSAT
 
 
 def equivalent(
@@ -758,7 +761,10 @@ def equivalent(
         return finite_status is SolverStatus.UNSAT
     solver = ConditionSolver(context)
     solver.add(difference)
-    return solver.check() is SolverStatus.UNSAT
+    status = solver.check()
+    if status is SolverStatus.UNKNOWN:
+        raise SolverUnknownError("equivalence depends on an unresolved condition")
+    return status is SolverStatus.UNSAT
 
 
 def finite_check(

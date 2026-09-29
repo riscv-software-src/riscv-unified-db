@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+import udb
+import udb.conditions as conditions_api
 from udb.conditions import (
     FALSE,
     TRUE,
@@ -654,6 +656,72 @@ def test_boolean_solver_helpers_do_not_collapse_unknown_results() -> None:
     with pytest.raises(solver_api.SolverUnknownError):
         solver_api.equivalent(TRUE, unresolved)
     assert solver_api.implies(unresolved, unresolved)
+
+
+def test_boolean_solver_helpers_raise_for_unknown_z3_fallback() -> None:
+    pytest.importorskip("z3")
+    solver_api = _solver_module()
+    context = solver_api.SolverContext()
+    antecedent = {"param": {"name": "MXLEN", "equal": 64}}
+    unresolved = UnresolvedIdlCondition(text="f()")
+
+    assert solver_api.finite_check(antecedent, context) is None
+    with pytest.raises(solver_api.SolverUnknownError):
+        solver_api.implies(antecedent, unresolved, context)
+    with pytest.raises(solver_api.SolverUnknownError):
+        solver_api.equivalent(antecedent, unresolved, context)
+
+
+def test_top_level_package_exports_condition_and_solver_api() -> None:
+    condition_exports = (
+        "FALSE",
+        "TRUE",
+        "AllOf",
+        "AnyOf",
+        "Condition",
+        "ConditionError",
+        "ConstantCondition",
+        "EvaluationContext",
+        "ExactlyOne",
+        "ExtensionTerm",
+        "FreeTerm",
+        "Implies",
+        "NoneOf",
+        "Not",
+        "ParameterOperator",
+        "ParameterTerm",
+        "TruthValue",
+        "UnresolvedConditionError",
+        "UnresolvedIdlCondition",
+        "XlenTerm",
+        "all_of",
+        "any_of",
+        "exactly_one",
+        "negate",
+        "none_of",
+        "normalize",
+        "not_",
+        "parse_condition",
+        "partial_evaluate",
+    )
+    solver_api = _solver_module()
+    solver_exports = (
+        "ConditionModel",
+        "ConditionSolver",
+        "SolverContext",
+        "SolverError",
+        "SolverStatus",
+        "SolverUnknownError",
+        "finite_check",
+        "is_satisfiable",
+    )
+
+    for name in condition_exports:
+        assert getattr(udb, name) is getattr(conditions_api, name)
+    for name in solver_exports:
+        assert getattr(udb, name) is getattr(solver_api, name)
+    for name in udb.__all__:
+        assert hasattr(udb, name)
 
 
 @pytest.mark.skipif(
