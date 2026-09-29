@@ -144,6 +144,11 @@ Generation owns the 532 tracked YAML outputs associated with the 31 layout sourc
 source warning, writes replacements atomically, and marks generated files read-only. `--check`
 reports drift and exits with status 1 without modifying files.
 
+For other generators, `udb.authoring.GeneratedFile` describes output bytes, ownership,
+dependencies, and permissions. `AuthoringPlan(outputs).apply(root, check=True)` reports drift;
+omitting `check=True` writes the outputs. Replacements are atomic per file. The caller controls
+the output tree while generation runs; applying a plan is not a transaction across the tree.
+
 Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` text in a layout is
 content preserved for a later configured-document rendering stage; it is not executed by the
 layout renderer.
