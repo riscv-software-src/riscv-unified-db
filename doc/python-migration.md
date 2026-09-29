@@ -59,8 +59,8 @@ These are local branches until publication of the PR stack.
 | `migration/python-08-configurations` | `migration/python-07-versions` | Immutable configurations and bundled generic configurations |
 | `migration/python-09-domains` | `migration/python-08-configurations` | Offline JSON Schema parameter domains and combined foundation gates |
 | `migration/python-10-conditions` | `migration/python-09-domains` | Condition parsing, normalization, concrete evaluation, and Z3 condition solving |
-| `migration/python-11-configured` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
-| `migration/python-12-stage3-gates` | `migration/python-11-configured` | Stage 3 integration and installed offline package acceptance gates |
+| `migration/python-11-configured-queries` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
+| `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -795,7 +795,9 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   to import and exercise representative condition solving and configured queries from outside
   the checkout with Ruby and Git absent from `PATH`.
 - Confirmed Ruby corrections remain recorded as entries 1–17 in `doc/python-migration-bugfixes.md`.
-  No new Ruby defects were logged during Stage 3 integration.
+  Fresh review found and fixed Python-only defects in typed `ParameterTerm` equality and unconstrained
+  `oneOf` sort inference; because these were Python implementation issues rather than Ruby divergences,
+  they are explicitly not added to the Ruby bug log.
 - Every existing generator is preserved. Remaining Ruby callers are the configured architecture/IDL
   resolver used by `./do gen:resolved_arch`, Ruby object-model consumers, and later-stage generators
   and document renderers. Full repository `./bin/regress --all` and remote CI remain pending.

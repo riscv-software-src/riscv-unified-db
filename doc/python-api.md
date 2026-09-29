@@ -15,10 +15,11 @@ The distribution name is `udb`, so a future published release can be installed w
 `python -m pip install udb`. This project has not yet established that the name is published or
 available from the Python Package Index.
 
-The package supports querying the bundled, raw standard ISA records and schemas. The data
+The package supports querying the bundled, raw standard ISA records and schemas. The raw data
 is the unconfigured source database: it has not been resolved for an XLEN, extension set, or named
-configuration. Configuration resolution and the full behavior of the existing Ruby implementation
-are still being ported.
+configuration. To analyze full architecture semantics or evaluation rules, pass a resolved database
+and configuration to `database.resolve().configure(configuration)`. Full compilation and proof of
+IDL logic are still being ported in Stage 4.
 
 ```python
 from udb import Database
@@ -85,7 +86,8 @@ versions remain compatible upward until the next release marked `breaking: true`
 `resolved.documents` exposes the resolved mappings keyed by relative source path. `$child_of`
 and `$parent_of` record inheritance relationships. Data `$ref` links remain references; they are
 not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate
-configurations or conditions, or compile IDL. It does not yet provide a configured architecture.
+configurations or conditions, or compile IDL. Use `resolved.configure(configuration)` to create a
+configured architecture with solver-backed condition and presence queries.
 
 Raw records and resolved databases also expose immutable source metadata. `record.source_at(...)`
 and `resolved.source_at(document, ...)` return a `SourceSpan` for the exact field that defined the
@@ -238,8 +240,7 @@ limit; unsupported schema shapes or analyses fail explicitly. See
 Conditions parse into immutable expressions that support three-valued evaluation and Z3 solving:
 
 ```python
-from udb import Database, EvaluationContext, parse_condition
-from udb.conditions import TruthValue
+from udb import Database, EvaluationContext, TruthValue, parse_condition
 
 condition = parse_condition(
     {

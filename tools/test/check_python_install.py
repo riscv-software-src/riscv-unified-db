@@ -88,7 +88,11 @@ def check_install() -> None:
     eval_ctx = udb.EvaluationContext(
         xlen=64, closed_world_extensions=True, closed_world_parameters=True
     )
-    assert condition.evaluate(eval_ctx) is udb.conditions.TruthValue.UNKNOWN
+    assert condition.evaluate(eval_ctx) is udb.TruthValue.UNKNOWN
+
+    solver = udb.ConditionSolver(udb.SolverContext(xlen=64, fixed_extensions={"I": "1.0.0"}))
+    solver.add(condition)
+    assert solver.check() is udb.SolverStatus.SAT
 
     rv64_arch = resolved.configure(udb.Configuration.builtin("rv64"))
     assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
