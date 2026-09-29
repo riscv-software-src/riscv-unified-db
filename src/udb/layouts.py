@@ -24,7 +24,7 @@ from .authoring import AuthoringPlan, GeneratedFile
 from .errors import LayoutError
 from .resources import package_data_root
 
-_TAG = re.compile(r"{{(.*?)}}|{%(.*?)%}", re.DOTALL)
+_OPENING_TAG = re.compile(r"{{|{%|{#")
 _MAX_NESTING = 64
 _MAX_TEMPLATE_NODES = 10_000
 _MAX_EXPRESSION_CHARACTERS = 4096
@@ -84,14 +84,19 @@ def _tokenize(template: str, source: Path) -> list[tuple[str, str]]:
     tokens: list[tuple[str, str]] = []
     cursor = 0
     trim_next_newline = False
-    for match in _TAG.finditer(template):
+    while match := _OPENING_TAG.search(template, cursor):
+        opening = match.group()
+        if opening == "{#":
+            raise LayoutError(f"{source}: unterminated or unsupported layout delimiter")
         text = template[cursor : match.start()]
         if trim_next_newline:
             text = re.sub(r"\A\r?\n", "", text, count=1)
             trim_next_newline = False
-        if any(delimiter in text for delimiter in ("{{", "{%", "{#")):
+        closing = "}}" if opening == "{{" else "%}"
+        end = _tag_end(template, match.end(), closing)
+        if end is None:
             raise LayoutError(f"{source}: unterminated or unsupported layout delimiter")
-        body = match.group(1) if match.group(1) is not None else match.group(2)
+        body = template[match.end() : end]
         if body.startswith("-"):
             body = body[1:]
             if re.search(r"(?:^|\n)[ \t]*\Z", text):
@@ -101,8 +106,8 @@ def _tokenize(template: str, source: Path) -> list[tuple[str, str]]:
         if body.endswith("-"):
             body = body[:-1]
             trim_next_newline = True
-        tokens.append(("expression" if match.group(1) is not None else "tag", body.strip()))
-        cursor = match.end()
+        tokens.append(("expression" if opening == "{{" else "tag", body.strip()))
+        cursor = end + len(closing)
     text = template[cursor:]
     if trim_next_newline:
         text = re.sub(r"\A\r?\n", "", text, count=1)
@@ -111,6 +116,37 @@ def _tokenize(template: str, source: Path) -> list[tuple[str, str]]:
     if text:
         tokens.append(("text", text))
     return tokens
+
+
+def _tag_end(template: str, start: int, closing: str) -> int | None:
+    """Find a tag terminator while ignoring terminator text inside Python strings."""
+
+    quote: str | None = None
+    triple = False
+    escaped = False
+    index = start
+    while index < len(template):
+        if quote is None:
+            if template.startswith(closing, index):
+                return index
+            if template[index] in {"'", '"'}:
+                quote = template[index]
+                triple = template.startswith(quote * 3, index)
+                index += 3 if triple else 1
+                continue
+        elif escaped:
+            escaped = False
+        elif template[index] == "\\":
+            escaped = True
+        elif triple and template.startswith(quote * 3, index):
+            quote = None
+            triple = False
+            index += 3
+            continue
+        elif not triple and template[index] == quote:
+            quote = None
+        index += 1
+    return None
 
 
 def _parse(template: str, source: Path) -> tuple[object, ...]:
@@ -492,7 +528,7 @@ def _recipe_values(source: Path, supplied: Mapping[str, object]) -> dict[str, ob
 def render_layout(source: Path, values: Mapping[str, object]) -> str:
     """Render one layout using its typed recipe values."""
 
-    template = source.read_text(encoding="utf-8")
+    template = _read_layout_text(source, source)
     return _render_template(template, source, values)
 
 
@@ -631,7 +667,7 @@ def _layout_text(
     if repository_sources is True or (repository_sources is None and repository_source.is_file()):
         if not repository_source.is_file():
             raise LayoutError(f"layout source does not exist: {repository_source}")
-        return repository_source.read_text(encoding="utf-8")
+        return _read_layout_text(repository_source, repository_source)
     relative = source.relative_to(PurePosixPath("spec/std/isa"))
     try:
         resource = package_data_root().joinpath("layouts", *relative.parts)
@@ -639,7 +675,16 @@ def _layout_text(
         raise LayoutError("the installed udb distribution could not be located") from error
     if not resource.is_file():
         raise LayoutError(f"layout source does not exist: {repository_source}")
-    return resource.read_text(encoding="utf-8")
+    return _read_layout_text(resource, Path(source.as_posix()))
+
+
+def _read_layout_text(resource: Any, source: Path) -> str:
+    try:
+        return resource.read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        raise LayoutError(f"{source}: layout source is not valid UTF-8: {error}") from error
+    except OSError as error:
+        raise LayoutError(f"{source}: cannot read layout source: {error}") from error
 
 
 def layout_plan(root: Path) -> AuthoringPlan:

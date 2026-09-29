@@ -7,13 +7,15 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from udb import cli
+from udb import cli, layouts
 from udb.errors import LayoutError
 from udb.layouts import (
+    LayoutJob,
     generate_layouts,
     iter_layout_jobs,
     layout_plan,
     layout_sources,
+    render_job,
     render_layout,
 )
 
@@ -92,6 +94,29 @@ def test_renderer_rejects_unbounded_or_non_scalar_loops(tmp_path: Path) -> None:
         render_layout(layout, {"items": ({"key": "value"},)})
 
 
+def test_renderer_preserves_literal_idl_closing_braces(tmp_path: Path) -> None:
+    layout = tmp_path / "idl.layout"
+    layout.write_text("value = {WIDTH-1{1'b1}};\n", encoding="utf-8")
+
+    assert render_layout(layout, {}) == "value = {WIDTH-1{1'b1}};\n"
+
+
+@pytest.mark.parametrize(
+    ("template", "values", "expected"),
+    [
+        ('{{ "}}" }}', {}, "}}"),
+        ('{% if value == "%}" %}yes{% endif %}', {"value": "%}"}, "yes"),
+    ],
+)
+def test_renderer_ignores_closing_delimiters_inside_quoted_strings(
+    tmp_path: Path, template: str, values: dict[str, object], expected: str
+) -> None:
+    layout = tmp_path / "quoted.layout"
+    layout.write_text(template, encoding="utf-8")
+
+    assert render_layout(layout, values) == expected
+
+
 def test_renderer_limits_expression_size(tmp_path: Path) -> None:
     layout = tmp_path / "expression.layout"
     layout.write_text("{{ " + "1 + " * 5000 + "1 }}", encoding="utf-8")
@@ -101,6 +126,27 @@ def test_renderer_limits_expression_size(tmp_path: Path) -> None:
     layout.write_text("{{ " + " + ".join("1" for _ in range(200)) + " }}", encoding="utf-8")
     with pytest.raises(LayoutError, match="AST nodes"):
         render_layout(layout, {})
+
+
+def test_packaged_layout_reports_invalid_utf8(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    package_root = tmp_path / "package"
+    resource = package_root / "layouts/test/bad.layout"
+    resource.parent.mkdir(parents=True)
+    resource.write_bytes(b"\xff")
+    monkeypatch.setattr(layouts, "package_data_root", lambda: package_root)
+    job = LayoutJob(
+        PurePosixPath("spec/std/isa/test/bad.layout"),
+        PurePosixPath("spec/std/isa/test/bad.yaml"),
+        {},
+    )
+
+    with pytest.raises(
+        LayoutError,
+        match=r"spec/std/isa/test/bad\.layout: layout source is not valid UTF-8",
+    ):
+        render_job(job, tmp_path, repository_sources=False)
 
 
 def test_renderer_limits_nested_work_and_control_depth(tmp_path: Path) -> None:

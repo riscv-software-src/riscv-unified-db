@@ -157,3 +157,27 @@ def test_atomic_write_wraps_filesystem_errors_and_preserves_target(
 
     assert target.read_bytes() == b"old\n"
     assert not tuple(tmp_path.glob(".out.*"))
+
+
+def test_atomic_write_rechecks_a_parent_swapped_to_a_symlink(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "root"
+    outside = tmp_path / "outside"
+    parent = root / "generated"
+    parent.mkdir(parents=True)
+    outside.mkdir()
+    plan = AuthoringPlan((_output("generated/out"),))
+    real_mkstemp = authoring.tempfile.mkstemp
+
+    def swap_parent(*args: object, **kwargs: object) -> tuple[int, str]:
+        parent.rename(root / "original")
+        parent.symlink_to(outside, target_is_directory=True)
+        return real_mkstemp(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(authoring.tempfile, "mkstemp", swap_parent)
+    with pytest.raises(AuthoringError, match="path contains a symlink"):
+        plan.apply(root)
+
+    assert not (outside / "out").exists()
+    assert not tuple(outside.glob(".out.*"))

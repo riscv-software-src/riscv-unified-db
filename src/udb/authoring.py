@@ -124,7 +124,7 @@ class AuthoringPlan:
                     )
 
         drift: list[PurePosixPath] = []
-        pending: list[tuple[Path, bytes, int]] = []
+        pending: list[tuple[PurePosixPath, bytes, int]] = []
         for output, target in zip(self._outputs, targets, strict=True):
             try:
                 actual = target.read_bytes() if target.is_file() else None
@@ -142,11 +142,11 @@ class AuthoringPlan:
                         ) from error
                 continue
             drift.append(output.path)
-            pending.append((target, output.content, output.mode))
+            pending.append((output.path, output.content, output.mode))
 
         if not check:
-            for target, content, mode in pending:
-                _atomic_write(target, content, mode)
+            for relative, content, mode in pending:
+                _atomic_write(resolved_root, relative, content, mode)
         return tuple(drift)
 
 
@@ -191,11 +191,15 @@ def _dependency_path(root: Path, relative: PurePosixPath) -> Path:
     return dependency
 
 
-def _atomic_write(path: Path, content: bytes, mode: int) -> None:
+def _atomic_write(root: Path, relative: PurePosixPath, content: bytes, mode: int) -> None:
     descriptor: int | None = None
     temporary: Path | None = None
+    write_error: OSError | None = None
+    cleanup_error: OSError | None = None
     try:
+        path = _target_path(root, relative)
         path.parent.mkdir(parents=True, exist_ok=True)
+        path = _target_path(root, relative)
         descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
         temporary = Path(temporary_name)
         stream = os.fdopen(descriptor, "wb")
@@ -205,11 +209,27 @@ def _atomic_write(path: Path, content: bytes, mode: int) -> None:
             stream.flush()
             os.fsync(stream.fileno())
         temporary.chmod(mode)
+        path = _target_path(root, relative)
         os.replace(temporary, path)
     except OSError as error:
-        raise AuthoringError(f"cannot write generated output {path}: {error}") from error
+        write_error = error
     finally:
         if descriptor is not None:
-            os.close(descriptor)
+            try:
+                os.close(descriptor)
+            except OSError as error:
+                cleanup_error = error
         if temporary is not None:
-            temporary.unlink(missing_ok=True)
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as error:
+                cleanup_error = cleanup_error or error
+    if write_error is not None:
+        raise AuthoringError(
+            f"cannot write generated output {root.joinpath(*relative.parts)}: {write_error}"
+        ) from write_error
+    if cleanup_error is not None:
+        raise AuthoringError(
+            f"cannot clean up temporary output for {root.joinpath(*relative.parts)}: "
+            f"{cleanup_error}"
+        ) from cleanup_error
