@@ -2,65 +2,42 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  raise "'size' must be defined as 'b', 'h', 'w', or 'd'" unless %w[b h w d].include?(size)
-  raise "'rl' must be defined as true or false" unless [true, false].include?(rl)
-
-  size_info = {
-    "b" => { funct3: "000", long_name_suffix: "Byte", bits: 8 },
-    "h" => { funct3: "001", long_name_suffix: "Halfword", bits: 16 },
-    "w" => { funct3: "010", long_name_suffix: "Word", bits: 32 },
-    "d" => { funct3: "011", long_name_suffix: "Doubleword", bits: 64 }
-  }
-
-  current_size = size_info[size]
-
-  aq_rl_suffix = rl ? ".aqrl" : ".aq"
-  rl_bit = rl ? "1" : "0"
-  acquire_suffix = " Acquire"
-  release_suffix = rl ? " Release" : ""
-
-  aq_bit_val = "1'b1"
-  rl_bit_val = rl ? "1'b1" : "1'b0"
-
-  alignment_bytes = current_size[:bits] / 8
--%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: l<%= size %><%= aq_rl_suffix %>
-long_name: Load <%= current_size[:long_name_suffix] %><%= acquire_suffix %><%= release_suffix %>
+name: l{{ size }}{{ aq_rl_suffix }}
+long_name: Load {{ current_size.long_name_suffix }}{{ acquire_suffix }}{{ release_suffix }}
 description: |
-  Load <%= current_size[:bits] %> bits of data from the address in `xs1` into register `xd`, sign-extending
+  Load {{ current_size.bits }} bits of data from the address in `xs1` into register `xd`, sign-extending
   the result to XLEN bits.
-<% if rl -%>
+{% if rl -%}
 
   This instruction has both acquire and release semantics. No subsequent memory
   operations (in program order) from this hart can be observed to occur before
   this load completes, and no previous memory operations can be observed to occur
   after this load completes.
-<% else -%>
+{% else -%}
 
   This instruction has acquire semantics, which means that no subsequent memory
   operations (in program order) from this hart can be observed to occur before
   this load completes. Acquire semantics provide ordering guarantees useful for
   synchronization, such as reading a lock variable.
-<% end -%>
-<% if current_size[:bits] == 8 -%>
+{% endif -%}
+{% if current_size.bits == 8 -%}
 
   The address must be naturally aligned; if not, an address-misaligned or
   access-fault exception will be raised.
-<% else -%>
+{% else -%}
 
-  The address must be naturally aligned (<%= alignment_bytes %>-byte aligned); if not, an
+  The address must be naturally aligned ({{ alignment_bytes }}-byte aligned); if not, an
   address-misaligned or access-fault exception will be raised.
-<% end -%>
+{% endif -%}
 definedBy:
   extension:
     name: Zalasr
 assembly: xd, (xs1)
 encoding:
-  match: 001101<%= rl_bit %>00000-----<%= current_size[:funct3] %>-----0101111
+  match: 001101{{ rl_bit }}00000-----{{ current_size.funct3 }}-----0101111
   variables:
     - name: xs1
       location: 19-15
@@ -75,8 +52,8 @@ data_independent_timing: false
 operation(): |
   XReg virtual_address = X[xs1];
 
-  if (!is_naturally_aligned(<%= current_size[:bits] %>, virtual_address)) {
+  if (!is_naturally_aligned({{ current_size.bits }}, virtual_address)) {
     raise(ExceptionCode::LoadAddressMisaligned, mode(), virtual_address);
   }
 
-  X[xd] = sext(read_memory_aligned(<%= current_size[:bits] %>, virtual_address, $encoding, <%= aq_bit_val %>, <%= rl_bit_val %>), <%= current_size[:bits] %>);
+  X[xd] = sext(read_memory_aligned({{ current_size.bits }}, virtual_address, $encoding, {{ aq_bit_val }}, {{ rl_bit_val }}), {{ current_size.bits }});
