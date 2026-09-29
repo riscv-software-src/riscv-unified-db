@@ -63,7 +63,7 @@ jobs:
           assert database.instruction("add")["encoding"]["match"].endswith("0110011")
           assert database.csr("mhpmcounter3").name == "mhpmcounter3"
           assert len(database.objects()) > 2000
-          assert database.resolve().profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          assert database.resolve(validate=True).profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
           PY
           udb show instruction add
       - name: Install the source archive offline with build isolation
@@ -79,7 +79,7 @@ jobs:
           assert database.extension("Zvkg").name == "Zvkg"
           assert database.csr("mhpmcounter3").name == "mhpmcounter3"
           assert len(database.objects()) > 2000
-          assert database.resolve().profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          assert database.resolve(validate=True).profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
           PY
 
   never-runs:

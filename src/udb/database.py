@@ -23,6 +23,7 @@ from ruamel.yaml.error import YAMLError
 
 from .errors import DataError, ObjectNotFoundError, ResolutionError, UnknownKindError
 from .resolver import YamlResolver, merge_patch
+from .schema import SchemaError, SchemaStore
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -255,12 +256,15 @@ class Database:
     def profile(self, name: str) -> Profile:
         return self.get("profile", name)  # type: ignore[return-value]
 
-    def resolve(self, *, overlays: Sequence[str | Path] = ()) -> ResolvedDatabase:
+    def resolve(
+        self, *, overlays: Sequence[str | Path] = (), validate: bool = False
+    ) -> ResolvedDatabase:
         """Resolve inheritance after applying overlay trees in order.
 
         Overlay files are matched to source documents by their POSIX path
         relative to each overlay root and combined with JSON Merge Patch.
-        Schema validation and default insertion are intentionally deferred.
+        Schema validation is optional and never inserts defaults or rewrites
+        declared schema URIs.
         """
         documents = self._load_documents(self._isa_root)
         for overlay in overlays:
@@ -275,8 +279,12 @@ class Database:
                     )
                 documents[path] = dict(merged)
 
-        resolved = YamlResolver(documents).resolve()
-        return ResolvedDatabase(resolved, schemas_root=self._schemas_root)
+        resolved = ResolvedDatabase(
+            YamlResolver(documents).resolve(), schemas_root=self._schemas_root
+        )
+        if validate:
+            resolved.validate()
+        return resolved
 
     def _canonical_kind(self, kind: str) -> str:
         normalized = kind.strip().lower().replace("-", "_")
@@ -397,10 +405,22 @@ class ResolvedDatabase(Database):
         """Resolved documents keyed by their relative POSIX source paths."""
         return self._resolved_documents
 
-    def resolve(self, *, overlays: Sequence[str | Path] = ()) -> ResolvedDatabase:
+    def resolve(
+        self, *, overlays: Sequence[str | Path] = (), validate: bool = False
+    ) -> ResolvedDatabase:
         if overlays:
             raise ResolutionError("Cannot apply source overlays to an already resolved database")
+        if validate:
+            self.validate()
         return self
+
+    def validate(self) -> None:
+        """Validate every resolved document against its declared schema."""
+        if self._schemas_root is None:
+            raise SchemaError("Resolved database has no schema directory")
+        store = SchemaStore(self._schemas_root)
+        for path, document in self._resolved_documents.items():
+            store.validate(document, source=path)
 
     def _load_kind(self, kind: str) -> None:
         directory = _KIND_DIRECTORIES[kind]

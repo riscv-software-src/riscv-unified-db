@@ -79,8 +79,9 @@ udb show instruction add
 ----
 
 This package needs Python 3.12 or newer and installs its Python dependencies automatically.
-It runs without Ruby or repository setup. It exposes raw records and resolves YAML inheritance
-and overlays. Configuration resolution, IDL compilation, and generators are covered by the ongoing
+It runs without Ruby or repository setup. It exposes raw records, resolves YAML inheritance
+and overlays, and validates against bundled or local schemas. Configuration resolution, IDL
+compilation, and generators are covered by the ongoing
 link:doc/python-migration.md[migration plan]. See the link:doc/python-api.md[Python API guide].
 
 === Prerequisites
