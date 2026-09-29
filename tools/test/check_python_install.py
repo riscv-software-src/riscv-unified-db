@@ -77,6 +77,24 @@ def check_install() -> None:
     assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([7])
     assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([0, 0])
 
+    condition = udb.parse_condition(
+        {
+            "allOf": [
+                {"extension": {"name": "I"}},
+                {"param": {"name": "MXLEN", "equal": 64}},
+            ]
+        }
+    )
+    eval_ctx = udb.EvaluationContext(
+        xlen=64, closed_world_extensions=True, closed_world_parameters=True
+    )
+    assert condition.evaluate(eval_ctx) is udb.conditions.TruthValue.UNKNOWN
+
+    rv64_arch = resolved.configure(udb.Configuration.builtin("rv64"))
+    assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
+    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
+    assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
+
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
 
@@ -168,7 +186,7 @@ def check_install() -> None:
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
-        f"{len(sm_versions)} Sm versions, 532 layout outputs"
+        f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries"
     )
 
 

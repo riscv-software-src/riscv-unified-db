@@ -234,3 +234,53 @@ emptiness, singleton values, and complete bounded enumeration use JSON Schema se
 Defaults remain annotations. Enumeration raises when the complete result exceeds the supplied
 limit; unsupported schema shapes or analyses fail explicitly. See
 [the domain contract](stage3-domains.md) for the supported subset and analysis limits.
+
+Conditions parse into immutable expressions that support three-valued evaluation and Z3 solving:
+
+```python
+from udb import Database, EvaluationContext, parse_condition
+from udb.conditions import TruthValue
+
+condition = parse_condition(
+    {
+        "allOf": [
+            {"extension": {"name": "Zicsr"}},
+            {"param": {"name": "MXLEN", "equal": 64}},
+        ]
+    }
+)
+context = EvaluationContext(xlen=64, closed_world_extensions=True, closed_world_parameters=True)
+assert condition.evaluate(context) is TruthValue.UNKNOWN
+```
+
+Condition expressions represent extension requirements, parameter comparisons, XLEN constraints,
+free terms, conjunction, disjunction, negation, implication, exact-one (`oneOf`), none-of (`noneOf`),
+and unresolved `idl()` blocks. `parse_condition(data)` parses raw YAML condition structures,
+`condition.to_data()` converts back to deterministic data, `condition.evaluate(context)` performs
+three-valued concrete evaluation (`TRUE`, `FALSE`, `UNKNOWN`), `condition.partial_evaluate(context)`
+simplifies known subexpressions, and `normalize(condition)` applies Boolean identities.
+Conditions containing `idl()` return `has_unresolved == True` and evaluate to `UNKNOWN` when their
+truth depends on IDL logic. Full compilation and proof of IDL logic are deferred to Stage 4.
+
+`ResolvedDatabase.configure(configuration)` creates an immutable `ConfiguredArchitecture`:
+
+```python
+from udb import Configuration, Database, QueryPresence
+
+db = Database.bundled().resolve()
+arch = db.configure(Configuration.builtin("rv64"))
+
+assert arch.extension_presence("I") is QueryPresence.MANDATORY
+check = arch.check()
+assert check.status.name == "VALID"
+print([inst.name for inst in arch.possible_instructions])
+```
+
+`ConfiguredArchitecture` combines extension-version catalogs, parameter domains, YAML conditions,
+and configuration declarations. Queries return `QueryPresence` (`MANDATORY`, `POSSIBLE`, `ABSENT`,
+`DEFERRED`). Supported queries include extension presence, version presence, instructions, CSRs, CSR
+fields, exception codes, interrupt codes, parameters, profiles, encoding overlaps, CSR address
+overlaps, and compatibility checking via `arch.compatible_with(other)`. Queries that depend on
+unresolved IDL logic return `DEFERRED` or `UNKNOWN` without failing unrelated data queries.
+`arch.check()` returns an `ArchitectureCheckResult` with status `VALID`, `UNSAT`, or `DEFERRED`.
+Unsatisfiable configurations report labeled diagnostic conflicts.
