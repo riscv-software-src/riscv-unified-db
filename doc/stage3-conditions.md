@@ -38,6 +38,10 @@ holds independently of it remains `SAT` or `UNSAT`. Boolean satisfiability, impl
 equivalence helpers raise `SolverUnknownError` rather than collapsing `UNKNOWN` to `False`.
 Implication and equivalence return true only after a definite unsatisfiability proof of the
 corresponding counterexample.
+For an unconstrained scalar parameter `oneOf`, homogeneous Boolean, integer, or string choices
+provide the Z3 symbol type. Heterogeneous or array-valued choices require an explicit parameter
+domain of the appropriate type and otherwise raise `SolverError`; the condition grammar rejects
+empty and singleton choice lists.
 Models are available after `SAT`; labeled constraints provide Z3 unsat cores and a deterministic
 deletion-minimal conflict relative to any unlabeled background constraints.
 

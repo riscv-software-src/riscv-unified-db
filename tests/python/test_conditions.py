@@ -16,6 +16,7 @@ from udb.conditions import (
     FALSE,
     TRUE,
     AllOf,
+    AnyOf,
     ConditionError,
     EvaluationContext,
     ExtensionTerm,
@@ -313,6 +314,8 @@ def test_idl_condition_is_an_explicit_unknown_marker() -> None:
         {"allOf": [{"xlen": 32}]},
         {"if": {"xlen": 32}},
         {"param": {"name": "P", "equal": 1, "greaterThan": 0}},
+        {"param": {"name": "P", "oneOf": []}},
+        {"param": {"name": "P", "oneOf": [1]}},
         {"param": {"name": "P", "size": False, "equal": 1}},
         {"param": {"name": "P", "index": -1, "equal": 1}},
         {"param": {"name": "P", "equal": 1, "reason": 3}},
@@ -557,6 +560,54 @@ def test_integer_parameter_comparisons_use_json_numeric_equality() -> None:
     assert solver_api.finite_check(boolean, context) is solver_api.SolverStatus.UNSAT
     assert solver_api.is_satisfiable(numeric, context)
     assert not solver_api.is_satisfiable(boolean, context)
+
+
+def test_parameter_term_identity_preserves_json_types_recursively() -> None:
+    boolean = parse_condition({"param": {"name": "P", "equal": True}})
+    integer = parse_condition({"param": {"name": "P", "equal": 1}})
+
+    expression = any_of(boolean, integer)
+
+    assert boolean != integer
+    assert len({boolean, integer}) == 2
+    assert isinstance(expression, AnyOf)
+    assert expression.children == (boolean, integer)
+    assert expression.evaluate(EvaluationContext(parameters={"P": 1})) is TruthValue.TRUE
+
+    nested_boolean = parse_condition({"param": {"name": "P", "equal": [True]}})
+    nested_integer = parse_condition({"param": {"name": "P", "equal": [1]}})
+    nested_expression = any_of(nested_boolean, nested_integer)
+    assert isinstance(nested_expression, AnyOf)
+    assert nested_expression.evaluate(EvaluationContext(parameters={"P": [1]})) is TruthValue.TRUE
+
+
+def test_unconstrained_homogeneous_parameter_one_of_uses_a_scalar_symbol() -> None:
+    pytest.importorskip("z3")
+    solver_api = _solver_module()
+    condition = parse_condition({"param": {"name": "P", "oneOf": [1, 2]}})
+
+    assert solver_api.finite_check(condition) is None
+    solver = solver_api.ConditionSolver()
+    solver.add(condition)
+    assert solver.check() is solver_api.SolverStatus.SAT
+    assert solver.model().parameters["P"] in (1, 2)
+
+    domain_context = solver_api.SolverContext(
+        parameter_domains={"P": ParameterDomain.from_schema({"type": "integer", "enum": [1, 2]})}
+    )
+    assert solver_api.finite_check(condition, domain_context) is solver_api.SolverStatus.SAT
+    constrained = solver_api.ConditionSolver(domain_context)
+    constrained.add(condition)
+    assert constrained.check() is solver_api.SolverStatus.SAT
+
+
+def test_unconstrained_mixed_parameter_one_of_is_explicitly_unsupported() -> None:
+    pytest.importorskip("z3")
+    solver_api = _solver_module()
+    condition = parse_condition({"param": {"name": "P", "oneOf": [1, "one"]}})
+
+    with pytest.raises(solver_api.SolverError, match="homogeneous scalar"):
+        solver_api.ConditionSolver().add(condition)
 
 
 def test_finite_evaluator_honors_unmentioned_fixed_context_constraints() -> None:

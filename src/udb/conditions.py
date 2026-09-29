@@ -257,13 +257,16 @@ class ParameterOperator(str, Enum):
 class ParameterTerm(Condition):
     name: str
     operator: ParameterOperator
-    value: Any
+    value: Any = field(compare=False, hash=False)
+    _value_identity: tuple[Any, ...] = field(init=False, repr=False)
     index: int | None = None
     size: bool = False
     bit_range: tuple[int, int] | None = None
     reason: str | None = field(default=None, compare=False, hash=False)
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "_value_identity", _json_identity(self.value))
+        object.__setattr__(self, "value", _freeze_value(self.value))
         selector_count = sum((self.index is not None, self.size, self.bit_range is not None))
         if selector_count > 1:
             raise ConditionError(f"parameter {self.name!r} has multiple selectors")
@@ -275,6 +278,10 @@ class ParameterTerm(Condition):
                 raise ConditionError(f"parameter {self.name!r} has invalid bit range {msb}-{lsb}")
         if self.operator is ParameterOperator.INCLUDES and selector_count:
             raise ConditionError("includes cannot be combined with index, size, or range")
+        if self.operator is ParameterOperator.ONE_OF and (
+            not isinstance(self.value, tuple) or len(self.value) < 2
+        ):
+            raise ConditionError("parameter oneOf needs at least two values")
 
     def evaluate(self, context: EvaluationContext) -> TruthValue:
         if self.name not in context.parameters:
@@ -728,25 +735,44 @@ def _contains_unresolved(condition: Condition) -> bool:
 
 
 def _freeze_value(value: Any) -> Any:
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         return tuple(_freeze_value(item) for item in value)
     if isinstance(value, Mapping):
-        return tuple((key, _freeze_value(item)) for key, item in value.items())
+        return MappingProxyType({key: _freeze_value(item) for key, item in value.items()})
     return value
 
 
 def _mutable_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {key: _mutable_value(item) for key, item in value.items()}
     if isinstance(value, tuple):
         return [_mutable_value(item) for item in value]
     return value
 
 
 def _json_equal(left: Any, right: Any) -> bool:
-    if isinstance(left, bool) or isinstance(right, bool):
-        return isinstance(left, bool) and isinstance(right, bool) and left == right
-    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
-        return left == right
-    return type(left) is type(right) and left == right
+    return _json_identity(left) == _json_identity(right)
+
+
+def _json_identity(value: Any) -> tuple[Any, ...]:
+    """Return a hashable identity with JSON value-type distinctions."""
+
+    if value is None:
+        return ("null",)
+    if isinstance(value, bool):
+        return ("boolean", value)
+    if isinstance(value, (int, float)):
+        return ("number", value)
+    if isinstance(value, str):
+        return ("string", value)
+    if isinstance(value, (list, tuple)):
+        return ("array", tuple(_json_identity(item) for item in value))
+    if isinstance(value, Mapping):
+        return (
+            "object",
+            frozenset((_json_identity(key), _json_identity(item)) for key, item in value.items()),
+        )
+    return ("other", type(value), value)
 
 
 def _ordered_values(left: Any, right: Any, operator: str) -> bool:

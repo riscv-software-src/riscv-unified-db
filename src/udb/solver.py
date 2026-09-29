@@ -466,7 +466,13 @@ class ConditionSolver:
 
     def _encode_parameter(self, term: ParameterTerm) -> Any:
         z3 = self._z3
-        symbol = self._parameter_symbol(term.name, value_hint=term.value)
+        value_hint = term.value
+        if (
+            term.operator is ParameterOperator.ONE_OF
+            and term.name not in self.context.parameter_domains
+        ):
+            value_hint = _one_of_scalar_hint(term.value)
+        symbol = self._parameter_symbol(term.name, value_hint=value_hint)
         selected = symbol
         if term.index is not None:
             if not isinstance(symbol, _ArraySymbol):
@@ -980,6 +986,18 @@ def _domain_kind(domain: Any, value_hint: Any) -> str:
     if isinstance(value_hint, (tuple, list)):
         return "array"
     return "integer"
+
+
+def _one_of_scalar_hint(values: Any) -> bool | int | float | str:
+    if not isinstance(values, tuple) or len(values) < 2:
+        raise SolverError("parameter oneOf needs at least two values")
+    kinds = {_value_kind(value) for value in values}
+    if len(kinds) != 1 or not kinds <= {"boolean", "integer", "string"}:
+        raise SolverError(
+            "unconstrained parameter oneOf needs homogeneous scalar Boolean, integer, or string "
+            "choices"
+        )
+    return values[0]
 
 
 def _make_scalar(z3: Any, kind: str, name: str, context: Any = None) -> Any:
