@@ -43,6 +43,11 @@ normalized metadata for later condition and solver adapters:
 - `schema` is a deeply immutable copy of the caller's original schema, or the
   exact `allOf` schema produced by `intersection()`.
 
+The factory is the normal construction path. Direct concrete-class construction
+is supported for tests and adapters; it validates and freezes collection fields
+such as `allowed_values`, `prefix_items`, and `contains` so caller-owned lists
+cannot change a domain after construction.
+
 Use `accepts(value)` or `value in domain` for membership. `intersection()` and
 `&` construct a new domain without changing either operand. `is_empty`,
 `is_finite`, `is_singleton`, and `single_value` cover common condition-evaluation
@@ -68,16 +73,26 @@ The implementation covers every parameter schema in the current standard
 database: Boolean, integer, string, and array types; `const`; homogeneous
 `enum`; inclusive and exclusive integer bounds; `not` of constants; local
 `$ref`; `allOf`; and array `items`, tuple items, `additionalItems`, `minItems`,
-`maxItems`, `contains`, and `uniqueItems`. Local references require an explicit
-`SchemaStore` and use only its offline registry.
+`maxItems`, `contains`, and `uniqueItems`. File references require an explicit
+`SchemaStore` and use only its offline registry. Fragment-only references such
+as `#/$defs/value` resolve within the supplied schema without a store. Reference
+cycles raise `DomainError` with the offending reference instead of recursing.
+
+Draft 7 treats integral JSON numbers such as `1.0` as integers and compares
+`1.0` equal to `1` for `const`, `enum`, and `uniqueItems`. Membership follows
+that rule while enumeration emits canonical Python integers. Booleans remain a
+separate type.
 
 Valid Draft 7 features outside the current parameter corpus fail with
 `UnsupportedDomainError` rather than being approximated. These currently
 include `anyOf` and `oneOf`, string patterns and length constraints, numeric
 `multipleOf`, array-valued `const` and `enum`, object and null domains,
-unconstrained array items, and conditional schemas. Solver encodings are a
-separate Stage 3 layer and consume the normalized domain model; this module does
-not contain a partial solver substitute.
+unconstrained or nested array items, non-integral numeric bounds, and conditional
+schemas. A schema that uses type-specific keywords without restricting values
+to that type is also rejected: for example, `{"maximum": 3}` accepts strings
+under Draft 7 and cannot be silently narrowed to an integer domain. Solver
+encodings are a separate Stage 3 layer and consume the normalized domain model;
+this module does not contain a partial solver substitute.
 
 Simple array emptiness is resolved analytically. Arrays combining
 `uniqueItems` or `contains` use exact finite-state search up to 64 items, 12

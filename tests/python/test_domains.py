@@ -10,6 +10,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft7Validator
 
 from udb.database import Database
 from udb.domains import (
@@ -32,6 +33,7 @@ from udb.schema import SchemaStore
 REPOSITORY_ROOT = Path(__file__).parents[2]
 ISA_ROOT = REPOSITORY_ROOT / "spec" / "std" / "isa"
 SCHEMA_ROOT = REPOSITORY_ROOT / "spec" / "schemas"
+MOCK_ISA_ROOT = REPOSITORY_ROOT / "tools" / "ruby-gems" / "udb" / "test" / "mock_spec" / "isa"
 RUBY_ORACLE = Path(__file__).with_name("ruby_domain_oracle.rb")
 RUBY_Z3_DEFECTS = Path(__file__).with_name("ruby_domain_z3_defects.rb")
 
@@ -147,6 +149,76 @@ def test_reference_and_allof_use_the_explicit_offline_schema_store() -> None:
     assert not result.accepts(2**64)
 
 
+def test_local_and_nested_external_references_preserve_resolution_context(
+    tmp_path: Path,
+) -> None:
+    local = domain(
+        {
+            "$defs": {"n": {"type": "integer", "enum": [1, 2]}},
+            "$ref": "#/$defs/n",
+        }
+    )
+    (tmp_path / "defs.json").write_text(
+        json.dumps(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "$id": "v0.1",
+                "$defs": {
+                    "n": {"type": "integer", "enum": [3, 4]},
+                    "array": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/n"},
+                        "minItems": 1,
+                        "maxItems": 1,
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    nested = ParameterDomain.from_schema(
+        {"$ref": "defs.json#/$defs/array"},
+        schema_store=SchemaStore(tmp_path),
+    )
+
+    assert local.enumerate_values(limit=2) == (1, 2)
+    assert (local & domain({"type": "integer", "minimum": 2})).single_value == 2
+    assert nested.enumerate_values(limit=2) == ((3,), (4,))
+
+
+def test_cyclic_schema_reference_has_a_domain_error() -> None:
+    schema: dict = {
+        "$defs": {"n": {"$ref": "#/$defs/n"}},
+        "$ref": "#/$defs/n",
+    }
+
+    with pytest.raises(DomainError, match="cyclic parameter schema reference"):
+        domain(schema, source="recursive")
+
+
+def test_cyclic_external_schema_reference_has_a_domain_error(tmp_path: Path) -> None:
+    (tmp_path / "cycle.json").write_text(
+        json.dumps(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "$id": "v0.1",
+                "$defs": {
+                    "a": {"$ref": "#/$defs/b"},
+                    "b": {"$ref": "#/$defs/a"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(DomainError, match="cyclic parameter schema reference"):
+        ParameterDomain.from_schema(
+            {"$ref": "cycle.json#/$defs/a"},
+            schema_store=SchemaStore(tmp_path),
+            source="external cycle",
+        )
+
+
 def test_array_length_items_contains_and_uniqueness() -> None:
     result = domain(
         {
@@ -182,6 +254,21 @@ def test_array_length_items_contains_and_uniqueness() -> None:
         (16, 0, 7),
         (16, 7, 0),
     )
+
+
+def test_contains_can_be_satisfied_by_an_additional_tuple_item() -> None:
+    result = domain(
+        {
+            "type": "array",
+            "items": [{"const": 0}],
+            "additionalItems": {"const": 1},
+            "contains": {"const": 1},
+        }
+    )
+
+    assert isinstance(result, ArrayDomain)
+    assert not result.is_empty
+    assert result.accepts([0, 1])
 
 
 def test_tuple_items_and_additional_items() -> None:
@@ -254,6 +341,24 @@ def test_array_intersection_normalizes_length_and_item_constraints() -> None:
     assert result.enumerate_values(limit=6) == ((2,), (3,), (2, 3), (3, 2))
 
 
+def test_array_enumeration_filters_before_applying_result_limit() -> None:
+    result = domain(
+        {
+            "type": "array",
+            "items": {"type": "integer", "enum": [0, 1, 2]},
+            "minItems": 1,
+            "maxItems": 1,
+            "contains": {"const": 2},
+        }
+    )
+
+    assert isinstance(result, ArrayDomain)
+    assert result.cardinality == 1
+    assert result.is_singleton
+    assert result.single_value == (2,)
+    assert result.enumerate_values(limit=1) == ((2,),)
+
+
 def test_array_empty_detection_covers_required_items_and_uniqueness() -> None:
     impossible_contains = domain(
         {
@@ -324,13 +429,44 @@ def test_zero_length_array_is_finite_with_infinite_item_schema() -> None:
     assert result.single_value == ()
 
 
+def test_unique_unbounded_array_with_finite_items_is_finite() -> None:
+    result = domain(
+        {
+            "type": "array",
+            "items": {"type": "integer", "enum": [1, 2]},
+            "uniqueItems": True,
+        }
+    )
+
+    assert isinstance(result, ArrayDomain)
+    assert result.effective_max_items == 2
+    assert result.is_finite
+    assert result.cardinality == 5
+    assert result.enumerate_values(limit=5) == ((), (1,), (2,), (1, 2), (2, 1))
+
+
+def test_empty_tuple_position_makes_later_infinite_items_unreachable() -> None:
+    result = domain(
+        {
+            "type": "array",
+            "items": [{"type": "integer", "minimum": 1, "maximum": 0}],
+            "additionalItems": {"type": "integer"},
+        }
+    )
+
+    assert isinstance(result, ArrayDomain)
+    assert result.effective_max_items == 0
+    assert result.is_finite
+    assert result.enumerate_values(limit=1) == ((),)
+
+
 def test_array_enumeration_bounds_rejected_candidate_work() -> None:
     result = domain(
         {
             "type": "array",
-            "items": [{"const": 0}, {"const": 0}],
-            "additionalItems": {"const": 0},
-            "maxItems": 50_000,
+            "items": [{"const": 0} for _ in range(200)],
+            "additionalItems": False,
+            "maxItems": 200,
             "uniqueItems": True,
         }
     )
@@ -364,6 +500,78 @@ def test_unsupported_non_corpus_shapes_have_actionable_errors() -> None:
         domain({"type": "array", "items": [{"type": "integer"}]})
     with pytest.raises(UnsupportedDomainError, match="cannot infer"):
         domain({}, source="empty schema")
+    with pytest.raises(UnsupportedDomainError, match="cannot infer"):
+        domain({"maximum": 3}, source="implicit numeric union")
+    with pytest.raises(UnsupportedDomainError, match="cannot infer"):
+        domain({"items": {"type": "integer"}}, source="implicit array union")
+
+
+def test_json_schema_integer_membership_includes_integral_floats() -> None:
+    enum_domain = domain({"type": "integer", "enum": [1.0, 2]})
+    const_domain = domain({"type": "integer", "const": 1})
+    excluded_domain = domain({"type": "integer", "not": {"const": 1.0}})
+
+    assert enum_domain.enumerate_values(limit=2) == (1, 2)
+    assert enum_domain.accepts(1.0)
+    assert const_domain.accepts(1.0)
+    assert not excluded_domain.accepts(1.0)
+    assert not enum_domain.accepts(True)
+
+
+def test_membership_matches_draft7_for_supported_scalar_matrix() -> None:
+    schemas_and_values = [
+        ({"type": "boolean"}, [False, True, 0, 1, "true"]),
+        (
+            {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 3,
+                "enum": [1.0, 2, 3],
+            },
+            [False, 0, 1, 1.0, 2.0, 3, 4, "1"],
+        ),
+        ({"type": "string", "enum": ["a", "b"]}, ["", "a", "b", "c", 1]),
+    ]
+
+    for schema, values in schemas_and_values:
+        result = domain(schema)
+        validator = Draft7Validator(schema)
+        assert [result.accepts(value) for value in values] == [
+            validator.is_valid(value) for value in values
+        ]
+
+
+def test_array_membership_matrix_matches_draft7() -> None:
+    schema = {
+        "type": "array",
+        "items": {"type": "integer", "enum": [0, 1, 2]},
+        "contains": {"const": 2},
+        "minItems": 1,
+        "maxItems": 3,
+        "uniqueItems": True,
+    }
+    result = domain(schema)
+    validator = Draft7Validator(schema)
+    values: list[list[object]] = [[]]
+    atoms: tuple[object, ...] = (False, 0, 1, 1.0, 2, 3, "2")
+    for first in atoms:
+        values.append([first])
+        for second in atoms:
+            values.append([first, second])
+
+    assert [result.accepts(value) for value in values] == [
+        validator.is_valid(value) for value in values
+    ]
+
+
+def test_direct_concrete_construction_freezes_mutable_fields() -> None:
+    allowed = [True]
+    result = BooleanDomain({}, allowed_values=allowed)  # type: ignore[arg-type]
+
+    allowed.append(False)
+
+    assert result.allowed_values == (True,)
+    assert not result.accepts(False)
 
 
 def test_all_standard_parameter_schemas_are_supported_and_nonempty() -> None:
@@ -383,6 +591,20 @@ def test_all_standard_parameter_schemas_are_supported_and_nonempty() -> None:
         schema = parameter["schema"]
         if "default" in schema:
             assert result.accepts(schema["default"]), parameter.name
+
+
+def test_all_legacy_mock_parameter_schemas_are_supported_and_nonempty() -> None:
+    database = Database.from_path(MOCK_ISA_ROOT, schemas_path=SCHEMA_ROOT)
+    store = SchemaStore(database.schemas_root)
+    domains = [
+        ParameterDomain.from_schema(
+            parameter["schema"], schema_store=store, source=str(parameter.path)
+        )
+        for parameter in database.objects("parameter")
+    ]
+
+    assert len(domains) == 8
+    assert all(not result.is_empty for result in domains)
 
 
 @pytest.mark.skipif(

@@ -9,12 +9,15 @@ from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import product
+from math import isfinite
 from types import MappingProxyType
 from typing import Any, ClassVar
 
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError as JsonSchemaError
+from referencing import Registry, Resource
 from referencing.exceptions import Unresolvable
+from referencing.jsonschema import DRAFT7
 
 from .errors import DataError
 from .schema import _BASE_URI, SchemaStore
@@ -23,9 +26,11 @@ DomainValue = bool | int | str | tuple["DomainValue", ...]
 
 _ANNOTATIONS = {
     "$comment",
+    "$defs",
     "$id",
     "$schema",
     "default",
+    "definitions",
     "description",
     "examples",
     "readOnly",
@@ -94,6 +99,7 @@ class Bound:
     def __post_init__(self) -> None:
         if not _is_integer(self.value):
             raise DomainError(f"Integer bound must be an integer, not {self.value!r}")
+        object.__setattr__(self, "value", int(self.value))
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,11 +112,24 @@ class ParameterDomain:
     schema: Mapping[str, Any] = field(repr=False)
     source: str = "<parameter schema>"
     _schema_store: SchemaStore | None = field(default=None, repr=False, compare=False)
+    _expanded_schema: Mapping[str, Any] | None = field(default=None, repr=False, compare=False)
 
     kind: ClassVar[DomainKind]
 
     def __post_init__(self) -> None:
+        if not isinstance(self.schema, Mapping):
+            raise DomainError("Parameter domain schema must be a mapping")
+        if not isinstance(self.source, str) or not self.source:
+            raise DomainError("Parameter domain source must be a non-empty string")
+        if self._schema_store is not None and not isinstance(self._schema_store, SchemaStore):
+            raise DomainError("Parameter domain schema store must be a SchemaStore")
         object.__setattr__(self, "schema", _freeze_schema(self.schema, source=self.source))
+        expanded = self.schema if self._expanded_schema is None else self._expanded_schema
+        object.__setattr__(
+            self,
+            "_expanded_schema",
+            _freeze_schema(expanded, source=f"{self.source} expanded schema"),
+        )
 
     @classmethod
     def from_schema(
@@ -136,7 +155,14 @@ class ParameterDomain:
             raise DomainError(
                 f"{source}: invalid Draft 7 parameter schema: {error.message}"
             ) from error
-        return _DomainParser(frozen, schema_store=schema_store, source=source).parse()
+        resolver, rooted = _root_resolver(plain, schema_store=schema_store, source=source)
+        expanded = _materialize_schema(rooted, resolver, source=source)
+        return _DomainParser(
+            frozen,
+            expanded_schema=_freeze_schema(expanded, source=f"{source} expanded schema"),
+            schema_store=schema_store,
+            source=source,
+        ).parse()
 
     def accepts(self, value: object) -> bool:
         """Return whether *value* belongs to this domain."""
@@ -159,11 +185,13 @@ class ParameterDomain:
             raise DomainError("Cannot intersect domains backed by different SchemaStore instances")
         store = self._schema_store or other._schema_store
         schema = {"allOf": [_thaw(self.schema), _thaw(other.schema)]}
-        return ParameterDomain.from_schema(
+        expanded = {"allOf": [_thaw(self._expanded_schema), _thaw(other._expanded_schema)]}
+        return _DomainParser(
             schema,
+            expanded_schema=expanded,
             schema_store=store,
             source=f"intersection of {self.source} and {other.source}",
-        )
+        ).parse()
 
     def __and__(self, other: ParameterDomain) -> ParameterDomain:
         return self.intersection(other)
@@ -193,7 +221,7 @@ class ParameterDomain:
     def enumerate_values(self, *, limit: int) -> tuple[DomainValue, ...]:
         """Return every value, raising rather than truncating at *limit*."""
 
-        if not _is_integer(limit) or limit < 0:
+        if not _is_python_int(limit) or limit < 0:
             raise ValueError("Enumeration limit must be a non-negative integer")
         if not self.is_finite:
             raise InfiniteDomainError(f"{self.source}: {self.kind} domain is infinite")
@@ -280,6 +308,13 @@ class BooleanDomain(ParameterDomain):
     allowed_values: tuple[bool, ...] = (False, True)
     kind: ClassVar[DomainKind] = DomainKind.BOOLEAN
 
+    def __post_init__(self) -> None:
+        ParameterDomain.__post_init__(self)
+        values = _tuple_field(self.allowed_values, "allowed_values", self.source)
+        if any(not isinstance(value, bool) for value in values):
+            raise DomainError(f"{self.source}: Boolean allowed_values must contain Booleans")
+        object.__setattr__(self, "allowed_values", tuple(dict.fromkeys(values)))
+
     def accepts(self, value: object) -> bool:
         return isinstance(value, bool) and value in self.allowed_values
 
@@ -312,14 +347,38 @@ class IntegerDomain(ParameterDomain):
     excluded_values: tuple[int, ...] = ()
     kind: ClassVar[DomainKind] = DomainKind.INTEGER
 
+    def __post_init__(self) -> None:
+        ParameterDomain.__post_init__(self)
+        if self.minimum is not None and not isinstance(self.minimum, Bound):
+            raise DomainError(f"{self.source}: integer minimum must be a Bound")
+        if self.maximum is not None and not isinstance(self.maximum, Bound):
+            raise DomainError(f"{self.source}: integer maximum must be a Bound")
+        allowed = (
+            None
+            if self.allowed_values is None
+            else tuple(
+                _as_integer(value, source=self.source)
+                for value in _tuple_field(self.allowed_values, "allowed_values", self.source)
+            )
+        )
+        excluded = tuple(
+            _as_integer(value, source=self.source)
+            for value in _tuple_field(self.excluded_values, "excluded_values", self.source)
+        )
+        object.__setattr__(
+            self, "allowed_values", None if allowed is None else _deduplicate(allowed)
+        )
+        object.__setattr__(self, "excluded_values", _deduplicate(excluded))
+
     def accepts(self, value: object) -> bool:
         if not _is_integer(value):
             return False
-        if not _within_bounds(value, self.minimum, self.maximum):
+        normalized = int(value)
+        if not _within_bounds(normalized, self.minimum, self.maximum):
             return False
-        if self.allowed_values is not None and value not in self.allowed_values:
+        if self.allowed_values is not None and normalized not in self.allowed_values:
             return False
-        return value not in self.excluded_values
+        return normalized not in self.excluded_values
 
     @property
     def is_empty(self) -> bool:
@@ -401,6 +460,23 @@ class StringDomain(ParameterDomain):
     excluded_values: tuple[str, ...] = ()
     kind: ClassVar[DomainKind] = DomainKind.STRING
 
+    def __post_init__(self) -> None:
+        ParameterDomain.__post_init__(self)
+        allowed = (
+            None
+            if self.allowed_values is None
+            else _tuple_field(self.allowed_values, "allowed_values", self.source)
+        )
+        excluded = _tuple_field(self.excluded_values, "excluded_values", self.source)
+        if allowed is not None and any(not isinstance(value, str) for value in allowed):
+            raise DomainError(f"{self.source}: string allowed_values must contain strings")
+        if any(not isinstance(value, str) for value in excluded):
+            raise DomainError(f"{self.source}: string excluded_values must contain strings")
+        object.__setattr__(
+            self, "allowed_values", None if allowed is None else _deduplicate(allowed)
+        )
+        object.__setattr__(self, "excluded_values", _deduplicate(excluded))
+
     def accepts(self, value: object) -> bool:
         if not isinstance(value, str):
             return False
@@ -454,6 +530,34 @@ class ArrayDomain(ParameterDomain):
     unique_items: bool = False
     kind: ClassVar[DomainKind] = DomainKind.ARRAY
 
+    def __post_init__(self) -> None:
+        ParameterDomain.__post_init__(self)
+        if not _is_python_int(self.min_items) or self.min_items < 0:
+            raise DomainError(f"{self.source}: min_items must be a non-negative integer")
+        if self.max_items is not None and (
+            not _is_python_int(self.max_items) or self.max_items < 0
+        ):
+            raise DomainError(f"{self.source}: max_items must be a non-negative integer or None")
+        prefix = _tuple_field(self.prefix_items, "prefix_items", self.source)
+        contains = _tuple_field(self.contains, "contains", self.source)
+        domain_fields = (*prefix, *contains)
+        if self.item_domain is not None:
+            domain_fields = (*domain_fields, self.item_domain)
+        if self.additional_items is not None:
+            domain_fields = (*domain_fields, self.additional_items)
+        if any(not isinstance(domain, ParameterDomain) for domain in domain_fields):
+            raise DomainError(f"{self.source}: array item constraints must be parameter domains")
+        if not isinstance(self.unique_items, bool):
+            raise DomainError(f"{self.source}: unique_items must be Boolean")
+        if prefix and self.item_domain is not None:
+            raise DomainError(f"{self.source}: tuple arrays cannot also have item_domain")
+        if not prefix and self.item_domain != self.additional_items:
+            raise DomainError(
+                f"{self.source}: uniform array item_domain must equal additional_items"
+            )
+        object.__setattr__(self, "prefix_items", prefix)
+        object.__setattr__(self, "contains", contains)
+
     def accepts(self, value: object) -> bool:
         if not isinstance(value, list | tuple):
             return False
@@ -473,17 +577,30 @@ class ArrayDomain(ParameterDomain):
     def effective_max_items(self) -> int | None:
         """Maximum realizable length after tuple ``additionalItems`` handling."""
 
-        tuple_max = len(self.prefix_items) if self.additional_items is None else None
-        if self.max_items is None:
-            return tuple_max
-        if tuple_max is None:
-            return self.max_items
-        return min(self.max_items, tuple_max)
+        maximum = self.max_items
+        for index, item in enumerate(self.prefix_items):
+            if item.is_empty:
+                maximum = index if maximum is None else min(maximum, index)
+                break
+        else:
+            if self.additional_items is None or self.additional_items.is_empty:
+                tuple_max = len(self.prefix_items)
+                maximum = tuple_max if maximum is None else min(maximum, tuple_max)
+
+        if self.unique_items:
+            domains = list(self.prefix_items)
+            if self.additional_items is not None:
+                domains.append(self.additional_items)
+            cardinalities = [domain.cardinality for domain in domains if not domain.is_empty]
+            if cardinalities and all(value is not None for value in cardinalities):
+                unique_max = sum(value for value in cardinalities if value is not None)
+                maximum = unique_max if maximum is None else min(maximum, unique_max)
+        return maximum
 
     def domain_for_index(self, index: int) -> ParameterDomain | None:
         """Return the item domain at *index*, or ``None`` if it is prohibited."""
 
-        if not _is_integer(index) or index < 0:
+        if not _is_python_int(index) or index < 0:
             raise IndexError("Array domain index must be a non-negative integer")
         if index < len(self.prefix_items):
             return self.prefix_items[index]
@@ -496,6 +613,8 @@ class ArrayDomain(ParameterDomain):
             return True
         if not self._length_has_nonempty_items(self.min_items):
             return True
+        if self.min_items == 0 and not self.contains:
+            return False
         if not self.contains and not self.unique_items:
             return False
         if not self.contains and not self.prefix_items and self.additional_items is not None:
@@ -513,6 +632,7 @@ class ArrayDomain(ParameterDomain):
             self.min_items,
             self.min_items + len(self.contains),
             len(self.prefix_items),
+            len(self.prefix_items) + len(self.contains),
         )
         if maximum is not None:
             search_max = min(search_max, maximum)
@@ -574,12 +694,18 @@ class ArrayDomain(ParameterDomain):
             item_values: list[tuple[DomainValue, ...]] = []
             for domain in domains:
                 assert domain is not None
-                try:
-                    item_values.append(domain.enumerate_values(limit=limit + 1))
-                except (EnumerationLimitError, InfiniteDomainError) as error:
+                cardinality = domain.cardinality
+                if not domain.is_finite:
+                    raise InfiniteDomainError(
+                        f"{self.source}: array item domain at index {len(item_values)} is infinite"
+                    )
+                if cardinality is None or work + cardinality > work_limit:
                     raise EnumerationLimitError(
-                        f"{self.source}: complete array enumeration exceeds limit {limit}"
-                    ) from error
+                        f"{self.source}: complete array enumeration exceeded its bounded work "
+                        f"for limit {limit}"
+                    )
+                work += cardinality
+                item_values.append(domain.enumerate_values(limit=cardinality))
             for value in product(*item_values):
                 work += 1
                 if work > work_limit:
@@ -675,25 +801,25 @@ class _DomainParser:
         self,
         schema: Mapping[str, Any],
         *,
+        expanded_schema: Mapping[str, Any] | None = None,
         schema_store: SchemaStore | None,
         source: str,
     ) -> None:
-        self.schema = schema
+        self.schema = _freeze_schema(schema, source=source)
+        self.expanded_schema = (
+            self.schema
+            if expanded_schema is None
+            else _freeze_schema(expanded_schema, source=f"{source} expanded schema")
+        )
         self.schema_store = schema_store
         self.source = source
-        self.resolver: Any | None = None
-        if schema_store is not None:
-            schema_store._load()
-            registry = schema_store._registry
-            assert registry is not None
-            self.resolver = registry.resolver(_BASE_URI)
 
     def parse(self) -> ParameterDomain:
-        atoms = tuple(self._flatten(self.schema, self.resolver))
+        atoms = tuple(self._flatten(self.expanded_schema))
         kinds = {_schema_kind(atom, source=self.source) for atom in atoms}
         kinds.discard(None)
         if len(kinds) > 1:
-            return EmptyDomain(self.schema, self.source, self.schema_store)
+            return self._empty()
         if not kinds:
             raise UnsupportedDomainError(f"{self.source}: cannot infer parameter type from schema")
         kind = kinds.pop()
@@ -707,30 +833,7 @@ class _DomainParser:
         assert kind is DomainKind.ARRAY
         return self._array(atoms)
 
-    def _flatten(
-        self, schema: Mapping[str, Any], resolver: Any | None
-    ) -> Iterator[Mapping[str, Any]]:
-        if "$ref" in schema:
-            ref = schema["$ref"]
-            if not isinstance(ref, str) or not ref:
-                raise DomainError(f"{self.source}: '$ref' must be a non-empty string")
-            if resolver is None:
-                raise DomainError(
-                    f"{self.source}: schema reference {ref!r} requires an explicit SchemaStore"
-                )
-            try:
-                resolved = resolver.lookup(ref)
-            except Unresolvable as error:
-                raise DomainError(
-                    f"{self.source}: cannot resolve parameter schema reference {ref!r}: {error}"
-                ) from error
-            if not isinstance(resolved.contents, Mapping):
-                raise DomainError(
-                    f"{self.source}: parameter schema reference {ref!r} does not select an object"
-                )
-            yield from self._flatten(resolved.contents, resolved.resolver)
-            return
-
+    def _flatten(self, schema: Mapping[str, Any]) -> Iterator[Mapping[str, Any]]:
         siblings = {key: value for key, value in schema.items() if key != "allOf"}
         if any(key not in _ANNOTATIONS for key in siblings):
             yield siblings
@@ -740,7 +843,7 @@ class _DomainParser:
         for index, subschema in enumerate(all_of):
             if not isinstance(subschema, Mapping):
                 raise DomainError(f"{self.source}: allOf[{index}] must be a schema object")
-            yield from self._flatten(subschema, resolver)
+            yield from self._flatten(subschema)
 
     def _check_keywords(self, atoms: tuple[Mapping[str, Any], ...], kind: DomainKind) -> None:
         allowed = _ARRAY_KEYWORDS if kind is DomainKind.ARRAY else _SCALAR_KEYWORDS
@@ -760,8 +863,14 @@ class _DomainParser:
             excluded.extend(_excluded_values(atom, DomainKind.BOOLEAN, self.source))
         allowed = tuple(value for value in allowed if value not in excluded)
         if not allowed:
-            return EmptyDomain(self.schema, self.source, self.schema_store)
-        return BooleanDomain(self.schema, self.source, self.schema_store, allowed)
+            return self._empty()
+        return BooleanDomain(
+            schema=self.schema,
+            source=self.source,
+            _schema_store=self.schema_store,
+            _expanded_schema=self.expanded_schema,
+            allowed_values=allowed,
+        )
 
     def _integer(self, atoms: tuple[Mapping[str, Any], ...]) -> ParameterDomain:
         allowed: tuple[int, ...] | None = None
@@ -796,25 +905,27 @@ class _DomainParser:
                     ),
                 )
         domain = IntegerDomain(
-            self.schema,
-            self.source,
-            self.schema_store,
-            minimum,
-            maximum,
-            allowed,
-            tuple(dict.fromkeys(excluded)),
+            schema=self.schema,
+            source=self.source,
+            _schema_store=self.schema_store,
+            _expanded_schema=self.expanded_schema,
+            minimum=minimum,
+            maximum=maximum,
+            allowed_values=allowed,
+            excluded_values=tuple(dict.fromkeys(excluded)),
         )
         if domain.is_empty:
-            return EmptyDomain(self.schema, self.source, self.schema_store)
+            return self._empty()
         if allowed is not None:
             domain = IntegerDomain(
-                self.schema,
-                self.source,
-                self.schema_store,
-                minimum,
-                maximum,
-                tuple(value for value in allowed if domain.accepts(value)),
-                (),
+                schema=self.schema,
+                source=self.source,
+                _schema_store=self.schema_store,
+                _expanded_schema=self.expanded_schema,
+                minimum=minimum,
+                maximum=maximum,
+                allowed_values=tuple(value for value in allowed if domain.accepts(value)),
+                excluded_values=(),
             )
         return domain
 
@@ -825,21 +936,23 @@ class _DomainParser:
             allowed = _merge_allowed_values(allowed, atom, DomainKind.STRING, source=self.source)
             excluded.extend(_excluded_values(atom, DomainKind.STRING, self.source))
         domain = StringDomain(
-            self.schema,
-            self.source,
-            self.schema_store,
-            allowed,
-            tuple(dict.fromkeys(excluded)),
+            schema=self.schema,
+            source=self.source,
+            _schema_store=self.schema_store,
+            _expanded_schema=self.expanded_schema,
+            allowed_values=allowed,
+            excluded_values=tuple(dict.fromkeys(excluded)),
         )
         if domain.is_empty:
-            return EmptyDomain(self.schema, self.source, self.schema_store)
+            return self._empty()
         if allowed is not None:
             domain = StringDomain(
-                self.schema,
-                self.source,
-                self.schema_store,
-                tuple(value for value in allowed if domain.accepts(value)),
-                (),
+                schema=self.schema,
+                source=self.source,
+                _schema_store=self.schema_store,
+                _expanded_schema=self.expanded_schema,
+                allowed_values=tuple(value for value in allowed if domain.accepts(value)),
+                excluded_values=(),
             )
         return domain
 
@@ -886,7 +999,7 @@ class _DomainParser:
                 for prefix, additional in item_rules
             ]
             if any(domain is None for domain in domains):
-                prefix_items.append(EmptyDomain(self.schema, self.source, self.schema_store))
+                prefix_items.append(self._empty())
             else:
                 prefix_items.append(_intersect_domains(domain for domain in domains if domain))
 
@@ -898,20 +1011,29 @@ class _DomainParser:
         )
         item_domain = additional if not prefix_items else None
         domain = ArrayDomain(
-            self.schema,
-            self.source,
-            self.schema_store,
-            min_items,
-            max_items,
-            item_domain,
-            tuple(prefix_items),
-            additional,
-            tuple(contains),
-            unique_items,
+            schema=self.schema,
+            source=self.source,
+            _schema_store=self.schema_store,
+            _expanded_schema=self.expanded_schema,
+            min_items=min_items,
+            max_items=max_items,
+            item_domain=item_domain,
+            prefix_items=tuple(prefix_items),
+            additional_items=additional,
+            contains=tuple(contains),
+            unique_items=unique_items,
         )
         if domain.is_empty:
-            return EmptyDomain(self.schema, self.source, self.schema_store)
+            return self._empty()
         return domain
+
+    def _empty(self) -> EmptyDomain:
+        return EmptyDomain(
+            schema=self.schema,
+            source=self.source,
+            _schema_store=self.schema_store,
+            _expanded_schema=self.expanded_schema,
+        )
 
     def _item_rule(
         self, atom: Mapping[str, Any]
@@ -945,11 +1067,17 @@ class _DomainParser:
         raise DomainError(f"{self.source}: items[{index}] must be a schema object")
 
     def _subdomain(self, schema: Mapping[str, Any], label: str) -> ParameterDomain:
-        return _DomainParser(
+        domain = _DomainParser(
             _freeze_schema(schema, source=f"{self.source} {label}"),
+            expanded_schema=schema,
             schema_store=self.schema_store,
             source=f"{self.source} {label}",
         ).parse()
+        if isinstance(domain, ArrayDomain):
+            raise UnsupportedDomainError(
+                f"{self.source}: nested array domain in {label} is not supported"
+            )
+        return domain
 
 
 def _schema_kind(schema: Mapping[str, Any], *, source: str) -> DomainKind | None:
@@ -963,8 +1091,6 @@ def _schema_kind(schema: Mapping[str, Any], *, source: str) -> DomainKind | None
             raise UnsupportedDomainError(
                 f"{source}: unsupported parameter type {declared!r}"
             ) from error
-    if any(keyword in schema for keyword in ("items", "minItems", "maxItems", "contains")):
-        return DomainKind.ARRAY
     values: list[Any] = []
     if "const" in schema:
         values.append(schema["const"])
@@ -978,11 +1104,6 @@ def _schema_kind(schema: Mapping[str, Any], *, source: str) -> DomainKind | None
         raise UnsupportedDomainError(f"{source}: heterogeneous enum domains are not supported")
     if kinds:
         return kinds.pop()
-    if any(
-        keyword in schema
-        for keyword in ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum")
-    ):
-        return DomainKind.INTEGER
     return None
 
 
@@ -1063,6 +1184,8 @@ def _excluded_values(schema: Mapping[str, Any], kind: DomainKind, source: str) -
 
 
 def _normalize_value(value: Any, kind: DomainKind) -> Any:
+    if kind is DomainKind.INTEGER:
+        return int(value)
     if kind is DomainKind.ARRAY:
         return tuple(value)
     return value
@@ -1128,7 +1251,7 @@ def _integer_keyword(value: Any, keyword: str, source: str) -> int:
         raise UnsupportedDomainError(
             f"{source}: integer domain {keyword!r} must be an integer, not {value!r}"
         )
-    return value
+    return int(value)
 
 
 def _non_negative_integer(value: Any, keyword: str, source: str) -> int:
@@ -1139,7 +1262,28 @@ def _non_negative_integer(value: Any, keyword: str, source: str) -> int:
 
 
 def _is_integer(value: object) -> bool:
+    return (isinstance(value, int) and not isinstance(value, bool)) or (
+        isinstance(value, float) and isfinite(value) and value.is_integer()
+    )
+
+
+def _is_python_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _as_integer(value: object, *, source: str) -> int:
+    if not _is_integer(value):
+        raise DomainError(f"{source}: integer values must be integral numbers, not {value!r}")
+    return int(value)
+
+
+def _tuple_field(value: Any, field_name: str, source: str) -> tuple[Any, ...]:
+    if isinstance(value, str | bytes):
+        raise DomainError(f"{source}: {field_name} must be an iterable of values")
+    try:
+        return tuple(value)
+    except TypeError as error:
+        raise DomainError(f"{source}: {field_name} must be an iterable of values") from error
 
 
 def _contains_json(values: Sequence[Any], wanted: Any) -> bool:
@@ -1168,6 +1312,86 @@ def _json_key(value: Any) -> Any:
     if isinstance(value, list | tuple):
         return ("array", tuple(_json_key(item) for item in value))
     raise UnsupportedDomainError(f"Unsupported parameter value {value!r}")
+
+
+def _root_resolver(
+    schema: Mapping[str, Any], *, schema_store: SchemaStore | None, source: str
+) -> tuple[Any, Mapping[str, Any]]:
+    registry: Registry[Any]
+    if schema_store is None:
+        registry = Registry()
+    else:
+        schema_store._load()
+        loaded = schema_store._registry
+        assert loaded is not None
+        registry = loaded
+    rooted = _thaw(schema)
+    if not isinstance(rooted.get("$id"), str):
+        rooted["$id"] = f"{_BASE_URI}parameter-domain-root.json"
+    try:
+        resource = Resource.from_contents(rooted, default_specification=DRAFT7)
+    except Exception as error:
+        raise DomainError(
+            f"{source}: cannot create a parameter schema resource: {error}"
+        ) from error
+    root_uri = rooted["$id"]
+    registry = registry.with_resource(root_uri, resource)
+    return registry.resolver(root_uri), resource.contents
+
+
+def _materialize_schema(
+    schema: Any,
+    resolver: Any,
+    *,
+    source: str,
+    active: frozenset[int] = frozenset(),
+) -> Any:
+    if isinstance(schema, Mapping):
+        if "$ref" in schema:
+            ref = schema["$ref"]
+            if not isinstance(ref, str) or not ref:
+                raise DomainError(f"{source}: '$ref' must be a non-empty string")
+            try:
+                resolved = resolver.lookup(ref)
+            except Unresolvable as error:
+                store_hint = (
+                    " (a non-local reference requires an explicit SchemaStore)"
+                    if not ref.startswith("#")
+                    else ""
+                )
+                raise DomainError(
+                    f"{source}: cannot resolve parameter schema reference {ref!r}{store_hint}: "
+                    f"{error}"
+                ) from error
+            if not isinstance(resolved.contents, Mapping):
+                raise DomainError(
+                    f"{source}: parameter schema reference {ref!r} does not select an object"
+                )
+            identity = id(resolved.contents)
+            if identity in active:
+                raise DomainError(
+                    f"{source}: cyclic parameter schema reference detected at {ref!r}"
+                )
+            return _materialize_schema(
+                resolved.contents,
+                resolved.resolver,
+                source=source,
+                active=active | {identity},
+            )
+        materialized: dict[str, Any] = {}
+        for key, value in schema.items():
+            if key in {"$defs", "definitions"}:
+                materialized[key] = value
+            else:
+                materialized[key] = _materialize_schema(
+                    value, resolver, source=source, active=active
+                )
+        return materialized
+    if isinstance(schema, list | tuple):
+        return [
+            _materialize_schema(value, resolver, source=source, active=active) for value in schema
+        ]
+    return schema
 
 
 def _freeze_schema(value: Any, *, source: str, _active: set[int] | None = None) -> Any:
