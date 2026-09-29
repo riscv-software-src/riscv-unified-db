@@ -37,27 +37,29 @@ concurrency:
 
 jobs:
   regress-python-package:
-    name: Python package (${{ matrix.python }})
-    runs-on: ubuntu-latest
+    name: Python package (${{ matrix.python }}, ${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
     container: python:${{ matrix.python }}-slim
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.12", "3.14"]
+        python: ["3.12", "3.13", "3.14"]
+        runner: [ubuntu-latest, ubuntu-24.04-arm]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Python package and test dependencies
-        run: python -m pip install . pytest build hatchling
+        run: >-
+          python -m pip install --only-binary=:all: . pytest build hatchling
       - name: Verify the package without Ruby or repository setup
         run: python -m pytest tests/python
       - name: Build a wheelhouse including runtime dependencies
         run: |
-          python -m pip wheel . hatchling --wheel-dir /tmp/udb-wheels
+          python -m pip wheel --only-binary=:all: . hatchling --wheel-dir /tmp/udb-wheels
           python -m build --sdist --outdir /tmp/udb-sdist
       - name: Install offline and query outside the checkout
         run: |
           python -m venv /tmp/udb-install
-          /tmp/udb-install/bin/python -m pip install --no-index --find-links /tmp/udb-wheels udb
+          /tmp/udb-install/bin/python -m pip install --no-cache-dir --no-index --find-links /tmp/udb-wheels udb
           cp tools/test/check_python_install.py /tmp/check_python_install.py
           cd /tmp
           export PATH=/tmp/udb-install/bin
@@ -66,7 +68,7 @@ jobs:
       - name: Install the source archive offline with build isolation
         run: |
           python -m venv /tmp/udb-sdist-install
-          /tmp/udb-sdist-install/bin/python -m pip install --no-index --find-links /tmp/udb-wheels /tmp/udb-sdist/udb-*.tar.gz
+          /tmp/udb-sdist-install/bin/python -m pip install --no-cache-dir --no-index --find-links /tmp/udb-wheels /tmp/udb-sdist/udb-*.tar.gz
           cd /tmp
           export PATH=/tmp/udb-sdist-install/bin
           unset UDB_ROOT PYTHONPATH
