@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ETRIGGER_SUPPORTED
+description: |
+  Indicates which triggers support etrigger.
+long_name: TODO
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 256
+  minItems: 1
+definedBy:
+  extension:
+    name: Sdtrig

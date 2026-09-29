@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ICOUNT_COUNT_HARDWIRED_1
+description: |
+  If true then icount.count is hard-wired to 1 for all icount triggers: it does not become 0 when the
+  trigger matches, and icount.m, icount.s, icount.u, icount.vs, and icount.vu are cleared when the trigger fires.
+  If false, icount.count is writable and becomes 0 when the trigger matches with a count of 1.
+long_name: TODO
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Sdtrig
