@@ -5,6 +5,24 @@
 
 ---
 tests:
+  regress-python-configuration-parity:
+    ci_stage: pr
+    tags:
+      - integration
+      - smoke
+    test:
+      - name: Compare Python and Ruby configuration parsing
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_configuration_parity.py
+
+  regress-python-domain-parity:
+    ci_stage: pr
+    tags:
+      - integration
+      - smoke
+    test:
+      - name: Compare Python parameter domains with Ruby schema validation
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_domains.py
+
   regress-python-versions-parity:
     ci_stage: pr
     tags:
