@@ -12,8 +12,8 @@ description: |
   It enables BF16 as an interchange format as it provides conversion between BF16 values and
   FP32 values.
 
-  This extension depends upon the single-precision floating-point extension `F`,
-  and the `flh`, `fsh`, `fmv.x.h`, and `fmv.h.x` instructions as defined in the `Zfh` extension.
+  This extension includes the `flh`, `fsh`, `fmv.x.h`, and `fmv.h.x`
+  instructions defined in the `Zfh` extension.
 
 type: unprivileged
 versions:
@@ -22,6 +22,4 @@ versions:
     ratification_date: 2024-06
 requirements:
   extension:
-    allOf:
-      - name: F
-      - name: Zfh
+    name: F

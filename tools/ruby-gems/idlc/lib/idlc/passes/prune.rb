@@ -20,8 +20,18 @@ module Idl
       width = forced_type ? forced_type.width : value.bit_length
       raise "pruning error: attempting to prune an integer with unknown width" unless width.is_a?(Integer)
       width = 1 if width == 0
-      v = value <= 512 ? value.to_s : "h#{value.to_s(16)}"
-      str = "#{width}'#{v}"
+
+      # negative values must keep an explicit sign marker and their native decimal
+      # text; the literal grammar already parses signed negative decimals correctly,
+      # while re-encoding as an unsigned magnitude (with no sign marker) silently
+      # drops the sign once rendered to C++ (see IntLiteralAst#gen_cpp)
+      str =
+        if value.is_a?(Integer) && value.negative?
+          "#{width}'sd#{value}"
+        else
+          v = value <= 512 ? value.to_s : "h#{value.to_s(16)}"
+          "#{width}'#{v}"
+        end
       Idl::IntLiteralAst.new(str, 0...str.size, str)
     end
 
@@ -694,7 +704,10 @@ module Idl
     def prune(symtab, forced_type: nil)
       if forced_type
         raise "pruning error: attempt to force bitwidth when width is unknown" if forced_type.width.nil? || forced_type.width == :unknown
-        s = "#{forced_type.width}'d#{value(symtab)}"
+        v = value(symtab)
+        # negative values need an explicit sign marker; without it, the literal
+        # re-parses as unsigned and loses its sign once rendered to C++
+        s = v.negative? ? "#{forced_type.width}'sd#{v}" : "#{forced_type.width}'d#{v}"
         IntLiteralAst.new(s, 0...s.size, s)
       else
         dup

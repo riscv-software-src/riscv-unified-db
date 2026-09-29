@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sctrstatus
+long_name: Supervisor Control Transfer Records Status
+address: 0x14F
+writable: true
+priv_mode: S
+length: 32
+description: |
+  The `sctrstatus` register provides access to CTR status information and is
+  updated by hardware whenever CTR is active.
+definedBy:
+  extension:
+    name: Smctr
+fields:
+  WRPTR:
+    location: 7-0
+    description: |
+      Write Pointer. Indicates the physical CTR buffer entry to be written next.
+
+      Note: Bits above depth-1 are read-only zero depending on the configured CTR depth.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      Bits<8> mask = (9'd16 << CSR[sctrdepth].DEPTH) - 1;
+      return csr_value.WRPTR & mask;
+  FROZEN:
+    location: 31
+    description: |
+      When set, inhibits transfer recording.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL

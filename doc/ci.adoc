@@ -5,7 +5,7 @@
 
 The UnifiedDB project uses continuous integration (CI) to improve quality and automate artifact creation.
 
-We use two framworks for CI:
+We use two frameworks for CI:
 
 - https://pre-commit.com[pre-commit]
 - https://docs.github.com/en/actions[GitHub Actions]
@@ -39,7 +39,8 @@ They generate artifacts that are deployed to https://riscv.github.io/riscv-unifi
 If any test in the second group fails, a PR is removed from the merge queue.
 While in the merge queue, the CI tests generate artifacts but do not upload/update pages yet.
 The upload occurs after the PR merges to main and the test runs again.
-The tests are specified in xref:.github/workflows/deploy.yml[`.github/workflows/deploy.yml`] and are uploaded via xref:.github/workflows/pages.yml[`.github/workflows/pages.yml`].
+The tests are defined in xref:tools/test/regress-tests.yaml[`tools/test/regress-tests.yaml`] (jobs with `ci_stage: merge_queue`), and run via xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
+The resulting artifacts/pages are uploaded via xref:.github/workflows/pages.yml[`.github/workflows/pages.yml`].
 
 == CI Policies
 

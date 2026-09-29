@@ -1,0 +1,44 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+name: tinfo
+long_name: Trigger Info
+address: 0x7A4
+priv_mode: M
+length: XLEN
+writable: true
+description: |
+  This register provides access to the trigger selected by `tselect`.
+  The reset values listed here apply to every underlying trigger.
+
+  This register is optional if no triggers are implemented, or if `type` is not writable
+  and `version` would be 0. In this case the debugger can read the only supported type
+  from `tdata1`.
+
+  Writing this read/write CSR has no effect.
+definedBy:
+  extension:
+    name: Sdtrig
+fields:
+  VERSION:
+    location: 31-24
+    description: |
+      Contains the version of the Sdtrig extension implemented.
+
+      0 (0):: Supports triggers as described in this spec at commit 5a5c078, made on
+      February 2, 2023.
+
+      1 (1):: Supports triggers as described in the ratified version 1.0 of this document.
+    type: RO
+    reset_value: UNDEFINED_LEGAL
+  TYPES:
+    location: 15-0
+    description: |
+      One bit for each possible `type` enumerated in `tdata1`. Bit N corresponds to type N.
+      If the bit is set, then that type is supported by the currently selected trigger.
+
+      If the currently selected trigger doesn't exist, this field contains 1.
+    type: RO
+    reset_value: UNDEFINED_LEGAL

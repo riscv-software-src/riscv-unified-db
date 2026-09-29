@@ -22,7 +22,7 @@ description: |
   An implemented entry may still be read-only zero (but will never cause an exception).
   The number of entries that are actually usable is given by
   NUM_USABLE_PMP_ENTRIES.
-long_name: TODO
+long_name: number of implemented PMP entries
 schema:
   type: integer
   enum: [0, 16, 64]

@@ -37,11 +37,11 @@ fields:
         * `minstretcfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is (H)S
         <%- end -%>
         <%- if ext?(:U) -%>
-        * `minstretcfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is U
+        * `minstretcfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.UINH`<%- end -%> is set and the current privilege level is U
         <%- end -%>
         <%- if ext?(:H) -%>
-        * `minstretcfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VS
-        * `minstretcfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VU
+        * `minstretcfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.VSINH`<%- end -%> is set and the current privilege level is VS
+        * `minstretcfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.VUINH`<%- end -%> is set and the current privilege level is VU
         <%- end -%>
         <%- end -%>
 

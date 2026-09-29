@@ -405,6 +405,9 @@ function f32_muladd {
     Translated from Berkeley Softfloat softfloat_mulAddF32.
   }
   body {
+    if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b) || is_sp_signaling_nan?(c)) {
+      set_fp_flag(FpFlag::NV);
+    }
     Bits<1>  signA    = signF32UI(a);
     Bits<16>  expA     = expF32UI(a);
     Bits<32> sigA     = fracF32UI(a);
@@ -584,8 +587,11 @@ function f32_sqrt {
     Translated from Berkeley Softfloat f32_sqrt.
   }
   body {
+    if (is_sp_signaling_nan?(a)) {
+      set_fp_flag(FpFlag::NV);
+    }
     Bits<1> signA = signF32UI(a);
-    Bits<8> expA  = expF32UI(a);
+    Bits<16> expA  = expF32UI(a);
     Bits<32> fracA = fracF32UI(a);
 
     if (expA == 8'hFF) {
@@ -606,7 +612,8 @@ function f32_sqrt {
       fracA = norm.sig;
     }
 
-    Bits<16> expZ = ((expA - 16'h007F) >> 1) + 16'h007E;
+    Bits<16> adjExp = expA - 16'h007F;
+    Bits<16> expZ = ((adjExp >> 1) ^ (adjExp & 16'h8000)) + 16'h007E;
     Bits<1> oddExpA = expA[0];
     Bits<32> sigA32 = (fracA | 32'h00800000) << 8;
     Bits<32> sigZ = (sigA32 `* softfloat_approxRecipSqrt32_1(oddExpA, sigA32)) >> 32;
@@ -653,19 +660,22 @@ function softfloat_approxRecip32_1 {
   arguments
     Bits<32> a
   description {
-    Returns a 32-bit approximation of 1/a, where a is in [1, 2).
-    Translated from Berkeley Softfloat softfloat_approxRecip32_1.
+    Returns floor(0x7FFFFFFFFFFFFFFF / a), matching the platform-specific
+    Berkeley SoftFloat macro on 64-bit hosts. Computed via binary long division.
   }
   body {
-    Bits<32> index = (a >> 27) & 0xF;
-    Bits<16> eps = a >> 11;
-    Bits<32> r0 = softfloat_approxRecip_1k0s[index]
-                  - ((softfloat_approxRecip_1k1s[index] `* eps) >> 20);
-    Bits<32> sigma0 = ~((r0 `* a) >> 7);
-    Bits<32> r = (r0 << 16) + ((r0 `* sigma0) >> 24);
-    Bits<32> sqrSigma0 = (sigma0 `* sigma0) >> 32;
-    r = r + ((r `* sqrSigma0) >> 48);
-    return r;
+    Bits<64> a64 = {32'h0, a};
+    Bits<64> a_top = a64 << 31;
+    Bits<64> rem = 64'h7FFFFFFFFFFFFFFF;
+    Bits<32> q = 0;
+    for (U32 i = 0; i < 32; i++) {
+      Bits<64> d = a_top >> i;
+      if (rem >= d) {
+        q = q | (32'h1 << (31 - i));
+        rem = rem - d;
+      }
+    }
+    return q;
   }
 }
 
@@ -710,6 +720,9 @@ function f32_div {
     Translated from Berkeley Softfloat f32_div.
   }
   body {
+    if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) {
+      set_fp_flag(FpFlag::NV);
+    }
     Bits<1> signA = signF32UI(a);
     Bits<16> expA  = expF32UI(a);
     Bits<32> sigA = fracF32UI(a);
@@ -771,7 +784,7 @@ function f32_div {
     Bits<32> sigZ = (sigA `* recip32) >> 32;
     sigZ = sigZ + 2;
 
-    if ((sigZ & 0x3F) < 2) {
+    if ((sigZ & 7) <= 2) {
       sigZ = sigZ & ~32'h3;
       Bits<64> rem = (sigA `<< 31) - (sigZ `* sigB);
       if ((rem & 64'h8000000000000000) != 0) {
@@ -798,6 +811,9 @@ function f32_mul {
     Translated from Berkeley Softfloat f32_mul.
   }
   body {
+    if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) {
+      set_fp_flag(FpFlag::NV);
+    }
     Bits<1> signA = signF32UI(a);
     Bits<16> expA  = expF32UI(a);
     Bits<23> fracA = fracF32UI(a);
@@ -1326,6 +1342,9 @@ function softfloat_addMagsF32 {
     Returns sum of the magnitudes of 2 floating point numbers
   }
   body {
+    if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) {
+      set_fp_flag(FpFlag::NV);
+    }
 
     # extract exponents and significands of a and b
     Bits<16> expA = expF32UI(a);
@@ -1433,6 +1452,9 @@ function softfloat_subMagsF32 {
     Returns difference of the magnitudes of 2 floating point numbers
   }
   body {
+    if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) {
+      set_fp_flag(FpFlag::NV);
+    }
 
     # extract exponents and significands of a and b
     Bits<16> expA = expF32UI(a);
@@ -1886,7 +1908,7 @@ function round_f32_to_integral {
 }
 
 struct ExpAndSig {
-  Bits<8> exp;
+  Bits<16> exp;
   Bits<32> sig;
 }
 
@@ -1897,11 +1919,13 @@ function softfloat_normSubnormalF32Sig {
   description {
     Normalize a subnormal F32 significand.
     Returns (exp, sig32) where exp is the adjusted exponent (two's complement
-    in Bits<8>) and sig32 is the normalized significand with implicit leading 1
-    at bit 23.
+    in Bits<16>) and sig32 is the normalized significand with implicit leading 1
+    at bit 23. The exponent is widened to Bits<16> (rather than the natural
+    Bits<8>) so that callers can add two adjusted exponents together (e.g.
+    expA + expB - bias) without overflow.
   }
   body {
-    Bits<8> shiftDist = count_leading_zeros(32, sig) - 8;
+    Bits<16> shiftDist = count_leading_zeros(32, sig) - 8;
     ExpAndSig ret;
     ret.exp = 1 - shiftDist;
     ret.sig = sig << shiftDist;

@@ -25,8 +25,7 @@ def main() -> None:
 
     profiles_filter = []
     if params.profiles is not None:
-        for profile in params.profiles.split(","):
-            profiles_filter.append(profile)
+        profiles_filter = params.profiles.split(",")
 
     profiles = []
     for path in params.paths:

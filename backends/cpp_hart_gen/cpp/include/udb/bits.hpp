@@ -1,7 +1,6 @@
 #pragma once
 
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <format>
 #include <gmpxx.h>
 
 #include <array>
@@ -1103,7 +1102,7 @@ namespace udb {
     friend std::ostream &operator<<(std::ostream &stream, const _Bits &val) {
       if constexpr (std::same_as<StorageType, unsigned __int128> ||
                     std::same_as<StorageType, __int128>) {
-        stream << fmt::format("{:x}", val.m_val);
+        stream << std::format("{:x}", val.m_val);
       } else {
         stream << val.m_val;
       }
@@ -2219,7 +2218,7 @@ namespace udb {
     friend std::ostream &operator<<(std::ostream &stream, const _RuntimeBits &val) {
       if constexpr (std::same_as<StorageType, unsigned __int128> ||
                     std::same_as<StorageType, __int128>) {
-        stream << fmt::format("{:x}", val.m_val);
+        stream << std::format("{:x}", val.m_val);
       } else {
         stream << val.m_val;
       }
@@ -2798,7 +2797,7 @@ namespace udb {
       if (val.m_unknown_mask == 0_b) {
         stream << val.m_val;
       } else {
-        stream << fmt::format("{} (unknown mask: {})", val.m_val, val.m_unknown_mask);
+        stream << std::format("{} (unknown mask: {})", val.m_val, val.m_unknown_mask);
       }
       return stream;
     }
@@ -3500,56 +3499,301 @@ namespace udb {
 
 
 
+// std::formatter specializations for __int128 types (not provided by the standard library)
+namespace std {
+  template <>
+  struct formatter<unsigned __int128> {
+  private:
+    char presentation_type_ = 'd';
+
+  public:
+    constexpr auto parse(format_parse_context &ctx) {
+      auto it = ctx.begin();
+      if (it != ctx.end() && (*it == 'x' || *it == 'X' || *it == 'o' || *it == 'd')) {
+        presentation_type_ = *it++;
+      }
+      return it;
+    }
+
+    template <typename FormatContext>
+    auto format(unsigned __int128 val, FormatContext &ctx) const {
+      std::string result;
+      if (val == 0) {
+        result = "0";
+      } else {
+        unsigned __int128 tmp = val;
+        if (presentation_type_ == 'x') {
+          while (tmp > 0) {
+            result += "0123456789abcdef"[tmp & 0xf];
+            tmp >>= 4;
+          }
+        } else if (presentation_type_ == 'X') {
+          while (tmp > 0) {
+            result += "0123456789ABCDEF"[tmp & 0xf];
+            tmp >>= 4;
+          }
+        } else if (presentation_type_ == 'o') {
+          while (tmp > 0) {
+            result += static_cast<char>('0' + (tmp & 0x7));
+            tmp >>= 3;
+          }
+        } else {
+          while (tmp > 0) {
+            result += static_cast<char>('0' + (tmp % 10));
+            tmp /= 10;
+          }
+        }
+        std::reverse(result.begin(), result.end());
+      }
+      return format_to(ctx.out(), "{}", result);
+    }
+  };
+
+  template <>
+  struct formatter<__int128> {
+  private:
+    char presentation_type_ = 'd';
+
+  public:
+    constexpr auto parse(format_parse_context &ctx) {
+      auto it = ctx.begin();
+      if (it != ctx.end() && (*it == 'x' || *it == 'X' || *it == 'o' || *it == 'd')) {
+        presentation_type_ = *it++;
+      }
+      return it;
+    }
+
+    template <typename FormatContext>
+    auto format(__int128 val, FormatContext &ctx) const {
+      bool negative = (presentation_type_ == 'd' && val < 0);
+      unsigned __int128 uval =
+          negative ? static_cast<unsigned __int128>(-val) : static_cast<unsigned __int128>(val);
+      std::string result;
+      if (uval == 0) {
+        result = "0";
+      } else {
+        if (presentation_type_ == 'x') {
+          while (uval > 0) {
+            result += "0123456789abcdef"[uval & 0xf];
+            uval >>= 4;
+          }
+        } else if (presentation_type_ == 'X') {
+          while (uval > 0) {
+            result += "0123456789ABCDEF"[uval & 0xf];
+            uval >>= 4;
+          }
+        } else if (presentation_type_ == 'o') {
+          while (uval > 0) {
+            result += static_cast<char>('0' + (uval & 0x7));
+            uval >>= 3;
+          }
+        } else {
+          while (uval > 0) {
+            result += static_cast<char>('0' + (uval % 10));
+            uval /= 10;
+          }
+        }
+        std::reverse(result.begin(), result.end());
+      }
+      if (negative) {
+        return format_to(ctx.out(), "-{}", result);
+      } else {
+        return format_to(ctx.out(), "{}", result);
+      }
+    }
+  };
+}  // namespace std
+
 // format Bits as their underlying type when using format()
 template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
   requires((BitsClass<N, Signed>::IsABits) && (N <= udb::BitsMaxNativePrecision))
-struct fmt::formatter<BitsClass<N, Signed>>
-    : formatter<typename BitsClass<N, Signed>::StorageType> {
+struct std::formatter<BitsClass<N, Signed>>
+    : std::formatter<typename BitsClass<N, Signed>::StorageType> {
   template <typename CONTEXT_TYPE>
   auto format(BitsClass<N, Signed> value, CONTEXT_TYPE &ctx) const {
-    return fmt::formatter<typename BitsClass<N, Signed>::StorageType>::format(value.get_ignore_unknown(), ctx);
+    return std::formatter<typename BitsClass<N, Signed>::StorageType>::format(
+        value.get_ignore_unknown(), ctx);
   }
 };
 
 template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
-  requires ((BitsClass<N, Signed>::IsABits) && (N > udb::BitsMaxNativePrecision))
-struct fmt::formatter<BitsClass<N, Signed>> {
+  requires((BitsClass<N, Signed>::IsABits) && (N > udb::BitsMaxNativePrecision))
+struct std::formatter<BitsClass<N, Signed>> {
  private:
-  fmt::detail::dynamic_format_specs<char> specs_;
+  char presentation_type_ = 'd';
+  int width_ = 0;
+  bool alt_flag_ = false;
+  bool zero_pad_ = false;
 
  public:
-  constexpr auto parse(fmt::format_parse_context &ctx) -> decltype(ctx.begin()) {
-    auto end = parse_format_specs(ctx.begin(), ctx.end(), specs_, ctx, fmt::detail::type::int_type);
-    return end;
+  constexpr auto parse(std::format_parse_context &ctx) -> decltype(ctx.begin()) {
+    auto it = ctx.begin();
+    auto end = ctx.end();
+
+    // Standard format spec order: [#][0][width][type]
+
+    // Parse alternate form flag
+    if (it != end && *it == '#') {
+      alt_flag_ = true;
+      ++it;
+    }
+
+    // Parse zero-pad flag
+    if (it != end && *it == '0') {
+      zero_pad_ = true;
+      ++it;
+    }
+
+    // Parse width
+    if (it != end && *it >= '1' && *it <= '9') {
+      width_ = 0;
+      while (it != end && *it >= '0' && *it <= '9') {
+        width_ = width_ * 10 + (*it - '0');
+        ++it;
+      }
+    }
+
+    // Parse presentation type
+    if (it != end && (*it == 'x' || *it == 'X' || *it == 'o' || *it == 'd')) {
+      presentation_type_ = *it;
+      ++it;
+    }
+
+    return it;
   }
 
   template <class FormatContext>
-  auto format(const BitsClass<N, Signed> &c, FormatContext &ctx) -> decltype(ctx.out()) {
-    fmt::detail::handle_dynamic_spec<fmt::detail::precision_checker>(specs_.width, specs_.width_ref,
-                                                                     ctx);
+  auto format(const BitsClass<N, Signed> &c, FormatContext &ctx) const -> decltype(ctx.out()) {
     int base = 10;
     std::string gmp_fmt_string = "%";
-    if (specs_.fill.data()[0] == '0') gmp_fmt_string += "0";
-    if (specs_.alt) gmp_fmt_string += "#";
-    if (specs_.sign == fmt::sign_t::plus) gmp_fmt_string += "+";
-    if (specs_.sign == fmt::sign_t::minus) gmp_fmt_string += "-";
-    if (specs_.sign == fmt::sign_t::space) gmp_fmt_string += " ";
-    if (specs_.width != 0) gmp_fmt_string += std::to_string(specs_.width);
+
+    if (alt_flag_) {
+      gmp_fmt_string += "#";
+    }
+    if (zero_pad_ && width_ != 0) {
+      gmp_fmt_string += "0";
+    }
+    if (width_ != 0) {
+      gmp_fmt_string += std::to_string(width_);
+    }
+
     gmp_fmt_string += "Z";
-    if (specs_.type == fmt::presentation_type::hex_lower) {
+
+    if (presentation_type_ == 'x') {
       base = 16;
       gmp_fmt_string += "x";
-    } else if (specs_.type == fmt::presentation_type::hex_upper) {
+    } else if (presentation_type_ == 'X') {
       base = 16;
       gmp_fmt_string += "X";
-    } else if (specs_.type == fmt::presentation_type::oct) {
+    } else if (presentation_type_ == 'o') {
       base = 8;
       gmp_fmt_string += "o";
     } else {
       base = 10;
       gmp_fmt_string += "d";
     }
-    size_t strwidth = std::max((size_t)specs_.width, mpz_sizeinbase(c.get().get_mpz_t(), base));
+
+    size_t strwidth = std::max((size_t)width_, mpz_sizeinbase(c.get().get_mpz_t(), base)) + 10;
+    char *str = new char[strwidth + 100];
+    gmp_snprintf(str, strwidth + 100, gmp_fmt_string.c_str(), c.get().get_mpz_t());
+    auto ret_val = std::format_to(ctx.out(), "{}", str);
+    delete[] str;
+    return ret_val;
+  }
+};
+
+#ifdef FMT_VERSION
+// fmt::formatter specializations for Bits types.
+// These are only compiled when <fmt/format.h> has been included before this header,
+// providing compatibility with code that uses fmt::format with Bits types.
+
+template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+  requires((BitsClass<N, Signed>::IsABits) && (N <= udb::BitsMaxNativePrecision))
+struct fmt::formatter<BitsClass<N, Signed>>
+    : fmt::formatter<typename BitsClass<N, Signed>::StorageType> {
+  template <typename CONTEXT_TYPE>
+  auto format(BitsClass<N, Signed> value, CONTEXT_TYPE &ctx) const {
+    return fmt::formatter<typename BitsClass<N, Signed>::StorageType>::format(
+        value.get_ignore_unknown(), ctx);
+  }
+};
+
+template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
+  requires((BitsClass<N, Signed>::IsABits) && (N > udb::BitsMaxNativePrecision))
+struct fmt::formatter<BitsClass<N, Signed>> {
+ private:
+  char presentation_type_ = 'd';
+  int width_ = 0;
+  bool alt_flag_ = false;
+  bool zero_pad_ = false;
+
+ public:
+  constexpr auto parse(fmt::format_parse_context &ctx) -> decltype(ctx.begin()) {
+    auto it = ctx.begin();
+    auto end = ctx.end();
+
+    // Parse alternate form flag
+    if (it != end && *it == '#') {
+      alt_flag_ = true;
+      ++it;
+    }
+
+    // Parse zero-pad flag
+    if (it != end && *it == '0') {
+      zero_pad_ = true;
+      ++it;
+    }
+
+    // Parse width
+    if (it != end && *it >= '1' && *it <= '9') {
+      width_ = 0;
+      while (it != end && *it >= '0' && *it <= '9') {
+        width_ = width_ * 10 + (*it - '0');
+        ++it;
+      }
+    }
+
+    // Parse presentation type
+    if (it != end && (*it == 'x' || *it == 'X' || *it == 'o' || *it == 'd')) {
+      presentation_type_ = *it;
+      ++it;
+    }
+
+    return it;
+  }
+
+  template <class FormatContext>
+  auto format(const BitsClass<N, Signed> &c, FormatContext &ctx) const -> decltype(ctx.out()) {
+    int base = 10;
+    std::string gmp_fmt_string = "%";
+
+    if (alt_flag_) {
+      gmp_fmt_string += "#";
+    }
+    if (zero_pad_ && width_ != 0) {
+      gmp_fmt_string += "0";
+    }
+    if (width_ != 0) {
+      gmp_fmt_string += std::to_string(width_);
+    }
+
+    gmp_fmt_string += "Z";
+
+    if (presentation_type_ == 'x') {
+      base = 16;
+      gmp_fmt_string += "x";
+    } else if (presentation_type_ == 'X') {
+      base = 16;
+      gmp_fmt_string += "X";
+    } else if (presentation_type_ == 'o') {
+      base = 8;
+      gmp_fmt_string += "o";
+    } else {
+      base = 10;
+      gmp_fmt_string += "d";
+    }
+
+    size_t strwidth = std::max((size_t)width_, mpz_sizeinbase(c.get().get_mpz_t(), base)) + 10;
     char *str = new char[strwidth + 100];
     gmp_snprintf(str, strwidth + 100, gmp_fmt_string.c_str(), c.get().get_mpz_t());
     auto ret_val = fmt::format_to(ctx.out(), "{}", str);
@@ -3557,6 +3801,7 @@ struct fmt::formatter<BitsClass<N, Signed>> {
     return ret_val;
   }
 };
+#endif  // FMT_VERSION
 
 
 namespace std {

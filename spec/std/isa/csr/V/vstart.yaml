@@ -10,7 +10,7 @@ long_name: Vector Start Index
 address: 0x008
 writable: true
 priv_mode: U
-length: MXLEN
+length: XLEN
 description: Specifies the index of the first element to be executed by a vector instruction.
 definedBy:
   extension:

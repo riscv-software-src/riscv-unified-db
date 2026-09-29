@@ -6,32 +6,25 @@
 $schema: param_schema.json#
 kind: parameter
 name: MSTATUS_FS_LEGAL_VALUES
-description: "The set of values that mstatus.FS supports.
-
-  "
-long_name: TODO
+description: The set of values that mstatus.FS supports.
+long_name: mstatus.FS legal values
 schema:
   type: array
   items:
     type: integer
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
+      - 0 # Off
+      - 1 # Initial
+      - 2 # Clean
+      - 3 # Dirty
   maxItems: 4
   minItems: 1
   uniqueItems: true
 requirements:
   idl(): |
-    implemented?(ExtensionName::F) &&
-      (HW_MSTATUS_FS_DIRTY_UPDATE == "precise" ||
-       HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise")
-    ->
+    implemented?(ExtensionName::F) ->
       $array_includes?(MSTATUS_FS_LEGAL_VALUES, 3);
-  reason:
-    If there is a hardware update to mstatus.FS, then the Dirty state must be
-    supported
+  reason: If F extension is implemented, then the Dirty state must be supported
 definedBy:
   extension:
     allOf:

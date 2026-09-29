@@ -73,7 +73,7 @@ endif()
 
 FetchContent_Declare(fmt
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 10.2.1
+  GIT_TAG 12.2.0
 )
 FetchContent_MakeAvailable(fmt)
 
@@ -88,7 +88,7 @@ FetchContent_Declare(
     cli11_proj
     QUIET
     GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-    GIT_TAG v2.6.2
+    GIT_TAG v2.7.2
 )
 
 FetchContent_MakeAvailable(cli11_proj)
@@ -96,10 +96,19 @@ FetchContent_MakeAvailable(cli11_proj)
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.15.2
+  GIT_TAG        v3.16.0
 )
 
 FetchContent_MakeAvailable(Catch2)
+
+# nlohmann_json is header-only; fetched here so its headers are available to
+# hart (transitively needed by nlohmann_json_schema_validator headers).
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG        v3.11.3
+)
+FetchContent_MakeAvailable(nlohmann_json)
 
 FetchContent_Declare(
   nlohmann_json_schema_validator
@@ -115,6 +124,39 @@ FetchContent_Declare(
   GIT_TAG        v3.11.0
 )
 FetchContent_MakeAvailable(compile_time_regular_expressions)
+
+# -----------------------------------------------------------------------
+# berkeley-softfloat-3
+# -----------------------------------------------------------------------
+# berkeley-softfloat-3's build/ directory has one Makefile per supported
+# platform/toolchain (e.g. Linux-x86_64-GCC, Linux-RISCV64-GCC,
+# Win64-MinGW-w64); there is no generic host/toolchain-derived name to
+# compute, and no macOS entry exists upstream at all. Expose the spec as a
+# cache variable so builds on a platform other than the default CI target
+# can point at the matching upstream directory instead of failing.
+set(SOFTFLOAT_BUILD_SPEC "Linux-x86_64-GCC" CACHE STRING
+  "Subdirectory of berkeley-softfloat-3/build to compile, matching one of \
+the platform/toolchain directories in the upstream repository (e.g. \
+Linux-x86_64-GCC, Linux-RISCV64-GCC, Win64-MinGW-w64)")
+
+ExternalProject_Add(berkeley_softfloat
+  GIT_REPOSITORY      https://github.com/ucb-bar/berkeley-softfloat-3.git
+  GIT_TAG             a0c6494cdc11865811dec815d5c0049fba9d82a8
+  UPDATE_DISCONNECTED TRUE
+  CONFIGURE_COMMAND   ""
+  BUILD_COMMAND       make -C <SOURCE_DIR>/build/${SOFTFLOAT_BUILD_SPEC}
+  INSTALL_COMMAND     ""
+)
+
+ExternalProject_Get_Property(berkeley_softfloat SOURCE_DIR)
+file(MAKE_DIRECTORY "${SOURCE_DIR}/source/include") # Prevent CMake error before it is cloned
+
+add_library(libsoftfloat_static STATIC IMPORTED)
+set_target_properties(libsoftfloat_static PROPERTIES
+  IMPORTED_LOCATION             "${SOURCE_DIR}/build/${SOFTFLOAT_BUILD_SPEC}/softfloat.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${SOURCE_DIR}/source/include"
+)
+add_dependencies(libsoftfloat_static berkeley_softfloat)
 
 # -----------------------------------------------------------------------
 # libelf — built from elfutils source; no system package required
@@ -219,6 +261,7 @@ add_dependencies(test_bits_random ${RANDOM_TESTS})
 
 add_executable(test_util
   ${CMAKE_SOURCE_DIR}/test/test_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/NotificationHandler.cpp
 )
 target_include_directories(test_util PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_util PRIVATE hart Catch2::Catch2WithMain)
@@ -235,12 +278,25 @@ add_executable(test_version
 target_include_directories(test_version PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_version PRIVATE hart Catch2::Catch2WithMain)
 
+add_executable(test_softfloat_fp
+  ${CMAKE_SOURCE_DIR}/test/test_softfloat_fp.cpp
+  ${CMAKE_SOURCE_DIR}/src/NotificationHandler.cpp
+)
+target_include_directories(test_softfloat_fp PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_softfloat_fp PRIVATE hart Catch2::Catch2WithMain libsoftfloat_static)
+target_compile_definitions(test_softfloat_fp PRIVATE
+  UDB_FP_DIRECTED_JSONL="${UDB_ROOT}/tests/data/fp/directed/f32_fpgen_expanded.jsonl"
+)
+
 add_executable(test_regfile
   ${CMAKE_SOURCE_DIR}/test/test_regfile.cpp
   ${CMAKE_SOURCE_DIR}/src/NotificationHandler.cpp
 )
 target_include_directories(test_regfile PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_regfile PRIVATE hart Catch2::Catch2WithMain)
+target_compile_definitions(test_regfile PRIVATE
+  UDB_RV64_RISCV_TESTS_CFG="${UDB_ROOT}/cfgs/rv64-riscv-tests.yaml"
+)
 
 # add_executable(test_decode
 #   ${CMAKE_SOURCE_DIR}/test/test_decode.cpp
@@ -252,10 +308,13 @@ include(CTest)
 include(Catch)
 catch_discover_tests(test_bits_directed)
 catch_discover_tests(test_regfile)
+catch_discover_tests(test_util)
 
 foreach (random_test IN LISTS RANDOM_TESTS)
   catch_discover_tests(${random_test})
 endforeach()
+
+catch_discover_tests(test_softfloat_fp)
 
 # catch_discover_tests(test_version)
 # catch_discover_tests(test_csr)

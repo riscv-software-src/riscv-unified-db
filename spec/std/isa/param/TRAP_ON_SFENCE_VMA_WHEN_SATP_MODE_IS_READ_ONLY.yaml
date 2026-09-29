@@ -17,7 +17,7 @@ description: |
 
   TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY has no effect when
   some virtual translation mode is supported.
-long_name: TODO
+long_name: "Trap on SFENCE.VMA when satp.MODE is read-only"
 schema:
   type: boolean
   default: false

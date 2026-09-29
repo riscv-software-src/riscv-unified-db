@@ -56,9 +56,7 @@ Closes #<issue number>
 
 All Pull Requests must go through the code review process.
 
-All Pull Requests require approval by at least one Code Owner.
-
-Code Owners are maintained in `.github/CODEOWNERS`.
+All Pull Requests require approval by at least one maintainer.
 
 == Finding tasks
 
@@ -66,7 +64,7 @@ If you are looking to contribute but are unsure what to do, browse through the h
 
 == Legal
 
-All contributions to UnifiedDB are by default made under the xref:LICENSE[BSD-3-clear license].
+All contributions to UnifiedDB are by default made under the xref:LICENSE-BSD-3-Clause-Clear.txt[BSD-3-Clause-Clear license].
 Copyrights are held by the specific contributors, and are not tracked by the UnifiedDB project other
 than what can be gleaned through git history.
 

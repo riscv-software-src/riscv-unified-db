@@ -7,7 +7,7 @@ $schema: param_schema.json#
 kind: parameter
 name: UXLEN
 description: |
-  Set of XLENs supported in U-mode. When both 32 and 64 are supported, SXLEN can be changed,
+  Set of XLENs supported in U-mode. When both 32 and 64 are supported, UXLEN can be changed,
   via mstatus.UXL, between 32 and 64.
 long_name: TODO
 schema:

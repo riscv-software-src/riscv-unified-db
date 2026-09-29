@@ -22,9 +22,7 @@ definedBy:
   allOf:
     - xlen: 64
     - extension:
-        anyOf:
-          - name: M
-          - name: Zmmul
+        name: Zmmul
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------000-----0111011
@@ -42,10 +40,6 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   Bits<32> src1 = X[xs1][31:0];
   Bits<32> src2 = X[xs2][31:0];
 

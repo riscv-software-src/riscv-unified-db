@@ -167,10 +167,12 @@ tests:
         test:
           - logic
           - conditions
+          - database_obj_compare
           - cli
           - yaml_loader
           - cfg_arch
           - cfg
+          - csr
           - mmr
           - mmr_schema
           - schema_versioning
@@ -410,15 +412,39 @@ tests:
       - smoke
     test:
       - name: Check schema versions against published URLs
-        run: ./do gen:schemas && ./bin/ruby tools/scripts/check_schema_versions.rb
+        run: ./do gen:schemas && ./bin/python tools/scripts/check_schema_versions.py
 
   regress-schema-docs:
     ci_stage: pr
     tags:
       - smoke
+    checkout_with:
+      fetch-depth: 0
     test:
       - name: Generate schema documentation
         run: ./bin/chore gen -f schema-docs
+      - name: Check old schema MDX files were not modified
+        run: |
+          base="$(git merge-base origin/main HEAD)"
+          changed_old_docs="$(
+            git diff --name-only --diff-filter=ACDMRT "$base" HEAD -- 'doc/docs/schemas/*/*.mdx' \
+              | while IFS= read -r doc; do
+                  schema="spec/schemas/$(basename "$doc" .mdx).json"
+                  version="$(basename "$(dirname "$doc")")"
+                  current_version="$(./bin/python -c 'import json,pathlib,sys; p=pathlib.Path(sys.argv[1]); print(json.loads(p.read_text()).get("$id", "") if p.exists() else "")' "$schema")"
+                  [ "$version" = "$current_version" ] || printf '%s\n' "$doc"
+                done
+          )"
+          if [ -n "$changed_old_docs" ]; then
+            echo "ERROR: Schema docs for old versions changed:"
+            echo "$changed_old_docs"
+            echo
+            echo "Schema documentation for old schema versions is immutable. To update docs for a schema change:"
+            echo '  1. Increment the "$id" value in the modified schema file.'
+            echo "  2. Restore the old doc file(s) listed above."
+            echo "  3. The new versioned doc page will be generated automatically by autofix."
+            exit 1
+          fi
 
   build-idl-doc:
     ci_stage: merge_queue
@@ -464,7 +490,5 @@ tests:
       - smoke
       - artifacts
     test:
-      - name: Install Node dependencies
-        run: ./bin/npm ci
       - name: Build Docusaurus site
-        run: ./bin/npm run build --workspace=doc
+        run: ./bin/aubr -C doc --frozen-lockfile build

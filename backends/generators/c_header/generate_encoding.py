@@ -21,6 +21,7 @@ from generator import (
 )
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
+LOGGER = logging.getLogger(__name__)
 
 
 def calculate_mask(match_str):
@@ -92,7 +93,7 @@ def extract_instruction_fields(instructions):
         }
 
     # Then process fields from actual instructions
-    for _name, instr_data in instructions.items():
+    for instr_data in instructions.values():
         # Get variables from the instruction structure
         variables = []
         if "encoding" in instr_data:
@@ -145,7 +146,7 @@ def extract_instruction_fields(instructions):
                         ),
                     }
                 except ValueError:
-                    logging.warning(
+                    LOGGER.warning(
                         f"Invalid location format: {location} for field {orig_field_name}"
                     )
             elif isinstance(location, (int, str)):
@@ -161,11 +162,11 @@ def extract_instruction_fields(instructions):
                         ),
                     }
                 except ValueError:
-                    logging.warning(
+                    LOGGER.warning(
                         f"Invalid location format: {location} for field {orig_field_name}"
                     )
 
-    logging.info(f"Extracted {len(field_dict)} unique instruction field names")
+    LOGGER.info(f"Extracted {len(field_dict)} unique instruction field names")
     return field_dict
 
 
@@ -226,18 +227,18 @@ def main():
     output_file = os.path.join(this_dir, args.output)
 
     # Load instructions and CSRs
-    logging.info(f"Loading instructions from {args.inst_dir}")
+    LOGGER.info(f"Loading instructions from {args.inst_dir}")
     instructions = load_instructions(
         args.inst_dir, args.extensions, include_all=args.include_all, target_arch="BOTH"
     )
 
-    logging.info(f"Loading CSRs from {args.csr_dir}")
+    LOGGER.info(f"Loading CSRs from {args.csr_dir}")
     csrs = load_csrs(
         args.csr_dir, args.extensions, include_all=args.include_all, target_arch="BOTH"
     )
 
     # Load exception codes
-    logging.info(f"Loading exception codes from {args.ext_dir}")
+    LOGGER.info(f"Loading exception codes from {args.ext_dir}")
     causes = load_exception_codes(
         args.ext_dir,
         args.extensions,
@@ -262,8 +263,8 @@ def main():
                     "match": f"0x{match_val:x}",
                     "mask": f"0x{mask_val:x}",
                 }
-            except Exception as e:
-                logging.error(f"Error processing {name}: {e}")
+            except ValueError as e:
+                LOGGER.error(f"Error processing {name}: {e}")
 
     # Extract field information
     field_dict = extract_instruction_fields(instructions)
@@ -328,7 +329,7 @@ def main():
     with open(output_file, "w", encoding="utf-8") as enc_file:
         enc_file.write(output_str)
 
-    logging.info(f"Generated encoding header file: {output_file}")
+    LOGGER.info(f"Generated encoding header file: {output_file}")
 
 
 if __name__ == "__main__":

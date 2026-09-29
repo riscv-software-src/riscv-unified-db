@@ -80,7 +80,7 @@ sw_read(): |
     }
   } else if (mode() == PrivilegeMode::VU) {
     # access in VU mode
-    if (((CSR[hcounteren].TM & CSR[scounteren].TM) == 1'b0) && (CSR[mcounteren].IR == 1'b1)) {
+    if (((CSR[hcounteren].TM & CSR[scounteren].TM) == 1'b0) && (CSR[mcounteren].TM == 1'b1)) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     } else if (CSR[mcounteren].TM == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);

@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfofp4min
+long_name: Vector OFP4 Conversion Extension
+type: unprivileged
+description: |
+ The Zvfofp4min extension provides basic vector conversion support for
+ the OFP4 E2M1 format.
+versions:
+ - version: "0.1.0"
+   state: development
+   # commit: e1e20a75c9a9fa797519fcc11ee997c7a7be4503
+   repositories:
+     - url: https://github.com/aswaterman/riscv-misc
+       branch: main
+requirements:
+ extension:
+   name: Zve32f

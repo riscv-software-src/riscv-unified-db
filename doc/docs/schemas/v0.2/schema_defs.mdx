@@ -1,0 +1,592 @@
+---
+title: Common patterns used by all schemas (v0.2)
+sidebar_label: Common patterns used by all schemas
+custom_edit_url: null
+# This file is auto-generated from schema_defs.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Common patterns used by all schemas
+
+<span class="badge badge--secondary">v0.2</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`schema_defs.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/schema_defs.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Definitions
+
+<details>
+<summary><a id="$source"></a><strong><code>$source</code></strong> — Path to the source file containing this object</summary>
+
+Path to the source file containing this object
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="semantic-version"></a><strong><code>semantic_version</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="rvi-version"></a><strong><code>rvi_version</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="csr-name"></a><strong><code>csr_name</code></strong> — CSR name</summary>
+
+CSR name
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="csr-field"></a><strong><code>csr_field</code></strong> — CSR field</summary>
+
+CSR field
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="csr-field-bits"></a><strong><code>csr_field_bits</code></strong> — CSR field</summary>
+
+CSR field
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="field-location"></a><strong><code>field_location</code></strong> — Location of a field in a register</summary>
+
+Location of a field in a register
+
+</details>
+
+<details>
+<summary><a id="bit-length-value"></a><strong><code>bit_length_value</code></strong> — Bit width value for a register or field</summary>
+
+Bit width value for a register or field
+
+</details>
+
+<details>
+<summary><a id="register-name"></a><strong><code>register_name</code></strong> — Register name</summary>
+
+Register name
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="register-file-name"></a><strong><code>register_file_name</code></strong> — Register file name</summary>
+
+Register file name
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="register-alias"></a><strong><code>register_alias</code></strong> — Register alias or ABI mnemonic</summary>
+
+Register alias or ABI mnemonic
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="possibly-split-field-location"></a><strong><code>possibly_split_field_location</code></strong> — Location specifier for a field</summary>
+
+Location specifier for a field
+
+</details>
+
+<details>
+<summary><a id="revision-history-entry"></a><strong><code>revision_history_entry</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `revision` | [`semantic_version`](#semantic-version) | ✓ | Revision number |
+| `date` | `string` | ✓ | The date of the change |
+| `changes` | Array&lt;`string`&gt; | ✓ | List of changes |
+
+</details>
+
+<details>
+<summary><a id="spec-state"></a><strong><code>spec_state</code></strong> — Ratification state of a specification or extension version: `development` (actively being worked on), `frozen` (feature-complete, under review), `public-review` (open for public comment), `ratification-ready` (approved by the task group, awaiting board vote), `ratified` (officially approved by RISC-V International), or `nonstandard-released` (released but not part of the RISC-V standard).</summary>
+
+Ratification state of a specification or extension version: `development` (actively being worked on), `frozen` (feature-complete, under review), `public-review` (open for public comment), `ratification-ready` (approved by the task group, awaiting board vote), `ratified` (officially approved by RISC-V International), or `nonstandard-released` (released but not part of the RISC-V standard).
+
+**Allowed values:**
+
+- `development`
+- `frozen`
+- `public-review`
+- `ratification-ready`
+- `ratified`
+- `nonstandard-released`
+
+</details>
+
+<details>
+<summary><a id="spec-text"></a><strong><code>spec_text</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="conditional-text"></a><strong><code>conditional_text</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `text` | `string` | ✓ | Asciidoctor source |
+| `when()` | `string` |  | IDL boolean expression. When true, the text applies |
+| `when_ast` | `object` |  |  |
+
+</details>
+
+<details>
+<summary><a id="license"></a><strong><code>license</code></strong> — License that applies to the textual documentation for this extension</summary>
+
+License that applies to the textual documentation for this extension
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` |  | License name |
+| `id` | `string` |  | License identifier |
+| `url` | `string` |  | Link to license text |
+| `text_url` | `string` |  | Link to license text |
+
+</details>
+
+<details>
+<summary><a id="company"></a><strong><code>company</code></strong> — A company</summary>
+
+A company
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` |  | Name of the company. Should be "RISC-V International" for standard extensions |
+| `url` | `string` |  | Website of the company. Should be "https://riscv.org" for standard extensions |
+
+</details>
+
+<details>
+<summary><a id="extension-presence"></a><strong><code>extension_presence</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="date"></a><strong><code>date</code></strong> — A specific day in YYYY-MM-DD format</summary>
+
+A specific day in YYYY-MM-DD format
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="extension-name"></a><strong><code>extension_name</code></strong> — Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`)</summary>
+
+Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`)
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="extension-version"></a><strong><code>extension_version</code></strong> — Exact version in `MAJOR[.MINOR[.PATCH]]` format (e.g., `2.1.0`, `2.1`, `2`)</summary>
+
+Exact version in `MAJOR[.MINOR[.PATCH]]` format (e.g., `2.1.0`, `2.1`, `2`)
+
+</details>
+
+<details>
+<summary><a id="implemented-extension-version"></a><strong><code>implemented_extension_version</code></strong> — Exact implemented extension version, either bare or prefixed with `=` (e.g., `2.1.0`, `2.1`, `= 2.1`)</summary>
+
+Exact implemented extension version, either bare or prefixed with `=` (e.g., `2.1.0`, `2.1`, `= 2.1`)
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="requirement-string"></a><strong><code>requirement_string</code></strong> — Version requirement string (e.g., `&gt;= 2.0`, `~&gt; 1.5`, `= 2.1`). The `~&gt;` operator is a pessimistic version constraint: `~&gt; X.Y` means `&gt;= X.Y` and `&lt; (X+1).0`; `~&gt; X.Y.Z` means `&gt;= X.Y.Z` and `&lt; X.(Y+1).0`.</summary>
+
+Version requirement string (e.g., `&gt;= 2.0`, `~&gt; 1.5`, `= 2.1`). The `~&gt;` operator is a pessimistic version constraint: `~&gt; X.Y` means `&gt;= X.Y` and `&lt; (X+1).0`; `~&gt; X.Y.Z` means `&gt;= X.Y.Z` and `&lt; X.(Y+1).0`.
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="version-requirements"></a><strong><code>version_requirements</code></strong> — Version requirement or list of requirements (e.g., `&gt;= 2.0` or `['&gt;= 2.0', '&lt; 3.0']`)</summary>
+
+Version requirement or list of requirements (e.g., `&gt;= 2.0` or `['&gt;= 2.0', '&lt; 3.0']`)
+
+</details>
+
+<details>
+<summary><a id="extension-requirement"></a><strong><code>extension_requirement</code></strong> — A requirement on an extension. Can either specify just an extension name, in which case version '&gt;= 0' is implied, or both a name and a requirement</summary>
+
+A requirement on an extension. Can either specify just an extension name, in which case version '&gt;= 0' is implied, or both a name and a requirement
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | [`extension_name`](#extension-name) | ✓ |  |
+| `version` | [`version_requirements`](#version-requirements) |  |  |
+
+</details>
+
+<details>
+<summary><a id="param-name"></a><strong><code>param_name</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="param-requirement"></a><strong><code>param_requirement</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | [`param_name`](#param-name) | ✓ |  |
+| `schema` | [`json-schema-draft-07`](http://json-schema.org/draft-07/schema#) | ✓ |  |
+
+</details>
+
+<details>
+<summary><a id="requires-entry"></a><strong><code>requires_entry</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="extension-with-version"></a><strong><code>extension_with_version</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | [`extension_name`](#extension-name) | ✓ |  |
+| `version` | [`extension_version`](#extension-version) | ✓ |  |
+
+</details>
+
+<details>
+<summary><a id="author"></a><strong><code>author</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Author's full name |
+| `email` | `string` |  | Author's email address |
+| `organization` | [`organization`](#organization) |  | Author's organization, which should be an RVI member (or individual) |
+
+</details>
+
+<details>
+<summary><a id="organization"></a><strong><code>organization</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Organization name |
+| `url` | `string` |  | Organization URL |
+
+</details>
+
+<details>
+<summary><a id="when-condition"></a><strong><code>when_condition</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `version` | [`version_requirements`](#version-requirements) |  |  |
+
+</details>
+
+<details>
+<summary><a id="parameter-constraint"></a><strong><code>parameter_constraint</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `schema` | [`json-schema-draft-07`](http://json-schema.org/draft-07/schema#) |  |  |
+| `when` | [`when_condition`](#when-condition) |  |  |
+
+</details>
+
+<details>
+<summary><a id="encoding-match"></a><strong><code>encoding_match</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="inst-type-name"></a><strong><code>inst_type_name</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="inst-subtype-name"></a><strong><code>inst_subtype_name</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="reference"></a><strong><code>reference</code></strong> — reference to another database object, as a JSON Reference</summary>
+
+reference to another database object, as a JSON Reference
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="integer"></a><strong><code>integer</code></strong> — An integer, either native to JSON or a number-like string</summary>
+
+An integer, either native to JSON or a number-like string
+
+</details>
+
+<details>
+<summary><a id="ref-url"></a><strong><code>ref_url</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="ref-url-list"></a><strong><code>ref_url_list</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="extension-condition"></a><strong><code>extension_condition</code></strong> — A logic condition specifying certain extension version requirements</summary>
+
+A logic condition specifying certain extension version requirements
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `extension` | One of: [`extension_requirement`](#extension-requirement) \| `object` \| `object` | ✓ |  |
+
+</details>
+
+<details>
+<summary><a id="param-condition"></a><strong><code>param_condition</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `param` | One of: `object` \| `object` | ✓ |  |
+
+</details>
+
+<details>
+<summary><a id="idl"></a><strong><code>idl</code></strong> — IDL code</summary>
+
+IDL code
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="idl-condition"></a><strong><code>idl_condition</code></strong> — A condition expressed with IDL</summary>
+
+A condition expressed with IDL
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `idl()` | [`idl`](#idl) | ✓ | IDL function containing one or more implications (e.g., A -&gt; B). |
+| `idl_ast` | `object` |  |  |
+| `reason` | `string` |  | Why the constraint exists |
+
+</details>
+
+<details>
+<summary><a id="yaml-condition"></a><strong><code>yaml_condition</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="xlen-condition"></a><strong><code>xlen_condition</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `xlen` | `32` \| `64` | ✓ |  |
+
+</details>
+
+<details>
+<summary><a id="condition"></a><strong><code>condition</code></strong> — A condition (YAML structure or IDL function). See the conditions reference for details.</summary>
+
+A condition (YAML structure or IDL function). See the conditions reference for details.
+
+</details>
+
+<details>
+<summary><a id="extension-requirement-list-item"></a><strong><code>extension_requirement_list_item</code></strong> — A list of extension requirements, possibly with a condition</summary>
+
+A list of extension requirements, possibly with a condition
+
+</details>
+
+<details>
+<summary><a id="extension-requirement-list"></a><strong><code>extension_requirement_list</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="uint32"></a><strong><code>uint32</code></strong></summary>
+
+**Type:** `integer`
+
+</details>
+
+<details>
+<summary><a id="uint64"></a><strong><code>uint64</code></strong></summary>
+
+**Type:** `integer`
+
+</details>
+
+<details>
+<summary><a id="32bit-unsigned-pow2"></a><strong><code>32bit_unsigned_pow2</code></strong> — An unsigned power of 2 that fits in 32 bits</summary>
+
+An unsigned power of 2 that fits in 32 bits
+
+**Allowed values:**
+
+- `1`
+- `2`
+- `4`
+- `8`
+- `16`
+- `32`
+- `64`
+- `128`
+- `256`
+- `512`
+- `1024`
+- `2048`
+- `4096`
+- `8192`
+- `16384`
+- `32768`
+- `65536`
+- `131072`
+- `262144`
+- `524288`
+- `1048576`
+- `2097152`
+- `4194304`
+- `8388608`
+- `16777216`
+- `33554432`
+- `67108864`
+- `134217728`
+- `268435456`
+- `536870912`
+- `1073741824`
+- `2147483648`
+
+</details>
+
+<details>
+<summary><a id="64bit-unsigned-pow2"></a><strong><code>64bit_unsigned_pow2</code></strong> — An unsigned power of 2 that fits in 64 bits</summary>
+
+An unsigned power of 2 that fits in 64 bits
+
+**Allowed values:**
+
+- `1`
+- `2`
+- `4`
+- `8`
+- `16`
+- `32`
+- `64`
+- `128`
+- `256`
+- `512`
+- `1024`
+- `2048`
+- `4096`
+- `8192`
+- `16384`
+- `32768`
+- `65536`
+- `131072`
+- `262144`
+- `524288`
+- `1048576`
+- `2097152`
+- `4194304`
+- `8388608`
+- `16777216`
+- `33554432`
+- `67108864`
+- `134217728`
+- `268435456`
+- `536870912`
+- `1073741824`
+- `2147483648`
+- `4294967296`
+- `8589934592`
+- `17179869184`
+- `34359738368`
+- `68719476736`
+- `137438953472`
+- `274877906944`
+- `549755813888`
+- `1099511627776`
+- `2199023255552`
+- `4398046511104`
+- `8796093022208`
+- `17592186044416`
+- `35184372088832`
+- `70368744177664`
+- `140737488355328`
+- `281474976710656`
+- `562949953421312`
+- `1125899906842624`
+- `2251799813685248`
+- `4503599627370496`
+- `9007199254740992`
+- `18014398509481984`
+- `36028797018963968`
+- `72057594037927936`
+- `144115188075855872`
+- `288230376151711744`
+- `576460752303423488`
+- `1152921504606846976`
+- `2305843009213693952`
+- `4611686018427387904`
+- `9223372036854775808`
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.2` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

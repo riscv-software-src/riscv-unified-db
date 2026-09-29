@@ -1,0 +1,42 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: clmul
+long_name: Carry-less multiply (low-part)
+description: |
+  `clmul` produces the lower half of the 2*XLEN carry-less product
+definedBy:
+  extension:
+    name: Zbkc
+assembly: xd, xs1, xs2
+encoding:
+  match: 0000101----------001-----0110011
+  variables:
+    - name: xs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
+  XReg xs1_val = X[xs1];
+  XReg xs2_val = X[xs2];
+  XReg output = 0;
+
+  for (U32 i=0; i < xlen(); i++) {
+    output = (((xs2_val >> i) & 1) == 1)
+      ? output ^ (xs1_val << i)
+      : output;
+  }
+
+  X[xd] = output;

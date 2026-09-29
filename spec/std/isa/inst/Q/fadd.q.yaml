@@ -11,8 +11,8 @@ definedBy:
   extension:
     name: Q
 description: |
-  `fadd.q` is analogous to `fadd.d` and performs double-precision floating-point addition between
-  `qs1` and `qs2` and writes the final result to `qd`.
+  `fadd.q` is analogous to `fadd.d` and performs quad-precision floating-point addition between
+  `fs1` and `fs2` and writes the final result to `fd`.
 assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000011------------------1010011

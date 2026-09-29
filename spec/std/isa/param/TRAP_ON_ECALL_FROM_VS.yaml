@@ -11,7 +11,7 @@ description: |
 
   The spec states that implementations may handle ECALLs transparently
   without raising a trap, in which case the EEI must provide a builtin.
-long_name: TODO
+long_name: "Trap on ECALL from VS-mode"
 schema:
   type: boolean
   default: true

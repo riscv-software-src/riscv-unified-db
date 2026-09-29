@@ -34,7 +34,7 @@ fields:
           || (TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED != "always zero")
           || (TINST_VALUE_ON_LOAD_ACCESS_FAULT != "always zero")
           || (TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED != "always zero")
-          || (TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT != "always_zero")
+          || (TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT != "always zero")
           || (TINST_VALUE_ON_UCALL != "always zero")
           || (TINST_VALUE_ON_SCALL != "always zero")
           || (TINST_VALUE_ON_MCALL != "always zero")

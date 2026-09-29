@@ -51,8 +51,7 @@ access:
 data_independent_timing: false
 <% if n == 7 -%>
 hints:
-  - { $ref: inst/Zicfiss/sspush.x1.yaml# }
-  - { $ref: inst/Zicfiss/sspush.x5.yaml# }
+  - { $ref: inst/Zicfiss/sspush.yaml# }
 <% end -%>
 operation(): |
   X[xd] = 0;

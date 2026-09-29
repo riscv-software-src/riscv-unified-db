@@ -32,7 +32,7 @@ fields:
       # since writes to this register may not be hart-local, it must be handled
       # as a special case
       if (xlen() == 32) {
-        return sw_write_mcycle({read_mcycle()[63:31], csr_value.COUNT[31:0]});
+        return sw_write_mcycle({read_mcycle()[63:32], csr_value.COUNT[31:0]});
       } else {
         return sw_write_mcycle(csr_value.COUNT);
       }
@@ -40,7 +40,7 @@ fields:
       Cycle counter.
 
       <%- if ext?(:Zicntr) -%>
-      Aliased as `cycle.CYCLE`.
+      Aliased as `cycle.COUNT`.
       <%- end -%>
 
       Increments every cycle unless:
@@ -49,14 +49,14 @@ fields:
         <%- if ext?(:Smcntrpmf) -%>
         * `mcyclecfg.MINH` is set and the current privilege level is M
         <%- if ext?(:S) -%>
-        * `mcyclecfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is (H)S
+        * `mcyclecfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.SINH`<%- end -%> is set and the current privilege level is (H)S
         <%- end -%>
         <%- if ext?(:U) -%>
-        * `mcyclecfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is U
+        * `mcyclecfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.UINH`<%- end -%> is set and the current privilege level is U
         <%- end -%>
         <%- if ext?(:H) -%>
-        * `mcyclecfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VS
-        * `mcyclecfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VU
+        * `mcyclecfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.VSINH`<%- end -%> is set and the current privilege level is VS
+        * `mcyclecfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.VUINH`<%- end -%> is set and the current privilege level is VU
         <%- end -%>
         <%- end -%>
     reset_value: UNDEFINED_LEGAL

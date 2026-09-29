@@ -11,7 +11,7 @@ description:
   `misa.F` bit.
 
   "
-long_name: TODO
+long_name: "`misa.F` mutability"
 schema:
   type: boolean
 definedBy:

@@ -26,7 +26,7 @@ fields:
     description: |
       see `mstatus.MDT`
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 1
     alias: mstatus.MDT
     definedBy:
       extension:

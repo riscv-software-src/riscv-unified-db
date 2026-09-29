@@ -50,8 +50,7 @@ access:
 data_independent_timing: false
 <% if n == 28 -%>
 hints:
-  - { $ref: inst/Zicfiss/sspopchk.x1.yaml# }
-  - { $ref: inst/Zicfiss/sspopchk.x5.yaml# }
+  - { $ref: inst/Zicfiss/sspopchk.yaml# }
   - { $ref: inst/Zicfiss/ssrdp.yaml# }
 <% end -%>
 operation(): |

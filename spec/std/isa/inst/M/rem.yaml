@@ -32,8 +32,8 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented?(ExtensionName::M) && MISA_CSR_IMPLEMENTED && (CSR[misa].M == 1'b0)) {
+    reserved_instruction($encoding);
   }
 
   XReg src1 = X[xs1];

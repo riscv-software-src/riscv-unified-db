@@ -1,0 +1,28 @@
+# Copyright (c) David_Harris@hmc.edu 13 July 2026
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MEI_INTR_IMPL
+description: |
+  Whether or not machine-level external interrupts are implemented.
+
+  Possible values:
+
+  true::
+    Machine-level external interrupts are implemented.
+    `mie.MEIE` and `mideleg.MEI` are writable.
+
+  false::
+    Machine-level external interrupts are not implemented.
+    `mie.MEIE` and `mideleg.MEI` are read-only zero.
+long_name: Machine-level external interrupts are implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: Sm

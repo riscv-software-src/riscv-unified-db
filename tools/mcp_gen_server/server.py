@@ -33,6 +33,7 @@ from mcp.server.lowlevel.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
 from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
 
 # ============================================================================
 # Constants and Configuration
@@ -146,6 +147,13 @@ def _load_yaml(path: Path) -> dict:
     """Load and parse a YAML file."""
     with open(path, encoding="utf-8") as fh:
         return YAML_SAFE.load(fh) or {}
+
+
+def _try_load_yaml(path: Path) -> dict | None:
+    """Load a YAML file, returning None if it cannot be read or parsed."""
+    with contextlib.suppress(OSError, YAMLError):
+        return _load_yaml(path)
+    return None
 
 
 def _extract_defined_by(data: dict) -> list[str]:
@@ -359,7 +367,7 @@ async def read_gen_yaml(args: dict[str, Any]):
     """Read and parse a YAML file under gen/."""
     rel = args.get("path")
     if not isinstance(rel, str):
-        raise ValueError("'path' arg must be a string")
+        raise TypeError("'path' arg must be a string")
     p = _ensure_in_gen(Path(rel))
     data = _load_yaml(p)
     return {"path": rel, "data": data}
@@ -431,9 +439,8 @@ async def search_instructions(args: dict[str, Any]):
         rel = p.relative_to(REPO_ROOT)
         rel_str = str(rel)
 
-        try:
-            data = _load_yaml(p)
-        except Exception:
+        data = _try_load_yaml(p)
+        if data is None:
             continue
 
         # Keys filter: require all specified keys
@@ -604,9 +611,8 @@ async def search_csrs(args: dict[str, Any]):
     for p in _iter_csr_yaml_paths():
         rel = str(p.relative_to(REPO_ROOT))
 
-        try:
-            data = _load_yaml(p)
-        except Exception:
+        data = _try_load_yaml(p)
+        if data is None:
             continue
 
         # Keys filter
@@ -730,7 +736,7 @@ async def search_all(args: dict[str, Any]):
     limit_per_domain = int(args.get("limit_per_domain") or 20)
 
     if not isinstance(domains, list):
-        raise ValueError("'domains' must be a list")
+        raise TypeError("'domains' must be a list")
 
     valid_domains = {"instructions", "csrs", "extensions"}
     for d in domains:
@@ -781,42 +787,39 @@ async def search_all(args: dict[str, Any]):
                 regex_pattern = re.compile(term, re.IGNORECASE)
 
         for p in _iter_extension_yaml_paths():
-            try:
-                data = _load_yaml(p)
-                if data.get("kind") != "extension":
-                    continue
-
-                name = data.get("name", "")
-                long_name = data.get("long_name", "")
-                search_text = f"{name} {long_name}".lower()
-
-                matched = False
-                if regex_pattern:
-                    matched = bool(regex_pattern.search(search_text))
-                elif fuzzy:
-                    threshold = float(fuzzy) if isinstance(fuzzy, (int, float)) else 0.6
-                    matched = _fuzzy_match(term, name, threshold) or _fuzzy_match(
-                        term, long_name, threshold
-                    )
-                else:
-                    matched = term.lower() in search_text
-
-                if matched:
-                    info = {
-                        "path": str(p.relative_to(REPO_ROOT)),
-                        "name": name,
-                        "long_name": long_name,
-                    }
-                    if fuzzy:
-                        score = max(_fuzzy_score(term, name), _fuzzy_score(term, long_name))
-                        info["fuzzy_score"] = round(score, 3)
-
-                    ext_results["results"].append(info)
-                    ext_results["count"] += 1
-                    if ext_results["count"] >= limit_per_domain:
-                        break
-            except Exception:
+            data = _try_load_yaml(p)
+            if data is None or data.get("kind") != "extension":
                 continue
+
+            name = data.get("name", "")
+            long_name = data.get("long_name", "")
+            search_text = f"{name} {long_name}".lower()
+
+            matched = False
+            if regex_pattern:
+                matched = bool(regex_pattern.search(search_text))
+            elif fuzzy:
+                threshold = float(fuzzy) if isinstance(fuzzy, (int, float)) else 0.6
+                matched = _fuzzy_match(term, name, threshold) or _fuzzy_match(
+                    term, long_name, threshold
+                )
+            else:
+                matched = term.lower() in search_text
+
+            if matched:
+                info = {
+                    "path": str(p.relative_to(REPO_ROOT)),
+                    "name": name,
+                    "long_name": long_name,
+                }
+                if fuzzy:
+                    score = max(_fuzzy_score(term, name), _fuzzy_score(term, long_name))
+                    info["fuzzy_score"] = round(score, 3)
+
+                ext_results["results"].append(info)
+                ext_results["count"] += 1
+                if ext_results["count"] >= limit_per_domain:
+                    break
 
         # Sort by fuzzy score if applicable
         if fuzzy:
@@ -866,9 +869,8 @@ async def search_extensions(args: dict[str, Any]):
     # Collect all extensions
     items: list[dict[str, Any]] = []
     for p in _iter_extension_yaml_paths():
-        try:
-            data = _load_yaml(p)
-        except Exception:
+        data = _try_load_yaml(p)
+        if data is None:
             continue
         if data.get("kind") == "extension" and isinstance(data.get("name"), str):
             items.append(
@@ -910,9 +912,8 @@ async def search_extensions(args: dict[str, Any]):
     if include_instructions:
         insts: list[dict[str, Any]] = []
         for p in _iter_instruction_yaml_paths():
-            try:
-                data = _load_yaml(p)
-            except Exception:
+            data = _try_load_yaml(p)
+            if data is None:
                 continue
             defined_by = set(_extract_defined_by(data))
             rel_parts = p.relative_to(GEN_DIR).parts if str(p).startswith(str(GEN_DIR)) else p.parts
@@ -938,9 +939,8 @@ async def search_extensions(args: dict[str, Any]):
     if include_csrs:
         csrs: list[dict[str, Any]] = []
         for p in _iter_csr_yaml_paths():
-            try:
-                data = _load_yaml(p)
-            except Exception:
+            data = _try_load_yaml(p)
+            if data is None:
                 continue
             csr_exts = _csr_extensions(data)
             if name in csr_exts:
@@ -997,8 +997,8 @@ def _parse_all_funcs_names(all_funcs_path: Path) -> list[str]:
                     back = re.findall(r"`([^`]+)\`?", line)
                     if back:
                         names.append(back[0])
-    except Exception:
-        pass
+    except OSError:
+        return names
     return names
 
 
@@ -1009,7 +1009,7 @@ def _parse_funcs_sections(funcs_path: Path) -> dict[str, str]:
         with open(funcs_path, encoding="utf-8") as fh:
             content = fh.read()
         # Split on level 2 headings "== name" (start of line)
-        parts = re.split(r"^==\s+", content, flags=re.M)
+        parts = re.split(r"^==\s+", content, flags=re.MULTILINE)
         # parts[0] is preamble; subsequent parts are "Name\n<body>"
         for part in parts[1:]:
             lines = part.splitlines()
@@ -1019,8 +1019,8 @@ def _parse_funcs_sections(funcs_path: Path) -> dict[str, str]:
             name = header.split()[0]
             body = "\n".join(lines[1:]).strip()
             sections[name] = body
-    except Exception:
-        pass
+    except OSError:
+        return sections
     return sections
 
 
@@ -1098,9 +1098,8 @@ async def find_function_usages(args: dict[str, Any]):
 
     # Scan instruction YAMLs for function references
     for p in _iter_instruction_yaml_paths():
-        try:
-            data = _load_yaml(p)
-        except Exception:
+        data = _try_load_yaml(p)
+        if data is None:
             continue
 
         val = data.get("operation()")

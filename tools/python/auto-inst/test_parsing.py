@@ -114,7 +114,7 @@ class TestInstructionEncoding:
                     encoding_bits.append(str(bit))
             encoding_bits.reverse()
             return "".join(encoding_bits)
-        except Exception:
+        except (AttributeError, TypeError):
             return ""
 
     def test_instruction_encoding(self, instr_name):

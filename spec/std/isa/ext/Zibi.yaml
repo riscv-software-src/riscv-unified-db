@@ -1,0 +1,29 @@
+# Copyright (c) RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zibi
+long_name: Branch with Immediate
+description: |
+  The Zibi extension adds conditional branch instructions that compare an
+  integer register with a small immediate constant.
+
+  Existing conditional branch instructions, such as `beq` and `bne`, compare two
+  integer registers. When a branch compares against a constant, software must
+  otherwise materialize that constant in an integer register before branching,
+  which can increase register pressure and potentially cause register spills and
+  reloads.
+
+  The `beqi` and `bnei` instructions use the B-type instruction format. The
+  instruction bits that would otherwise carry _rs2_ in a B-type branch carry a
+  5-bit _cimm_ field. All _cimm_ encodings are valid: the _cimm_ field is not
+  sign-extended; it decodes to an XLEN-bit comparison constant where `cimm=0`
+  encodes the value -1, and `cimm` values 1 through 31 encode the corresponding
+  positive integer values 1 through 31.
+type: unprivileged
+versions:
+  - version: "0.7.0"
+    state: frozen

@@ -93,7 +93,7 @@ access_detail: |
   <%- end -%>
 operation(): |
   # first, perform all the access checks
-  if (mode() == PrivilegeMode::U) {
+  if (mode() == PrivilegeMode::U && !WFI_U_MODE) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
   if ((CSR[misa].S == 1) && (CSR[mstatus].TW == 1'b1)) {

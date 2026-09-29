@@ -14,10 +14,15 @@ description: |
   For RV32, store doubleword from even/odd register pair.
   <% end %>
 definedBy:
-  extension:
-    anyOf:
-      - name: I
-      - name: Zilsd
+  anyOf:
+    - allOf:
+        - xlen: 64
+        - extension:
+            name: I
+    - allOf:
+        - xlen: 32
+        - extension:
+            name: Zilsd
 assembly: xs2, imm(xs1)
 encoding:
   RV32:
@@ -51,7 +56,7 @@ operation(): |
   XReg virtual_address = X[xs1] + $signed(imm);
 
   if (xlen() == 32) {
-    if (implemented?(ExtensionName::Zclsd)) {
+    if (implemented?(ExtensionName::Zilsd)) {
       data = {X[xs2 + 1], X[xs2]};
     } else {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);

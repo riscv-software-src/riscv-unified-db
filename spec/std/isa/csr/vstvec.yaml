@@ -6,31 +6,32 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: vstvec
-long_name: Supervisor Trap Vector
+long_name: Virtual Supervisor Trap Vector
 address: 0x205
 writable: true
 virtual_address: 0x105
-priv_mode: S
-length: 64
+priv_mode: VS
+length: VSXLEN
 description: Controls where traps jump.
 definedBy:
   extension:
     name: H
 fields:
   BASE:
-    location: 63-2
+    location_rv32: 31-2
+    location_rv64: 63-2
     description: |
-      <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>
-      Bit 63:0 of the virtual address of the exception vector for any trap taken into VS-mode.
+      <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 48 : 39) -%>
+      Bits [VSXLEN-1:2] of the virtual address of the exception vector for any trap taken into VS-mode.
 
-      If the base address is written with a non-cannonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
+      If the base address is written with a non-canonical address (_i.e._, bits [VSXLEN-1:<%= va_size %>] do not match bit <%= va_size-1 %>),
       the write should be ignored.
 
     type: RW-R
     sw_write(csr_value): |
       # Base spec says that BASE must be 4-byte aligned, which will always be the case
       # implementations may put further constraints on BASE when MODE != Direct
-      # If that is the case, stvec should have an override for the implementation
+      # If that is the case, vstvec should have an override for the implementation
       return csr_value.BASE;
     reset_value: 0
   MODE:
@@ -42,14 +43,13 @@ fields:
 
       When Direct, all synchronous exceptions and asynchronous interrupts jump to (`vstvec.BASE` << 2).
 
-      When Vectored, asynchronous interrupts jump to (`vstvec.BASE` << 2 + `vscause.CAUSE`*4) while synchronous exceptions continue to jump to (`vstvec.BASE` << 2).
-    type: RW-R
+      When Vectored, asynchronous interrupts jump to (`vstvec.BASE` << 2 + `vscause.CODE`*4) while synchronous exceptions continue to jump to (`vstvec.BASE` << 2).
+    type(): |
+      return ($array_size(VSTVEC_MODES) == 1) ? CsrFieldType::RO : CsrFieldType::RWR;
     sw_write(csr_value): |
-      if (VSTVEC_MODE_DIRECT && csr_value.MODE == 0) {
-        return 0;
-      } else if (VSTVEC_MODE_VECTORED && csr_value.MODE == 1) {
-        return 1;
-      } else {
-        return UNDEFINED_LEGAL_DETERMINISTIC;
+      if ($array_includes?(VSTVEC_MODES, csr_value.MODE)) {
+        return csr_value.MODE;
       }
-    reset_value: 0
+      return UNDEFINED_LEGAL_DETERMINISTIC;
+    reset_value(): |
+      return ($array_size(VSTVEC_MODES) == 1) ? VSTVEC_MODES[0] : UNDEFINED_LEGAL;

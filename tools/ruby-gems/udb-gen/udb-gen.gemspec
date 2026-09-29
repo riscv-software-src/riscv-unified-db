@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.license     = "BSD-3-Clause-Clear"
   s.metadata    = {
     "homepage_uri" => "https://github.com/riscv/riscv-unified-db",
-    "mailing_list_uri" => "https://lists.riscv.org/g/tech-unifieddb",
+    "mailing_list_uri" => "https://lists.riscv.org/g/sig-unifieddb",
     "bug_tracker_uri" => "https://github.com/riscv/riscv-unified-db/issues"
   }
   s.required_ruby_version = "~> 3.2"
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-option"
   s.add_dependency "tty-progressbar"
   s.add_dependency "tty-table"
-  s.add_dependency "udb", "= 0.1.14"
+  s.add_dependency "udb", "= 0.1.17"
   s.add_dependency "write_xlsx"
 
   s.add_development_dependency "mocha"

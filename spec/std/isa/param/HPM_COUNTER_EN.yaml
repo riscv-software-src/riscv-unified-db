@@ -7,10 +7,20 @@ $schema: param_schema.json#
 kind: parameter
 name: HPM_COUNTER_EN
 description: |
-  List of HPM counters that are enabled.
-  There is one entry for each hpmcounter.
+  Whether each HPM counter is implemented in hardware.
 
-  The first three entries *must* be false (as they correspond to CY, IR, TM in, _e.g._ `mhmpcountinhibit`)
+  `HPM_COUNTER_EN[n]` being `false` means `hpmcounter<n>`/`mhpmcounter<n>` and the
+  corresponding `mhpmevent<n>` are not implemented and are hardwired read-only zero.
+  (It does *not* mean the counter is implemented but currently stopped from counting;
+  that is a separate, run-time concept controlled by `mcountinhibit`.)
+
+  There is one entry for each hpmcounter, indexed 0-31.
+
+  Indices 0-2 *must* be false: they are placeholders for the three counters
+  (`cycle`/`mcycle` (CY), `time` (TM), and `instret`/`minstret` (IR)) whose
+  implementation this parameter does not control. These counters are associated
+  with indexes 0, 1, and 2. The rest of the HPM counters logically follow at
+  indexes 3-31.
   Index 3 in HPM_COUNTER_EN corresponds to mhpmcounter3.
   Index 31 in HPM_COUNTER_EN corresponds to mhpmcounter31.
 long_name: TODO

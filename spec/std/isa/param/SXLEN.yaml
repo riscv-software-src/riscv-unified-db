@@ -9,8 +9,8 @@ name: SXLEN
 description: |
   Set of XLENs supported in S-mode. Can be one of:
 
-    * 32:   SXLEN is always 32
-    * 64:   SXLEN is always 64
+    * [32]:     SXLEN is always 32
+    * [64]:     SXLEN is always 64
     * [32, 64]: SXLEN can be changed (via mstatus.SXL) between 32 and 64
 long_name: TODO
 schema:

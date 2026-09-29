@@ -10,7 +10,7 @@ long_name: Vector Type
 address: 0xC21
 writable: false
 priv_mode: U
-length: MXLEN
+length: XLEN
 description: Provides the default type used to interpret the contents of the vector register file.
 definedBy:
   extension:
@@ -36,6 +36,25 @@ fields:
     type: RO-H
     reset_value(): |
       return (FOLLOW_VTYPE_RESET_RECOMMENDATION)? 1 : UNDEFINED_LEGAL;
+  ALTFMT:
+    location: 8
+    description: |
+      Selects the alternate floating-point format for vector floating-point instructions.
+
+      When ALTFMT is zero, the hart behaves as though Zvfbfa were not implemented.
+
+      Setting ALTFMT to one when SEW is greater than or equal to 32 is reserved.
+
+      [NOTE]
+      Implementations should set VILL when a reserved combination of ALTFMT and SEW is selected.
+
+      It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
+    definedBy:
+      extension:
+        name: Zvfbfa
+    type: RO-H
+    reset_value(): |
+      return (FOLLOW_VTYPE_RESET_RECOMMENDATION)? 0 : UNDEFINED_LEGAL;
   VMA:
     location: 7
     description: |

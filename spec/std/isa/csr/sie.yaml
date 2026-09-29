@@ -15,34 +15,60 @@ definedBy:
 length: SXLEN
 description: Supervisor interrupt-enable register.
 writable: true
+sw_read(): |
+  return $bits(CSR[mie]) & $bits(CSR[mideleg]);
 fields:
   SSIE:
     location: 1
     alias: mie.SSIE
     description: |
       Supervisor Software Interrupt Enable
-    type: RW
+    type: RW-R
+    sw_write(csr_value): |
+      if (CSR[mideleg].SSI == 1'b1) {
+        CSR[mie].SSIE = csr_value.SSIE;
+        return csr_value.SSIE;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
   STIE:
     location: 5
     alias: mie.STIE
     description: |
       Supervisor Timer Interrupt Enable
-    type: RW
+    type: RW-R
+    sw_write(csr_value): |
+      if (CSR[mideleg].STI == 1'b1) {
+        CSR[mie].STIE = csr_value.STIE;
+        return csr_value.STIE;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
   SEIE:
     location: 9
     alias: mie.SEIE
     description: |
       Supervisor External Interrupt Enable
-    type: RW
+    type: RW-R
+    sw_write(csr_value): |
+      if (CSR[mideleg].SEI == 1'b1) {
+        CSR[mie].SEIE = csr_value.SEIE;
+        return csr_value.SEIE;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
   LCOFIE:
     location: 13
     alias: mie.LCOFIE
     description: |
       Local Counter Overflow Interrupt Enable
-    type: RW
+    type: RW-R
+    sw_write(csr_value): |
+      if (CSR[mideleg].LCOFI == 1'b1) {
+        CSR[mie].LCOFIE = csr_value.LCOFIE;
+        return csr_value.LCOFIE;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
     definedBy:
       extension:

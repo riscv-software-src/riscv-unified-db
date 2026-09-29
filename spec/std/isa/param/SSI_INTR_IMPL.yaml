@@ -1,0 +1,28 @@
+# Copyright (c) David_Harris@hmc.edu 13 July 2026
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SSI_INTR_IMPL
+description: |
+  Whether or not supervisor-level software interrupts are implemented.
+
+  Possible values:
+
+  true::
+    Supervisor-level software interrupts are implemented.
+    `mie.SSIE` and `mideleg.SSI` are writable.
+
+  false::
+    Supervisor-level software interrupts are not implemented.
+    `mie.SSIE`, `mip.SSIP`, and `mideleg.SSI` are read-only zero.
+long_name: Supervisor-level software interrupts are implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: S

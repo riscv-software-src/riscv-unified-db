@@ -61,21 +61,11 @@ _record_fail() { ((_FAIL_COUNT++)) || true; }
 _record_warn() { ((_WARN_COUNT++)) || true; }
 
 # ---------------------------------------------------------------------------
-# Section 1: Core Prerequisites
+# Core Prerequisites
 # ---------------------------------------------------------------------------
 
 _check_core_prerequisites() {
   _section "Core Prerequisites"
-
-  # gpg
-  if command -v gpg > /dev/null 2>&1 || command -v gpg2 > /dev/null 2>&1; then
-    _pass "gpg  ${_C_DIM}found${_C_RESET}"
-    _record_pass
-  else
-    _fail "gpg not found"
-    _info "Fix: install gnupg via your package manager (e.g. \`brew install gnupg\`)"
-    _record_fail
-  fi
 
   # git
   if command -v git > /dev/null 2>&1; then
@@ -105,7 +95,7 @@ _check_core_prerequisites() {
 }
 
 # ---------------------------------------------------------------------------
-# Section 2: Mise Tools
+# Mise Tools
 # ---------------------------------------------------------------------------
 
 _check_mise_tool() {
@@ -151,14 +141,14 @@ _check_mise_tools() {
     return
   fi
 
-  local tools=(ruby node uv cmake make shellcheck github-cli prek)
+  local tools=(ruby aube uv cmake make shellcheck github-cli prek)
   for tool in "${tools[@]}"; do
     _check_mise_tool "$tool"
   done
 }
 
 # ---------------------------------------------------------------------------
-# Section 3: Ruby Ecosystem
+# Ruby Ecosystem
 # ---------------------------------------------------------------------------
 
 _check_ruby_ecosystem() {
@@ -192,7 +182,7 @@ _check_ruby_ecosystem() {
 }
 
 # ---------------------------------------------------------------------------
-# Section 4: Python Ecosystem
+# Python Ecosystem
 # ---------------------------------------------------------------------------
 
 _check_python_ecosystem() {
@@ -204,65 +194,57 @@ _check_python_ecosystem() {
     return
   fi
 
-  local expected_hash expected_target link_target
-  expected_hash=$(sha256sum "$ROOT/uv.lock" | cut -c1-16)
-  expected_target="${XDG_DATA_HOME:-$HOME/.local/share}/udb/venv-$expected_hash"
-  link_target=$(readlink "$ROOT/.venv" 2>/dev/null)
-
-  if [[ "$link_target" == "$expected_target" ]]; then
-    _pass ".venv linked to shared install  ${_C_DIM}venv-${expected_hash}${_C_RESET}"
-    _record_pass
-  elif [[ -z "$link_target" && -d "$ROOT/.venv" ]]; then
-    _warn ".venv is a plain directory, not a shared symlink"
-    _info "Fix: run \`bin/setup\` to migrate to the shared install"
+  if [[ -L "$ROOT/.venv" ]]; then
+    _warn ".venv is a symlink from the old shared-environment setup"
+    _info "Fix: run \`bin/setup\` to replace it with uv's default in-tree .venv"
     _record_warn
-  elif [[ -n "$link_target" ]]; then
-    _warn ".venv symlink does not match current uv.lock"
-    _info "Expected: $expected_target"
-    _info "Actual:   $link_target"
-    _info "Fix: run \`bin/setup\` to update the symlink"
-    _record_warn
-  else
+  elif [[ ! -d "$ROOT/.venv" ]]; then
     _fail ".venv not found"
-    _info "Fix: run \`bin/setup\`"
+    _info "Fix: run \`bin/setup\` or \`bin/uv sync\`"
+    _record_fail
+  elif (cd "$ROOT" && "$ROOT/bin/uv" sync --locked --check > /dev/null 2>&1); then
+    _pass ".venv is up to date"
+    _record_pass
+  else
+    _fail ".venv is not in sync with uv.lock"
+    _info "Fix: run \`bin/uv sync\`"
     _record_fail
   fi
 }
 
 # ---------------------------------------------------------------------------
-# Section 5: Node.js Ecosystem
+# Node.js Ecosystem
 # ---------------------------------------------------------------------------
 
 _check_node_ecosystem() {
   _section "Node.js Ecosystem"
 
-  local expected_hash expected_target link_target
-  expected_hash=$(sha256sum "$ROOT/package-lock.json" | cut -c1-16)
-  expected_target="${XDG_DATA_HOME:-$HOME/.local/share}/udb/npm-$expected_hash/node_modules"
-  link_target=$(readlink "$ROOT/node_modules" 2>/dev/null)
-
-  if [[ "$link_target" == "$expected_target" ]]; then
-    _pass "node_modules linked to shared install  ${_C_DIM}npm-${expected_hash}${_C_RESET}"
+  local node_version
+  if node_version=$("$ROOT/bin/aube" node --version 2>/dev/null); then
+    _pass "Node.js runtime  ${_C_DIM}${node_version#v} (via aube)${_C_RESET}"
     _record_pass
-  elif [[ -z "$link_target" && -d "$ROOT/node_modules" ]]; then
-    _warn "node_modules is a plain directory, not a shared symlink"
-    _info "Fix: run \`bin/setup\` to migrate to the shared install"
+  else
+    _fail "Node.js runtime not available through aube"
+    _info "Fix: run \`bin/setup\` or \`bin/aube node --version\`"
+    _record_fail
+  fi
+
+  if [[ -L "$ROOT/node_modules" ]]; then
+    _warn "node_modules is a symlink from the old shared-environment setup"
+    _info "Fix: run \`bin/setup\` to replace it with aube's in-tree node_modules"
     _record_warn
-  elif [[ -n "$link_target" ]]; then
-    _warn "node_modules symlink does not match current package-lock.json"
-    _info "Expected: $expected_target"
-    _info "Actual:   $link_target"
-    _info "Fix: run \`bin/setup\` to update the symlink"
-    _record_warn
+  elif [[ -d "$ROOT/node_modules" ]]; then
+    _pass "node_modules installed"
+    _record_pass
   else
     _fail "node_modules not found"
-    _info "Fix: run \`bin/setup\`"
+    _info "Fix: run \`bin/setup\` or \`bin/aube ci\`"
     _record_fail
   fi
 }
 
 # ---------------------------------------------------------------------------
-# Section 5: Developer Setup
+# Developer Setup
 # ---------------------------------------------------------------------------
 
 _check_developer_setup() {
@@ -279,37 +261,7 @@ _check_developer_setup() {
       _record_pass
     else
       _warn "Pre-commit hook not installed"
-      _info "Fix: run \`bin/install_hooks\` in the repo root"
-      _record_warn
-    fi
-
-    if [[ -f "${git_hooks_dir}/hooks/post-merge" ]]; then
-      if grep -qE 'bin/uv" sync|bin/npm" install' "${git_hooks_dir}/hooks/post-merge" 2>/dev/null; then
-        _warn "Post-merge hook is stale"
-        _info "Fix: run \`bin/install_hooks\`"
-        _record_warn
-      else
-        _pass "Post-merge hook installed"
-        _record_pass
-      fi
-    else
-      _warn "Post-merge hook not installed"
-      _info "Fix: run \`bin/install_hooks\` in the repo root"
-      _record_warn
-    fi
-
-    if [[ -f "${git_hooks_dir}/hooks/post-checkout" ]]; then
-      if grep -qE 'bin/uv" sync|bin/npm" install' "${git_hooks_dir}/hooks/post-checkout" 2>/dev/null; then
-        _warn "Post-checkout hook is stale"
-        _info "Fix: run \`bin/install_hooks\`"
-        _record_warn
-      else
-        _pass "Post-checkout hook installed"
-        _record_pass
-      fi
-    else
-      _warn "Post-checkout hook not installed"
-      _info "Fix: run \`bin/install_hooks\` in the repo root"
+      _info "Fix: run \`mise deps prek\` in the repo root"
       _record_warn
     fi
   fi
@@ -392,7 +344,7 @@ _check_developer_setup() {
 }
 
 # ---------------------------------------------------------------------------
-# Section 6: C++ Toolchain
+# C++ Toolchain
 # ---------------------------------------------------------------------------
 
 _check_cxx_toolchain() {

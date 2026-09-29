@@ -13,7 +13,7 @@ IDL source files use the `.idl` extension and live alongside the YAML/ADOC defin
 
 ## Anatomy of an `operation()` body
 
-Every instruction has an `operation()` block. Decode fields (`xd`, `xs1`, `xs2`, `imm`, etc.) are defined in scope automatically from the instruction encoding before the body runs — you do not declare them:
+Every instruction has an `operation()` block. Decode fields (`xd`, `xs1`, `xs2`, `imm`, etc.) are predefined in scope from the instruction encoding before the body runs — you do not declare them:
 
 ```idl
 # From: spec/std/isa/inst/I/add.yaml
@@ -97,37 +97,29 @@ X[xd] = X[xs1] + $signed(imm);   # sign-extend imm before adding
 
 ## Writing CSR callbacks
 
+CSR YAML definitions can include `sw_read()` and `sw_write()` callbacks for custom read and write behavior. Note that while `sw_read()` can be defined at the CSR or field level, `sw_write()` is defined **per-field** (operating on an individual CSR field).
+
 ### `sw_read()`
 
-Called when software reads the CSR. Return the value software should see. Useful for CSRs whose read value differs from stored state:
+Called when software reads the CSR. Returns the value software should see. Useful for CSRs whose read value differs from stored state:
 
-```idl
-# sw_read() for a read-as-zero field:
-function sw_read {
-  returns Bits<MXLEN>
-  description { Return the CSR value with reserved fields masked to zero. }
-  body {
-    return $bits(CSR[mcause]) & MCAUSE_MASK;
-  }
-}
+```yaml
+# sw_read() for a CSR:
+sw_read(): |
+  return $bits(CSR[mip]) & $bits(CSR[mideleg]);
 ```
 
-### `sw_write()`
+### `sw_write(csr_value)`
 
-Called when software writes the CSR. The argument is the value software wrote. Apply WARL (Write Any Read Legal) filtering here:
+Defined per field. Called when software writes the CSR. The `csr_value` parameter receives the value written by software and individual fields can be accessed like a CSR, e.g. `csr_value.FIELD`. Apply WARL (Write Any Read Legal) filtering here:
 
-```idl
+```yaml
 # In a field definition, sw_write() for a WARL field:
-function sw_write {
-  arguments Bits<2> value
-  description { Only legal values 0 and 1 are accepted; others are ignored. }
-  body {
-    if (value <= 1) {
-      CSR[myregister].field = value;
-    }
-    # if value is illegal, field is left unchanged
+sw_write(csr_value): |
+  # accept values [ 0, 1 ] only, otherwise ignore
+  if (csr_value.FIELD <= 1'b1) {
+    return csr_value.FIELD;
   }
-}
 ```
 
 ## Using configuration constants

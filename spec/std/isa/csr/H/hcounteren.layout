@@ -76,7 +76,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `time` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -116,7 +116,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `instret` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -154,7 +154,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`# 2+^.>! `hpmcounter<%= hpm_num %>` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`

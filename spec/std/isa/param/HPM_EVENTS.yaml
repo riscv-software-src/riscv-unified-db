@@ -29,9 +29,6 @@ definedBy:
             index: 4
             equal: true
           - name: HPM_COUNTER_EN
-            index: 4
-            equal: true
-          - name: HPM_COUNTER_EN
             index: 5
             equal: true
           - name: HPM_COUNTER_EN

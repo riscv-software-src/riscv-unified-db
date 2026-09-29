@@ -28,4 +28,6 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+hints:
+  - { $ref: inst/Zicfiss/c.sspopchk.yaml# }
 operation(): "" #do nothing

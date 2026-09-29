@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import argparse
+import contextlib
 import glob
 import json
 import os
@@ -48,13 +49,12 @@ SCHEMAS_PATH = Path(os.path.join(UDB_ROOT, "spec", "schemas"))
 _SCHEMA_VERSION_MAP: dict[str, str] = {}
 for _entry in SCHEMAS_PATH.iterdir():
     if _entry.suffix == ".json" and _entry.name != "json-schema-draft-07.json":
-        try:
+        with contextlib.suppress(OSError, json.JSONDecodeError):
             _schema_data = json.loads(_entry.read_text())
-            _version = _schema_data.get("$id")
-            if _version:
-                _SCHEMA_VERSION_MAP[_entry.name] = _version
-        except Exception:
-            pass
+            if isinstance(_schema_data, dict):
+                _version = _schema_data.get("$id")
+                if _version:
+                    _SCHEMA_VERSION_MAP[_entry.name] = _version
 
 
 def _versioned_schema_uri(uri: str) -> str:
@@ -304,14 +304,14 @@ def resolve(
         unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
         if do_checks and ("name" not in unresolved_arch_data):
             print(f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr)
-            exit(1)
+            sys.exit(1)
         fn_name = Path(rel_path).stem
         if do_checks and (fn_name != unresolved_arch_data["name"]):
             print(
                 f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name}) in {arch_root}/{rel_path}",
                 file=sys.stderr,
             )
-            exit(1)
+            sys.exit(1)
         resolved_objs[str(rel_path)] = _resolve(
             unresolved_arch_data,
             [],
@@ -329,20 +329,18 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compil
         return obj
 
     if isinstance(obj, list):
-        obj = list(
-            map(
-                lambda o: _resolve(
-                    o,
-                    obj_path,
-                    obj_file_path,
-                    doc_obj,
-                    arch_root,
-                    do_checks,
-                    compile_idl,
-                ),
-                obj,
+        obj = [
+            _resolve(
+                o,
+                obj_path,
+                obj_file_path,
+                doc_obj,
+                arch_root,
+                do_checks,
+                compile_idl,
             )
-        )
+            for o in obj
+        ]
         return obj
 
     if "$inherits" in obj:
@@ -414,10 +412,8 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compil
 
         # now parent_obj is the child and obj is the parent
         # merge them
-        keys = []
-        for key in obj.keys():
-            keys.append(key)
-        for key in parent_obj.keys():
+        keys = list(obj.keys())
+        for key in parent_obj:
             if keys.count(key) == 0:
                 keys.append(key)
 
@@ -485,7 +481,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compil
             del obj["$remove"]
 
         if compile_idl:
-            idl_keys = {key for key in obj.keys() if key.endswith("()")}
+            idl_keys = {key for key in obj if key.endswith("()")}
             for key in idl_keys:
                 if key.endswith("()") and obj[key]:
                     r = (
@@ -506,13 +502,14 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compil
                             shell=True,
                             capture_output=True,
                             text=True,
+                            check=False,
                         )
                         if result.returncode != 0:
                             print(
                                 f"ERROR: Failed to compile {obj_file_path}::{obj_path}::{key}: {result.stderr}",
                                 file=sys.stderr,
                             )
-                            exit(1)
+                            sys.exit(1)
                         obj[key[:-2] + "_ast"] = read_yaml(ast_tmp_file.name)
 
         return obj
@@ -547,13 +544,13 @@ def merge_file(
     if not os.path.exists(arch_path) and (overlay_path == None or not os.path.exists(overlay_path)):
         # neither exist
         if not os.path.exists(merge_path):
-            raise "Script error: no path exists"
+            raise RuntimeError("Script error: no path exists")
 
         # remove the merged file
         os.remove(merge_path)
     elif overlay_path == None or not os.path.exists(overlay_path):
         if arch_path == None:
-            raise "Must supply with arch_path or overlay_path"
+            raise ValueError("Must supply with arch_path or overlay_path")
 
         # no overlay, just copy arch
         if not os.path.exists(merge_path) or (
@@ -562,7 +559,7 @@ def merge_file(
             shutil.copyfile(os.path.join(arch_dir, rel_path), merge_path)
     elif not os.path.exists(arch_path):
         if overlay_path == None or not os.path.exists(overlay_path):
-            raise "Must supply with arch_path or overlay_path"
+            raise ValueError("Must supply with arch_path or overlay_path")
 
         # no arch, just copy overlay
         if not os.path.exists(merge_path) or (
@@ -666,7 +663,7 @@ def write_resolved_file_and_validate(
         except ValidationError:
             print(f"JSON Schema Validation Error for {rel_path}:")
             print(best_match(schema.iter_errors(resolved_obj)).message)
-            exit(1)
+            sys.exit(1)
 
     # Rewrite the $schema field to include the version prefix, so the written file
     # records the exact schema version that was used (e.g. 'v0.1/csr_schema.json#').

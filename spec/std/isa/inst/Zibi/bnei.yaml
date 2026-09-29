@@ -1,0 +1,45 @@
+# Copyright (c) RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: bnei
+long_name: Branch if not equal immediate
+description: |
+  Branch to PC + offset if the value in register xs1 is not equal to the XLEN-bit
+  comparison constant decoded from cimm.
+
+  The cimm field is not sign-extended: cimm == 0 encodes the value -1, and
+  cimm values 1 through 31 encode the corresponding positive integer values.
+
+  Raise a `MisalignedAddress` exception if the branch is taken and PC + offset is
+  misaligned.
+definedBy:
+  extension:
+    name: Zibi
+assembly: xs1, cimm, offset
+encoding:
+  match: "-----------------011-----1100011"
+  variables:
+    - name: offset
+      location: 31|7|30-25|11-8
+      left_shift: 1
+      sign_extend: true
+    - name: cimm
+      location: 24-20
+    - name: xs1
+      location: 19-15
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg lhs = X[xs1];
+  XReg rhs = (cimm == 0) ? {MXLEN{1'b1}} : cimm;
+
+  if (lhs != rhs) {
+    jump_halfword($pc + $signed(offset));
+  }

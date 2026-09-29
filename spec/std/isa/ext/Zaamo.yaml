@@ -6,7 +6,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Zaamo
-long_name: Load-acquire/Store-release atomic instructions
+long_name: Atomic Memory Operations
 type: unprivileged
 versions:
   - version: "1.0.0"

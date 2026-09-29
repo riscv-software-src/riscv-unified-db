@@ -403,7 +403,7 @@ module Udb
     sig { override.params(other_ext: Object).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other_ext)
       return nil unless other_ext.is_a?(Extension)
-      other_ext.name <=> name
+      name <=> other_ext.name
     end
 
     # returns list of exception codes that are defined by any version of this extension

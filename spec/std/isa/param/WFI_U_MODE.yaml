@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Neel Kumar
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: WFI_U_MODE
+long_name: |
+  Whether WFI is supported in U mode
+definedBy:
+  extension:
+    name: Sm
+description: |
+  Options:
+
+    * true: WFI can be executed in U mode
+    * false: Executing WFI in U mode raises an illegal instruction exception
+schema:
+  type: boolean

@@ -238,7 +238,7 @@ module Udb
     def initialize(data, info)
       super(data, info)
 
-      @param_values = @data.key?("params") ? @data["params"] : [].freeze
+      @param_values = @data.key?("params") ? @data["params"] : {}.freeze
 
       @mxlen = @data.dig("params", "MXLEN")
 

@@ -25,5 +25,5 @@ versions:
         company: SiFive, Inc.
 requirements:
   param:
-    name: STVEC_MODE_DIRECT
-    equal: true
+    name: STVEC_MODES
+    includes: 0

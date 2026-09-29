@@ -43,7 +43,7 @@ fields:
       [when="HPM_COUNTER_EN[3] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[3] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[3] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[3] ? UNDEFINED_LEGAL : 0;
   OF4:
@@ -56,7 +56,7 @@ fields:
       [when="HPM_COUNTER_EN[4] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[4] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[4] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[4] ? UNDEFINED_LEGAL : 0;
   OF5:
@@ -69,7 +69,7 @@ fields:
       [when="HPM_COUNTER_EN[5] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[5] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[5] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[5] ? UNDEFINED_LEGAL : 0;
   OF6:
@@ -82,7 +82,7 @@ fields:
       [when="HPM_COUNTER_EN[6] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[6] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[6] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[6] ? UNDEFINED_LEGAL : 0;
   OF7:
@@ -95,7 +95,7 @@ fields:
       [when="HPM_COUNTER_EN[7] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[7] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[7] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[7] ? UNDEFINED_LEGAL : 0;
   OF8:
@@ -108,7 +108,7 @@ fields:
       [when="HPM_COUNTER_EN[8] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[8] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[8] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[8] ? UNDEFINED_LEGAL : 0;
   OF9:
@@ -121,7 +121,7 @@ fields:
       [when="HPM_COUNTER_EN[9] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[9] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[9] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[9] ? UNDEFINED_LEGAL : 0;
   OF10:
@@ -134,7 +134,7 @@ fields:
       [when="HPM_COUNTER_EN[10] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[10] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[10] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[10] ? UNDEFINED_LEGAL : 0;
   OF11:
@@ -147,7 +147,7 @@ fields:
       [when="HPM_COUNTER_EN[11] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[11] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[11] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[11] ? UNDEFINED_LEGAL : 0;
   OF12:
@@ -160,7 +160,7 @@ fields:
       [when="HPM_COUNTER_EN[12] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[12] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[12] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[12] ? UNDEFINED_LEGAL : 0;
   OF13:
@@ -173,7 +173,7 @@ fields:
       [when="HPM_COUNTER_EN[13] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[13] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[13] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[13] ? UNDEFINED_LEGAL : 0;
   OF14:
@@ -186,7 +186,7 @@ fields:
       [when="HPM_COUNTER_EN[14] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[14] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[14] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[14] ? UNDEFINED_LEGAL : 0;
   OF15:
@@ -199,7 +199,7 @@ fields:
       [when="HPM_COUNTER_EN[15] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[15] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[15] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[15] ? UNDEFINED_LEGAL : 0;
   OF16:
@@ -212,7 +212,7 @@ fields:
       [when="HPM_COUNTER_EN[16] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[16] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[16] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[16] ? UNDEFINED_LEGAL : 0;
   OF17:
@@ -225,7 +225,7 @@ fields:
       [when="HPM_COUNTER_EN[17] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[17] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[17] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[17] ? UNDEFINED_LEGAL : 0;
   OF18:
@@ -238,7 +238,7 @@ fields:
       [when="HPM_COUNTER_EN[18] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[18] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[18] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[18] ? UNDEFINED_LEGAL : 0;
   OF19:
@@ -251,7 +251,7 @@ fields:
       [when="HPM_COUNTER_EN[19] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[19] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[19] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[19] ? UNDEFINED_LEGAL : 0;
   OF20:
@@ -264,7 +264,7 @@ fields:
       [when="HPM_COUNTER_EN[20] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[20] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[20] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[20] ? UNDEFINED_LEGAL : 0;
   OF21:
@@ -277,7 +277,7 @@ fields:
       [when="HPM_COUNTER_EN[21] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[21] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[21] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[21] ? UNDEFINED_LEGAL : 0;
   OF22:
@@ -290,7 +290,7 @@ fields:
       [when="HPM_COUNTER_EN[22] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[22] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[22] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[22] ? UNDEFINED_LEGAL : 0;
   OF23:
@@ -303,7 +303,7 @@ fields:
       [when="HPM_COUNTER_EN[23] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[23] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[23] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[23] ? UNDEFINED_LEGAL : 0;
   OF24:
@@ -316,7 +316,7 @@ fields:
       [when="HPM_COUNTER_EN[24] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[24] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[24] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[24] ? UNDEFINED_LEGAL : 0;
   OF25:
@@ -329,7 +329,7 @@ fields:
       [when="HPM_COUNTER_EN[25] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[25] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[25] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[25] ? UNDEFINED_LEGAL : 0;
   OF26:
@@ -342,7 +342,7 @@ fields:
       [when="HPM_COUNTER_EN[26] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[26] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[26] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[26] ? UNDEFINED_LEGAL : 0;
   OF27:
@@ -355,7 +355,7 @@ fields:
       [when="HPM_COUNTER_EN[27] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[27] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[27] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[27] ? UNDEFINED_LEGAL : 0;
   OF28:
@@ -368,7 +368,7 @@ fields:
       [when="HPM_COUNTER_EN[28] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[28] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[28] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[28] ? UNDEFINED_LEGAL : 0;
   OF29:
@@ -381,7 +381,7 @@ fields:
       [when="HPM_COUNTER_EN[29] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[29] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[29] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[29] ? UNDEFINED_LEGAL : 0;
   OF30:
@@ -394,7 +394,7 @@ fields:
       [when="HPM_COUNTER_EN[30] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[30] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[30] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[30] ? UNDEFINED_LEGAL : 0;
   OF31:
@@ -407,7 +407,7 @@ fields:
       [when="HPM_COUNTER_EN[31] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[31] ? CsrFieldType::RO : CsrFieldType::ROH;
+      return HPM_COUNTER_EN[31] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
       return HPM_COUNTER_EN[31] ? UNDEFINED_LEGAL : 0;
 

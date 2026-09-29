@@ -15,10 +15,12 @@ description: |
 
   Hypervisor-related interrupts (VS-mode interrupts and Supervisor Guest interrupts) are not reflected
   in `sip` even though those interrupts can be taken in HS-mode. Instead, they are reported through `hip`.
-length: 64
+length: SXLEN
 definedBy:
   extension:
     name: S
+sw_read(): |
+  return $bits(CSR[mip]) & $bits(CSR[mideleg]);
 fields:
   SSIP:
     location: 1
@@ -59,7 +61,13 @@ fields:
       ! 0 ! read-only 0
       ! 1 ! writable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
       !===
-    type: RW
+    type: RW-R
+    sw_write(csr_value): |
+      if (CSR[mideleg].SSI == 1'b1) {
+        CSR[mip].SSIP = csr_value.SSIP;
+        return csr_value.SSIP;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
     definedBy:
       extension:
@@ -153,7 +161,13 @@ fields:
       ! 1
       a! writable alias of `mip.LCOFIP` (and `vsip.LCOFIP` when `hideleg.LCOFI` is set)
       !===
-    type: RW-H
+    type: RW-RH
+    sw_write(csr_value): |
+      if (CSR[mideleg].LCOFI == 1'b1) {
+        CSR[mip].LCOFIP = csr_value.LCOFIP;
+        return csr_value.LCOFIP;
+      }
+      return 1'b0;
     reset_value: UNDEFINED_LEGAL
     definedBy:
       extension:

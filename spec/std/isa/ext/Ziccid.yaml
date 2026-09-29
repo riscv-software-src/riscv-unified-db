@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Ziccid
+long_name: Instruction/Data Coherence and Consistency
+description: |
+  The `Ziccid` extension mandates more stringent requirements for consistency
+  between instruction fetches and other memory accesses than those imposed by
+  the base ISA.
+
+  `Ziccid` guarantees that a hart's instruction fetches appear to occur in
+  program order with respect to each other, and that stores eventually become
+  visible to all harts' instruction fetches.
+
+  [NOTE]
+  The primary intent of the `Ziccid` extension is to accelerate JIT compilation
+  in multiprocessor systems.
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2026-06
+requirements:
+  extension:
+    name: Ziccif

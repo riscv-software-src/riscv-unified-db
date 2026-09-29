@@ -119,12 +119,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
-    # even though this is a memory operation, the exception occurs before that would be known,
-    # so mode() is the correct reporting mode rathat than effective_ldst_mode()
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg virtual_address = X[xs1];
 
   if (!is_naturally_aligned(<%= current_size[:align_bits] %>, virtual_address)) {
@@ -147,11 +141,7 @@ operation(): |
 
   XReg load_value = load_reserved(<%= current_size[:load_reserved_bits] %>, virtual_address, aq, rl, $encoding);
 <%- if size == "w" -%>
-  if (xlen() == 64) {
-    X[xd] = load_value;
-  } else {
-    X[xd] = sext(load_value[31:0], 32);
-  }
+  X[xd] = sext(load_value[31:0], 32);
 <%- else -%>
   X[xd] = load_value;
 <%- end -%>

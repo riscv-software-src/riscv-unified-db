@@ -27,6 +27,7 @@ access:
   u: always
   vs: always
   vu: always
+data_independent_timing: true
 operation(): |
   XReg t0 = X[creg2reg(xd)];
   XReg t1 = X[creg2reg(xs2)];

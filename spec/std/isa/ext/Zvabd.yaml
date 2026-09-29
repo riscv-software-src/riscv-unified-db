@@ -1,0 +1,21 @@
+# Copyright (c) Alibaba Damo Academy
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvabd
+long_name: Vector Integer Absolute Difference
+description: |
+  The Zvabd extension defines element-wise absolute difference instructions for
+  vectors of integers, including widening absolute-difference-and-accumulate
+  variants. These operations are widely used in image registration, object
+  recognition, motion estimation, and loop filters for video workloads.
+type: unprivileged
+versions:
+  - version: "0.7.0"
+    state: frozen
+requirements:
+  extension:
+    name: Zve32x

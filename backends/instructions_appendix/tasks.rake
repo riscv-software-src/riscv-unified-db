@@ -92,39 +92,21 @@ end
 namespace :test do
   desc "Check the instruction appendix output vs. stored golden output"
   task instruction_appendix: "gen:instruction_appendix_adoc" do
-    files = {
-      golden: {
-        file: Tempfile.new("golden"),
-        path: "#{$root}/tests/golden/all_instructions.golden.adoc"
-      },
-      output: {
-        file: Tempfile.new("output"),
-        path: "gen/instructions_appendix/all_instructions.adoc"
-      }
-    }
+    golden = "#{$root}/tests/golden/all_instructions.golden.adoc"
+    output = "gen/instructions_appendix/all_instructions.adoc"
 
-    # filter out lines that have file paths
-    [:golden, :output].each do |which|
-      file = files[which][:file]
-      path = files[which][:path]
-      orig = File.read(path)
-      filtered = orig.lines.reject { |l| l =~ /^:wavedrom:/ }.join("\n")
-      file.write(filtered)
-      file.flush
-    end
-
-    sh "diff -u #{files[:golden][:file].path} #{files[:output][:file].path}"
+    sh "diff -u #{golden} #{output}"
     if $? == 0
       puts "PASSED"
     else
       warn <<~MSG
-        The golden output for the instruction appendix has changed. If this is expected, run
+              The golden output for the instruction appendix has changed. If this is expected, run
 
-        cp gen/instructions_appendix/all_instructions.adoc tests/golden/all_instructions.golden.adoc
-        git add tests/golden/all_instructions.golden.adoc
+              cp gen/instructions_appendix/all_instructions.adoc tests/golden/all_instructions.golden.adoc
+              git add tests/golden/all_instructions.golden.adoc
 
-        And commit
-      MSG
+              And commit
+            MSG
       exit 1
     end
   end

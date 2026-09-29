@@ -2967,7 +2967,10 @@ module Idl
 
       value_result = value_try do
         idx_value = idx.value(symtab)
-        type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{lhs.type(symtab).width})" if idx_value >= lhs.type(symtab).width
+        lhs_width = lhs.type(symtab).width
+        if lhs_width != :unknown && idx_value >= lhs_width
+          type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{lhs_width})"
+        end
       end
       # OK, doesn't need to be known
 
@@ -4799,27 +4802,12 @@ module Idl
     # @return [Integer] the number of bits needed to represent value in two's complement
     def bits_needed(value, signed)
       if signed
-        case value
-        when 0
-          1
-        when 1
-          2
-        else
-          if value > 0
-            # need bit_legnth plus a sign bit
-            bits = value.bit_length + 1
-          else
-            # need bit_length plus a sign bit, unless value is a power of 2
-            if (value.abs & (value.abs - 1)) == 0
-              value.bit_length
-            else
-              value.bit_length + 1
-            end
-          end
-        end
+        # add sign bit
+        value.bit_length + 1
       else
         internal_error "unsigned value is negative" if value < 0
 
+        # 0 needs a single bit; `0.bit_length` returns 0.
         value == 0 ? 1 : value.bit_length
       end
     end
@@ -9388,7 +9376,9 @@ module Idl
 
     sig { params(symtab: SymbolTable).returns(CsrField) }
     def field_def(symtab)
-      T.must(csr_obj(symtab).fields.find { |f| f.name == @field_name })
+      field = csr_obj(symtab).fields.find { |f| f.name == @field_name }
+      type_error "#{@field_name} is not a field of CSR[#{csr_name}]" if not field
+      field
     end
 
     sig { params(symtab: SymbolTable).returns(String) }

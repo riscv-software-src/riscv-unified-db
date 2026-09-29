@@ -138,7 +138,7 @@ fields:
 
       Notably, `hstatus.VTVM` does *not* cause `hfence.vvma`, `sfence.w.inval`, or `sfence.inval.ir` to trap.
 
-      `mstatus.TVM` does not affect the VS-mode instructions controlled by `hstatus.TVTM`.
+      `mstatus.TVM` does not affect the VS-mode instructions controlled by `hstatus.VTVM`.
     type: RW
     reset_value: UNDEFINED_LEGAL
   VGEIN:

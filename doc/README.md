@@ -9,18 +9,15 @@ This directory is the root of the UDB documentation site, built with [Docusaurus
 
 ## Local development
 
-Dependencies are managed from the **repo root** via npm workspaces. Run all commands from the
+Dependencies are managed from the **repo root** via aube. Run all commands from the
 repo root, not from inside `doc/`.
 
 ```bash
-# Install dependencies (run once from repo root, or after package.json changes)
-npm install
-
 # Start the local dev server with live reload
-npm run start --workspace=doc
+./bin/aubr -C doc start
 
 # Build the static site
-npm run build --workspace=doc
+./bin/aubr -C doc build
 ```
 
 The dev server runs at `http://localhost:3000` by default.

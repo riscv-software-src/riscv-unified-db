@@ -58,9 +58,7 @@ namespace udb {
     SatisfiedResult operator&&(const SatisfiedResult& rhs) const {
       if (m_result == Type::No || rhs.m_result == Type::No) {
         return Type::No;
-      } else if (m_result == Type::Yes && rhs.m_result == Type::Maybe) {
-        return Type::Maybe;
-      } else if (m_result == Type::Maybe && rhs.m_result == Type::Yes) {
+      } else if (m_result == Type::Maybe || rhs.m_result == Type::Maybe) {
         return Type::Maybe;
       } else {
         udb_assert(m_result == Type::Yes && rhs.m_result == Type::Yes, "missed a case");
@@ -71,9 +69,7 @@ namespace udb {
     SatisfiedResult operator||(const SatisfiedResult& rhs) const {
       if (m_result == Type::Yes || rhs.m_result == Type::Yes) {
         return Type::Yes;
-      } else if (m_result == Type::No && rhs.m_result == Type::Maybe) {
-        return Type::Maybe;
-      } else if (m_result == Type::Maybe && rhs.m_result == Type::No) {
+      } else if (m_result == Type::Maybe || rhs.m_result == Type::Maybe) {
         return Type::Maybe;
       } else {
         udb_assert(m_result == Type::No && rhs.m_result == Type::No, "missed a case");

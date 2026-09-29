@@ -1,0 +1,28 @@
+# Copyright (c) David_Harris@hmc.edu 13 July 2026
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SEI_INTR_IMPL
+description: |
+  Whether or not supervisor-level external interrupts are implemented.
+
+  Possible values:
+
+  true::
+    Supervisor-level external interrupts are implemented.
+    `mie.SEIE` and `mideleg.SEI` are writable.
+
+  false::
+    Supervisor-level external interrupts are not implemented.
+    `mie.SEIE`, `mip.SEIP`, and `mideleg.SEI` are read-only zero.
+long_name: Supervisor-level external interrupts are implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: S

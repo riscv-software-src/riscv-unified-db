@@ -13,6 +13,7 @@ implemented_extensions:
   - [Zca, "1.0.0"]
   - [Zcd, "1.0.0"]
   - [M, "2.0"]
+  - [Zmmul, "1.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
   - [Smrnmi, "1.0"]
@@ -67,8 +68,8 @@ params:
   MCOUNTINHIBIT_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
-  MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_BASE_ALIGNMENT_DIRECT: 0x4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 0x4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MUTABLE_MISA_C: false
   MUTABLE_MISA_D: false
@@ -198,8 +199,8 @@ params:
       false,
       false,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 0x4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   TRAP_ON_ECALL_FROM_U: true
@@ -217,7 +218,7 @@ params:
   MSTATEEN_ENVCFG_TYPE: rw
   # Zvl32b parameters
   MUTABLE_MISA_V: false
-  HW_MSTATUS_VS_DIRTY_UPDATE: never
+  HW_MSTATUS_VS_DIRTY_UPDATE: imprecise
   RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: "VLMAX"
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   VLEN: 128
@@ -243,7 +244,7 @@ params:
   VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
-  HW_MSTATUS_FS_DIRTY_UPDATE: never
+  HW_MSTATUS_FS_DIRTY_UPDATE: imprecise
   MUTABLE_MISA_F: false
   HPM_COUNTER_EN:
     [
@@ -280,3 +281,12 @@ params:
       false,
       false,
     ]
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  SEI_INTR_IMPL: false
+  SSI_INTR_IMPL: false
+  STI_INTR_IMPL: false
+  WFI_U_MODE: false
+  WFI_FINITE: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false

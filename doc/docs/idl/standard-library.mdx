@@ -120,20 +120,22 @@ Memory access functions handle virtual-to-physical address translation, PMP/PMA 
 
 Reads `len` bits from virtual memory. `len` must be 8, 16, 32, or 64.
 
+Returns `XReg` (`Bits<MXLEN>`). The `len` bits that were read are zero-extended to MXLEN. To read a signed quantity, the caller must sign-extend the result itself with `sext(result, len)`.
+
 ```idl
-# Load byte (zero-extended)
+# Load byte, zero-extended to full XReg width
 X[xd] = read_memory(8, virtual_address, $encoding);
 
-# Load word (sign-extended via sext helper)
+# Load word, sign-extended from bit 31 by the sext helper
 X[xd] = sext(read_memory(32, virtual_address, $encoding), 32);
 
-# Load doubleword
+# Load doubleword. MXLEN must be 64 here, since the return type is Bits<MXLEN>
 Bits<64> data = read_memory(64, virtual_address, $encoding);
 ```
 
 ### `write_memory(len, virtual_address, value, encoding)`
 
-Writes `len` bits to virtual memory.
+Writes `len` bits to virtual memory. Returns nothing (`void`).
 
 ```idl
 # Store byte
@@ -149,3 +151,15 @@ write_memory(32, virtual_address, X[xs2][31:0], $encoding);
 :::note
 Both `read_memory` and `write_memory` may raise exceptions (access fault, page fault, misaligned) as a side effect of the access. No explicit error handling is needed in the calling code — the exception propagates automatically via `raise()`.
 :::
+
+### `sext(value, first_extended_bit)`
+
+Sign-extends `value` (an `XReg`) by replicating bit `first_extended_bit - 1` into bits `[MXLEN-1:first_extended_bit]` of the result. Returns an `XReg`.
+
+```idl
+# Sign extend a 32-bit quantity to a full XReg width.
+XReg operand1 = sext(X[xs1], 32);
+
+# Load word (sign-extended via sext helper)
+X[xd] = sext(read_memory(32, virtual_address, $encoding), 32);
+```

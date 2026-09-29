@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
 
 YAML_SAFE = YAML(typ="safe")
 
@@ -17,12 +18,9 @@ REPO_DIRECTORY = None
 
 def safe_get(data, key, default=""):
     """Safely get a value from a dictionary, return default if not found or error."""
-    try:
-        if isinstance(data, dict):
-            return data.get(key, default)
-        return default
-    except Exception:
-        return default
+    if isinstance(data, dict):
+        return data.get(key, default)
+    return default
 
 
 def get_json_path():
@@ -59,8 +57,7 @@ def load_inherited_variable(var_path, repo_dir):
     """Load variable definition from an inherited YAML file."""
     try:
         path, anchor = var_path.split("#")
-        if anchor.startswith("/"):
-            anchor = anchor[1:]
+        anchor = anchor.removeprefix("/")
 
         full_path = os.path.join(repo_dir, path)
 
@@ -79,7 +76,7 @@ def load_inherited_variable(var_path, repo_dir):
                 return None
 
         return data
-    except Exception as e:
+    except (OSError, ValueError, TypeError, YAMLError) as e:
         print(f"Error loading inherited variable {var_path}: {e!s}")
         return None
 

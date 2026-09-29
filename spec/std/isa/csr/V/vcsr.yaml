@@ -10,7 +10,7 @@ long_name: Vector Control and Status Register
 address: 0x00F
 writable: true
 priv_mode: U
-length: MXLEN
+length: XLEN
 description: Contains aliases to vxrm and vxsat CSRs
 definedBy:
   extension:

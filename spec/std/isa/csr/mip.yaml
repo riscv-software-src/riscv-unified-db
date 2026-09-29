@@ -185,7 +185,8 @@ fields:
       <%- if ext?(:Smaia) -%>
       * `mvip.SSIP`
       <%- end -%>
-    type: RW
+    type(): |
+      return SSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
@@ -214,7 +215,8 @@ fields:
       * `hip.VSSIP`
       * `hvip.VSSIP`
       * `vsip.SSIP` when `hideleg.VSSI` is set
-    type: RW
+    type(): |
+      return VSSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
@@ -225,13 +227,16 @@ fields:
     description: |
       *Machine Software Interrupt Pending*
 
-      Unused field.
+      Interrupt-pending bit for machine-level software interrupts.
+      MSIP is read-only in mip, and is written by accesses to memory-mapped control registers,
+      which are used to provide machine-level interprocessor interrupts.
 
       <%- if ext?(:Smaia) -%>
       With AIA/IMSIC, IPIs are delivered as external interrupts. As a result, this bit is
       unused and hardwired to 0.
       <%- end -%>
-    type: RO
+    type(): |
+      return MSI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value: 0
   STIP:
     location: 5
@@ -261,7 +266,8 @@ fields:
       * `mvip.STIP` when when `menvcfg.STCE` is clear
       <%- end -%>
 
-    type: RW
+    type(): |
+      return STI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
@@ -298,7 +304,8 @@ fields:
       * `hip.VSTIP`
       * `vsip.STIP` when `hideleg.VSTI` is set
       * `hvip.VSTIP` <% if ext?(:Sstc) %>when `menvcfg.STCE` is clear<% end %> (though `hvip.VSTIP` is writable)
-    type: RO-H
+    type(): |
+      return VSTI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
@@ -312,7 +319,8 @@ fields:
       Reports the current pending state of an M-mode timer interrupt.
 
       Bit is controlled by the timer device (using `mtimecmp`), and is not writable.
-    type: RO-H
+    type(): |
+      return MTI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value: 0
   SEIP:
     location: 9
@@ -334,7 +342,8 @@ fields:
       _Alias_:
 
       * `sip.SEIP` when `mideleg.SEI` is set (though `sip.SEIP` is read-only)
-    type: RW-H
+    type(): |
+      return SEI_INTR_IMPL ? CsrFieldType::RWH : CsrFieldType::RO;
     definedBy:
       extension:
         name: S
@@ -363,7 +372,8 @@ fields:
 
       * `hip.VSEIP`
       * `vsip.SEIP` when `hideleg.VSEI` is set
-    type: RO-H
+    type(): |
+      return VSEI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
@@ -378,7 +388,8 @@ fields:
 
       MEIP is controlled by the external interrupt controller <% if ext?(:Smaia) %>(AIA) <% end %>.
       It is not writable by software.
-    type: RO-H
+    type(): |
+      return MEI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value: 0
   SGEIP:
     location: 12

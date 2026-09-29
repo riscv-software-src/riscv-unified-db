@@ -1,0 +1,35 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vfext.vf2
+long_name: Vector OFP4 to OFP8 widening conversion
+description: |
+  Converts a vector of OFP4 E2M1 values in vector register vs2 (EEW=4,
+  EMUL=LMUL/2) to a vector of OFP8 E4M3 values in vector register vd
+  (EEW=8, EMUL=LMUL), according to mask vm. Defined only for SEW=8,
+  altfmt=0, and LMUL >= 1/4. No rounding occurs, and no floating-point
+  exception flags are set. This instruction does not access the fcsr
+  and is not considered a floating-point instruction for the purposes
+  of the floating-point context status (FS) setting.
+definedBy:
+  extension:
+    name: Zvfofp4min
+assembly: vd, vs2, vm
+encoding:
+  match: "010010------10110010-----1010111"
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

@@ -20,6 +20,7 @@ encoding:
   variables:
     - name: imm
       location: 31-25|11-7
+      sign_extend: true
     - name: fs2
       location: 24-20
     - name: xs1
@@ -29,7 +30,7 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
+data_independent_timing: false
 operation(): |
   check_f_ok($encoding);
 

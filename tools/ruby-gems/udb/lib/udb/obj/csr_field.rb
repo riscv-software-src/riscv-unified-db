@@ -715,7 +715,7 @@ module Udb
     sig { override.returns(T::Boolean) }
     def defined_in_base64? = base != 32
 
-    sig { params(xlen: Integer).returns(T::Boolean) }
+    sig { override.params(xlen: Integer).returns(T::Boolean) }
     def defined_in_base?(xlen) = xlen == 32 ? defined_in_base32? : defined_in_base64?
 
     # @return [Boolean] Whether or not this field exists for any XLEN

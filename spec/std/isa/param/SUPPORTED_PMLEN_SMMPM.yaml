@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SUPPORTED_PMLEN_SMMPM
+description: |
+  The `PMLEN` values supported by the `Smmpm` pointer masking facility
+  for M-mode, selected via the `PMM` field in `mseccfg`. `PMLEN` is the
+  number of high-order bits of an address that are masked.
+
+  Options:
+
+    0::
+      PMLEN=0 (pointer masking is disabled)
+    7::
+      PMLEN=XLEN-57 (i.e., PMLEN=7 on RV64)
+    16::
+      PMLEN=XLEN-48 (i.e., PMLEN=16 on RV64)
+
+  The current standard only supports these values (`zpm.adoc`, tag
+  `norm:pmlen_supported_values`). `PMM`=00 (pointer masking disabled,
+  PMLEN=0) is mandatory and always available, so it is mandatory
+  here.
+long_name: Pointer mask length for M mode
+schema:
+  type: array
+  items:
+    type: integer
+    enum: [0, 7, 16]
+  contains:
+    const: 0
+  minItems: 1
+  maxItems: 3
+  uniqueItems: true
+definedBy:
+  extension:
+    name: Smmpm

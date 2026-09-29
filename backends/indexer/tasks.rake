@@ -7,7 +7,7 @@ namespace :gen do
     index_path = Pathname.new("#{$root}/gen/indexer/index-unified.json")
     Dir.chdir "#{$root}/backends/indexer" do
       FileUtils.mkdir_p index_path.dirname
-      File.write index_path, `node index-unifieddb.js #{$root}`
+      File.write index_path, `#{$root}/bin/aube node index-unifieddb.js #{$root}`
     end
   end
 end

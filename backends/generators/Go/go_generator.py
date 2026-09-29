@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from generator import load_csrs, load_instructions, parse_match, signed
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
+LOGGER = logging.getLogger(__name__)
 
 
 def make_go(instr_dict, csrs, output_file="inst.go"):
@@ -68,9 +69,7 @@ func encode(a obj.As) *inst {
 
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(go_code)
-    logging.info(
-        f"Generated {output_file} with {len(instr_dict)} instructions and {len(csrs)} CSRs"
-    )
+    LOGGER.info(f"Generated {output_file} with {len(instr_dict)} instructions and {len(csrs)} CSRs")
 
 
 def parse_args():
@@ -121,36 +120,36 @@ def main():
     # Parse enabled extensions
     if include_all:
         enabled_extensions = []
-        logging.info("Including all instructions and CSRs (extension filtering disabled)")
+        LOGGER.info("Including all instructions and CSRs (extension filtering disabled)")
     else:
         # Get extensions from the command line
         enabled_extensions = [ext.strip() for ext in args.extensions.split(",") if ext.strip()]
-        logging.info(f"Enabled extensions: {', '.join(enabled_extensions)}")
+        LOGGER.info(f"Enabled extensions: {', '.join(enabled_extensions)}")
 
     # Log target architecture
-    logging.info(f"Target architecture: {args.arch}")
+    LOGGER.info(f"Target architecture: {args.arch}")
 
     # Check if the directories exist
     if not os.path.isdir(args.inst_dir):
-        logging.error(f"Instruction directory not found: {args.inst_dir}")
+        LOGGER.error(f"Instruction directory not found: {args.inst_dir}")
         sys.exit(1)
     if not os.path.isdir(args.csr_dir):
-        logging.warning(f"CSR directory not found: {args.csr_dir}")
+        LOGGER.warning(f"CSR directory not found: {args.csr_dir}")
 
     # Load instructions filtered by extensions or all instructions
     instr_dict = load_instructions(args.inst_dir, enabled_extensions, include_all, args.arch)
     if not instr_dict:
-        logging.error("No instructions found or all were filtered out.")
-        logging.error("Try using --verbose to see more details about the filtering process.")
+        LOGGER.error("No instructions found or all were filtered out.")
+        LOGGER.error("Try using --verbose to see more details about the filtering process.")
         sys.exit(1)
-    logging.info(f"Loaded {len(instr_dict)} instructions")
+    LOGGER.info(f"Loaded {len(instr_dict)} instructions")
 
     # Load CSRs filtered by extensions or all CSRs
     csrs = load_csrs(args.csr_dir, enabled_extensions, include_all, args.arch)
     if not csrs:
-        logging.warning("No CSRs found or all were filtered out.")
+        LOGGER.warning("No CSRs found or all were filtered out.")
     else:
-        logging.info(f"Loaded {len(csrs)} CSRs")
+        LOGGER.info(f"Loaded {len(csrs)} CSRs")
 
     # Generate the Go code
     make_go(instr_dict, csrs, args.output)

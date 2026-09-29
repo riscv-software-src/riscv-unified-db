@@ -114,7 +114,7 @@ module Udb
     sig { params(other: T.untyped).returns(T.nilable(Integer)).checked(:never) }
     def <=>(other)
       if other.is_a?(String)
-        VersionSpec.new(other) <=> self
+        self <=> VersionSpec.new(other)
       elsif other.is_a?(VersionSpec)
         if @major != other.major
           @major <=> other.major

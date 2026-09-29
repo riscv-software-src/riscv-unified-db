@@ -17,5 +17,7 @@ versions:
     ratification_date: 2023-09
     requirements:
       extension:
-        name: Zvknha
-        version: "= 1.0.0"
+        allOf:
+          - name: Zvknha
+            version: "= 1.0.0"
+          - name: Zve64x

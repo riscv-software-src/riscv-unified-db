@@ -465,7 +465,10 @@ namespace :gen do
     end
 
     sh [
-      "#{Udb.repo_root}/node_modules/.bin/antora",
+      "#{Udb.repo_root}/bin/aube",
+      "exec",
+      "antora",
+      "--",
       "--stacktrace",
       "generate",
       "--cache-dir=#{Udb.repo_root}/.home/.antora",

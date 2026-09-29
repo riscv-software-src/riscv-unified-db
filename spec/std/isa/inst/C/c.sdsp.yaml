@@ -8,7 +8,7 @@ kind: instruction
 name: c.sdsp
 long_name: Store doubleword to stack
 description: |
-  Stores a 64-bit value in register rs2 to memory.
+  Stores a 64-bit value in register xs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
   It expands to `sd` `xs2, offset(x2)`.
@@ -45,19 +45,19 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented?(ExtensionName::C) && MISA_CSR_IMPLEMENTED && (CSR[misa].C == 1'b0)) {
+    reserved_instruction($encoding);
   }
 
   XReg virtual_address = X[2] + imm;
 
   if (xlen() == 32) {
     if (implemented?(ExtensionName::Zclsd)) {
-      Bits<64> data = {X[creg2reg(xs2) + 1], X[creg2reg(xs2)]};
+      Bits<64> data = {X[xs2 + 1], X[xs2]};
       write_memory(64, virtual_address, data, $encoding);
     } else {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
   } else {
-    write_memory(64, virtual_address, X[creg2reg(xs2)], $encoding);
+    write_memory(64, virtual_address, X[xs2], $encoding);
   }

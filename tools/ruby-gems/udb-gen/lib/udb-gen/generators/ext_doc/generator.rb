@@ -181,13 +181,15 @@ module UdbGen
         "-a imagesdir=#{params[:images]}",
         "-r asciidoctor-diagram",
         "-r idl_highlighter",
-        "-a wavedrom=#{Udb.repo_root}/node_modules/.bin/wavedrom-cli",
+        "-a wavedrom=#{Udb.repo_root}/bin/wavedrom",
         "-o #{pdf_filename}",
         adoc_filename
       ].join(" ")
 
       Udb.logger.debug cmd
-      system cmd
+      unless system(cmd)
+        exit_with(:software_error, "asciidoctor-pdf failed while generating #{pdf_filename}")
+      end
 
       puts "SUCCESS! Wrote result to #{pdf_filename}"
     end

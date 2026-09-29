@@ -6,15 +6,17 @@ name = "riscv-unified-db"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "check-jsonschema>=0.36.1",
     "deepmerge>=2.1.0",
     "jsonschema>=4.26.0",
-    "pycobertura>=4.1.0",
-    "pytest>=9.0.2",
-    "reuse>=6.2.0",
     "ruamel-yaml>=0.19.1",
-    "ruff>=0.15.0",
     "tqdm>=4.67.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+    "reuse==6.2.0",
+    "ruff==0.16.6",
 ]
 
 [tool.ruff]
@@ -22,25 +24,29 @@ line-length = 100
 extend-exclude = [ "ext" ]
 
 [tool.ruff.lint]
-select = [
-    "F",    # pyflakes - various basic rules
-    "E",    # pycodestyle errors
-    "W",    # pycodestyle warnings
-    "I",    # isort - import related rules
-    "UP",   # pyupgrade - suggest upgrades for newer Python
-    "B",    # flake8-bugbear - bugbear rules
-    "A",    # flake8-builtins - shadow builtins
-    "EXE",  # flake8-executable - executable file shebangs
-    "RUF",  # ruff specific rules
-    "SIM",  # flake8-simplify - simplifications
-]
-ignore = [
-    "E501",   # line too long (handled by formatter)
-    "E711",   # comparison to None (too many to fix now)
-    "B016",   # cannot raise a literal (legacy code)
-    "B904",   # raise from err (requires careful refactoring)
-    "SIM102", # nested if statements (readability preference)
-    "SIM108", # ternary operator (readability preference)
-    "SIM118", # use key in dict instead of key in dict.keys()
-    "RUF005", # consider list unpacking instead of concatenation
+extend-select = [
+    "A005",   # flake8-builtins: stdlib module shadowing
+    "B007",   # flake8-bugbear: unused loop control variable
+    "B011",   # flake8-bugbear: assert False
+    "B034",   # flake8-bugbear: regex positional args
+    "E713",   # pycodestyle: not in
+    "E714",   # pycodestyle: is not
+    "E721",   # pycodestyle: direct type comparisons
+    "EXE003", # flake8-executable: Python shebangs
+    "F403",   # pyflakes: star import analysis blind spot
+    "F405",   # pyflakes: possibly undefined from star import
+    "F406",   # pyflakes: star import only at module level
+    "F722",   # pyflakes: forward annotation syntax error
+    "RUF001", # ruff: ambiguous Unicode in strings
+    "RUF002", # ruff: ambiguous Unicode in docstrings
+    "RUF003", # ruff: ambiguous Unicode in comments
+    "RUF006", # ruff: dangling asyncio task
+    "RUF021", # ruff: mixed and/or precedence
+    "RUF043", # ruff: pytest raises match ambiguity
+    "RUF061", # ruff: pytest raises/warns context manager
+    "RUF064", # ruff: non-octal permissions
+    "RUF102", # ruff: invalid rule code
+    "RUF103", # ruff: invalid suppression comment
+    "RUF104", # ruff: unmatched suppression comment
+    "W191",   # pycodestyle: tabs in indentation
 ]

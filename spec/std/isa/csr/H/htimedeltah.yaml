@@ -29,4 +29,4 @@ fields:
       CSR[htimedelta].DELTA = {csr_value.DELTA, CSR[htimedelta].DELTA[31:0]};
       return csr_value.DELTA;
 sw_read(): |
-  return CSR[htimedelta].DELTA[31:0];
+  return CSR[htimedelta].DELTA[63:32];

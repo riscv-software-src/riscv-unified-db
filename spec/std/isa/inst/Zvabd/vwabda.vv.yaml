@@ -1,0 +1,72 @@
+# Copyright (c) Alibaba Damo Academy
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: vwabda.vv
+long_name: Vector Widening Signed Integer Absolute Difference and Accumulate, Overwrite Addend
+description: |
+  Computes the element-wise absolute difference of two signed integer SEW-bit
+  source operands vs1 and vs2, and accumulates the results into the elements of
+  a 2*SEW-bit operand vd.
+
+  Reserved when SEW is neither 8 nor 16.
+definedBy:
+  extension:
+    name: Zvabd
+assembly: vd, vs2, vs1, vm
+encoding:
+  match: 010101-----------010-----1010111
+  variables:
+    - name: vm
+      location: 25
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  VectorState state = vector_state();
+
+  if (state.sew != 8 && state.sew != 16) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  U32 sew2 = state.sew + state.sew;
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    U32 src_start = i * state.sew;
+    U32 src_end = src_start + state.sew - 1;
+    U32 dst_start = i * sew2;
+    U32 dst_end = dst_start + sew2 - 1;
+    if (vm == 1'b1 || V[0][i:i] == 1'b1) {
+      # active element
+      if ($signed(V[vs2][src_end:src_start]) >= $signed(V[vs1][src_end:src_start])) {
+        V[vd][dst_end:dst_start] = V[vd][dst_end:dst_start] + (V[vs2][src_end:src_start] - V[vs1][src_end:src_start]);
+      } else {
+        V[vd][dst_end:dst_start] = V[vd][dst_end:dst_start] + (V[vs1][src_end:src_start] - V[vs2][src_end:src_start]);
+      }
+    }
+    # inactive element: handled according to vtype.VMA policy
+  }
+  # tail elements (i >= vl): handled according to vtype.VTA policy
+
+  CSR[vstart].VALUE = 0;

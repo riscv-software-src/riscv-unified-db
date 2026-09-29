@@ -84,14 +84,14 @@ fields:
         <%- if ext?(:Sscofpmf) -%>
         * `mhpmevent31.MINH` is set and the current privilege level is M
         <%- if ext?(:S) -%>
-        * `mhpmevent31.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31..SINH`<%- end -%> is set and the current privilege level is (H)S
+        * `mhpmevent31.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.SINH`<%- end -%> is set and the current privilege level is (H)S
         <%- end -%>
         <%- if ext?(:U) -%>
-        * `mhpmevent31.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.SINH`<%- end -%> is set and the current privilege level is U
+        * `mhpmevent31.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.UINH`<%- end -%> is set and the current privilege level is U
         <%- end -%>
         <%- if ext?(:H) -%>
-        * `mhpmevent31.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.SINH`<%- end -%> is set and the current privilege level is VS
-        * `mhpmevent31.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.SINH`<%- end -%> is set and the current privilege level is VU
+        * `mhpmevent31.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.VSINH`<%- end -%> is set and the current privilege level is VS
+        * `mhpmevent31.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent31.VUINH`<%- end -%> is set and the current privilege level is VU
         <%- end -%>
         <%- end -%>
       --

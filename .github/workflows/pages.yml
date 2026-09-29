@@ -23,7 +23,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Clone Github Repo Action
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
 
       - name: Make _site
         run: mkdir _site
@@ -150,25 +153,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Collect all per-schema release tags (schemas/<schema_name>/<version>)
-          SCHEMA_TAGS=$(gh release list --limit 200 --json tagName --jq '.[] | .tagName | select(startswith("schemas/"))' 2>/dev/null || true)
-          for tag in $SCHEMA_TAGS; do
-              # tag format: schemas/<schema_name>/<version>
-              rest="${tag#schemas/}"
-              schema_name="${rest%%/*}"
-              version="${rest#*/}"
-              mkdir -p "_site/schemas/${schema_name}/${version}"
-              gh release download "${tag}" --dir "_site/schemas/${schema_name}/${version}" --pattern "*.json" 2>/dev/null || true
-            done
-          # Write a JSON index of all available schema versions and files
-          ruby tools/scripts/gen_schema_index.rb _site/schemas _site/schemas/index.json
+          ./do gen:schemas
+          ./bin/python tools/scripts/download_schema_releases.py \
+            --gen-schemas-dir gen/schemas \
+            --output-dir _site/schemas
+          ./bin/python tools/scripts/gen_schema_index.py _site/schemas _site/schemas/index.json
 
       - name: Create index
         env:
           PAGES_URL: https://riscv.github.io/riscv-unified-db
         run: >
           cp doc/udb-block.svg _site/ &&
-          ruby -r erb -r date -e "File.write('_site/index.html', ERB.new(File.read('tools/scripts/pages.html.erb'), trim_mode: '-').result(binding))"
+          ./bin/python tools/scripts/gen_pages_index.py
 
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
@@ -178,4 +174,4 @@ jobs:
           path: "_site"
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

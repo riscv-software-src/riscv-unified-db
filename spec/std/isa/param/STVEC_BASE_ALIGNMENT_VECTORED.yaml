@@ -1,0 +1,100 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: STVEC_BASE_ALIGNMENT_VECTORED
+long_name: |
+  Minimum alignment of `stvec.BASE` when `stvec.MODE` is 1 (Vectored)
+definedBy:
+  allOf:
+    - extension:
+        name: S
+    - param:
+        name: STVEC_MODES
+        includes: 1
+        reason: Only relevant when vectored mode is supported
+description: |
+  Minimum alignment of the base pointer when `stvec.MODE` is Vectored. Because
+  `stvec` excludes the two least-significant bits of the base, the minimum
+  alignment cannot be less than 4 bytes.
+schema:
+  description: An unsigned power of 2 greater than or equal to 4 that fits in 64 bits
+  default: 0x4
+  enum:
+    [
+      0x4,
+      0x8,
+      0x10,
+      0x20,
+      0x40,
+      0x80,
+      0x100,
+      0x200,
+      0x400,
+      0x800,
+      0x1000,
+      0x2000,
+      0x4000,
+      0x8000,
+      0x10000,
+      0x20000,
+      0x40000,
+      0x80000,
+      0x100000,
+      0x200000,
+      0x400000,
+      0x800000,
+      0x1000000,
+      0x2000000,
+      0x4000000,
+      0x8000000,
+      0x10000000,
+      0x20000000,
+      0x40000000,
+      0x80000000,
+      0x100000000,
+      0x200000000,
+      0x400000000,
+      0x800000000,
+      0x1000000000,
+      0x2000000000,
+      0x4000000000,
+      0x8000000000,
+      0x10000000000,
+      0x20000000000,
+      0x40000000000,
+      0x80000000000,
+      0x100000000000,
+      0x200000000000,
+      0x400000000000,
+      0x800000000000,
+      0x1000000000000,
+      0x2000000000000,
+      0x4000000000000,
+      0x8000000000000,
+      0x10000000000000,
+      0x20000000000000,
+      0x40000000000000,
+      0x80000000000000,
+      0x100000000000000,
+      0x200000000000000,
+      0x400000000000000,
+      0x800000000000000,
+      0x1000000000000000,
+      0x2000000000000000,
+      0x4000000000000000,
+      0x8000000000000000,
+    ]
+
+requirements:
+  if:
+    param:
+      name: SXLEN
+      includes: 32
+  then:
+    param:
+      name: STVEC_BASE_ALIGNMENT_VECTORED
+      lessThanOrEqual: 0x80000000

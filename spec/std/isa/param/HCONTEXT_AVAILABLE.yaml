@@ -8,7 +8,7 @@ kind: parameter
 name: HCONTEXT_AVAILABLE
 description: |
   Specifies if HCONTEXT is available
-long_name: TODO
+long_name: HCONTEXT Availability
 schema:
   type: boolean
 definedBy:

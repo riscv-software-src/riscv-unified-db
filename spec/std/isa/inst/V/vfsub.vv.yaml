@@ -11,7 +11,9 @@ description: |
   Performs floating-point subtraction on elements from vs2 and vs1, according to mask vm, and stores results in vd. Element width is determined by SEW setting. Follows IEEE-754 floating-point standards. Supports vector masking and follows vector tail policy.
 definedBy:
   extension:
-    name: Zvl32b
+    anyOf:
+      - name: Zvl32b
+      - name: Zvfbfa
 assembly: vd, vs2, vs1, vm
 encoding:
   match: 000010-----------001-----1010111

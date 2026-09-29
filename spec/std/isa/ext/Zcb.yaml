@@ -43,3 +43,6 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
+requirements:
+  extension:
+    name: Zca

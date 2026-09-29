@@ -56,7 +56,7 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
+data_independent_timing: false
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);

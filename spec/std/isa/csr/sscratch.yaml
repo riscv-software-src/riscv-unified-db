@@ -10,14 +10,15 @@ long_name: Supervisor Scratch Register
 address: 0x140
 writable: true
 priv_mode: S
-length: 64
+length: SXLEN
 description: Scratch register for software use. Bits are not interpreted by hardware.
 definedBy: # actually, defined by RV64, but must implement U-mode for this CSR to exist
   extension:
     name: S
 fields:
   SCRATCH:
-    location: 63-0
+    location_rv32: 31-0
+    location_rv64: 63-0
     description: Scratch value
     type: RW
     reset_value: UNDEFINED_LEGAL

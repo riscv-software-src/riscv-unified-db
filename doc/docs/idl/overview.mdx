@@ -105,7 +105,7 @@ function jump {
       raise(ExceptionCode::InstructionAddressMisaligned);
     }
 
-    PC = target_addr; # (5)
+    $pc = target_addr; # (5)
   }
 }
 ```
@@ -114,7 +114,7 @@ function jump {
 2. A textual description is mandatory — IDL is intended as executable documentation.
 3. Executable statements go inside `body { ... }`.
 4. Trigger a synchronous exception by calling `raise`.
-5. Set the new PC to the target address.
+5. Set the new PC to the target address using the `$pc` builtin.
 
 ---
 

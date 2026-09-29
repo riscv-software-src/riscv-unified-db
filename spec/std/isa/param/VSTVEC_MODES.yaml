@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSTVEC_MODES
+long_name: |
+  Modes supported by `vstvec.MODE`
+definedBy:
+  extension:
+    name: H
+description: |
+  Options:
+
+    0::
+      Direct; All traps set `pc` to `vstvec.BASE`
+    1::
+      Vectored; Asynchronous interrupts set `pc` to `vstvec.BASE` + 4 x cause.
+
+  If only one mode is given, `vstvec.MODE` is assumed to be read-only with that value.
+  Otherwise, `vstvec.MODE` is read-write.
+schema:
+  type: array
+  items:
+    type: integer
+    enum: [0, 1]
+  minItems: 1
+  maxItems: 2
+  uniqueItems: true

@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vstimecmph
+long_name: Virtual supervisor timer compare high
+address: 0x25D
+writable: true
+virtual_address: 0x15D
+priv_mode: VS
+length: 32
+description: |
+  Upper 32 bits of the `vstimecmp` CSR.
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        allOf:
+          - name: H
+          - name: Sstc
+fields:
+  TIME:
+    location: 31-0
+    alias: vstimecmp.TIME[63:32]
+    description: |
+      Upper 32 bits of the virtual supervisor timer compare value.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if (CSR[henvcfg].STCE == 1'b0 || CSR[hcounteren].TM == 1'b0) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      CSR[vstimecmp].TIME = {csr_value.TIME, CSR[vstimecmp].TIME[31:0]};
+      return csr_value.TIME;
+sw_read(): |
+  if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (CSR[henvcfg].STCE == 1'b0 || CSR[hcounteren].TM == 1'b0) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  return CSR[vstimecmp].TIME[63:32];

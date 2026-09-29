@@ -1,0 +1,28 @@
+# Copyright (c) David_Harris@hmc.edu 13 July 2026
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MTI_INTR_IMPL
+description: |
+  Whether or not machine-level timer interrupts are implemented.
+
+  Possible values:
+
+  true::
+    Machine-level timer interrupts are implemented.
+    `mie.MTIE`, `mideleg.MTI`, and `mtimecmp` are writable.
+
+  false::
+    Machine-level timer interrupts are not implemented.
+    `mie.MTIE` and `mideleg.MTI` are read-only zero. `mtimecmp` is optional and may be read-only zero.
+long_name: Machine-level timer interrupts are implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: Sm

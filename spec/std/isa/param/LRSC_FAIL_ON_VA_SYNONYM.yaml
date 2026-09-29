@@ -9,7 +9,7 @@ name: LRSC_FAIL_ON_VA_SYNONYM
 description: |
   Whether or not an `sc.l`/`sc.d` will fail if its VA does not match the VA of the prior
   `lr.l`/`lr.d`, even if the physical address of the SC and LR are the same
-long_name: TODO
+long_name: "Store Conditional fails on virtual address mismatch of Load Reserved"
 schema:
   type: boolean
 definedBy:

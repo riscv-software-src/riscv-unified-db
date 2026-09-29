@@ -28,7 +28,10 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
+data_independent_timing: false
+pseudoinstructions:
+  - when: "true"
+    to: fmv.x.s xd, fs1
 operation(): |
   check_f_ok($encoding);
 

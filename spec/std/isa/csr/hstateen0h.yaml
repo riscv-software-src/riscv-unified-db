@@ -156,4 +156,4 @@ fields:
       `mstateen0.CTR=0`.
     type: RW
     reset_value: 0
-sw_read(): return $bits(CSR[hstateen0])[63:32];
+sw_read(): return CSR[hstateen0].sw_read()[63:32];

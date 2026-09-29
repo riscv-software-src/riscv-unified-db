@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: c.sspush
+long_name: Compressed Shadow Stack Push
+description: |
+  C.SSPUSH pushes link register `x1` to the shadow stack.
+
+  This instruction uses the `c.mop.1` codepoint provided by Zcmop and expands
+  to `sspush x1`.
+definedBy:
+  extension:
+    allOf:
+      - name: Zicfiss
+      - name: Zcmop
+assembly: x1
+encoding:
+  match: "0110000010000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

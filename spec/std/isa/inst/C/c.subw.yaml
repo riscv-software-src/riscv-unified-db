@@ -29,6 +29,7 @@ access:
   u: always
   vs: always
   vu: always
+data_independent_timing: true
 operation(): |
   Bits<32> t0 = X[creg2reg(xd)][31:0];
   Bits<32> t1 = X[creg2reg(xs2)][31:0];

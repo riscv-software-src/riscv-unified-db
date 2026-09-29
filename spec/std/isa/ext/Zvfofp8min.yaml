@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfofp8min
+long_name: Vector OFP8 Conversion Extension
+description: |
+ The Zvfofp8min extension provides basic vector conversion support for the
+ 8-bit floating-point formats OFP8 E4M3 and OFP8 E5M2.
+type: unprivileged
+versions:
+ - version: "0.9.0"
+   state: development
+   repositories:
+     - url: https://github.com/riscv/riscv-isa-manual
+       branch: zvfofp8min
+requirements:
+ extension:
+   name: Zve32f

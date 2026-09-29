@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /home/paulclar/projects/riscv-unified-db/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: {docdir}/../../bin/wavedrom
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -10716,6 +10716,65 @@ Included in::
 
 
 
+[#udb:doc:inst:beqi]
+== beqi
+
+Synopsis::
+Branch if equal immediate
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+beqi xs1, cimm, offset
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x63,"type":2},{"bits":5,"name": "offset[4:1|11]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "cimm","type":4},{"bits":7,"name": "offset[12|10:5]","type":4}]}
+....
+
+Description::
+Branch to PC + offset if the value in register xs1 is equal to the XLEN-bit
+comparison constant decoded from cimm.
+
+The cimm field is not sign-extended: cimm == 0 encodes the value -1, and
+cimm values 1 through 31 encode the corresponding positive integer values.
+
+Raise a `MisalignedAddress` exception if the branch is taken and PC + offset is
+misaligned.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|offset |sext({$encoding[31], $encoding[7], $encoding[30:25], $encoding[11:8], 1'd0}, 13)
+|cimm |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zibi*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:bext]
 == bext
 
@@ -11243,6 +11302,65 @@ Included in::
 | Extension | Version
 
 | *I*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:bnei]
+== bnei
+
+Synopsis::
+Branch if not equal immediate
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+bnei xs1, cimm, offset
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x63,"type":2},{"bits":5,"name": "offset[4:1|11]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "cimm","type":4},{"bits":7,"name": "offset[12|10:5]","type":4}]}
+....
+
+Description::
+Branch to PC + offset if the value in register xs1 is not equal to the XLEN-bit
+comparison constant decoded from cimm.
+
+The cimm field is not sign-extended: cimm == 0 encodes the value -1, and
+cimm values 1 through 31 encode the corresponding positive integer values.
+
+Raise a `MisalignedAddress` exception if the branch is taken and PC + offset is
+misaligned.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|offset |sext({$encoding[31], $encoding[7], $encoding[30:25], $encoding[11:8], 1'd0}, 13)
+|cimm |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zibi*
 | any
 |===
 
@@ -13729,20 +13847,27 @@ Base::
 |===
 
 Assembly::
-c.nop
+c.nop imm
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":16,"name": 0x1,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":5,"name": 0x0,"type":2},{"bits":1,"name": "imm[5]","type":4},{"bits":3,"name": 0x0,"type":2}]}
 ....
 
 Description::
+C.NOP does not change any user-visible state, except for advancing the pc and
+accepting any HINTs.
 C.NOP expands into `addi x0, x0, 0`.
+C.NOP with non-zero immediate values are HINTs.
 
 
 Decode Variables::
-c.nop has no decode variables.
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|imm |sext({$encoding[12], $encoding[6:2]}, 6)
+|===
 
 Included in::
 
@@ -14233,7 +14358,7 @@ RV64::
 ....
 
 Description::
-Stores a 64-bit value in register rs2 to memory.
+Stores a 64-bit value in register xs2 to memory.
 It computes an effective address by adding the zero-extended offset, scaled by 8,
 to the stack pointer, x2.
 It expands to xref:insts:sd.adoc#udb:doc:inst:sd[sd] `xs2, offset(x2)`.
@@ -14659,6 +14784,109 @@ Included in::
 
 
 
+[#udb:doc:inst:c_sspopchk]
+== c.sspopchk
+
+Synopsis::
+Compressed Shadow Stack Pop and Check
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+c.sspopchk x5
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x6281,"type":2}]}
+....
+
+Description::
+C.SSPOPCHK pops a value from the shadow stack and checks it against link
+register `x5`.
+
+This instruction uses the xref:insts:c_mop_5.adoc#udb:doc:inst:c_mop_5[c.mop.5] codepoint provided by Zcmop and expands
+to `sspopchk x5`.
+
+
+Decode Variables::
+c.sspopchk has no decode variables.
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zicfiss*
+| any
+| *Zcmop*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:c_sspush]
+== c.sspush
+
+Synopsis::
+Compressed Shadow Stack Push
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+c.sspush x1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":16,"name": 0x6081,"type":2}]}
+....
+
+Description::
+C.SSPUSH pushes link register `x1` to the shadow stack.
+
+This instruction uses the xref:insts:c_mop_1.adoc#udb:doc:inst:c_mop_1[c.mop.1] codepoint provided by Zcmop and expands
+to `sspush x1`.
+
+
+Decode Variables::
+c.sspush has no decode variables.
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zicfiss*
+| any
+| *Zcmop*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:c_sub]
 == c.sub
 
@@ -14977,8 +15205,6 @@ Included in::
 
 | *Zcb*
 | any
-| *Zbb*
-| any
 |===
 
 
@@ -15084,7 +15310,7 @@ Included in::
 
 | *Zcb*
 | any
-| *Zbb*
+| *Zba*
 | any
 |===
 
@@ -15130,7 +15356,7 @@ operation():
 
 xref:insts:cbo_clean.adoc#udb:doc:inst:cbo_clean[cbo.clean] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
-<%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_clean.adoc#udb:doc:inst:cbo_clean[cbo.clean] has UNSPECIFIED behavior.
 <%- end -%>
 
@@ -15143,7 +15369,7 @@ one of the following exceptions will occur:
   * `Store/AMO Page Fault` if virtual memory translation fails <% if ext?(:H) %>when V=0 or during VS-stage translation<% end %>
   * `Store/AMO Access Fault` if a PMP or PMA access check fails
 
-<%- if CACHE_BLOCK_SIZE.bit_length <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
 and PMA access checks only need to check a single address in the line.
 <%- end -%>
@@ -15202,7 +15428,7 @@ Flushes an entire cache block by cleaning it and then invalidating it in all cac
 
 xref:insts:cbo_flush.adoc#udb:doc:inst:cbo_flush[cbo.flush] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
-<%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_flush.adoc#udb:doc:inst:cbo_flush[cbo.flush] has UNSPECIFIED behavior.
 <%- end -%>
 
@@ -15215,7 +15441,7 @@ one of the following exceptions will occur:
   * `Store/AMO Page Fault` if virtual memory translation fails <% if ext?(:H) %>when V=0 or during VS-stage translation<% end %>
   * `Store/AMO Access Fault` if a PMP or PMA access check fails.
 
-<%- if CACHE_BLOCK_SIZE.bit_length <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
 and PMA access checks only need to check a single address in the line.
 <%- end -%>
@@ -15313,8 +15539,8 @@ The table below summarizes the options.
 
 xref:insts:cbo_inval.adoc#udb:doc:inst:cbo_inval[cbo.inval] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
-<%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
-Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] has UNSPECIFIED behavior.
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_inval.adoc#udb:doc:inst:cbo_inval[cbo.inval] has UNSPECIFIED behavior.
 <%- end -%>
 
 Invalidate operations are treated as stores for page and access permissions. If permission checks fail,
@@ -15326,7 +15552,7 @@ one of the following exceptions will occur:
   * `Store/AMO Page Fault` if virtual memory translation fails <% if ext?(:H) %>when V=0 or during VS-stage translation<% end %>
   * `Store/AMO Access Fault` if a PMP or PMA access check fails.
 
-<%- if CACHE_BLOCK_SIZE.bit_length <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
 and PMA access checks only need to check a single address in the line.
 <%- end -%>
@@ -15387,7 +15613,7 @@ The block zeroing does not need to be atomic.
 
 xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
-<%- if CACHE_BLOCK_SIZE.bit_length > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Both PMP and PMA access control must be the same for all bytes in the block; otherwise, xref:insts:cbo_zero.adoc#udb:doc:inst:cbo_zero[cbo.zero] has UNSPECIFIED behavior.
 <%- end -%>
 
@@ -15400,7 +15626,7 @@ one of the following exceptions will occur:
   * `Store/AMO Page Fault` if virtual memory translation fails <% if ext?(:H) %>when V=0 or during VS-stage translation<% end %>
   * `Store/AMO Access Fault` if a PMP or PMA access check fails.
 
-<%- if CACHE_BLOCK_SIZE.bit_length <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+<%- if (CACHE_BLOCK_SIZE.bit_length - 1) <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
 Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
 and PMA access checks only need to check a single address in the line.
 <%- end -%>
@@ -15470,10 +15696,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:Zbc.adoc#udb:doc:ext:Zbc[Zbc]
-xref:exts:Zbkc.adoc#udb:doc:ext:Zbkc[Zbkc]
+| *Zbkc*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:clmulh]
@@ -15517,10 +15748,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:Zbc.adoc#udb:doc:ext:Zbc[Zbc]
-xref:exts:Zbkc.adoc#udb:doc:ext:Zbkc[Zbkc]
+| *Zbkc*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:clmulr]
@@ -17353,8 +17589,8 @@ Encoding::
 ....
 
 Description::
-xref:insts:fadd_q.adoc#udb:doc:inst:fadd_q[fadd.q] is analogous to xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] and performs double-precision floating-point addition between
-`qs1` and `qs2` and writes the final result to `qd`.
+xref:insts:fadd_q.adoc#udb:doc:inst:fadd_q[fadd.q] is analogous to xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] and performs quad-precision floating-point addition between
+`fs1` and `fs2` and writes the final result to `fd`.
 
 
 Decode Variables::
@@ -17574,13 +17810,13 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] instruction examines the value in floating-point register `rs1` and writes to integer
-register `rd` a 10-bit mask that indicates the class of the floating-point number.
+The xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] instruction examines the value in floating-point register `fs1` and writes to integer
+register `xd` a 10-bit mask that indicates the class of the floating-point number.
 
-The format of the mask is described in table given below. The corresponding bit in `rd`
-will be set if the property is true and clear otherwise. All other bits in `rd` are cleared.
+The format of the mask is described in table given below. The corresponding bit in `xd`
+will be set if the property is true and clear otherwise. All other bits in `xd` are cleared.
 
-Note that exactly one bit in `rd` will be set. xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] does not set the floating-point
+Note that exactly one bit in `xd` will be set. xref:insts:fclass_q.adoc#udb:doc:inst:fclass_q[fclass.q] does not set the floating-point
 exception flags.
 
 .Format of result of `fclass` instruction.
@@ -20933,7 +21169,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |$encoding[31:20]
+|imm |sext($encoding[31:20], 12)
 |xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
@@ -21298,7 +21534,6 @@ and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
 
 xref:insts:fleq_q.adoc#udb:doc:inst:fleq_q[fleq.q] is defined like xref:insts:fle_q.adoc#udb:doc:inst:fle_q[fle.q], except that quiet _NaN_ inputs do not cause the invalid
 operation exception flag to be set.
-This instruction is encoded like its `flt` counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -21405,7 +21640,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _xd_.
+The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a half-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _xd_.
 
 xref:insts:flh.adoc#udb:doc:inst:flh[flh] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -21416,7 +21651,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |$encoding[31:20]
+|imm |sext($encoding[31:20], 12)
 |xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
@@ -21424,15 +21659,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *Zfhmin*
-| any
-|===
-
-
+xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin]
+xref:exts:Zfbfmin.adoc#udb:doc:ext:Zfbfmin[Zfbfmin]
 
 
 [#udb:doc:inst:fli_d]
@@ -21569,7 +21799,7 @@ Encoding::
 
 Description::
 The xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] instruction loads one of 32 quad-precision floating-point constants, encoded in the `xs1`
-field, into floating-point register `rd`.
+field, into floating-point register `fd`.
 xref:insts:fli_q.adoc#udb:doc:inst:fli_q[fli.q] is encoded like xref:insts:fmv_w_x.adoc#udb:doc:inst:fmv_w_x[fmv.w.x], but with _fmt_ = Q.
 
 
@@ -21686,7 +21916,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |$encoding[31:20]
+|imm |sext($encoding[31:20], 12)
 |xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
@@ -22038,12 +22268,12 @@ Base::
 |===
 
 Assembly::
-fltq.q fd, fs1, fs2
+fltq.q xd, fs1, fs2
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -22052,7 +22282,6 @@ and writes 1 to integer register `xd` if the condition holds, and 0 otherwise.
 
 xref:insts:fltq_q.adoc#udb:doc:inst:fltq_q[fltq.q] is defined like xref:insts:flt_q.adoc#udb:doc:inst:flt_q[flt.q], except that quiet _NaN_ inputs do not cause the invalid
 operation exception flag to be set.
-This instruction is encoded like its `fle` counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -22061,7 +22290,7 @@ Decode Variables::
 |Variable Name |Location
 |fs2 |$encoding[24:20]
 |fs1 |$encoding[19:15]
-|fd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -22167,7 +22396,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |$encoding[31:20]
+|imm |sext($encoding[31:20], 12)
 |xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
@@ -22751,7 +22980,6 @@ The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If either input is _NaN_, the result is the canonical _NaN_.
 Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
-This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -23186,7 +23414,6 @@ The value `-0.0` is considered to be less than the value `+0.0`.
 If both inputs are _NaN_s, the result is the canonical _NaN_.
 If either input is _NaN_, the result is the canonical _NaN_.
 Signaling _NaN_ inputs set the invalid operation exception flag, even when the result is not _NaN_.
-This instruction is encoded like its xref:insts:fminm_q.adoc#udb:doc:inst:fminm_q[fminm.q] counterpart, but with instruction bit 14 set to 1.
 
 
 Decode Variables::
@@ -23776,15 +24003,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *Zfhmin*
-| any
-|===
-
-
+xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin]
+xref:exts:Zfbfmin.adoc#udb:doc:ext:Zfbfmin[Zfbfmin]
 
 
 [#udb:doc:inst:fmv_w_x]
@@ -23942,15 +24164,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *Zfhmin*
-| any
-|===
-
-
+xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin]
+xref:exts:Zfbfmin.adoc#udb:doc:ext:Zfbfmin[Zfbfmin]
 
 
 [#udb:doc:inst:fmv_x_w]
@@ -24210,7 +24427,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] instruction moves a double-precision number from a pair of integer registers into
+The xref:insts:fmvp_q_x.adoc#udb:doc:inst:fmvp_q_x[fmvp.q.x] instruction moves a quad-precision number from a pair of integer registers into
 a floating-point register.
 Integer registers `xs1` and `xs2` supply bits 63:0 and 127:64, respectively; the result is written to
 floating-point register `fd`.
@@ -25146,7 +25363,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |{$encoding[31:25], $encoding[11:7]}
+|imm |sext({$encoding[31:25], $encoding[11:7]}, 12)
 |fs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |===
@@ -25823,7 +26040,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |{$encoding[31:25], $encoding[11:7]}
+|imm |sext({$encoding[31:25], $encoding[11:7]}, 12)
 |xs1 |$encoding[19:15]
 |fs2 |$encoding[24:20]
 |===
@@ -25831,15 +26048,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *Zfhmin*
-| any
-|===
-
-
+xref:exts:Zfhmin.adoc#udb:doc:ext:Zfhmin[Zfhmin]
+xref:exts:Zfbfmin.adoc#udb:doc:ext:Zfbfmin[Zfbfmin]
 
 
 [#udb:doc:inst:fsq]
@@ -25880,7 +26092,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |{$encoding[31:25], $encoding[11:7]}
+|imm |sext({$encoding[31:25], $encoding[11:7]}, 12)
 |fs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |===
@@ -26337,7 +26549,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |{$encoding[31:25], $encoding[11:7]}
+|imm |sext({$encoding[31:25], $encoding[11:7]}, 12)
 |fs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |===
@@ -27671,8 +27883,8 @@ Included in::
 
 This instruction requires the following:
 
-xref:exts:I.adoc#udb:doc:ext:I[I]
-xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd]
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 32 && xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd])
 
 
 [#udb:doc:inst:ld_aq]
@@ -29089,6 +29301,1095 @@ Included in::
 | Extension | Version
 
 | *I*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxd]
+== lxd
+
+Synopsis::
+Load indexed doubleword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxh]
+== lxh
+
+Synopsis::
+Load indexed halfword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxhu]
+== lxhu
+
+Synopsis::
+Load indexed halfword unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxhu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsb]
+== lxsb
+
+Synopsis::
+Load scaled indexed byte
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsb xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+The `lxb` mnemonic is an assembler pseudoinstruction for xref:insts:lxsb.adoc#udb:doc:inst:lxsb[lxsb].
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsbu]
+== lxsbu
+
+Synopsis::
+Load scaled indexed byte unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsbu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+The `lxbu` mnemonic is an assembler pseudoinstruction for xref:insts:lxsbu.adoc#udb:doc:inst:lxsbu[lxsbu].
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsd]
+== lxsd
+
+Synopsis::
+Load scaled indexed doubleword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 3)`, where `xs2` is the base and `xs1` is the index.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsh]
+== lxsh
+
+Synopsis::
+Load scaled indexed halfword
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 1)`, where `xs2` is the base and `xs1` is the index.
+Sign extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxshu]
+== lxshu
+
+Synopsis::
+Load scaled indexed halfword unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxshu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 1)`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to XLEN.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxsuwb]
+== lxsuwb
+
+Synopsis::
+Load scaled indexed byte with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwb xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + zext32(X[xs1])`, where `xs2` is the base and `xs1` is the index.
+The index is zero-extended from `X[xs1][31:0]` before forming the address.
+Sign extend the loaded byte to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwbu]
+== lxsuwbu
+
+Synopsis::
+Load scaled indexed byte unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwbu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 8 bits of data into register `xd` from the effective address
+`X[xs2] + zext32(X[xs1])`, where `xs2` is the base and `xs1` is the index.
+The index is zero-extended from `X[xs1][31:0]` before forming the address.
+Zero extend the loaded byte to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwd]
+== lxsuwd
+
+Synopsis::
+Load scaled indexed doubleword with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwd xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 64 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 3)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwh]
+== lxsuwh
+
+Synopsis::
+Load scaled indexed halfword with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwh xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 1)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Sign extend the loaded halfword to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwhu]
+== lxsuwhu
+
+Synopsis::
+Load scaled indexed halfword unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwhu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 16 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 1)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Zero extend the loaded halfword to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuww]
+== lxsuww
+
+Synopsis::
+Load scaled indexed word with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuww xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 2)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Sign extend the loaded word to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsuwwu]
+== lxsuwwu
+
+Synopsis::
+Load scaled indexed word unsigned with unsigned word index
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxsuwwu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x78,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (zext32(X[xs1]) << 2)`, where `xs2` is the base and `xs1` is the
+index. The index is zero-extended from `X[xs1][31:0]` before scaling.
+Zero extend the loaded word to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxsw]
+== lxsw
+
+Synopsis::
+Load scaled indexed word
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxsw xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 2)`, where `xs2` is the base and `xs1` is the index.
+On RV64, the loaded word is sign-extended to 64 bits.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxswu]
+== lxswu
+
+Synopsis::
+Load scaled indexed word unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxswu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x68,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + (X[xs1] << 2)`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
+
+
+[#udb:doc:inst:lxw]
+== lxw
+
+Synopsis::
+Load indexed word
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+lxw xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+On RV64, the loaded word is sign-extended to 64 bits.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:lxwu]
+== lxwu
+
+Synopsis::
+Load indexed word unsigned
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+|
+| &#x2713;
+|===
+
+Assembly::
+lxwu xd, (xs2), xs1
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x2f,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x48,"type":2}]}
+....
+
+Description::
+Load 32 bits of data into register `xd` from the effective address
+`X[xs2] + X[xs1]`, where `xs2` is the base and `xs1` is the index.
+Zero extend the result to 64 bits.
+
+This instruction is defined only for RV64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zilx*
 | any
 |===
 
@@ -31637,10 +32938,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:M.adoc#udb:doc:ext:M[M]
-xref:exts:Zmmul.adoc#udb:doc:ext:Zmmul[Zmmul]
+| *Zmmul*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:mulh]
@@ -31694,10 +33000,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:M.adoc#udb:doc:ext:M[M]
-xref:exts:Zmmul.adoc#udb:doc:ext:Zmmul[Zmmul]
+| *Zmmul*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:mulhsu]
@@ -31751,10 +33062,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:M.adoc#udb:doc:ext:M[M]
-xref:exts:Zmmul.adoc#udb:doc:ext:Zmmul[Zmmul]
+| *Zmmul*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:mulhu]
@@ -31808,10 +33124,15 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-xref:exts:M.adoc#udb:doc:ext:M[M]
-xref:exts:Zmmul.adoc#udb:doc:ext:Zmmul[Zmmul]
+| *Zmmul*
+| any
+|===
+
+
 
 
 [#udb:doc:inst:mulw]
@@ -31864,10 +33185,18 @@ Decode Variables::
 Included in::
 
 
-This instruction requires the following:
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
 
-++(++xlen+++()+++ == 64 && xref:exts:M.adoc#udb:doc:ext:M[M])
-++(++xlen+++()+++ == 64 && xref:exts:Zmmul.adoc#udb:doc:ext:Zmmul[Zmmul])
+| *Zmmul*
+| any
+|===
+
+
+Additionally, this instruction requires the following:
+
+xlen+++()+++ == 64
 
 
 [#udb:doc:inst:ntl_all]
@@ -34802,8 +36131,8 @@ Included in::
 
 This instruction requires the following:
 
-xref:exts:I.adoc#udb:doc:ext:I[I]
-xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd]
+++(++xlen+++()+++ == 64 && xref:exts:I.adoc#udb:doc:ext:I[I])
+++(++xlen+++()+++ == 32 && xref:exts:Zilsd.adoc#udb:doc:ext:Zilsd[Zilsd])
 
 
 [#udb:doc:inst:sd_aqrl]
@@ -37962,7 +39291,7 @@ Base::
 |===
 
 Assembly::
-ssamoswap.d xd, xs2, xs1
+ssamoswap.d xd, xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -38016,7 +39345,7 @@ Base::
 |===
 
 Assembly::
-ssamoswap.w xd, xs2, xs1
+ssamoswap.w xd, xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -38053,11 +39382,11 @@ Included in::
 
 
 
-[#udb:doc:inst:sspopchk_x1]
-== sspopchk.x1
+[#udb:doc:inst:sspopchk]
+== sspopchk
 
 Synopsis::
-No synopsis available
+Shadow Stack Pop and Check
 
 Base::
 
@@ -38070,20 +39399,27 @@ Base::
 |===
 
 Assembly::
-sspopchk.x1 sspopchk_x1
+sspopchk xs1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":32,"name": 0xcdc0c073,"type":2}]}
+{"reg":[{"bits":15,"name": 0x4073,"type":2},{"bits":5,"name": "xs1 != {0,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":12,"name": 0xcdc,"type":2}]}
 ....
 
 Description::
-No description available.
+SSPOPCHK pops a value from the shadow stack and checks it against link
+register `xs1`. The encoding restricts `xs1` to `x1` or `x5`.
+
+This instruction uses the xref:insts:mop_r_28.adoc#udb:doc:inst:mop_r_28[mop.r.28] codepoint provided by Zimop.
 
 
 Decode Variables::
-sspopchk.x1 has no decode variables.
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|xs1 |$encoding[19:15]
+|===
 
 Included in::
 
@@ -38099,11 +39435,11 @@ Included in::
 
 
 
-[#udb:doc:inst:sspopchk_x5]
-== sspopchk.x5
+[#udb:doc:inst:sspush]
+== sspush
 
 Synopsis::
-No synopsis available
+Shadow Stack Push
 
 Base::
 
@@ -38116,112 +39452,27 @@ Base::
 |===
 
 Assembly::
-sspopchk.x5 sspopchk_x5
+sspush xs2
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":32,"name": 0xcdc2c073,"type":2}]}
+{"reg":[{"bits":20,"name": 0x4073,"type":2},{"bits":5,"name": "xs2 != {0,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}","type":4},{"bits":7,"name": 0x67,"type":2}]}
 ....
 
 Description::
-No description available.
+SSPUSH pushes the value of link register `xs2` to the shadow stack.
+The encoding restricts `xs2` to `x1` or `x5`.
+
+This instruction uses the xref:insts:mop_rr_7.adoc#udb:doc:inst:mop_rr_7[mop.rr.7] codepoint provided by Zimop.
 
 
 Decode Variables::
-sspopchk.x5 has no decode variables.
-
-Included in::
-
-
-[width="100%",cols="1,2",options="header"]
+[width="100%", cols="1,2", options="header"]
 |===
-| Extension | Version
-
-| *Zicfiss*
-| any
+|Variable Name |Location
+|xs2 |$encoding[24:20]
 |===
-
-
-
-
-[#udb:doc:inst:sspush_x1]
-== sspush.x1
-
-Synopsis::
-No synopsis available
-
-Base::
-
-[cols="1,1"]
-|===
-| RV32 | RV64
-
-| &#x2713;
-| &#x2713;
-|===
-
-Assembly::
-sspush.x1 sspush_x1
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":32,"name": 0xce104073,"type":2}]}
-....
-
-Description::
-No description available.
-
-
-Decode Variables::
-sspush.x1 has no decode variables.
-
-Included in::
-
-
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
-
-| *Zicfiss*
-| any
-|===
-
-
-
-
-[#udb:doc:inst:sspush_x5]
-== sspush.x5
-
-Synopsis::
-No synopsis available
-
-Base::
-
-[cols="1,1"]
-|===
-| RV32 | RV64
-
-| &#x2713;
-| &#x2713;
-|===
-
-Assembly::
-sspush.x5 sspush_x5
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":32,"name": 0xce504073,"type":2}]}
-....
-
-Description::
-No description available.
-
-
-Decode Variables::
-sspush.x5 has no decode variables.
 
 Included in::
 
@@ -38825,6 +40076,174 @@ Included in::
 | Extension | Version
 
 | *Zvl32b*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vabd_vv]
+== vabd.vv
+
+Synopsis::
+Vector Single-Width Signed Integer Absolute Difference
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vabd.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x11,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of two signed integer SEW-bit
+source operands vs1 and vs2 and writes the result to vd according to mask vm.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vabdu_vv]
+== vabdu.vv
+
+Synopsis::
+Vector Single-Width Unsigned Integer Absolute Difference
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vabdu.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x13,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of two unsigned integer SEW-bit
+source operands vs1 and vs2 and writes the result to vd according to mask vm.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vabs_v]
+== vabs.v
+
+Synopsis::
+Vector Single-Width Signed Integer Absolute
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vabs.v vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x82,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+An absolute value operation is performed on each element of vs2, storing the
+result in vector register vd according to mask vm.
+
+vabs.v supports SEW of 8, 16, and 32 when Zve32x is implemented.
+When Zve64x is implemented, vabs.v also supports SEW of 64.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
 | any
 |===
 
@@ -39914,7 +41333,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -39967,7 +41386,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -40283,7 +41702,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -41550,6 +42969,64 @@ Included in::
 
 
 
+[#udb:doc:inst:vfext_vf2]
+== vfext.vf2
+
+Synopsis::
+Vector OFP4 to OFP8 widening conversion
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vfext.vf2 vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0xb2,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Converts a vector of OFP4 E2M1 values in vector register vs2 (EEW=4,
+EMUL=LMUL/2) to a vector of OFP8 E4M3 values in vector register vd
+(EEW=8, EMUL=LMUL), according to mask vm. Defined only for SEW=8,
+altfmt=0, and LMUL >= 1/4. No rounding occurs, and no floating-point
+exception flags are set. This instruction does not access the fcsr
+and is not considered a floating-point instruction for the purposes
+of the floating-point context status (FS) setting.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvfofp4min*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vfirst_m]
 == vfirst.m
 
@@ -42549,6 +44026,60 @@ Included in::
 
 
 
+[#udb:doc:inst:vfncvt_f_f_q]
+== vfncvt.f.f.q
+
+Synopsis::
+Vector floating-point FP32 conversion to OFP8
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vfncvt.f.f.q vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0xc9,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Converts FP32 floating-point elements in vector register vs2 to OFP8
+elements and stores the results in vector register vd according to mask vm.
+Results are rounded using the dynamic floating-point rounding mode.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvfofp8min*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vfncvt_f_f_w]
 == vfncvt.f.f.w
 
@@ -42861,6 +44392,61 @@ Included in::
 
 
 
+[#udb:doc:inst:vfncvt_sat_f_f_q]
+== vfncvt.sat.f.f.q
+
+Synopsis::
+Vector floating-point FP32 saturating conversion to OFP8
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vfncvt.sat.f.f.q vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0xd9,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Converts FP32 floating-point elements in vector register vs2 to OFP8
+elements and stores the results in vector register vd according to mask vm.
+Infinite results are converted to the maximum-magnitude finite value of the
+same sign.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvfofp8min*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vfncvt_x_f_w]
 == vfncvt.x.f.w
 
@@ -43006,11 +44592,61 @@ Decode Variables::
 Included in::
 
 
+This instruction requires the following:
+
+xref:exts:Zvfbfmin.adoc#udb:doc:ext:Zvfbfmin[Zvfbfmin]
+xref:exts:Zvfofp8min.adoc#udb:doc:ext:Zvfofp8min[Zvfofp8min]
+
+
+[#udb:doc:inst:vfncvtbf16_sat_f_f_w]
+== vfncvtbf16.sat.f.f.w
+
+Synopsis::
+Vector saturating narrowing BFloat16 to OFP8 conversion
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vfncvtbf16.sat.f.f.w vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0xf9,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Converts BFloat16 floating-point elements in vector register vs2 to OFP8
+elements and stores the results in vector register vd according to mask vm.
+Infinite results are converted to the maximum-magnitude finite value of the
+same sign.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
 [width="100%",cols="1,2",options="header"]
 |===
 | Extension | Version
 
-| *Zvfbfmin*
+| *Zvfofp8min*
 | any
 |===
 
@@ -45062,15 +46698,10 @@ Decode Variables::
 Included in::
 
 
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
+This instruction requires the following:
 
-| *Zvfbfmin*
-| any
-|===
-
-
+xref:exts:Zvfbfmin.adoc#udb:doc:ext:Zvfbfmin[Zvfbfmin]
+xref:exts:Zvfofp8min.adoc#udb:doc:ext:Zvfofp8min[Zvfofp8min]
 
 
 [#udb:doc:inst:vfwmacc_vf]
@@ -59400,7 +61031,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|imm |$encoding[19:15]
+|imm |sext($encoding[19:15], 5)
 |vd |$encoding[11:7]
 |===
 
@@ -61571,7 +63202,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -61836,7 +63467,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -61889,7 +63520,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -61942,7 +63573,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -61995,7 +63626,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -62048,7 +63679,7 @@ Included in::
 |===
 | Extension | Version
 
-| *Zvbb*
+| *Zvkb*
 | any
 |===
 
@@ -71845,6 +73476,120 @@ Included in::
 | Extension | Version
 
 | *Zvl32b*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vwabda_vv]
+== vwabda.vv
+
+Synopsis::
+Vector Widening Signed Integer Absolute Difference and Accumulate, Overwrite Addend
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vwabda.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of two signed integer SEW-bit
+source operands vs1 and vs2, and accumulates the results into the elements of
+a 2*SEW-bit operand vd.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vwabdau_vv]
+== vwabdau.vv
+
+Synopsis::
+Vector Widening Unsigned Integer Absolute Difference and Accumulate, Overwrite Addend
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vwabdau.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of two unsigned integer SEW-bit
+source operands vs1 and vs2, and accumulates the results into the elements of
+a 2*SEW-bit operand vd.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
 | any
 |===
 

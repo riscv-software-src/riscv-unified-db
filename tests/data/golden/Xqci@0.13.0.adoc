@@ -39597,6 +39597,7 @@ return sp;
 === highest_set_bit
 Returns the position of the highest (nearest MSB) bit that is '1',
 or -1 if value is zero.
+Callers should cast the return value with $signed().
   
 
 [cols="1,4"]
@@ -39618,9 +39619,9 @@ h! `XReg`
 
 [source,idl,subs="specialchars,macros"]
 ----
-for pass:[(]Bits<8> i = xref:#udb-function-xlen[xlen]pass:[(]) - 1; i >= 0; i--) {
-  if pass:[(]value[i] == 1) {
-    return i;
+for pass:[(]Bits<8> i = xref:#udb-function-xlen[xlen]pass:[(]); i > 0; i--) {
+  if pass:[(]value[i - 1] == 1) {
+    return i - 1;
   }
 }
 return -'sd1;

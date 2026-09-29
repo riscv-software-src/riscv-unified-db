@@ -27,8 +27,8 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::Zcmp) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented?(ExtensionName::Zcmp) && MISA_CSR_IMPLEMENTED && (CSR[misa].C == 1'b0)) {
+    reserved_instruction($encoding);
   }
   XReg xreg1 = (r1s[2:1]>0) ? {1,0,r1s[2:0]} : {0,1,r1s[2:0]};
   XReg xreg2 = (r2s[2:1]>0) ? {1,0,r2s[2:0]} : {0,1,r2s[2:0]};

@@ -1,0 +1,42 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stimecmp
+long_name: Supervisor timer compare
+address: 0x14D
+writable: true
+priv_mode: S
+length: 64
+description: |
+  Supervisor timer compare register.
+
+  When `menvcfg.STCE` is set, `stimecmp` is operational and provides
+  supervisor mode with a CSR-based timer interrupt facility.
+definedBy:
+  extension:
+    name: Sstc
+fields:
+  TIME:
+    location: 63-0
+    description: |
+      Time compare value for supervisor timer interrupts.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (mode() != PrivilegeMode::M) {
+        if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+      }
+      return csr_value.TIME;
+sw_read(): |
+  if (mode() != PrivilegeMode::M) {
+    if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+  return CSR[stimecmp].TIME;

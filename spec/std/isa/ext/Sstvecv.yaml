@@ -26,5 +26,5 @@ versions:
         company: SiFive, Inc.
 requirements:
   param:
-    name: STVEC_MODE_VECTORED
-    equal: true
+    name: STVEC_MODES
+    includes: 1

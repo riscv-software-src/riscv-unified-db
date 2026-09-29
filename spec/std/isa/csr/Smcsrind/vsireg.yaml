@@ -46,7 +46,7 @@ fields:
       value of the `vsiselect` CSR.
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      Csr handle = indirect_csr_lookup(CSR[vsiselect].VALUE, 1);
+      Csr handle = indirect_csr_lookup(PrivilegeMode::VS, CSR[vsiselect].VALUE, 1);
       if (!handle.valid) {
         unimplemented_csr($encoding);
       }
@@ -56,7 +56,7 @@ fields:
       csr_sw_write(handle, csr_value.VALUE);
       return csr_hw_read(handle);
 sw_read(): |
-  Csr handle = indirect_csr_lookup(CSR[vsiselect].VALUE, 1);
+  Csr handle = indirect_csr_lookup(PrivilegeMode::VS, CSR[vsiselect].VALUE, 1);
   if (!handle.valid) {
     unimplemented_csr($encoding);
   }

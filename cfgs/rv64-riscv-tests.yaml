@@ -11,6 +11,7 @@ implemented_extensions:
   - [I, "2.1"]
   - [C, "2.0"]
   - [M, "2.0"]
+  - [Zmmul, "1.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
   - [Smrnmi, "1.0"]
@@ -56,8 +57,8 @@ params:
   MCOUNTINHIBIT_IMPLEMENTED: true
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
-  MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_BASE_ALIGNMENT_DIRECT: 0x4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 0x4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MUTABLE_MISA_C: false
   MUTABLE_MISA_M: false
@@ -186,8 +187,8 @@ params:
       false,
       false,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 0x4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   TRAP_ON_ECALL_FROM_U: true
@@ -240,3 +241,12 @@ params:
       false,
       false,
     ]
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  SEI_INTR_IMPL: false
+  SSI_INTR_IMPL: false
+  STI_INTR_IMPL: false
+  WFI_U_MODE: false
+  WFI_FINITE: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false

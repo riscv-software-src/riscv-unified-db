@@ -22,7 +22,7 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.xtend</groupId>
+				<groupId>org.eclipse.xtext</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -36,7 +36,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty.ee10</groupId>
 				<artifactId>jetty-ee10-maven-plugin</artifactId>
-				<version>12.1.11</version>
+				<version>12.1.13</version>
 				<configuration>
 					<webAppSourceDirectory>WebRoot</webAppSourceDirectory>
 				</configuration>
@@ -95,7 +95,7 @@
 			<version>${xtextVersion}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.xtend</groupId>
+			<groupId>org.eclipse.xtext</groupId>
 			<artifactId>org.eclipse.xtend.lib</artifactId>
 			<version>${xtextVersion}</version>
 		</dependency>
@@ -117,13 +117,13 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.ee10</groupId>
 			<artifactId>jetty-ee10-annotations</artifactId>
-			<version>12.1.11</version>
+			<version>12.1.13</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>2.0.18</version>
+			<version>2.0.19</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

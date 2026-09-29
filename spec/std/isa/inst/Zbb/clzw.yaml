@@ -30,8 +30,4 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   X[xd] = 31 - $signed(highest_set_bit(X[xs1][31:0]));

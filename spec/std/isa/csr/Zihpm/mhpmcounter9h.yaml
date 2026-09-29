@@ -74,7 +74,7 @@ definedBy:
 fields:
   COUNT:
     location: 31-0
-    alias: mhpmcounter.COUNT9[63:32]
+    alias: mhpmcounter9.COUNT[63:32]
     description: |
       Upper bits of counter.
     type(): |

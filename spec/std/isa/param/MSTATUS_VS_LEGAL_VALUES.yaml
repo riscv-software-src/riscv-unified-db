@@ -7,34 +7,26 @@ $schema: param_schema.json#
 kind: parameter
 name: MSTATUS_VS_LEGAL_VALUES
 description: The set of values that mstatus.VS will accept from a software write.
-long_name: TODO
+long_name: mstatus.VS legal values
 schema:
   type: array
   items:
     type: integer
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
+      - 0 # Off
+      - 1 # Initial
+      - 2 # Clean
+      - 3 # Dirty
   minItems: 1
   maxItems: 4
   uniqueItems: true
 requirements:
   idl(): |
-    # [RULE] If the v registers are implemented, the VS field shall not be read-only zero.
-    implemented?(ExtensionName::V)
-      -> $array_size(MSTATUS_VS_LEGAL_VALUES) > 1;
-
     # [RULE] If there is a hardware update to mstatus.VS, then the Dirty state must be supported
-    implemented?(ExtensionName::V) &&
-    (HW_MSTATUS_VS_DIRTY_UPDATE == "precise" || HW_MSTATUS_VS_DIRTY_UPDATE == "imprecise")
-      -> $array_includes?(MSTATUS_VS_LEGAL_VALUES, 0) &&
-         $array_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
+    implemented?(ExtensionName::V)
+      -> $array_includes?(MSTATUS_VS_LEGAL_VALUES, 3);
 
   reason: |
-    If V is supported, both Off (0) and Dirty (3) must be supported
-
     If there is a hardware update to mstatus.VS, then the Dirty state must be supported
 definedBy:
   extension:

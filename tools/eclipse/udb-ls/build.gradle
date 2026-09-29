@@ -21,7 +21,7 @@ dependencies {
   implementation "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
 
 
-  implementation "io.github.classgraph:classgraph:4.8.184"
+  implementation "io.github.classgraph:classgraph:4.8.194"
   implementation "aopalliance:aopalliance:1.0"
 }
 

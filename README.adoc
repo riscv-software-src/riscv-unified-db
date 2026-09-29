@@ -91,6 +91,16 @@ When it finishes, it will tell you how to activate mise in your shell profile so
 mise-managed tools are available in future terminal sessions, and remind you to use the
 wrappers in `bin/` when invoking any tool.
 
+=== Verify the installation
+
+After `bin/setup` completes, verify that the development environment has been configured successfully by running:
+
+[source,bash]
+----
+./bin/doctor
+----
+
+The doctor script checks that the required tools, dependencies, and development environment are configured correctly. If it reports any issues, follow the suggested fixes or re-run `bin/setup` and ensure that `mise` has been activated in your shell as instructed by the setup script.
 === Tasks
 
 [source,bash]

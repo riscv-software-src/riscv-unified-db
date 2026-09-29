@@ -11,6 +11,7 @@ implemented_extensions:
   - [C, "2.0"]
   - [Zca, "1.0"]
   - [M, "2.0"]
+  - [Zmmul, "1.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
   - [Smrnmi, "1.0"]
@@ -50,8 +51,8 @@ params:
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MTVEC_MODES: [0, 1]
-  MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_BASE_ALIGNMENT_DIRECT: 0x4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 0x4
   MUTABLE_MISA_C: false
   MUTABLE_MISA_M: false
   TIME_CSR_IMPLEMENTED: false
@@ -161,3 +162,9 @@ params:
       false,
       false,
     ]
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  WFI_U_MODE: false
+  WFI_FINITE: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false

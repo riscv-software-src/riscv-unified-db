@@ -11,7 +11,9 @@ description: |
   Converts each single-precision floating-point element in vector register vs2 to BFloat16 format, storing results in vector register vd according to mask vm. This is a narrowing conversion that compresses 32-bit single-precision values to 16-bit BFloat16 values.
 definedBy:
   extension:
-    name: Zvfbfmin
+    anyOf:
+      - name: Zvfbfmin
+      - name: Zvfofp8min
 assembly: vd, vs2, vm
 encoding:
   match: 010010------11101001-----1010111

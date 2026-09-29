@@ -33,9 +33,9 @@ Set up the Docusaurus project, CI/CD, and scaffolding before writing any content
     package.json
   ```
 - [x] **0.1.2** Initialize Docusaurus in the existing `doc/` directory. Because `doc/` already contains files, run `npx create-docusaurus@latest` into a temporary directory and then copy the scaffold files into `doc/`, skipping any files that already exist (e.g., `README.md`). Alternatively: `cd doc && npx create-docusaurus@latest . classic --typescript` — Docusaurus will warn about the non-empty directory but will proceed. Review and reconcile any conflicts before committing.
-- [x] **0.1.3** Add `doc/node_modules/` to `.gitignore`. Also added `doc/.docusaurus` and `doc/build`. The root `node_modules` entry covers `doc/node_modules/` since Docusaurus is managed as an npm workspace (see D3 in `decisions.md`).
+- [x] **0.1.3** Add `doc/node_modules/` to `.gitignore`. Also added `doc/.docusaurus` and `doc/build`. The root `node_modules` entry covers `doc/node_modules/` since Docusaurus is managed from the root package-lock with aube (see D3 in `decisions.md`).
 - [x] **0.1.4** Commit the bare scaffold with a `docs/placeholder.md` so the site builds.
-- [x] **0.1.5** Verify `npm run build` succeeds from `doc/`.
+- [x] **0.1.5** Verify `./bin/aubr -C doc build` succeeds.
 
 ### 0.2 — Configure Docusaurus
 
@@ -61,11 +61,11 @@ Set up the Docusaurus project, CI/CD, and scaffolding before writing any content
 
 ### 0.4 — CI/CD integration
 
-- [x] **0.4.1** Add a CI check that builds the Docusaurus site on every PR and push to `main`. The `build-docs-site` job is defined in `tools/test/regress-tests.yaml` (auto-generates `.github/workflows/regress.yml`) and runs `npm ci` + `npm run build --workspace=doc` inside the Docker container via `./bin/npm`. No deployment — this is build-only for now (see D4 in `decisions.md`).
+- [x] **0.4.1** Add a CI check that builds the Docusaurus site on every PR and push to `main`. The `build-docs-site` job is defined in `tools/test/regress-tests.yaml` (auto-generates `.github/workflows/regress.yml`) and runs `./bin/aube ci` + `./bin/aubr -C doc build`. No deployment — this is build-only for now (see D4 in `decisions.md`).
 - [ ] **0.4.2** Decide whether the new Docusaurus site replaces or coexists with the existing `pages.yml` workflow.
   - **Recommended**: Keep `pages.yml` for generated artifacts; have the Docusaurus site link out to them. Merge the two deployments into a single Pages root once the Docusaurus site is ready to go live.
   - **This decision (Q4) must be made before 0.4.3 is executed.** See Open Questions.
-- [ ] **0.4.3** Integrate the Docusaurus build output into the assembled `_site/` directory. The current `pages.yml` places generated artifacts at `_site/resolved_spec`, `_site/htmls/udb_api_doc`, etc., and generates `_site/index.html` from `tools/scripts/pages.html.erb`. The Docusaurus build output must go at the `_site/` root, which means the ERB-generated `index.html` must be removed or redirected. **Concrete plan**: place the Docusaurus build at `_site/` root; move the generated-artifacts landing page to `_site/artifacts/` and update the Docusaurus site to link there. Coordinate with Phase 15 cutover.
+- [ ] **0.4.3** Integrate the Docusaurus build output into the assembled `_site/` directory. The current `pages.yml` places generated artifacts at `_site/resolved_spec`, `_site/htmls/udb_api_doc`, etc., and generates `_site/index.html` from `tools/scripts/pages.html.template` using `tools/scripts/gen_pages_index.py`. The Docusaurus build output must go at the `_site/` root, which means the generated `index.html` must be removed or redirected. **Concrete plan**: place the Docusaurus build at `_site/` root; move the generated-artifacts landing page to `_site/artifacts/` and update the Docusaurus site to link there. Coordinate with Phase 15 cutover.
 
 ### 0.5 — Asset structure
 
@@ -100,7 +100,7 @@ Inline content assets (diagrams, screenshots) live under `doc/docs/<section>/ass
   - `doc/idl-navbar-logo.svg` → `doc/static/img/idl-navbar-logo.svg`
 - [ ] **0.5.4** Update references to the old `doc/*.svg` paths:
   - `README.adoc` line 1: `image::doc/udb.svg[UDB banner]` — **Decision**: keep `doc/udb.svg` in place (do not move it) until the AsciiDoc pipeline is retired in Phase 15. Copy the file to `doc/static/img/udb.svg` rather than moving it. The copy can be removed once `README.adoc` is updated.
-  - `tools/scripts/pages.html.erb` line 14: `<img src="udb-block.svg" ...>` — **Decision**: leave this reference unchanged until Phase 15 cutover. The `pages.yml` workflow copies `doc/udb-block.svg` to `_site/`; keep that copy step in place until the ERB template is retired.
+  - `tools/scripts/pages.html.template`: `<img src="udb-block.svg" ...>` — **Decision**: leave this reference unchanged until Phase 15 cutover. The `pages.yml` workflow copies `doc/udb-block.svg` to `_site/`; keep that copy step in place until the generated landing page is retired.
 - [ ] **0.5.5** Generate `doc/static/favicon.ico` from `idl-favicon.svg`. **Tool decision**: use `imagemagick` (`convert` command), which is available in the CI container. Add a one-time generation step to the build setup notes; do not add it to the automated pre-build pipeline (the `.ico` file will be committed to the repo).
 
 ### 0.6 — Theming and branding
@@ -168,8 +168,8 @@ All four use CSS custom properties (`var(--idl-logo-bg)`, `var(--idl-logo-fg)`) 
 - [x] **0.8.2** Write `doc/planning/README.md` explaining what these files are and that the implementation plan is the active working document.
 - [x] **0.8.3** Write `doc/README.md` covering:
   - One-line description of what this directory is
-  - How to install dependencies (`npm ci` inside `doc/`)
-  - How to run the local dev server (`npm start`)
+  - How to install dependencies (`./bin/aube ci` from the repo root)
+  - How to run the local dev server (`./bin/aubr -C doc start`)
   - Where the full contributor guide lives once the site is running (`/docs/contributing/docs-site`)
   - Where the architecture notes live (`/docs/contributing/docs-architecture`)
   - Where the planning docs live (`doc/planning/`)
@@ -517,7 +517,7 @@ For each generator: description, what it produces, how to invoke it, example out
 - [ ] **9.5** Write `docs/contributing/code-review.md` — review process, code owners.
 - [ ] **9.6** Write `docs/contributing/license.md` — BSD-3-Clear, what is and isn't accepted.
 - [ ] **9.7** Write `docs/contributing/docs-site.md` — contributor guide for the documentation site itself:
-  - Prerequisites and local dev setup (`npm ci`, `npm start`)
+  - Prerequisites and local dev setup (`./bin/aube ci`, `./bin/aubr -C doc start`)
   - How to add a new page (file location, front matter, sidebar registration)
   - How to add a page to the sidebar (`sidebars.js`)
   - Markdown conventions used on this site (admonitions, code blocks, MDX components)
@@ -550,7 +550,7 @@ This phase sets up the tooling to keep docs in sync with source automatically.
 - [x] **10.1.4** Generation step added: `bin/chore gen schema-docs` (run manually; not yet wired into the Docusaurus pre-build step — see note below).
 - [~] **10.1.5** Improving schema files with better `description` fields and `examples`: `config_schema.json` fully done; `schema_defs.json` partially done (`extension_name`, `requirement_string`, `version_requirements`, `extension_version`, `condition` updated); remaining schemas not yet reviewed. See schema content review status in Phase 5.4.
 
-  **Note**: Schema docs are currently regenerated manually via `bin/chore gen schema-docs` and committed. Wiring into the Docusaurus pre-build step requires the Docker container to be available during `npm run build`, which is not the case in the current CI setup (see D4). Options: (a) keep committing generated files, (b) add a CI step that runs `bin/chore gen schema-docs` before the Docusaurus build, (c) move generation to a Node.js script that runs without Docker.
+  **Note**: Schema docs are currently regenerated manually via `bin/chore gen schema-docs` and committed. Wiring into the Docusaurus pre-build step requires the Docker container to be available during `./bin/aubr -C doc build`, which is not the case in the current CI setup (see D4). Options: (a) keep committing generated files, (b) add a CI step that runs `bin/chore gen schema-docs` before the Docusaurus build, (c) move generation to a Node.js script that runs without Docker.
 
 ### 10.2 — CLI documentation generation
 
@@ -631,7 +631,7 @@ Components that need a `DOCS.md`:
 
 ## Phase 14 — Quality and Polish
 
-- [ ] **14.1** Run a broken-link check (`npm run build` catches most; also use `linkinator` or similar).
+- [ ] **14.1** Run a broken-link check (`./bin/aubr -C doc build` catches most; also use `linkinator` or similar).
 - [ ] **14.2** Add OpenGraph / SEO metadata to key pages.
 - [ ] **14.3** Verify mobile responsiveness.
 - [ ] **14.4** Verify dark mode.
@@ -647,7 +647,7 @@ Components that need a `DOCS.md`:
 - [ ] **15.1** Run the new site in parallel with the old Pages site for a review period.
 - [ ] **15.2** Get sign-off from maintainers (Derek Hower, Paul Clarke).
 - [ ] **15.3** Update `pages.yml` to deploy the Docusaurus site as the root of GitHub Pages.
-- [ ] **15.4** Archive or redirect the old ERB-generated landing page (`tools/scripts/pages.html.erb`).
+- [ ] **15.4** Archive or redirect the generated landing page (`tools/scripts/pages.html.template` and `tools/scripts/gen_pages_index.py`).
 - [ ] **15.5** Update any external links (RISC-V International, downstream projects) to point to the new site.
 - [ ] **15.6** Update `README.adoc` to point to the new Docusaurus site URL and remove links to the old Pages site.
 - [ ] **15.7** Remove the `asciidoctor` IDL HTML build step from CI (`regress.yml` / `pages.yml`) once Phase 6 IDL docs are live and Q9 is confirmed. Delete `doc/idl.html` artifact references.

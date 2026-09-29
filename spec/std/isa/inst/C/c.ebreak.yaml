@@ -32,8 +32,8 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented?(ExtensionName::C) && MISA_CSR_IMPLEMENTED && (CSR[misa].C == 1'b0)) {
+    reserved_instruction($encoding);
   }
   if (TRAP_ON_EBREAK) {
     raise_precise(ExceptionCode::Breakpoint, mode(), $pc);

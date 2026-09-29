@@ -9,8 +9,8 @@ name: COUNTINHIBIT_EN
 description: |
   Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
 
-  An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false,
-  it would be illegal to set COUNTINHIBIT_EN[3] to true.
+  `COUNTINHIBIT_EN[n]` controls whether `mcountinhibit.HPM<n>` is writable. It does
+  not depend on whether `hpmcounter<n>`/`mhpmcounter<n>` is read-only zero.
 
   COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,
   which is always read-only-0.
@@ -25,6 +25,7 @@ schema:
     type: boolean
   maxItems: 32
   minItems: 32
+
 definedBy:
   allOf:
     - extension:

@@ -8,9 +8,28 @@ kind: extension
 name: Zicfiss
 long_name: Shadow Stack
 description: |
-  TODO
+  The Zicfiss extension introduces a shadow stack to enforce
+  backward-edge control-flow integrity.
+
+  The extension provides instructions to store and load the link register
+  to and from the shadow stack, check the integrity of the return address,
+  read the shadow stack pointer, and perform atomic swaps on shadow stack
+  locations.
 type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-07
+requirements:
+  allOf:
+    - extension:
+        allOf:
+          - name: Zicsr
+          - name: Zimop
+          - name: Zaamo
+    - if:
+        extension:
+          name: U
+      then:
+        extension:
+          name: S

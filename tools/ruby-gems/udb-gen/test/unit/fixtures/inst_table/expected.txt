@@ -20,5 +20,5 @@
 #                                 < left shift by 'num' amount on extraction, can only appear once
 #                                 ! mark 'num' as an invalid input for this variable
 one common 0100000<31|111<14|0110011<6 xs2=24-20 xs1=19-15 xd=11-7
-two 32 1100011<6|101<14 imm~<1=31|7|30-25|11-8 xs2=24-20 xs1=19-15
 three 64 1100011<6|101<14 imm=31-25|11-7 xs2!1!3!5!7!9!11!13!15!17!19!21!23!25!27!29!31=24-20 xs1=19-15
+two 32 1100011<6|101<14 imm~<1=31|7|30-25|11-8 xs2=24-20 xs1=19-15

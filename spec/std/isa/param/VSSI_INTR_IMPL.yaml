@@ -1,0 +1,28 @@
+# Copyright (C) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSSI_INTR_IMPL
+description: |
+  Whether or not virtual supervisor-level software interrupts are implemented.
+
+  Possible values:
+
+  true::
+    Virtual supervisor-level software interrupts are implemented.
+    `mie.VSSIE` and `mideleg.VSSI` are writable.
+
+  false::
+    Virtual supervisor-level software interrupts are not implemented.
+    `mie.VSSIE`, `mip.VSSIP`, and `mideleg.VSSI` are read-only zero.
+long_name: Virtual supervisor-level software interrupts are implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: H

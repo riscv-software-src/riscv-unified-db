@@ -44,4 +44,4 @@ fields:
       The SE0 bit in `hstateen2h` controls access to the `sstateen2` CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
-sw_read(): return $bits(CSR[hstateen2])[63:32];
+sw_read(): return CSR[hstateen2].sw_read()[63:32];

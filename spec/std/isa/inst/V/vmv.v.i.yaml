@@ -24,6 +24,7 @@ encoding:
   variables:
     - name: imm
       location: 19-15
+      sign_extend: true
     - name: vd
       location: 11-7
 access:

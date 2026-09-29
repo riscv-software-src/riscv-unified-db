@@ -79,7 +79,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `time` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -119,7 +119,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `instret` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -156,7 +156,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM3`# .2+h! [.rotate]#`mcounteren.HPM3`# .2+h! [.rotate]#`scounteren.HPM3`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM3`# .2+h! [.rotate]#`mcounteren.HPM3`# .2+h! [.rotate]#`scounteren.HPM3`# 2+^.>! `hpmcounter3` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -193,7 +193,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM4`# .2+h! [.rotate]#`mcounteren.HPM4`# .2+h! [.rotate]#`scounteren.HPM4`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM4`# .2+h! [.rotate]#`mcounteren.HPM4`# .2+h! [.rotate]#`scounteren.HPM4`# 2+^.>! `hpmcounter4` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -230,7 +230,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM5`# .2+h! [.rotate]#`mcounteren.HPM5`# .2+h! [.rotate]#`scounteren.HPM5`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM5`# .2+h! [.rotate]#`mcounteren.HPM5`# .2+h! [.rotate]#`scounteren.HPM5`# 2+^.>! `hpmcounter5` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -267,7 +267,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM6`# .2+h! [.rotate]#`mcounteren.HPM6`# .2+h! [.rotate]#`scounteren.HPM6`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM6`# .2+h! [.rotate]#`mcounteren.HPM6`# .2+h! [.rotate]#`scounteren.HPM6`# 2+^.>! `hpmcounter6` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -304,7 +304,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM7`# .2+h! [.rotate]#`mcounteren.HPM7`# .2+h! [.rotate]#`scounteren.HPM7`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM7`# .2+h! [.rotate]#`mcounteren.HPM7`# .2+h! [.rotate]#`scounteren.HPM7`# 2+^.>! `hpmcounter7` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -341,7 +341,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM8`# .2+h! [.rotate]#`mcounteren.HPM8`# .2+h! [.rotate]#`scounteren.HPM8`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM8`# .2+h! [.rotate]#`mcounteren.HPM8`# .2+h! [.rotate]#`scounteren.HPM8`# 2+^.>! `hpmcounter8` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -378,7 +378,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM9`# .2+h! [.rotate]#`mcounteren.HPM9`# .2+h! [.rotate]#`scounteren.HPM9`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM9`# .2+h! [.rotate]#`mcounteren.HPM9`# .2+h! [.rotate]#`scounteren.HPM9`# 2+^.>! `hpmcounter9` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -415,7 +415,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM10`# .2+h! [.rotate]#`mcounteren.HPM10`# .2+h! [.rotate]#`scounteren.HPM10`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM10`# .2+h! [.rotate]#`mcounteren.HPM10`# .2+h! [.rotate]#`scounteren.HPM10`# 2+^.>! `hpmcounter10` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -452,7 +452,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM11`# .2+h! [.rotate]#`mcounteren.HPM11`# .2+h! [.rotate]#`scounteren.HPM11`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM11`# .2+h! [.rotate]#`mcounteren.HPM11`# .2+h! [.rotate]#`scounteren.HPM11`# 2+^.>! `hpmcounter11` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -489,7 +489,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM12`# .2+h! [.rotate]#`mcounteren.HPM12`# .2+h! [.rotate]#`scounteren.HPM12`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM12`# .2+h! [.rotate]#`mcounteren.HPM12`# .2+h! [.rotate]#`scounteren.HPM12`# 2+^.>! `hpmcounter12` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -526,7 +526,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM13`# .2+h! [.rotate]#`mcounteren.HPM13`# .2+h! [.rotate]#`scounteren.HPM13`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM13`# .2+h! [.rotate]#`mcounteren.HPM13`# .2+h! [.rotate]#`scounteren.HPM13`# 2+^.>! `hpmcounter13` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -563,7 +563,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM14`# .2+h! [.rotate]#`mcounteren.HPM14`# .2+h! [.rotate]#`scounteren.HPM14`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM14`# .2+h! [.rotate]#`mcounteren.HPM14`# .2+h! [.rotate]#`scounteren.HPM14`# 2+^.>! `hpmcounter14` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -600,7 +600,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM15`# .2+h! [.rotate]#`mcounteren.HPM15`# .2+h! [.rotate]#`scounteren.HPM15`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM15`# .2+h! [.rotate]#`mcounteren.HPM15`# .2+h! [.rotate]#`scounteren.HPM15`# 2+^.>! `hpmcounter15` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -637,7 +637,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM16`# .2+h! [.rotate]#`mcounteren.HPM16`# .2+h! [.rotate]#`scounteren.HPM16`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM16`# .2+h! [.rotate]#`mcounteren.HPM16`# .2+h! [.rotate]#`scounteren.HPM16`# 2+^.>! `hpmcounter16` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -674,7 +674,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM17`# .2+h! [.rotate]#`mcounteren.HPM17`# .2+h! [.rotate]#`scounteren.HPM17`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM17`# .2+h! [.rotate]#`mcounteren.HPM17`# .2+h! [.rotate]#`scounteren.HPM17`# 2+^.>! `hpmcounter17` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -711,7 +711,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM18`# .2+h! [.rotate]#`mcounteren.HPM18`# .2+h! [.rotate]#`scounteren.HPM18`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM18`# .2+h! [.rotate]#`mcounteren.HPM18`# .2+h! [.rotate]#`scounteren.HPM18`# 2+^.>! `hpmcounter18` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -748,7 +748,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM19`# .2+h! [.rotate]#`mcounteren.HPM19`# .2+h! [.rotate]#`scounteren.HPM19`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM19`# .2+h! [.rotate]#`mcounteren.HPM19`# .2+h! [.rotate]#`scounteren.HPM19`# 2+^.>! `hpmcounter19` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -785,7 +785,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM20`# .2+h! [.rotate]#`mcounteren.HPM20`# .2+h! [.rotate]#`scounteren.HPM20`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM20`# .2+h! [.rotate]#`mcounteren.HPM20`# .2+h! [.rotate]#`scounteren.HPM20`# 2+^.>! `hpmcounter20` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -822,7 +822,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM21`# .2+h! [.rotate]#`mcounteren.HPM21`# .2+h! [.rotate]#`scounteren.HPM21`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM21`# .2+h! [.rotate]#`mcounteren.HPM21`# .2+h! [.rotate]#`scounteren.HPM21`# 2+^.>! `hpmcounter21` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -859,7 +859,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM22`# .2+h! [.rotate]#`mcounteren.HPM22`# .2+h! [.rotate]#`scounteren.HPM22`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM22`# .2+h! [.rotate]#`mcounteren.HPM22`# .2+h! [.rotate]#`scounteren.HPM22`# 2+^.>! `hpmcounter22` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -896,7 +896,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM23`# .2+h! [.rotate]#`mcounteren.HPM23`# .2+h! [.rotate]#`scounteren.HPM23`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM23`# .2+h! [.rotate]#`mcounteren.HPM23`# .2+h! [.rotate]#`scounteren.HPM23`# 2+^.>! `hpmcounter23` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -933,7 +933,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM24`# .2+h! [.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM24`# .2+h! [.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`# 2+^.>! `hpmcounter24` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -970,7 +970,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM25`# .2+h! [.rotate]#`mcounteren.HPM25`# .2+h! [.rotate]#`scounteren.HPM25`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM25`# .2+h! [.rotate]#`mcounteren.HPM25`# .2+h! [.rotate]#`scounteren.HPM25`# 2+^.>! `hpmcounter25` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1007,7 +1007,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM26`# .2+h! [.rotate]#`mcounteren.HPM26`# .2+h! [.rotate]#`scounteren.HPM26`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM26`# .2+h! [.rotate]#`mcounteren.HPM26`# .2+h! [.rotate]#`scounteren.HPM26`# 2+^.>! `hpmcounter26` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1044,7 +1044,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM27`# .2+h! [.rotate]#`mcounteren.HPM27`# .2+h! [.rotate]#`scounteren.HPM27`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM27`# .2+h! [.rotate]#`mcounteren.HPM27`# .2+h! [.rotate]#`scounteren.HPM27`# 2+^.>! `hpmcounter27` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1081,7 +1081,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM28`# .2+h! [.rotate]#`mcounteren.HPM28`# .2+h! [.rotate]#`scounteren.HPM28`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM28`# .2+h! [.rotate]#`mcounteren.HPM28`# .2+h! [.rotate]#`scounteren.HPM28`# 2+^.>! `hpmcounter28` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1118,7 +1118,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM29`# .2+h! [.rotate]#`mcounteren.HPM29`# .2+h! [.rotate]#`scounteren.HPM29`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM29`# .2+h! [.rotate]#`mcounteren.HPM29`# .2+h! [.rotate]#`scounteren.HPM29`# 2+^.>! `hpmcounter29` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1155,7 +1155,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM30`# .2+h! [.rotate]#`mcounteren.HPM30`# .2+h! [.rotate]#`scounteren.HPM30`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM30`# .2+h! [.rotate]#`mcounteren.HPM30`# .2+h! [.rotate]#`scounteren.HPM30`# 2+^.>! `hpmcounter30` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
@@ -1192,7 +1192,7 @@ fields:
 
       [separator="!",%autowidth]
       !===
-      .2+h! [.rotate]#`hcounteren.HPM31`# .2+h! [.rotate]#`mcounteren.HPM31`# .2+h! [.rotate]#`scounteren.HPM31`# 2+^.>! `cycle` access behavior
+      .2+h! [.rotate]#`hcounteren.HPM31`# .2+h! [.rotate]#`mcounteren.HPM31`# .2+h! [.rotate]#`scounteren.HPM31`# 2+^.>! `hpmcounter31` access behavior
       .>h! VS-mode .>h! VU-mode
 
       ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`

@@ -13,7 +13,7 @@ priv_mode: S
 length: 64
 definedBy:
   extension:
-    name: Smctr
+    name: Ssctr
 description: The `sctrctl` register enables and configures the Control Transfer Records capability in S mode.
 fields:
   U:

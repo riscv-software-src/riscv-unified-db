@@ -11,6 +11,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from generator import load_csrs, load_exception_codes, load_instructions
 
+LOGGER = logging.getLogger(__name__)
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -81,7 +83,7 @@ def format_cause_name(name):
 def match_to_sverilog_bits(match_str):
     """Convert a match string to SystemVerilog bit pattern."""
     if not match_str:
-        logging.error("Empty match string encountered.")
+        LOGGER.error("Empty match string encountered.")
 
     # For compressed instructions (16-bit), we need to handle them differently.
     # The 16-bit pattern is in the lower 16 bits,
@@ -90,7 +92,7 @@ def match_to_sverilog_bits(match_str):
         # Pad with wildcards on the left for 16-bit instructions
         match_str = "?" * 16 + match_str
     elif len(match_str) != 32:
-        logging.error(f"Match string length is {len(match_str)}, expected 32 or 16.")
+        LOGGER.error(f"Match string length is {len(match_str)}, expected 32 or 16.")
 
     # Convert to SystemVerilog format (0, 1, or ?)
     result = match_str.replace("-", "?")
@@ -107,10 +109,10 @@ def generate_sverilog(instructions, csrs, causes, output_file):
 
         # Find the maximum name length for alignment
         max_instr_len = max(
-            (len(format_instruction_name(name)) for name in instructions.keys()),
+            (len(format_instruction_name(name)) for name in instructions),
             default=0,
         )
-        max_csr_len = max((len(format_csr_name(csrs[addr])) for addr in csrs.keys()), default=0)
+        max_csr_len = max((len(format_csr_name(csrs[addr])) for addr in csrs), default=0)
         max_cause_len = max((len(format_cause_name(name)) for _, name in causes), default=0)
         max_len = max(max_instr_len, max_csr_len)
 
@@ -124,7 +126,7 @@ def generate_sverilog(instructions, csrs, causes, output_file):
             if isinstance(encoding, dict) and "match" in encoding:
                 match = encoding["match"]
             else:
-                logging.error(f"No match field for instruction {name}.")
+                LOGGER.error(f"No match field for instruction {name}.")
 
             sv_bits = match_to_sverilog_bits(match)
             f.write(f"  localparam logic [31:0] {padded_name} = {sv_bits};\n")
@@ -161,20 +163,20 @@ def main():
     # Parse extensions
     if args.include_all:
         enabled_extensions = []
-        logging.info("Including all instructions and CSRs (ignoring extension filter)")
+        LOGGER.info("Including all instructions and CSRs (ignoring extension filter)")
     else:
         enabled_extensions = [ext.strip() for ext in args.extensions.split(",")]
-        logging.info(f"Enabled extensions: {', '.join(enabled_extensions)}")
+        LOGGER.info(f"Enabled extensions: {', '.join(enabled_extensions)}")
 
-    logging.info(f"Target architecture: {args.arch}")
+    LOGGER.info(f"Target architecture: {args.arch}")
 
     # Load instructions
     instructions = load_instructions(args.inst_dir, enabled_extensions, args.include_all, args.arch)
-    logging.info(f"Loaded {len(instructions)} instructions")
+    LOGGER.info(f"Loaded {len(instructions)} instructions")
 
     # Load CSRs
     csrs = load_csrs(args.csr_dir, enabled_extensions, args.include_all, args.arch)
-    logging.info(f"Loaded {len(csrs)} CSRs")
+    LOGGER.info(f"Loaded {len(csrs)} CSRs")
 
     # Load exception codes
     causes = load_exception_codes(
@@ -183,11 +185,11 @@ def main():
         include_all=args.include_all,
         resolved_codes_file=args.resolved_codes,
     )
-    logging.info(f"Loaded {len(causes)} exception codes")
+    LOGGER.info(f"Loaded {len(causes)} exception codes")
 
     # Generate the SystemVerilog file
     generate_sverilog(instructions, csrs, causes, args.output)
-    logging.info(
+    LOGGER.info(
         f"Generated {args.output} with {len(instructions)} instructions and {len(csrs)} CSRs"
     )
 

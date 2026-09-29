@@ -8,9 +8,13 @@ kind: extension
 name: Zicfilp
 long_name: Landing Pad
 description: |
-  TODO
+  The Zicfilp extension introduces a landing-pad instruction and related
+  execution state to enforce forward-edge control-flow integrity.
 type: unprivileged
 versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-07
+requirements:
+  extension:
+    name: Zicsr

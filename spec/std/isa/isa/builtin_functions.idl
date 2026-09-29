@@ -58,10 +58,12 @@ generated function direct_csr_lookup {
 generated function indirect_csr_lookup {
   returns Csr
   arguments
+    PrivilegeMode target_mode,
     Bits<MXLEN> csr_addr,
     Bits<4> window_slot  # 1-indexed "slot" in the window (corresponding to *ireg<window_slot>)
   description {
-    Return CSR info for a CSR with indirect address +csr_addr+ at window slot +window_slot+.
+    Return CSR info for a CSR with indirect address +csr_addr+ in the target privilege-mode
+    indirect address space at window slot +window_slot+.
 
     If no CSR exists, <return_value>.valid == false
   }
