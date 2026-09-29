@@ -689,11 +689,8 @@ system-installed native dependencies used by UDB itself.
   inheritance were the next integration step, completed in the Stage 2c follow-up
   below without changing resolved semantic values or embedding absolute paths.
 
-### 2026-09-29: Stage 2c recovery and integration
+### 2026-09-29: Stage 2c authoring and provenance
 
-- Recovered the local migration commits after the system restart. The temporary
-  worktrees had disappeared; the saved layout patch and Git history preserved
-  the implementation. Original recovery branches remain available.
 - Converted all 31 layouts to restricted Python expressions and explicit
   generation recipes. `udb generate-layouts --root . [--check]` replaces ERB
   expansion, and the existing `./do gen:arch` wrapper delegates to it. All 532
