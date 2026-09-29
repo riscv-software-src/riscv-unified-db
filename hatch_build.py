@@ -37,6 +37,11 @@ def package_data(source_root: Path) -> dict[Path, PurePosixPath]:
         mappings[path] = (
             PurePosixPath("udb/_data/schemas") / path.relative_to(schema_root).as_posix()
         )
+    for name in ("_", "rv32", "rv64"):
+        path = source_root / "cfgs" / f"{name}.yaml"
+        if not path.is_file():
+            raise RuntimeError(f"required generic configuration is missing: {path}")
+        mappings[path] = PurePosixPath("udb/_data/configs") / path.name
     return mappings
 
 
