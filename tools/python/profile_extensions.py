@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 """List RISC-V extensions associated with given (or all defined) profile(s).
 
-It is generally expected to be used with a "resolved architectural specification".
-So, for example:
+With no path, the bundled standard database is resolved in memory. Explicit
+paths continue to read existing resolved architecture trees. For example:
 ```
+$ ./profile_extensions [--profiles P1[,P2]]
 $ ./profile_extensions [--profiles P1[,P2]] $UDB_ROOT/gen/resolved_spec/_
 ```
 """
@@ -21,16 +22,19 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     parser = argparse.ArgumentParser(description="List extensions associated with profiles")
     parser.add_argument("-p", "--profiles")
-    parser.add_argument("paths", nargs="*", default=["."])
+    parser.add_argument("paths", nargs="*")
     params = parser.parse_args(argv)
 
     profiles_filter = []
     if params.profiles is not None:
         profiles_filter = params.profiles.split(",")
 
-    profiles = []
-    for path in params.paths:
-        profiles.extend(Database.from_path(path).profiles)
+    if params.paths:
+        profiles = []
+        for path in params.paths:
+            profiles.extend(Database.from_path(path).profiles)
+    else:
+        profiles = list(Database.bundled().resolve().profiles)
 
     for profile in sorted(profiles, key=lambda x: x["name"]):
         if (
