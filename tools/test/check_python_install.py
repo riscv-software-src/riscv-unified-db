@@ -85,18 +85,34 @@ def check_install() -> None:
             ]
         }
     )
-    eval_ctx = udb.EvaluationContext(
+    assert condition.evaluate(udb.EvaluationContext(xlen=64)) is udb.TruthValue.UNKNOWN
+    assert (
+        condition.evaluate(
+            udb.EvaluationContext(extensions={"I": "2.1.0"}, parameters={"MXLEN": 64})
+        )
+        is udb.TruthValue.TRUE
+    )
+    closed_ctx = udb.EvaluationContext(
         xlen=64, closed_world_extensions=True, closed_world_parameters=True
     )
-    assert condition.evaluate(eval_ctx) is udb.TruthValue.UNKNOWN
+    assert condition.evaluate(closed_ctx) is udb.TruthValue.FALSE
 
-    solver = udb.ConditionSolver(udb.SolverContext(xlen=64, fixed_extensions={"I": "1.0.0"}))
+    solver_ctx = udb.SolverContext(
+        xlen=64,
+        extension_versions={"I": ["2.1.0"]},
+        parameter_domains={"MXLEN": domains["MXLEN"]},
+        fixed_extensions={"I": "2.1.0"},
+    )
+    solver = udb.ConditionSolver(solver_ctx)
     solver.add(condition)
     assert solver.check() is udb.SolverStatus.SAT
+    solver.add(udb.parse_condition({"param": {"name": "MXLEN", "equal": 32}}))
+    assert solver.check() is udb.SolverStatus.UNSAT
 
     rv64_arch = resolved.configure(udb.Configuration.builtin("rv64"))
     assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
-    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
+    # Some rv64 extensions and parameters are gated by idl() conditions until Stage 4.
+    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.DEFERRED
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
 
     data_references = schema_references = source_values = 0

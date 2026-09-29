@@ -240,7 +240,7 @@ limit; unsupported schema shapes or analyses fail explicitly. See
 Conditions parse into immutable expressions that support three-valued evaluation and Z3 solving:
 
 ```python
-from udb import Database, EvaluationContext, TruthValue, parse_condition
+from udb import EvaluationContext, TruthValue, parse_condition
 
 condition = parse_condition(
     {
@@ -250,8 +250,11 @@ condition = parse_condition(
         ]
     }
 )
-context = EvaluationContext(xlen=64, closed_world_extensions=True, closed_world_parameters=True)
-assert condition.evaluate(context) is TruthValue.UNKNOWN
+assert condition.evaluate(EvaluationContext(xlen=64)) is TruthValue.UNKNOWN
+known = EvaluationContext(extensions={"Zicsr": "2.0.0"}, parameters={"MXLEN": 64})
+assert condition.evaluate(known) is TruthValue.TRUE
+closed = EvaluationContext(xlen=64, closed_world_extensions=True, closed_world_parameters=True)
+assert condition.evaluate(closed) is TruthValue.FALSE
 ```
 
 Condition expressions represent extension requirements, parameter comparisons, XLEN constraints,
@@ -273,7 +276,8 @@ arch = db.configure(Configuration.builtin("rv64"))
 
 assert arch.extension_presence("I") is QueryPresence.MANDATORY
 check = arch.check()
-assert check.status.name == "VALID"
+# rv64 includes idl()-gated extensions and parameters, so it is DEFERRED until Stage 4.
+assert check.status.name == "DEFERRED"
 print([inst.name for inst in arch.possible_instructions])
 ```
 

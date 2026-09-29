@@ -793,11 +793,20 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   from `tools/test/regress-gh-template.yaml` using the generator script.
 - Extended `tools/test/check_python_install.py` in the installed wheel/sdist offline gate
   to import and exercise representative condition solving and configured queries from outside
-  the checkout with Ruby and Git absent from `PATH`.
+  the checkout with Ruby and Git absent from `PATH`. The bundled `rv64` configuration checks as
+  `DEFERRED` because some of its extensions and parameters are gated by `idl()` conditions.
+  `tests/python/test_distribution.py` now runs this same script against a wheel rebuilt from the
+  sdist in a fresh virtual environment, so the CI gate cannot drift unexercised.
 - Confirmed Ruby corrections remain recorded as entries 1–17 in `doc/python-migration-bugfixes.md`.
-  Fresh review found and fixed Python-only defects in typed `ParameterTerm` equality and unconstrained
-  `oneOf` sort inference; because these were Python implementation issues rather than Ruby divergences,
+  Fresh reviews found and fixed Python-only defects: typed `ParameterTerm` equality, unconstrained
+  `oneOf` sort inference, missing top-level `udb` exports for the condition and solver API,
+  `solver.implies`/`solver.equivalent` returning `False` instead of raising `SolverUnknownError`
+  when finite enumeration was unavailable, and incorrect assertions in the installed-package gate
+  and API examples. Because these were Python implementation issues rather than Ruby divergences,
   they are explicitly not added to the Ruby bug log.
+- Local validation: 340+ Python tests pass with `UDB_TEST_RUBY=1` Ruby-oracle differentials, both
+  Stage 3 parity regress jobs pass, the installed wheel gate passes from `/tmp` with a restricted
+  `PATH`, and `prek` hooks pass for the Stage 3 range.
 - Every existing generator is preserved. Remaining Ruby callers are the configured architecture/IDL
   resolver used by `./do gen:resolved_arch`, Ruby object-model consumers, and later-stage generators
   and document renderers. Full repository `./bin/regress --all` and remote CI remain pending.
