@@ -332,6 +332,16 @@ jobs:
           gem install udb.gem
       - name: try z3
         run: ruby -r 'udb' -e "Udb::Z3Loader.ensure_z3_loaded"
+  regress-python-versions-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare Python and Ruby RISC-V version semantics
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_versions.py
+
   regress-python-resolution-parity:
     runs-on: ubuntu-latest
     steps:
@@ -1032,6 +1042,7 @@ jobs:
   regress-complete:
     runs-on: ubuntu-latest
     needs:
+      - regress-python-versions-parity
       - regress-python-resolution-parity
       - regress-python-layout-drift
       - regress-python-unit
