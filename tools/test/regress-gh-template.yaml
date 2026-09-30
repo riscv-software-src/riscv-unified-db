@@ -45,6 +45,8 @@ jobs:
       - name: Install Python package and test dependencies
         run: >-
           python -m pip install --only-binary=:all: . pytest build hatchling
+      - name: Install compiler for generated C++ tests
+        run: apt-get update -qq && apt-get install -y --no-install-recommends g++
       - name: Verify the package without Ruby or repository setup
         run: python -m pytest tests/python
       - name: Build a wheelhouse including runtime dependencies
