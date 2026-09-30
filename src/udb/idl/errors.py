@@ -59,14 +59,23 @@ class IdlSemanticError(IdlError):
     """Base class for errors raised while type-checking or evaluating IDL.
 
     Attributes:
-        reason: Human-readable description of the failure.
+        reason: Human-readable, short description of the failure (Ruby's
+            ``reason``/``what`` argument to ``type_error``/``internal_error``).
         node: The offending AST node, when known.
+        message: The full exception message. For errors raised through
+            :meth:`~udb.idl.ast.Node.type_error`/``internal_error`` this is
+            the Ruby-style formatted message (file/line, and for type errors
+            a "HERE >> ... << HERE" source excerpt); otherwise it defaults to
+            ``reason``.
     """
 
-    def __init__(self, reason: str, node: object | None = None) -> None:
-        super().__init__(reason)
+    def __init__(
+        self, reason: str, node: object | None = None, *, message: str | None = None
+    ) -> None:
+        super().__init__(message if message is not None else reason)
         self.reason = reason
         self.node = node
+        self.message = message if message is not None else reason
 
 
 class IdlTypeError(IdlSemanticError):

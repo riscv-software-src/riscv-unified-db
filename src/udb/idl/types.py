@@ -230,6 +230,7 @@ __all__ = [
     "BOOL_TYPE",
     "CONST_BITS_UNKNOWN_TYPE",
     "CONST_BOOL_TYPE",
+    "POSSIBLY_UNKNOWN_BITS1_TYPE",
     "STRING_TYPE",
     "VOID_TYPE",
     "WIDTH_UNKNOWN",
@@ -1348,9 +1349,21 @@ class XregType(RegFileElementType):
 
 
 # Pre-defined common types (``type.rb``'s `Bits1Type`, `Bits32Type`, ...).
+#
+# Ruby's ``ast.rb`` also defines same-named constants nested inside ``class AstNode`` with a
+# ``:known`` qualifier (``AstNode::Bits1Type``, etc.), but a bare reference to e.g. ``Bits1Type``
+# from any *sibling* ``AstNode`` subclass resolves lexically to the top-level ``Idl`` module's
+# unqualified constant here, never to ``AstNode``'s shadowed one (Ruby's lexical constant lookup
+# checks enclosing modules before the ancestor chain). The ``AstNode``-nested, ``:known``-tagged
+# versions are therefore unreachable dead code in every real call site; these constants mirror
+# the one that is actually observable (confirmed via the oracle: e.g. ``(8'hff)[0]``'s type is
+# ``"Bits<1>"``, never ``"known Bits<1>"``).
 BITS1_TYPE = Type(TypeKind.BITS, width=1)
 BITS32_TYPE = Type(TypeKind.BITS, width=32)
 BITS64_TYPE = Type(TypeKind.BITS, width=64)
+#: Ruby's ``PossiblyUnknownBits1Type``: structurally identical to ``BITS1_TYPE`` (both are an
+#: unqualified 1-bit type), kept as a distinct name only to mirror Ruby's separate constant.
+POSSIBLY_UNKNOWN_BITS1_TYPE = Type(TypeKind.BITS, width=1)
 BITS_UNKNOWN_TYPE = Type(TypeKind.BITS, width=WIDTH_UNKNOWN)
 CONST_BITS_UNKNOWN_TYPE = Type(TypeKind.BITS, width=WIDTH_UNKNOWN, qualifiers=(Qualifier.CONST,))
 CONST_BOOL_TYPE = Type(TypeKind.BOOLEAN, qualifiers=(Qualifier.CONST,))

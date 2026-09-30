@@ -10,7 +10,7 @@
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
 | Stage 3: versions, configurations, conditions, and solving | Complete locally; CI pending |
-| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) complete locally |
+| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) and expression semantics (branch 14) complete locally |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
@@ -62,6 +62,7 @@ These are local branches until publication of the PR stack.
 | `migration/python-11-configured-queries` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
 | `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
 | `migration/python-13-idl-syntax` | `migration/python-12-stage3-gates` | Pure-Python IDL parser and syntax tree with full-database Ruby parity |
+| `migration/python-14-idl-expressions` | `migration/python-13-idl-syntax` | IDL type system, symbol table, and expression semantics with Ruby oracle parity |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -851,6 +852,23 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   - `from_h` crashed on unknown-bit literals.
   The parser now relinks parents after parsing, raises the recursion limit while it
   runs, and reports nesting that is still too deep as `IdlSyntaxError`.
-- Semantic analysis (types, symbol tables, values, type checking), passes, and closing
-  the Stage 3 `idl()` deferrals remain for branches 14–18 as planned in
-  `doc/stage4-idl.md`.
+- The parser is a package of grammar-area modules (`udb.idl.parser`), each under about
+  900 lines; the public API is unchanged.
+
+### 2026-09-29: Stage 4 IDL types and expressions
+
+- Added `udb.idl.types` and `udb.idl.symbols`, ports of idlc's `type.rb` and
+  `symbol_table.rb`. Types are immutable values, and the symbol table takes an injected
+  architecture environment instead of reaching into Ruby objects. Differential tests use
+  `ruby_idl_type_oracle.rb`.
+- Every expression node implements `type_check`, `type`, `value`, and `values`.
+  `tests/python/test_idl_expressions.py` compares a 443-case frozen Ruby corpus
+  (the idlc `expressions.yaml`/`literals.yaml` fixtures plus adversarial cases) and has a
+  Ruby-gated freshness check. The `regress-python-idl-expression-parity` CI job runs it,
+  and the installed-package gate type-checks and evaluates an expression.
+- Confirmed Ruby defects are bug-log entries 23–30: enum and CSR comparisons and shared
+  array defaults in the type system, concatenation constness, division by zero (even
+  when short-circuited), uppercase `X` literals reported `known`, unsized unknown-bit
+  literals, and signed literals that never evaluate negative.
+- Statements and functions, whole-configuration type checking, passes, and closing the
+  Stage 3 `idl()` deferrals remain for branches 15–18 as planned in `doc/stage4-idl.md`.

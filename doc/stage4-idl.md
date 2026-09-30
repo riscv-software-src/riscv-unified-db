@@ -122,6 +122,12 @@ directly.
   are consumed directly.
 - **Unit-test mapping:** each `tools/ruby-gems/idlc/test/test_*.rb` category maps to a
   `tests/python/test_idl_*.py` module. The mapping is recorded in this file as slices land.
+
+  | Ruby test | Python module | Slice |
+  | --- | --- | --- |
+  | `test_type_to_idl.rb` | `test_idl_types.py` | 14 |
+  | `test_expressions.rb` (with `expressions.yaml`, `literals.yaml`) | `test_idl_expressions.py` | 14 |
+  | `test_values.rb` (`max_value`/`min_value`, CSR fields) and the CSR cases of `test_ast_type.rb` | not yet ported | 16 |
 - **Corrections:** a confirmed Ruby defect goes in `doc/python-migration-bugfixes.md` with a
   regression test and a reviewed corpus exception. Python defects go in the migration progress
   log.
@@ -133,7 +139,7 @@ directly.
 | `migration/python-13-idl-syntax` | Parser, AST classes, lowering, `to_h`/`from_h`/`to_idl`, syntax diagnostics, and a whole-database parse differential |
 | `migration/python-14-idl-expressions` | Types, literals, values, and expression typing and evaluation |
 | `migration/python-15-idl-statements` | Symbol tables, declarations, functions and calls, control flow, aggregates, CSR and register-file operations, and includes |
-| `migration/python-16-idl-architecture` | Architecture environment, YAML source mapping, and full type checking for `_`, `rv32`, `rv64`, and `qc_iu` |
+| `migration/python-16-idl-architecture` | Architecture environment, YAML source mapping, expression `max_value`/`min_value` bounds (register-file sizing), and full type checking for `_`, `rv32`, `rv64`, and `qc_iu` |
 | `migration/python-17-idl-passes` | Pruning, reachability, register and CSR discovery, return values, AsciiDoc and option generation, and `cpp_hart_gen` analyses |
 | `migration/python-18-idl-conditions` | `idl()` conditions and closure of the Stage 3 deferred results |
 

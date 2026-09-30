@@ -135,12 +135,30 @@ Design notes
 
 from __future__ import annotations
 
+import operator
 import re
-from collections.abc import Mapping
+import warnings
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import Any, ClassVar, NoReturn
 
+from .errors import IdlInternalError, IdlTypeError, IdlValueUnknown
 from .source import IdlSource
+from .symbols import SymbolTable, Var
+from .types import (
+    BITS_UNKNOWN_TYPE,
+    BOOL_TYPE,
+    CONST_BOOL_TYPE,
+    POSSIBLY_UNKNOWN_BITS1_TYPE,
+    WIDTH_UNKNOWN,
+    BitfieldType,
+    EnumerationType,
+    Qualifier,
+    RegFileElementType,
+    StructType,
+    Type,
+    TypeKind,
+)
 
 __all__ = [
     "ArrayIncludes",
@@ -283,6 +301,136 @@ class Node:
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.text!r})"
 
+    # -- semantic error/diagnostic helpers -----------------------------------
+    # Ports of ``Idl::AstNode#lines_around``/``#type_error``/``#internal_error``/
+    # ``#truncation_warn`` (``ast.rb`` ~lines 335-478). ``value_error`` replaces
+    # Ruby's global ``throw(:value_error)`` with :class:`IdlValueUnknown` (see
+    # ``doc/stage4-idl.md`` "Semantics").
+
+    @property
+    def input_file(self) -> str:
+        """Mirrors ``AstNode#input_file`` (here, always the tree's source label)."""
+        return self.source.label
+
+    def find_ancestor(self, klass: type[Node]) -> Node | None:
+        """The nearest ancestor that is an instance of *klass*. Mirrors ``AstNode#find_ancestor``."""
+        node = self.parent
+        while node is not None:
+            if isinstance(node, klass):
+                return node
+            node = node.parent
+        return None
+
+    def _lines_around(self) -> tuple[str, tuple[int, int], tuple[int, int]]:
+        """Port of ``AstNode#lines_around``: +-2/+3 lines of context around this node's span."""
+        text = self.source.text
+        interval_min = self.start
+        interval_max = self.end - 1 if self.end > self.start else self.start
+
+        interval_start = interval_min
+        cnt = 0
+        while cnt < 2:
+            if text[interval_start] == "\n":
+                cnt += 1
+            if interval_start == 0:
+                break
+            interval_start -= 1
+
+        interval_end = interval_max
+        cnt = 0
+        while cnt < 3:
+            if text[interval_end] == "\n":
+                cnt += 1
+            if interval_end >= len(text) - 1:
+                break
+            if cnt == 3:
+                break
+            interval_end += 1
+
+        lines = text[interval_start : interval_end + 1]
+        problem_interval = (interval_min - interval_start, interval_max - interval_start)
+        lines_interval = (interval_start + 1, interval_end)
+        return lines, problem_interval, lines_interval
+
+    def _format_type_error(self, reason: str) -> str:
+        """Port of ``AstNode#type_error``'s message formatting (always the non-tty branch)."""
+        lines, (pmin, pmax), (li_min, _li_max) = self._lines_around()
+        marked = (
+            f"{lines[:pmin]}**HERE** >> {lines[pmin : pmax + 1]} << **HERE**{lines[pmax + 1 :]}"
+        )
+
+        prefix = self.source.text[: li_min + 1]
+        starting_lineno = prefix.count("\n")
+        numbered_lines = []
+        for line in marked.splitlines(keepends=True):
+            starting_lineno += 1
+            numbered_lines.append(f"{self.source.starting_line + starting_lineno - 1}: {line}")
+        numbered = "".join(numbered_lines)
+
+        return (
+            f"In file {self.input_file}\n"
+            f"On line {self.lineno}\n"
+            "In the code:\n\n"
+            f"  {numbered.replace(chr(10), chr(10) + '  ')}\n\n"
+            "A type error occurred\n"
+            f"  {reason}\n"
+        )
+
+    def type_error(self, reason: str) -> NoReturn:
+        """Raise :class:`IdlTypeError`. Mirrors ``AstNode#type_error``."""
+        raise IdlTypeError(reason, self, message=self._format_type_error(reason))
+
+    def internal_error(self, reason: str) -> NoReturn:
+        """Raise :class:`IdlInternalError`. Mirrors ``AstNode#internal_error``."""
+        message = f"In file {self.input_file}\nOn line {self.lineno}\n  An internal error occurred\n  {reason}\n"
+        raise IdlInternalError(reason, self, message=message)
+
+    def value_error(self, reason: str) -> NoReturn:
+        """Raise :class:`IdlValueUnknown`. Replaces Ruby's ``throw(:value_error)``."""
+        raise IdlValueUnknown(reason, self)
+
+    def truncation_warn(self, reason: str) -> None:
+        """Warn that a value was truncated. Mirrors ``AstNode#truncation_warn``."""
+        message = (
+            f"In file {self.input_file}\n"
+            f"On line {self.lineno}\n"
+            "  A value was truncated\n"
+            f"  {reason}.\n"
+            "  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+        )
+        warnings.warn(message, stacklevel=2)
+
+    # -- semantic (type/value) defaults --------------------------------------
+    # Every concrete expression node overrides ``type_check``/``type``/``value``;
+    # these defaults only fire for nodes that are explicitly out of scope for
+    # this slice (statements, declarations, function calls, CSR/register-file
+    # access, ...), matching the task's "raise IdlInternalError" guidance.
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.internal_error(f"type_check: not yet supported: {type(self).__name__}")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        self.internal_error(f"type: not yet supported: {type(self).__name__}")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        self.internal_error(f"value: not yet supported: {type(self).__name__}")
+
+    def values(self, symtab: SymbolTable) -> list[Any]:
+        """The complete list of possible compile-time values. Mirrors ``Rvalue#values``.
+
+        The default (used by every node except :class:`TernaryOperatorExpression`)
+        is a single-entry list holding :meth:`value`.
+        """
+        return [self.value(symtab)]
+
+    @staticmethod
+    def truncate(value: int, width: int, signed: bool) -> int:
+        """Mask *value* to *width* bits, sign-extending if *signed*. Mirrors ``Rvalue#truncate``."""
+        masked = value & ((1 << width) - 1) if width > 0 else 0
+        if signed and width > 0 and (masked >> (width - 1)) & 1:
+            return masked - (1 << width)
+        return masked
+
 
 def _source_and_span(
     data: Mapping[str, Any], sources: Mapping[str, str]
@@ -301,6 +449,59 @@ def _check_kind(data: Mapping[str, Any], kind: str) -> None:
 
 def _idl_join(nodes: tuple[Node, ...], sep: str = ", ") -> str:
     return sep.join(n.to_idl() for n in nodes)
+
+
+def _try_value(node: Node, symtab: SymbolTable) -> Any | None:
+    """Evaluate ``node.value(symtab)``, or ``None`` if unknown. Mirrors Ruby's ``value_try``.
+
+    None of the value domains used by this slice (``bool``, ``int``, ``str``,
+    ``list``, ``UnknownLiteral``) are ever the Python object ``None``, so
+    ``None`` is a safe "unknown" sentinel here.
+    """
+    try:
+        return node.value(symtab)
+    except IdlValueUnknown:
+        return None
+
+
+def _values_disjoint(a: Iterable[Any], b: Iterable[Any]) -> bool:
+    """Whether no value in *a* equals any value in *b*. Mirrors Ruby's ``Array#intersection.empty?``.
+
+    Compares with ``==`` rather than relying on hashing, since ``UnknownLiteral``
+    values may appear in either list.
+    """
+    b_list = list(b)
+    return not any(any(x == y for y in b_list) for x in a)
+
+
+#: Reserved words that cannot be used as identifiers/type names. Mirrors Ruby's
+#: ``Idl::ReservedWords::RESERVED`` (``ast.rb`` ~lines 38-49).
+RESERVED_WORDS = frozenset(
+    (
+        "if",
+        "else",
+        "for",
+        "return",
+        "returns",
+        "arguments",
+        "description",
+        "body",
+        "function",
+        "builtin",
+        "generated",
+        "enum",
+        "bitfield",
+        "CSR",
+        "true",
+        "false",
+        "XReg",
+        "Bits",
+        "Boolean",
+        "String",
+        "U64",
+        "U32",
+    )
+)
 
 
 # ---------------------------------------------------------------------------
@@ -330,6 +531,38 @@ class Id(Node):
 
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.name in RESERVED_WORDS:
+            self.type_error(f"Cannot use reserved word '{self.name}' as variable name")
+        if symtab.get(self.name) is None:
+            self.type_error(f"no symbol named '{self.name}'")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        cached = self._cache.get("_type_symtab")
+        if cached is not None:
+            return cached
+        sym = symtab.get(self.name)
+        if sym is None:
+            self.type_error(f"Symbol '{self.name}' not found")
+        if isinstance(sym, Type):
+            result = sym
+        elif isinstance(sym, Var):
+            result = sym.type
+        else:
+            self.internal_error("Unexpected object on the symbol table")
+        self._cache["_type_symtab"] = result
+        return result
+
+    def value(self, symtab: SymbolTable) -> Any:
+        var = symtab.get(self.name)
+        if var is None:
+            self.type_error(f"Variable '{self.name}' was not found")
+        if not isinstance(var, Var):
+            self.internal_error("Unexpected object on the symbol table")
+        if var.value is None:
+            self.value_error(f"Value of '{self.name}' not known")
+        return var.value
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> Id:
@@ -375,6 +608,68 @@ class UnknownLiteral:
             else:
                 chars.append(known_bits[i] if i < len(known_bits) else "0")
         return f"{n}'b{''.join(reversed(chars))}"
+
+    def is_zero(self) -> bool:
+        """Mirrors Ruby's ``UnknownLiteral#zero?`` (always ``False``)."""
+        return False
+
+    def __and__(self, other: int | UnknownLiteral) -> int | UnknownLiteral:
+        if isinstance(other, UnknownLiteral):
+            new_known = self.known_value & other.known_value
+            new_mask = (
+                (self.unknown_mask | other.unknown_mask)
+                & ~(~self.known_value & ~self.unknown_mask)
+                & ~(~other.known_value & ~other.unknown_mask)
+            )
+        else:
+            new_known = self.known_value & other
+            new_mask = self.unknown_mask & other
+        return (
+            new_known
+            if new_mask == 0
+            else UnknownLiteral(known_value=new_known, unknown_mask=new_mask)
+        )
+
+    def __or__(self, other: int | UnknownLiteral) -> int | UnknownLiteral:
+        if isinstance(other, UnknownLiteral):
+            new_known = self.known_value | other.known_value
+            new_mask = (
+                (self.unknown_mask | other.unknown_mask)
+                & ~(self.known_value & ~self.unknown_mask)
+                & ~(other.known_value & ~other.unknown_mask)
+            )
+        else:
+            new_known = self.known_value | other
+            new_mask = self.unknown_mask & ~other
+        return (
+            new_known
+            if new_mask == 0
+            else UnknownLiteral(known_value=new_known, unknown_mask=new_mask)
+        )
+
+    def __lshift__(self, shamt: int) -> UnknownLiteral:
+        return UnknownLiteral(
+            known_value=self.known_value << shamt, unknown_mask=self.unknown_mask << shamt
+        )
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, UnknownLiteral):
+            return (
+                self.known_value & ~self.unknown_mask == other.known_value & ~other.unknown_mask
+                and self.unknown_mask == other.unknown_mask
+            )
+        if isinstance(other, int):
+            return self.known_value == other and self.unknown_mask == 0
+        return NotImplemented
+
+    def __le__(self, other: int | UnknownLiteral) -> bool:
+        if self.unknown_mask != 0:
+            raise IdlValueUnknown("unknown value")
+        if isinstance(other, UnknownLiteral):
+            if other.unknown_mask != 0:
+                raise IdlValueUnknown("unknown value")
+            return self.known_value <= other.known_value
+        return self.known_value <= other
 
 
 _VERILOG_INT_RE = re.compile(r"^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$")
@@ -516,6 +811,129 @@ class IntLiteral(Node):
             "radix": self.radix(),
         }
 
+    def _width_for(self, symtab: SymbolTable | None) -> int | object:
+        """Ruby's ``IntLiteralAst#width(symtab)``: the symtab-aware bit width.
+
+        Distinct from the no-argument :meth:`width` (used by ``to_h``): this
+        falls back to :data:`~udb.idl.types.WIDTH_UNKNOWN` when there is no
+        explicit width and no known ``symtab.mxlen`` (``width()`` falls back
+        to the string ``"unknown"`` for the same case; both are ports of two
+        separately-written, intentionally-not-unified Ruby code paths).
+        """
+        cached = self._cache.get("_width_symtab")
+        if cached is not None:
+            return cached
+        style, m = self._match()
+        if style == "verilog":
+            w = m.group(1)
+            if w is None or w == "MXLEN":
+                width: int | object = (
+                    WIDTH_UNKNOWN if symtab is None or symtab.mxlen is None else symtab.mxlen
+                )
+            else:
+                width = int(w)
+        else:
+            v = self.unsigned_value()
+            assert isinstance(v, int)
+            bit_length = v.bit_length() + 1 if self.signed() else v.bit_length()
+            width = 1 if bit_length == 0 else bit_length
+        self._cache["_width_symtab"] = width
+        return width
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        style, m = self._match()
+        if style != "verilog":
+            return
+        width_text = m.group(1)
+        value_text = m.group(6)
+        if width_text is None or width_text == "MXLEN":
+            width = 32 if symtab.mxlen is None else symtab.mxlen
+        else:
+            width = int(width_text)
+        uv = self.unsigned_value()
+        if uv.bit_length() > width:
+            self.type_error(f"{value_text} cannot be represented in {width} bits")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        cached = self._cache.get("_type_symtab")
+        if cached is not None:
+            return cached
+        style, m = self._match()
+        if style == "verilog":
+            signed = m.group(4) == "s"
+            value_text = m.group(6)
+            width = self._width_for(symtab)
+            if width != WIDTH_UNKNOWN and not (isinstance(width, int) and width > 0):
+                self.type_error(f"integer width must be positive (is {width})")
+            qualifiers = [Qualifier.SIGNED, Qualifier.CONST] if signed else [Qualifier.CONST]
+            # Ruby only checks lowercase ``x`` here (a confirmed bug, see
+            # doc/python-migration-bugfixes.md); Python checks both cases,
+            # matching ``unsigned_value``'s own case-insensitive handling.
+            if "x" not in value_text.lower():
+                qualifiers.append(Qualifier.KNOWN)
+            if width == WIDTH_UNKNOWN:
+                result = Type(TypeKind.BITS, width=width, max_width=64, qualifiers=qualifiers)
+            else:
+                result = Type(TypeKind.BITS, width=width, qualifiers=qualifiers)
+        else:
+            signed = (m.group(3) if style == "cpp" else m.group(2)) == "s"
+            qualifiers = (
+                [Qualifier.SIGNED, Qualifier.CONST, Qualifier.KNOWN]
+                if signed
+                else [Qualifier.CONST, Qualifier.KNOWN]
+            )
+            result = Type(TypeKind.BITS, width=self._width_for(symtab), qualifiers=qualifiers)
+        self._cache["_type_symtab"] = result
+        return result
+
+    def value(self, symtab: SymbolTable) -> int | UnknownLiteral:
+        cached = self._cache.get("_value_symtab")
+        if cached is not None:
+            return cached
+        style, _m = self._match()
+        uv = self.unsigned_value()
+        if style != "verilog":
+            self._cache["_value_symtab"] = uv
+            return uv
+        signed = self.signed()
+        width = self._width_for(symtab)
+        if width == WIDTH_UNKNOWN:
+            # Ruby crashes here (``NoMethodError: undefined method '>'``) if
+            # ``uv`` is an ``UnknownLiteral`` -- an unsized literal with x/X
+            # bits (confirmed Ruby bug; see doc/python-migration-bugfixes.md).
+            # Comparing against ``bit_length()`` gives an identical result
+            # for plain integers and also works for ``UnknownLiteral``.
+            bit_length = uv.bit_length()
+            if signed:
+                if bit_length > 31:
+                    self.value_error("Don't know if value will be negative")
+                if bit_length > 32:
+                    self.value_error("Don't know if value will fit in literal")
+            else:
+                if bit_length > 32:
+                    self.value_error("Don't know if value will fit in literal")
+            v: int | UnknownLiteral = uv
+        else:
+            assert isinstance(width, int)
+            if uv.bit_length() > width:
+                self.value_error("Value does not fit in literal")
+            if signed and isinstance(uv, int) and ((uv >> (width - 1)) & 1) == 1:
+                # Ruby also checks ``unsigned_value.bit_length > (width - 1)``
+                # here, but that is *always* true whenever the sign bit is
+                # set (given the ``bit_length <= width`` guard just above),
+                # so Ruby's ``value()`` never actually returns a negative
+                # value for an explicit-width signed literal -- a confirmed
+                # Ruby bug; Python computes the correct negative value.
+                v = -(2**width - uv)
+            elif signed and isinstance(uv, UnknownLiteral):
+                # Ruby crashes here too (``>>`` undefined on ``UnknownLiteral``);
+                # the sign bit genuinely can't be determined in general.
+                self.value_error("Value is not fully known")
+            else:
+                v = uv
+        self._cache["_value_symtab"] = v
+        return v
+
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> IntLiteral:
         _check_kind(data, cls.kind)
@@ -555,6 +973,20 @@ class StringLiteral(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"text": self.content}
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        cached = self._cache.get("_type_symtab")
+        if cached is not None:
+            return cached
+        result = Type(TypeKind.STRING, width=len(self.value(symtab)), qualifiers=(Qualifier.CONST,))
+        self._cache["_type_symtab"] = result
+        return result
+
+    def value(self, symtab: SymbolTable) -> str:
+        return self.content
+
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> StringLiteral:
         _check_kind(data, cls.kind)
@@ -570,6 +1002,15 @@ class TrueExpression(Node):
 
     def to_idl(self) -> str:
         return "true"
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return BOOL_TYPE
+
+    def value(self, symtab: SymbolTable) -> bool:
+        return True
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> TrueExpression:
@@ -588,6 +1029,15 @@ class FalseExpression(Node):
 
     def to_idl(self) -> str:
         return "false"
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return BOOL_TYPE
+
+    def value(self, symtab: SymbolTable) -> bool:
+        return False
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> FalseExpression:
@@ -657,6 +1107,27 @@ class BuiltinVariable(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.name not in ("$pc", "$encoding"):
+            self.type_error("Not a builtin variable")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        if self.name == "$encoding":
+            sz = symtab.get("__instruction_encoding_size")
+            if sz is None:
+                self.internal_error("Forgot to set __instruction_encoding_size")
+            return Type(
+                TypeKind.BITS,
+                width=sz.value,
+                qualifiers=frozenset({Qualifier.CONST, Qualifier.KNOWN}),
+            )
+        if self.name == "$pc":
+            return Type(TypeKind.BITS, width=32 if symtab.mxlen == 32 else 64)
+        self.internal_error(f"unhandled builtin variable {self.name}")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        self.value_error("Cannot know the value of pc or encoding")
+
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> BuiltinVariable:
         _check_kind(data, cls.kind)
@@ -681,6 +1152,20 @@ class UserTypeName(Node):
 
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.name in RESERVED_WORDS:
+            self.type_error(f"Cannot use reserved word '{self.name}' as user-defined type name")
+        t = self.type(symtab)
+        if not isinstance(t, Type):
+            self.type_error(f"{self.name} is not a type")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        t = symtab.get(self.name)
+        if t is None:
+            self.type_error(f"Undefined user type: '{self.name}'")
+        assert isinstance(t, Type)
+        return t
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> UserTypeName:
@@ -795,6 +1280,36 @@ class EnumRef(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"enum_class": self.class_name, "member_name": self.member_name}
 
+    def _enum_def_type(self, symtab: SymbolTable) -> Type:
+        cache = self._cache.setdefault("_enum_def_type", {})
+        if symtab.name not in cache:
+            t = symtab.get(self.class_name)
+            if t is None or t.kind != TypeKind.ENUM:
+                self.type_error(f"{self.class_name} is not a defined Enum")
+            cache[symtab.name] = t
+        return cache[symtab.name]
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        enum_def_type = self._enum_def_type(symtab)
+        if enum_def_type is None:
+            self.type_error(f"No symbol {self.class_name} has been defined")
+        if not isinstance(enum_def_type, EnumerationType):
+            self.type_error(f"{self.class_name} is not an enum type")
+        if enum_def_type.value(self.member_name) is None:
+            self.type_error(f"{self.class_name} has no member '{self.member_name}'")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        enum_def_type = self._enum_def_type(symtab)
+        if enum_def_type is None:
+            self.type_error(f"No enum named {self.class_name}")
+        assert isinstance(enum_def_type, EnumerationType)
+        return enum_def_type.ref_type
+
+    def value(self, symtab: SymbolTable) -> Any:
+        enum_def_type = self._enum_def_type(symtab)
+        assert isinstance(enum_def_type, EnumerationType)
+        return enum_def_type.value(self.member_name)
+
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> EnumRef:
         _check_kind(data, cls.kind)
@@ -907,6 +1422,348 @@ class BinaryExpression(Node):
         rhs = from_h(data["rhs"], sources)
         return cls(source=source, start=start, end=end, children=(lhs, rhs), op=data["op"])
 
+    LOGICAL_OPS: ClassVar[tuple[str, ...]] = ("==", "!=", ">", "<", ">=", "<=", "&&", "||")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        op = self.op
+        if op in ("||", "&&"):
+            # See if we can short circuit.
+            lhs_value = _try_value(self.lhs, symtab)
+            rhs_value = _try_value(self.rhs, symtab)
+            if isinstance(lhs_value, bool) and isinstance(rhs_value, bool):
+                return CONST_BOOL_TYPE
+            if lhs_value is False and op == "||":
+                return CONST_BOOL_TYPE if self.rhs.type(symtab).is_const else BOOL_TYPE
+            if lhs_value is True and op == "||":
+                return CONST_BOOL_TYPE
+            if lhs_value is True and op == "&&":
+                return CONST_BOOL_TYPE if self.rhs.type(symtab).is_const else BOOL_TYPE
+            if lhs_value is False and op == "&&":
+                return CONST_BOOL_TYPE
+            if rhs_value is False and op == "||":
+                return CONST_BOOL_TYPE if self.lhs.type(symtab).is_const else BOOL_TYPE
+            if rhs_value is True and op == "||":
+                return CONST_BOOL_TYPE
+            if rhs_value is True and op == "&&":
+                return CONST_BOOL_TYPE if self.lhs.type(symtab).is_const else BOOL_TYPE
+            if rhs_value is False and op == "&&":
+                return CONST_BOOL_TYPE
+
+        lhs_type = self.lhs.type(symtab)
+        rhs_type = self.rhs.type(symtab)
+
+        qualifiers: list[Qualifier] = []
+        if lhs_type.is_const and rhs_type.is_const:
+            qualifiers.append(Qualifier.CONST)
+
+        if op in self.LOGICAL_OPS:
+            return CONST_BOOL_TYPE if Qualifier.CONST in qualifiers else BOOL_TYPE
+        if op in ("<<", ">>", ">>>"):
+            # Type of a non-widening shift is the type of the left-hand side.
+            return lhs_type
+        if op == "`<<":
+            if lhs_type.is_known and rhs_type.is_known:
+                qualifiers.append(Qualifier.KNOWN)
+            try:
+                if lhs_type.width == WIDTH_UNKNOWN:
+                    self.value_error("lhs width unknown")
+                # If the shift amount is known, the result width is increased
+                # by the shift; otherwise it is the width of the lhs.
+                return Type(
+                    TypeKind.BITS,
+                    width=lhs_type.width + self.rhs.value(symtab),
+                    qualifiers=tuple(qualifiers),
+                )
+            except IdlValueUnknown:
+                return Type(TypeKind.BITS, width=lhs_type.width, qualifiers=tuple(qualifiers))
+        if op in ("`+", "`-"):
+            # +/- raises an exception if either lhs or rhs has undefined state.
+            qualifiers.append(Qualifier.KNOWN)
+            # Widening addition/subtraction: result is 1 more bit than the
+            # largest operand, to capture the carry.
+            try:
+                if lhs_type.width == WIDTH_UNKNOWN:
+                    self.value_error("lhs width is unknown")
+                if rhs_type.width == WIDTH_UNKNOWN:
+                    self.value_error("rhs width is unknown")
+                return Type(
+                    TypeKind.BITS,
+                    width=max(lhs_type.width, rhs_type.width) + 1,
+                    qualifiers=tuple(qualifiers),
+                )
+            except IdlValueUnknown:
+                return Type(TypeKind.BITS, width=WIDTH_UNKNOWN, qualifiers=tuple(qualifiers))
+        if op == "`*":
+            if lhs_type.is_known and rhs_type.is_known:
+                qualifiers.append(Qualifier.KNOWN)
+            # Widening multiply: result width is the sum of the operand widths.
+            try:
+                if lhs_type.width == WIDTH_UNKNOWN:
+                    self.value_error("lhs width is unknown")
+                if rhs_type.width == WIDTH_UNKNOWN:
+                    self.value_error("rhs width is unknown")
+                return Type(
+                    TypeKind.BITS,
+                    width=lhs_type.width + rhs_type.width,
+                    qualifiers=tuple(qualifiers),
+                )
+            except IdlValueUnknown:
+                return Type(TypeKind.BITS, width=WIDTH_UNKNOWN, qualifiers=tuple(qualifiers))
+
+        if lhs_type.is_signed and rhs_type.is_signed:
+            qualifiers.append(Qualifier.SIGNED)
+        if lhs_type.is_known and rhs_type.is_known:
+            qualifiers.append(Qualifier.KNOWN)
+        if lhs_type.width == WIDTH_UNKNOWN or rhs_type.width == WIDTH_UNKNOWN:
+            return Type(TypeKind.BITS, width=WIDTH_UNKNOWN, qualifiers=tuple(qualifiers))
+        return Type(
+            TypeKind.BITS, width=max(lhs_type.width, rhs_type.width), qualifiers=tuple(qualifiers)
+        )
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        op = self.op
+        lhs_short_circuit = False
+        rhs_short_circuit = False
+        if op in ("||", "&&"):
+            lhs_value = _try_value(self.lhs, symtab)
+            rhs_value = _try_value(self.rhs, symtab)
+            if isinstance(lhs_value, bool) and isinstance(rhs_value, bool):
+                return
+            if lhs_value is False and op == "||":
+                self.rhs.type_check(symtab, strict=strict)
+            elif lhs_value is True and op == "||":
+                rhs_short_circuit = True
+            elif lhs_value is True and op == "&&":
+                self.rhs.type_check(symtab, strict=strict)
+            elif lhs_value is False and op == "&&":
+                rhs_short_circuit = True
+            elif rhs_value is False and op == "||":
+                self.lhs.type_check(symtab, strict=strict)
+            elif rhs_value is True and op == "||":
+                lhs_short_circuit = True
+            elif rhs_value is True and op == "&&":
+                self.lhs.type_check(symtab, strict=strict)
+            elif rhs_value is False and op == "&&":
+                lhs_short_circuit = True
+
+        if op in ("<=", ">=", "<", ">", "!=", "=="):
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if not rhs_type.comparable_to(lhs_type):
+                self.type_error(
+                    f"{self.lhs.text} (type = {lhs_type}) and {self.rhs.text} "
+                    f"(type = {rhs_type}) are not comparable"
+                )
+        elif op in ("&&", "||"):
+            if not lhs_short_circuit:
+                lhs_type = self.lhs.type(symtab)
+                if not lhs_type.convertable_to(TypeKind.BOOLEAN):
+                    self.type_error(
+                        f"left-hand side of {op} needs to be boolean (is {lhs_type}) ({self.text})"
+                    )
+            if not rhs_short_circuit:
+                rhs_type = self.rhs.type(symtab)
+                if not rhs_type.convertable_to(TypeKind.BOOLEAN):
+                    self.type_error(
+                        f"right-hand side of {op} needs to be boolean (is {rhs_type}) ({self.text})"
+                    )
+        elif op == "<<":
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if lhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported type for left shift: {lhs_type}")
+            if rhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported shift for left shift: {rhs_type}")
+        elif op == "`<<":
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if lhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported type for left shift: {lhs_type}")
+            if rhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported shift for left shift: {rhs_type}")
+            if not rhs_type.is_const:
+                self.type_error(
+                    "Widening shift amount must be constant (if it's not, the width of "
+                    "the result is unknowable)."
+                )
+        elif op in (">>", ">>>"):
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if lhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported type for right shift: {lhs_type}")
+            if rhs_type.kind != TypeKind.BITS:
+                self.type_error(f"Unsupported shift for right shift: {rhs_type}")
+        elif op in ("*", "`*", "/", "%"):
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if not (lhs_type.is_integral and rhs_type.is_integral):
+                self.type_error(
+                    "Multiplication/division is only defined for integral types. "
+                    "Maybe you forgot a $bits cast?"
+                )
+        elif op in ("+", "-", "`+", "`-"):
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if not (lhs_type.is_integral and rhs_type.is_integral):
+                self.type_error(
+                    "Addition/subtraction is only defined for integral types. "
+                    "Maybe you forgot a $bits cast?"
+                )
+        elif op in ("&", "|", "^"):
+            rhs_type = self.rhs.type(symtab)
+            lhs_type = self.lhs.type(symtab)
+            if not (lhs_type.is_integral and rhs_type.is_integral):
+                self.type_error(
+                    "Bitwise operation is only defined for integral types. "
+                    "Maybe you forgot a $bits cast?"
+                )
+        else:
+            self.internal_error(f"Unhandled op '{op}'")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        op = self.op
+        if op == ">>>":
+            lhs_value = self.lhs.value(symtab)
+            lhs_width = self.lhs.type(symtab).width
+            if (lhs_value & (1 << (lhs_width - 1))) == 0:
+                shamt = self.rhs.value(symtab)
+                return lhs_value if shamt == 0 else (lhs_value >> shamt)
+            shift_amount = self.rhs.value(symtab)
+            if shift_amount == 0:
+                return lhs_value
+            shifted_value = lhs_value >> shift_amount
+            mask_len = min(lhs_width, shift_amount)
+            mask = ((1 << mask_len) - 1) << max(lhs_width - shift_amount, 0)
+            return shifted_value | mask
+
+        if op in ("&&", "||"):
+            # These can short circuit, so we might only need the lhs.
+            lhs_value = self.lhs.value(symtab)
+            if op == "&&" and lhs_value is False:
+                return False
+            if op == "||" and lhs_value is True:
+                return True
+            # Otherwise lhs_value is True (for "&&") or False (for "||"), so the
+            # result is exactly rhs's value; mirrors Ruby's
+            # ``lhs_value && rhs.value(symtab)`` / ``lhs_value || rhs.value(symtab)``.
+            return self.rhs.value(symtab)
+
+        if op in ("==", "!="):
+            try:
+                lhs_val = self.lhs.value(symtab)
+                rhs_val = self.rhs.value(symtab)
+                return lhs_val == rhs_val if op == "==" else lhs_val != rhs_val
+            except IdlValueUnknown:
+                # Even without knowing the exact lhs/rhs values, disjoint
+                # possible-value sets are enough to resolve == / !=.
+                if _values_disjoint(self.lhs.values(symtab), self.rhs.values(symtab)):
+                    return op == "!="
+                self.value_error("There is overlap in the lhs/rhs return values")
+
+        if op in ("<=", ">=", "<", ">"):
+            cmp = {
+                "<=": operator.le,
+                ">=": operator.ge,
+                "<": operator.lt,
+                ">": operator.gt,
+            }[op]
+            try:
+                return cmp(self.lhs.value(symtab), self.rhs.value(symtab))
+            except IdlValueUnknown:
+                rhs_values = self.rhs.values(symtab)
+                if all(cmp(lv, rv) for lv in self.lhs.values(symtab) for rv in rhs_values):
+                    return True
+                self.value_error(f"Some value of lhs is not {op} some value of rhs")
+
+        if op == "&":
+            # If one side is zero, we don't need to know the other side.
+            lhs_val = None
+            try:
+                lhs_val = self.lhs.value(symtab)
+                if lhs_val == 0:
+                    return 0
+            except IdlValueUnknown:
+                pass
+            rhs_val = self.rhs.value(symtab)
+            if rhs_val == 0:
+                return 0
+            if lhs_val is None:
+                self.value_error("lhs value not known")
+            return lhs_val & rhs_val
+
+        if op == "|":
+            # If one side is all ones, we don't need to know the other side.
+            rhs_type = self.rhs.type(symtab)
+            if rhs_type.width == WIDTH_UNKNOWN:
+                self.value_error("Unknown width")
+            lhs_type = self.lhs.type(symtab)
+            if lhs_type.width == WIDTH_UNKNOWN:
+                self.value_error("unknown width")
+
+            rhs_val = None
+            try:
+                rhs_mask = (1 << rhs_type.width) - 1
+                rhs_val = self.rhs.value(symtab)
+                if rhs_val == rhs_mask and lhs_type.width <= rhs_type.width:
+                    return rhs_mask
+            except IdlValueUnknown:
+                pass
+            lhs_mask = (1 << lhs_type.width) - 1
+            lhs_val = None
+            try:
+                lhs_val = self.lhs.value(symtab)
+                if lhs_val == lhs_mask and rhs_type.width <= lhs_type.width:
+                    return lhs_mask
+            except IdlValueUnknown:
+                pass
+            if lhs_val is None:
+                self.value_error("lhs value not known")
+            if rhs_val is None:
+                self.value_error("rhs value not known")
+            return lhs_val | rhs_val
+
+        if op in ("+", "`+"):
+            v = self.lhs.value(symtab) + self.rhs.value(symtab)
+        elif op in ("-", "`-"):
+            v = self.lhs.value(symtab) - self.rhs.value(symtab)
+        elif op in ("*", "`*"):
+            v = self.lhs.value(symtab) * self.rhs.value(symtab)
+        elif op == "/":
+            lhs_val = self.lhs.value(symtab)
+            rhs_val = self.rhs.value(symtab)
+            if rhs_val == 0:
+                # Ruby crashes here with an uncaught ZeroDivisionError (a
+                # confirmed Ruby bug; see doc/python-migration-bugfixes.md).
+                # A zero divisor genuinely makes the compile-time value
+                # unknowable, so this is a value error, not a crash.
+                self.value_error("Division by zero")
+            v = lhs_val // rhs_val
+        elif op == "%":
+            lhs_val = self.lhs.value(symtab)
+            rhs_val = self.rhs.value(symtab)
+            if rhs_val == 0:
+                self.value_error("Division by zero")
+            v = lhs_val % rhs_val
+        elif op == "^":
+            v = self.lhs.value(symtab) ^ self.rhs.value(symtab)
+        elif op == ">>":
+            v = self.lhs.value(symtab) >> self.rhs.value(symtab)
+        elif op in ("<<", "`<<"):
+            v = self.lhs.value(symtab) << self.rhs.value(symtab)
+        else:
+            self.internal_error(f"Unhandled binary op {op!r}")
+
+        expr_type = self.type(symtab)
+        if expr_type.width == WIDTH_UNKNOWN:
+            self.value_error("Cannot know value of Bits with unknown width")
+        v_trunc = v if "`" in op else self.truncate(v, expr_type.width, expr_type.is_signed)
+        if v != v_trunc:
+            self.truncation_warn(
+                f"The value of '{self.text}' is truncated from {v} to {v_trunc} "
+                f"because the result is only {expr_type.width} bits"
+            )
+        return v_trunc
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class UnaryOperatorExpression(Node):
@@ -940,6 +1797,57 @@ class UnaryOperatorExpression(Node):
         source, start, end = _source_and_span(data, sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,), op=data["op"])
+
+    def type(self, symtab: SymbolTable) -> Type:
+        if self.op in ("-", "~"):
+            return self.expression.type(symtab)
+        if self.op == "!":
+            return CONST_BOOL_TYPE if self.expression.type(symtab).is_const else BOOL_TYPE
+        self.internal_error(f"unhandled op {self.op}")
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.expression.type_check(symtab, strict=strict)
+        exp_type = self.expression.type(symtab)
+        if self.op in ("-", "~"):
+            if exp_type.kind not in (TypeKind.BITS, TypeKind.BITFIELD):
+                self.type_error(f"{exp_type} does not support unary {self.op} operator")
+        elif self.op == "!":
+            if not exp_type.convertable_to(TypeKind.BOOLEAN):
+                if exp_type.kind == TypeKind.BITS:
+                    self.type_error(
+                        f"{exp_type} does not support unary {self.op} operator. "
+                        f"Perhaps you want '{self.expression.text} != 0'?"
+                    )
+                else:
+                    self.type_error(f"{exp_type} does not support unary {self.op} operator")
+        else:
+            self.internal_error(f"Unhandled op {self.op}")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        exp_value = self.expression.value(symtab)
+        if self.op == "-":
+            val = -exp_value
+        elif self.op == "~":
+            val = ~exp_value
+        elif self.op == "!":
+            val = not exp_value
+        else:
+            self.internal_error(f"Unhandled unary op {self.op}")
+
+        val_trunc = val
+        t = self.type(symtab)
+        if t.is_integral:
+            if t.width == WIDTH_UNKNOWN:
+                self.value_error("Unknown width for truncation")
+            val_trunc = self.truncate(val, t.width, t.is_signed)
+
+        if self.op != "~" and val_trunc != val:
+            self.truncation_warn(
+                f"{self.text} is truncated due to insufficient bit width "
+                f"(from {val} to {val_trunc})"
+            )
+
+        return val_trunc
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -986,6 +1894,111 @@ class TernaryOperatorExpression(Node):
         false_expr = from_h(data["false_expression"], sources)
         return cls(source=source, start=start, end=end, children=(condition, true_expr, false_expr))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.condition.type_check(symtab, strict=strict)
+        cond_type = self.condition.type(symtab)
+        if cond_type.kind == TypeKind.BITS:
+            self.type_error(
+                f"ternary selector must be bool (maybe you meant '{self.condition.text} != 0'?)"
+            )
+        elif cond_type.kind != TypeKind.BOOLEAN:
+            self.type_error("ternary selector must be bool")
+
+        def check_both() -> None:
+            self.true_expression.type_check(symtab, strict=strict)
+            self.false_expression.type_check(symtab, strict=strict)
+            true_type = self.true_expression.type(symtab)
+            false_type = self.false_expression.type(symtab)
+            if not true_type.equal_to(false_type) and not (
+                true_type.kind == TypeKind.BITS and false_type.kind == TypeKind.BITS
+            ):
+                self.type_error(
+                    f"True and false options must be same type (have {true_type} and {false_type})"
+                )
+
+        if strict:
+            try:
+                cond = self.condition.value(symtab)
+                # If the condition is compile-time-known, only check the used branch.
+                if cond:
+                    self.true_expression.type_check(symtab, strict=strict)
+                else:
+                    self.false_expression.type_check(symtab, strict=strict)
+            except IdlValueUnknown:
+                check_both()
+        else:
+            check_both()
+
+    def type(self, symtab: SymbolTable) -> Type:
+        cache = self._cache.setdefault("_ternary_type", {})
+        key = (symtab.name, symtab.mxlen)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached
+
+        true_type = self.true_expression.type(symtab)
+        false_type = self.false_expression.type(symtab)
+        if true_type.kind == TypeKind.BITS and false_type.kind == TypeKind.BITS:
+            true_width = true_type.width
+            false_width = false_type.width
+            known = true_type.is_known and false_type.is_known
+            if true_width == WIDTH_UNKNOWN or false_width == WIDTH_UNKNOWN:
+                if true_width == WIDTH_UNKNOWN and false_width == WIDTH_UNKNOWN:
+                    max_width = (
+                        None
+                        if true_type.max_width is None or false_type.max_width is None
+                        else max(true_type.max_width, false_type.max_width)
+                    )
+                elif true_width == WIDTH_UNKNOWN:
+                    max_width = (
+                        None
+                        if true_type.max_width is None
+                        else max(true_type.max_width, false_width)
+                    )
+                else:
+                    max_width = (
+                        None
+                        if false_type.max_width is None
+                        else max(false_type.max_width, true_width)
+                    )
+                qualifiers = (Qualifier.KNOWN,) if known else ()
+                t = Type(
+                    TypeKind.BITS, width=WIDTH_UNKNOWN, max_width=max_width, qualifiers=qualifiers
+                )
+            else:
+                qualifiers = (Qualifier.KNOWN,) if known else ()
+                t = Type(TypeKind.BITS, width=max(true_width, false_width), qualifiers=qualifiers)
+        else:
+            t = true_type
+
+        if self.condition.type(symtab).is_const and true_type.is_const and false_type.is_const:
+            t = t.make_const()
+        cache[key] = t
+        return t
+
+    def value(self, symtab: SymbolTable) -> Any:
+        return (
+            self.true_expression.value(symtab)
+            if self.condition.value(symtab)
+            else self.false_expression.value(symtab)
+        )
+
+    def values(self, symtab: SymbolTable) -> list[Any]:
+        try:
+            cond = self.condition.value(symtab)
+            return (
+                self.true_expression.values(symtab)
+                if cond
+                else self.false_expression.values(symtab)
+            )
+        except IdlValueUnknown:
+            combined = [*self.true_expression.values(symtab), *self.false_expression.values(symtab)]
+            deduped: list[Any] = []
+            for v in combined:
+                if not any(v == existing for existing in deduped):
+                    deduped.append(v)
+            return deduped
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ParenExpression(Node):
@@ -1010,6 +2023,15 @@ class ParenExpression(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.expression.type_check(symtab, strict=strict)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return self.expression.type(symtab)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        return self.expression.value(symtab)
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ArrayLiteral(Node):
@@ -1030,6 +2052,23 @@ class ArrayLiteral(Node):
         values = tuple(from_h(v, sources) for v in data["values"])
         return cls(source=source, start=start, end=end, children=values)
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        for node in self.children:
+            node.type_check(symtab, strict=strict)
+        first_type = self.children[0].type(symtab)
+        if not all(e.type(symtab).equal_to(first_type) for e in self.children):
+            self.type_error("Array elements must be identical")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        if len(self.children) > 0:
+            return Type(
+                TypeKind.ARRAY, width=len(self.children), sub_type=self.children[0].type(symtab)
+            )
+        return Type(TypeKind.ARRAY, width=0, sub_type=None)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        return [e.value(symtab) for e in self.children]
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ConcatenationExpression(Node):
@@ -1049,6 +2088,55 @@ class ConcatenationExpression(Node):
         source, start, end = _source_and_span(data, sources)
         exprs = tuple(from_h(v, sources) for v in data["exprs"])
         return cls(source=source, start=start, end=end, children=exprs)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if len(self.children) < 2:
+            self.type_error("Must concatenate at least two objects")
+        for exp in self.children:
+            exp.type_check(symtab, strict=strict)
+            e_type = exp.type(symtab)
+            if e_type.kind != TypeKind.BITS:
+                self.type_error("Concatenation only supports Bits<> types")
+            if e_type.width != WIDTH_UNKNOWN and e_type.width <= 0:
+                self.internal_error(f"Negative width for element {exp.text}")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        all_known_values = True
+        width_known = True
+        total_width = 0
+        for exp in self.children:
+            e_type = exp.type(symtab)
+            if e_type.width == WIDTH_UNKNOWN:
+                width_known = False
+            elif width_known:
+                total_width += e_type.width
+            all_known_values = all_known_values and e_type.is_known
+
+        # NOTE: Ruby's equivalent `is_const` local is a confirmed-bug dead
+        # variable (always `true`, never updated from each `e_type.const?`
+        # -- see doc/python-migration-bugfixes.md), so the Ruby oracle always
+        # reports concatenation as `const` even when a constituent is not.
+        # Python computes it correctly here.
+        is_const = all(exp.type(symtab).is_const for exp in self.children)
+        qualifiers: list[Qualifier] = [Qualifier.CONST] if is_const else []
+
+        if all_known_values:
+            qualifiers.append(Qualifier.KNOWN)
+        return Type(
+            TypeKind.BITS,
+            width=total_width if width_known else WIDTH_UNKNOWN,
+            qualifiers=tuple(qualifiers),
+        )
+
+    def value(self, symtab: SymbolTable) -> Any:
+        result: int | UnknownLiteral = UnknownLiteral(known_value=0, unknown_mask=0)
+        total_width = 0
+        for exp in reversed(self.children):
+            result = result | (exp.value(symtab) << total_width)
+            total_width += exp.type(symtab).width
+        if isinstance(result, UnknownLiteral):
+            return result.known_value if result.unknown_mask == 0 else result
+        return result
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1078,6 +2166,34 @@ class ReplicationExpression(Node):
         n = from_h(data["count"], sources)
         v = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(n, v))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.n.type_check(symtab, strict=strict)
+        self.v.type_check(symtab, strict=strict)
+        if self.v.type(symtab).kind != TypeKind.BITS:
+            self.type_error("value of replication must be a Bits type")
+        try:
+            n_value = self.n.value(symtab)
+            if n_value <= 0:
+                self.type_error(f"replication amount must be positive ({n_value})")
+        except IdlValueUnknown:
+            pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        try:
+            width = self.n.value(symtab) * self.v.type(symtab).width
+            return Type(TypeKind.BITS, width=width, qualifiers=(Qualifier.KNOWN,))
+        except IdlValueUnknown:
+            return Type(TypeKind.BITS, width=WIDTH_UNKNOWN)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        result: int | UnknownLiteral = UnknownLiteral(known_value=0, unknown_mask=0)
+        v_width = self.v.type(symtab).width
+        for i in range(self.n.value(symtab)):
+            result = result | (self.v.value(symtab) << (i * v_width))
+        if isinstance(result, UnknownLiteral):
+            return result.known_value if result.unknown_mask == 0 else result
+        return result
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1146,6 +2262,48 @@ class FieldAccessExpression(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"expr": self.obj.to_h(), "field_name": self.field_name}
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.obj.type_check(symtab, strict=strict)
+        obj_type = self.obj.type(symtab)
+
+        if obj_type.kind == TypeKind.BITFIELD:
+            if not isinstance(obj_type, BitfieldType):
+                self.internal_error(
+                    f"{self.obj.text} Not a BitfieldType (is a {type(obj_type).__name__})"
+                )
+            if self.field_name not in obj_type.field_names:
+                self.type_error(f"{self.field_name} is not a member of {obj_type}")
+        elif obj_type.kind == TypeKind.STRUCT:
+            assert isinstance(obj_type, StructType)
+            if not obj_type.has_member(self.field_name):
+                self.type_error(f"{self.field_name} is not a member of {obj_type}")
+        else:
+            self.type_error(f"{self.obj.text} is not a bitfield (is {obj_type})")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        obj_type = self.obj.type(symtab)
+        if obj_type.kind == TypeKind.BITFIELD:
+            assert isinstance(obj_type, BitfieldType)
+            return Type(TypeKind.BITS, width=len(obj_type.range(self.field_name)))
+        if obj_type.kind == TypeKind.STRUCT:
+            assert isinstance(obj_type, StructType)
+            return obj_type.member_type(self.field_name)
+        self.internal_error(f"huh? {self.obj.text} {obj_type.kind}")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        obj_type = self.obj.type(symtab)
+        if obj_type.kind == TypeKind.BITFIELD:
+            assert isinstance(obj_type, BitfieldType)
+            field_range = obj_type.range(self.field_name)
+            return (self.obj.value(symtab) >> field_range.start) & ((1 << len(field_range)) - 1)
+        if obj_type.kind == TypeKind.STRUCT:
+            struct_val = self.obj.value(symtab)
+            field_val = struct_val.get(self.field_name)
+            if field_val is None:
+                self.value_error(f"{self.field_name} is not known at compile-time")
+            return field_val
+        self.type_error(f"{self.obj.text} is Not a bitfield.")
+
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> FieldAccessExpression:
         _check_kind(data, cls.kind)
@@ -1184,6 +2342,80 @@ class AryElementAccess(Node):
         index = from_h(data["index"], sources)
         return cls(source=source, start=start, end=end, children=(var, index))
 
+    @staticmethod
+    def _is_register_file_array(var_type: Type) -> bool:
+        return (
+            var_type.kind == TypeKind.ARRAY
+            and isinstance(var_type.sub_type, RegFileElementType)
+            and var_type.is_global
+        )
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.var.type_check(symtab, strict=strict)
+        self.index.type_check(symtab, strict=strict)
+
+        if not self.index.type(symtab).is_integral:
+            self.type_error("Array index must be integral")
+
+        var_type = self.var.type(symtab)
+        if var_type.kind == TypeKind.ARRAY:
+            try:
+                index_value = self.index.value(symtab)
+                if var_type.width != WIDTH_UNKNOWN and index_value >= var_type.width:
+                    self.type_error("Array index out of range")
+            except IdlValueUnknown:
+                pass  # OK, doesn't need to be known
+        elif var_type.is_integral:
+            if var_type.kind == TypeKind.BITS:
+                try:
+                    index_value = self.index.value(symtab)
+                    if var_type.width != WIDTH_UNKNOWN and index_value >= var_type.width:
+                        self.type_error(
+                            f"Bits element index ({index_value}) out of range "
+                            f"(max {var_type.width - 1}) in access '{self.text}'"
+                        )
+                except IdlValueUnknown:
+                    pass  # OK, doesn't need to be known
+        else:
+            self.type_error("Array element access can only be used with integral types and arrays")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        var_type = self.var.type(symtab)
+        if var_type.kind == TypeKind.ARRAY:
+            return var_type.sub_type
+        if var_type.is_integral:
+            # Ruby's ``AryElementAccessAst#type`` branches on ``var_type.known?`` between its
+            # own ``Bits1Type`` (qualifiers ``[:known]``, defined inside ``class AstNode``) and
+            # ``PossiblyUnknownBits1Type`` (no qualifiers). But a bare constant reference from
+            # a *sibling* AstNode subclass resolves lexically to the top-level ``Idl`` module's
+            # own (unqualified, no-``:known``) ``Bits1Type`` from type.rb, which shadows
+            # ``AstNode::Bits1Type`` for every subclass -- confirmed empirically via the oracle
+            # ((8'hff)[0]).type is "Bits<1>", never "known Bits<1>". Both of Ruby's branches
+            # are therefore structurally identical in practice; mirror that by always returning
+            # the unqualified type.
+            return POSSIBLY_UNKNOWN_BITS1_TYPE
+        self.internal_error("Bad ary element access")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        var_val = self.var.value(symtab)
+        if self.var.type(symtab).is_integral:
+            return (var_val >> self.index.value(symtab)) & 1
+
+        try:
+            var_type = self.var.type(symtab)
+        except (IdlTypeError, IdlInternalError):
+            var_type = None
+        if isinstance(var_type, Type) and self._is_register_file_array(var_type):
+            self.value_error("Register file registers are not compile-time-known")
+
+        if not isinstance(var_val, list):
+            self.internal_error(f"Not an array (is a {type(var_val).__name__})")
+
+        idx = self.index.value(symtab)
+        if idx >= len(var_val):
+            self.internal_error("Index out of range; make sure type_check is called")
+        return var_val[idx]
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AryRangeAccess(Node):
@@ -1217,6 +2449,56 @@ class AryRangeAccess(Node):
         msb = from_h(data["range"]["msb"], sources)
         lsb = from_h(data["range"]["lsb"], sources)
         return cls(source=source, start=start, end=end, children=(var, msb, lsb))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.var.type_check(symtab, strict=strict)
+        self.msb.type_check(symtab, strict=strict)
+        self.lsb.type_check(symtab, strict=strict)
+
+        var_type = self.var.type(symtab)
+        if not var_type.is_integral:
+            self.type_error(f"Range operator only defined for integral types (found {var_type})")
+        if not self.msb.type(symtab).is_integral:
+            self.type_error("Range MSB must be an integral type")
+        if not self.lsb.type(symtab).is_integral:
+            self.type_error("Range LSB must be an integral type")
+
+        try:
+            msb_value = self.msb.value(symtab)
+            lsb_value = self.lsb.value(symtab)
+            if (
+                strict
+                and var_type.kind == TypeKind.BITS
+                and var_type.width != WIDTH_UNKNOWN
+                and msb_value >= var_type.width
+            ):
+                self.type_error(
+                    f"Range too large for bits (msb = {msb_value}, range size = {var_type.width})"
+                )
+            range_size = msb_value - lsb_value + 1
+            if range_size <= 0:
+                self.type_error(f"zero/negative range ({msb_value}:{lsb_value})")
+        except IdlValueUnknown:
+            pass  # OK, don't have to know
+
+    def type(self, symtab: SymbolTable) -> Type:
+        try:
+            msb_value = self.msb.value(symtab)
+            lsb_value = self.lsb.value(symtab)
+            range_size = msb_value - lsb_value + 1
+            if self.var.type(symtab).is_known:
+                return Type(TypeKind.BITS, width=range_size, qualifiers=(Qualifier.KNOWN,))
+            return Type(TypeKind.BITS, width=range_size)
+        except IdlValueUnknown:
+            # Don't know the width at compile time... assume the worst.
+            return self.var.type(symtab)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        msb_val = self.msb.value(symtab)
+        lsb_val = self.lsb.value(symtab)
+        var_val = self.var.value(symtab)
+        mask = (1 << (msb_val - lsb_val + 1)) - 1
+        return (var_val >> lsb_val) & mask
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1421,6 +2703,24 @@ class WidthReveal(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.expression.type_check(symtab, strict=strict)
+        e_type = self.expression.type(symtab)
+        if e_type.kind != TypeKind.BITS:
+            self.type_error(f"{self.expression.text} is not a Bits<N> type")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        e_width = self.expression.type(symtab).width
+        if e_width == WIDTH_UNKNOWN:
+            return BITS_UNKNOWN_TYPE
+        return Type(TypeKind.BITS, width=e_width.bit_length())
+
+    def value(self, symtab: SymbolTable) -> Any:
+        v = self.expression.type(symtab).width
+        if v == WIDTH_UNKNOWN:
+            self.value_error("Width is not known")
+        return v
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class SignCast(Node):
@@ -1444,6 +2744,24 @@ class SignCast(Node):
         source, start, end = _source_and_span(data, sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.expression.type_check(symtab, strict=strict)
+        if self.expression.type(symtab).kind != TypeKind.BITS:
+            self.type_error("$signed cast only works on Bits types")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return self.expression.type(symtab).make_signed()
+
+    def value(self, symtab: SymbolTable) -> Any:
+        t = self.expression.type(symtab)
+        if t.kind != TypeKind.BITS:
+            self.internal_error("Expecting a bits type")
+        v = self.expression.value(symtab)
+        if ((v >> (t.width - 1)) & 1) == 1:
+            # twos complement negate the value
+            return -(2**t.width - v)
+        return v
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1469,6 +2787,40 @@ class BitsCast(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.expression.type_check(symtab, strict=strict)
+        etype = self.expression.type(symtab)
+        if etype.kind not in (TypeKind.BITS, TypeKind.ENUM_REF, TypeKind.BITFIELD, TypeKind.CSR):
+            self.type_error(f"{etype} Cannot be cast to bits")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        etype = self.expression.type(symtab)
+        if etype.kind == TypeKind.BITS:
+            return etype
+        if etype.kind == TypeKind.BITFIELD:
+            return Type(TypeKind.BITS, width=etype.width, qualifiers=frozenset({Qualifier.KNOWN}))
+        if etype.kind == TypeKind.ENUM_REF:
+            assert isinstance(etype, Type)
+            return Type(
+                TypeKind.BITS, width=etype.enum_class.width, qualifiers=frozenset({Qualifier.KNOWN})
+            )
+        if etype.kind == TypeKind.CSR:
+            self.internal_error("not yet supported: $bits cast of CSR")
+        self.type_error("$bits cast is only defined for CSRs and Enum references")
+
+    def value(self, symtab: SymbolTable) -> Any:
+        etype = self.expression.type(symtab)
+        if etype.kind in (TypeKind.BITS, TypeKind.BITFIELD):
+            return self.expression.value(symtab)
+        if etype.kind == TypeKind.ENUM_REF:
+            if isinstance(self.expression, EnumRef):
+                return etype.enum_class.value(self.expression.member_name)
+            # this is an expression with an EnumRef type
+            return self.expression.value(symtab)
+        if etype.kind == TypeKind.CSR:
+            self.internal_error("not yet supported: $bits cast of CSR")
+        self.type_error(f"TODO: Bits cast for {etype.kind}")
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ArraySize(Node):
@@ -1492,6 +2844,29 @@ class ArraySize(Node):
         source, start, end = _source_and_span(data, sources)
         array = from_h(data["array"], sources)
         return cls(source=source, start=start, end=end, children=(array,))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.array.type_check(symtab, strict=strict)
+        array_type = self.array.type(symtab)
+        if array_type.kind != TypeKind.ARRAY:
+            self.type_error(f"{self.array.text} is not an array")
+        if not array_type.is_const:
+            self.type_error(f"{self.array.text} must be a constant")
+
+    def type(self, symtab: SymbolTable) -> Type:
+        array_type = self.array.type(symtab)
+        if array_type.width == WIDTH_UNKNOWN:
+            return Type(
+                TypeKind.BITS, width=WIDTH_UNKNOWN, qualifiers=(Qualifier.CONST, Qualifier.KNOWN)
+            )
+        length = array_type.width.bit_length() or 1
+        return Type(TypeKind.BITS, width=length, qualifiers=(Qualifier.CONST, Qualifier.KNOWN))
+
+    def value(self, symtab: SymbolTable) -> Any:
+        w = self.array.type(symtab).width
+        if w == WIDTH_UNKNOWN:
+            self.value_error("Width of the array is unknown")
+        return w
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1517,6 +2892,20 @@ class EnumSize(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.enum_class_name.type_check(symtab, strict=strict)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        enum_type = self.enum_class_name.type(symtab)
+        assert isinstance(enum_type, EnumerationType)
+        length = len(enum_type.element_names).bit_length()
+        return Type(TypeKind.BITS, width=length, qualifiers=(Qualifier.CONST, Qualifier.KNOWN))
+
+    def value(self, symtab: SymbolTable) -> Any:
+        enum_type = self.enum_class_name.type(symtab)
+        assert isinstance(enum_type, EnumerationType)
+        return len(enum_type.element_names)
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class EnumElementSize(Node):
@@ -1541,6 +2930,18 @@ class EnumElementSize(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.enum_class_name.type_check(symtab, strict=strict)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        enum_type = self.enum_class_name.type(symtab)
+        return Type(
+            TypeKind.BITS, width=enum_type.width, qualifiers=(Qualifier.CONST, Qualifier.KNOWN)
+        )
+
+    def value(self, symtab: SymbolTable) -> Any:
+        return self.enum_class_name.type(symtab).width
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class EnumArrayCast(Node):
@@ -1564,6 +2965,26 @@ class EnumArrayCast(Node):
         source, start, end = _source_and_span(data, sources)
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.enum_class_name.type_check(symtab, strict=strict)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        enum_type = self.enum_class_name.type(symtab)
+        assert isinstance(enum_type, EnumerationType)
+        return Type(
+            TypeKind.ARRAY,
+            width=len(enum_type.element_values),
+            sub_type=Type(
+                TypeKind.BITS, width=enum_type.width, qualifiers=(Qualifier.CONST, Qualifier.KNOWN)
+            ),
+            qualifiers=(Qualifier.CONST,),
+        )
+
+    def value(self, symtab: SymbolTable) -> Any:
+        enum_type = self.enum_class_name.type(symtab)
+        assert isinstance(enum_type, EnumerationType)
+        return list(enum_type.element_values)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1593,6 +3014,33 @@ class EnumCast(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name, expr))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.enum_class_name.type_check(symtab, strict=strict)
+        self.expression.type_check(symtab, strict=strict)
+
+        if self.expression.type(symtab).kind != TypeKind.BITS:
+            self.type_error("Can only cast from Bits<N> to enum")
+
+        enum_def_type = symtab.get(self.enum_class_name.text)
+        if enum_def_type is None:
+            self.type_error(f"No enum named {self.enum_class_name.text}")
+        assert isinstance(enum_def_type, EnumerationType)
+
+        try:
+            expr_value = self.expression.value(symtab)
+            if expr_value not in enum_def_type.element_values:
+                self.type_error(f"{expr_value} is not a value in enum {self.enum_class_name.text}")
+        except IdlValueUnknown:
+            pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        enum_def_type = symtab.get(self.enum_class_name.text)
+        assert isinstance(enum_def_type, EnumerationType)
+        return Type(TypeKind.ENUM_REF, enum_class=enum_def_type)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        return self.expression.value(symtab)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1624,6 +3072,30 @@ class ArrayIncludes(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(array, expr))
 
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.array.type_check(symtab, strict=strict)
+        ary_type = self.array.type(symtab)
+        if ary_type.kind != TypeKind.ARRAY:
+            self.type_error(
+                f"First argument of $array_includes? must be an array. Found {ary_type}"
+            )
+
+        self.expression.type_check(symtab, strict=strict)
+        value_type = self.expression.type(symtab)
+        if not (ary_type.width == 0 or value_type.comparable_to(ary_type.sub_type)):
+            self.type_error(
+                "Second argument of $array_includes? must be comparable to the array "
+                f"element type. Found {ary_type.sub_type} and {value_type}"
+            )
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return BOOL_TYPE
+
+    def value(self, symtab: SymbolTable) -> Any:
+        ary_val = self.array.value(symtab)
+        expr_val = self.expression.value(symtab)
+        return any(v == expr_val for v in ary_val)
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ImplicationExpression(Node):
@@ -1652,6 +3124,12 @@ class ImplicationExpression(Node):
         antecedent = from_h(data["antecedent"], sources)
         consequent = from_h(data["consequent"], sources)
         return cls(source=source, start=start, end=end, children=(antecedent, consequent))
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.antecedent.type(symtab).kind != TypeKind.BOOLEAN:
+            self.antecedent.type_error("Antecedent must a boolean")
+        if self.consequent.type(symtab).kind != TypeKind.BOOLEAN:
+            self.consequent.type_error("Consequent must a boolean")
 
 
 # ---------------------------------------------------------------------------
@@ -2976,6 +4454,15 @@ class ParseTimeDetectedTypeError(Node):
         _check_kind(data, cls.kind)
         source, start, end = _source_and_span(data, sources)
         return cls(source=source, start=start, end=end, reason=data["reason"])
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.type_error(self.reason)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        self.type_error(self.reason)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        self.value_error("Can't take value of a type error")
 
 
 # ---------------------------------------------------------------------------
