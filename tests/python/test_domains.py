@@ -637,7 +637,7 @@ def test_membership_matches_ruby_json_schema_oracle() -> None:
 
     for schema, values in cases:
         result = subprocess.run(
-            [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
+            [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
             cwd=REPOSITORY_ROOT,
             input=json.dumps({"schema": schema, "values": values}),
             check=False,
