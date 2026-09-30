@@ -663,6 +663,7 @@ def test_legacy_ruby_z3_domain_defects_are_reproducible() -> None:
         [
             mise,
             "exec",
+            "--no-deps",
             "--",
             "bundle",
             "exec",
