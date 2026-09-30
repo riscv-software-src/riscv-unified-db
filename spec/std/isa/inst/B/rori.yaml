@@ -42,6 +42,6 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  XReg shamt = (xlen() == 32) ? shamt[4:0] : shamt[5:0];
+  XReg rotate_amount = (xlen() == 32) ? shamt[4:0] : shamt[5:0];
 
-  X[xd] = (X[xs1] >> shamt) | (X[xs1] << (xlen() - shamt));
+  X[xd] = (X[xs1] >> rotate_amount) | (X[xs1] << (xlen() - rotate_amount));

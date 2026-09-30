@@ -31,7 +31,15 @@ from .reference import Reference, ResolvedNode, classify_reference
 from .resolver import YamlResolver
 from .resources import package_data_root
 from .schema import SchemaError, SchemaStore
-from .source import ParsedYaml, SourceMap, SourceSpan, merge_patch_with_sources, parse_yaml
+from .source import (
+    IdlSourceProvider,
+    ParsedYaml,
+    SourceMap,
+    SourceSpan,
+    SourceText,
+    merge_patch_with_sources,
+    parse_yaml,
+)
 from .versions import ExtensionVersion, ExtensionVersionSet, VersionLike
 
 if TYPE_CHECKING:
@@ -334,7 +342,17 @@ class Database:
         Schema validation is optional and never inserts defaults or rewrites
         declared schema URIs.
         """
-        documents, source_maps = self._load_documents(self._isa_root)
+        source_texts: dict[tuple[str, str], str] = {}
+        documents, source_maps = self._load_documents(self._isa_root, source_texts=source_texts)
+        idl_sources = self._load_idl_sources(self._isa_root, layer="source")
+        idl_source_layers = {
+            (source.layer, source.source): source for source in idl_sources.values()
+        }
+        idl_source_roots = (
+            {"source": self._isa_root.resolve().as_posix()}
+            if isinstance(self._isa_root, Path)
+            else {}
+        )
         for overlay_index, overlay in enumerate(overlays):
             overlay_root = Path(overlay).resolve()
             if not overlay_root.is_dir():
@@ -343,7 +361,15 @@ class Database:
                 overlay_root,
                 allow_non_mapping=True,
                 layer=f"overlay[{overlay_index}]",
+                source_texts=source_texts,
             )
+            layer = f"overlay[{overlay_index}]"
+            overlay_idl = self._load_idl_sources(overlay_root, layer=layer)
+            idl_sources.update(overlay_idl)
+            idl_source_layers.update(
+                {(source.layer, source.source): source for source in overlay_idl.values()}
+            )
+            idl_source_roots[layer] = overlay_root.as_posix()
             for path, patch in patches.items():
                 base_sources = source_maps.get(path, SourceMap(path))
                 merged, merged_sources = merge_patch_with_sources(
@@ -362,6 +388,10 @@ class Database:
             result.documents,
             schemas_root=self._schemas_root,
             sources=result.sources,
+            source_texts=source_texts,
+            idl_sources=idl_sources,
+            idl_source_layers=idl_source_layers,
+            idl_source_roots=idl_source_roots,
         )
         resolved._validate_duplicate_identities()
         if validate:
@@ -401,7 +431,12 @@ class Database:
         self._object_maps[kind] = MappingProxyType(by_name)
 
     def _load_documents(
-        self, root: Any, *, allow_non_mapping: bool = False, layer: str = "source"
+        self,
+        root: Any,
+        *,
+        allow_non_mapping: bool = False,
+        layer: str = "source",
+        source_texts: dict[tuple[str, str], str] | None = None,
     ) -> tuple[dict[str, Any], dict[str, SourceMap]]:
         documents: dict[str, Any] = {}
         sources: dict[str, SourceMap] = {}
@@ -409,7 +444,9 @@ class Database:
             self._yaml_files(root, PurePosixPath()), key=lambda entry: entry[1].as_posix()
         ):
             path = relative_path.as_posix()
-            parsed = self._parse_yaml(resource, relative_path, layer=layer)
+            parsed = self._parse_yaml(
+                resource, relative_path, layer=layer, source_texts=source_texts
+            )
             data = parsed.value
             if not allow_non_mapping and not isinstance(data, Mapping):
                 raise DataError(f"UDB document {relative_path} must contain a mapping")
@@ -418,12 +455,32 @@ class Database:
         return documents, sources
 
     def _yaml_files(self, directory: Any, relative_dir: PurePosixPath):
+        yield from self._resource_files(directory, relative_dir, (".yaml", ".yml"))
+
+    def _resource_files(
+        self, directory: Any, relative_dir: PurePosixPath, suffixes: tuple[str, ...]
+    ):
         for child in directory.iterdir():
             relative_path = relative_dir / child.name
             if child.is_dir():
-                yield from self._yaml_files(child, relative_path)
-            elif child.name.endswith((".yaml", ".yml")):
+                yield from self._resource_files(child, relative_path, suffixes)
+            elif child.name.endswith(suffixes):
                 yield child, relative_path
+
+    def _load_idl_sources(self, root: Any, *, layer: str) -> dict[str, SourceText]:
+        sources: dict[str, SourceText] = {}
+        for resource, relative_path in sorted(
+            self._resource_files(root, PurePosixPath(), (".isa", ".idl")),
+            key=lambda entry: entry[1].as_posix(),
+        ):
+            try:
+                with resource.open("r", encoding="utf-8") as stream:
+                    text = stream.read()
+            except (OSError, UnicodeError) as error:
+                raise DataError(f"Cannot read UDB IDL source {relative_path}: {error}") from error
+            path = relative_path.as_posix()
+            sources[path] = SourceText(path, text, layer)
+        return sources
 
     def _load_record(
         self, resource: Any, relative_path: PurePosixPath, *, expected_kind: str
@@ -438,11 +495,20 @@ class Database:
         )
 
     def _parse_yaml(
-        self, resource: Any, relative_path: PurePosixPath, *, layer: str = "source"
+        self,
+        resource: Any,
+        relative_path: PurePosixPath,
+        *,
+        layer: str = "source",
+        source_texts: dict[tuple[str, str], str] | None = None,
     ) -> ParsedYaml:
         try:
             with resource.open("r", encoding="utf-8") as stream:
-                return parse_yaml(stream.read(), source=relative_path.as_posix(), layer=layer)
+                text = stream.read()
+            parsed = parse_yaml(text, source=relative_path.as_posix(), layer=layer)
+            if source_texts is not None:
+                source_texts[(layer, relative_path.as_posix())] = text
+            return parsed
         except (OSError, UnicodeError, YAMLError) as error:
             raise DataError(f"Cannot parse UDB YAML document {relative_path}: {error}") from error
 
@@ -487,6 +553,10 @@ class ResolvedDatabase(Database):
         *,
         schemas_root: Any | None = None,
         sources: Mapping[str, SourceMap] | None = None,
+        source_texts: Mapping[tuple[str, str], str] | None = None,
+        idl_sources: Mapping[str, SourceText] | None = None,
+        idl_source_layers: Mapping[tuple[str, str], SourceText] | None = None,
+        idl_source_roots: Mapping[str, str] | None = None,
     ) -> None:
         super().__init__(None, schemas_root=schemas_root)
         copied: dict[str, Mapping[Any, Any]] = {}
@@ -500,6 +570,22 @@ class ResolvedDatabase(Database):
                 path: sources[path] if sources is not None and path in sources else SourceMap(path)
                 for path in copied
             }
+        )
+        captured_texts: dict[tuple[str, str], str] = {}
+        for key, text in (source_texts or {}).items():
+            if (
+                not isinstance(key, tuple)
+                or len(key) != 2
+                or any(not isinstance(part, str) or not part for part in key)
+                or not isinstance(text, str)
+            ):
+                raise DataError(
+                    "Source texts require (layer, source) string keys and string values"
+                )
+            captured_texts[key] = text
+        self._resolved_source_texts = MappingProxyType(captured_texts)
+        self._idl_source_provider = IdlSourceProvider(
+            idl_sources, layers=idl_source_layers, roots=idl_source_roots
         )
 
     @property
@@ -515,6 +601,32 @@ class ResolvedDatabase(Database):
     def source_maps(self) -> Mapping[str, SourceMap]:
         """Field-level provenance keyed by resolved document path."""
         return self._resolved_sources
+
+    @property
+    def idl_sources(self) -> Mapping[str, SourceText]:
+        """Captured `.isa`/`.idl` sources, with later overlay files replacing earlier ones."""
+        return self._idl_source_provider.sources
+
+    @property
+    def idl_source_layers(self) -> Mapping[tuple[str, str], SourceText]:
+        """All captured IDL versions keyed by their original layer and relative path."""
+        return self._idl_source_provider.layers
+
+    @property
+    def idl_source_roots(self) -> Mapping[str, str]:
+        """Captured root provenance, used lexically without reopening any directory."""
+        return self._idl_source_provider.roots
+
+    def resolve_idl_include(self, owner: SourceText, filename: str) -> SourceText:
+        """Resolve a relative include to an explicitly captured original source."""
+        return self._idl_source_provider.include(owner, filename)
+
+    def source_text(self, source: str, *, layer: str = "source") -> str:
+        """Return original YAML text for a defining span, without reading a source tree."""
+        try:
+            return self._resolved_source_texts[(layer, source)]
+        except KeyError as error:
+            raise DataError(f"No captured YAML source {layer}:{source}") from error
 
     def source_at(self, document: str, *path: str | int) -> SourceSpan | None:
         """Return the exact original YAML span defining a resolved value."""
