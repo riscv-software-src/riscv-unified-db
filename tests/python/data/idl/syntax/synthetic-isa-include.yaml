@@ -1,0 +1,12 @@
+input: "%version: 1.0\ninclude \"other_file.idl\"\n"
+root: isa
+label: synthetic-isa-include
+expected:
+  kind: isa
+  children:
+    - kind: include
+      filename: other_file.idl
+  source:
+    file: synthetic-isa-include
+    begin: 0
+    end: 39

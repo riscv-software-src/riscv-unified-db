@@ -1,0 +1,28 @@
+input: "return $nonexistent(x);\n"
+root: function_body
+label: synthetic-fn-parse-time-detected-type-error
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: ParseTimeDetectedTypeError
+            reason: $nonexistent is not a builtin function
+            source:
+              file: synthetic-fn-parse-time-detected-type-error
+              begin: 7
+              end: 22
+        source:
+          file: synthetic-fn-parse-time-detected-type-error
+          begin: 0
+          end: 22
+      source:
+        file: synthetic-fn-parse-time-detected-type-error
+        begin: 0
+        end: 23
+  source:
+    file: synthetic-fn-parse-time-detected-type-error
+    begin: 0
+    end: 24

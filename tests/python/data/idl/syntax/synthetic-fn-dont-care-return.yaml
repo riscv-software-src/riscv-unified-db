@@ -1,0 +1,36 @@
+input: "return -, 5;\n"
+root: function_body
+label: synthetic-fn-dont-care-return
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: dont_care
+            source:
+              file: synthetic-fn-dont-care-return
+              begin: 7
+              end: 8
+          - kind: bits_literal
+            width: "3"
+            value: 5
+            signed: false
+            radix: 10
+            source:
+              file: synthetic-fn-dont-care-return
+              begin: 10
+              end: 11
+        source:
+          file: synthetic-fn-dont-care-return
+          begin: 0
+          end: 11
+      source:
+        file: synthetic-fn-dont-care-return
+        begin: 0
+        end: 12
+  source:
+    file: synthetic-fn-dont-care-return
+    begin: 0
+    end: 13

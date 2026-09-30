@@ -1,0 +1,167 @@
+input: "# check if mstateen0 is implemented\nif (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CONTEXT != 0) {\n  unimplemented_csr($encoding);\n}\n\n# check if HCONTEXT is available\nif (!HCONTEXT_AVAILABLE) {\n  unimplemented_csr($encoding);\n}\n\n# return the value of mcontext\nreturn $bits(CSR[mcontext]); # might truncate if xlen() < MXLEN, but that's the expected behavior\n"
+root: function_body
+label: csr/hcontext.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: "&&"
+        lhs:
+          kind: funcall_expr
+          func: implemented?
+          args:
+            - kind: enum_reference_expr
+              enum_class: ExtensionName
+              member_name: Smstateen
+              source:
+                file: csr/hcontext.yaml#sw_read()
+                begin: 53
+                end: 77
+          source:
+            file: csr/hcontext.yaml#sw_read()
+            begin: 40
+            end: 78
+        rhs:
+          kind: binary_operator_expr
+          op: "!="
+          lhs:
+            kind: csr_field_read_expr
+            csr:
+              kind: csr_read_expr
+              csr_name: mstateen0
+              source:
+                file: csr/hcontext.yaml#sw_read()
+                begin: 82
+                end: 96
+            field_name: CONTEXT
+            source:
+              file: csr/hcontext.yaml#sw_read()
+              begin: 82
+              end: 104
+          rhs:
+            kind: bits_literal
+            width: "1"
+            value: 0
+            signed: false
+            radix: 10
+            source:
+              file: csr/hcontext.yaml#sw_read()
+              begin: 108
+              end: 109
+          source:
+            file: csr/hcontext.yaml#sw_read()
+            begin: 82
+            end: 109
+        source:
+          file: csr/hcontext.yaml#sw_read()
+          begin: 40
+          end: 109
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: funcall_expr
+              func: unimplemented_csr
+              args:
+                - kind: builtin_var_expr
+                  name: $encoding
+                  source:
+                    file: csr/hcontext.yaml#sw_read()
+                    begin: 133
+                    end: 142
+              source:
+                file: csr/hcontext.yaml#sw_read()
+                begin: 115
+                end: 143
+            source:
+              file: csr/hcontext.yaml#sw_read()
+              begin: 115
+              end: 144
+        source:
+          file: csr/hcontext.yaml#sw_read()
+          begin: 115
+          end: 145
+      else_ifs: []
+      else:
+      source:
+        file: csr/hcontext.yaml#sw_read()
+        begin: 36
+        end: 146
+    - kind: if_stmt
+      condition:
+        kind: unary_operator_expr
+        op: "!"
+        expr:
+          kind: id
+          name: HCONTEXT_AVAILABLE
+          source:
+            file: csr/hcontext.yaml#sw_read()
+            begin: 186
+            end: 204
+        source:
+          file: csr/hcontext.yaml#sw_read()
+          begin: 185
+          end: 204
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: funcall_expr
+              func: unimplemented_csr
+              args:
+                - kind: builtin_var_expr
+                  name: $encoding
+                  source:
+                    file: csr/hcontext.yaml#sw_read()
+                    begin: 228
+                    end: 237
+              source:
+                file: csr/hcontext.yaml#sw_read()
+                begin: 210
+                end: 238
+            source:
+              file: csr/hcontext.yaml#sw_read()
+              begin: 210
+              end: 239
+        source:
+          file: csr/hcontext.yaml#sw_read()
+          begin: 210
+          end: 240
+      else_ifs: []
+      else:
+      source:
+        file: csr/hcontext.yaml#sw_read()
+        begin: 181
+        end: 241
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: bits_cast
+            expr:
+              kind: csr_read_expr
+              csr_name: mcontext
+              source:
+                file: csr/hcontext.yaml#sw_read()
+                begin: 287
+                end: 300
+            source:
+              file: csr/hcontext.yaml#sw_read()
+              begin: 281
+              end: 301
+        source:
+          file: csr/hcontext.yaml#sw_read()
+          begin: 274
+          end: 301
+      source:
+        file: csr/hcontext.yaml#sw_read()
+        begin: 274
+        end: 302
+  source:
+    file: csr/hcontext.yaml#sw_read()
+    begin: 0
+    end: 372

@@ -1,0 +1,34 @@
+input: "return $width(x);\n"
+root: function_body
+label: synthetic-fn-bits-width-cast
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: bits_width_cast
+            expr:
+              kind: id
+              name: x
+              source:
+                file: synthetic-fn-bits-width-cast
+                begin: 14
+                end: 15
+            source:
+              file: synthetic-fn-bits-width-cast
+              begin: 7
+              end: 16
+        source:
+          file: synthetic-fn-bits-width-cast
+          begin: 0
+          end: 16
+      source:
+        file: synthetic-fn-bits-width-cast
+        begin: 0
+        end: 17
+  source:
+    file: synthetic-fn-bits-width-cast
+    begin: 0
+    end: 18

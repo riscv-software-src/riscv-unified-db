@@ -10,7 +10,7 @@
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
 | Stage 3: versions, configurations, conditions, and solving | Complete locally; CI pending |
-| Stage 4: IDL compiler and semantic passes | Pending |
+| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) complete locally |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
@@ -61,6 +61,7 @@ These are local branches until publication of the PR stack.
 | `migration/python-10-conditions` | `migration/python-09-domains` | Condition parsing, normalization, concrete evaluation, and Z3 condition solving |
 | `migration/python-11-configured-queries` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
 | `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
+| `migration/python-13-idl-syntax` | `migration/python-12-stage3-gates` | Pure-Python IDL parser and syntax tree with full-database Ruby parity |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -372,6 +373,9 @@ change is explicitly approved.
   system packages and no runtime download.
 
 ## Stage 4: IDL compiler and semantic passes
+
+The Stage 4 design contract, including the parser decision and the slice
+plan, is in [stage4-idl.md](stage4-idl.md).
 
 ### Capability
 
@@ -811,3 +815,32 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   resolver used by `./do gen:resolved_arch`, Ruby object-model consumers, and later-stage generators
   and document renderers. Full repository `./bin/regress --all` and remote CI remain pending.
   Stage 3 is complete locally against its acceptance gate.
+
+### 2026-09-29: Stage 4 IDL syntax
+
+- Recorded the Stage 4 design contract in `doc/stage4-idl.md`. The compiler uses a
+  hand-written pure-Python packrat PEG parser that mirrors `idl.treetop` rule for rule,
+  keeping the wheel pure Python and offline. Tree-sitter remains an option for editor
+  tooling only.
+- Added `udb.idl` with `parse` and per-root entry points (`parse_isa`,
+  `parse_function_body`, `parse_instruction_operation`, `parse_expression`,
+  `parse_constraint_body`, `parse_for_loop`). It also has an immutable AST whose
+  `to_h`/`from_h`/`to_idl` follow Ruby's canonical serialization, and `IdlSyntaxError`
+  with line and column. The parser has no global state; the whole database parses in
+  about two seconds.
+- `tests/python/test_idl_parity.py` (gated by `UDB_TEST_RUBY=1`) compares every embedded
+  IDL string and `isa/` file in `spec/std/isa` and `spec/custom/isa` against Ruby, with
+  no differences. Offline coverage comes from:
+  - a checked-in syntax corpus (`test_idl_corpus.py`);
+  - parser unit tests;
+  - an independently written black-box grammar suite (`test_idl_grammar_edges.py`,
+    263 Ruby-generated cases covering acceptance, rejection line/column, and `to_idl`
+    round trips).
+- Added the `regress-python-idl-syntax-parity` CI job. The installed-package gate now
+  parses every bundled `isa/` file from the installed wheel. That gate found a
+  Python 3.12-only `dataclass(slots=True)` zero-argument `super()` failure, now fixed.
+- Confirmed Ruby defects are recorded as bug-log entries 18–21: signed decimal literal
+  width, two `to_idl` printing errors, and a post-increment assignment crash.
+- Semantic analysis (types, symbol tables, values, type checking), passes, and closing
+  the Stage 3 `idl()` deferrals remain for branches 14–18 as planned in
+  `doc/stage4-idl.md`.

@@ -1,0 +1,55 @@
+input: "return [1, 2, 3];\n"
+root: function_body
+label: synthetic-fn-array-literal
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: array_literal
+            values:
+              - kind: bits_literal
+                width: "1"
+                value: 1
+                signed: false
+                radix: 10
+                source:
+                  file: synthetic-fn-array-literal
+                  begin: 8
+                  end: 9
+              - kind: bits_literal
+                width: "2"
+                value: 2
+                signed: false
+                radix: 10
+                source:
+                  file: synthetic-fn-array-literal
+                  begin: 11
+                  end: 12
+              - kind: bits_literal
+                width: "2"
+                value: 3
+                signed: false
+                radix: 10
+                source:
+                  file: synthetic-fn-array-literal
+                  begin: 14
+                  end: 15
+            source:
+              file: synthetic-fn-array-literal
+              begin: 7
+              end: 16
+        source:
+          file: synthetic-fn-array-literal
+          begin: 0
+          end: 16
+      source:
+        file: synthetic-fn-array-literal
+        begin: 0
+        end: 17
+  source:
+    file: synthetic-fn-array-literal
+    begin: 0
+    end: 18

@@ -1,0 +1,177 @@
+input: "if (DCSR_STEPIE_TYPE == \"read-only-0\") {\n  return 0;\n} else if (DCSR_STEPIE_TYPE == \"read-only-1\") {\n  return 1;\n}\nassert(DCSR_STEPIE_TYPE == \"rw\", \"Unhandled DCSR_STEPIE_TYPE value\");\nreturn UNDEFINED_LEGAL;\n"
+root: function_body
+label: csr/dcsr.yaml#fields/STEPIE/reset_value()
+expected:
+  kind: function_body
+  stmts:
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: id
+          name: DCSR_STEPIE_TYPE
+          source:
+            file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+            begin: 4
+            end: 20
+        rhs:
+          kind: string_literal
+          text: read-only-0
+          source:
+            file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+            begin: 24
+            end: 37
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+          begin: 4
+          end: 37
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: bits_literal
+                  width: "1"
+                  value: 0
+                  signed: false
+                  radix: 10
+                  source:
+                    file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                    begin: 50
+                    end: 51
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                begin: 43
+                end: 51
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 43
+              end: 52
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+          begin: 43
+          end: 53
+      else_ifs:
+        - kind: else_if_stmt
+          condition:
+            kind: binary_operator_expr
+            op: ==
+            lhs:
+              kind: id
+              name: DCSR_STEPIE_TYPE
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                begin: 64
+                end: 80
+            rhs:
+              kind: string_literal
+              text: read-only-1
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                begin: 84
+                end: 97
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 64
+              end: 97
+          body:
+            kind: if_body
+            stmts:
+              - kind: stmt
+                expr:
+                  kind: return_expr
+                  exprs:
+                    - kind: bits_literal
+                      width: "1"
+                      value: 1
+                      signed: false
+                      radix: 10
+                      source:
+                        file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                        begin: 110
+                        end: 111
+                  source:
+                    file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                    begin: 103
+                    end: 111
+                source:
+                  file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                  begin: 103
+                  end: 112
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 103
+              end: 113
+          source:
+            file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+            begin: 54
+            end: 114
+      else:
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+        begin: 0
+        end: 114
+    - kind: stmt
+      expr:
+        kind: funcall_expr
+        func: assert
+        args:
+          - kind: binary_operator_expr
+            op: ==
+            lhs:
+              kind: id
+              name: DCSR_STEPIE_TYPE
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                begin: 122
+                end: 138
+            rhs:
+              kind: string_literal
+              text: rw
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+                begin: 142
+                end: 146
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 122
+              end: 146
+          - kind: string_literal
+            text: Unhandled DCSR_STEPIE_TYPE value
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 148
+              end: 182
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+          begin: 115
+          end: 183
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+        begin: 115
+        end: 184
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: id
+            name: UNDEFINED_LEGAL
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+              begin: 192
+              end: 207
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+          begin: 185
+          end: 207
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+        begin: 185
+        end: 208
+  source:
+    file: csr/dcsr.yaml#fields/STEPIE/reset_value()
+    begin: 0
+    end: 209

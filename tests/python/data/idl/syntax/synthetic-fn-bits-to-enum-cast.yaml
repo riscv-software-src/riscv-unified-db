@@ -1,0 +1,44 @@
+input: "return $enum(MyEnum, 1);\n"
+root: function_body
+label: synthetic-fn-bits-to-enum-cast
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: bits_to_enum_cast
+            enum_class_name:
+              kind: user_type_reference
+              name: MyEnum
+              source:
+                file: synthetic-fn-bits-to-enum-cast
+                begin: 13
+                end: 19
+            expr:
+              kind: bits_literal
+              width: "1"
+              value: 1
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-fn-bits-to-enum-cast
+                begin: 21
+                end: 22
+            source:
+              file: synthetic-fn-bits-to-enum-cast
+              begin: 7
+              end: 23
+        source:
+          file: synthetic-fn-bits-to-enum-cast
+          begin: 0
+          end: 23
+      source:
+        file: synthetic-fn-bits-to-enum-cast
+        begin: 0
+        end: 24
+  source:
+    file: synthetic-fn-bits-to-enum-cast
+    begin: 0
+    end: 25
