@@ -123,11 +123,14 @@ def generate_sverilog(instructions, csrs, causes, output_file):
             # Pad the name for alignment
             padded_name = sv_name.ljust(max_len)
             # Get the match pattern
+            match: str | None = None
             if isinstance(encoding, dict) and "match" in encoding:
                 match = encoding["match"]
             else:
                 LOGGER.error(f"No match field for instruction {name}.")
 
+            if match is None:
+                continue
             sv_bits = match_to_sverilog_bits(match)
             f.write(f"  localparam logic [31:0] {padded_name} = {sv_bits};\n")
 
@@ -185,6 +188,7 @@ def main():
         include_all=args.include_all,
         resolved_codes_file=args.resolved_codes,
     )
+    causes = causes or []
     LOGGER.info(f"Loaded {len(causes)} exception codes")
 
     # Generate the SystemVerilog file

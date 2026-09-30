@@ -14,6 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pyrefly",
     "pytest==9.1.1",
     "reuse==6.2.0",
     "ruff==0.16.6",
@@ -49,4 +50,22 @@ extend-select = [
     "RUF103", # ruff: invalid suppression comment
     "RUF104", # ruff: unmatched suppression comment
     "W191",   # pycodestyle: tabs in indentation
+]
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]
+project-excludes = [
+    "ext/**",
+    "gen/**",
+    ".github/**",
+    "tools/mcp_gen_server/**",
+    "tools/ruby-gems/udb-gen/**",
+]
+search-path = [
+    "tools/python/auto-inst",
+    "backends/generators",
+    "tools/python",
 ]

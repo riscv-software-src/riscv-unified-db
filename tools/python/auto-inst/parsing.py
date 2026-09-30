@@ -5,6 +5,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Any
 
 import pytest
 from ruamel.yaml import YAML
@@ -12,11 +13,11 @@ from ruamel.yaml.error import YAMLError
 
 YAML_SAFE = YAML(typ="safe")
 
-yaml_instructions = {}
-REPO_DIRECTORY = None
+yaml_instructions: dict = {}
+REPO_DIRECTORY: str | None = None
 
 
-def safe_get(data, key, default=""):
+def safe_get(data, key, default: Any = ""):
     """Safely get a value from a dictionary, return default if not found or error."""
     if isinstance(data, dict):
         return data.get(key, default)
@@ -122,6 +123,8 @@ def load_yaml_encoding(instr_name):
     candidates.add(lower_name.replace("_", "."))
 
     yaml_file_path = None
+    if REPO_DIRECTORY is None:
+        return None, None, None
     for cand in candidates:
         if cand in yaml_instructions:
             yaml_category = yaml_instructions[cand]

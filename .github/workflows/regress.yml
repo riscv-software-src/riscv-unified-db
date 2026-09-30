@@ -373,6 +373,16 @@ jobs:
       - name: Run sorbet checks
         run: ./do test:sorbet
 
+  regress-python-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run pyrefly checks
+        run: ./do test:python_typecheck
+
   regress-ext-explorer:
     runs-on: ubuntu-latest
     steps:
@@ -973,6 +983,7 @@ jobs:
       - regress-udb-gen-integration
       - regress-udb-gen-chore
       - regress-sorbet
+      - regress-python-typecheck
       - regress-ext-explorer
       - regress-idl-typecheck-smoke
       - regress-idl-typecheck-other

@@ -38,6 +38,7 @@ bin/doctor   # verify the environment is correctly set up (run after bin/setup)
 ./do test:idlc:unit           # run IDL compiler unit tests
 ./do test:udb:unit            # run UDB library unit tests
 ./do test:sorbet              # run Sorbet type checks
+./do test:python_typecheck    # run pyrefly type checks
 ./do test:idl CFG=_           # type-check IDL for a config (also: rv32, rv64, qc_iu)
 ./do test:inst_encodings      # check instruction encoding conflicts
 ./do test:schema              # validate all arch files against schemas

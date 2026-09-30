@@ -458,9 +458,12 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                         continue
 
             # If we're here, we've passed all checks
+            addr_to_use: int | str | None = address if address is not None else indirect_address
+            if addr_to_use is None:
+                LOGGER.error(f"Missing 'address' or 'indirect_address' in CSR {name} in {path}")
+                address_errors += 1
+                continue
             try:
-                # Use address if available, otherwise use indirect_address
-                addr_to_use = address if address is not None else indirect_address
                 if isinstance(addr_to_use, int):
                     addr_int = addr_to_use
                 else:
@@ -489,7 +492,7 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
 
 def load_exception_codes(
     ext_dir, enabled_extensions=None, include_all=False, resolved_codes_file=None
-):
+) -> list | None:
     """Load exception codes from extension YAML files or pre-resolved JSON file."""
     exception_codes = []
     found_extensions = 0

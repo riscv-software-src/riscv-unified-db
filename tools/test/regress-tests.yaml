@@ -74,6 +74,14 @@ tests:
       - name: Run sorbet checks
         run: ./do test:sorbet
 
+  regress-python-typecheck:
+    ci_stage: pr
+    tags:
+      - smoke
+    test:
+      - name: Run pyrefly checks
+        run: ./do test:python_typecheck
+
   regress-ext-explorer:
     ci_stage: pr
     test:
