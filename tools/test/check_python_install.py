@@ -245,11 +245,32 @@ def check_install() -> None:
     assert str(expression_type) == "const known Bits<4>"
     assert expression_node.value(expression_symtab) == 11
 
+    from udb.idl.types import Type, TypeKind
+
+    statement_symtab = SymbolTable(IdlEnvironment(mxlen=64))
+    statement_isa = idl.parse_isa(
+        "%version: 1.0\n"
+        "function increment { returns Bits<8> arguments Bits<8> value "
+        "description { Increment a value. } body { return value + 1; } }\n"
+    )
+    statement_isa.type_check(statement_symtab)
+    statement_symtab.push(None)
+    statement_symtab.add("__expected_return_type", Type(TypeKind.BITS, width=8))
+    statement_body = idl.parse_function_body(
+        "Bits<8> values[2]; "
+        "for (Bits<8> i = 0; i < 2; i++) { values[i] = increment(i); } "
+        "return values[1];"
+    )
+    statement_body.type_check(statement_symtab)
+    assert statement_body.return_value(statement_symtab) == 2
+    statement_symtab.pop()
+
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
-        f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files)"
+        f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
+        "IDL statement typing & execution"
     )
 
 

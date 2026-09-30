@@ -205,6 +205,12 @@ class BinaryExpression(Node):
             TypeKind.BITS, width=max(lhs_type.width, rhs_type.width), qualifiers=tuple(qualifiers)
         )
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        # Ruby's comment: can't check for short-circuit here unless we also
+        # evaluate values during the const_eval pass; conservatively assume
+        # no short-circuiting.
+        return self.lhs.const_eval(symtab) and self.rhs.const_eval(symtab)
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         op = self.op
         lhs_short_circuit = False
@@ -495,6 +501,9 @@ class UnaryOperatorExpression(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,), op=data["op"])
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.expression.const_eval(symtab)
+
     def type(self, symtab: SymbolTable) -> Type:
         if self.op in ("-", "~"):
             return self.expression.type(symtab)
@@ -590,6 +599,13 @@ class TernaryOperatorExpression(Node):
         true_expr = from_h(data["true_expression"], sources)
         false_expr = from_h(data["false_expression"], sources)
         return cls(source=source, start=start, end=end, children=(condition, true_expr, false_expr))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return (
+            self.condition.const_eval(symtab)
+            and self.true_expression.const_eval(symtab)
+            and self.false_expression.const_eval(symtab)
+        )
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.condition.type_check(symtab, strict=strict)
@@ -719,6 +735,9 @@ class ParenExpression(Node):
         source, start, end = _source_and_span(data, sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.expression.const_eval(symtab)
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.expression.type_check(symtab, strict=strict)

@@ -289,3 +289,52 @@ overlaps, and compatibility checking via `arch.compatible_with(other)`. Queries 
 unresolved IDL logic return `DEFERRED` or `UNKNOWN` without failing unrelated data queries.
 `arch.check()` returns an `ArchitectureCheckResult` with status `VALID`, `UNSAT`, or `DEFERRED`.
 Unsatisfiable configurations report labeled diagnostic conflicts.
+
+## IDL parsing and semantics
+
+`udb.idl` parses expressions, function bodies, instruction operations, constraints,
+loops, and ISA files into source-aware syntax trees. Nodes provide `to_idl()` and
+`to_h()`; `idl.from_h()` restores serialized trees. Parse failures raise
+`IdlSyntaxError`; semantic failures raise `IdlTypeError` or `IdlSemanticError`.
+Evaluation that cannot determine a value raises `IdlValueUnknown`.
+
+Type checking and execution use an explicit `SymbolTable` and `IdlEnvironment`
+from `udb.idl.symbols`. ISA checking registers types, function signatures and
+globals before checking bodies. A standalone function body requires a local
+scope and its expected return type:
+
+```python
+from udb import idl
+from udb.idl.symbols import IdlEnvironment, SymbolTable
+from udb.idl.types import Type, TypeKind
+
+symbols = SymbolTable(IdlEnvironment(mxlen=64))
+definitions = idl.parse_isa(
+    "%version: 1.0\n"
+    "function increment { returns Bits<8> arguments Bits<8> value "
+    "description { Increment a value. } body { return value + 1; } }\n"
+)
+definitions.type_check(symbols)
+symbols.push(None)
+symbols.add("__expected_return_type", Type(TypeKind.BITS, width=8))
+body = idl.parse_function_body(
+    "Bits<8> values[2]; "
+    "for (Bits<8> i = 0; i < 2; i++) { values[i] = increment(i); } "
+    "return values[1];"
+)
+body.type_check(symbols)
+assert body.return_value(symbols) == 2
+symbols.pop()
+```
+
+`global_clone()` copies global bindings; `deep_clone()` copies every scope.
+Both isolate mutable bindings, nested values and memoization while retaining
+immutable types and sources. The legacy `clone_values=False` argument does not
+permit mutation to leak into the original table. Tables constructed from the
+same environment also own their mutable bindings independently.
+
+Python rejects duplicate declarations in the same scope but permits outer-scope
+shadowing. Unknown conditional writes invalidate their destination rather than
+retaining a previously known value. Architecture-bound global/include loading,
+full configured type checking, semantic passes and IDL-condition solving remain
+subsequent Stage 4 integration work.

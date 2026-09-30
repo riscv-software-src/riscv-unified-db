@@ -14,7 +14,10 @@ from ..errors import IdlValueUnknown
 from ..source import IdlSource
 from ..symbols import SymbolTable, Var
 from ..types import (
+    BITS32_TYPE,
+    BITS64_TYPE,
     BOOL_TYPE,
+    STRING_TYPE,
     WIDTH_UNKNOWN,
     EnumerationType,
     Qualifier,
@@ -46,6 +49,13 @@ class Id(Node):
 
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        if self.const:
+            return True
+        var = symtab.get(self.name)
+        assert isinstance(var, Var)
+        return var.const_eval
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         if self.name in RESERVED_WORDS:
@@ -224,6 +234,9 @@ class IntLiteral(Node):
 
     def to_idl(self) -> str:
         return self.raw_text
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def _match(self) -> tuple[str, re.Match[str]]:
         cached = self._cache.get("_int_match")
@@ -483,6 +496,9 @@ class StringLiteral(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"text": self.content}
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         pass
 
@@ -513,6 +529,9 @@ class TrueExpression(Node):
     def to_idl(self) -> str:
         return "true"
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         pass
 
@@ -539,6 +558,9 @@ class FalseExpression(Node):
 
     def to_idl(self) -> str:
         return "false"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         pass
@@ -617,6 +639,13 @@ class BuiltinVariable(Node):
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        if self.name == "$encoding":
+            return True
+        if self.name == "$pc":
+            return False
+        self.internal_error("TODO")
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         if self.name not in ("$pc", "$encoding"):
             self.type_error("Not a builtin variable")
@@ -662,6 +691,9 @@ class UserTypeName(Node):
 
     def _to_h_fields(self) -> dict[str, Any]:
         return {"name": self.name}
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         if self.name in RESERVED_WORDS:
@@ -742,6 +774,61 @@ class BuiltinTypeName(Node):
             return cls(source=source, start=start, end=end, type_name=data["type"])
         raise ValueError(f"Bad YAML: expected kind 'bits_type' or 'builtin_type', got {kind!r}")
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        # Ruby's `const_eval?` compares `@type_name == "bits"` (lowercase), but
+        # `@type_name` is always the grammar-cased "Bits"/"XReg"/etc., so that
+        # comparison is always false and Ruby always returns `True` here, even
+        # for `Bits<...>` with a non-const width expression. Unreachable in
+        # the frozen corpus (no call site actually invokes this), so this
+        # implements the evidently-intended behavior instead of the dead
+        # comparison.
+        if self.type_name == "Bits":
+            assert self.bits_expression is not None
+            return self.bits_expression.const_eval(symtab)
+        return True
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.type_name == "Bits":
+            assert self.bits_expression is not None
+            self.bits_expression.type_check(symtab, strict=strict)
+            try:
+                if not self.bits_expression.value(symtab) > 0:
+                    self.type_error(
+                        f"Bits width ({self.bits_expression.value(symtab)}) must be positive"
+                    )
+            except IdlValueUnknown:
+                pass
+            if not self.bits_expression.type(symtab).is_const:
+                self.type_error(f"Bits width ({self.bits_expression.text}) must be const")
+        if self.type_name not in _BUILTIN_TYPE_NAMES:
+            self.type_error(f"Unimplemented builtin type {self.text}")
+
+    def bits_type(self, symtab: SymbolTable) -> Type:
+        assert self.bits_expression is not None
+        try:
+            return Type(TypeKind.BITS, width=self.bits_expression.value(symtab))
+        except IdlValueUnknown:
+            return Type(TypeKind.BITS, width=WIDTH_UNKNOWN, width_ast=self.bits_expression)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        if self.type_name == "XReg":
+            if symtab.mxlen == 32:
+                return BITS32_TYPE
+            if symtab.mxlen == 64:
+                return BITS64_TYPE
+            return Type(TypeKind.BITS, width=WIDTH_UNKNOWN, max_width=64)
+        if self.type_name == "Boolean":
+            return BOOL_TYPE
+        if self.type_name == "U32":
+            return BITS32_TYPE
+        if self.type_name == "U64":
+            return BITS64_TYPE
+        if self.type_name == "String":
+            return STRING_TYPE
+        if self.type_name == "Bits":
+            return self.bits_type(symtab)
+        self.internal_error(f"TODO: {self.text}")
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class DontCareReturn(Node):
@@ -751,6 +838,28 @@ class DontCareReturn(Node):
 
     def to_idl(self) -> str:
         return "-"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return Type(TypeKind.DONTCARE)
+
+    def set_expected_type(self, t: Type) -> None:
+        self._cache["_expected_type"] = t
+
+    def value(self, symtab: SymbolTable) -> Any:
+        expected_type = self._cache.get("_expected_type")
+        if expected_type is None:
+            self.internal_error("Must call set_expected_type first")
+        if expected_type.kind == TypeKind.BITS:
+            return 0
+        if expected_type.kind == TypeKind.BOOLEAN:
+            return False
+        self.internal_error("Unhandled expected type")
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> DontCareReturn:
@@ -767,6 +876,18 @@ class DontCareLvalue(Node):
 
     def to_idl(self) -> str:
         return "-"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return Type(TypeKind.DONTCARE)
+
+    def value(self, symtab: SymbolTable) -> Any:
+        self.internal_error("Why are you calling value for an lval?")
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> DontCareLvalue:
@@ -789,6 +910,9 @@ class EnumRef(Node):
 
     def _to_h_fields(self) -> dict[str, Any]:
         return {"enum_class": self.class_name, "member_name": self.member_name}
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def _enum_def_type(self, symtab: SymbolTable) -> Type:
         cache = self._cache.setdefault("_enum_def_type", {})
@@ -846,6 +970,15 @@ class Noop(Node):
 
     def to_idl(self) -> str:
         return ""
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
+
+    def execute(self, symtab: SymbolTable) -> None:
+        pass
 
     @classmethod
     def from_h(cls, data: Mapping[str, Any], sources: Mapping[str, str]) -> Noop:
