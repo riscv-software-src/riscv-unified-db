@@ -427,9 +427,9 @@ class BuiltinFunctionCallbacks:
 
 
 #: Matches Ruby's ``eval_register_length_idl`` literal-integer case.
-_LITERAL_WIDTH_RE = re.compile(r"\A\d+\z")
+_LITERAL_WIDTH_RE = re.compile(r"\A\d+\Z")
 #: Matches Ruby's ``eval_register_length_idl`` ``MXLEN``-reference case.
-_MXLEN_WIDTH_RE = re.compile(r"\AMXLEN\z")
+_MXLEN_WIDTH_RE = re.compile(r"\AMXLEN\Z")
 
 
 def _default_eval_register_length(idl_body: str, mxlen: int | None) -> int | str:
