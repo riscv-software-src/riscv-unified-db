@@ -475,6 +475,41 @@ jobs:
           tests/python/test_idl_qc_ilut_source_review.py
           tests/python/test_idl_architecture_real.py
 
+  regress-python-idl-pass-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check standalone analysis, rendering and real-source pass parity
+        run: >-
+          uv run --locked python -m pytest -n 0
+          tests/python/test_idl_adoc.py
+          tests/python/test_idl_prune.py
+          tests/python/test_idl_reachability.py
+          tests/python/test_idl_register_discovery.py
+          tests/python/test_idl_return_values.py
+          tests/python/test_idl_passes_corpus.py
+          tests/python/test_idl_passes_pruning_unit.py
+          tests/python/test_idl_passes_reachability_unit.py
+          tests/python/test_idl_passes_discovery_unit.py
+          tests/python/test_idl_passes_returns_unit.py
+          tests/python/test_idl_passes_hart_unit.py
+          tests/python/test_idl_passes_decode_tree_unit.py
+          tests/python/test_idl_passes_csr_pruning_unit.py
+          tests/python/test_idl_passes_real_adapter_unit.py
+          tests/python/test_idl_passes_review_regressions.py
+          tests/python/test_idl_passes_rendered_guards_review.py
+          tests/python/test_idl_passes_nested_index_review.py
+          tests/python/test_idl_passes_scope_review_unit.py
+          tests/python/test_idl_passes_write_scope_unit.py
+          tests/python/test_idl_passes_carried_array_context_unit.py
+          tests/python/test_idl_passes_exception_specialization_review.py
+          tests/python/test_idl_passes_assignment_binding_adjudication_unit.py
+          tests/python/test_idl_passes_real_corrections_review.py
+          tests/python/test_idl_passes_real.py
+
   regress-python-layout-drift:
     runs-on: ubuntu-latest
     steps:
@@ -1175,6 +1210,7 @@ jobs:
       - regress-python-idl-expression-parity
       - regress-python-idl-statement-parity
       - regress-python-idl-architecture
+      - regress-python-idl-pass-parity
       - regress-python-layout-drift
       - regress-python-unit
       - regress-scripts-unit
