@@ -447,7 +447,7 @@ def test_solver_consumes_real_scalar_and_array_domains() -> None:
     )
 
 
-def test_solver_truncates_huge_array_domains_soundly() -> None:
+def test_solver_rejects_impractically_large_materialized_arrays() -> None:
     pytest.importorskip("z3")
     solver_api = _solver_module()
     array = ParameterDomain.from_schema(
@@ -466,7 +466,7 @@ def test_solver_truncates_huge_array_domains_soundly() -> None:
     assert sat({"param": {"name": "A", "equal": []}})
     assert sat({"param": {"name": "A", "size": True, "equal": 2**59}})
     assert not sat({"param": {"name": "A", "size": True, "equal": 2**60 + 2}})
-    # Items and values beyond the materialized prefix stay possible...
+    # Symbolic array capacity does not limit indexed reads or exact equality.
     assert sat({"param": {"name": "A", "equal": list(range(100))}})
     assert sat({"param": {"name": "A", "index": 500, "equal": 7}})
     assert sat(
@@ -478,7 +478,7 @@ def test_solver_truncates_huge_array_domains_soundly() -> None:
             ]
         }
     )
-    # ...while item domains and the length still constrain them.
+    # Item domains and the length still constrain every index.
     assert not sat({"param": {"name": "A", "index": 500, "equal": 2**60 + 1}})
     assert not sat({"param": {"name": "A", "includes": 2**60 + 1}})
     assert not sat(
@@ -494,8 +494,22 @@ def test_solver_truncates_huge_array_domains_soundly() -> None:
         {"type": "array", "items": {"type": "integer"}, "minItems": 5000, "maxItems": 2**64}
     )
     solver = solver_api.ConditionSolver(solver_api.SolverContext(parameter_domains={"A": minimum}))
-    with pytest.raises(solver_api.SolverError, match="exceeds the solver limit"):
-        solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 5000}}))
+    solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 5000}}))
+    assert solver.check() is solver_api.SolverStatus.SAT
+    with pytest.raises(solver_api.SolverError, match=r"5000.*exceeds the solver limit.*4096"):
+        solver.model()
+
+    for length in (65, 4096, 4097):
+        solver = solver_api.ConditionSolver(context)
+        solver.add({"param": {"name": "A", "size": True, "equal": length}})
+        assert solver.check() is solver_api.SolverStatus.SAT
+        if length > 4096:
+            with pytest.raises(solver_api.SolverError, match=r"4097.*4096"):
+                solver.model()
+        else:
+            concrete = solver.model().parameters["A"]
+            assert len(concrete) == length
+            assert array.accepts(concrete)
 
 
 def test_solver_links_xlen_to_mxlen() -> None:

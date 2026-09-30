@@ -46,14 +46,27 @@ Models are available after `SAT`; labeled constraints provide Z3 unsat cores and
 deletion-minimal conflict relative to any unlabeled background constraints.
 
 The Z3 adapter consumes `ParameterDomain` metadata and does not add solver state to the domain
-objects. Array solving materializes one symbol per possible index, so a referenced array domain
-must have a finite `maxItems`; an unbounded array without a fixed-value length is rejected with
-`SolverError`. When `maxItems` exceeds 4096 (for example `HPM_EVENTS`, whose `maxItems` is
-`2**64`), only a 64-item prefix is materialized, as in Ruby. The length remains bounded by
-`maxItems`, and a constraint that reaches past the prefix (a larger index, an `includes`, a long
-fixed value) is over-approximated, so no satisfiable configuration is rejected. Ruby instead ignores
-items past index 64. Parameter symbols are lazy, so large array domains that no condition or fixed
-value references cost nothing.
+objects. A referenced array must have a finite `maxItems` or a fixed-value length; otherwise
+solving raises `SolverError`. Small domains use explicit item symbols. Larger domains, including
+`HPM_EVENTS` with `maxItems = 2**64`, use a shared indexed Z3 array and their full symbolic length.
+Typed tuple prefixes and quantified tail predicates enforce item domains, uniqueness, `contains`,
+membership, indexed reads, and equality exactly; no unmaterialized tail is over-approximated.
+Parameter symbols are lazy, so unreferenced large array domains cost nothing.
+
+For unique bounded integer intervals, a cyclic-rotation certificate cheaply proves SAT when it
+satisfies the actual constraints. A rejected certificate never proves UNSAT: the unrestricted
+indexed theory must establish that result. Indexed solving uses a deterministic Z3 `rlimit` of
+10,000,000 resource units per exact attempt; optional certificates use only 25,000 units.
+Resource exhaustion or theory incompleteness produces `UNKNOWN`, not an approximate answer.
+
+Concrete models contain every actual item and are limited to 4096 items per array. If the initial
+symbolic witness is larger, model extraction retries the **same query**, including tracked and
+temporary constraints, with model-only length bounds. These bounds never constrain subsequent
+SAT/UNSAT queries. A successful retry returns an exact small model; proven impossibility raises
+`SolverError`, while an undecidable retry raises `SolverUnknownError`. A tuple is never silently
+truncated or presented as a complete model. Architecture validity and compatibility checks report
+undecidable solver/model queries with a `solver-unknown` diagnostic instead of accessing a model
+after an unchecked solver result.
 
 `tests/python/test_conditions.py` covers parsing, canonical serialization, three-valued evaluation,
 partial evaluation, actual `ExtensionVersionSet` compatibility, actual scalar and array domains,
