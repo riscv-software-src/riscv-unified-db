@@ -10,8 +10,8 @@ Ruby `idlc` gem stays in place as the behavioral oracle until each Stage 4 gate 
 
 ## Parser
 
-The parser is a hand-written, pure-Python packrat parser in `udb/idl/parser.py`.
-It implements the parsing expression grammar in
+The parser is a hand-written, pure-Python packrat parser in the `udb.idl.parser` package. Its
+rules are split by grammar area into mixin classes that combine into one parser class. It implements the parsing expression grammar in
 `tools/ruby-gems/idlc/lib/idlc/idl.treetop` rule for rule. Each Treetop rule becomes a method with
 the same name, and each keeps the same ordered alternatives, repetition, and `&`/`!` lookahead.
 Results are memoized by rule and input position. A provably equivalent fast path is allowed only
@@ -70,6 +70,13 @@ tree for each consumer that memoizes semantic state.
 `to_h()` and `from_h()` produce and accept the Ruby serialization, including `kind`, field names,
 and `source` offsets. That makes the Ruby `to_h` output the differential oracle for parsing and
 lowering. `to_idl()` produces valid IDL that reparses to an equivalent tree.
+
+## Module layout
+
+Modules stay under about 1,000 lines. The parser is split by grammar area, and `udb.idl.ast`
+becomes a package split by node family once slice 14 lands. Later slices add their semantics and
+passes in separate modules, which also lets slices proceed in parallel. Package `__init__` modules
+re-export the public API, so imports do not depend on the layout.
 
 ## Semantics
 
