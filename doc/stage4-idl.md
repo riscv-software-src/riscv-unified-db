@@ -73,10 +73,15 @@ lowering. `to_idl()` produces valid IDL that reparses to an equivalent tree.
 
 ## Module layout
 
-Modules stay under about 1,000 lines. The parser is split by grammar area, and `udb.idl.ast`
-becomes a package split by node family once slice 14 lands. Later slices add their semantics and
-passes in separate modules, which also lets slices proceed in parallel. Package `__init__` modules
-re-export the public API, so imports do not depend on the layout.
+Modules stay under about 1,000 lines. `udb.idl.parser` is a package split by grammar area:
+`_lexical`, `_base`, `_expressions`, `_statements`, and `_definitions`, with `_api` exposing the
+`parse_*` entry points. `udb.idl.ast` is likewise a package, split by node family: `_base` (the
+`Node` base class and shared helpers), `_leaves` (literals and other leaf nodes), `_operators`,
+`_aggregates` (array, concatenation, and field/element-access expressions), `_csr`, `_builtins`
+(the `$`-prefixed builtin expressions), `_statements`, `_assignments`, `_declarations` (including
+`FunctionBody`), `_toplevel`, and `_registry` (the `from_h` dispatch table). Later slices add
+their semantics and passes in separate modules, which also lets slices proceed in parallel.
+Package `__init__` modules re-export the public API, so imports do not depend on the layout.
 
 ## Semantics
 
