@@ -512,6 +512,33 @@ jobs:
           tests/python/test_idl_passes_real_corrections_review.py
           tests/python/test_idl_passes_real.py
 
+  regress-python-idl-condition-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare frozen IDL conditions and environment callbacks with live Ruby
+        run: >-
+          UDB_TEST_RUBY=1 uv run --locked python -m pytest -n 0
+          tests/python/test_idl_conditions.py::test_frozen_ruby_condition_corpus_is_current
+          tests/python/test_idl_environment.py::test_idl_environment_matches_ruby_oracle
+      - name: Check symbolic IDL conditions, compiled requirements and genuine hooks
+        run: >-
+          uv run --locked python -m pytest -n 2
+          tests/python/test_idl_conditions.py
+          tests/python/test_idl_condition_bootstrap.py
+          tests/python/test_idl_condition_integration.py
+          tests/python/test_idl_condition_loop_controls.py
+          tests/python/test_idl_condition_loop_symbolic_review.py
+          tests/python/test_idl_condition_runtime.py
+          tests/python/test_config_validation_cli.py
+          tests/python/test_idl_environment_oracle_corrections_review.py
+          tests/python/test_idl_environment.py::test_rv32_sxlen_invariant_prohibits_64_bit_supervisor_extensions
+          tests/python/test_schema_idl_conditions.py
+          tests/python/test_solver_arrays.py::test_shipped_configuration_solver_construction_and_queries
+
   regress-python-layout-drift:
     runs-on: ubuntu-latest
     steps:
@@ -1213,6 +1240,7 @@ jobs:
       - regress-python-idl-statement-parity
       - regress-python-idl-architecture
       - regress-python-idl-pass-parity
+      - regress-python-idl-condition-parity
       - regress-python-layout-drift
       - regress-python-unit
       - regress-scripts-unit

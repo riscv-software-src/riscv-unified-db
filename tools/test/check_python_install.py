@@ -112,8 +112,7 @@ def check_install() -> None:
 
     rv64_arch = resolved.configure(udb.Configuration.builtin("rv64"))
     assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
-    # Some rv64 extensions and parameters are gated by idl() conditions until Stage 4.
-    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.DEFERRED
+    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
 
     data_references = schema_references = source_values = 0
@@ -267,9 +266,10 @@ def check_install() -> None:
 
     from udb.idl.value_bounds import max_value, min_value
     from udb.idl_architecture import ArchitectureCompiler
+    from udb.idl_conditions import compile_idl_condition
     from udb.idl_environment import condition_symbol_table
 
-    configured = resolved.configure(udb.Configuration.builtin("rv64"))
+    configured = rv64_arch
     compiler = ArchitectureCompiler(configured)
     operation = compiler.compile_instruction("addi", effective_xlen=64)
     assert operation.effective_xlen == 64
@@ -279,6 +279,38 @@ def check_install() -> None:
     assert "X[xd]" in operation.source.text
     bootstrap = condition_symbol_table(resolved)
     assert bootstrap.get("INSTR_ENC_SIZE").value == 32
+    before = bootstrap.snapshot_values()
+    constraint = next(
+        record for record in resolved.objects("parameter") if record.name == "SXLEN"
+    ).data["requirements"]["idl()"]
+    translated = compile_idl_condition(constraint, bootstrap)
+    assert translated == udb.parse_condition(
+        {
+            "if": {"param": {"name": "MXLEN", "equal": 32}},
+            "then": {"not": {"param": {"name": "SXLEN", "includes": 64}}},
+        }
+    )
+    assert not translated.has_unresolved
+    assert bootstrap.snapshot_values() == before
+    rv32_arch = resolved.configure(udb.Configuration.builtin("rv32"))
+    assert rv32_arch.check().status is udb.ArchitectureCheckStatus.VALID
+    assert rv32_arch.extension_presence("Sv39") is udb.QueryPresence.ABSENT
+    checked_config = subprocess.run(
+        [str(Path(sys.executable).with_name("udb")), "validate-cfg", "rv32"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert checked_config.stdout == "rv32: valid\n"
+    assert not checked_config.stderr
+    assert (
+        configured.instruction_operation("addi", effective_xlen=64).source.text
+        == operation.source.text
+    )
+    csr = configured.csr_behavior("misa", effective_xlen=64)
+    assert csr.source.label.endswith("csr/misa.yaml")
+    assert csr.effective_xlen == 64
+    assert csr.expected_return_type == Type(TypeKind.BITS, width=128)
     literal = idl.parse_expression("6'd3")
     assert min_value(literal, operation.symtab) == max_value(literal, operation.symtab) == 3
     symbolic_compiler = ArchitectureCompiler(resolved.configure(udb.Configuration.builtin("_")))
@@ -317,7 +349,7 @@ def check_install() -> None:
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
         f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
         "IDL statement typing & execution, captured architecture compilation & value bounds, "
-        "standalone analysis and source-generation passes"
+        "standalone analysis and source-generation passes, symbolic IDL conditions & genuine hooks"
     )
 
 
