@@ -1,0 +1,22 @@
+{
+  "name": "Header -- demo",
+  "params": {
+    "MXLEN": 32,
+    "TRUE": true,
+    "FALSE": false,
+    "ZERO": 0,
+    "STR": " __ Mixed---case / value __ ",
+    "EMPTY_STR": "___",
+    "DIGIT_STR": "32-bit",
+    "BOOLS": [false, true, false, true],
+    "INTS": [10, 2, 10, 0],
+    "STRINGS": ["z!", "a b", "A--B", "z"],
+    "EMPTY": [],
+    "UNEVALUATED": "<%= MXLEN %>",
+    "U32_MAX": 4294967295,
+    "U32_NEXT": 4294967296,
+    "U64_MAX": 18446744073709551615,
+    "U64_NEXT": 18446744073709551616,
+    "U96_NEXT": 79228162514264337593543950336
+  }
+}

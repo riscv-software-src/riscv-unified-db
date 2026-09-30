@@ -174,6 +174,40 @@ udb --path spec/std/isa --schemas spec/schemas --overlay spec/custom/isa/qc_iu v
 
 The same commands are available through `python -m udb`.
 
+Fully configured C and SystemVerilog headers can be generated without Ruby or a
+native toolchain:
+
+```shell
+udb generate cfg-c-header --config my-full-config.yaml
+udb generate cfg-svh-header -c my-full-config.yaml -o build/config.svh
+udb --path my-isa --schemas my-schemas --overlay my-overlay generate cfg-c-header -c my-full-config.yaml
+```
+
+`--cfg` is also accepted as an alias for `--config`. Configurations are explicit
+paths or the bundled names `_`, `rv32`, and `rv64`; there is no implicit checkout
+lookup. The default `_`, partial configurations, incomplete full configurations,
+and inconsistent or undecidable configurations fail with exit status 2.
+Generation preserves the reviewed legacy guard, presence-macro, version-precision,
+string/array, and integer-width behavior. Unsupported macro identifiers and
+collisions also fail explicitly. File outputs create missing parent directories;
+file and stdout artifacts are UTF-8 with LF newlines, independent of locale and
+`PYTHONIOENCODING`. Stdout contains only the header; output I/O errors use exit
+status 2. See [the configuration-header contract](stage5-config-headers.md)
+for exact byte conventions and supported inputs.
+
+The public source API returns a complete string without writing files:
+
+```python
+from udb import Configuration, Database
+from udb.generators.config_headers import generate_config_header
+
+architecture = (
+    Database.bundled().resolve().configure(Configuration.from_file("my-full-config.yaml"))
+)
+c_header = generate_config_header(architecture, "c")
+sv_header = generate_config_header(architecture, "svh")
+```
+
 `validate-cfg` accepts a YAML configuration path or a bundled name (`_`, `rv32`, or `rv64`).
 It resolves the selected database and explicit overlays, then checks configuration consistency,
 including IDL requirements. It prints `<name>: valid`, `unsat`, or `deferred`; diagnostics go to
