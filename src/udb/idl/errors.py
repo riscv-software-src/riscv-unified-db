@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Exceptions raised by the IDL parser and (in later slices) the type checker."""
+"""Exceptions raised by the IDL parser, type checker, and evaluator."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from collections.abc import Iterable
 __all__ = [
     "IdlError",
     "IdlInternalError",
+    "IdlSemanticError",
     "IdlSyntaxError",
     "IdlTypeError",
     "IdlValueUnknown",
@@ -54,23 +55,32 @@ class IdlSyntaxError(IdlError):
         super().__init__(f"{location}: {message}{detail}")
 
 
-class IdlTypeError(IdlError):
-    """An IDL type error was found during type checking (stubbed for slice 13).
+class IdlSemanticError(IdlError):
+    """Base class for errors raised while type-checking or evaluating IDL.
 
-    This is populated in a later migration slice that ports ``AstNode#type_check``.
+    Attributes:
+        reason: Human-readable description of the failure.
+        node: The offending AST node, when known.
     """
 
-
-class IdlInternalError(IdlError):
-    """An internal compiler invariant was violated (stubbed for slice 13).
-
-    This is populated in a later migration slice that ports ``AstNode#internal_error``.
-    """
+    def __init__(self, reason: str, node: object | None = None) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.node = node
 
 
-class IdlValueUnknown(IdlError):
-    """A compile-time value could not be determined (stubbed for slice 13).
+class IdlTypeError(IdlSemanticError):
+    """A type error was found while type-checking IDL (Ruby ``AstNode::TypeError``)."""
 
-    This is populated in a later migration slice that ports ``AstNode#value_error``
-    (Ruby's ``throw(:value_error, ...)`` control-flow mechanism).
+
+class IdlInternalError(IdlSemanticError):
+    """An internal compiler invariant was violated (Ruby ``AstNode::InternalError``)."""
+
+
+class IdlValueUnknown(IdlSemanticError):
+    """The compile-time value of an IDL expression is not known.
+
+    Replaces Ruby's ``throw(:value_error)`` / ``AstNode.value_try`` /
+    ``AstNode.value_else`` control flow; callers use ``try``/``except
+    IdlValueUnknown`` instead of process-wide error state.
     """
