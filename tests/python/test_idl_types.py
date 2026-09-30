@@ -214,6 +214,13 @@ def test_b2_comparable_to_csr_with_different_names_does_not_crash() -> None:
     assert lhs.comparable_to(rhs) is True
 
 
+def test_b2_comparable_to_csr_with_bits_operand_does_not_crash() -> None:
+    """B2: the corrected branch must not read ``csr`` from a non-CSR operand."""
+    csr = CsrType(_FakeCsr("mstatus", 64))
+    assert csr.comparable_to(Type(TypeKind.BITS, width=64)) is True
+    assert csr.comparable_to(Type(TypeKind.STRING)) is False
+
+
 def test_b3_array_default_elements_are_independent() -> None:
     """B3: Ruby's Array#default aliases the same sub_type default across all elements."""
     struct_type = StructType("Point", (Type(TypeKind.BITS, width=8),), ("x",))

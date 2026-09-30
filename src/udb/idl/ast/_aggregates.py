@@ -391,7 +391,9 @@ class AryElementAccess(Node):
     def value(self, symtab: SymbolTable) -> Any:
         var_val = self.var.value(symtab)
         if self.var.type(symtab).is_integral:
-            return (var_val >> self.index.value(symtab)) & 1
+            index = self.index.value(symtab)
+            # Ruby's Integer#[] reads a negative bit index as 0.
+            return 0 if index < 0 else (var_val >> index) & 1
 
         try:
             var_type = self.var.type(symtab)

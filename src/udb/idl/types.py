@@ -780,11 +780,11 @@ class Type:
                 # See deviation B2: Ruby calls `type.csr.width`, which does not exist on
                 # `Csr`; we use `max_length`, matching the intent (and `convertable_to`'s
                 # working `:csr` branch, which compares against `self.width`).
-                return (
-                    rhs.kind is TypeKind.CSR and rhs.csr.name == self.csr.name
-                ) or rhs.convertable_to(  # type: ignore[attr-defined]
-                    Type(TypeKind.BITS, width=rhs.csr.max_length)  # type: ignore[attr-defined]
-                )
+                if rhs.kind is TypeKind.CSR:
+                    return rhs.csr.name == self.csr.name or rhs.convertable_to(  # type: ignore[attr-defined]
+                        Type(TypeKind.BITS, width=rhs.csr.max_length)  # type: ignore[attr-defined]
+                    )
+                return rhs.convertable_to(Type(TypeKind.BITS, width=self.width))
             case TypeKind.STRING:
                 return rhs.kind is TypeKind.STRING
             case _:

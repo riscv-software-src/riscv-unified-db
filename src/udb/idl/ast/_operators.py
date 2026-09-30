@@ -20,7 +20,17 @@ from ..types import (
     Type,
     TypeKind,
 )
-from ._base import Node, _check_kind, _source_and_span, _try_value, _values_disjoint, from_h
+from ._base import (
+    Node,
+    _check_kind,
+    _ruby_shl,
+    _ruby_shr,
+    _source_and_span,
+    _try_value,
+    _values_disjoint,
+    from_h,
+)
+from ._leaves import UnknownLiteral
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -296,19 +306,33 @@ class BinaryExpression(Node):
             self.internal_error(f"Unhandled op '{op}'")
 
     def value(self, symtab: SymbolTable) -> Any:
+        try:
+            return self._value(symtab)
+        except TypeError:
+            # Ruby crashes on most operators with a partially-unknown (``x``-bit)
+            # operand (a confirmed Ruby bug; see doc/python-migration-bugfixes.md).
+            # The result is not knowable at compile time.
+            if any(
+                isinstance(_try_value(side, symtab), UnknownLiteral)
+                for side in (self.lhs, self.rhs)
+            ):
+                self.value_error(f"Cannot evaluate '{self.op}' on a value with unknown bits")
+            raise
+
+    def _value(self, symtab: SymbolTable) -> Any:
         op = self.op
         if op == ">>>":
             lhs_value = self.lhs.value(symtab)
             lhs_width = self.lhs.type(symtab).width
             if (lhs_value & (1 << (lhs_width - 1))) == 0:
                 shamt = self.rhs.value(symtab)
-                return lhs_value if shamt == 0 else (lhs_value >> shamt)
+                return lhs_value if shamt == 0 else _ruby_shr(lhs_value, shamt)
             shift_amount = self.rhs.value(symtab)
             if shift_amount == 0:
                 return lhs_value
-            shifted_value = lhs_value >> shift_amount
+            shifted_value = _ruby_shr(lhs_value, shift_amount)
             mask_len = min(lhs_width, shift_amount)
-            mask = ((1 << mask_len) - 1) << max(lhs_width - shift_amount, 0)
+            mask = (_ruby_shl(1, mask_len) - 1) << max(lhs_width - shift_amount, 0)
             return shifted_value | mask
 
         if op in ("&&", "||"):
@@ -397,15 +421,15 @@ class BinaryExpression(Node):
                 self.value_error("rhs value not known")
             return lhs_val | rhs_val
 
+        lhs_val = self.lhs.value(symtab)
+        rhs_val = self.rhs.value(symtab)
         if op in ("+", "`+"):
-            v = self.lhs.value(symtab) + self.rhs.value(symtab)
+            v = lhs_val + rhs_val
         elif op in ("-", "`-"):
-            v = self.lhs.value(symtab) - self.rhs.value(symtab)
+            v = lhs_val - rhs_val
         elif op in ("*", "`*"):
-            v = self.lhs.value(symtab) * self.rhs.value(symtab)
+            v = lhs_val * rhs_val
         elif op == "/":
-            lhs_val = self.lhs.value(symtab)
-            rhs_val = self.rhs.value(symtab)
             if rhs_val == 0:
                 # Ruby crashes here with an uncaught ZeroDivisionError (a
                 # confirmed Ruby bug; see doc/python-migration-bugfixes.md).
@@ -414,17 +438,15 @@ class BinaryExpression(Node):
                 self.value_error("Division by zero")
             v = lhs_val // rhs_val
         elif op == "%":
-            lhs_val = self.lhs.value(symtab)
-            rhs_val = self.rhs.value(symtab)
             if rhs_val == 0:
                 self.value_error("Division by zero")
             v = lhs_val % rhs_val
         elif op == "^":
-            v = self.lhs.value(symtab) ^ self.rhs.value(symtab)
+            v = lhs_val ^ rhs_val
         elif op == ">>":
-            v = self.lhs.value(symtab) >> self.rhs.value(symtab)
+            v = _ruby_shr(lhs_val, rhs_val)
         elif op in ("<<", "`<<"):
-            v = self.lhs.value(symtab) << self.rhs.value(symtab)
+            v = _ruby_shl(lhs_val, rhs_val)
         else:
             self.internal_error(f"Unhandled binary op {op!r}")
 

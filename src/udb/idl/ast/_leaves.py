@@ -54,20 +54,15 @@ class Id(Node):
             self.type_error(f"no symbol named '{self.name}'")
 
     def type(self, symtab: SymbolTable) -> Type:
-        cached = self._cache.get("_type_symtab")
-        if cached is not None:
-            return cached
+        # Not memoized: the same AST can be evaluated under different scopes.
         sym = symtab.get(self.name)
         if sym is None:
             self.type_error(f"Symbol '{self.name}' not found")
         if isinstance(sym, Type):
-            result = sym
-        elif isinstance(sym, Var):
-            result = sym.type
-        else:
-            self.internal_error("Unexpected object on the symbol table")
-        self._cache["_type_symtab"] = result
-        return result
+            return sym
+        if isinstance(sym, Var):
+            return sym.type
+        self.internal_error("Unexpected object on the symbol table")
 
     def value(self, symtab: SymbolTable) -> Any:
         var = symtab.get(self.name)

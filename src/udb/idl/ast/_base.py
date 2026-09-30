@@ -235,6 +235,16 @@ def _try_value(node: Node, symtab: SymbolTable) -> Any | None:
         return None
 
 
+def _ruby_shl(value: Any, amount: int) -> Any:
+    """``value << amount`` with Ruby's rule that a negative count shifts right."""
+    return value << amount if amount >= 0 else value >> -amount
+
+
+def _ruby_shr(value: Any, amount: int) -> Any:
+    """``value >> amount`` with Ruby's rule that a negative count shifts left."""
+    return value >> amount if amount >= 0 else value << -amount
+
+
 def _values_disjoint(a: Iterable[Any], b: Iterable[Any]) -> bool:
     """Whether no value in *a* equals any value in *b*. Mirrors Ruby's ``Array#intersection.empty?``.
 

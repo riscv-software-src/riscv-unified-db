@@ -438,3 +438,83 @@ def test_literals_yaml_self_consistency() -> None:
 
 def test_expressions_yaml_self_consistency() -> None:
     _run_expression_yaml_entries(_yaml_entries(IDLC_TEST_DIR / "expressions.yaml"))
+
+
+# --- Regressions from the slice 14 cross-family review ---------------------------------------
+
+
+def _eval(text: str, symtab: SymbolTable) -> tuple[str, Any]:
+    node = parser.parse_expression(text, label=EXPRESSION_LABEL)
+    node.type_check(symtab, strict=False)
+    return str(node.type(symtab)), node.value(symtab)
+
+
+def test_id_type_follows_the_current_scope() -> None:
+    # Ruby's IdAst#type never memoizes, so a shadowing binding changes the type of a reused AST.
+    node = parser.parse_expression("a + 1", label=EXPRESSION_LABEL)
+    symtab = SymbolTable(IdlEnvironment())
+    symtab.push(None)
+    symtab.add("a", Var("a", Type(TypeKind.BITS, width=2), 2))
+    assert (str(node.type(symtab)), node.value(symtab)) == ("Bits<2>", 3)
+    symtab.push(None)
+    symtab.add("a", Var("a", Type(TypeKind.BITS, width=8), 128))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert (str(node.type(symtab)), node.value(symtab)) == ("Bits<8>", 129)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # Ruby's Integer#<< and #>> reverse direction for a negative count.
+        ("$signed(8'd255) << $signed(8'd255)", -1),
+        ("$signed(8'd254) >> $signed(8'd255)", -4),
+        # Ruby's Integer#[] returns 0 for a negative bit index.
+        ("8'd255[$signed(8'd255)]", 0),
+        # Ruby's arithmetic-shift masking with a negative count, reproduced exactly.
+        ("$signed(8'd255) >>> $signed(8'd255)", -2),
+        ("8'd128 >>> $signed(8'd255)", -256),
+    ],
+)
+def test_negative_shift_amounts_follow_ruby(text: str, expected: int) -> None:
+    symtab = SymbolTable(IdlEnvironment())
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        assert _eval(text, symtab)[1] == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        *(
+            f"4'b10x1 {op} 4'd1"
+            for op in ["+", "-", "*", "/", "%", "^", ">>", ">>>", "<", ">", ">="]
+        ),
+        *(f"4'd1 {op} 4'b10x1" for op in ["+", "&", "|", "<", "<=", ">>>"]),
+    ],
+)
+def test_unknown_bit_operands_give_an_unknown_value(text: str) -> None:
+    # Ruby crashes on each of these (bug-log entry 31).
+    symtab = SymbolTable(IdlEnvironment())
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        with pytest.raises(IdlValueUnknown):
+            _eval(text, symtab)
+
+
+def test_shifting_unknown_bits_truncates_both_masks() -> None:
+    # Ruby crashes in Rvalue#truncate (bug-log entry 32).
+    symtab = SymbolTable(IdlEnvironment())
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        assert _eval("4'b10x1 << 4'd4", symtab)[1] == 0
+
+
+def test_unsized_unknown_bit_literal_evaluates_to_its_partial_value() -> None:
+    # Ruby crashes here (bug-log entry 29); Python returns the partially-known value, exactly as it
+    # does for the sized literal 4'b10x1.
+    symtab = SymbolTable(IdlEnvironment())
+    unsized = parser.parse_expression("'b10x1", label=EXPRESSION_LABEL)
+    sized = parser.parse_expression("4'b10x1", label=EXPRESSION_LABEL)
+    assert isinstance(unsized.value(symtab), UnknownLiteral)
+    assert unsized.value(symtab) == sized.value(symtab)

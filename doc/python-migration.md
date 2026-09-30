@@ -870,5 +870,12 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   array defaults in the type system, concatenation constness, division by zero (even
   when short-circuited), uppercase `X` literals reported `known`, unsized unknown-bit
   literals, and signed literals that never evaluate negative.
+- A GPT-family review, with about 1,100 generated Ruby/Python differential expressions,
+  found Python defects, all fixed with regressions: identifier types cached across scopes,
+  a crash comparing a CSR type with Bits, Python exceptions on negative shift counts and bit
+  indexes, and Python exceptions on operators with unknown-bit operands. It also found two
+  more Ruby crashes on unknown-bit operands, bug-log entries 31–32.
+- `udb.idl.ast` is a package of node-family modules, each under about 900 lines; imports
+  are unchanged.
 - Statements and functions, whole-configuration type checking, passes, and closing the
   Stage 3 `idl()` deferrals remain for branches 15–18 as planned in `doc/stage4-idl.md`.
