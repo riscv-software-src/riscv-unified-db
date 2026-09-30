@@ -70,7 +70,7 @@ struct NullSocModel {
   void write_device_32(uint64_t, uint32_t) {}
   void sync_read_after_write_device(bool, uint32_t) {}
   void sync_write_after_read_device(bool, uint32_t) {}
-  uint32_t read_seed() { return 0x2u << 30; }
+  uint32_t read_seed() { return 0b10u << 30; }
 };
 
 using TestHart = Rv64_Hart<NullSocModel>;

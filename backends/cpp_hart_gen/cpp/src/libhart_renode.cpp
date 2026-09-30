@@ -108,7 +108,7 @@ struct RenodeSocModel {
     // Always report ES16 (0b10) with fresh entropy in the low 16 bits.
     // Seeded deterministically so simulation runs are reproducible.
     static std::mt19937 gen{0x5EEDu};
-    return (0x2u << 30) | (gen() & 0xffffu);
+    return (0b10u << 30) | (gen() & 0xffffu);
   }
 };
 

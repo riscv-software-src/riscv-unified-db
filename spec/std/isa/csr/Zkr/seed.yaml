@@ -66,5 +66,5 @@ sw_read(): |
     }
   }
 
-    # A single poll returns both the status and the entropy it goes with.
-    return read_seed();
+  # A single poll returns both the status and the entropy it goes with.
+  return read_seed();
