@@ -11,7 +11,7 @@
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
 | Stage 3: versions, configurations, conditions, and solving | Complete locally, including IDL-backed queries; CI pending |
 | Stage 4: IDL compiler and semantic passes | Complete locally; corrected development-fork CI pending |
-| Stage 5: generators, templates, and document rendering | Pending |
+| Stage 5: generators, templates, and document rendering | In progress: retained-generator inventory and contracts |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
 The standard database is bundled in the `udb` Python distribution. Every
@@ -74,6 +74,7 @@ These are local branches until publication of the PR stack.
 | `migration/python-17-idl-passes` | `migration/python-16-idl-architecture` | Semantic analyses, AsciiDoc source generation, and hart/decode analyses |
 | `migration/python-18-idl-conditions` | `migration/python-17-idl-passes` | Symbolic IDL requirements, completed configured queries, and a small configuration-validation CLI |
 | `migration/python-19-cfg-diagnostics` | `migration/python-18-idl-conditions` | Captured-source explanations of configuration conflicts without changing solver results |
+| `migration/python-20-generator-contracts` | `migration/python-19-cfg-diagnostics` | Source-traced retained generator/consumer inventory and artifact acceptance contracts |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -455,6 +456,11 @@ code without constructing a full configured database.
   generated parser tool, compiler, Ruby, or system library on the target host.
 
 ## Stage 5: generators, templates, and document rendering
+
+The source-traced [generator and consumer inventory](stage5-generators.md) and
+[machine-readable registry](stage5-generators.json) track all retained families,
+including embedded configured prose, shared/dormant templates, repository authoring
+tools and deployed artifact routes. Pending entries are not migrated capabilities.
 
 ### Capability
 
