@@ -14,8 +14,11 @@
 | Stage 5: generators, templates, and document rendering | In progress: retained-generator inventory and contracts |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
-The standard database is bundled in the `udb` Python distribution. Every
-current generator and supported workflow remains in scope. Generators may use
+The standard database is bundled in the `udb` Python distribution. The
+[approved retention scope](stage5-generators.md#approved-retention-scope-2026-09-30)
+defines the supported generators and workflows after the maintainer's explicit
+scope reduction. Historical inventories below do not override those decisions.
+Retained generators may use
 documented extras such as `udb[docs]` or `udb[sim]` so that the default install
 does not carry every rendering and code-generation dependency. If a particular
 generator proves impractical to preserve, that is a scope decision for
@@ -458,9 +461,9 @@ code without constructing a full configured database.
 ## Stage 5: generators, templates, and document rendering
 
 The source-traced [generator and consumer inventory](stage5-generators.md) and
-[machine-readable registry](stage5-generators.json) track all retained families,
-including embedded configured prose, shared/dormant templates, repository authoring
-tools and deployed artifact routes. Pending entries are not migrated capabilities.
+[machine-readable registry](stage5-generators.json) track retained, replaced and
+retired families, including their consumers. Pending entries are not migrated
+capabilities, and approved retirements are not porting obligations.
 
 ### Capability
 
@@ -478,7 +481,8 @@ escaping or type rules.
 
 ### Generator decision list
 
-Every item below is retained unless maintainers explicitly approve a change:
+The list below reflects the approved scope reduction. The historical inventory
+also records retired products so their removal can be traced across consumers.
 
 All generation commands are installed through one or more documented extras;
 `udb[docs]` and `udb[sim]` below illustrate the major groups. The exact grouping
@@ -495,21 +499,25 @@ resolution, configuration, or IDL behind an extra.
 | Generic SystemVerilog output | Port existing Python generator onto public API | Output diff and syntax/lint check |
 | Go output | Port existing Python generator onto public API | Output diff and Go compile/test |
 | Instruction table | Python structured table builder | Canonical table equality |
-| ISA Explorer CSR, extension, and instruction browsers | Python data/table generation and non-ERB templates | DOM/data assertions and browser smoke tests |
-| ISA Explorer XLSX workbook | Python workbook library | Sheet names, cell values/types, formulas, and links |
 | Extension documentation and PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor rendering | Semantic AsciiDoc diff and external rendered smoke/golden checks |
-| ISA manual, including version/config variants | `udb[docs]`: Python generation and navigation templates; external rendering | Link check, semantic content diff, and external HTML smoke tests |
-| Configuration HTML documentation | `udb[docs]`: consolidate with manual source pipeline; external rendering | Page set, links, anchors, and content comparison |
-| Processor Requirements Manual PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor PDF | Source-content and external rendered PDF smoke/golden checks |
-| Instruction appendix AsciiDoc/PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor PDF | Existing golden plus external rendered artifact check |
-| Profile documents and profile-config generation | `udb[docs]`: Python document/config generation; external rendering | Current profile regression matrix |
-| Portfolio appendices/documents | `udb[docs]`: Python document generation; external rendering | Page/section and content comparison |
+| Strict profile configurations | Core Python configuration transformation and authoring | All retained profile configuration outputs and semantics |
 | C++ hart model and decode tree | `udb[sim]`: Python semantic passes and source templates | Generated C++ build/unit tests and RV32/RV64/vector suites |
-| External documentation renderer and links | Retain external Asciidoctor; port UDB-specific preprocessing to Python | Include/link/source mapping corpus |
+| C++ Bits tests | Native C++ randomized/property tests, no source generator | Preserve existing width/signedness/operation/edge-case coverage |
+| QC interrupt-controller CSR authoring | Python `.layout` mechanism | Complete generated CSR family and tracked-file drift |
+| UDB query/report/instruction matching | Native Python CLI capabilities | Query, formatted output and decoding behavior |
+| IDL command-line interface | Align with the Python IDL API | Parsing, evaluation and checking behavior, not Ruby parser quirks |
+| Configured prose and exception names | Python conversion if feasible; otherwise approved retirement | Exact configured output or explicit reported unsupported scope, never a Ruby fallback |
 | Schema documentation | Replace internal Ruby gem with Python generator | Versioned MDX equality and immutability checks |
 | IDL language documentation/highlighting | IDL syntax definitions and external document rendering | HTML build and representative token classes |
-| Indexer/Search ingestion | Keep JavaScript only where it is the deployed runtime; feed it Python-produced data | Index schema and query smoke tests |
-| UDB API documentation | Python API documentation | Installed-package import and docs link checks |
+| Pages landing and schema indexes | Retain independent Python publication helpers | Correct artifact/schema links and version history |
+| UDB API documentation | Python API reference | Installed-package import and docs link checks |
+
+Retire manual/config/appendix/profile-release/PRM documents, Explorer browsers
+and workbook, the profile-extension report and JSON-reference search index,
+floating-point stimulus generation, standalone CSR HTML fragments, and their
+obsolete shared helpers. Remove the old shared document framework but preserve
+instruction/CSR content within extension documents. No manual chapter resource
+bundle is required. Ruby type/gem metadata is removed with the Ruby cutover.
 
 Retain the official Asciidoctor rendering pipeline rather than choosing or
 implementing another renderer. Python owns document source, UDB-specific
@@ -522,8 +530,9 @@ capability; rendering them is a separately documented external capability.
 
 ### Acceptance criteria
 
-- Every row in the decision list has an owner, command, fixture, comparison
-  policy, and CI job; no generator disappears because its old task was deleted.
+- Every retained/replacement row has an owner, interface, fixture, comparison
+  policy, and CI job; approved retirement removes all obsolete consumers
+  coherently rather than leaving broken commands or stale publication routes.
 - Each generator consumes only documented Python APIs, not internal dictionaries
   or paths in a checkout.
 - Machine-readable output is deterministic and source output passes the target
@@ -568,6 +577,10 @@ Implement and cut over:
 - removal of gem release workflows, Gemfiles/lockfiles, Sorbet/Tapioca/YARD,
   Ruby coverage jobs, Rakefiles, gem sources, Treetop, ERB templates, and layout
   runtime requirements after their consumers have passed earlier gates.
+
+Approved retired products and their commands, tests/fixtures, build/CI jobs,
+publication routes and documentation are removed on explicit owning layers.
+Removing those obligations does not authorize weakening retained-feature tests.
 
 Delete compatibility shims after all in-repository consumers have migrated.
 Before deletion, use repository-wide searches plus CI tracing to find dynamic

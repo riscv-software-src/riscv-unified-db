@@ -1,6 +1,45 @@
 {
   "baseline": "f5a2099a",
-  "status": "inventory-only; all planned gates pending",
+  "status": "maintainer-approved retention scope; implementation and retirement gates pending",
+  "scope_decisions": {
+    "date": "2026-09-30",
+    "retain_other_families": true,
+    "retired": [
+      "isa-manual-adoc-antora",
+      "isa-manual-html",
+      "config-doc-adoc",
+      "config-doc-html",
+      "instruction-appendix-adoc",
+      "instruction-appendix-pdf",
+      "profile-release-doc",
+      "prm-adoc",
+      "prm-pdf",
+      "isa-explorer-ext-browser",
+      "isa-explorer-inst-browser",
+      "isa-explorer-csr-browser",
+      "isa-explorer-xlsx",
+      "profile-extensions-report",
+      "indexer-search",
+      "fp-floating-stimuli",
+      "manual-chapter-metadata",
+      "csr-description-html",
+      "portfolio-appendices",
+      "prm-external-document-preprocessor",
+      "ruby-gem-typing-metadata"
+    ],
+    "replacements": {
+      "udb-api-doc": "Python API reference, not Ruby YARD documentation.",
+      "idl-cli-compile-eval": "Align with the new Python IDL interface rather than reproducing the Ruby CLI.",
+      "qc-mclic-csr-authoring": "Use the existing Python .layout authoring mechanism; no additional standalone authoring CLI.",
+      "cpp-test-bits-source": "Replace source generation with native C++ randomized/property tests, preserving coverage.",
+      "configured-prose-interpolation": "Implement in Python if feasible; otherwise retirement is authorized. No Ruby fallback or silent loss of required output.",
+      "shared-csr-instruction-mmr-asciidoc": "Retire the old shared framework and obsolete MMR/manual/PRM/portfolio pieces; preserve instruction/CSR content within retained extension documents."
+    },
+    "retirement_contract": "Remove retired code, entry points, CI/build/publication consumers, fixtures and documentation coherently on owning layers. Historical family entries below remain audit evidence, not porting obligations for retired outputs.",
+    "retained_document_products": ["extension-adoc", "extension-pdf"],
+    "manual_chapter_packaging": "No longer required after ISA manual retirement.",
+    "cli_policy": "Retain UDB query/report/instruction-matching capabilities; final Python command spelling remains a separate design decision."
+  },
   "families": [
     {
       "id": "qc-mclic-csr-authoring",

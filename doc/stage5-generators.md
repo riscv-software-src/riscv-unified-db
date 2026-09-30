@@ -7,14 +7,43 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 
 Status: **inventory/contracts only**; all proposed migration gates below are **pending**, not implemented. Baseline: accepted Stage 4 `f5a2099a`. This report inventories first-party generators and callers; `ext/` third-party trees and generated `gen/` output are not migration credit. Stage 1–4 Python foundations already exist (packaged data, resolution/schema/serialization/layout, configurations/conditions, IDL compiler/semantic passes). Stage 5 output owners and Stage 6 invocation cutovers remain pending, including scripts that currently wrap Ruby. Preserve every legacy output/consumer unless a maintainer explicitly approves a scope reduction. `.adoc` source must be generated offline by installed Python; **only already-installed official external Asciidoctor/asciidoctor-pdf rendering** may use Ruby.
 
+## Approved retention scope (2026-09-30)
+
+This section and the registry's `scope_decisions` override the historical
+preserve-all inventory below. Approval to retire a product is not a claim that
+its source and consumers have already been removed.
+
+| Disposition | Families/capabilities |
+| --- | --- |
+| Retain | C/SV configuration headers, generic C/SV/Go outputs, C++ hart/decode source, extension AsciiDoc/PDF, instruction table, UDB query/report/instruction-matching CLI, raw/resolved architecture and schemas, Python layouts, strict profile configs, architecture-test scaffolding, schema MDX, Pages landing/schema indexes, IDL highlighting. |
+| Retire | ISA manual source/HTML, configuration-document source/HTML, instruction appendix source/PDF, profile-release documents, PRM source/PDF, all three Explorer browsers and XLSX, profile-extension report, JSON-reference search index, floating-point stimulus generator, manual title metadata, CSR HTML-fragment API, portfolio appendices, PRM external-document preprocessing, Ruby type/gem metadata. |
+| Replace | Ruby API docs with a Python API reference; IDLC CLI with an interface aligned to Python IDL; QC CSR-family authoring with Python `.layout` files; generated C++ Bits source tests with native C++ randomized/property tests. |
+| Conditional Python conversion | Configuration-sensitive prose and exception-name expansion: implement in Python if feasible; otherwise retirement is authorized. Never retain Ruby as a fallback or silently emit unevaluated/wrong configuration text. |
+| Retire framework, preserve required content | Remove the old shared document-template framework and obsolete MMR/manual/PRM/portfolio pieces; instruction and CSR content remains part of retained extension documents. |
+
+The historical registry keeps all 46 families so deletion is auditable:
+21 are retired, six have explicit replacement/conversion contracts, and 19
+remain retained without that special disposition. Retired-family golden/installed
+generation obligations below are superseded by coherent removal of their code,
+CLI/build/CI/publication consumers, fixtures and documentation. Do not weaken
+tests for retained capabilities. Native C++ property/randomized tests must
+preserve the Bits coverage previously supplied by generated tests.
+
+ISA-manual chapter packaging is no longer a decision or distribution dependency.
+Extension PDF rendering still uses the official external Asciidoctor toolchain.
+Schema/Python API documentation and publication indexes remain retained.
+Query/report/disassembly capabilities remain, but final Python CLI spelling
+and compatibility aliases have not been approved by this scope decision.
+
 ## Inventory method and acceptance
 
 Each family below receives its legacy command, implementation/templates, input/config/version matrix, output paths and consumers, fixture and comparison policy, prospective Python API/CLI layer above Stage 4, and pending installed/CI gate. An apparent Python script is **not migrated** if it shells a Ruby script or requires repository paths. All installed generation gates use offline wheels/sdists outside the checkout, no repository, network, or UDB-owned native toolchain. Separate repository gates may compile generated C++/C/Go/SV and separately render documents with external Asciidoctor.
 
-The machine-readable [generator registry](stage5-generators.json) retains 46
+The machine-readable [generator registry](stage5-generators.json) records 46
 families and eight workflow-consumer groups, including dormant templates and
-repository-only authoring tools. Its pending gates are obligations, not claims
-of implemented tests. Capability contracts must add executable artifact oracles
+repository-only authoring tools. Gates apply to retained capabilities and their
+approved replacements, not retired products. Pending gates are not claims of
+implemented tests. Capability contracts must add executable artifact oracles
 and exact commands before cutover.
 
 ## Owning-layer sequence
@@ -27,12 +56,12 @@ Subsequent layers follow dependency order, with one separately reviewable
 capability per layer; names/numbers are assigned when created, not speculative
 branches. Shared configured-prose rendering and encoding descriptors precede
 generic C/SV/Go output and instruction tables. Profile configuration conversion
-and shared document components precede Explorer/workbooks and portfolio/profile
-documents. Captured includes/assets and AsciiDoc components precede extension,
-manual/config, PRM and appendix documents. Schema/API documentation and index
-producers retain separate owners. C++ source emission and static resources build
-on accepted IDL passes, with generated-code acceptance before cutover. Authoring
-tools and all eight workflow groups remain explicitly in scope.
+remains independent of retired profile documents. Extension-document-owned
+components/assets precede extension AsciiDoc/PDF. Schema/Python API documentation
+and retained publication indexes have separate owners. C++ source emission and
+static resources build on accepted IDL passes, with generated-code acceptance
+and native C++ Bits randomized/property coverage before cutover. Authoring tools
+and the retained portions of all eight workflow groups remain in scope.
 
 Stage 6 CLI/task orchestration, setup/quality and release consolidation have
 separate owners above the accepted capabilities. Ruby deletion is a final layer,
@@ -40,7 +69,10 @@ blocked until every retained consumer is covered. Package-index publication
 requires the separate name/ownership decision; fork branch publication is not
 authorization to publish a distribution.
 
-## Generator contracts
+## Historical generator contracts
+
+The source traces below describe the original inventory. Apply the approved
+retention scope above before treating any proposed API, output or gate as work.
 
 ### Retained surfaces identified by independent contract review
 
