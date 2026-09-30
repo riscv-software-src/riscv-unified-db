@@ -13,7 +13,9 @@
         }
       },
       "id": "prune_forced_type",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? 4'b0 : 5'b1"
     },
@@ -30,7 +32,9 @@
         }
       },
       "id": "prune_forced_type_nested",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? 4'b0 : (5'b1 * 1)"
     },
@@ -47,7 +51,9 @@
         }
       },
       "id": "prune_forced_type_nested_multiply",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 * 1"
     },
@@ -64,7 +70,9 @@
         }
       },
       "id": "prune_forced_type_nested_divide",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 / 1"
     },
@@ -81,7 +89,9 @@
         }
       },
       "id": "prune_forced_type_nested_add",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 + 1"
     },
@@ -98,7 +108,9 @@
         }
       },
       "id": "prune_forced_type_nested_subtract",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 - 1"
     },
@@ -115,7 +127,9 @@
         }
       },
       "id": "prune_forced_type_nested_and",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 & 1"
     },
@@ -132,7 +146,9 @@
         }
       },
       "id": "prune_forced_type_nested_or",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 5'b0 : 4'b1 | 1"
     },
@@ -149,7 +165,9 @@
         }
       },
       "id": "prune_forced_type_negative_value",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "false ? 4'sb0 : -(8'sd1)"
     },
@@ -166,11 +184,16 @@
         }
       },
       "id": "prune_function_body_negative_return_value",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "signed Bits<64>",
       "root": "function_body",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "if (false) { return 1; } return -(64'sd1);"
     },
@@ -187,7 +210,9 @@
         }
       },
       "id": "prune_ternary",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "(true) ? {1'b1, {31{1'b0}}} : {1'b1, {63{1'b0}}}"
     },
@@ -204,7 +229,9 @@
         }
       },
       "id": "prune_ternary_unknown_bits",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "(true) ? {1'b1, {31{1'bx}}} : {1'b1, {63{1'b0}}}"
     },
@@ -221,7 +248,9 @@
         }
       },
       "id": "prune_nested_ternary_type_coercion",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (false ? 8'b0 : 16'b1) : 32'd2"
     },
@@ -238,7 +267,9 @@
         }
       },
       "id": "prune_complex_concatenation",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? {1'b1, {7{1'b0}}} : {1'b0, {15{1'b1}}}"
     },
@@ -255,7 +286,9 @@
         }
       },
       "id": "prune_arithmetic_known_values",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (5 `+ 3) : (10 - 2)"
     },
@@ -272,7 +305,9 @@
         }
       },
       "id": "prune_logical_operations",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (true && false) : (true || false)"
     },
@@ -289,7 +324,9 @@
         }
       },
       "id": "prune_bitwise_operations",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (8'hFF & 8'h0F) : (8'hAA | 8'h55)"
     },
@@ -306,7 +343,9 @@
         }
       },
       "id": "prune_shift_operations",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (8'h01 << 3) : (8'h80 >> 3)"
     },
@@ -323,7 +362,9 @@
         }
       },
       "id": "prune_comparison_operations",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (5 > 3) : (2 < 1)"
     },
@@ -340,7 +381,9 @@
         }
       },
       "id": "prune_nested_if_statements",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "text": "if (true) { if (false) { return 1; } else { return 2; } }"
@@ -358,7 +401,9 @@
         }
       },
       "id": "prune_unknown_condition_preserved",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "setup": {
         "vars": [
@@ -383,7 +428,9 @@
         }
       },
       "id": "prune_csr_known_field",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -444,7 +491,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "if (CSR[mockcsr].ONE == 1) { return 1; }"
     },
@@ -461,7 +511,9 @@
         }
       },
       "id": "prune_csr_unknown_field",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -522,7 +574,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "if (CSR[mockcsr].UNKNOWN == 1) { return 1; }"
     },
@@ -539,7 +594,9 @@
         }
       },
       "id": "prune_csr_field_assignment",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -600,7 +657,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "CSR[mockcsr].UNKNOWN = CSR[mockcsr].ONE;"
     },
@@ -617,7 +677,9 @@
         }
       },
       "id": "prune_unknown_csr_bits_cast",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -678,7 +740,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> tmp = $bits(CSR[mockcsr]);"
     },
@@ -695,7 +760,9 @@
         }
       },
       "id": "prune_known_csr_bits_cast",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -756,7 +823,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> tmp = $bits(CSR[mockcsr2]);"
     },
@@ -773,7 +843,9 @@
         }
       },
       "id": "prune_multiple_known_csr_fields",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -834,7 +906,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "if (CSR[testcsr].FIELD1 == 1 && CSR[testcsr].FIELD2 == 2) { return 1; }"
     },
@@ -851,7 +926,9 @@
         }
       },
       "id": "prune_preserves_unknown_csr_field",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -912,7 +989,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "if (CSR[testcsr].FIELD3 == 1) { return 1; }"
     },
@@ -929,7 +1009,9 @@
         }
       },
       "id": "prune_type_width_mismatch",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? 4'b1111 : 8'b00000000"
     },
@@ -946,7 +1028,9 @@
         }
       },
       "id": "prune_complex_expression_tree",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "root": "expression",
       "text": "true ? (false ? 1 : (true ? 2 : 3)) : 4"
     },
@@ -963,7 +1047,9 @@
         }
       },
       "id": "prune_if_body_does_not_leak_assignments",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1024,7 +1110,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> a = 10; if (CSR[mockcsr].UNKNOWN == 1) { a = 0xdeadbeef; } Bits<32> result = a;"
     },
@@ -1041,7 +1130,9 @@
         }
       },
       "id": "prune_conditional_statement_does_not_leak_assignment",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1102,7 +1193,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> a = 10; a = 0xdeadbeef if (CSR[mockcsr].UNKNOWN == 1); Bits<32> result = a;"
     },
@@ -1119,7 +1213,9 @@
         }
       },
       "id": "prune_for_loop_does_not_leak_assignments",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1180,7 +1276,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> a = 10; for (Bits<8> i = 0; i < 4; i++) { a = i; } Bits<32> result = a;"
     },
@@ -1197,7 +1296,9 @@
         }
       },
       "id": "prune_ary_range_assignment_does_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1258,7 +1359,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> vec = 0; if (CSR[mockcsr].UNKNOWN == 1) { vec[7:0] = 0xff; } Bits<32> result = vec;"
     },
@@ -1275,7 +1379,9 @@
         }
       },
       "id": "prune_ary_range_assignment_execute_updates_value",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1336,7 +1442,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> vec = 0x12340000; if (CSR[mockcsr].ONE == 1) { vec[7:0] = 0xab; } Bits<32> result = vec + 0;"
     },
@@ -1353,7 +1462,9 @@
         }
       },
       "id": "prune_post_increment_does_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1414,7 +1525,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> result = 0; for (Bits<8> i = 0; i < 4; i++) { result = i; } Bits<32> final = result;"
     },
@@ -1431,7 +1545,9 @@
         }
       },
       "id": "prune_post_decrement_does_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1492,7 +1608,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> result = 0; for (Bits<8> i = 3; i > 0; i--) { result = i; } Bits<32> final = result;"
     },
@@ -1509,7 +1628,9 @@
         }
       },
       "id": "prune_multiple_assignments_unknown_branch_do_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1570,7 +1691,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> a = 1; Bits<32> b = 2; if (CSR[mockcsr].UNKNOWN == 1) { a = 10; b = 20; } Bits<32> result_a = a; Bits<32> result_b = b;"
     },
@@ -1587,7 +1711,9 @@
         }
       },
       "id": "prune_multiple_conditional_modifiers_do_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1648,7 +1774,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> result = 0; result = 0x1111 if (CSR[mockcsr].UNKNOWN == 1); result = 0x2222 if (CSR[mockcsr].UNKNOWN == 2); Bits<32> final = result;"
     },
@@ -1665,7 +1794,9 @@
         }
       },
       "id": "prune_for_loop_nested_unknown_if_does_not_leak",
-      "passes": ["prune"],
+      "passes": [
+        "prune"
+      ],
       "return_type": "Bits<32>",
       "root": "function_body",
       "setup": {
@@ -1726,7 +1857,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "text": "Bits<32> result = 0; if (CSR[mockcsr].UNKNOWN == 1) { for (Bits<8> i = 0; i < 4; i++) { result = 1; } } Bits<32> final = result;"
     },
@@ -1735,15 +1869,22 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["b"]
+            "value": [
+              "b"
+            ]
           }
         }
       },
       "id": "reachable_direct_call",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "a",
       "text": "%version: 1.0\n\nfunction b { description { b } body { } }\nfunction a { description { a } body { b(); } }\n"
@@ -1753,15 +1894,24 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["b", "c", "d"]
+            "value": [
+              "b",
+              "c",
+              "d"
+            ]
           }
         }
       },
       "id": "reachable_transitive_closure",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "a",
       "text": "%version: 1.0\n\nfunction d { description { d } body { } }\nfunction c { description { c } body { d(); } }\nfunction b { description { b } body { c(); } }\nfunction a { description { a } body { b(); } }\n"
@@ -1771,15 +1921,24 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["b", "c", "d"]
+            "value": [
+              "b",
+              "c",
+              "d"
+            ]
           }
         }
       },
       "id": "reachable_diamond_unique",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "a",
       "text": "%version: 1.0\n\nfunction d { description { d } body { } }\nfunction b { description { b } body { d(); } }\nfunction c { description { c } body { d(); } }\nfunction a { description { a } body { b(); c(); } }\n"
@@ -1789,15 +1948,22 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["b"]
+            "value": [
+              "b"
+            ]
           }
         }
       },
       "id": "reachable_excludes_uncalled_function",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "a",
       "text": "%version: 1.0\n\nfunction b { description { b } body { } }\nfunction c { description { c } body { } }\nfunction a { description { a } body { b(); } }\n"
@@ -1812,10 +1978,15 @@
         }
       },
       "id": "reachable_empty_body",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "empty_fn",
       "text": "%version: 1.0\nfunction empty_fn { description { empty } body { } }"
@@ -1825,15 +1996,23 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["dispatcher", "go_left"]
+            "value": [
+              "dispatcher",
+              "go_left"
+            ]
           }
         }
       },
       "id": "reachable_known_argument_path",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "entry",
       "text": "%version: 1.0\n\nenum Branch { Left 0 Right 1 }\nfunction go_left { description { left } body { } }\nfunction go_right { description { right } body { } }\nfunction dispatcher {\n  arguments Branch branch\n  description { dispatch }\n  body {\n    if (branch == Branch::Left) { go_left(); } else { go_right(); }\n  }\n}\nfunction entry {\n  description { entry }\n  body { dispatcher(Branch::Left); }\n}\n"
@@ -1843,15 +2022,23 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["go_left", "go_right"]
+            "value": [
+              "go_left",
+              "go_right"
+            ]
           }
         }
       },
       "id": "reachable_unknown_path_includes_both",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "dispatcher",
       "text": "%version: 1.0\n\nBits<64> unknown_val;\nfunction go_left { description { left } body { } }\nfunction go_right { description { right } body { } }\nfunction dispatcher {\n  description { dispatch }\n  body {\n    if (unknown_val == 1) { go_left(); } else { go_right(); }\n  }\n}\n"
@@ -1861,15 +2048,22 @@
         "passes": {
           "reachable_functions": {
             "ok": true,
-            "value": ["my_builtin"]
+            "value": [
+              "my_builtin"
+            ]
           }
         }
       },
       "id": "reachable_builtin_included",
-      "passes": ["reachable_functions"],
+      "passes": [
+        "reachable_functions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "caller",
       "text": "%version: 1.0\n\nbuiltin function my_builtin { description { builtin } }\nfunction caller { description { caller } body { my_builtin(); } }\n"
@@ -1880,19 +2074,33 @@
           "reachable_functions_shared": {
             "ok": true,
             "value": {
-              "caller1": ["leaf", "middle"],
-              "caller2": ["leaf", "middle"]
+              "caller1": [
+                "leaf",
+                "middle"
+              ],
+              "caller2": [
+                "leaf",
+                "middle"
+              ]
             }
           }
         }
       },
       "id": "reachable_shared_cache_transitive",
-      "passes": ["reachable_functions_shared"],
+      "passes": [
+        "reachable_functions_shared"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
-      "shared_targets": ["caller1", "caller2"],
+      "shared_targets": [
+        "caller1",
+        "caller2"
+      ],
       "text": "\n%version: 1.0\nfunction leaf { description { leaf } body { } }\nfunction middle { description { middle } body { leaf(); } }\nfunction caller1 { description { caller1 } body { middle(); } }\nfunction caller2 { description { caller2 } body { middle(); } }\n"
     },
     {
@@ -1901,17 +2109,24 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [1],
+              "codes": [
+                1
+              ],
               "mask": 2
             }
           }
         }
       },
       "id": "exceptions_transitive_known_argument",
-      "passes": ["reachable_exceptions"],
+      "passes": [
+        "reachable_exceptions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "test",
       "text": "%version: 1.0\n\nenum Choice { A 0 B 1 }\nenum ExceptionCode { ACode 0 BCode 1 CCode 4 }\nbuiltin function raise {\n  arguments ExceptionCode code\n  description { raise }\n}\nbuiltin function raise_precise {\n  arguments ExceptionCode code\n  description { raise precise }\n}\n\nfunction nested_choose {\n  arguments Choice choice\n  description { nested }\n  body {\n    if (choice == Choice::A) {\n      raise(ExceptionCode::ACode);\n    } else {\n      raise(ExceptionCode::BCode);\n    }\n  }\n}\nfunction choose {\n  arguments Choice choice\n  description { choose }\n  body { nested_choose(choice); }\n}\nfunction test { description { test } body { choose(Choice::B); } }\n"
@@ -1922,17 +2137,24 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [1],
+              "codes": [
+                1
+              ],
               "mask": 2
             }
           }
         }
       },
       "id": "exceptions_known_path_under_unknown_path",
-      "passes": ["reachable_exceptions"],
+      "passes": [
+        "reachable_exceptions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "test",
       "text": "%version: 1.0\n\nenum Choice { A 0 B 1 }\nenum ExceptionCode { ACode 0 BCode 1 CCode 4 }\nbuiltin function raise {\n  arguments ExceptionCode code\n  description { raise }\n}\nbuiltin function raise_precise {\n  arguments ExceptionCode code\n  description { raise precise }\n}\n\nBits<64> unknown;\nfunction choose {\n  arguments Choice choice\n  description { choose }\n  body {\n    if (unknown == 1) {\n      if (choice == Choice::A) {\n        raise(ExceptionCode::ACode);\n      } else {\n        raise(ExceptionCode::BCode);\n      }\n    }\n  }\n}\nfunction test { description { test } body { choose(Choice::B); } }\n"
@@ -1943,17 +2165,25 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [0, 4],
+              "codes": [
+                0,
+                4
+              ],
               "mask": 17
             }
           }
         }
       },
       "id": "exceptions_unknown_branch_union",
-      "passes": ["reachable_exceptions"],
+      "passes": [
+        "reachable_exceptions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "test",
       "text": "%version: 1.0\n\nenum Choice { A 0 B 1 }\nenum ExceptionCode { ACode 0 BCode 1 CCode 4 }\nbuiltin function raise {\n  arguments ExceptionCode code\n  description { raise }\n}\nbuiltin function raise_precise {\n  arguments ExceptionCode code\n  description { raise precise }\n}\n\nBits<64> unknown;\nfunction test {\n  description { test }\n  body {\n    if (unknown == 0) {\n      raise(ExceptionCode::ACode);\n    } else {\n      raise_precise(ExceptionCode::CCode);\n    }\n  }\n}\n"
@@ -1971,10 +2201,15 @@
         }
       },
       "id": "exceptions_empty_body",
-      "passes": ["reachable_exceptions"],
+      "passes": [
+        "reachable_exceptions"
+      ],
       "root": "isa",
       "setup": {
-        "possible_xlens": [32, 64]
+        "possible_xlens": [
+          32,
+          64
+        ]
       },
       "target": "test",
       "text": "%version: 1.0\n\nenum Choice { A 0 B 1 }\nenum ExceptionCode { ACode 0 BCode 1 CCode 4 }\nbuiltin function raise {\n  arguments ExceptionCode code\n  description { raise }\n}\nbuiltin function raise_precise {\n  arguments ExceptionCode code\n  description { raise precise }\n}\nfunction test { description { test } body { } }"
@@ -1994,11 +2229,15 @@
         }
       },
       "id": "source_register_f_known_index",
-      "passes": ["source_registers"],
+      "passes": [
+        "source_registers"
+      ],
       "root": "expression",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2054,12 +2293,16 @@
         }
       },
       "id": "destination_register_f_known_index",
-      "passes": ["destination_registers"],
+      "passes": [
+        "destination_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2115,11 +2358,15 @@
         }
       },
       "id": "source_register_x_known_index",
-      "passes": ["source_registers"],
+      "passes": [
+        "source_registers"
+      ],
       "root": "expression",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2179,12 +2426,16 @@
         }
       },
       "id": "register_reads_are_unique",
-      "passes": ["source_registers"],
+      "passes": [
+        "source_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2240,12 +2491,16 @@
         }
       },
       "id": "destination_register_nested_bit_write",
-      "passes": ["destination_registers"],
+      "passes": [
+        "destination_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2301,12 +2556,16 @@
         }
       },
       "id": "destination_register_nested_range_write",
-      "passes": ["destination_registers"],
+      "passes": [
+        "destination_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2358,11 +2617,15 @@
         }
       },
       "id": "source_register_unknown_index",
-      "passes": ["source_registers"],
+      "passes": [
+        "source_registers"
+      ],
       "root": "expression",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2414,12 +2677,16 @@
         }
       },
       "id": "destination_register_unknown_index",
-      "passes": ["destination_registers"],
+      "passes": [
+        "destination_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2474,12 +2741,17 @@
         }
       },
       "id": "local_array_is_not_register_file",
-      "passes": ["source_registers", "destination_registers"],
+      "passes": [
+        "source_registers",
+        "destination_registers"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
         "mxlen": 64,
-        "possible_xlens": [64],
+        "possible_xlens": [
+          64
+        ],
         "register_files": [
           {
             "count": 32,
@@ -2525,12 +2797,16 @@
         "passes": {
           "referenced_csrs": {
             "ok": true,
-            "value": ["mockcsr"]
+            "value": [
+              "mockcsr"
+            ]
           }
         }
       },
       "id": "referenced_csr_read",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "root": "expression",
       "setup": {
         "csrs": [
@@ -2590,7 +2866,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -2605,12 +2884,16 @@
         "passes": {
           "referenced_csrs": {
             "ok": true,
-            "value": ["mockcsr"]
+            "value": [
+              "mockcsr"
+            ]
           }
         }
       },
       "id": "referenced_csr_field_read",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "root": "expression",
       "setup": {
         "csrs": [
@@ -2670,7 +2953,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -2685,12 +2971,16 @@
         "passes": {
           "referenced_csrs": {
             "ok": true,
-            "value": ["mockcsr"]
+            "value": [
+              "mockcsr"
+            ]
           }
         }
       },
       "id": "referenced_csr_field_write",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
@@ -2751,7 +3041,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -2766,12 +3059,16 @@
         "passes": {
           "referenced_csrs": {
             "ok": true,
-            "value": ["mockcsr"]
+            "value": [
+              "mockcsr"
+            ]
           }
         }
       },
       "id": "referenced_csr_software_write",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
@@ -2832,7 +3129,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -2847,12 +3147,17 @@
         "passes": {
           "referenced_csrs": {
             "ok": true,
-            "value": ["mockcsr", "testcsr"]
+            "value": [
+              "mockcsr",
+              "testcsr"
+            ]
           }
         }
       },
       "id": "referenced_csrs_unique_sorted",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
@@ -2913,7 +3218,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -2933,7 +3241,9 @@
         }
       },
       "id": "no_referenced_csrs",
-      "passes": ["referenced_csrs"],
+      "passes": [
+        "referenced_csrs"
+      ],
       "return_type": "void",
       "root": "function_body",
       "setup": {
@@ -2994,7 +3304,10 @@
             "name": "testcsr"
           }
         ],
-        "possible_xlens": [32, 64],
+        "possible_xlens": [
+          32,
+          64
+        ],
         "vars": [
           {
             "name": "value",
@@ -3014,7 +3327,9 @@
         }
       },
       "id": "return_values_empty",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
@@ -3054,7 +3369,9 @@
         }
       },
       "id": "return_values_direct",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
@@ -3099,14 +3416,18 @@
         }
       },
       "id": "return_values_if_without_else",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
             "ok": true,
             "value": [
               {
-                "conditions": ["a"],
+                "conditions": [
+                  "a"
+                ],
                 "expression": "1"
               }
             ]
@@ -3144,18 +3465,24 @@
         }
       },
       "id": "return_values_if_else",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
             "ok": true,
             "value": [
               {
-                "conditions": ["a"],
+                "conditions": [
+                  "a"
+                ],
                 "expression": "1"
               },
               {
-                "conditions": ["!a"],
+                "conditions": [
+                  "!a"
+                ],
                 "expression": "2"
               }
             ]
@@ -3193,22 +3520,32 @@
         }
       },
       "id": "return_values_else_if",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
             "ok": true,
             "value": [
               {
-                "conditions": ["a"],
+                "conditions": [
+                  "a"
+                ],
                 "expression": "1"
               },
               {
-                "conditions": ["!a", "b"],
+                "conditions": [
+                  "!a",
+                  "b"
+                ],
                 "expression": "2"
               },
               {
-                "conditions": ["!a", "!b"],
+                "conditions": [
+                  "!a",
+                  "!b"
+                ],
                 "expression": "3"
               }
             ]
@@ -3246,22 +3583,32 @@
         }
       },
       "id": "return_values_nested_conditions",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
             "ok": true,
             "value": [
               {
-                "conditions": ["a", "b"],
+                "conditions": [
+                  "a",
+                  "b"
+                ],
                 "expression": "1"
               },
               {
-                "conditions": ["a", "!b"],
+                "conditions": [
+                  "a",
+                  "!b"
+                ],
                 "expression": "2"
               },
               {
-                "conditions": ["!a"],
+                "conditions": [
+                  "!a"
+                ],
                 "expression": "3"
               }
             ]
@@ -3299,18 +3646,24 @@
         }
       },
       "id": "return_values_ternary",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
             "ok": true,
             "value": [
               {
-                "conditions": ["a"],
+                "conditions": [
+                  "a"
+                ],
                 "expression": "1"
               },
               {
-                "conditions": ["!a"],
+                "conditions": [
+                  "!a"
+                ],
                 "expression": "2"
               }
             ]
@@ -3348,7 +3701,9 @@
         }
       },
       "id": "return_values_sequential",
-      "passes": ["return_values"],
+      "passes": [
+        "return_values"
+      ],
       "python_expect": {
         "passes": {
           "return_values": {
@@ -3359,7 +3714,9 @@
                 "expression": "1"
               },
               {
-                "conditions": ["c"],
+                "conditions": [
+                  "c"
+                ],
                 "expression": "2"
               }
             ]
@@ -3396,7 +3753,9 @@
         }
       },
       "id": "adoc_integer",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "8'hff"
     },
@@ -3410,7 +3769,9 @@
         }
       },
       "id": "adoc_boolean",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "true"
     },
@@ -3424,7 +3785,9 @@
         }
       },
       "id": "adoc_string",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "\"quoted\""
     },
@@ -3438,7 +3801,9 @@
         }
       },
       "id": "adoc_binary_escaping",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "a + b `+ c"
     },
@@ -3452,7 +3817,9 @@
         }
       },
       "id": "adoc_unary",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "!a"
     },
@@ -3466,7 +3833,9 @@
         }
       },
       "id": "adoc_parentheses",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "(a + b)"
     },
@@ -3480,7 +3849,9 @@
         }
       },
       "id": "adoc_ternary",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "a == 1 ? b : c"
     },
@@ -3494,7 +3865,9 @@
         }
       },
       "id": "adoc_concatenation_replication",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "{a, {3{b}}}"
     },
@@ -3508,7 +3881,9 @@
         }
       },
       "id": "adoc_bits_cast",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "$bits(a)"
     },
@@ -3522,7 +3897,9 @@
         }
       },
       "id": "adoc_signed_cast",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "$signed(a)"
     },
@@ -3536,7 +3913,9 @@
         }
       },
       "id": "adoc_array_builtins",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "$array_includes?(values, $array_size(values))"
     },
@@ -3550,7 +3929,9 @@
         }
       },
       "id": "adoc_enum_reference",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "Mode::Machine"
     },
@@ -3564,7 +3945,9 @@
         }
       },
       "id": "adoc_function_call_link",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "expression",
       "text": "helper(a, 2)"
     },
@@ -3578,7 +3961,9 @@
         }
       },
       "id": "adoc_csr_links",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": "Bits<32> a = $bits(CSR[mstatus]); Bits<1> b = CSR[mstatus].MIE; CSR[mstatus].MIE = b; CSR[mstatus].sw_write(a);"
     },
@@ -3592,7 +3977,9 @@
         }
       },
       "id": "adoc_declarations_assignments",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": "Bits<8> a; Bits<8> b = 1; Bits<8> values[4]; a = b; values[2] = a; values[1][3:0] = 4'hf; $pc = a;"
     },
@@ -3606,7 +3993,9 @@
         }
       },
       "id": "adoc_if_else",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": "if (a) { b = 1; } else if (c) { b = 2; } else { b = 3; }"
     },
@@ -3620,7 +4009,9 @@
         }
       },
       "id": "adoc_conditional_statements",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": "b = 1 if (a); return b if (c);"
     },
@@ -3634,7 +4025,9 @@
         }
       },
       "id": "adoc_for_loop",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": "for (Bits<8> i = 0; i < 4; i++) { values[i] = i; }"
     },
@@ -3649,7 +4042,9 @@
         }
       },
       "id": "adoc_multi_return_and_assignment",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "python_expect": {
         "passes": {
           "adoc": {
@@ -3671,7 +4066,9 @@
         }
       },
       "id": "adoc_empty_body",
-      "passes": ["adoc"],
+      "passes": [
+        "adoc"
+      ],
       "root": "function_body_syntax",
       "text": ""
     },
@@ -3685,7 +4082,9 @@
         }
       },
       "id": "option_adoc_if_else",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "if (a == 1) { return 2; } else { return 3; }"
     },
@@ -3699,7 +4098,9 @@
         }
       },
       "id": "option_adoc_else_if",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "if (a) { return true; } else if (b) { return false; } else { return c; }"
     },
@@ -3713,7 +4114,9 @@
         }
       },
       "id": "option_adoc_ternary_binary",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "return (a == 1) ? 2 : 3;"
     },
@@ -3727,7 +4130,9 @@
         }
       },
       "id": "option_adoc_ternary_identifier",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "return a ? 2 : 3;"
     },
@@ -3741,7 +4146,9 @@
         }
       },
       "id": "option_adoc_function_call",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "helper(a);"
     },
@@ -3755,7 +4162,9 @@
         }
       },
       "id": "option_adoc_undefined_legal",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "return 36893488147419103232;"
     },
@@ -3769,7 +4178,9 @@
         }
       },
       "id": "option_adoc_undefined_legal_deterministic",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "return 73786976294838206464;"
     },
@@ -3783,7 +4194,9 @@
         }
       },
       "id": "option_adoc_csr_field_types",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "root": "function_body_syntax",
       "text": "if (a) { return CsrFieldType::ROH; } else if (b) { return CsrFieldType::RWRH; } else { return CsrFieldType::RW; }"
     },
@@ -3798,7 +4211,9 @@
         }
       },
       "id": "option_adoc_array_element",
-      "passes": ["option_adoc"],
+      "passes": [
+        "option_adoc"
+      ],
       "python_expect": {
         "passes": {
           "option_adoc": {
@@ -3811,7 +4226,12 @@
       "text": "return ($array_size(MTVEC_MODES) == 1) ? MTVEC_MODES[0] : UNDEFINED_LEGAL;"
     }
   ],
-  "configs": ["_", "rv32", "rv64", "qc_iu"],
+  "configs": [
+    "_",
+    "rv32",
+    "rv64",
+    "qc_iu"
+  ],
   "real": {
     "_": [
       {
@@ -3973,7 +4393,11 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5, 13],
+                    "codes": [
+                      4,
+                      5,
+                      13
+                    ],
                     "mask": 8240
                   }
                 },
@@ -4084,7 +4508,11 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5, 13],
+                    "codes": [
+                      4,
+                      5,
+                      13
+                    ],
                     "mask": 8240
                   }
                 },
@@ -4201,7 +4629,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -4282,7 +4712,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -4375,11 +4807,17 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["unpredictable", "vector_state"]
+                  "value": [
+                    "unpredictable",
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -4440,11 +4878,17 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["unpredictable", "vector_state"]
+                  "value": [
+                    "unpredictable",
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -4506,11 +4950,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -4553,11 +5005,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -4600,7 +5060,12 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [8, 9, 10, 11],
+                    "codes": [
+                      8,
+                      9,
+                      10,
+                      11
+                    ],
                     "mask": 3840
                   }
                 },
@@ -4668,7 +5133,12 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [8, 9, 10, 11],
+                    "codes": [
+                      8,
+                      9,
+                      10,
+                      11
+                    ],
                     "mask": 3840
                   }
                 },
@@ -4744,11 +5214,20 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["hstatus", "misa", "mstatus", "vsstatus"]
+            "value": [
+              "hstatus",
+              "misa",
+              "mstatus",
+              "vsstatus"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -4783,7 +5262,11 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [4, 5, 13],
+              "codes": [
+                4,
+                5,
+                13
+              ],
               "mask": 8240
             }
           },
@@ -4846,7 +5329,9 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "wrong number of arguments (given 3, expected 2)",
@@ -4887,7 +5372,11 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["assert", "implemented?", "mstatus_sd_has_known_reset"]
+            "value": [
+              "assert",
+              "implemented?",
+              "mstatus_sd_has_known_reset"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -4932,11 +5421,18 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable", "xlen"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable",
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -4981,7 +5477,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5030,7 +5528,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5219,11 +5719,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -5268,7 +5772,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5367,11 +5873,18 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable", "xlen"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable",
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -5416,7 +5929,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5465,7 +5980,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5654,11 +6171,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -5703,7 +6224,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -5874,7 +6397,10 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5],
+                    "codes": [
+                      4,
+                      5
+                    ],
                     "mask": 48
                   }
                 },
@@ -5972,7 +6498,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -6059,11 +6587,16 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["vector_state"]
+                  "value": [
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -6125,11 +6658,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -6172,7 +6713,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [11],
+                    "codes": [
+                      11
+                    ],
                     "mask": 2048
                   }
                 },
@@ -6243,7 +6786,12 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["hstatus", "misa", "mstatus", "vsstatus"]
+            "value": [
+              "hstatus",
+              "misa",
+              "mstatus",
+              "vsstatus"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -6278,7 +6826,10 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [4, 5],
+              "codes": [
+                4,
+                5
+              ],
               "mask": 48
             }
           },
@@ -6324,7 +6875,9 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "wrong number of arguments (given 3, expected 2)",
@@ -6365,7 +6918,11 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["assert", "implemented?", "mstatus_sd_has_known_reset"]
+            "value": [
+              "assert",
+              "implemented?",
+              "mstatus_sd_has_known_reset"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -6410,11 +6967,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["xlen"]
+            "value": [
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -6459,7 +7020,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -6508,7 +7071,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -6697,11 +7262,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -6746,7 +7315,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -6971,7 +7542,11 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5, 13],
+                    "codes": [
+                      4,
+                      5,
+                      13
+                    ],
                     "mask": 8240
                   }
                 },
@@ -7087,7 +7662,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -7180,11 +7757,17 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["unpredictable", "vector_state"]
+                  "value": [
+                    "unpredictable",
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -7246,11 +7829,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -7293,7 +7884,12 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [8, 9, 10, 11],
+                    "codes": [
+                      8,
+                      9,
+                      10,
+                      11
+                    ],
                     "mask": 3840
                   }
                 },
@@ -7373,7 +7969,12 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["hstatus", "misa", "mstatus", "vsstatus"]
+            "value": [
+              "hstatus",
+              "misa",
+              "mstatus",
+              "vsstatus"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -7408,7 +8009,11 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [4, 5, 13],
+              "codes": [
+                4,
+                5,
+                13
+              ],
               "mask": 8240
             }
           },
@@ -7470,7 +8075,9 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "wrong number of arguments (given 3, expected 2)",
@@ -7511,7 +8118,11 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["assert", "implemented?", "mstatus_sd_has_known_reset"]
+            "value": [
+              "assert",
+              "implemented?",
+              "mstatus_sd_has_known_reset"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -7556,11 +8167,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["xlen"]
+            "value": [
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -7605,7 +8220,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -7654,7 +8271,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -7843,11 +8462,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -7892,7 +8515,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -8178,7 +8803,11 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5, 13],
+                    "codes": [
+                      4,
+                      5,
+                      13
+                    ],
                     "mask": 8240
                   }
                 },
@@ -8288,7 +8917,11 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [4, 5, 13],
+                    "codes": [
+                      4,
+                      5,
+                      13
+                    ],
                     "mask": 8240
                   }
                 },
@@ -8404,7 +9037,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -8485,7 +9120,9 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [2],
+                    "codes": [
+                      2
+                    ],
                     "mask": 4
                   }
                 },
@@ -8578,11 +9215,17 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["unpredictable", "vector_state"]
+                  "value": [
+                    "unpredictable",
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -8643,11 +9286,17 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["unpredictable", "vector_state"]
+                  "value": [
+                    "unpredictable",
+                    "vector_state"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["vl", "vstart"]
+                  "value": [
+                    "vl",
+                    "vstart"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -8709,11 +9358,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -8756,11 +9413,19 @@
                 },
                 "reachable_functions": {
                   "ok": true,
-                  "value": ["fence", "implemented?", "mode"]
+                  "value": [
+                    "fence",
+                    "implemented?",
+                    "mode"
+                  ]
                 },
                 "referenced_csrs": {
                   "ok": true,
-                  "value": ["henvcfg", "menvcfg", "senvcfg"]
+                  "value": [
+                    "henvcfg",
+                    "menvcfg",
+                    "senvcfg"
+                  ]
                 },
                 "return_values": {
                   "error": "wrong number of arguments (given 3, expected 2)",
@@ -8803,7 +9468,12 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [8, 9, 10, 11],
+                    "codes": [
+                      8,
+                      9,
+                      10,
+                      11
+                    ],
                     "mask": 3840
                   }
                 },
@@ -8871,7 +9541,12 @@
                 "reachable_exceptions": {
                   "ok": true,
                   "value": {
-                    "codes": [8, 9, 10, 11],
+                    "codes": [
+                      8,
+                      9,
+                      10,
+                      11
+                    ],
                     "mask": 3840
                   }
                 },
@@ -8947,11 +9622,20 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["hstatus", "misa", "mstatus", "vsstatus"]
+            "value": [
+              "hstatus",
+              "misa",
+              "mstatus",
+              "vsstatus"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -8986,7 +9670,11 @@
           "reachable_exceptions": {
             "ok": true,
             "value": {
-              "codes": [4, 5, 13],
+              "codes": [
+                4,
+                5,
+                13
+              ],
               "mask": 8240
             }
           },
@@ -9048,7 +9736,9 @@
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "wrong number of arguments (given 3, expected 2)",
@@ -9089,7 +9779,11 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["assert", "implemented?", "mstatus_sd_has_known_reset"]
+            "value": [
+              "assert",
+              "implemented?",
+              "mstatus_sd_has_known_reset"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9134,11 +9828,18 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable", "xlen"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable",
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -9183,7 +9884,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9232,7 +9935,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9421,11 +10126,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -9470,7 +10179,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9569,11 +10280,18 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?", "mode", "unreachable", "xlen"]
+            "value": [
+              "implemented?",
+              "mode",
+              "unreachable",
+              "xlen"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["misa"]
+            "value": [
+              "misa"
+            ]
           },
           "return_values": {
             "error": "undefined local variable or method 'first' for an instance of Idl::ReturnStatementAst",
@@ -9618,7 +10336,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9667,7 +10387,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
@@ -9856,11 +10578,15 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["unreachable"]
+            "value": [
+              "unreachable"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
-            "value": ["mtvec"]
+            "value": [
+              "mtvec"
+            ]
           },
           "return_values": {
             "error": "undefined method 'elements' for an instance of Idl::IfBodyAst",
@@ -9905,7 +10631,9 @@
           },
           "reachable_functions": {
             "ok": true,
-            "value": ["implemented?"]
+            "value": [
+              "implemented?"
+            ]
           },
           "referenced_csrs": {
             "ok": true,
