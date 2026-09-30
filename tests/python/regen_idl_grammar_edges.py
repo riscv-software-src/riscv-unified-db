@@ -56,7 +56,7 @@ def run_oracle(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
             {"cases": [{"id": c["id"], "root": c["root"], "text": c["text"]} for c in batch]}
         )
         proc = subprocess.run(
-            [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
+            [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
             cwd=REPOSITORY_ROOT,
             input=payload,
             capture_output=True,

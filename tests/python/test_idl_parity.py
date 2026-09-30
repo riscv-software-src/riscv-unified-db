@@ -157,7 +157,7 @@ def _run_ruby_oracle(cases: list[dict[str, str]]) -> list[dict[str, Any]]:
     if mise is None:
         pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
     result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
+        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
         cwd=REPOSITORY_ROOT,
         input=json.dumps({"cases": cases}),
         check=False,
