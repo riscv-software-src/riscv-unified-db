@@ -46,6 +46,55 @@ def test_plan_writes_atomically_and_check_never_writes(tmp_path: Path) -> None:
     assert target.stat().st_mtime_ns == before
 
 
+@pytest.mark.parametrize("check", [False, True])
+def test_overwrite_prefix_protects_existing_files_before_any_write(tmp_path, check):
+    protected = tmp_path / "protected"
+    protected.write_bytes(b"user-owned\n")
+    output = GeneratedFile(
+        PurePosixPath("protected"),
+        b"generated\n",
+        "test",
+        (PurePosixPath("source"),),
+        overwrite_prefixes=(b"generated",),
+    )
+    plan = AuthoringPlan((_output("first"), output))
+    with pytest.raises(AuthoringError, match="refusing to overwrite"):
+        plan.apply(tmp_path, check=check)
+    assert protected.read_bytes() == b"user-owned\n"
+    assert not (tmp_path / "first").exists()
+
+
+def test_overwrite_prefix_accepts_previous_generator_and_copies_inputs(tmp_path):
+    prefixes = [b"previous", b"generated"]
+    target = tmp_path / "out"
+    target.write_bytes(b"previous\n")
+    output = GeneratedFile(
+        PurePosixPath("out"),
+        b"generated\n",
+        "test",
+        (PurePosixPath("source"),),
+        overwrite_prefixes=prefixes,  # type: ignore[arg-type]
+    )
+    plan = AuthoringPlan((output,))
+    prefixes.clear()
+    assert plan.apply(tmp_path) == (PurePosixPath("out"),)
+    assert target.read_bytes() == b"generated\n"
+    assert plan.apply(tmp_path, check=True) == ()
+
+
+@pytest.mark.parametrize("prefix", [b"", "not bytes", 0])
+def test_overwrite_prefix_rejects_invalid_header(prefix):
+    output = GeneratedFile(
+        PurePosixPath("out"),
+        b"generated\n",
+        "test",
+        (PurePosixPath("source"),),
+        overwrite_prefixes=(prefix,),
+    )
+    with pytest.raises(AuthoringError, match="nonempty bytes"):
+        AuthoringPlan((output,))
+
+
 @pytest.mark.parametrize(
     "path",
     ["/absolute", "../escape", "nested/../../escape", r"windows\\escape", "C:/drive"],
