@@ -60,8 +60,9 @@ producing `ParseTimeDetectedTypeError` nodes. The AST never holds a concrete syn
 
 Each node stores its children as a tuple, its parent, and a half-open `(start, end)` interval
 into an `IdlSource`. `IdlSource` owns the text, logical origin, first line, and optional mapping to
-a YAML document and scalar span. Construction sets parent links, and the tree is then frozen:
-public attributes cannot be reassigned. Semantic memoization uses private per-node caches owned by
+a YAML document and scalar span. Construction sets parent links, and `parse` relinks the final
+tree because packrat memoization shares children with discarded speculative parents. The tree is
+then frozen: public attributes cannot be reassigned. Semantic memoization uses private per-node caches owned by
 the tree, and each configured architecture owns its own trees. The Ruby process-wide parse cache is
 not reproduced. A compiler may keep a bounded cache of source text to AST, which must build a fresh
 tree for each consumer that memoizes semantic state.

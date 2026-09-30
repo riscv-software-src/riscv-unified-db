@@ -66,9 +66,9 @@ Identifiers
       ``[A-Z][A-Za-z0-9_]*``.
 
 Reserved words
-    See ``ReservedWords`` in ``ast.rb``; these are rejected by
-    :func:`udb.idl.ast.check_reserved` wherever an ``id`` is used as a
-    binding name, not by the grammar itself.
+    See ``ReservedWords`` in ``ast.rb``. The grammar does not reject them;
+    rejecting reserved binding names is a semantic check (Stage 4 slice 15
+    in ``doc/stage4-idl.md``).
 
 Expression precedence (loosest to tightest)
     ``ternary_expression`` (``a ? b : c``, both branches always parsed as
@@ -119,6 +119,10 @@ Entry points (``root=`` argument to :func:`parse`)
 from __future__ import annotations
 
 import re
+import sys
+import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any
 
 from . import ast
@@ -235,7 +239,7 @@ class _Parser:
     time linear in the size of the input (packrat parsing).
     """
 
-    __slots__ = ("_fail_expected", "_fail_pos", "_memo", "source", "text")
+    __slots__ = ("_fail_expected", "_fail_pos", "_invalid_nodes", "_memo", "source", "text")
 
     def __init__(self, text: str, source: IdlSource) -> None:
         self.text = text
@@ -243,6 +247,9 @@ class _Parser:
         self._memo: dict[tuple[Any, ...], tuple[Any, int] | None] = {}
         self._fail_pos = -1
         self._fail_expected: set[str] = set()
+        # id(node) -> (offset, message) for nodes the grammar accepts but that
+        # must be rejected if they end up in the final tree.
+        self._invalid_nodes: dict[int, tuple[int, str]] = {}
 
     # -- failure tracking --------------------------------------------------
 
@@ -254,14 +261,16 @@ class _Parser:
         elif pos == self._fail_pos:
             self._fail_expected.add(expected)
 
-    def error_at(self, pos: int, message: str) -> IdlSyntaxError:
+    def error_at(
+        self, pos: int, message: str, *, expected: list[str] | None = None
+    ) -> IdlSyntaxError:
         source = self.source
         return IdlSyntaxError(
             message,
             offset=pos,
-            line=source.lineno(pos),
+            line=source.failure_lineno(pos),
             column=source.column(pos),
-            expected=sorted(self._fail_expected),
+            expected=sorted(self._fail_expected) if expected is None else expected,
             source=source.label,
         )
 
@@ -285,7 +294,10 @@ class _Parser:
                 if nl == -1:
                     # A comment with no trailing newline is *not* whitespace at
                     # all (the grammar's `comment` rule requires the "\n"), so
-                    # stop without consuming the '#'.
+                    # stop without consuming the '#'. Treetop's comment rule
+                    # still scans to EOF looking for the "\n", so record the
+                    # failure there to match its error position.
+                    self._fail(n, repr("\n"))
                     break
                 pos = nl + 1
                 continue
@@ -1989,6 +2001,7 @@ class _Parser:
         p = self._lit(pos, "return")
         if p is not None:
             vals: list[Any] = []
+            missing_first_at: int | None = None
             p1 = self._ws1(p)
             if p1 is not None:
                 r = self._r_expression(p1)
@@ -1997,6 +2010,8 @@ class _Parser:
                 if r is not None:
                     first, p = r
                     vals.append(first)
+            if not vals:
+                missing_first_at = p
             while True:
                 p3 = self._ws0(p)
                 p4 = self._lit(p3, ",")
@@ -2010,10 +2025,16 @@ class _Parser:
                     break
                 nxt, p = r2
                 vals.append(nxt)
-            result = (
-                ast.ReturnExpression(source=self.source, start=pos, end=p, children=tuple(vals)),
-                p,
-            )
+            node = ast.ReturnExpression(source=self.source, start=pos, end=p, children=tuple(vals))
+            if missing_first_at is not None and vals:
+                # The grammar admits `return , x`, but Ruby's lowering crashes on
+                # it (see doc/python-migration-bugfixes.md). Reject it, but only
+                # if this node survives into the final tree.
+                self._invalid_nodes[id(node)] = (
+                    missing_first_at,
+                    "return value list is missing its first value",
+                )
+            result = (node, p)
         memo[key] = result
         return result
 
@@ -3001,6 +3022,58 @@ _ROOT_RULES: dict[str, str] = {
 }
 
 
+# Recursive descent uses roughly 35 Python frames per level of bracket
+# nesting, so the default recursion limit (1000) allows only ~28 levels.
+# While parsing, raise the limit in proportion to the input length, up to a
+# cap; deeper input raises IdlSyntaxError instead of RecursionError.
+_FRAMES_PER_CHAR = 40
+_MIN_RECURSION_LIMIT = 4_000
+_MAX_RECURSION_LIMIT = 60_000
+_recursion_lock = threading.Lock()
+_recursion_users = 0
+_recursion_saved = 0
+
+
+@contextmanager
+def _recursion_headroom(text: str) -> Iterator[None]:
+    global _recursion_users, _recursion_saved
+    wanted = min(_MAX_RECURSION_LIMIT, _MIN_RECURSION_LIMIT + _FRAMES_PER_CHAR * len(text))
+    with _recursion_lock:
+        if _recursion_users == 0:
+            _recursion_saved = sys.getrecursionlimit()
+        _recursion_users += 1
+        if sys.getrecursionlimit() < wanted:
+            sys.setrecursionlimit(wanted)
+    try:
+        yield
+    finally:
+        with _recursion_lock:
+            _recursion_users -= 1
+            if _recursion_users == 0:
+                sys.setrecursionlimit(_recursion_saved)
+
+
+def _finish_tree(parser: _Parser, root: ast.Node) -> None:
+    """Re-link parent pointers and reject grammar-accepted but invalid nodes.
+
+    Packrat memoization shares child nodes between speculative parents that
+    backtracking later discards, and each construction re-parents the child,
+    so parents are only trustworthy once the final tree is known. The walk
+    is iterative because trees can be deeper than the recursion limit.
+    """
+    object.__setattr__(root, "parent", None)
+    invalid = parser._invalid_nodes
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if invalid and id(node) in invalid:
+            pos, message = invalid[id(node)]
+            raise parser.error_at(pos, message, expected=[])
+        for child in node.children:
+            object.__setattr__(child, "parent", node)
+            stack.append(child)
+
+
 def parse(
     text: str,
     root: str = "isa",
@@ -3057,7 +3130,11 @@ def parse(
 
     parser = _Parser(text, source)
     rule = getattr(parser, _ROOT_RULES[root])
-    result = rule(0)
+    try:
+        with _recursion_headroom(text):
+            result = rule(0)
+    except RecursionError:
+        raise parser.error_at(0, "IDL nesting is too deep to parse", expected=[]) from None
     if result is None:
         raise parser.furthest_failure_error()
     node, end = result
@@ -3071,6 +3148,7 @@ def parse(
     if text[end:] != "":
         parser._fail(end, "end of input")
         raise parser.furthest_failure_error()
+    _finish_tree(parser, node)
     return node
 
 

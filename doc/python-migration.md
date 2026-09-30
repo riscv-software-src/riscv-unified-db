@@ -839,8 +839,18 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
 - Added the `regress-python-idl-syntax-parity` CI job. The installed-package gate now
   parses every bundled `isa/` file from the installed wheel. That gate found a
   Python 3.12-only `dataclass(slots=True)` zero-argument `super()` failure, now fixed.
-- Confirmed Ruby defects are recorded as bug-log entries 18–21: signed decimal literal
-  width, two `to_idl` printing errors, and a post-increment assignment crash.
+- Confirmed Ruby defects are recorded as bug-log entries 18–22: signed decimal literal
+  width, two `to_idl` printing errors, and crashes on a post-increment assignment and
+  on a return list with no first value.
+- Two independent reviews (Sonnet and GPT families) found Python defects, all fixed
+  with regressions in `test_idl_parser.py`:
+  - memoized children kept parent links to discarded speculative parses;
+  - bracket nesting deeper than about 28 levels raised `RecursionError`;
+  - syntax errors at a newline or in an unterminated trailing comment reported the
+    wrong position;
+  - `from_h` crashed on unknown-bit literals.
+  The parser now relinks parents after parsing, raises the recursion limit while it
+  runs, and reports nesting that is still too deep as `IdlSyntaxError`.
 - Semantic analysis (types, symbol tables, values, type checking), passes, and closing
   the Stage 3 `idl()` deferrals remain for branches 14–18 as planned in
   `doc/stage4-idl.md`.

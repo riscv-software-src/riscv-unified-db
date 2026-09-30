@@ -522,7 +522,8 @@ class IntLiteral(Node):
         source, start, end = _source_and_span(data, sources)
         radix = data["radix"]
         value = data["value"]
-        if isinstance(value, UnknownLiteral):  # pragma: no cover - see UnknownLiteral docstring
+        # ``to_h`` serializes unknown-bit (x/X) values as strings; see ``_to_h_fields``.
+        if isinstance(value, (str, UnknownLiteral)):
             raise NotImplementedError("from_h does not support unknown-bit literal values")
         text = f"{data['width']}'{'s' if data['signed'] else ''}{_RADIX_TO_VERILOG[radix]}{_int_to_s(value, radix)}"
         return cls(source=source, start=start, end=end, raw_text=text)

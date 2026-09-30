@@ -215,8 +215,64 @@ def test_comment_is_pure_whitespace() -> None:
 
 
 def test_unterminated_comment_is_not_whitespace() -> None:
-    with pytest.raises(IdlSyntaxError):
+    # Treetop's comment rule scans to EOF looking for the newline, so the
+    # furthest failure (and so the reported position) is at EOF.
+    with pytest.raises(IdlSyntaxError) as exc:
         parse_expression("1 + # no newline before EOF")
+    assert (exc.value.offset, exc.value.line, exc.value.column) == (27, 1, 28)
+
+
+def test_syntax_error_line_does_not_count_newline_at_failure() -> None:
+    # Treetop's String#line_of counts newlines strictly before the offset.
+    with pytest.raises(IdlSyntaxError) as exc:
+        parse_expression("\n17")
+    assert (exc.value.offset, exc.value.line, exc.value.column) == (0, 1, 1)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "(" * 200 + "a" + ")" * 200,
+        "[" * 200 + "1" + "]" * 200,
+        "{" * 200 + "1" + "}" * 200,
+        "f(" * 200 + "1" + ")" * 200,
+        "-" * 2000 + "1",
+    ],
+    ids=["paren", "array", "concat", "call", "unary"],
+)
+def test_deep_nesting_parses(text: str) -> None:
+    parse_expression(text)
+
+
+def test_nesting_beyond_limit_raises_syntax_error() -> None:
+    import sys
+
+    limit = sys.getrecursionlimit()
+    with pytest.raises(IdlSyntaxError, match="nesting is too deep"):
+        parse_expression("(" * 5000 + "a" + ")" * 5000)
+    assert sys.getrecursionlimit() == limit
+
+
+def test_parent_links_ignore_discarded_speculative_parses() -> None:
+    # function_body tries a statement before the for loop; the memoized `32`
+    # must end up parented by the type name in the final tree.
+    body = parse_function_body("for (Bits<32> i = 0; i < 4; i++) { x = i; }")
+    assert body.parent is None
+    stack: list = [body]
+    while stack:
+        node = stack.pop()
+        for child in node.children:
+            assert child.parent is node
+            stack.append(child)
+
+
+def test_return_list_without_first_value_is_rejected() -> None:
+    # The grammar admits this, but Ruby's lowering crashes on it; see
+    # doc/python-migration-bugfixes.md.
+    with pytest.raises(IdlSyntaxError, match="missing its first value") as exc:
+        parse_function_body("return,1;")
+    assert exc.value.offset == 6
+    assert parse_function_body("return;").children[0].children[0].children == ()
 
 
 # ---------------------------------------------------------------------------
@@ -529,3 +585,9 @@ def test_id_expression() -> None:
     node = parse_expression("some_var")
     assert isinstance(node, Id)
     assert node.name == "some_var"
+
+
+def test_from_h_rejects_unknown_bit_literals() -> None:
+    node = parse_expression("'b10x1", label="t")
+    with pytest.raises(NotImplementedError):
+        from_h(node.to_h(), {"t": "'b10x1"})

@@ -73,6 +73,14 @@ class IdlSource:
         """
         return self.text.count("\n", 0, pos + 1) + 1 + self.starting_line
 
+    def failure_lineno(self, pos: int) -> int:
+        """1-based line number of a syntax error at offset *pos*.
+
+        Mirrors Treetop's ``String#line_of``, which (unlike
+        ``Idl::AstNode#lineno``) does not count a newline *at* ``pos``.
+        """
+        return self.text.count("\n", 0, pos) + 1 + self.starting_line
+
     def column(self, pos: int) -> int:
         """1-based column number of character offset *pos* in ``text``."""
         line_start = self.text.rfind("\n", 0, pos) + 1
