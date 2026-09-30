@@ -11,8 +11,8 @@ Status: **inventory/contracts only**; all proposed migration gates below are **p
 
 Each family below receives its legacy command, implementation/templates, input/config/version matrix, output paths and consumers, fixture and comparison policy, prospective Python API/CLI layer above Stage 4, and pending installed/CI gate. An apparent Python script is **not migrated** if it shells a Ruby script or requires repository paths. All installed generation gates use offline wheels/sdists outside the checkout, no repository, network, or UDB-owned native toolchain. Separate repository gates may compile generated C++/C/Go/SV and separately render documents with external Asciidoctor.
 
-The machine-readable [generator registry](stage5-generators.json) retains 41
-families and six workflow-consumer groups, including dormant templates and
+The machine-readable [generator registry](stage5-generators.json) retains 46
+families and eight workflow-consumer groups, including dormant templates and
 repository-only authoring tools. Its pending gates are obligations, not claims
 of implemented tests. Capability contracts must add executable artifact oracles
 and exact commands before cutover.
@@ -32,7 +32,7 @@ documents. Captured includes/assets and AsciiDoc components precede extension,
 manual/config, PRM and appendix documents. Schema/API documentation and index
 producers retain separate owners. C++ source emission and static resources build
 on accepted IDL passes, with generated-code acceptance before cutover. Authoring
-tools and all six workflow groups remain explicitly in scope.
+tools and all eight workflow groups remain explicitly in scope.
 
 Stage 6 CLI/task orchestration, setup/quality and release consolidation have
 separate owners above the accepted capabilities. Ruby deletion is a final layer,
@@ -41,6 +41,63 @@ requires the separate name/ownership decision; fork branch publication is not
 authorization to publish a distribution.
 
 ## Generator contracts
+
+### Retained surfaces identified by independent contract review
+
+The custom ISA includes a separate Ruby/ERB authoring generator,
+`spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb`, that emits the indexed
+`qc.mclic{ip,ie,lvl,mwpstartaddr,mwpendaddr}*.yaml` CSR families. It is not a
+`.layout` file and is not covered by standard layout generation. Its Python
+authoring replacement must preserve the complete generated path set and exact
+CSR bytes, with an installed generator and custom-source drift gate.
+The **135-file count below is only YAML configured prose**, not all embedded
+ERB: this Ruby source additionally contains ERB heredocs.
+
+`bin/udb` and `bin/idlc` are retained CLI consumers, not aliases of the already
+ported Python inspection commands. Their Thor implementations are
+`tools/ruby-gems/{udb,idlc}/lib/{udb,idlc}/cli.rb`. Preserve UDB
+`validate spec|cfg`, `extension`, `parameter`, `extensions`, `parameters`,
+`csrs`, and `disasm ENCODING`; preserve IDLC `compile --format yaml --root`,
+`eval`, and `tc inst`, including their supported filters/formats, output
+semantics and errors. The compiler API alone does not close these CLI contracts.
+
+Two model methods currently cross the rendering boundary in-process:
+`manual.rb` uses `Asciidoctor.load(...).doctitle`, and `csr.rb` implements
+`Csr#description_html` with `Asciidoctor.convert`. Neither may remain a hidden
+installed Ruby dependency. Manual chapter titles become captured resource
+metadata (or explicit caller-supplied metadata), verified against the official
+external renderer during resource preparation. Retain HTML description
+fragments as an explicit optional external-rendering capability; source
+generation remains Python-only and missing renderers are reported explicitly.
+Do not replace either with a homegrown general AsciiDoc renderer.
+
+**Appendix oracle exception:** the legacy golden contains
+`:wavedrom: {docdir}/../../bin/wavedrom`. All appendix byte-equality statements
+in this inventory apply after removing exactly this known tool-location
+attribute from the expected artifact. Installed output must not emit a dead
+checkout-relative path. Supply WaveDrom and bytefield executables at the external
+render step, preserving all diagram blocks and testing rendered results.
+`bin/asciidoctor`, `bin/wavedrom`, `bin/bytefield-svg` and `bin/aub*` belong
+to the explicit rendering/toolchain consumer inventory; they are not runtime
+dependencies of installed source generation.
+
+Repository validation and fixture authoring remain first-class workflows:
+`./do test:csrs`, `test:inst_encodings`, `test:schema`, `test:idl`,
+`test:llvm`, `chore:update_golden_appendix`, and
+`chore:udb_gen:update_fixtures`, plus `bin/chore`'s Xqci and fixture commands.
+Their replacements must preserve the CSR pre-commit hook, encoding/IDL CI
+coverage, `tools/python/auto-inst` tests, and exact intended fixture file sets.
+This is separate from running pytest against previously captured fixtures.
+
+Additional consumers include `tools/mcp_gen_server/server.py` and its README
+(resolved tree paths); `.github/workflows/autofix.yaml`,
+`autofix-comment.yml`, and `copilot-setup-steps.yml`; Ruby launch/recommendation
+settings in `.vscode/{launch,extensions}.json`; `.rubocop.yml`,
+`.solargraph.yml`, `CLAUDE.md`, and `codecov.yml`.
+The gem-install-time native downloader
+`tools/ruby-gems/udb/ext/udb_download/extconf.rb` and Ruby-owned
+`tools/ruby-gems/udb/python/yaml_resolver.py` require explicit retirement after
+their consumers are replaced. A Python filename is not proof of cutover.
 
 ### Implemented foundations versus pending structured generators
 

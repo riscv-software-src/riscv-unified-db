@@ -3,6 +3,134 @@
   "status": "inventory-only; all planned gates pending",
   "families": [
     {
+      "id": "qc-mclic-csr-authoring",
+      "status": "pending: first-party Ruby/ERB embedded in custom ISA source",
+      "legacy_commands": ["ruby spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb"],
+      "legacy_sources": ["spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb"],
+      "legacy_templates": ["ERB heredocs inside gen_mcliciX.rb"],
+      "input_matrix": [
+        "all configured counter/index ranges in the source generator"
+      ],
+      "output_paths": [
+        "spec/custom/isa/qc_iu/csr/Xqci/qc.mclic{ip,ie,lvl,mwpstartaddr,mwpendaddr}*.yaml"
+      ],
+      "consumers": ["qc_iu overlay resolution, documentation and simulator"],
+      "prospective_owner": "udb.author.qc_mclic",
+      "python_cli": "udb author qc-mclic --output DIR",
+      "fixtures": [
+        "all tracked qc.mclic*.yaml outputs owned by gen_mcliciX.rb"
+      ],
+      "comparison_policy": "exact generated-file set and byte equality; no omitted indices",
+      "gates": {
+        "installed_wheel_sdist_offline": "pending",
+        "repository_ci": "pending: complete custom CSR authoring drift"
+      }
+    },
+    {
+      "id": "udb-reports-disassembly",
+      "status": "pending: Ruby Thor CLI",
+      "legacy_commands": [
+        "bin/udb extension NAME",
+        "bin/udb parameter NAME",
+        "bin/udb extensions",
+        "bin/udb parameters",
+        "bin/udb csrs",
+        "bin/udb disasm ENCODING"
+      ],
+      "legacy_sources": ["bin/udb", "tools/ruby-gems/udb/lib/udb/cli.rb"],
+      "legacy_templates": [],
+      "input_matrix": [
+        "legacy config/format/filter flags",
+        "valid/invalid/ambiguous encodings and RV32/RV64"
+      ],
+      "output_paths": ["stdout reports and disassembly"],
+      "consumers": ["interactive users and scripts"],
+      "prospective_owner": "udb.cli inspect/disasm",
+      "python_cli": "udb inspect extension|parameter|extensions|parameters|csrs; udb disasm ENCODING",
+      "fixtures": ["pending: captured reports and decoder corpus"],
+      "comparison_policy": "field/row and disassembly semantic parity, explicit errors and exit statuses",
+      "gates": {
+        "installed_wheel_sdist_offline": "pending",
+        "repository_ci": "pending: all retained CLI subcommands"
+      }
+    },
+    {
+      "id": "idl-cli-compile-eval",
+      "status": "pending: Ruby CLI on accepted migrated compiler",
+      "legacy_commands": [
+        "bin/idlc compile --format yaml --root ROOT FILE",
+        "bin/idlc eval",
+        "bin/idlc tc inst"
+      ],
+      "legacy_sources": ["bin/idlc", "tools/ruby-gems/idlc/lib/idlc/cli.rb"],
+      "legacy_templates": [],
+      "input_matrix": [
+        "supported parser roots/formats",
+        "expressions and instruction bodies",
+        "invalid inputs"
+      ],
+      "output_paths": ["AST YAML, evaluated values and type diagnostics"],
+      "consumers": [
+        "Rake COMPILE_IDL resolved globals export",
+        "interactive users and scripts"
+      ],
+      "prospective_owner": "udb.cli idl",
+      "python_cli": "udb idl compile|eval|check",
+      "fixtures": [
+        "accepted IDL corpus plus legacy CLI serialization fixtures pending"
+      ],
+      "comparison_policy": "AST structure, values, diagnostics/source coordinates and exit statuses",
+      "gates": {
+        "installed_wheel_sdist_offline": "pending",
+        "repository_ci": "pending: CLI roots, formats and errors"
+      }
+    },
+    {
+      "id": "manual-chapter-metadata",
+      "status": "pending: replace in-process Asciidoctor doctitle dependency",
+      "legacy_commands": [
+        "manual chapter title query during document generation"
+      ],
+      "legacy_sources": ["tools/ruby-gems/udb/lib/udb/obj/manual.rb"],
+      "legacy_templates": [],
+      "input_matrix": [
+        "all captured manual chapter/version sources",
+        "attribute-bearing document titles"
+      ],
+      "output_paths": ["chapter title/navigation metadata"],
+      "consumers": ["ISA manual navigation and headings"],
+      "prospective_owner": "udb.docs.manual resources",
+      "python_cli": "udb generate manual with captured chapter metadata",
+      "fixtures": [
+        "pending: genuine doctitle results from official external renderer"
+      ],
+      "comparison_policy": "exact title text; capture metadata during resource preparation or accept explicit caller metadata, no renderer during installed source generation",
+      "gates": {
+        "installed_wheel_sdist_offline": "pending",
+        "repository_ci": "pending: title manifest freshness against external official Asciidoctor"
+      }
+    },
+    {
+      "id": "csr-description-html",
+      "status": "pending: retain rendering capability at explicit external boundary",
+      "legacy_commands": ["Csr#description_html"],
+      "legacy_sources": ["tools/ruby-gems/udb/lib/udb/obj/csr.rb"],
+      "legacy_templates": [],
+      "input_matrix": [
+        "CSR descriptions with links, formatting, attributes and configured prose"
+      ],
+      "output_paths": ["HTML description fragments"],
+      "consumers": ["description_html API callers"],
+      "prospective_owner": "udb.docs.render_external",
+      "python_cli": "udb render html-fragment using installed official Asciidoctor",
+      "fixtures": ["pending: external-rendered CSR description fragments"],
+      "comparison_policy": "HTML DOM/text/link equality; missing renderer explicit, source generation remains Python-only",
+      "gates": {
+        "installed_wheel_sdist_offline": "source portion only; renderer absence/error contract pending",
+        "repository_ci": "pending: external fragment rendering"
+      }
+    },
+    {
       "id": "architecture-test-scaffolding",
       "status": "pending: existing standalone shell generator, not Ruby-dependent",
       "legacy_commands": ["tools/scripts/new-rvtest NAME"],
@@ -492,7 +620,7 @@
       "prospective_owner": "udb.docs.instruction_appendix",
       "python_cli": "udb generate instruction-appendix [--assembly] --out DIR",
       "fixtures": ["tests/golden/all_instructions.golden.adoc"],
-      "comparison_policy": "byte-exact tracked golden plus assembly variant semantic diff",
+      "comparison_policy": "byte-exact golden after removing only the known checkout-relative wavedrom renderer attribute; assembly variant semantics retained; renderer tool paths supplied externally",
       "gates": {
         "installed_wheel_sdist_offline": "pending",
         "repository_ci": "pending: golden drift/links/installed offline"
@@ -1018,6 +1146,7 @@
       "consumers": [
         "C++ generator",
         "backends/generators/tasks.rake",
+        "tools/mcp_gen_server/server.py and its README",
         "merge-queue resolved_spec artifact"
       ],
       "prospective_owner": "udb.serialization",
@@ -1176,12 +1305,58 @@
   ],
   "workflow_consumers": [
     {
+      "id": "validators-and-fixture-authoring",
+      "sources": [
+        "Rakefile",
+        "tools/ruby-gems/tasks.rake",
+        ".pre-commit-config.yaml",
+        "tools/test/regress-tests.yaml",
+        "tools/python/auto-inst"
+      ],
+      "legacy_commands": [
+        "bin/udb validate spec",
+        "bin/udb validate cfg",
+        "./do test:csrs",
+        "./do test:inst_encodings",
+        "./do test:schema",
+        "./do test:idl",
+        "./do test:llvm",
+        "./do chore:update_golden_appendix",
+        "./do chore:udb_gen:update_fixtures",
+        "./bin/chore gen all|udb-gen|xqci|instruction-appendix"
+      ],
+      "prospective_owner": "Python validation and explicit fixture authoring commands",
+      "gate": "pending: original schema/encoding/CSR/IDL outcomes; check-csr-conflicts pre-commit and CI cutover; complete inst_table/appendix/Xqci fixture regeneration without modifying unrelated files"
+    },
+    {
+      "id": "external-render-toolchain",
+      "sources": [
+        "bin/asciidoctor",
+        "bin/wavedrom",
+        "bin/bytefield-svg",
+        "bin/aub*",
+        "backends/portfolio/tasks.rake",
+        "backends/instructions_appendix/templates/instructions.adoc.erb"
+      ],
+      "legacy_commands": [
+        "asciidoctor",
+        "asciidoctor-pdf",
+        "wavedrom",
+        "bytefield-svg",
+        "Antora assembly"
+      ],
+      "prospective_owner": "documented external rendering tools and Python-generated source/assets",
+      "gate": "pending: no checkout-relative tool paths in installed source; diagrams and official HTML/PDF rendering with caller-supplied installed executables, never runtime downloads"
+    },
+    {
       "id": "cli-orchestration",
       "sources": [
         "do",
         "Rakefile",
         "bin/generate",
         "bin/udb-gen",
+        "bin/udb",
+        "bin/idlc",
         "bin/regress",
         "tools/test/regress-cli.rb",
         "bin/chore"
@@ -1201,7 +1376,9 @@
         "tools/test/regress-tests.yaml",
         "tools/test/regress-gh-template.yaml",
         "tools/test/gen_regress.py",
-        ".github/workflows/regress.yml"
+        ".github/workflows/regress.yml",
+        ".github/workflows/autofix.yaml",
+        ".github/workflows/autofix-comment.yml"
       ],
       "legacy_commands": [
         "./bin/chore gen regress",
@@ -1247,6 +1424,8 @@
       "sources": [
         ".github/workflows/{gem_bump,release_gems,release_udb_deps}.yml",
         "tools/ruby-gems/tasks.rake",
+        "tools/ruby-gems/udb/ext/udb_download/extconf.rb",
+        "tools/ruby-gems/udb/python/yaml_resolver.py",
         "bin/chore",
         "Gemfile",
         "Gemfile.lock",
@@ -1267,6 +1446,13 @@
         "bin/setup",
         "bin/doctor",
         ".github/actions/mise-setup/action.yml",
+        ".github/workflows/copilot-setup-steps.yml",
+        ".vscode/launch.json",
+        ".vscode/extensions.json",
+        ".rubocop.yml",
+        ".solargraph.yml",
+        "CLAUDE.md",
+        "codecov.yml",
         ".pre-commit-config.yaml",
         "tools/vscode/**",
         "tools/eclipse/udb-vscode/**",
@@ -1283,10 +1469,11 @@
     }
   ],
   "first_vertical_slice": "Full-config C/SV headers: cfg_header_base.rb + cfg_{c,svh}_header/generator.rb + tests/golden/mc100-32-full-example.golden.{h,svh}; typed concrete version/parameter defines before instruction-table decode variable API.",
-  "oracle_policy": "Byte exact tracked YAML, headers, appendix and old-version MDX; canonical structured data for YAML/JSON; semantic page/anchor/link for AsciiDoc/HTML; decoded cells for XLSX; normalized PDF content/metadata; compiled source gates separately from offline installed generation.",
+  "oracle_policy": "Byte exact tracked layout YAML, headers and unchanged old-version MDX; appendix exact after removing its one known checkout-relative renderer attribute; canonical structured data for other YAML/JSON; semantic page/anchor/link for AsciiDoc/HTML; decoded cells for XLSX; normalized PDF content/metadata; compiled source gates separately from offline installed generation.",
   "coverage_notes": [
     "MMR common template and potentially dormant cpp/manual ERB files are retained pending dynamic invocation proof.",
     "Legacy editor ERB injection fixtures retained until migration of developer workflows.",
+    "The 135-file YAML prose census is not a complete ERB census: custom gen_mcliciX.rb additionally embeds ERB heredocs.",
     "No installed source generation can depend on symlink targets in ext/docs-resources or fetched manual chapters."
   ],
   "deployed_artifacts": {
