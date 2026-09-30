@@ -184,6 +184,15 @@ type-check every instruction or CSR body, and it does not implicitly follow a co
 `arch_overlay` declaration. Overlays with checkout-relative IDL includes, such as `qc_iu`, need
 the checkout source database (`--path`) as shown above rather than the bundled snapshot.
 
+Proved configuration conflicts are shown as separate entries with captured requirement reasons,
+rules, and original source locations when available. Array assignments summarize repeated values
+and list a bounded number of other indexed values; these are observed input facts, not individually
+proved causes. A parameter's definition condition is distinct from its supplied value. Unknown
+core labels have an explicit raw-label fallback. This presentation does not change solver decisions
+or conflict membership; invalid IDL remains an error diagnostic.
+Displayed values and captured rule/IDL snippets preserve literal whitespace, even when
+their previews are truncated.
+
 Repository authors can regenerate every layout-derived architecture file without Ruby, Rake, or
 ERB:
 
@@ -316,6 +325,12 @@ undecidable solver queries return `DEFERRED` or `UNKNOWN`; supported IDL require
 cause deferral. `arch.check()` returns an `ArchitectureCheck` with status `VALID`, `UNSAT`, or
 `DEFERRED`. Unsatisfiable configurations report labeled diagnostic conflicts. Invalid custom
 IDL requirements produce source-aware `invalid-idl-condition` diagnostics.
+
+`udb.configuration_diagnostics.explain_conflict(arch, check)` returns immutable explanation entries
+in exactly `check.conflict` order. Each retains its complete original `label`, including when a long
+display is truncated, plus any captured source spans and details. `format_check_diagnostics(arch,
+check)` returns the corresponding stderr lines without rereading sources or performing solver
+queries. The underlying `ArchitectureCheck` and its diagnostics are unchanged.
 
 ## IDL parsing and semantics
 
