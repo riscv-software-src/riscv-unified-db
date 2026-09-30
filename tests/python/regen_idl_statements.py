@@ -758,7 +758,7 @@ def run_oracle(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
         batch = cases[start : start + BATCH_SIZE]
         payload = json.dumps({"cases": batch})
         proc = subprocess.run(
-            [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
+            [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
             cwd=REPOSITORY_ROOT,
             input=payload,
             capture_output=True,
