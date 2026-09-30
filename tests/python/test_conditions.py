@@ -739,7 +739,7 @@ def test_condition_evaluation_and_sat_match_ruby_oracle() -> None:
         {"param": {"name": "LITTLE_IS_BETTER", "equal": False}},
     ]
     result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
+        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
         cwd=REPOSITORY_ROOT,
         input=json.dumps({"config": "little_is_better", "conditions": data}),
         check=False,
@@ -778,7 +778,7 @@ def test_legacy_ruby_condition_defects_are_reproducible() -> None:
     if mise is None:
         pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
     result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_DEFECTS)],
+        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_DEFECTS)],
         cwd=REPOSITORY_ROOT,
         check=False,
         capture_output=True,
