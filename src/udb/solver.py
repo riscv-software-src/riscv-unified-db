@@ -39,6 +39,10 @@ from .domains import (
 from .versions import ExtensionVersionSet, Version
 
 _MAX_MATERIALIZED_ARRAY_ITEMS = 4096
+# Arrays whose maxItems exceeds _MAX_MATERIALIZED_ARRAY_ITEMS (for example
+# HPM_EVENTS, maxItems 2**64) get this many item symbols; queries that reach
+# past the prefix are over-approximated rather than rejected.
+_TRUNCATED_ARRAY_PREFIX_ITEMS = 64
 
 
 class SolverError(RuntimeError):
@@ -110,9 +114,21 @@ class ConditionModel:
 
 @dataclass(slots=True)
 class _ArraySymbol:
+    """Array parameter encoding.
+
+    When ``truncated`` is true, ``length`` may exceed ``len(items)``: only a
+    prefix is materialized, and constraints that depend on the remaining items
+    are over-approximated so that no satisfiable configuration is rejected.
+    Model values for such an array list only the materialized prefix.
+    """
+
     length: Any
     items: tuple[Any, ...]
     item_domains: tuple[ParameterDomain | None, ...]
+    name: str = ""
+    domain: ArrayDomain | None = None
+    truncated: bool = False
+    tail_items: dict[int, Any] = field(default_factory=dict)
 
 
 class ConditionSolver:
@@ -135,6 +151,7 @@ class ConditionSolver:
         self._parameter_symbols: dict[str, Any] = {}
         self._free_symbols: dict[str, Any] = {}
         self._unresolved_idl_symbols: dict[UnresolvedIdlCondition, Any] = {}
+        self._fresh_symbol_count = 0
         self._base_has_unresolved = False
         self._xlen = z3.Int("udb_xlen", ctx=self._z3_context)
         self._solver.add(z3.Or(self._xlen == 32, self._xlen == 64))
@@ -477,9 +494,9 @@ class ConditionSolver:
         if term.index is not None:
             if not isinstance(symbol, _ArraySymbol):
                 raise SolverError(f"parameter {term.name!r} is not an array")
-            if term.index >= len(symbol.items):
+            if term.index >= len(symbol.items) and not symbol.truncated:
                 return z3.BoolVal(False, ctx=self._z3_context)
-            selected = symbol.items[term.index]
+            selected = self._array_item(symbol, term.index, term.value)
             in_range = symbol.length > term.index
         elif term.size:
             if not isinstance(symbol, _ArraySymbol):
@@ -505,6 +522,8 @@ class ConditionSolver:
                 )
                 for index, item in enumerate(symbol.items)
             )
+            if symbol.truncated:
+                matches += (self._tail_includes(symbol, term.value),)
             comparison = self._or(*matches)
         elif term.operator is ParameterOperator.ONE_OF:
             comparison = self._or(*(self._equals(selected, value) for value in term.value))
@@ -556,17 +575,19 @@ class ConditionSolver:
         if maximum is None:
             raise SolverError(f"array parameter {name!r} needs a finite maxItems domain")
         maximum = int(maximum)
-        if maximum > _MAX_MATERIALIZED_ARRAY_ITEMS:
-            raise SolverError(
-                f"array parameter {name!r} maxItems {maximum} exceeds the solver limit "
-                f"of {_MAX_MATERIALIZED_ARRAY_ITEMS}"
-            )
         if maximum < minimum:
             raise SolverError(f"array parameter {name!r} has an empty length domain")
+        truncated = maximum > _MAX_MATERIALIZED_ARRAY_ITEMS
+        materialized = max(minimum, _TRUNCATED_ARRAY_PREFIX_ITEMS) if truncated else maximum
+        if materialized > _MAX_MATERIALIZED_ARRAY_ITEMS:
+            raise SolverError(
+                f"array parameter {name!r} minItems {minimum} exceeds the solver limit "
+                f"of {_MAX_MATERIALIZED_ARRAY_ITEMS}"
+            )
         length = self._z3.Int(f"udb_param_{_safe_name(name)}_length", ctx=self._z3_context)
         item_domains = tuple(
             domain.domain_for_index(index) if domain is not None else None
-            for index in range(maximum)
+            for index in range(materialized)
         )
         items = tuple(
             _make_scalar(
@@ -580,9 +601,9 @@ class ConditionSolver:
                 f"udb_param_{_safe_name(name)}_{index}",
                 self._z3_context,
             )
-            for index in range(maximum)
+            for index in range(materialized)
         )
-        symbol = _ArraySymbol(length, items, item_domains)
+        symbol = _ArraySymbol(length, items, item_domains, name, domain, truncated)
         self._solver.add(length >= minimum, length <= maximum)
         for index, (item, item_domain) in enumerate(zip(items, item_domains, strict=True)):
             if item_domain is not None:
@@ -590,8 +611,8 @@ class ConditionSolver:
                     self._z3.Implies(length > index, self._domain_expression(item, item_domain))
                 )
         if getattr(domain, "unique_items", False):
-            for left in range(maximum):
-                for right in range(left + 1, maximum):
+            for left in range(materialized):
+                for right in range(left + 1, materialized):
                     if items[left].sort() == items[right].sort():
                         self._solver.add(
                             self._z3.Implies(length > right, items[left] != items[right])
@@ -605,10 +626,49 @@ class ConditionSolver:
                     *(
                         self._z3.And(length > index, self._domain_expression(item, contained))
                         for index, item in enumerate(items)
-                    )
+                    ),
+                    *((length > materialized,) if truncated else ()),
                 )
             )
         return symbol
+
+    def _array_item(self, symbol: _ArraySymbol, index: int, value_hint: Any) -> Any:
+        """Return the item at *index*, creating an unmaterialized tail item if needed."""
+
+        if index < len(symbol.items):
+            return symbol.items[index]
+        if index in symbol.tail_items:
+            return symbol.tail_items[index]
+        item_domain = symbol.domain.domain_for_index(index) if symbol.domain is not None else None
+        item = _make_scalar(
+            self._z3,
+            _domain_kind(item_domain, value_hint),
+            f"udb_param_{_safe_name(symbol.name)}_{index}",
+            self._z3_context,
+        )
+        if item_domain is not None:
+            self._solver.add(
+                self._z3.Implies(symbol.length > index, self._domain_expression(item, item_domain))
+            )
+        symbol.tail_items[index] = item
+        return item
+
+    def _tail_includes(self, symbol: _ArraySymbol, value: Any) -> Any:
+        """Over-approximate whether an unmaterialized item could equal *value*."""
+
+        prefix = len(symbol.items)
+        item_domain = symbol.domain.domain_for_index(prefix) if symbol.domain is not None else None
+        self._fresh_symbol_count += 1
+        item = _make_scalar(
+            self._z3,
+            _domain_kind(item_domain, value),
+            f"udb_param_{_safe_name(symbol.name)}_tail_{self._fresh_symbol_count}",
+            self._z3_context,
+        )
+        clauses = [symbol.length > prefix, self._scalar_equals(item, value)]
+        if item_domain is not None:
+            clauses.append(self._domain_expression(item, item_domain))
+        return self._z3.And(*clauses)
 
     def _constrain_domain(self, symbol: Any, domain: Any) -> None:
         if isinstance(symbol, _ArraySymbol):
@@ -648,12 +708,12 @@ class ConditionSolver:
         if isinstance(symbol, _ArraySymbol):
             if not isinstance(value, (tuple, list)):
                 return self._z3.BoolVal(False, ctx=self._z3_context)
-            if len(value) > len(symbol.items):
+            if len(value) > len(symbol.items) and not symbol.truncated:
                 return self._z3.BoolVal(False, ctx=self._z3_context)
             return self._z3.And(
                 symbol.length == len(value),
                 *(
-                    self._scalar_equals(symbol.items[index], item)
+                    self._scalar_equals(self._array_item(symbol, index, item), item)
                     for index, item in enumerate(value)
                 ),
             )

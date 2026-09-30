@@ -447,16 +447,55 @@ def test_solver_consumes_real_scalar_and_array_domains() -> None:
     )
 
 
-def test_solver_rejects_impractically_large_materialized_arrays() -> None:
+def test_solver_truncates_huge_array_domains_soundly() -> None:
     pytest.importorskip("z3")
     solver_api = _solver_module()
     array = ParameterDomain.from_schema(
-        {"type": "array", "items": {"type": "integer"}, "maxItems": 5000}
+        {
+            "type": "array",
+            "items": {"type": "integer", "minimum": 0, "maximum": 2**60},
+            "uniqueItems": True,
+            "maxItems": 2**64,
+        }
     )
-    solver = solver_api.ConditionSolver(solver_api.SolverContext(parameter_domains={"A": array}))
+    context = solver_api.SolverContext(parameter_domains={"A": array})
 
+    def sat(raw: object) -> bool:
+        return solver_api.is_satisfiable(parse_condition(raw), context)
+
+    assert sat({"param": {"name": "A", "equal": []}})
+    assert sat({"param": {"name": "A", "size": True, "equal": 2**59}})
+    assert not sat({"param": {"name": "A", "size": True, "equal": 2**60 + 2}})
+    # Items and values beyond the materialized prefix stay possible...
+    assert sat({"param": {"name": "A", "equal": list(range(100))}})
+    assert sat({"param": {"name": "A", "index": 500, "equal": 7}})
+    assert sat(
+        {
+            "allOf": [
+                {"param": {"name": "A", "size": True, "equal": 200}},
+                {"param": {"name": "A", "includes": 2**60}},
+                {"not": {"param": {"name": "A", "index": 0, "equal": 2**60}}},
+            ]
+        }
+    )
+    # ...while item domains and the length still constrain them.
+    assert not sat({"param": {"name": "A", "index": 500, "equal": 2**60 + 1}})
+    assert not sat({"param": {"name": "A", "includes": 2**60 + 1}})
+    assert not sat(
+        {
+            "allOf": [
+                {"param": {"name": "A", "size": True, "equal": 0}},
+                {"param": {"name": "A", "includes": 1}},
+            ]
+        }
+    )
+
+    minimum = ParameterDomain.from_schema(
+        {"type": "array", "items": {"type": "integer"}, "minItems": 5000, "maxItems": 2**64}
+    )
+    solver = solver_api.ConditionSolver(solver_api.SolverContext(parameter_domains={"A": minimum}))
     with pytest.raises(solver_api.SolverError, match="exceeds the solver limit"):
-        solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 1}}))
+        solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 5000}}))
 
 
 def test_solver_links_xlen_to_mxlen() -> None:

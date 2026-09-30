@@ -46,10 +46,14 @@ Models are available after `SAT`; labeled constraints provide Z3 unsat cores and
 deletion-minimal conflict relative to any unlabeled background constraints.
 
 The Z3 adapter consumes `ParameterDomain` metadata and does not add solver state to the domain
-objects. Array solving currently materializes one symbol per possible index, so a referenced array
-domain must have a practical finite `maxItems`; an unbounded array without a fixed-value length is
-rejected with `SolverError`. This does not affect large array domains that are present in the
-catalog but never referenced by a condition or fixed value, because parameter symbols are lazy.
+objects. Array solving materializes one symbol per possible index, so a referenced array domain
+must have a finite `maxItems`; an unbounded array without a fixed-value length is rejected with
+`SolverError`. When `maxItems` exceeds 4096 (for example `HPM_EVENTS`, whose `maxItems` is
+`2**64`), only a 64-item prefix is materialized, as in Ruby. The length remains bounded by
+`maxItems`, and a constraint that reaches past the prefix (a larger index, an `includes`, a long
+fixed value) is over-approximated, so no satisfiable configuration is rejected. Ruby instead ignores
+items past index 64. Parameter symbols are lazy, so large array domains that no condition or fixed
+value references cost nothing.
 
 `tests/python/test_conditions.py` covers parsing, canonical serialization, three-valued evaluation,
 partial evaluation, actual `ExtensionVersionSet` compatibility, actual scalar and array domains,
