@@ -11,6 +11,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from .cli_output import write_generated_source as _write_generated_source
 from .database import Database, ResolvedDatabase
 from .errors import UdbError
 from .layout_collections import get_layout_collection, layout_collection_names
@@ -169,34 +170,6 @@ def build_parser() -> argparse.ArgumentParser:
     add_extension_document_parser(generators)
     add_pdf_render_parser(subparsers)
     return parser
-
-
-def _write_generated_source(
-    text: str, output: Path | None, *, artifact: str, create_parents: bool = False
-) -> None:
-    destination = "stdout" if output is None else str(output)
-    try:
-        encoded = text.encode("utf-8")
-        if output is None:
-            stream = getattr(sys.stdout, "buffer", None)
-            if stream is None:
-                raise OSError("stdout has no binary stream for UTF-8 output")
-            # Raw writes avoid locale/newline translation and buffered
-            # retries at shutdown after a broken pipe.
-            stream = getattr(stream, "raw", stream)
-            remaining = memoryview(encoded)
-            while remaining:
-                written = stream.write(remaining)
-                if written is None or written <= 0:
-                    raise OSError(f"stdout did not accept the complete {artifact}")
-                remaining = remaining[written:]
-            stream.flush()
-        else:
-            if create_parents:
-                output.parent.mkdir(parents=True, exist_ok=True)
-            output.write_bytes(encoded)
-    except (OSError, UnicodeError) as error:
-        raise UdbError(f"{destination}: cannot write {artifact}: {error}") from error
 
 
 def main(argv: Sequence[str] | None = None) -> int:

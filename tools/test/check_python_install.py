@@ -709,6 +709,38 @@ def check_install() -> None:
             )
         subprocess.run(["udb", "show", "instruction", "add"], check=True, stdout=subprocess.DEVNULL)
 
+        idl_command = [sys.executable, "-I", "-m", "udb.idl.cli"]
+        evaluated = subprocess.run(
+            [*idl_command, "eval", "-DA=1==1", "A"],
+            check=True,
+            capture_output=True,
+        )
+        assert evaluated.stdout == b"true\n" and evaluated.stderr == b""
+        typed = subprocess.run(
+            [*idl_command, "tc", "inst", "-"],
+            input=b"X[2] = 15;\n",
+            check=True,
+            capture_output=True,
+        )
+        assert typed.stdout == typed.stderr == b""
+        compiled = subprocess.run(
+            [*idl_command, "compile", "-r", "instruction_operation", "-f", "json", "-"],
+            input=b"X[2] = 15;\n",
+            check=True,
+            capture_output=True,
+        )
+        tree = json.loads(compiled.stdout)
+        assert tree["kind"] == "function_body" and len(tree["stmts"]) == 1
+        assert tree["stmts"][0]["expr"]["kind"] == "array_element_assignment"
+        rejected = subprocess.run(
+            [*idl_command, "tc", "inst", "-"],
+            input=b"X[missing] = 15;\n",
+            check=False,
+            capture_output=True,
+        )
+        assert rejected.returncode == 1 and b"missing" in rejected.stderr
+        assert rejected.stdout == b""
+
     function_body = idl.parse_function_body("XReg a = X[rs1] + X[rs2];\nreturn a;\n")
     assert isinstance(function_body, idl.FunctionBody)
     isa_snippet = idl.parse_isa(
@@ -854,7 +886,7 @@ def check_install() -> None:
         f"{data_references} data / {schema_references} schema references, "
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
         f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
-        "IDL statement typing & execution, captured architecture compilation & value bounds, "
+        "standalone IDL CLI, IDL statement typing & execution, captured architecture compilation & value bounds, "
         "standalone analysis and source-generation passes, symbolic IDL conditions & genuine hooks"
     )
 
