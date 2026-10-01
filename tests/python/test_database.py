@@ -212,12 +212,9 @@ def test_cli_lists_and_shows_bundled_records(monkeypatch, capsys) -> None:
 
 
 def test_cli_reports_data_errors_without_a_traceback(tmp_path: Path, capsys) -> None:
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(tmp_path / "missing"), "list", "extension"])
-
-    assert error.value.code == 2
+    assert main(["--database", str(tmp_path / "missing"), "list", "extension"]) == 2
     stderr = capsys.readouterr().err
-    assert stderr.startswith("udb: error:")
+    assert stderr.startswith("Error:")
     assert "Traceback" not in stderr
 
 
@@ -226,10 +223,7 @@ def test_cli_reports_invalid_utf8_without_a_traceback(tmp_path: Path, capsys) ->
     invalid_path.parent.mkdir(parents=True)
     invalid_path.write_bytes(b"kind: extension\nname: Invalid\nvalue: \xff\n")
 
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(tmp_path), "list", "extension"])
-
-    assert error.value.code == 2
+    assert main(["--database", str(tmp_path), "list", "extension"]) == 2
     stderr = capsys.readouterr().err
     assert "ext/Invalid.yaml" in stderr
     assert "Traceback" not in stderr

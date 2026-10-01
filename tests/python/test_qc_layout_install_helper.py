@@ -48,7 +48,7 @@ def test_installed_helper_logic_with_explicit_simulated_resources(
         stdout, stderr = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
             try:
-                result = cli.main(["generate-layouts", *arguments])
+                result = cli.main(["author", "layouts", *arguments])
             except SystemExit as error:
                 result = error.code
         return subprocess.CompletedProcess(arguments, result, stdout.getvalue(), stderr.getvalue())

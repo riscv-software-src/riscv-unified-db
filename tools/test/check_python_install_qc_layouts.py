@@ -29,7 +29,7 @@ def _without_warning(content: bytes, source: str) -> bytes:
 
 def _cli(*arguments: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, "-I", "-m", "udb", "generate-layouts", *arguments],
+        [sys.executable, "-I", "-m", "udb", "author", "layouts", *arguments],
         capture_output=True,
         text=True,
         check=False,
@@ -123,10 +123,10 @@ def check_installed_qc_layouts(root: Path, oracle_path: Path) -> None:
         ]
 
     cli_root = root / "cli"
-    generated = _cli("--root", str(cli_root), "--collection", "qc_iu")
+    generated = _cli("--root", str(cli_root), "--collection", "qc-iu")
     assert generated.returncode == 0, generated.stderr
     assert generated.stdout == generated.stderr == ""
-    checked = _cli("--root", str(cli_root), "--collection", "qc_iu", "--check")
+    checked = _cli("--root", str(cli_root), "--collection", "qc-iu", "--check")
     assert checked.returncode == 0, checked.stderr
     assert checked.stdout == checked.stderr == ""
     assert len(tuple(cli_root.rglob("*.yaml"))) == 56
@@ -134,7 +134,7 @@ def check_installed_qc_layouts(root: Path, oracle_path: Path) -> None:
     drift = cli_root / drift_path
     drift.chmod(0o644)
     drift.write_bytes(b"drift\n")
-    checked = _cli("--root", str(cli_root), "--collection", "qc_iu", "--check")
+    checked = _cli("--root", str(cli_root), "--collection", "qc-iu", "--check")
     assert checked.returncode == 1
     assert checked.stdout == f"{drift_path}\n" and checked.stderr == ""
     assert drift.read_bytes() == b"drift\n"
@@ -142,7 +142,7 @@ def check_installed_qc_layouts(root: Path, oracle_path: Path) -> None:
         "--root",
         str(root / "missing-out"),
         "--collection",
-        "qc_iu",
+        "qc-iu",
         "--source-root",
         str(root / "missing-input"),
     )
@@ -161,7 +161,7 @@ def check_installed_qc_layouts(root: Path, oracle_path: Path) -> None:
         "--root",
         str(cli_explicit),
         "--collection",
-        "qc_iu",
+        "qc-iu",
         "--source-root",
         str(cli_inputs),
     )

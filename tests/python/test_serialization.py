@@ -362,11 +362,33 @@ def test_serialization_cli_commands(tmp_path: Path) -> None:
     _write_schema(schemas)
 
     assert (
-        main(["--path", str(source), "--schemas", str(schemas), "resolve", str(tmp_path / "db")])
+        main(
+            [
+                "--database",
+                str(source),
+                "--schema-dir",
+                str(schemas),
+                "resolve",
+                "-o",
+                str(tmp_path / "db"),
+            ]
+        )
         == 0
     )
     assert (tmp_path / "db" / "ext" / "Demo.yaml").is_file()
-    assert main(["--schemas", str(schemas), "schemas", str(tmp_path / "published")]) == 0
+    assert (
+        main(
+            [
+                "--schema-dir",
+                str(schemas),
+                "generate",
+                "schema-bundle",
+                "-o",
+                str(tmp_path / "published"),
+            ]
+        )
+        == 0
+    )
     assert (tmp_path / "published" / "demo_schema.json" / "v1.2" / "demo_schema.json").is_file()
 
 
@@ -375,13 +397,13 @@ def test_schema_cli_reads_the_explicit_live_schema_root(tmp_path: Path) -> None:
     _write_schema(schemas)
     first = tmp_path / "first"
     second = tmp_path / "second"
-    assert main(["--schemas", str(schemas), "schemas", str(first)]) == 0
+    assert main(["--schema-dir", str(schemas), "generate", "schema-bundle", "-o", str(first)]) == 0
 
     schema_path = schemas / "demo_schema.json"
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     schema["$id"] = "v1.3"
     schema_path.write_text(json.dumps(schema), encoding="utf-8")
-    assert main(["--schemas", str(schemas), "schemas", str(second)]) == 0
+    assert main(["--schema-dir", str(schemas), "generate", "schema-bundle", "-o", str(second)]) == 0
 
     assert (first / "demo_schema.json" / "v1.2" / "demo_schema.json").is_file()
     assert (second / "demo_schema.json" / "v1.3" / "demo_schema.json").is_file()

@@ -25,11 +25,12 @@ def test_cli_qc_generation_reads_independent_explicit_source_tree(
         for item in source_plan.outputs
     }
     arguments = [
-        "generate-layouts",
+        "author",
+        "layouts",
         "--root",
         str(output),
         "--collection",
-        "qc_iu",
+        "qc-iu",
         "--source-root",
         str(ROOT),
     ]
@@ -51,7 +52,8 @@ def test_cli_both_collections_check_reports_exact_drift_without_writes(
     assert (
         cli.main(
             [
-                "generate-layouts",
+                "author",
+                "layouts",
                 "--root",
                 str(tmp_path),
                 "--source-root",
@@ -59,7 +61,7 @@ def test_cli_both_collections_check_reports_exact_drift_without_writes(
                 "--collection",
                 "standard",
                 "--collection",
-                "qc_iu",
+                "qc-iu",
                 "--check",
             ]
         )
@@ -72,27 +74,27 @@ def test_cli_both_collections_check_reports_exact_drift_without_writes(
 
 
 def test_cli_unknown_collection_fails_explicitly_before_writes(tmp_path: Path) -> None:
-    with pytest.raises(SystemExit) as error:
-        cli.main(["generate-layouts", "--root", str(tmp_path), "--collection", "unknown"])
-    assert error.value.code == 2
+    assert cli.main(["author", "layouts", "--root", str(tmp_path), "--collection", "unknown"]) == 2
     assert not tuple(tmp_path.rglob("*.yaml"))
 
 
 def test_cli_missing_explicit_source_never_falls_back(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    with pytest.raises(SystemExit) as error:
+    assert (
         cli.main(
             [
-                "generate-layouts",
+                "author",
+                "layouts",
                 "--root",
                 str(tmp_path / "output"),
                 "--source-root",
                 str(tmp_path / "missing"),
                 "--collection",
-                "qc_iu",
+                "qc-iu",
             ]
         )
-    assert error.value.code == 2
+        == 2
+    )
     assert "layout source does not exist" in capsys.readouterr().err
     assert not (tmp_path / "output").exists()

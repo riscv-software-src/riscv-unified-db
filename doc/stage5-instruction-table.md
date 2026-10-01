@@ -77,7 +77,7 @@ The wheel/sdist gate builds a wheel from the sdist, compares packaged resources,
 and exercises the actual installed API and CLI outside the checkout with Ruby
 and Git unavailable. This integrated gate has passed locally.
 
-The installed CLI is `udb generate instruction-table`; `--config`, `--cfg`,
+The installed CLI is `udb generate instruction-table`; `--config`,
 and `-c` select an explicit configuration path or bundled name, and `--output`,
 `--out`, and `-o` select a file. It shares the configuration-header UTF-8/LF
 binary writer, including short-write handling and explicit broken-pipe errors.

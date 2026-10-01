@@ -6,8 +6,8 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 # Retained UDB queries, reports and fixed-bit matching
 
 `udb.query_reports` replaces the **real** legacy report commands:
-`bin/udb show extension|parameter`, `bin/udb list extensions|parameters|csrs`,
-and `bin/udb disasm ENCODING`. It does not retire or wrap these Ruby callers.
+The final installed commands are `udb inspect extension|parameter`,
+`udb inspect extensions|parameters|csrs`, and `udb inspect encoding ENCODING`.
 Permanent installed CLI naming remains a separate integration decision.
 The scoped module CLI below is available now for testing.
 

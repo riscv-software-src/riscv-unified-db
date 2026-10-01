@@ -145,7 +145,7 @@ retirement is a separately reviewed Stage 6 artifact transition, not a parity
 fix or a reason to rewrite historical MDX now.
 
 The unified command is
-`udb generate schema-docs [--schemas DIR] --out DIR [--check]`, with bundled
+`udb [--schema-dir DIR] generate schema-docs --output DIR [--check]`, with bundled
 schemas by default. The standalone module entry point and API remain usable.
 The wrapper and CI preserve generator exit statuses, including non-writing
 drift and invalid input. Release/versioning policy is unchanged.

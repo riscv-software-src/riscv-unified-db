@@ -130,7 +130,7 @@ def test_installed_cli_candidate_routes_reports_and_disassembly(capsys):
     assert (
         capsys.readouterr().out.encode() == (FIXTURES / "show-extension-I.stdout.txt").read_bytes()
     )
-    assert udb_main(["disasm", "fff10093", "--width", "32"]) == 0
+    assert udb_main(["inspect", "encoding", "fff10093", "--width", "32"]) == 0
     assert capsys.readouterr().out.encode() == (FIXTURES / "disasm-addi.stdout.txt").read_bytes()
 
 

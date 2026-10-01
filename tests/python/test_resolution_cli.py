@@ -4,8 +4,6 @@
 import json
 from pathlib import Path
 
-import pytest
-
 from udb.cli import main
 
 
@@ -25,9 +23,8 @@ def test_cli_can_resolve_and_overlay_without_changing_source(tmp_path: Path, cap
     assert (
         main(
             [
-                "--path",
+                "--database",
                 str(source),
-                "--resolved",
                 "--overlay",
                 str(overlay),
                 "show",
@@ -44,7 +41,5 @@ def test_cli_can_resolve_and_overlay_without_changing_source(tmp_path: Path, cap
 
 
 def test_overlay_without_resolution_is_an_error(tmp_path: Path, capsys) -> None:
-    with pytest.raises(SystemExit) as error:
-        main(["--overlay", str(tmp_path), "list", "extension"])
-    assert error.value.code == 2
-    assert "--overlay requires --resolved" in capsys.readouterr().err
+    assert main(["--view", "raw", "--overlay", str(tmp_path), "list", "extension"]) == 2
+    assert "--overlay is invalid with --view raw" in capsys.readouterr().err

@@ -64,14 +64,15 @@ def check_extension_documents(resolved: udb.ResolvedDatabase) -> None:
             [
                 command,
                 "generate",
-                "ext-doc",
-                "--out",
+                "extension-document",
+                "-o",
                 str(output / "cli"),
+                "-e",
+                "Zba",
                 "--revision",
                 "a67618c2cd25ec235ccaa35adfc523ed56ef83ea",
                 "--date",
                 "2026-10-01",
-                "Zba",
             ],
             check=True,
             capture_output=True,
@@ -104,7 +105,7 @@ def check_instruction_table(resolved: udb.ResolvedDatabase) -> None:
     assert (immediate.encoded_width, immediate.width, immediate.left_shift) == (12, 13, 1)
     assert immediate.sign_extend
     command = str(Path(sys.executable).with_name("udb"))
-    args = [command, "generate", "instruction-table", "--cfg", "rv32"]
+    args = [command, "generate", "instruction-table", "--config", "rv32"]
     stdout = subprocess.run(args, check=True, capture_output=True)
     assert stdout.stdout == expected and stdout.stderr == b""
     with TemporaryDirectory(prefix="udb-installed-table-") as temporary:
@@ -115,7 +116,7 @@ def check_instruction_table(resolved: udb.ResolvedDatabase) -> None:
             "84decffca54d1c359d29879e71cfd0a450c816d205a3212b8934b29f74e09cf8"
         )
         output.unlink()
-        written = subprocess.run([*args, "--out", str(output)], check=True, capture_output=True)
+        written = subprocess.run([*args, "--output", str(output)], check=True, capture_output=True)
         assert written.stdout == written.stderr == b""
         assert output.read_bytes() == file_bytes
         rejected = subprocess.run(
@@ -255,7 +256,8 @@ def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
         ):
             expected = generate_config_header(architecture, language).encode()
             assert hashlib.sha256(expected).hexdigest() == digest
-            args = [command, "generate", f"cfg-{language}-header", "-c", str(config_path)]
+            generator = "config-c-header" if language == "c" else "config-sv-header"
+            args = [command, "generate", generator, "-c", str(config_path)]
             stdout = subprocess.run(args, check=True, capture_output=True)
             assert stdout.stdout == expected and stdout.stderr == b""
             output = Path(f"installed-config.{language}")
@@ -264,7 +266,7 @@ def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
             assert written.stdout == written.stderr == b""
             assert output.read_bytes() == expected
         rejected = subprocess.run(
-            [command, "generate", "cfg-c-header"], check=False, capture_output=True
+            [command, "generate", "config-c-header"], check=False, capture_output=True
         )
         assert rejected.returncode == 2 and rejected.stdout == b""
         assert b"not fully configured" in rejected.stderr
@@ -311,7 +313,13 @@ def check_configuration_diagnostics(resolved: udb.ResolvedDatabase) -> None:
         path = Path(temporary) / "installed-conflict.yaml"
         path.write_text(text, encoding="utf-8")
         checked = subprocess.run(
-            [str(Path(sys.executable).with_name("udb")), "validate-cfg", str(path)],
+            [
+                str(Path(sys.executable).with_name("udb")),
+                "validate",
+                "cfg",
+                "-c",
+                str(path),
+            ],
             check=False,
             capture_output=True,
             text=True,
@@ -420,24 +428,24 @@ def check_generic_codegens(resolved: udb.ResolvedDatabase) -> None:
     digests = {
         "c-encoding": "1d05bff647d3223900692aec0e1745a77fdbbf0605c181a92c60325dd24dddf6",
         "sv-decode": "9c44e97fe06e78ad4d202b92f48b481acec5ed4efcb7a37b2796b634642e039f",
-        "go": "a5f7d09c1bf20879ba60e00a5a0a2e316f9b6bc5a3197559ac3c5192254dbbb6",
+        "go-encoding": "a5f7d09c1bf20879ba60e00a5a0a2e316f9b6bc5a3197559ac3c5192254dbbb6",
     }
-    modules = {"c-encoding": "c_encoding", "sv-decode": "sv_decode", "go": "go"}
+    modules = {"c-encoding": "c_encoding", "sv-decode": "sv_decode", "go-encoding": "go"}
     filenames = {
         "c-encoding": "encoding.out.h",
         "sv-decode": "riscv_decode_package.svh",
-        "go": "inst.go",
+        "go-encoding": "inst.go",
     }
     for config in ("_", "rv32", "rv64"):
         architecture = resolved.configure(udb.Configuration.builtin(config))
         artifacts = (
             ("c-encoding", generate_c_encoding(architecture)),
             ("sv-decode", generate_sv_decode(architecture)),
-            ("go", generate_go(architecture)),
+            ("go-encoding", generate_go(architecture)),
         )
         for generator, text in artifacts:
             expected = text.encode("utf-8")
-            frozen = expected.split(b"\n", 1)[1] if generator == "go" else expected
+            frozen = expected.split(b"\n", 1)[1] if generator == "go-encoding" else expected
             assert hashlib.sha256(frozen).hexdigest() == digests[generator]
             args = [command, "generate", generator, "--config", config]
             result = subprocess.run(args, check=True, capture_output=True)
@@ -654,7 +662,7 @@ def check_install() -> None:
                 "udb",
                 "generate",
                 "schema-docs",
-                "--out",
+                "--output",
                 str(docs_first),
                 "--check",
                 "--diagnostics",
@@ -674,7 +682,7 @@ def check_install() -> None:
                 "udb",
                 "generate",
                 "schema-docs",
-                "--out",
+                "--output",
                 str(docs_first),
                 "--schema",
                 "missing.json",
@@ -700,7 +708,7 @@ def check_install() -> None:
 
         for arguments in (
             ["show", "instruction", "add"],
-            ["generate-layouts", "--root", str(authoring_root), "--check"],
+            ["author", "layouts", "--root", str(authoring_root), "--check"],
         ):
             subprocess.run(
                 [sys.executable, "-I", "-m", "udb", *arguments],
@@ -709,7 +717,7 @@ def check_install() -> None:
             )
         subprocess.run(["udb", "show", "instruction", "add"], check=True, stdout=subprocess.DEVNULL)
 
-        idl_command = [sys.executable, "-I", "-m", "udb.idl.cli"]
+        idl_command = [sys.executable, "-I", "-m", "udb", "idl"]
         evaluated = subprocess.run(
             [*idl_command, "eval", "-DA=1==1", "A"],
             check=True,
@@ -717,14 +725,22 @@ def check_install() -> None:
         )
         assert evaluated.stdout == b"true\n" and evaluated.stderr == b""
         typed = subprocess.run(
-            [*idl_command, "tc", "inst", "-"],
+            [*idl_command, "check", "instruction", "-"],
             input=b"X[2] = 15;\n",
             check=True,
             capture_output=True,
         )
         assert typed.stdout == typed.stderr == b""
         compiled = subprocess.run(
-            [*idl_command, "compile", "-r", "instruction_operation", "-f", "json", "-"],
+            [
+                *idl_command,
+                "compile",
+                "--root",
+                "instruction_operation",
+                "-f",
+                "json",
+                "-",
+            ],
             input=b"X[2] = 15;\n",
             check=True,
             capture_output=True,
@@ -733,12 +749,12 @@ def check_install() -> None:
         assert tree["kind"] == "function_body" and len(tree["stmts"]) == 1
         assert tree["stmts"][0]["expr"]["kind"] == "array_element_assignment"
         rejected = subprocess.run(
-            [*idl_command, "tc", "inst", "-"],
+            [*idl_command, "check", "instruction", "-"],
             input=b"X[missing] = 15;\n",
             check=False,
             capture_output=True,
         )
-        assert rejected.returncode == 1 and b"missing" in rejected.stderr
+        assert rejected.returncode == 2 and b"missing" in rejected.stderr
         assert rejected.stdout == b""
 
     function_body = idl.parse_function_body("XReg a = X[rs1] + X[rs2];\nreturn a;\n")
@@ -834,7 +850,7 @@ def check_install() -> None:
     assert rv32_arch.check().status is udb.ArchitectureCheckStatus.VALID
     assert rv32_arch.extension_presence("Sv39") is udb.QueryPresence.ABSENT
     checked_config = subprocess.run(
-        [str(Path(sys.executable).with_name("udb")), "validate-cfg", "rv32"],
+        [str(Path(sys.executable).with_name("udb")), "validate", "cfg", "-c", "rv32"],
         check=True,
         capture_output=True,
         text=True,

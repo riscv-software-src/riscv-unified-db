@@ -377,8 +377,8 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y gcc verilator
       - name: Generate configuration header artifacts with installed Python CLI
         run: |
-          uv run --locked udb generate cfg-c-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.h
-          uv run --locked udb generate cfg-svh-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.svh
+          uv run --locked udb generate config-c-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.h
+          uv run --locked udb generate config-sv-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.svh
           cmp gen/config-headers/config.h tests/golden/mc100-32-full-example.golden.h
           cmp gen/config-headers/config.svh tests/golden/mc100-32-full-example.golden.svh
       - name: Check configuration header bytes and C/SystemVerilog consumers
@@ -611,7 +611,7 @@ jobs:
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
       - name: Check layout-derived architecture files
-        run: uv run --locked udb generate-layouts --root . --collection standard --collection qc_iu --check
+        run: uv run --locked udb author layouts --root . --collection standard --collection qc-iu --check
 
   regress-python-configured-prose-frozen:
     runs-on: ubuntu-latest
@@ -838,7 +838,7 @@ jobs:
       - name: Install Go source acceptance tool
         run: sudo apt-get update -qq && sudo apt-get install -y golang-go
       - name: Generate Go code with Python
-        run: uv run --locked python -m udb.generators.go -o gen/go/inst.go
+        run: uv run --locked udb generate go-encoding -o gen/go/inst.go
       - name: Compile and execute the complete Go assembler adaptor
         run: >-
           PATH=/usr/bin:$PATH UDB_TEST_GENERIC_TOOLS=1 uv run --locked python -m pytest -n 0
@@ -854,7 +854,7 @@ jobs:
       - name: Install C source acceptance tool
         run: sudo apt-get update -qq && sudo apt-get install -y gcc
       - name: Generate generic C encoding header with Python
-        run: uv run --locked python -m udb.generators.c_encoding -o gen/c_header/encoding.out.h
+        run: uv run --locked udb generate c-encoding -o gen/c_header/encoding.out.h
       - name: Require genuine all-code and interpolated-name prose parity
         run: >-
           uv run --locked python -m pytest -n 0
@@ -874,7 +874,7 @@ jobs:
       - name: Install SystemVerilog source acceptance tool
         run: sudo apt-get update -qq && sudo apt-get install -y verilator
       - name: Generate SystemVerilog decode package with Python
-        run: uv run --locked python -m udb.generators.sv_decode -o gen/sverilog/riscv_decode_package.svh
+        run: uv run --locked udb generate sv-decode -o gen/sverilog/riscv_decode_package.svh
       - name: Parse every SystemVerilog declaration and consumer reference
         run: >-
           UDB_TEST_GENERIC_TOOLS=1 uv run --locked python -m pytest -n 0
@@ -1045,7 +1045,7 @@ jobs:
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
       - name: Check schema versions against published URLs
-        run: uv run --locked udb --schemas spec/schemas schemas gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
+        run: uv run --locked udb --schema-dir spec/schemas generate schema-bundle -o gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
 
   regress-schema-docs:
     runs-on: ubuntu-latest
@@ -1057,7 +1057,7 @@ jobs:
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
       - name: Check schema documentation without rewriting released pages
-        run: ./bin/python -m udb generate schema-docs --schemas spec/schemas --out doc/docs/schemas --check
+        run: ./bin/python -m udb --schema-dir spec/schemas generate schema-docs -o doc/docs/schemas --check
       - name: Check old schema MDX files were not modified
         run: |
           base="$(git merge-base origin/main HEAD)"

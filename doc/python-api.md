@@ -158,18 +158,18 @@ configurations:
 ```shell
 udb list extension
 udb show extension Zvkg
-udb --path spec/std/isa list extension
-udb --resolved show profile RVI20U64
-udb --resolved --validate show profile RVI20U64
-udb --resolved --overlay my-isa-overlay show profile RVI20U64
-udb --path my-isa --schemas my-schemas --resolved --validate show extension Xdemo
-udb --path my-isa --schemas my-schemas --validate resolve build/resolved-isa
-udb --schemas my-schemas schemas build/schemas
-udb validate-cfg rv64
-udb validate-cfg my-configuration.yaml
-udb --overlay my-isa-overlay validate-cfg my-configuration.yaml
-udb --path my-isa --schemas my-schemas validate-cfg my-configuration.yaml
-udb --path spec/std/isa --schemas spec/schemas --overlay spec/custom/isa/qc_iu validate-cfg cfgs/qc_iu.yaml
+udb --database spec/std/isa --schema-dir spec/schemas list extension
+udb show profile RVI20U64
+udb validate data
+udb --overlay my-isa-overlay show profile RVI20U64
+udb --database my-isa --schema-dir my-schemas validate data
+udb --database my-isa --schema-dir my-schemas resolve -o build/resolved-isa
+udb --schema-dir my-schemas generate schema-bundle -o build/schemas
+udb validate cfg -c rv64
+udb validate cfg -c my-configuration.yaml
+udb --overlay my-isa-overlay validate cfg -c my-configuration.yaml
+udb --database my-isa --schema-dir my-schemas validate cfg -c my-configuration.yaml
+udb --database spec/std/isa --schema-dir spec/schemas --overlay spec/custom/isa/qc_iu validate cfg -c cfgs/qc_iu.yaml
 ```
 
 The same commands are available through `python -m udb`.
@@ -178,11 +178,11 @@ Generate the complete instruction table from bundled or explicitly supplied data
 
 ```shell
 udb generate instruction-table
-udb generate instruction-table --cfg rv32 --out instructions.txt
-udb --path my-isa --schemas my-schemas --overlay my-overlay generate instruction-table
+udb generate instruction-table --config rv32 --output instructions.txt
+udb --database my-isa --schema-dir my-schemas --overlay my-overlay generate instruction-table
 ```
 
-`--config`/`--cfg` accepts the bundled `_`, `rv32`, and `rv64` configurations or an
+`--config` accepts the bundled `_`, `rv32`, and `rv64` configurations or an
 explicit YAML path. As in the legacy generator, configuration does not filter
 instructions or pin their structural RV32/RV64 encodings. File output overwrites
 an existing file but does not create missing parent directories. Stdout and files
@@ -203,7 +203,7 @@ fragment from bundled data:
 ```shell
 udb generate c-encoding --config rv32 -o encoding.out.h
 udb generate sv-decode --config rv64 -o riscv_decode_package.svh
-udb generate go --config _ -o inst.go
+udb generate go-encoding --config _ -o inst.go
 ```
 
 The corresponding offline APIs are
@@ -219,10 +219,9 @@ selection retains the legacy name-only extension filter and `RV32`, `RV64`, or
 Generate retained extension documentation as standalone AsciiDoc:
 
 ```shell
-udb generate ext-doc --out build/Zba Zba@latest
-udb generate ext-doc --config rv64 --out build/Zicsr --include-implied Zicsr
-udb generate ext-doc --out build/Zba --format pdf Zba
-udb render pdf build/Zba/Zba.adoc --out build/Zba/Zba.pdf
+udb generate extension-document -e Zba@latest -o build/Zba
+udb generate extension-document --config rv64 -e Zicsr -o build/Zicsr --include-implied
+udb render pdf build/Zba/Zba.adoc -o build/Zba/Zba.pdf
 ```
 
 Source generation is offline and uses the configured architecture, installed
@@ -238,13 +237,13 @@ Fully configured C and SystemVerilog headers can be generated without Ruby or a
 native toolchain:
 
 ```shell
-udb generate cfg-c-header --config my-full-config.yaml
-udb generate cfg-svh-header -c my-full-config.yaml -o build/config.svh
-udb --path my-isa --schemas my-schemas --overlay my-overlay generate cfg-c-header -c my-full-config.yaml
+udb generate config-c-header --config my-full-config.yaml
+udb generate config-sv-header -c my-full-config.yaml -o build/config.svh
+udb --database my-isa --schema-dir my-schemas --overlay my-overlay generate config-c-header -c my-full-config.yaml
 ```
 
-`--cfg` is also accepted as an alias for `--config`. Configurations are explicit
-paths or the bundled names `_`, `rv32`, and `rv64`; there is no implicit checkout
+Configurations are explicit paths or the bundled names `_`, `rv32`, and `rv64`;
+there is no implicit checkout
 lookup. The default `_`, partial configurations, incomplete full configurations,
 and inconsistent or undecidable configurations fail with exit status 2.
 Generation preserves the reviewed legacy guard, presence-macro, version-precision,
@@ -291,10 +290,10 @@ Repository authors can regenerate every layout-derived architecture file without
 ERB:
 
 ```shell
-udb generate-layouts --root .
-udb generate-layouts --root . --check
-udb generate-layouts --root . --collection qc_iu --check
-udb generate-layouts --root generated --collection standard --collection qc_iu
+udb author layouts --root .
+udb author layouts --root . --check
+udb author layouts --root . --collection qc-iu --check
+udb author layouts --root generated --collection standard --collection qc-iu
 ```
 
 The layout renderer is intentionally limited to interpolation, conditionals, and bounded loops.
@@ -302,7 +301,7 @@ Generation owns the 532 tracked YAML outputs associated with the 31 layout sourc
 source warning, writes replacements atomically, and marks generated files read-only. `--check`
 reports drift and exits with status 1 without modifying files.
 
-Standard layouts remain the default. `--collection qc_iu` selects the five QC
+Standard layouts remain the default. `--collection qc-iu` selects the five QC
 CSR layouts and all 56 generated files; repeating `--collection` selects multiple
 collections (standard plus QC owns 588 files). Input errors use exit status 2.
 QC authoring has replaced the removed `gen_mcliciX.rb`; there is no separate QC
@@ -523,7 +522,7 @@ bundled or explicitly selected source data and supports explicit overlays:
 udb generate profile-configs -o generated-profiles
 udb generate profile-configs --profile RVI20U32 -o generated-profiles
 udb generate profile-configs --profile RVI20U32 -o generated-profiles --check
-udb --path my-isa --overlay my-overlay generate profile-configs -o generated-profiles
+udb --database my-isa --schema-dir my-schemas --overlay my-overlay generate profile-configs -o generated-profiles
 ```
 
 Generation exits 0 on success. `--check` prints differing relative paths and
@@ -703,7 +702,7 @@ custom.plan("custom-docs").apply("custom-docs")
 drift = generate_schema_docs("schema-docs", check=True)
 ```
 
-The CLI is `udb generate schema-docs --out DIR [--schemas DIR] [--check]`.
+The CLI is `udb [--schema-dir DIR] generate schema-docs -o DIR [--check]`.
 `--diagnostics` emits one JSON document containing status, paths, and all
 located notices; input/output failures return exit 2 with an error document.
 `--schema NAME.json --output-file reference/schema.mdx` selects one page.

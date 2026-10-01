@@ -62,7 +62,7 @@ returns a complete string, using an ordinary `ConfiguredArchitecture` built by
 `Database.resolve().configure(Configuration(...))`. `language` is `"c"` or `"svh"`.
 It reads immutable public configuration, database, and version APIs only.
 
-`udb generate cfg-c-header|cfg-svh-header --config CONFIG [-o FILE]` defaults to
+`udb generate config-c-header|config-sv-header --config CONFIG [-o FILE]` defaults to
 stdout and the bundled `_` configuration (therefore an explicit unsupported
 configuration error without `--config`). `-c` and `--cfg` are compatibility aliases.
 Only `_`, `rv32`, and `rv64` are bundled names; custom configurations require an

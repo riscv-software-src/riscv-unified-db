@@ -71,7 +71,7 @@ def test_cli_checks_real_idl_constraints(inputs, capsys, value, exit_code, statu
     config.write_text(json.dumps(data), encoding="utf-8")
     before = config.read_bytes()
 
-    assert main(["--path", str(source), "validate-cfg", str(config)]) == exit_code
+    assert main(["--database", str(source), "validate", "cfg", "-c", str(config)]) == exit_code
 
     output = capsys.readouterr()
     assert output.out == f"example: {status}\n"
@@ -88,7 +88,19 @@ def test_cli_applies_explicit_overlay(inputs, tmp_path, capsys):
         {"requirements": {"idl()": LiteralScalarString("-> P > 1;")}},
     )
     assert (
-        main(["--path", str(source), "--overlay", str(overlay), "validate-cfg", str(config)]) == 1
+        main(
+            [
+                "--database",
+                str(source),
+                "--overlay",
+                str(overlay),
+                "validate",
+                "cfg",
+                "-c",
+                str(config),
+            ]
+        )
+        == 1
     )
     assert capsys.readouterr().out == "example: unsat\n"
 
@@ -100,7 +112,7 @@ def test_cli_reports_invalid_idl(inputs, capsys):
     document["requirements"] = {"idl()": LiteralScalarString("-> missing_parameter;")}
     write_yaml(path, document)
 
-    assert main(["--path", str(source), "validate-cfg", str(config)]) == 1
+    assert main(["--database", str(source), "validate", "cfg", "-c", str(config)]) == 1
     output = capsys.readouterr()
     assert "invalid-idl-condition:" in output.err
     assert "param/P.yaml" in output.err
@@ -117,7 +129,7 @@ def test_cli_never_treats_deferred_as_success(inputs, capsys, monkeypatch):
             (ArchitectureDiagnostic("solver-unknown", "could not decide validity"),),
         ),
     )
-    assert main(["--path", str(source), "validate-cfg", str(config)]) == 2
+    assert main(["--database", str(source), "validate", "cfg", "-c", str(config)]) == 2
     output = capsys.readouterr()
     assert output.out == "example: deferred\n"
     assert "solver-unknown: could not decide validity" in output.err
@@ -130,9 +142,7 @@ def test_cli_reports_missing_or_malformed_configuration(inputs, capsys, malforme
         config.write_text("name: invalid\n", encoding="utf-8")
     else:
         config.unlink()
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(source), "validate-cfg", str(config)])
-    assert error.value.code == 2
+    assert main(["--database", str(source), "validate", "cfg", "-c", str(config)]) == 2
     assert str(config) in capsys.readouterr().err
 
 
@@ -146,6 +156,6 @@ def test_cli_accepts_bundled_configuration_name(inputs, capsys, monkeypatch):
         return configuration
 
     monkeypatch.setattr(Configuration, "builtin", builtin)
-    assert main(["--path", str(source), "validate-cfg", "rv32"]) == 0
+    assert main(["--database", str(source), "validate", "cfg", "-c", "rv32"]) == 0
     assert names == ["rv32"]
     assert capsys.readouterr().out == "example: valid\n"

@@ -199,12 +199,16 @@ def test_cli_check_reports_drift_without_rewriting(
         check: bool = False,
         collections: Sequence[LayoutCollection] | None = None,
         source_root: Path | None = None,
+        progress=None,
     ) -> tuple[PurePosixPath, ...]:
-        assert collections is None and source_root is None
+        assert collections is not None
+        assert tuple(collection.name for collection in collections) == ("standard",)
+        assert source_root is None
+        assert progress is None
         calls.append((root, check))
         return drift
 
-    monkeypatch.setattr(cli, "generate_layouts", fake_generate)
-    assert cli.main(["generate-layouts", "--root", str(tmp_path), "--check"]) == 1
+    monkeypatch.setattr("udb.layouts.generate_layouts", fake_generate)
+    assert cli.main(["author", "layouts", "--root", str(tmp_path), "--check"]) == 1
     assert calls == [(tmp_path, True)]
     assert capsys.readouterr().out == "spec/std/isa/out.yaml\n"
