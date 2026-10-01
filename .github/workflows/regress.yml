@@ -583,15 +583,6 @@ jobs:
       uses: ./.github/actions/mise-setup
     - name: Run test:ruby:build-udb-gem
       run: mise run test:ruby:build-udb-gem
-  aggregate-all:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run check:all
-      run: mise run check:all
   build-reuse-manifest:
     runs-on: ubuntu-latest
     if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
@@ -732,7 +723,6 @@ jobs:
     - riscv-tests-64
     - riscv-tests-vector
     - build-udb-gem
-    - aggregate-all
     - build-reuse-manifest
     - build-udb-api-docs
     - resolve-unconfig

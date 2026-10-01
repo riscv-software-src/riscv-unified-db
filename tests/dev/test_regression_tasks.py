@@ -72,7 +72,7 @@ ROW_TASK_JOB = (
     ("regress-riscv-tests-64", "test:isa:rv64", "riscv-tests-64"),
     ("regress-riscv-tests-vector", "test:isa:vector", "riscv-tests-vector"),
     ("regress-build-udb-gem", "test:ruby:build-udb-gem", "build-udb-gem"),
-    ("regress-regress", "check:all", "aggregate-all"),
+    ("regress-regress", "check:all", None),
     ("build-reuse-manifest", "artifact:reuse-manifest", "build-reuse-manifest"),
     ("build-udb-api-docs", "artifact:ruby-api-docs", "build-udb-api-docs"),
     ("resolve-unconfig", "artifact:resolved-unconfigured", "resolve-unconfig"),
@@ -109,11 +109,15 @@ def test_every_legacy_row_has_one_unique_task_and_workflow_job() -> None:
     jobs = _workflow_jobs()
     for _, task, job_name in ROW_TASK_JOB:
         assert task in discovered_names
+        if job_name is None:
+            continue
         assert job_name in jobs
         commands = "\n".join(
             step.get("run", "") for step in jobs[job_name]["steps"] if isinstance(step, dict)
         )
         assert f"mise run {task}" in commands
+    assert "aggregate-all" not in jobs
+    assert "aggregate-all" not in jobs["regress-complete"]["needs"]
 
 
 def test_check_all_contains_every_executable_regression_task() -> None:
