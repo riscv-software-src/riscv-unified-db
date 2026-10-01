@@ -49,6 +49,17 @@ Docusaurus compiled an isolated generated-schema site without rewriting
 historical pages. The [schema contract](stage5-schema-docs.md) records deliberate
 historical CI drift and retained legacy anchor/provenance limitations.
 
+### Accepted instruction-table slice
+
+Layer 25 provides `udb generate instruction-table` and public immutable encoding
+descriptors. Complete stdout/file artifacts match the frozen genuine Ruby
+outputs; selecting RV32/RV64 does not filter database instructions. The
+[instruction-table contract](stage5-instruction-table.md) documents exact
+formatting, source provenance, and UTF-8/LF output/error behavior.
+Native API/CLI tests run alongside the existing Ruby integration oracle, and
+the actual wheel rebuilt from sdist passes installed acceptance outside the
+checkout. Repository wrapper consolidation remains a later CLI-cutover step.
+
 ### Historical inventory method
 
 Each family below receives its legacy command, implementation/templates, input/config/version matrix, output paths and consumers, fixture and comparison policy, prospective Python API/CLI layer above Stage 4, and pending installed/CI gate. An apparent Python script is **not migrated** if it shells a Ruby script or requires repository paths. All installed generation gates use offline wheels/sdists outside the checkout, no repository, network, or UDB-owned native toolchain. Separate repository gates may compile generated C++/C/Go/SV and separately render documents with external Asciidoctor.

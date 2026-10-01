@@ -70,6 +70,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     generate_parser = subparsers.add_parser("generate", help="generate source artifacts")
     generators = generate_parser.add_subparsers(dest="generator", required=True)
+    table_parser = generators.add_parser(
+        "instruction-table", help="generate a table of all database instructions"
+    )
+    table_parser.add_argument(
+        "-c",
+        "--config",
+        "--cfg",
+        default="_",
+        help="explicit configuration YAML path or bundled name (_, rv32, rv64)",
+    )
+    table_parser.add_argument(
+        "-o", "--output", "--out", type=Path, help="output file (default: stdout)"
+    )
     for language, description in (("c", "C"), ("svh", "SystemVerilog")):
         header_parser = generators.add_parser(
             f"cfg-{language}-header", help=f"generate a fully configured {description} header"
@@ -124,6 +137,34 @@ def build_parser() -> argparse.ArgumentParser:
     docs_parser.add_argument("--replace-current", action="store_true")
     docs_parser.add_argument("--diagnostics", action="store_true")
     return parser
+
+
+def _write_generated_source(
+    text: str, output: Path | None, *, artifact: str, create_parents: bool = False
+) -> None:
+    destination = "stdout" if output is None else str(output)
+    try:
+        encoded = text.encode("utf-8")
+        if output is None:
+            stream = getattr(sys.stdout, "buffer", None)
+            if stream is None:
+                raise OSError("stdout has no binary stream for UTF-8 output")
+            # Raw writes avoid locale/newline translation and buffered
+            # retries at shutdown after a broken pipe.
+            stream = getattr(stream, "raw", stream)
+            remaining = memoryview(encoded)
+            while remaining:
+                written = stream.write(remaining)
+                if written is None or written <= 0:
+                    raise OSError(f"stdout did not accept the complete {artifact}")
+                remaining = remaining[written:]
+            stream.flush()
+        else:
+            if create_parents:
+                output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_bytes(encoded)
+    except (OSError, UnicodeError) as error:
+        raise UdbError(f"{destination}: cannot write {artifact}: {error}") from error
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -201,7 +242,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 0
 
             from .configuration import Configuration
-            from .generators.config_headers import ConfigHeaderError, generate_config_header
 
             configuration = (
                 Configuration.builtin(args.config)
@@ -215,30 +255,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                     ),
                 )
             )
+            architecture = database.configure(configuration)
+            if args.generator == "instruction-table":
+                from .instruction_table import render_instruction_table
+
+                text = render_instruction_table(architecture, file_name=args.output)
+                _write_generated_source(text, args.output, artifact="instruction table")
+                return 0
+
+            from .generators.config_headers import generate_config_header
+
             language = "c" if args.generator == "cfg-c-header" else "svh"
-            header = generate_config_header(database.configure(configuration), language)
-            destination = "stdout" if args.output is None else str(args.output)
-            try:
-                encoded = header.encode("utf-8")
-                if args.output is None:
-                    stream = getattr(sys.stdout, "buffer", None)
-                    if stream is None:
-                        raise OSError("stdout has no binary stream for UTF-8 output")
-                    # Raw writes avoid locale/newline translation and buffered
-                    # retries at shutdown after a broken pipe.
-                    stream = getattr(stream, "raw", stream)
-                    remaining = memoryview(encoded)
-                    while remaining:
-                        written = stream.write(remaining)
-                        if written is None or written <= 0:
-                            raise OSError("stdout did not accept the complete header")
-                        remaining = remaining[written:]
-                    stream.flush()
-                else:
-                    args.output.parent.mkdir(parents=True, exist_ok=True)
-                    args.output.write_bytes(encoded)
-            except (OSError, UnicodeError) as error:
-                raise ConfigHeaderError(f"{destination}: cannot write header: {error}") from error
+            header = generate_config_header(architecture, language)
+            _write_generated_source(header, args.output, artifact="header", create_parents=True)
             return 0
         if args.command == "validate-cfg":
             from .architecture import ArchitectureCheckStatus

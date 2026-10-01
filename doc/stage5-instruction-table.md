@@ -72,10 +72,21 @@ Source-aware input errors reject unsupported encoding fields and malformed
 locations rather than silently skipping them.
 
 Generation is data-only and works from the installed bundled database without
-a checkout, Ruby, an external compiler/toolchain, subprocesses, or network access. Installed
-wheel/sdist command integration and acceptance belong to the parent lane.
-This lane owns only descriptor/table modules, focused tests and raw fixtures,
-this contract, and integration suggestions under `gen/handoff`.
+a checkout, Ruby, an external compiler/toolchain, subprocesses, or network access.
+The wheel/sdist gate builds a wheel from the sdist, compares packaged resources,
+and exercises the actual installed API and CLI outside the checkout with Ruby
+and Git unavailable. This integrated gate has passed locally.
+
+The installed CLI is `udb generate instruction-table`; `--config`, `--cfg`,
+and `-c` select an explicit configuration path or bundled name, and `--output`,
+`--out`, and `-o` select a file. It shares the configuration-header UTF-8/LF
+binary writer, including short-write handling and explicit broken-pipe errors.
+Missing file parents remain errors rather than being created. Output is fully
+rendered before opening a destination; mid-write OS errors can leave a partial
+file, just as for configuration headers. Installed acceptance checks the full
+stdout/file Ruby hashes, descriptor extraction, and the actual entry point.
+CI retains the Ruby integration oracle while also exercising the Python API
+and CLI. Repository Ruby wrapper retirement remains part of CLI cutover.
 
 ## Native API
 

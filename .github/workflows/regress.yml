@@ -659,6 +659,13 @@ jobs:
         uses: ./.github/actions/mise-setup
       - name: Check udb-gen integration tests
         run: ./do test:udb_gen:integration
+      - name: Check native instruction tables and CLI
+        run: >-
+          uv run --locked python -m pytest -n 8
+          tests/python/test_instruction_table.py
+          tests/python/test_instruction_table_formats.py
+          tests/python/test_instruction_table_bundled.py
+          tests/python/test_instruction_table_cli.py
 
   regress-udb-gen-chore:
     runs-on: ubuntu-latest
