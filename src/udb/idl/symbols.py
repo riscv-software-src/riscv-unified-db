@@ -535,6 +535,29 @@ def _unchanged(value: object, original: object) -> bool:
     )
 
 
+def value_key(value: object) -> Hashable:
+    """A hashable key that is equal only for equal compile-time values of the same kinds."""
+    if isinstance(value, (list, tuple)):
+        return (type(value).__name__, tuple(value_key(item) for item in value))
+    if isinstance(value, dict):
+        return ("dict", tuple(sorted((key, value_key(item)) for key, item in value.items())))
+    return (type(value).__name__, value)
+
+
+def binding_state(binding: object) -> Hashable:
+    """Describe the evaluation-relevant state of a global binding for :meth:`global_state_key`.
+
+    Variables compare by value. Other bindings are shared or rebound copies of
+    immutable definitions, so they compare by the identity of that definition.
+    """
+    if isinstance(binding, Var):
+        return ("var", value_key(binding.value))
+    definition = getattr(binding, "func_def_ast", None)
+    if definition is not None:
+        return ("function", id(definition))
+    return ("binding", id(binding))
+
+
 _MISSING = object()
 
 

@@ -1251,10 +1251,24 @@ class FunctionType(Type):
         ``"unknown"``, matching Ruby's ``:unknown`` symbol placeholder.
         """
 
+        return [
+            value if known else "unknown"
+            for known, value in self._bind_arguments(
+                symtab, argument_nodes, call_site_symtab, func_call_ast
+            )
+        ]
+
+    def _bind_arguments(
+        self,
+        symtab: SymbolTableLike,
+        argument_nodes: Sequence[RvalueLike],
+        call_site_symtab: SymbolTableLike,
+        func_call_ast: FunctionCallLike,
+    ) -> list[tuple[bool, object]]:
         from .errors import IdlValueUnknown
         from .symbols import Var  # local import: symbols.py imports types.py
 
-        values: list[object] = []
+        values: list[tuple[bool, object]] = []
         for index in range(self.num_args):
             if index >= len(argument_nodes):
                 func_call_ast.type_error(f"Missing argument {index}")
@@ -1262,10 +1276,10 @@ class FunctionType(Type):
             try:
                 value = argument_nodes[index].value(call_site_symtab)
                 symtab.add(aname, Var(aname, atype, value))
-                values.append(value)
+                values.append((True, value))
             except IdlValueUnknown:
                 symtab.add(aname, Var(aname, atype))
-                values.append("unknown")
+                values.append((False, None))
         return values
 
     def argument_values(
@@ -1312,14 +1326,49 @@ class FunctionType(Type):
         call_site_symtab: SymbolTableLike,
         func_call_ast: FunctionCallLike,
     ) -> object:
+        from .errors import IdlValueUnknown
+        from .symbols import binding_state, value_key
+
         symtab = self._symtab.global_clone()
         symtab.push(func_call_ast)
-        self.apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
+        arguments = self._bind_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
+        # The result depends only on this definition, the bound global state and
+        # the argument values, so repeated evaluations share one result.
+        cache = key = None
+        state_key = getattr(self._symtab, "global_state_key", None)
+        node_cache = getattr(self.func_def_ast, "_cache", None)
+        if state_key is not None and isinstance(node_cache, dict):
+            try:
+                key = (
+                    state_key(binding_state),
+                    tuple(value_key(value) if known else () for known, value in arguments),
+                )
+                cache = node_cache.setdefault("return_values", {})
+                cached = cache.get(key)
+            except TypeError:
+                cache = None
+            else:
+                if cached is not None:
+                    symtab.pop()
+                    symtab.release()
+                    ok, result = cached
+                    if not ok:
+                        raise result.with_traceback(None)
+                    return copy.deepcopy(result) if isinstance(result, (list, dict)) else result
         try:
             value = self.func_def_ast.body.return_value(symtab)
+        except IdlValueUnknown as error:
+            if cache is not None:
+                cache[key] = (False, error)
+            raise
         finally:
             symtab.pop()
             symtab.release()
+        if cache is not None:
+            cache[key] = (
+                True,
+                copy.deepcopy(value) if isinstance(value, (list, dict)) else value,
+            )
         return value
 
     def argument_type(

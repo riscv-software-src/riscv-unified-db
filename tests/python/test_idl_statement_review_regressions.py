@@ -491,3 +491,54 @@ def test_unknown_calls_invalidate_transitive_and_opaque_global_writes(freeze):
             expected = None if name in cleared else value
             assert caller.get_global(name).value == expected
         assert table.get_global("counter").value == 5
+
+
+@pytest.mark.parametrize("freeze", [False, True])
+def test_function_return_values_are_reused_only_for_equal_globals_and_arguments(freeze):
+    table = SymbolTable()
+    table.add("g", Var("g", BITS8, 3))
+    table.add("u", Var("u", BITS8))
+    parse_isa(
+        "%version: 1.0\n"
+        "function scaled { returns Bits<8> arguments Bits<8> x description { scaled } "
+        "body { return x + g; } }\n"
+        "function guarded { returns Bits<8> description { guarded } body { "
+        "if (u == 0) { return 1; } return 2; } }"
+    ).type_check(table)
+    if freeze:
+        table.freeze_globals()
+        table = table.global_clone()
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+    definition = table.get("scaled").func_def_ast
+    calls = []
+    original = type(definition.body).return_value
+
+    def counting(body, symtab):
+        calls.append(body)
+        return original(body, symtab)
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(type(definition.body), "return_value", counting)
+        assert parse_expression("scaled(1)").value(table) == 4
+        assert parse_expression("scaled(1)").value(table.deep_clone()) == 4
+        assert len(calls) == 1
+        assert parse_expression("scaled(2)").value(table) == 5
+        assert len(calls) == 2
+        changed = table.deep_clone()
+        changed.get_global("g").value = 10
+        assert parse_expression("scaled(1)").value(changed) == 11
+        assert len(calls) == 3
+        unknown = table.deep_clone()
+        unknown.get_global("g").value = None
+        for _ in range(2):
+            with pytest.raises(IdlValueUnknown):
+                parse_expression("scaled(1)").value(unknown)
+        assert len(calls) == 4
+        for _ in range(2):
+            with pytest.raises(IdlValueUnknown):
+                parse_expression("guarded()").value(table)
+        assert len(calls) == 5
+        known = table.deep_clone()
+        known.get_global("u").value = 0
+        assert parse_expression("guarded()").value(known) == 1
