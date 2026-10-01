@@ -154,7 +154,8 @@ class ConditionSolver:
             self._solver.add(self._xlen == self.context.xlen)
         self._last_status: SolverStatus | None = None
         self._last_model: Any = None
-        self._last_assertions: tuple[Any, ...] = ()
+        # A z3 AstVector snapshot of the last satisfiable query, converted only on demand.
+        self._last_assertions: Any = ()
         self._last_core: tuple[str, ...] = ()
         self._initialize_extensions()
         self._initialize_fixed_parameters()
@@ -212,7 +213,7 @@ class ConditionSolver:
                             definite_model if self._last_status is SolverStatus.SAT else None
                         )
                         self._last_assertions = (
-                            tuple(self._solver.assertions())
+                            self._solver.assertions()
                             if self._last_status is SolverStatus.SAT
                             else ()
                         )
@@ -221,7 +222,7 @@ class ConditionSolver:
                 else:
                     self._last_status = SolverStatus.SAT
                     self._last_model = result_model
-                    self._last_assertions = tuple(self._solver.assertions())
+                    self._last_assertions = self._solver.assertions()
                 self._last_core = ()
             elif result == self._z3.unsat:
                 self._last_status = SolverStatus.UNSAT
@@ -284,7 +285,7 @@ class ConditionSolver:
             > _MAX_MATERIALIZED_ARRAY_ITEMS
             for symbol in self._parameter_symbols.values()
         ):
-            smaller_model = materializable_model(self, self._last_assertions)
+            smaller_model = materializable_model(self, tuple(self._last_assertions))
             if smaller_model is not None:
                 self._last_model = model = smaller_model
         xlen_value = model.eval(self._xlen, model_completion=True).as_long()
