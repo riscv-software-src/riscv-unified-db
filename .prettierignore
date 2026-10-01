@@ -16,3 +16,5 @@ tests/python/fixtures/configured_prose*.json
 tests/python/fixtures/schema_docs
 # Preserve native query/report bytes and exact hashed config inputs.
 tests/python/fixtures/query_reports
+# Preserve native generic-generator source and artifact captures byte-for-byte.
+tests/python/fixtures/generic_codegen
