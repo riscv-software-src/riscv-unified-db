@@ -11,8 +11,8 @@ version = "0.1.0a0"
 description = "Python access to the RISC-V Unified Database"
 readme = "doc/python-api.md"
 requires-python = ">=3.12"
-license = "BSD-3-Clause-Clear AND CC-BY-4.0"
-license-files = ["LICENSE-BSD-3-Clause-Clear.txt", "LICENSE-CC-BY.txt", "NOTICE", "REUSE.toml"]
+license = "BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT"
+license-files = ["LICENSE-BSD-3-Clause-Clear.txt", "LICENSE-CC-BY.txt", "LICENSES/BSD-2-Clause.txt", "LICENSE-MIT.txt", "NOTICE", "REUSE.toml", "src/udb/schema_docs/NOTICE"]
 authors = [{ name = "RISC-V UnifiedDB contributors" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -60,6 +60,8 @@ include = [
     "/cfgs/rv64.yaml",
     "/LICENSE-BSD-3-Clause-Clear.txt",
     "/LICENSE-CC-BY.txt",
+    "/LICENSES/BSD-2-Clause.txt",
+    "/LICENSE-MIT.txt",
     "/NOTICE",
     "/REUSE.toml",
     "/doc/python-api.md",

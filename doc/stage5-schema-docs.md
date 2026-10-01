@@ -137,18 +137,18 @@ names are explicit errors. Plans created without an output root are valid for
 inspection or fresh trees; an index plan must be rebuilt with its destination
 to retain already existing history.
 
-The proposed manual `bin/chore gen schema-docs` wrapper intentionally requests
+The manual `bin/chore gen schema-docs` wrapper intentionally requests
 `--replace-current`; its fail-on-change path and CI use non-writing `--check`.
 Historical pages remain protected in both modes. The byte-locked legacy
 provenance URL still points to the Ruby source: replacing it after Ruby
 retirement is a separately reviewed Stage 6 artifact transition, not a parity
 fix or a reason to rewrite historical MDX now.
 
-The eventual unified command is
+The unified command is
 `udb generate schema-docs [--schemas DIR] --out DIR [--check]`, with bundled
-schemas by default. The standalone module entry point and API remain usable
-while the parent integrates shared CLI, installed checks and CI. This lane
-does not modify those shared files or release/versioning policy.
+schemas by default. The standalone module entry point and API remain usable.
+The wrapper and CI preserve generator exit statuses, including non-writing
+drift and invalid input. Release/versioning policy is unchanged.
 
 ## Public API and standalone invocation
 
@@ -168,7 +168,7 @@ custom.plan("custom-docs").apply("custom-docs")
 drift = generate_schema_docs("generated-schema-docs", check=True)
 ```
 
-Until unified CLI integration:
+Equivalent standalone module commands:
 
 ```sh
 python -m udb.schema_docs --out generated-schema-docs
@@ -184,7 +184,7 @@ and complete located `notices`, or an error document on input/output failures.
 Human progress lines never share that stdout. Located warnings/errors remain
 on stderr; unavailable/broken/short stdout writes are explicit exit-2 I/O
 errors (an unwritable stream cannot carry its own JSON error). The permanent
-CLI patch delegates to this same implementation and exposes `--diagnostics`.
+CLI delegates to this same implementation and exposes `--diagnostics`.
 The API warns
 once per instance with `SchemaDocsProjectionWarning`, and exposes immutable
 notices on the instance and plan. Generation requires no installed renderer.
@@ -198,8 +198,13 @@ the complete output set and exact bytes, not a selected substring or an
 updated tracked-doc baseline. Historical differences are recorded separately.
 Focused supplied-store tests cover references, examples, category/index,
 history, immutability, unsupported inputs, checks and offline operation.
-Installed-wheel and Docusaurus compilation checks are parent-owned gates,
-not implied by a source-tree oracle pass.
+The actual wheel rebuilt from sdist passes isolated installed API/CLI checks,
+including a digest of all 28 native artifacts, 911 located notices, and JSON
+success/error diagnostics. Direct and rebuilt distributions retain the
+Ruby/Psych/libyaml notices, BSD-2-Clause/MIT license texts and license metadata.
+Docusaurus compiled an isolated site containing the newly generated schema
+pages and preserved historical MDX. Existing broken-link and IDL HTML warnings
+remain; this does not claim a warning-free site or repaired legacy anchors.
 
 The original 28 current, 36 history-seeded and 7 caller-supplied artifacts and
 60 sort cases remain unchanged. Additional full-page Psych fixture captures
