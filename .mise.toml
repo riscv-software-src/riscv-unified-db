@@ -75,6 +75,9 @@ remove_legacy_hook post-merge
 remove_legacy_hook post-checkout
 ''' }
 
+[task_config]
+includes = ["tools/dev/tasks.toml"]
+
 [settings]
 experimental = true                            # Needed for deps feature
 idiomatic_version_file_enable_tools = ["node"]

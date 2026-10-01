@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[setup]
+description = "Install configured tools/dependencies and select the C++ toolchain"
+usage = '''
+flag "--toolchain <toolchain>" help="Toolchain route" default="auto" {
+  choices "auto" "container" "native" "none"
+}
+flag "--no-hooks" help="Do not explicitly install repository hooks"
+'''
+run = '''
+.venv/bin/python -m tools.dev.bootstrap \
+  --toolchain "${usage_toolchain?}" \
+  {% if usage.no_hooks %}--no-hooks{% endif %}
+'''
+
+[doctor]
+description = "Check the prepared developer environment"
+usage = '''
+flag "-f --format <format>" help="Output format" default="text" {
+  choices "text" "json"
+}
+'''
+run = '.venv/bin/python -m tools.dev.doctor --format "${usage_format?}"'
+
+[clean]
+description = "Remove owned generated and native build outputs"
+run = ".venv/bin/python -m tools.dev.clean clean"
+
+[clobber]
+description = "Remove outputs plus repository-local environments and caches"
+usage = 'flag "--container" help="Also remove the toolchain container image"'
+run = '''
+.venv/bin/python -m tools.dev.clean clobber \
+  {% if usage.container %}--container{% endif %}
+'''
+
+["container:build"]
+description = "Build the content-addressed toolchain image"
+usage = 'flag "--force" help="Build even when the image exists"'
+run = '''
+.venv/bin/python -m tools.dev.container build \
+  {% if usage.force %}--force{% endif %}
+'''
+
+["container:pull"]
+description = "Pull the content-addressed toolchain image"
+usage = 'flag "--force" help="Pull even when the image exists"'
+run = '''
+.venv/bin/python -m tools.dev.container pull \
+  {% if usage.force %}--force{% endif %}
+'''
+
+["container:remove"]
+description = "Remove the content-addressed toolchain image"
+run = ".venv/bin/python -m tools.dev.container remove"
