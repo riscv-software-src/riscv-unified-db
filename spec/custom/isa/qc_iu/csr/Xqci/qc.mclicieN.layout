@@ -1,16 +1,13 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-
-# WARNING: This file is auto-generated from spec/custom/isa/qc_iu/csr/Xqci/qc.mwpstartaddrN.layout
-
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
 $schema: csr_schema.json#
 kind: csr
-name: qc.mwpstartaddr1
-long_name: Watchpoint start address for region 1
-address: 0x7d1
+name: qc.mclicie{{ index }}
+long_name: IRQ Enable {{ number }}
+address: {{ address }}
 length: 32
 priv_mode: M
 definedBy:
@@ -18,13 +15,14 @@ definedBy:
     - xlen: 32
     - extension:
         name: Xqciint
-        version: ">=0.4"
 writable: true
 description: |
-  Watchpoint start address for region 1
+  Enable bits for IRQs {{ number * 32 }}-{{ (number + 1) * 32 - 1 }}
 fields:
-  ADDR:
+{% for field in field_numbers -%}
+  IRQ{{ number * 32 + field }}:
     type: RW
     reset_value: 0
-    location: 31-0
-    description: Watchpoint start address
+    location: {{ field }}
+    description: IRQ{{ number * 32 + field }} enabled
+{% endfor -%}
