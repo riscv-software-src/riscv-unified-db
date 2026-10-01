@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -81,6 +82,29 @@ def test_native_bits_plan_is_independent_and_honors_jobs(tmp_path: Path) -> None
     assert flattened[0].startswith("cmake -S ")
     assert "--target test_bits_random test_bits_directed -j 2" in flattened[1]
     assert "ctest --test-dir" in flattened[2] and "-j 2" in flattened[2]
+
+
+def test_container_toolchain_uses_container_compiler(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("UDB_TOOLCHAIN_CONTAINER", "1")
+    monkeypatch.delenv("UDB_TOOLCHAIN_NONE", raising=False)
+    monkeypatch.setattr(commands.shutil, "which", lambda _name: "/host/bin/g++")
+    monkeypatch.setattr(commands.container, "find_runtime", lambda: "/usr/bin/docker")
+    monkeypatch.setattr(commands.container, "image_name", lambda _root: "udb-toolchain:test")
+    calls: list[list[str]] = []
+
+    def fake_run(argv, **_kwargs):
+        calls.append(list(argv))
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(commands.subprocess, "run", fake_run)
+    options = commands.NativeOptions(configs=("rv64",))
+    assert commands.execute([commands.configure_command(options, tmp_path)], tmp_path) == 0
+    rendered = " ".join(calls[0])
+    assert rendered.startswith("/usr/bin/docker run ")
+    assert "-DCMAKE_CXX_COMPILER=g++" in rendered
+    assert "/host/bin/g++" not in rendered
 
 
 def test_riscv_test_build_uses_selected_width_and_toolchain_prefix(tmp_path: Path) -> None:

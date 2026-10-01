@@ -70,9 +70,32 @@ def generation_command(options: NativeOptions, root: Path = ROOT) -> Command:
     return Command(tuple(command), root)
 
 
+def _toolchain_mode(root: Path) -> str:
+    if os.environ.get("UDB_TOOLCHAIN_NONE") == "1":
+        return "none"
+    if os.environ.get("UDB_TOOLCHAIN_CONTAINER") == "1":
+        return "container"
+    preference = (
+        (root / ".toolchain-local").read_text(encoding="utf-8")
+        if (root / ".toolchain-local").is_file()
+        else ""
+    )
+    if "UDB_TOOLCHAIN_NONE=1" in preference:
+        return "none"
+    if "UDB_TOOLCHAIN_CONTAINER=1" in preference:
+        return "container"
+    return "native"
+
+
+def _cxx_compiler(root: Path) -> str:
+    if _toolchain_mode(root) == "container":
+        return "g++"
+    return shutil.which("g++") or shutil.which("clang++") or "g++"
+
+
 def configure_command(options: NativeOptions, root: Path = ROOT) -> Command:
     source = source_dir(options, root)
-    compiler = shutil.which("g++") or "g++"
+    compiler = _cxx_compiler(root)
     configs = ";".join(Path(config).stem for config in options.configs)
     return Command(
         (
@@ -180,7 +203,7 @@ def native_bits_plan(
     *, build_type: str = "debug", jobs: int = 1, root: Path = ROOT
 ) -> list[Command]:
     build = root / "gen/native-bits"
-    compiler = shutil.which("g++") or "g++"
+    compiler = _cxx_compiler(root)
     return [
         Command(
             (
@@ -336,14 +359,10 @@ def llvm_plan(root: Path = ROOT) -> list[Command]:
 
 
 def _toolchain_prefix(root: Path, cwd: Path) -> list[str]:
-    preference = (
-        (root / ".toolchain-local").read_text(encoding="utf-8")
-        if (root / ".toolchain-local").is_file()
-        else ""
-    )
-    if "UDB_TOOLCHAIN_NONE=1" in preference:
+    mode = _toolchain_mode(root)
+    if mode == "none":
         raise DevError("the selected task requires a configured C++ toolchain", 3)
-    if "UDB_TOOLCHAIN_CONTAINER=1" not in preference:
+    if mode != "container":
         return []
     runtime = container.find_runtime()
     if runtime is None:
