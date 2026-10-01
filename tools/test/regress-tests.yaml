@@ -5,6 +5,30 @@
 
 ---
 tests:
+  regress-python-extension-documents:
+    ci_stage: pr
+    tags: [integration, smoke]
+    gh_pre:
+      - name: Install the official external PDF renderer
+        run: gem install --no-document asciidoctor-pdf -v 2.3.19
+    test:
+      - name: Validate retained extension source, fields, IDL and declared resources
+        run: >-
+          uv run --locked python -m pytest -n 8
+          --basetemp=gen/extension-documents/pytest
+          tests/python/test_extension_documents.py tests/python/test_extension_contracts.py
+          tests/python/test_extension_assets.py tests/python/test_extension_pdf.py
+          tests/python/test_extension_fidelity.py -k "not actual_official"
+      - name: Inspect actual official external PDF products
+        run: |
+          mkdir -p gen/extension-documents/locks
+          UDB_RUN_PDF_ACCEPTANCE=1 \
+            UDB_PDF_RENDER_DIRECT=1 \
+            UDB_RUBY_LOCK=gen/extension-documents/locks/ruby.lock \
+            uv run --locked python -m pytest -n 0 \
+            --basetemp=gen/extension-documents/pdf \
+            tests/python/test_extension_pdf.py -k actual_official
+
   regress-python-config-headers:
     ci_stage: pr
     tags:
@@ -380,7 +404,7 @@ tests:
     ci_stage: pr
     test:
       - name: Generate Xqci extension PDF
-        run: ./bin/ruby tools/scripts/gen_xqci.rb
+        run: ./python tools/scripts/gen_xqci.py
 
   regress-profile-strict-cfg:
     ci_stage: pr

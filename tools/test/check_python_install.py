@@ -27,6 +27,66 @@ def tree_digest(root: Path) -> dict[str, str]:
     }
 
 
+def check_extension_documents(resolved: udb.ResolvedDatabase) -> None:
+    """Installed source generation: no Git, Ruby, renderer or checkout inputs."""
+    from datetime import date
+
+    from udb.extension_docs import DocumentOptions, generate_extension_document
+    from udb.extension_docs.pdf import copy_resources
+
+    architecture = resolved.configure(udb.Configuration.builtin("_"))
+    output = Path.cwd() / "extension-document-acceptance"
+    output.mkdir(exist_ok=True)
+    try:
+        source = generate_extension_document(
+            architecture,
+            ["Zba"],
+            output,
+            options=DocumentOptions(
+                revision="a67618c2cd25ec235ccaa35adfc523ed56ef83ea", today=date(2026, 10, 1)
+            ),
+        )
+        lines, literal = [], None
+        for line in source.read_text(encoding="utf-8").splitlines():
+            if line in {"----", "...."}:
+                literal = None if literal == line else line
+                lines.append(line)
+            elif literal is not None:
+                lines.append(line)
+            elif line.strip():
+                lines.append(line.rstrip())
+        assert (
+            hashlib.sha256("\n".join(lines).encode()).hexdigest()
+            == "a4d4bc9d46648355d37736ebd0ed88a6cbe6b5d635ef99b8ad38ccb78529e67b"
+        )
+        command = str(Path(sys.executable).with_name("udb"))
+        subprocess.run(
+            [
+                command,
+                "generate",
+                "ext-doc",
+                "--out",
+                str(output / "cli"),
+                "--revision",
+                "a67618c2cd25ec235ccaa35adfc523ed56ef83ea",
+                "--date",
+                "2026-10-01",
+                "Zba",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        assert (output / "cli/Zba.adoc").read_bytes() == source.read_bytes()
+        csr_source = generate_extension_document(architecture, ["Zicntr"], output)
+        text = csr_source.read_text(encoding="utf-8")
+        assert "== Field Summary" in text and "Reset value::" in text
+        copy_resources(output / "resources")
+        assert (output / "resources/fonts/JetBrainsMono-Regular.ttf").is_file()
+        assert (output / "resources/images/wavedrom/float-csr.adoc").is_file()
+    finally:
+        shutil.rmtree(output)
+
+
 def check_instruction_table(resolved: udb.ResolvedDatabase) -> None:
     from udb.instruction_fields import InstructionFieldBuilder
     from udb.instruction_table import generate_instruction_table, render_instruction_table
@@ -500,6 +560,7 @@ def check_install() -> None:
     check_instruction_table(resolved)
     check_query_reports(resolved)
     check_generic_codegens(resolved)
+    check_extension_documents(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()

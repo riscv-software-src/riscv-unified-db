@@ -427,7 +427,7 @@
     },
     {
       "id": "extension-adoc",
-      "status": "pending",
+      "status": "implemented locally; independent review and parent installed/wrapper/CI acceptance pending",
       "legacy_commands": [
         "./bin/generate ext-doc -c CFG -o DIR [-b NAME] [-i] [--no-csr-field-desc] EXT[@VERSION] ...",
         "./bin/ruby tools/scripts/gen_xqci.rb"
@@ -452,10 +452,10 @@
         "Xqci golden",
         "regress-gen-ext-pdf"
       ],
-      "prospective_owner": "udb.docs.ext",
-      "python_cli": "udb generate ext-doc --config CFG --extension EXT@REQ --out DIR",
+      "prospective_owner": "udb.extension_docs",
+      "python_cli": "udb generate ext-doc -c CFG -o DIR [-b NAME] [-i] [--no-csr-field-desc] EXT[@REQ]...",
       "fixtures": ["tests/data/golden/Xqci@0.13.0.adoc"],
-      "comparison_policy": "semantic AsciiDoc normalized dynamic commit/date; links/sections/CSR field",
+      "comparison_policy": "complete frozen raw artifact comparisons; only listing-preserving formatter differences and individually guarded content corrections/additions",
       "gates": {
         "installed_wheel_sdist_offline": "pending",
         "repository_ci": "pending: Xqci custom overlay/source; all implied ext cases"
@@ -463,7 +463,7 @@
     },
     {
       "id": "extension-pdf",
-      "status": "pending; external renderer boundary allowed only official tool",
+      "status": "implemented locally; independent review and parent installed/wrapper/CI acceptance pending",
       "legacy_commands": ["./bin/generate ext-doc -c CFG -o DIR EXT@VERSION"],
       "legacy_sources": [
         "tools/ruby-gems/udb-gen/lib/udb-gen/generators/ext_doc/generator.rb:167-198"
@@ -478,10 +478,10 @@
       ],
       "output_paths": ["DIR/<basename>.pdf"],
       "consumers": ["Xqci artifact", "PDF consumers"],
-      "prospective_owner": "udb.docs.render_external",
-      "python_cli": "udb render pdf INPUT.adoc --out FILE [--theme PATH]",
+      "prospective_owner": "udb.extension_docs.pdf",
+      "python_cli": "udb render pdf INPUT.adoc --out FILE [--theme PATH --fonts DIR --images DIR]",
       "fixtures": ["Xqci adoc golden; PDF inspected separately"],
-      "comparison_policy": "PDF page text, metadata and representative rendered pages, normalize IDs/time",
+      "comparison_policy": "actual official PDF full page-text/metadata and representative raster acceptance; source/native gates remain independent",
       "gates": {
         "installed_wheel_sdist_offline": "pending",
         "repository_ci": "pending: external renderer smoke; installed-generation gate only emits adoc"
@@ -1314,7 +1314,7 @@
     },
     {
       "id": "shared-csr-instruction-mmr-asciidoc",
-      "status": "pending: shared template/helper family; no installed gate",
+      "status": "implemented locally; independent review and parent installed/wrapper/CI acceptance pending",
       "legacy_commands": ["./bin/generate ext-doc / manual; ./do prm:adoc"],
       "legacy_sources": [
         "tools/ruby-gems/udb-gen/lib/udb-gen/template_helpers.rb",
@@ -1330,10 +1330,10 @@
       ],
       "output_paths": ["embedded CSR/inst/MMR AsciiDoc pages"],
       "consumers": ["extension docs", "ISA manual", "PRM/profile"],
-      "prospective_owner": "udb.docs.components",
-      "python_cli": "shared helper consumed by udb generate docs commands",
+      "prospective_owner": "udb.extension_docs.instructions and csrs",
+      "python_cli": "retained instruction/CSR content embedded by udb generate ext-doc; retired MMR/manual/PRM framework is not recreated",
       "fixtures": ["new CSR/inst/MMR fixtures pending"],
-      "comparison_policy": "semantic fields/links/encoding diagrams plus local source bytes",
+      "comparison_policy": "complete retained CSR/instruction/field/IDL artifacts, anchors and mapped assets; retired MMR publication excluded",
       "gates": {
         "installed_wheel_sdist_offline": "pending",
         "repository_ci": "pending: MMR source template invocation verify; no silent removal"

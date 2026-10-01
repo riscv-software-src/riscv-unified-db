@@ -164,6 +164,10 @@ def build_parser() -> argparse.ArgumentParser:
     docs_parser.add_argument("--no-index", action="store_true")
     docs_parser.add_argument("--replace-current", action="store_true")
     docs_parser.add_argument("--diagnostics", action="store_true")
+    from .extension_docs.cli import add_extension_document_parser, add_pdf_render_parser
+
+    add_extension_document_parser(generators)
+    add_pdf_render_parser(subparsers)
     return parser
 
 
@@ -256,6 +260,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if enabled:
                     docs_args.append(option)
             return schema_docs_main(docs_args)
+        if args.command == "render":
+            from .extension_docs.cli import run_pdf_render
+
+            if args.path or args.schemas or args.overlay or args.resolved or args.validate:
+                parser.error("render pdf accepts explicit rendering inputs, not ISA options")
+            run_pdf_render(args)
+            return 0
         if args.command == "schemas":
             schema_root = args.schemas
             if schema_root is None:
@@ -320,6 +331,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             )
             architecture = database.configure(configuration)
+            if args.generator == "ext-doc":
+                from .extension_docs.cli import run_extension_document
+
+                run_extension_document(architecture, args)
+                return 0
             if args.generator == "instruction-table":
                 from .instruction_table import render_instruction_table
 
