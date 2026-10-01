@@ -32,7 +32,10 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
     destinations = {destination.as_posix() for destination in mappings.values()}
 
     assert "udb/_data/isa/inst/Zaamo/amoadd.w.yaml" in destinations
+    assert "udb/_data/isa/inst/Zalrsc/lr.w.yaml" in destinations
     assert "udb/_data/isa/csr/Zihpm/mhpmcounter3.yaml" in destinations
+    assert "udb/_data/isa/csr/stvec.yaml" in destinations
+    assert "udb/_data/isa/exception_code/IllegalInstruction.yaml" in destinations
     assert "udb/_data/isa/isa/globals.isa" in destinations
     assert "udb/_data/isa/prose/interrupts.adoc" in destinations
     assert "udb/_data/schemas/inst_schema.json" in destinations
@@ -70,6 +73,7 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
     extracted = tmp_path / "extracted"
     with tarfile.open(sdist) as archive:
         names = archive.getnames()
+        assert any(name.endswith("/doc/stage5-configured-prose.md") for name in names)
         assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in names)
         assert not any(name.endswith(".erb") for name in names)
         archive.extractall(extracted, filter="data")
@@ -136,6 +140,14 @@ generated = authoring_root / 'spec/std/isa/inst/Zaamo/amoadd.w.yaml'
 bundled = files('udb') / '_data/isa/inst/Zaamo/amoadd.w.yaml'
 assert generated.read_bytes() == bundled.read_bytes()
 assert udb.generate_layouts(authoring_root, check=True) == ()
+from udb.prose import CapturedProse, ProseInputs, render_legacy, resolve_all_exception_records
+inputs = ProseInputs.from_database(resolved, udb.Configuration.builtin('rv64'))
+stvec = CapturedProse.from_record(resolved, resolved.csr('stvec'), 'fields', 'BASE', 'description')
+assert '[SXLEN-1:39]' in render_legacy(stvec, inputs)
+lr_w = CapturedProse.from_record(resolved, resolved.instruction('lr.w'), 'description')
+assert 'sign-extended to 64-bits' in render_legacy(lr_w, inputs)
+names = resolve_all_exception_records(resolved, inputs)
+assert names and all(isinstance(item['ext'], str) for item in names)
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(rebuilt_wheel)
