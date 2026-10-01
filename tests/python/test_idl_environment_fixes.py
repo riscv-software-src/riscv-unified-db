@@ -430,6 +430,51 @@ def test_compiled_csr_field_results_are_computed_once_per_environment(monkeypatc
     assert calls == [("dynamic", "FIELD", "reset_value()")]
 
 
+def test_compiled_bodies_reuse_one_parse_but_return_independent_trees(monkeypatch):
+    from udb import idl_architecture
+
+    database = _database(
+        {
+            "csr/dynamic.yaml": _csr(
+                "dynamic",
+                fields={"FIELD": {"location": 0, "type": "RO", "reset_value()": "return 1;"}},
+            ),
+        }
+    )
+    _, _, csrs = _adapted_csrs(database)
+    compiler = csrs["dynamic"]._bases.compiler
+    parses = []
+    original = idl_architecture.parse_function_body
+
+    def counting(*args, **kwargs):
+        parses.append(args)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(idl_architecture, "parse_function_body", counting)
+    first = compiler.compile_field("dynamic", "FIELD", "reset_value()")
+    second = compiler.compile_field("dynamic", "FIELD", "reset_value()")
+    assert len(parses) == 1
+    assert first.ast is not second.ast
+    assert first.ast.to_h() == second.ast.to_h()
+    assert first.ast.parent is None
+    for tree in (first.ast, second.ast):
+        stack = [tree]
+        while stack:
+            node = stack.pop()
+            for child in node.children:
+                assert child.parent is node
+                stack.append(child)
+    assert not {id(node) for node in _nodes(first.ast)} & {id(node) for node in _nodes(second.ast)}
+
+
+def _nodes(tree):
+    stack = [tree]
+    while stack:
+        node = stack.pop()
+        yield node
+        stack.extend(node.children)
+
+
 def _real_architecture(name):
     root = Path(__file__).resolve().parents[2]
     configuration = Configuration.from_file(root / "cfgs" / f"{name}.yaml")

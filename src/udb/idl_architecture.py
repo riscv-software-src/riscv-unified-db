@@ -15,6 +15,8 @@ from .errors import DataError
 from .idl.ast import FunctionBody, FunctionDef, Node
 from .idl.errors import IdlError, IdlInternalError, IdlValueUnknown
 from .idl.parser import parse_function_body
+from .idl.passes._tree import clone
+from .idl.passes._walk import walk
 from .idl.source import IdlSource
 from .idl.symbols import SymbolTable, Var
 from .idl.types import (
@@ -96,6 +98,10 @@ class ArchitectureCompiler:
         self._globals.freeze_globals()
         for csr in self._globals.csr_hash.values():
             csr._bases._compiler = self
+        # Pristine parse trees per (record, IDL path); every compile gets a fresh copy.
+        self._parsed: dict[
+            tuple[int, tuple[str, ...]], tuple[DatabaseObject, IdlSource, FunctionBody]
+        ] = {}
 
     @property
     def global_symbol_table(self) -> SymbolTable:
@@ -123,6 +129,23 @@ class ArchitectureCompiler:
         text = self.database.source_text(span.source, layer=span.layer)
         label = span.source if span.layer == "source" else f"{span.layer}:{span.source}"
         return idl_field_source(text, span, value, label=label)
+
+    def _parse(
+        self, record: DatabaseObject, path: tuple[str, ...]
+    ) -> tuple[IdlSource, FunctionBody]:
+        key = (id(record), path)
+        cached = self._parsed.get(key)
+        if cached is None or cached[0] is not record:
+            source = self._source(record, path)
+            cached = (record, source, parse_function_body(source.text, source=source))
+            self._parsed[key] = cached
+        _, source, pristine = cached
+        ast = clone(pristine)
+        for parent in walk(ast):
+            for child in parent.children:
+                object.__setattr__(child, "parent", parent)
+        object.__setattr__(ast, "parent", None)
+        return source, ast  # type: ignore[return-value]
 
     def _scope(
         self, ast: Node, effective_xlen: int | None, expected: Type, encoding_width: int = 32
@@ -155,8 +178,7 @@ class ArchitectureCompiler:
         *,
         specialize_mxlen: bool = True,
     ) -> CompiledIdl:
-        source = self._source(record, path)
-        ast = parse_function_body(source.text, source=source)
+        source, ast = self._parse(record, path)
         table = self._scope(ast, effective_xlen, expected)
         if specialize_mxlen and table.get("MXLEN") is not None and table.get("MXLEN").value is None:
             table.add(
@@ -175,8 +197,7 @@ class ArchitectureCompiler:
         record = self.database.instruction(name)
         if record.data.get("base") not in (None, effective_xlen):
             raise DataError(f"Instruction {name} is not defined for RV{effective_xlen}")
-        source = self._source(record, ("operation()",))
-        ast = parse_function_body(source.text, source=source)
+        source, ast = self._parse(record, ("operation()",))
         encoding = next(
             (
                 item
