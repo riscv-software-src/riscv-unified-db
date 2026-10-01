@@ -227,70 +227,6 @@
       }
     },
     {
-      "id": "config-doc-adoc",
-      "status": "pending",
-      "legacy_commands": ["./do gen:adoc[CFG]"],
-      "legacy_sources": [
-        "backends/cfg_html_doc/{adoc_gen,tasks}.rake",
-        "tools/ruby-gems/udb_helpers/lib/udb_helpers/backend_helpers.rb"
-      ],
-      "legacy_templates": [
-        "backends/cfg_html_doc/templates/{csr,inst,ext,func,landing}.adoc.erb"
-      ],
-      "input_matrix": [
-        "example_rv64_with_overlay",
-        "rv32|rv64|custom overlays"
-      ],
-      "output_paths": [
-        "gen/cfg_html_doc/<cfg>/adoc/{insts,csrs,exts,funcs}/*.adoc",
-        "gen/cfg_html_doc/<cfg>/adoc/{insts,csrs,exts,funcs}/all_*.adoc",
-        "gen/cfg_html_doc/<cfg>/adoc/ROOT/landing.adoc"
-      ],
-      "consumers": ["cfg HTML Antora", "merge-queue docs artifact"],
-      "prospective_owner": "udb.docs.config",
-      "python_cli": "udb generate config-doc --config CFG --out DIR",
-      "fixtures": ["new representative page manifest pending"],
-      "comparison_policy": "page set, headings, record details, source/link/anchor semantic diff",
-      "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: overlay config and installed offline source generation"
-      }
-    },
-    {
-      "id": "config-doc-html",
-      "status": "pending; external renderer boundary only",
-      "legacy_commands": [
-        "./do gen:html[CFG1,CFG2,...]",
-        "./do serve:html[CFG,PORT]"
-      ],
-      "legacy_sources": ["backends/cfg_html_doc/{html_gen,tasks}.rake"],
-      "legacy_templates": [
-        "backends/cfg_html_doc/templates/{config,toc}.adoc.erb",
-        "backends/cfg_html_doc/ui/highlight.js"
-      ],
-      "input_matrix": [
-        "example_rv64_with_overlay",
-        "prose spec/std/isa/prose",
-        "multiple CFG"
-      ],
-      "output_paths": [
-        "gen/cfg_html_doc/<cfg>/antora/{modules/**,antora.yml,playbook.yaml}",
-        "gen/cfg_html_doc/<cfg>/html/**"
-      ],
-      "consumers": [
-        "merge-queue HTML artifacts",
-        "Antora UI bundle and @asciidoctor/tabs CSS/JS (external build only)"
-      ],
-      "prospective_owner": "udb.docs.config",
-      "python_cli": "udb render config-html --out DIR",
-      "fixtures": ["new page/link fixture pending"],
-      "comparison_policy": "HTML DOM/nav/page set/link checks; not byte HTML",
-      "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: external Antora/Asciidoctor smoke and link checker"
-      }
-    },
-    {
       "id": "config-sv-header",
       "status": "pending",
       "legacy_commands": [
@@ -1204,7 +1140,6 @@
       "consumers": [
         "C++ generator",
         "backends/generators/tasks.rake",
-        "tools/mcp_gen_server/server.py and its README",
         "merge-queue resolved_spec artifact"
       ],
       "prospective_owner": "udb.serialization",
@@ -1543,7 +1478,6 @@
       "udb-api": "_site/htmls/udb_api_doc",
       "isa-explorer-csr|ext|inst|spreadsheet": "_site/isa_explorer",
       "isa-html-manual": "_site/manual/html",
-      "cfg-html-manual": "_site/example_cfg/html",
       "inst-appendix|RVI20|RVA20|RVA22|RVA23|RVB23": "_site/pdfs",
       "idl-doc": "idl.html",
       "docs-site": "_site/docs-preview",

@@ -60,7 +60,6 @@ screenshot or code snippet and links to the relevant backend documentation page.
 
 Suggested items:
 - Programmer's Reference Manual PDF (prm_pdf)
-- HTML configuration documentation (cfg_html_doc)
 - C encoding header snippet (generators/c_header)
 - SystemVerilog decode package snippet (generators/sverilog)
 - Profile documentation (profile)
@@ -195,7 +194,6 @@ Tools
 Generators
   Overview
   PRM PDF (prm_pdf)
-  HTML Config Docs (cfg_html_doc)
   C++ ISS (cpp_hart_gen)
   C Header (c_header)
   Go (go)

@@ -73,10 +73,10 @@ def test_every_leaf_has_help(command: tuple[str, ...]) -> None:
     assert "--help" in result.stdout
 
 
-def test_final_tree_has_no_transitional_commands_or_mcp() -> None:
+def test_final_tree_has_no_transitional_commands() -> None:
     result = RUNNER.invoke(app, ["--help"])
 
-    for removed in ("validate-cfg", "generate-layouts", "schemas", "disasm", "mcp"):
+    for removed in ("validate-cfg", "generate-layouts", "schemas", "disasm"):
         assert not re.search(rf"\b{re.escape(removed)}\b", result.stdout)
 
 

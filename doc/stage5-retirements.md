@@ -29,12 +29,9 @@ retiring stimulus authoring does not authorize deleting floating-point tests.
 
 ## Dependency-ordered completion
 
-Configuration-document publication and regression jobs are retired, but their
-backend cannot yet be deleted: the retained MCP server's function tools read
-its generated function documentation. Those tools must first consume the
-Python IDL interface without losing function lookup/search capabilities.
-The temporary backend is not an accepted final runtime or a retained document
-product.
+Configuration-document publication, its backend, and its regression jobs are
+retired. Function lookup and search are available through the Python database
+and IDL interfaces without generated configuration-document artifacts.
 
 Ruby typing/gem maintenance and the remainder of the old shared documentation
 framework are removed at final cutover, after their retained runtime and

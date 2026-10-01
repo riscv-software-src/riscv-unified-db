@@ -230,7 +230,6 @@ Generators produce artifacts from UDB data. They are invoked via `bin/generate` 
 
 | Generator | `bin/generate` subcommand | What it produces |
 |---|---|---|
-| `cfg_html_doc` | `bin/generate cfg-html-doc` | HTML documentation for a specific configuration |
 | `cpp_hart_gen` | `bin/generate cpp-hart-gen` | C++ ISS (Instruction Set Simulator) hart implementation |
 | `c_header` | `bin/generate c-header` | C encoding header (used by Spike, ACTs, Sail) |
 | `go` | `bin/generate go` | Go instruction/CSR definitions |

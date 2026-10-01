@@ -74,7 +74,7 @@ Instead, UDB is designed as **input to tools** that transform, serve, or integra
   </div>
   <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
     <div>⛁ Database + ⚙️ Config (RV32IMC) → 📄 Generator → C Header → 💻 Firmware</div>
-    <div>⛁ Database + ⚙️ Config (RV64GC) → 🌐 MCP Server → Claude/IDE → 🛠️ Development</div>
+    <div>⛁ Database + ⚙️ Config (RV64GC) → 🌐 API → IDE → 🛠️ Development</div>
     <div>⛁ Database + ⚙️ Custom Config → 💎 Ruby Gem → Script → 📦 Your Artifact</div>
     <div>⛁ Database + ⚙️ Profile Config → ✅ Validator → Report → 🎯 Certification</div>
   </div>
@@ -83,7 +83,7 @@ Instead, UDB is designed as **input to tools** that transform, serve, or integra
 **Different patterns for different needs:**
 
 - **Generators** produce files (C headers, PDFs, SystemVerilog) that you integrate into projects
-- **Servers** provide on-demand queries (MCP servers, JSON APIs, web UIs) for dynamic access
+- **Services** provide on-demand queries (JSON APIs and web UIs) for dynamic access
 - **Libraries** let you embed UDB directly into your toolchain (Ruby gems, Python bindings)
 - **Validators** check your custom data or implementations against the spec
 

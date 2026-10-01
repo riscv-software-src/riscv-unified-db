@@ -110,7 +110,6 @@ IDL is compiled by the `idlc` gem. The compiler performs type checking and can g
 ### Backends (`backends/`)
 
 Each backend has a `tasks.rake` file that registers Rake tasks. Key backends:
-- `cfg_html_doc` — Temporary function-documentation dependency of the MCP server; standalone config documents are retired
 - `cpp_hart_gen` — C++ ISS (Instruction Set Simulator) hart model
 - `generators` — Generic C, SystemVerilog, and Go outputs
 
