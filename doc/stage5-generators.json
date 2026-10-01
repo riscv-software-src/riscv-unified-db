@@ -513,7 +513,7 @@
     },
     {
       "id": "generic-c-encoding",
-      "status": "pending: Python script requires Ruby ERB exception preprocessing",
+      "status": "implemented: native fidelity, prose provider, installed artifacts, consumers and repository wrappers verified",
       "legacy_commands": ["./do gen:c_header CONFIG=_ OUTPUT_DIR=gen/c_header"],
       "legacy_sources": [
         "backends/generators/tasks.rake:70-109",
@@ -526,22 +526,25 @@
         "--extensions LIST",
         "--arch RV32|RV64|BOTH",
         "--include-all",
-        "resolved exception names via Ruby ERB"
+        "resolved exception names via udb.prose"
       ],
       "output_paths": ["gen/c_header/encoding.out.h"],
       "consumers": ["Spike", "ACTs", "Sail", "regress-gen-c-header"],
       "prospective_owner": "udb.generators.c_encoding",
       "python_cli": "udb generate c-encoding --config CFG --output FILE",
-      "fixtures": ["new golden pending"],
+      "fixtures": [
+        "tests/python/fixtures/generic_codegen",
+        "doc/stage5-generic-codegens.md"
+      ],
       "comparison_policy": "header diff and encoding/address equivalence; consumer C compile",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: C compile + special exception-code interpolation"
+        "installed_wheel_sdist_offline": "passed: direct wheel, sdist and wheel rebuilt from sdist; API, unified CLI and module CLI for _, rv32 and rv64",
+        "repository_ci": "wired: mandatory prose provider parity plus complete GCC consumer; repository wrapper acceptance passed"
       }
     },
     {
       "id": "generic-sv-decode",
-      "status": "pending: Python script requires Ruby ERB exception preprocessing",
+      "status": "implemented: native fidelity, prose provider, installed artifacts, consumers and repository wrappers verified",
       "legacy_commands": ["./do gen:sverilog CONFIG=_ OUTPUT_DIR=gen/sverilog"],
       "legacy_sources": [
         "backends/generators/tasks.rake:111-149",
@@ -554,22 +557,25 @@
         "--extensions LIST",
         "--arch RV32|RV64|BOTH",
         "--include-all",
-        "resolved exception names via Ruby ERB"
+        "resolved exception names via udb.prose"
       ],
       "output_paths": ["gen/sverilog/riscv_decode_package.svh"],
       "consumers": ["SV decode consumers", "regress-gen-sverilog"],
       "prospective_owner": "udb.generators.sv_decode",
       "python_cli": "udb generate sv-decode --config CFG --output FILE",
-      "fixtures": ["new golden pending"],
+      "fixtures": [
+        "tests/python/fixtures/generic_codegen",
+        "doc/stage5-generic-codegens.md"
+      ],
       "comparison_policy": "SV semantic opcode/address equality and parser/lint",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: SV syntax/lint"
+        "installed_wheel_sdist_offline": "passed: direct wheel, sdist and wheel rebuilt from sdist; API, unified CLI and module CLI for _, rv32 and rv64",
+        "repository_ci": "wired: complete Verilator consumer; repository wrapper acceptance passed"
       }
     },
     {
       "id": "go-source",
-      "status": "pending: script Python but Ruby Rake supplies resolved YAML",
+      "status": "implemented: native fidelity, installed artifacts, consumers and repository wrappers verified",
       "legacy_commands": ["./do gen:go CONFIG=_ OUTPUT_DIR=gen/go"],
       "legacy_sources": [
         "backends/generators/tasks.rake:36-67",
@@ -587,11 +593,14 @@
       "consumers": ["Go cmd/internal/obj encoder", "regress-gen-go"],
       "prospective_owner": "udb.generators.go",
       "python_cli": "udb generate go --config CFG --output FILE",
-      "fixtures": ["new golden pending"],
+      "fixtures": [
+        "tests/python/fixtures/generic_codegen",
+        "doc/stage5-generic-codegens.md"
+      ],
       "comparison_policy": "normalized header plus opcode/CSR canonical equality; Go compile",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: Go package compile/test"
+        "installed_wheel_sdist_offline": "passed: direct wheel, sdist and wheel rebuilt from sdist; API, unified CLI and module CLI for _, rv32 and rv64",
+        "repository_ci": "wired: complete real cmd/internal/obj Go consumer; repository wrapper acceptance passed"
       }
     },
     {

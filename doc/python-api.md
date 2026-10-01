@@ -197,6 +197,25 @@ stdout=None)` writes and returns that text. `udb.instruction_fields.InstructionF
 provides validated immutable descriptors with ordered opcode/decode ranges,
 sign extension, shifts, exclusions, and captured source locations.
 
+Generate generic C encodings, a SystemVerilog decode package, or the Go assembler
+fragment from bundled data:
+
+```shell
+udb generate c-encoding --config rv32 -o encoding.out.h
+udb generate sv-decode --config rv64 -o riscv_decode_package.svh
+udb generate go --config _ -o inst.go
+```
+
+The corresponding offline APIs are
+`udb.generators.c_encoding.generate_c_encoding`,
+`udb.generators.sv_decode.generate_sv_decode`, and
+`udb.generators.go.generate_go`. Each accepts a configured architecture.
+The C and SystemVerilog generators resolve exception names through `udb.prose`;
+callers with pre-rendered rows may supply typed
+`udb.generators.encoding_inputs.ExceptionRecord` values instead. Generic
+selection retains the legacy name-only extension filter and `RV32`, `RV64`, or
+`BOTH` encoding projection rather than configuration-presence filtering.
+
 Fully configured C and SystemVerilog headers can be generated without Ruby or a
 native toolchain:
 

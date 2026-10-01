@@ -351,6 +351,61 @@ def check_profile_configurations(resolved: udb.ResolvedDatabase) -> None:
         assert udb.Configuration.from_file(output / "RVI20U32.yaml").to_dict() == data
 
 
+def check_generic_codegens(resolved: udb.ResolvedDatabase) -> None:
+    from udb.generators.c_encoding import generate_c_encoding
+    from udb.generators.go import generate_go
+    from udb.generators.sv_decode import generate_sv_decode
+
+    command = str(Path(sys.executable).with_name("udb"))
+    digests = {
+        "c-encoding": "1d05bff647d3223900692aec0e1745a77fdbbf0605c181a92c60325dd24dddf6",
+        "sv-decode": "9c44e97fe06e78ad4d202b92f48b481acec5ed4efcb7a37b2796b634642e039f",
+        "go": "a5f7d09c1bf20879ba60e00a5a0a2e316f9b6bc5a3197559ac3c5192254dbbb6",
+    }
+    modules = {"c-encoding": "c_encoding", "sv-decode": "sv_decode", "go": "go"}
+    filenames = {
+        "c-encoding": "encoding.out.h",
+        "sv-decode": "riscv_decode_package.svh",
+        "go": "inst.go",
+    }
+    for config in ("_", "rv32", "rv64"):
+        architecture = resolved.configure(udb.Configuration.builtin(config))
+        artifacts = (
+            ("c-encoding", generate_c_encoding(architecture)),
+            ("sv-decode", generate_sv_decode(architecture)),
+            ("go", generate_go(architecture)),
+        )
+        for generator, text in artifacts:
+            expected = text.encode("utf-8")
+            frozen = expected.split(b"\n", 1)[1] if generator == "go" else expected
+            assert hashlib.sha256(frozen).hexdigest() == digests[generator]
+            args = [command, "generate", generator, "--config", config]
+            result = subprocess.run(args, check=True, capture_output=True)
+            assert result.stdout == expected and result.stderr == b""
+            module_result = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    "-m",
+                    f"udb.generators.{modules[generator]}",
+                    "--config",
+                    config,
+                ],
+                check=True,
+                capture_output=True,
+            )
+            assert module_result.stdout == expected and module_result.stderr == b""
+            output = Path("all" if config == "_" else config) / filenames[generator]
+            try:
+                written = subprocess.run(
+                    [*args, "-o", str(output)], check=True, capture_output=True
+                )
+                assert written.stdout == written.stderr == b""
+                assert output.read_bytes() == expected
+            finally:
+                output.unlink(missing_ok=True)
+
+
 def check_install() -> None:
     assert shutil.which("ruby") is None
     assert shutil.which("git") is None
@@ -444,6 +499,7 @@ def check_install() -> None:
     check_profile_configurations(resolved)
     check_instruction_table(resolved)
     check_query_reports(resolved)
+    check_generic_codegens(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
