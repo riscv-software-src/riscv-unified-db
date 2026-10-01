@@ -1,0 +1,12 @@
+{
+  "description_command": "bundle exec --gemfile /home/jcarlin/riscv-projects/riscv-unified-db/Gemfile ruby tests/python/capture_query_report_descriptions.rb",
+  "condition_command": "RUBYLIB=tools/ruby-gems/udb/lib:tools/ruby-gems/idlc/lib:tools/ruby-gems/udb_helpers/lib bundle exec --gemfile /home/jcarlin/riscv-projects/riscv-unified-db/Gemfile ruby tests/python/capture_query_report_conditions.rb",
+  "required_outer_transport": "UV_NO_SYNC=1 flock /home/jcarlin/.copilot/session-state/e7cf3328-386d-40d9-b677-2d92e44c2ebb/files/ruby.lock mise exec --no-deps --",
+  "outputs": {
+    "native-description-observations.json": "731a6e70c13174571aa1eb7c3fcd93b316f04c2062a34b4b6c0abdda7c340da0",
+    "native-condition-observations.json": "0ce5aa9c621e569842575bfcd254dad58c42857e5ed0c0236ada964fab730c18",
+    "native-full-config.yaml": "fae93e2e8c22d8e60f4b48c2277ceec4107f2450049773ad889269df36b9eb6c",
+    "native-first.stdout.txt": "e23309b1ff6668aa2adfe9db14079f9f6f3307389251a18148c588140ecf070a",
+    "native-first.stderr.txt": "85f08721c91444ee43f78038dfa33336b78bd8a1702f2765a478bed2932c3e24"
+  }
+}

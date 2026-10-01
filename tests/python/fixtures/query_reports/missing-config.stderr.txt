@@ -1,0 +1,14 @@
+/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s30-query-report-matching/tools/ruby-gems/udb/lib/udb/cli.rb:248:in 'Udb::CliCommands::List#extensions': Cannot find config: NO_SUCH_CONFIGURATION (ArgumentError)
+
+            raise ArgumentError, "Cannot find config: #{options[:config]}"
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/invocation.rb:116:in 'Thor::Invocation#invoke'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor.rb:338:in 'block in Udb::Cli#subcommand'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'
+	from /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'
+	from tools/ruby-gems/udb/bin/udb:11:in '<main>'

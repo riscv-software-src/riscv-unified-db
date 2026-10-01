@@ -1,0 +1,10 @@
+MXLEN
+
+  Defined by:
+  Extension Sm, version 0
+
+  Description:
+    XLEN in machine mode, specified in bits
+
+  Value:
+    [32, 64]

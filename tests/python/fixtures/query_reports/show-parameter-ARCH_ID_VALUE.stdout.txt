@@ -1,0 +1,12 @@
+ARCH_ID_VALUE
+
+  Defined by:
+  (Extension Sm, version 0 and Paremeter  equals true)
+
+  Description:
+    The value of `marchid`
+    The combination of mvendorid and marchid should uniquely identify the type of hart microarchitecture that is implemented.
+    
+
+  Value:
+    64-bit integer, ≠ 0

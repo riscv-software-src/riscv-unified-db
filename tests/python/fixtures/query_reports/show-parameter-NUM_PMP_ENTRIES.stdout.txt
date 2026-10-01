@@ -1,0 +1,25 @@
+NUM_PMP_ENTRIES
+
+  Defined by:
+  Extension Sm, version 0
+
+  Description:
+    Number of implemented PMP entries.
+    
+    The architecture mandates that the number of implemented PMP registers
+    must appear to be 0, 16, or 64, so NUM_PMP_ENTRIES must be one of those values.
+    It directly determines which PMP registers exist: `pmpaddr0`-`pmpaddr<N-1>`
+    and their corresponding `pmpNcfg` fields are implemented, and the rest are
+    not. Accessing an unimplemented PMP register causes an `IllegalInstruction`
+    when TRAP_ON_UNIMPLEMENTED_CSR is true.
+    
+    [NOTE]
+    `pmpcfgN` for an odd N never exists when XLEN == 64.
+    
+    An implemented entry may still be read-only zero (but will never cause an exception).
+    The number of entries that are actually usable is given by
+    NUM_USABLE_PMP_ENTRIES.
+    
+
+  Value:
+    [0, 16, 64]

@@ -1,0 +1,3 @@
+[0m[2K[1Gℹ info    Merged architecture files written to gen/query-report-native/spec/_
+[0m[2K[1Gℹ info    Resolved architecture files written to gen/query-report-native/resolved_spec/_
+ℹ info    Constructing ConfiguredArchiture for _

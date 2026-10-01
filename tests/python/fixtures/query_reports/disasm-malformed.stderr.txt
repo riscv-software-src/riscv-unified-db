@@ -1,0 +1,1 @@
+encoding must be a hex string

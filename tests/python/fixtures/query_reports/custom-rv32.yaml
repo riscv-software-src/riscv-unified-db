@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+$schema: config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: query-report-custom-rv32
+description: An RV32 overlay catalog with one structurally RV64-only instruction.
+arch_overlay: overlay
+mandatory_extensions:
+  - name: I
+    version: ">= 0"
+  - name: Sm
+    version: ">= 0"
+params:
+  MXLEN: 32

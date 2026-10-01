@@ -1,0 +1,7 @@
+I Extension
+  Base integer ISA (RV32I or RV64I)
+
+Versions:
+  * 2.1.0
+
+Includes 41 instructions

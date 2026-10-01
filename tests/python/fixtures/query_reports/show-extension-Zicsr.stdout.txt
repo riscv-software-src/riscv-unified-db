@@ -1,0 +1,7 @@
+Zicsr Extension
+  Control and status register instructions
+
+Versions:
+  * 2.0.0
+
+Includes 6 instructions

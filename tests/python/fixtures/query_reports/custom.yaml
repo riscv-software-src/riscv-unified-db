@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+$schema: config_schema.json#
+kind: architecture configuration
+type: unconfigured
+name: query-report-custom
+description: An unconfigured overlay catalog with one RV64-only ambiguous instruction.
+arch_overlay: overlay

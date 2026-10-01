@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+$schema: inst_schema.json#
+kind: instruction
+name: custom.addi
+long_name: Deliberately ambiguous custom encoding for matching tests
+description: Tests catalog ordering and explicit ambiguity without choosing an opcode.
+definedBy:
+  allOf:
+    - extension:
+        name: I
+    - xlen: 64
+assembly: xd, xs1, imm
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+encoding:
+  match: "-----------------000-----0010011"
+  variables:
+    - name: imm
+      location: 31-20
+      sign_extend: true
+    - name: xs1
+      location: 19-15
+    - name: xd
+      location: 11-7
+operation(): X[xd] = X[xs1] + $signed(imm);
