@@ -23,6 +23,65 @@ def _csr_dynamic(context, csr):
     return context.multi and Emitter._csr_dynamic(csr)
 
 
+def _reset_order(graph):
+    index = 0
+    indices = {}
+    lowlinks = {}
+    stack = []
+    active = set()
+    components = []
+
+    def visit(node):
+        nonlocal index
+        indices[node] = lowlinks[node] = index
+        index += 1
+        stack.append(node)
+        active.add(node)
+        for dependency in sorted(graph[node]):
+            if dependency not in indices:
+                visit(dependency)
+                lowlinks[node] = min(lowlinks[node], lowlinks[dependency])
+            elif dependency in active:
+                lowlinks[node] = min(lowlinks[node], indices[dependency])
+        if lowlinks[node] == indices[node]:
+            component = []
+            while True:
+                member = stack.pop()
+                active.remove(member)
+                component.append(member)
+                if member == node:
+                    break
+            components.append(tuple(sorted(component)))
+
+    for node in sorted(graph):
+        if node not in indices:
+            visit(node)
+    owner = {node: component for component in components for node in component}
+    component_graph = {
+        component: {
+            owner[dependency]
+            for node in component
+            for dependency in graph[node]
+            if owner[dependency] != component
+        }
+        for component in components
+    }
+    sorter = TopologicalSorter(
+        {
+            component: tuple(sorted(dependencies))
+            for component, dependencies in sorted(component_graph.items())
+        }
+    )
+    sorter.prepare()
+    result = []
+    while sorter.is_active():
+        ready = sorted(sorter.get_ready())
+        for component in ready:
+            result.extend(component)
+        sorter.done(*ready)
+    return tuple(result)
+
+
 def _bases(context, descriptor):
     return tuple(base for base in context.xlens if descriptor.defined_in_base(base))
 
@@ -354,13 +413,7 @@ def csr_container(context):
     missing = {dep for deps in graph.values() for dep in deps if dep not in graph}
     if missing:
         raise CppGenerationError(f"CSR reset references unavailable CSRs: {sorted(missing)}")
-    sorter = TopologicalSorter({name: tuple(sorted(graph[name])) for name in sorted(graph)})
-    sorter.prepare()
-    reset_order = []
-    while sorter.is_active():
-        ready = sorted(sorter.get_ready())
-        reset_order.extend(ready)
-        sorter.done(*ready)
+    reset_order = _reset_order(graph)
     reset = "\n".join(f"{csr.replace('.', '_')}.reset();" for csr in reset_order)
     return f"""#pragma once
 #include "udb/cfgs/{context.name}/csrs.hxx"

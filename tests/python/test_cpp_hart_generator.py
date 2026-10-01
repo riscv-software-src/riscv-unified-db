@@ -22,6 +22,7 @@ from udb.cpp_hart import (
 from udb.cpp_hart.__main__ import configuration_overlays, main
 from udb.cpp_hart.catalog import Catalog
 from udb.cpp_hart.context import Context
+from udb.cpp_hart.csrs import _reset_order
 from udb.cpp_hart.generator import _unavailable, build_type
 from udb.cpp_hart.resources import package_mapping, standalone_cmake
 from udb.idl_csr_environment import _CsrFieldAdapter
@@ -334,6 +335,17 @@ def test_dynamic_field_location_uses_accessible_privilege_modes(monkeypatch):
     assert _CsrFieldAdapter("field", {"location": None}, Parent()).dynamic_location()
     assert not _CsrFieldAdapter("field", {"location": "3-0"}, Parent()).dynamic_location()
     assert not _CsrFieldAdapter("field", {"location": None}).dynamic_location()
+
+
+def test_csr_reset_order_collapses_cycles_deterministically():
+    assert _reset_order(
+        {
+            "dependent": {"misa"},
+            "misa": {"mstatus"},
+            "mstatus": {"misa"},
+            "independent": set(),
+        }
+    ) == ("independent", "misa", "mstatus", "dependent")
 
 
 def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):
