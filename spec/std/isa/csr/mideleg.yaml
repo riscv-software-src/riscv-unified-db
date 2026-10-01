@@ -227,7 +227,7 @@ fields:
       otherwise it is read-only zero.
     type: RO
     reset_value(): |
-      return NUM_EXTERNAL_GUEST_INTERRUPTS > 0 ? 1 : 0;
+      return MIDELEG_DELEGATABLE[12] ? 1 : 0;
     definedBy:
       extension:
         name: H
