@@ -7,8 +7,9 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 
 The approved scope replaces `cpp/test/gen_test_bits.rb` and its six generated
 translation units with handwritten native C++ randomized/property tests.
-It does **not** introduce Python tests, another test-source generator, a Ruby
-facade, or changes to retained hart/ISS generation. The FP stimulus generator
+It does **not** substitute Python assertions for native coverage, introduce
+another test-source generator or Ruby facade, or change retained hart/ISS
+generation. The FP stimulus generator
 (ID35) is retired separately and is not a dependency of this capability.
 
 ## Source trace and coverage map
@@ -60,10 +61,14 @@ from `backends/cpp_hart_gen/cpp/test`, using only C++23, fmt, Catch2 and GMP,
 with no architecture resolution, generated hart headers, Ruby, or Python.
 Its targets are also integrated into the retained backend CMake test build.
 
-The parent owns retirement of the Ruby generator and six obsolete generated
-files, the `tasks.rake` generator invocation, and shared registry/CI/CLI/docs
-cutover. The lane supplies unapplied patches for those changes; it does not
-edit shared wiring or semantic ISA/schema data.
+The Ruby generator, six obsolete generated files and `tasks.rake` authoring
+invocation are removed. Rake copies the handwritten C++ sources, shared test
+header and CMake module into its generated tree. Its existing
+`test_bits_random` aggregate and CTest invocation remain supported.
+`regress-native-bits` also configures and runs all native Bits cases directly,
+without depending on successful hart generation or unrelated register tests.
+Python regression checks protect the retirement and CI wiring; they do not
+replace native assertions.
 
 ## Validation and acceptance
 
@@ -167,13 +172,23 @@ validation passed **7 cases / 2,978 assertions** covering conversions, shifts,
 unknown propagation and literal reproducers. Randomized signed arithmetic and
 the complete repository were not sanitizer-qualified by that bounded run.
 
-The original generator and six generated sources remain unchanged until
-acceptance. The parent-owned shared-wiring patch is still unapplied; the
-retirement patch was regenerated as a valid full deletion patch. Both pass
-`git apply --check` in this lane and the primary checkout. No Ruby invocation,
-registry/CLI/checker change, unrelated register/ISS repair, or FP/hart-generation
-change was made. One final native gate was run for this coupled follow-up after
-incremental checks; it was not repeated after documentation updates.
+## Retained backend integration
+
+Actual Rake asset rules prepared an isolated generated-layout tree, including
+the new test header and CMake module. The unmodified backend CMake entry point
+then built the compatibility aggregate and ran **39/39** property/defect CTest
+cases, without building a hart or invoking test-source generation. Existing
+native `db_data.cxx` and `enum.cxx` outputs supplied the unrelated hart target's
+configure-time source paths; they were not compiled or used as a new hart
+generation acceptance claim. No schema or register-storage repair was made.
+
+GMP discovery probes headers and linking through the selected C++ compiler,
+then links `gmpxx`/`gmp` by name. Host-side `find_library` paths must not leak
+into `bin/g++` invocations that run in the toolchain container. The updated
+probe/link wiring passed the backend's 39 cases and a standalone relink of
+all targets plus the eight defect cases. Exact offline dependency caches,
+one build job and the heavy-test lock were used. Logs are
+`gen/handoff/bits-{rake-integration,backend-integration,toolchain-link}.log`.
 
 See `gen/handoff/bits-report.md` for exact commands, cache versions, failing
-reproducers, parent-owned integration patches and the next concrete step.
+reproducers and the original independent native review evidence.
