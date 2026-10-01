@@ -545,7 +545,7 @@ class _GlobalScope:
     the base rather than to the size of the global scope.
     """
 
-    __slots__ = ("_base", "_deleted", "_lazy", "_memo", "_own", "_table")
+    __slots__ = ("_base", "_deleted", "_info", "_lazy", "_memo", "_own", "_table")
 
     def __init__(
         self,
@@ -559,6 +559,8 @@ class _GlobalScope:
         self._lazy: set[str] = set()
         self._deleted: set[str] = set()
         self._memo: dict[int, object] = {}
+        # Derived facts about ``_base``; shared by every scope sharing that base.
+        self._info: dict[object, object] = {}
 
     def _materialize(self, name: str) -> object | None:
         if name in self._deleted:
@@ -625,11 +627,23 @@ class _GlobalScope:
     def items(self) -> list[tuple[str, object]]:
         return [(name, self.get(name)) for name in self.keys()]
 
+    def names_where(self, predicate: Callable[[object], bool]) -> list[str]:
+        base_names = self._info.get(predicate)
+        if base_names is None:
+            base_names = tuple(name for name, value in self._base.items() if predicate(value))
+            self._info[predicate] = base_names
+        own = self._own
+        deleted = self._deleted
+        names = [name for name in base_names if name not in own and name not in deleted]
+        names.extend(name for name, value in own.items() if predicate(value))
+        return names
+
     def freeze(self) -> None:
         """Make the current bindings the shared base of this table and its clones."""
         merged = {name: value for name, value in self._base.items() if name not in self._deleted}
         merged.update(self._own)
         self._base = merged
+        self._info = {}
         self._own = {}
         self._lazy = set()
         self._deleted = set()
@@ -637,6 +651,7 @@ class _GlobalScope:
 
     def clone(self, table: SymbolTable, memo: dict[int, object]) -> _GlobalScope:
         result = _GlobalScope(table, base=self._base)
+        result._info = self._info
         result._deleted = set(self._deleted)
         for name, value in self._own.items():
             if name in self._lazy and (
@@ -957,6 +972,14 @@ class SymbolTable:
             for scope in scopes[1:]
         )
         return clone
+
+    def global_names_where(self, predicate: Callable[[object], bool]) -> list[str]:
+        """Names of current global bindings satisfying a pure, binding-local predicate.
+
+        ``predicate`` must depend only on the binding's identity-stable
+        properties, so results for shared unmodified bindings can be reused.
+        """
+        return self._scopes[0].names_where(predicate)  # type: ignore[attr-defined]
 
     def freeze_globals(self) -> None:
         """Share the current global bindings with later clones without copying them.

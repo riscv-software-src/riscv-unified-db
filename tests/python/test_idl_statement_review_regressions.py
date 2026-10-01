@@ -457,3 +457,37 @@ def test_explicit_isa_check_rejects_registered_incompatible_global_rhs(text):
 def test_duplicate_source_global_constants_are_rejected():
     with pytest.raises(IdlTypeError, match="already declared in this scope"):
         parse_isa("%version: 1.0\nBits<8> K = 1;\nBits<8> K = 2;").add_global_symbols(SymbolTable())
+
+
+@pytest.mark.parametrize("freeze", [False, True])
+def test_unknown_calls_invalidate_transitive_and_opaque_global_writes(freeze):
+    table = SymbolTable()
+    table.add("b", Var("b", BOOL_TYPE))
+    table.add("counter", Var("counter", BITS8, 5))
+    table.add("other", Var("other", BITS8, 6))
+    table.add("P", Var("P", BITS8, 7, param=True))
+    table.add("C", Var("C", Type(TypeKind.BITS, width=8, qualifiers=(Qualifier.CONST,)), 8))
+    parse_isa(
+        "%version: 1.0\n"
+        "builtin function opaque { description { runtime } }\n"
+        "function inner { description { inner } body { counter = 1; } }\n"
+        "function outer { description { outer } body { inner(); } }\n"
+        "function hidden { description { hidden } body { opaque(); } }"
+    ).type_check(table)
+    if freeze:
+        table.freeze_globals()
+        table = table.global_clone()
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+
+    for call, cleared in (("outer", {"counter"}), ("hidden", {"counter", "other"})):
+        caller = table.deep_clone()
+        caller.get_global("counter").value = 5
+        node = parse_function_body(f"{call}() if (b); return 4;")
+        node.type_check(caller)
+        with pytest.raises(IdlValueUnknown):
+            node.return_value(caller)
+        for name, value in (("counter", 5), ("other", 6), ("P", 7), ("C", 8)):
+            expected = None if name in cleared else value
+            assert caller.get_global(name).value == expected
+        assert table.get_global("counter").value == 5
