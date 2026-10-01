@@ -50,6 +50,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    reports_parser = subparsers.add_parser("inspect", help="configured UDB human reports")
+    reports_parser.add_argument(
+        "subject", choices=("extension", "parameter", "extensions", "parameters", "csrs")
+    )
+    reports_parser.add_argument("report_args", nargs=argparse.REMAINDER)
+    disasm_parser = subparsers.add_parser("disasm", help="fixed-bit instruction matching")
+    disasm_parser.add_argument("encoding")
+    disasm_parser.add_argument("report_args", nargs=argparse.REMAINDER)
+
     list_parser = subparsers.add_parser("list", help="list UDB records")
     list_parser.add_argument("kind", help="record kind, such as extension or instruction")
 
@@ -182,6 +191,26 @@ def _write_generated_source(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.command in ("inspect", "disasm"):
+        from .query_reports.cli import main as query_reports_main
+
+        if args.resolved or args.validate:
+            parser.error(
+                "configured reports resolve their database; --resolved/--validate are raw-query options"
+            )
+        options = []
+        for flag, value in (("--path", args.path), ("--schemas", args.schemas)):
+            if value is not None:
+                options.extend((flag, str(value)))
+        for overlay in args.overlay:
+            options.extend(("--overlay", str(overlay)))
+        if args.command == "disasm":
+            report_args = ["disasm", args.encoding]
+        elif args.subject in ("extension", "parameter"):
+            report_args = ["show", args.subject]
+        else:
+            report_args = ["list", args.subject]
+        return query_reports_main([*report_args, *options, *args.report_args])
     resolves_database = args.resolved or args.command in ("resolve", "validate-cfg", "generate")
     if args.overlay and not resolves_database:
         parser.error("--overlay requires --resolved")

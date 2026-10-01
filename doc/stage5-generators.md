@@ -126,13 +126,14 @@ and runs the frozen native-oracle helper against offline wheel/sdist installs.
 The **135-file count below is only YAML configured prose**, not all embedded
 ERB: the removed Ruby source additionally contained ERB heredocs.
 
-`bin/udb` and `bin/idlc` are retained CLI consumers, not aliases of the already
-ported Python inspection commands. Their Thor implementations are
-`tools/ruby-gems/{udb,idlc}/lib/{udb,idlc}/cli.rb`. Preserve UDB
-`validate spec|cfg`, `extension`, `parameter`, `extensions`, `parameters`,
-`csrs`, and `disasm ENCODING`; preserve IDLC `compile --format yaml --root`,
-`eval`, and `tc inst`, including their supported filters/formats, output
-semantics and errors. The compiler API alone does not close these CLI contracts.
+`bin/udb` now routes the retained `show extension|parameter`,
+`list extensions|parameters|csrs`, and `disasm ENCODING` leaves to
+`udb.query_reports`, supplying the repository ISA and schema paths explicitly.
+Other UDB leaves and `bin/idlc` remain Ruby Thor consumers pending their owning
+layers. The installed `udb inspect ...`/`udb disasm` adapter is intentionally a
+candidate spelling rather than a final public naming decision. Preserve IDLC
+`compile --format yaml --root`, `eval`, and `tc inst`, including their supported
+filters/formats, output semantics and errors.
 
 Two model methods currently cross the rendering boundary in-process:
 `manual.rb` uses `Asciidoctor.load(...).doctitle`, and `csr.rb` implements

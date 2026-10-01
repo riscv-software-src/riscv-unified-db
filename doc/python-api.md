@@ -679,3 +679,9 @@ Re-plan if historical page names change. Unknown keywords and unsupported
 schemas fail explicitly; no refs are fetched and no renderer is invoked.
 See [the precise artifact contract](stage5-schema-docs.md), including exact
 Ruby oracles and deliberately retained historical drift.
+
+## Retained configured reports and instruction matching
+
+See [Stage 5 query/report API](stage5-query-reports.md) for `udb.query_reports`,
+immutable outputs, native catalog/configuration selection, encoding-field decoding,
+and the testing module CLI. Permanent installed command naming remains separate.

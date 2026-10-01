@@ -65,6 +65,7 @@ def _wheel_data(wheel: Path) -> dict[str, str]:
             b"License-Expression: BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT\n"
             in archive.read(metadata)
         )
+        assert any(name.endswith("udb/query_reports/matching.py") for name in archive.namelist())
         return {
             name: hashlib.sha256(archive.read(name)).hexdigest()
             for name in archive.namelist()
@@ -101,6 +102,12 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
         ):
             assert any(name.endswith(f"/{source}") for name in names), source
         assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in names)
+        assert any(
+            name.endswith("/tests/python/query_reports_installed_acceptance.py") for name in names
+        )
+        assert any(
+            name.endswith("/tests/python/fixtures/query_reports/manifest.json") for name in names
+        )
         assert not any(name.endswith(".erb") for name in names)
         qc_sources = {
             name.split("/spec/custom/isa/qc_iu/", 1)[1]
@@ -241,6 +248,17 @@ for job in qc.jobs:
     gate_environment["PATH"] = str(venv / "bin")
     subprocess.run(
         [str(venv_python), "-I", str(REPOSITORY_ROOT / "tools/test/check_python_install.py")],
+        cwd=tmp_path,
+        env=gate_environment,
+        check=True,
+    )
+    subprocess.run(
+        [
+            str(venv_python),
+            "-I",
+            str(sdist_root / "tests/python/query_reports_installed_acceptance.py"),
+            str(sdist_root / "tests/python/fixtures/query_reports"),
+        ],
         cwd=tmp_path,
         env=gate_environment,
         check=True,

@@ -69,7 +69,7 @@
     },
     {
       "id": "udb-reports-disassembly",
-      "status": "pending: Ruby Thor CLI",
+      "status": "accepted locally: native API/testing CLI, installed inspect/disasm candidate, and repository show/list/disasm routing",
       "legacy_commands": [
         "bin/udb extension NAME",
         "bin/udb parameter NAME",
@@ -88,11 +88,14 @@
       "consumers": ["interactive users and scripts"],
       "prospective_owner": "udb.cli inspect/disasm",
       "python_cli": "udb inspect extension|parameter|extensions|parameters|csrs; udb disasm ENCODING",
-      "fixtures": ["pending: captured reports and decoder corpus"],
-      "comparison_policy": "field/row and disassembly semantic parity, explicit errors and exit statuses",
+      "fixtures": [
+        "tests/python/fixtures/query_reports: 38 genuine native CLI captures, source hashes, condition observations and exact resolver-description witnesses",
+        "doc/stage5-query-reports.md: public API, selection, matching and intentional-correction contract"
+      ],
+      "comparison_policy": "whole-report/name/disassembly byte equality and structured parameter-row equality, except nine exact source-faithful resolver-serialization corrections; explicit errors and exit statuses",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: all retained CLI subcommands"
+        "installed_wheel_sdist_offline": "passed: wheel, sdist install and wheel rebuilt from sdist with the portable frozen-fixture helper and repository installed checker",
+        "repository_ci": "wired: 96 focused API/CLI/native tests plus installed checker; bin/udb routes retained show/list/disasm leaves natively and supplies explicit schemas"
       }
     },
     {

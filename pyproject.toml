@@ -69,6 +69,8 @@ include = [
     "/hatch_build.py",
     "/pyproject.toml",
     "/src/udb",
+    "/tests/python/query_reports_installed_acceptance.py",
+    "/tests/python/fixtures/query_reports/**/*",
     "/spec/schemas/**/*.json",
     "/spec/schemas/**/*.yaml",
     "/spec/std/isa/**/*.adoc",
