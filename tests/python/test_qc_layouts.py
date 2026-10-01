@@ -23,6 +23,10 @@ ORACLE = json.loads((ROOT / "tests/data/qc_layouts/oracle.json").read_text(encod
 QC = get_layout_collection("qc_iu")
 
 
+def test_original_qc_ruby_authoring_is_retired() -> None:
+    assert not (ROOT / QC.source_root / "gen_mcliciX.rb").exists()
+
+
 def original_bytes(content: bytes, source: str) -> bytes:
     first, rest = content.split(b"\n", 1)
     warning = f"\n# WARNING: This file is auto-generated from {source}\n\n".encode()

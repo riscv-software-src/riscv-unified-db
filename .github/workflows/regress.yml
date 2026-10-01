@@ -63,10 +63,13 @@ jobs:
           python -m venv /tmp/udb-install
           /tmp/udb-install/bin/python -m pip install --no-cache-dir --no-index --find-links /tmp/udb-wheels udb
           cp tools/test/check_python_install.py /tmp/check_python_install.py
+          cp tools/test/check_python_install_qc_layouts.py /tmp/check_python_install_qc_layouts.py
+          cp tests/data/qc_layouts/oracle.json /tmp/qc-layouts-oracle.json
           cd /tmp
           export PATH=/tmp/udb-install/bin
           unset UDB_ROOT PYTHONPATH
           python -I /tmp/check_python_install.py
+          python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-wheel-acceptance --oracle /tmp/qc-layouts-oracle.json
       - name: Install the source archive offline with build isolation
         run: |
           python -m venv /tmp/udb-sdist-install
@@ -75,6 +78,7 @@ jobs:
           export PATH=/tmp/udb-sdist-install/bin
           unset UDB_ROOT PYTHONPATH
           python -I /tmp/check_python_install.py
+          python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-sdist-acceptance --oracle /tmp/qc-layouts-oracle.json
 
   never-runs:
     # this just exists so that renovate can keep action version pointers up-to-date
@@ -581,7 +585,7 @@ jobs:
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
       - name: Check layout-derived architecture files
-        run: uv run --locked udb generate-layouts --root . --check
+        run: uv run --locked udb generate-layouts --root . --collection standard --collection qc_iu --check
 
   regress-python-configured-prose-frozen:
     runs-on: ubuntu-latest

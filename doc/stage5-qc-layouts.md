@@ -89,8 +89,8 @@ snapshots. Generation does not modify templates or other unowned files.
 
 Installed authoring must use bundled QC layouts or caller-provided source
 data offline, outside a checkout, without reading source through repository
-fallbacks. Resource packaging and shared CLI integration are supplied as
-unapplied patches for the parent. The existing generic `generate-layouts`
+fallbacks. The wheel and sdist include the exact five QC layouts and 56 owned
+records. The existing generic `generate-layouts`
 command gains optional collection/source selection; its current default
 behavior and exit codes remain unchanged.
 
@@ -102,7 +102,7 @@ Use `udb.layout_collections.get_layout_collection("qc_iu")` with
 does not require registration. `source_root=` on the planning/generation
 function chooses a separate physical source tree, not a different output tree.
 `layout_collection_names()` exposes the two registered CLI selectors:
-`standard` and `qc_iu`. After parent integration:
+`standard` and `qc_iu`:
 
 ```shell
 udb generate-layouts --root . --collection qc_iu --check
@@ -124,8 +124,15 @@ all 532 unchanged standard outputs, independent template/output roots,
 immutable recipes, explicit source/resource failures, safe ownership,
 nonwriting drift checks, read-only regeneration, and standalone resource use.
 
-The parent must apply packaging/invocation patches, build wheel and sdist,
-rebuild the wheel from sdist, and run the supplied actual installed acceptance
-helper with no checkout/network/native helper available. This lane does not
-claim package acceptance before that gate runs. Ruby consumer deletion and
-Rake/bin/CI wiring remain parent-owned and are blocked on accepted integration.
+`test_wheel_rebuilt_from_sdist_is_standalone` compares wheel/sdist resources,
+checks zipped-wheel generation, and runs the installed acceptance helper with
+an explicit frozen native oracle outside the checkout. The package CI runs
+that helper against both offline wheel and sdist installations with PATH
+restricted to the installed environment. The helper compares all 56 native
+outputs, 588 combined outputs, relocated inputs, read-only outputs, CLI drift
+and error behavior. The fast layout drift job selects both collections;
+default CLI and `./do gen:arch` selection remain standard-only.
+
+The installed acceptance gate and independent integration review passed.
+The original Ruby authoring script is removed; its complete source and native
+outputs remain frozen in the oracle for provenance.

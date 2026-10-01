@@ -11,7 +11,7 @@ import tarfile
 import zipfile
 from pathlib import Path
 
-from udb import Database
+from udb import Database, get_layout_collection
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
 BUILD_HOOK_SPEC = importlib.util.spec_from_file_location(
@@ -102,6 +102,15 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
             assert any(name.endswith(f"/{source}") for name in names), source
         assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in names)
         assert not any(name.endswith(".erb") for name in names)
+        qc_sources = {
+            name.split("/spec/custom/isa/qc_iu/", 1)[1]
+            for name in names
+            if "/spec/custom/isa/qc_iu/" in name
+        }
+        qc = get_layout_collection("qc_iu")
+        assert qc_sources == {job.source.as_posix() for job in qc.jobs} | {
+            job.target.as_posix() for job in qc.jobs
+        }
         archive.extractall(extracted, filter="data")
 
     sdist_root = next(extracted.iterdir())
@@ -174,6 +183,13 @@ lr_w = CapturedProse.from_record(resolved, resolved.instruction('lr.w'), 'descri
 assert 'sign-extended to 64-bits' in render_legacy(lr_w, inputs)
 names = resolve_all_exception_records(resolved, inputs)
 assert names and all(isinstance(item['ext'], str) for item in names)
+qc = udb.get_layout_collection('qc_iu')
+assert len(udb.generate_layouts(authoring_root, collections=(qc,))) == 56
+assert udb.generate_layouts(authoring_root, collections=(qc,), check=True) == ()
+for job in qc.jobs:
+    generated = authoring_root / qc.output_root / job.target
+    bundled = files('udb').joinpath('_data', 'custom_isa', 'qc_iu', *job.target.parts)
+    assert generated.read_bytes() == bundled.read_bytes()
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(rebuilt_wheel)
@@ -225,6 +241,20 @@ assert names and all(isinstance(item['ext'], str) for item in names)
     gate_environment["PATH"] = str(venv / "bin")
     subprocess.run(
         [str(venv_python), "-I", str(REPOSITORY_ROOT / "tools/test/check_python_install.py")],
+        cwd=tmp_path,
+        env=gate_environment,
+        check=True,
+    )
+    subprocess.run(
+        [
+            str(venv_python),
+            "-I",
+            str(REPOSITORY_ROOT / "tools/test/check_python_install_qc_layouts.py"),
+            "--root",
+            str(tmp_path / "qc-installed"),
+            "--oracle",
+            str(REPOSITORY_ROOT / "tests/data/qc_layouts/oracle.json"),
+        ],
         cwd=tmp_path,
         env=gate_environment,
         check=True,

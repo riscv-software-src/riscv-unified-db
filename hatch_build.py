@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Build the standalone wheel with a read-only snapshot of standard UDB data."""
+"""Build the standalone wheel with read-only ISA and authoring resources."""
 
 from __future__ import annotations
 
@@ -42,6 +42,28 @@ def package_data(source_root: Path) -> dict[Path, PurePosixPath]:
         if not path.is_file():
             raise RuntimeError(f"required generic configuration is missing: {path}")
         mappings[path] = PurePosixPath("udb/_data/configs") / path.name
+    qc_root = source_root / "spec/custom/isa/qc_iu"
+    for stem, count in (
+        ("mclicip", 8),
+        ("mclicie", 8),
+        ("mclicilvl", 32),
+        ("mwpstartaddr", 4),
+        ("mwpendaddr", 4),
+    ):
+        names = [
+            f"qc.{stem}N.layout",
+            *(
+                f"qc.{stem}{number:02}.yaml" if stem == "mclicilvl" else f"qc.{stem}{number}.yaml"
+                for number in range(count)
+            ),
+        ]
+        for name in names:
+            relative = PurePosixPath("csr/Xqci") / name
+            path = qc_root / relative
+            if not path.is_file():
+                raise RuntimeError(f"required QC layout data is missing: {path}")
+            kind = "custom_layouts" if path.suffix == ".layout" else "custom_isa"
+            mappings[path] = PurePosixPath(f"udb/_data/{kind}/qc_iu") / relative
     return mappings
 
 
