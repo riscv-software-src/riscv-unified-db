@@ -285,6 +285,36 @@ def test_empty_all_selection_is_explicit(tmp_path, capsys):
     assert "No configurations selected" in capsys.readouterr().err
 
 
+def test_progress_is_opt_in_and_written_to_stderr(tmp_path, capsys, monkeypatch):
+    from udb.cpp_hart import __main__ as entrypoint
+
+    class FakeDatabase:
+        @classmethod
+        def bundled(cls):
+            return cls()
+
+        def resolve(self, *, overlays=()):
+            return self
+
+        def configure(self, config):
+            return object()
+
+    class FakeGenerator:
+        def __init__(self, architectures, **kwargs):
+            self.progress = kwargs["progress"]
+
+        def generate(self, root, *, check=False):
+            if self.progress is not None:
+                self.progress("rv64:instruction_headers", 2, 3)
+            return ()
+
+    monkeypatch.setattr(entrypoint, "Database", FakeDatabase)
+    monkeypatch.setattr(entrypoint, "CppHartGenerator", FakeGenerator)
+    assert main(["--config", "rv64", "--out", str(tmp_path), "--progress"]) == 0
+    error = capsys.readouterr().err
+    assert "cpp-hart: rv64:instruction_headers 2/3 elapsed=" in error
+
+
 def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):
     overlay_data = Configuration.builtin("rv32").to_dict()
     overlay_data["name"] = "with-overlay"

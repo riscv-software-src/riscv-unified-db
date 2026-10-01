@@ -5,6 +5,7 @@
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 from udb import Configuration, Database
@@ -53,6 +54,7 @@ def main(argv=None):
     parser.add_argument("--build-type", default="RelWithDebInfo")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--progress", action="store_true")
     args = parser.parse_args(argv)
     try:
         if args.schemas is not None and args.source is None:
@@ -92,11 +94,20 @@ def main(argv=None):
                 resolved = database.resolve(overlays=overlays)
                 resolved_databases[overlays] = resolved
             architectures.append(resolved.configure(config))
+        started = time.monotonic()
+
+        def progress(phase, current, total):
+            print(
+                f"cpp-hart: {phase} {current}/{total} elapsed={time.monotonic() - started:.1f}s",
+                file=sys.stderr,
+            )
+
         generator = CppHartGenerator(
             architectures,
             resources=RuntimeResources.from_path(args.runtime_root) if args.runtime_root else None,
             build_name=args.build_name,
             build_type=args.build_type,
+            progress=progress if args.progress else None,
         )
         changed = generator.generate(args.out, check=args.check)
         return 1 if args.check and changed else 0

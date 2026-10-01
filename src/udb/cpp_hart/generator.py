@@ -129,6 +129,7 @@ class CppHartGenerator:
         resources: RuntimeResources | None = None,
         build_name: str | None = None,
         build_type: str = "RelWithDebInfo",
+        progress=None,
     ):
         architectures = tuple(architectures)
         if not architectures or any(
@@ -145,13 +146,19 @@ class CppHartGenerator:
         self.build_type = globals()["build_type"](build_type)
         self.architectures = architectures
         self.resources = resources if resources is not None else RuntimeResources.bundled()
+        self.progress = progress
 
     @property
     def directory_name(self):
         return f"{self.build_name}_{self.build_type}"
 
     def plan(self) -> AuthoringPlan:
-        contexts = tuple(Context(arch) for arch in self.architectures)
+        contexts = []
+        for index, arch in enumerate(self.architectures, 1):
+            if self.progress is not None:
+                self.progress("context", index, len(self.architectures))
+            contexts.append(Context(arch))
+        contexts = tuple(contexts)
         first = contexts[0]
         catalog = Catalog(contexts)
         symbols = tuple(context.symbol("hart") for context in contexts)
@@ -214,8 +221,15 @@ class CppHartGenerator:
         add("include/udb/libhart_renode.h", c_api.header(catalog, renode=True))
         for context in contexts:
             prefix = f"include/udb/cfgs/{context.name}/"
-            inst, inst_impl = instructions.instruction_headers(context)
-            csr, csr_impl = csrs.csr_headers(context)
+            progress = (
+                None
+                if self.progress is None
+                else lambda phase, current, total, name=context.name: self.progress(
+                    f"{name}:{phase}", current, total
+                )
+            )
+            inst, inst_impl = instructions.instruction_headers(context, progress=progress)
+            csr, csr_impl = csrs.csr_headers(context, progress=progress)
             prototypes, defs = functions.function_headers(context)
             contents = (
                 inst,

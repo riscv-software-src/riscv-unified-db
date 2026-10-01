@@ -291,7 +291,7 @@ bool {scope}::implemented_without_Q_(const ExtensionName& ext) const {{ return t
 """
 
 
-def csr_headers(context):
+def csr_headers(context, *, progress=None):
     header = [
         '#pragma once\n#include "udb/util.hpp"\n#include "udb/bits.hpp"\n#include "udb/bitfield.hpp"\n#include "udb/csr.hpp"\n#include "udb/cpp_exceptions.hpp"\n#include "udb/version.hpp"\nnamespace udb {',
         f"template <SocModel SocType> class {context.symbol('hart')};",
@@ -299,7 +299,10 @@ def csr_headers(context):
     impl = [
         f'#pragma once\n#include "udb/cfgs/{context.name}/structs.hxx"\n#include "udb/cfgs/{context.name}/params.hxx"\nusing namespace std::literals;\nnamespace udb {{'
     ]
-    for record, csr in context.csrs:
+    total = len(context.csrs)
+    for index, (record, csr) in enumerate(context.csrs, 1):
+        if progress is not None:
+            progress("csr_headers", index, total)
         fields = context.fields(record, csr)
         header += [_field_header(context, record, field) for field in fields]
         header += [_views(context, record, csr), _csr_header(context, record, csr, fields)]

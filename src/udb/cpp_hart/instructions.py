@@ -103,8 +103,9 @@ def _registers(body, pass_function):
     return "return {" + ", ".join(items) + "};"
 
 
-def instruction_headers(context):
+def instruction_headers(context, *, progress=None):
     macro, undef = macros(context)
+    control_flow_cache = {}
     out = [
         '#pragma once\n#include "udb/bits.hpp"\n#include "udb/util.hpp"\n#include "udb/xregister.hpp"\n#include "udb/inst.hpp"\n#include "udb/cpp_exceptions.hpp"',
         f'#include "udb/cfgs/{context.name}/structs.hxx"',
@@ -113,7 +114,10 @@ def instruction_headers(context):
     ]
     impl = ["#pragma once\nnamespace udb {"]
     unavailable = 'm_parent->assert(false, "There is no operation() defined for this instruction");'
-    for instruction in context.instructions:
+    total = len(context.instructions)
+    for index, instruction in enumerate(context.instructions, 1):
+        if progress is not None:
+            progress("instruction_headers", index, total)
         encodings = [
             context.encodings[(instruction.name, xlen)]
             for xlen in context.xlens
@@ -138,7 +142,7 @@ public:
   virtual ~{cls}() {{}}
   {hart}<SocType>* parent() {{ return m_parent; }}
   bool control_flow() const override {{
-{_branches(context, instruction, lambda body, xlen: "return " + str(control_flow(body.ast, body.emitter.symtab.global_clone())).lower() + ";", default="return false;")}
+{_branches(context, instruction, lambda body, xlen: "return " + str(control_flow(body.ast, body.emitter.symtab.global_clone(), cache=control_flow_cache)).lower() + ";", default="return false;")}
   }}
 """)
         for encoding in encodings:
