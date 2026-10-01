@@ -1,0 +1,319 @@
+---
+title: Configuration Schema (v0.1)
+sidebar_label: Configuration Schema
+custom_edit_url: null
+# This file is auto-generated from config_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Configuration Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`config_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/config_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+A configuration represents RISC-V architectural choices - ranging from complete design specifications to requirement sets to unconstrained baselines.
+
+> **See also:** Configurations Overview for a narrative introduction with examples and use cases.
+
+Configurations come in three forms:
+
+- **Fully configured**: Concrete implementations with all extensions and parameters explicitly specified. These represent actual processor implementations where every architectural detail is known. Each extension must specify an exact version (e.g., `2.1.0` or `2.1`). Used for generating implementations, documentation, and test suites for specific hardware.
+
+- **Partially configured**: Profiles or configurable IP that define mandatory, optional, and prohibited extensions using version constraints (e.g., `>= 2.0`). These specify requirements that multiple implementations can satisfy. Can restrict whether additional extensions beyond those listed are allowed. Used for RISC-V compliance profiles, configurable IP offerings (a class of implementations a vendor may offer), and platform requirements.
+
+- **Unconfigured**: Special case representing the entire RISC-V specification without any implementation choices. Used to model the complete RISC-V architecture space before any configuration decisions are made.
+
+The variant is selected by the `type` field. Fields common to all variants: `name`, `description`, `arch_overlay`. The `params` field is available on `fully configured` and `partially configured` variants.
+
+> **Note:** Schema validation checks structural correctness only. A schema-valid file can still be semantically invalid - for example, referencing an extension version that does not exist in the database, or omitting a parameter that is required by the implemented extensions.
+
+
+## Quick Start
+
+**Minimal Fully Configured:**
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: MyProcessor
+description: A minimal 64-bit RISC-V processor
+params:
+  MXLEN: 64
+implemented_extensions:
+- name: I
+  version: '2.1'
+- name: Sm
+  version: '1.12'
+
+```
+
+**Minimal Partially Configured:**
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: MyProfile
+description: A minimal profile requiring base integer instructions
+mandatory_extensions:
+- name: I
+  version: ">= 2.1"
+
+```
+
+**Minimal Unconfigured:**
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: unconfigured
+name: generic
+description: The complete RISC-V specification with no implementation choices
+
+```
+
+
+
+## Variants
+
+This schema accepts **one of** the following variants, distinguished by the `type` field:
+
+- [fully configured](#fully-configured)
+- [partially configured](#partially-configured)
+- [unconfigured](#unconfigured)
+
+### `fully configured`
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ | Schema reference - must be `config_schema.json#` |
+| `kind` | `string` (const: `architecture configuration`) | ✓ | Document type identifier - must be `architecture configuration` |
+| `type` | `string` (const: `fully configured`) | ✓ | Configuration specificity level - `fully configured` means all extensions and parameters are explicitly specified |
+| `name` | `string` | ✓ | Name of the configuration |
+| `description` | `string` | ✓ | Human-readable description of this configuration (AsciiDoc format) |
+| `params` | `object` | ✓ | Architecture parameters that define implementation choices (e.g., `MXLEN: 64`, privilege modes, physical address width, etc.). Parameter names and valid values are defined by the parameter data files in `spec/std/isa/param/`. |
+| `implemented_extensions` | Array&lt;\{`name`, `version`\}&gt; [↓&nbsp;schema](#implemented-extensions-schema) | ✓ | Extensions implemented by this architecture [↓&nbsp;example](#implemented-extensions-example) |
+| `arch_overlay` | `string` |  | Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or an absolute or relative path to an overlay directory |
+| `compatible` | One of: `string` \| Array&lt;`string`&gt; |  | Declares that this configuration is compatible with one or more other configurations — meaning there exists at least one concrete hardware implementation that satisfies both this config and each listed config simultaneously. Each pointer is either the name of a config in the repository cfgs/ directory or a path to a config YAML file (absolute, or relative to this file). Compatibility is checked transitively: if config B lists config C as compatible, then this config must also be compatible with C. [↓&nbsp;example](#compatible-example) |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="implemented-extensions-schema"></a><code>implemented_extensions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Extension name |
+| `version` | `string` | ✓ | Exact implemented extension version, either bare or prefixed with `=` (e.g., `2.1.0`, `2.1`, `= 2.1`) |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="implemented-extensions-example"></a><code>implemented_extensions</code> example</summary>
+
+```yaml
+- name: I
+  version: 2.1.0
+- name: M
+  version: 2.0.0
+- name: Zicsr
+  version: 2.0.0
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="compatible-example"></a><code>compatible</code> example</summary>
+
+```yaml
+profile/RVA23U64
+```
+
+</details>
+
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+### `partially configured`
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `string` (const: `config_schema.json#`) | ✓ | Schema reference - must be `config_schema.json#` |
+| `kind` | `string` (const: `architecture configuration`) | ✓ | Document type identifier - must be `architecture configuration` |
+| `type` | `string` (const: `partially configured`) | ✓ | Configuration specificity level - `partially configured` means some extensions/parameters are specified as requirements while others are left open |
+| `name` | `string` | ✓ | Name of the configuration |
+| `description` | `string` | ✓ | Human-readable description of this configuration (AsciiDoc format) |
+| `mandatory_extensions` | Array&lt;\{`name`, `version`\}&gt; [↓&nbsp;schema](#mandatory-extensions-schema) | ✓ | Extensions mandatory in this architecture |
+| `params` | `object` |  | Architecture parameters that constrain compliant implementations. The entire `params` key may be omitted if no parameter constraints are needed. Parameter names and valid values are defined by the parameter data files in `spec/std/isa/param/`. |
+| `arch_overlay` | `string` |  | Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or an absolute or relative path to an overlay directory |
+| `compatible` | One of: `string` \| Array&lt;`string`&gt; |  | Declares that this configuration is compatible with one or more other configurations — meaning there exists at least one concrete hardware implementation that satisfies both this config and each listed config simultaneously. Each pointer is either the name of a config in the repository cfgs/ directory or a path to a config YAML file (absolute, or relative to this file). Compatibility is checked transitively: if config B lists config C as compatible, then this config must also be compatible with C. [↓&nbsp;example](#compatible-example) |
+| `non_mandatory_extensions` | Array&lt;\{`name`, `version`\}&gt; [↓&nbsp;schema](#non-mandatory-extensions-schema) |  | Optional extensions with special significance in this architecture. For configurable IP, these are optionally supported extensions. For profiles, these are profile-optional extensions. |
+| `prohibited_extensions` | Array&lt;\{`name`, `version`\}&gt; [↓&nbsp;schema](#prohibited-extensions-schema) |  | Extensions explicitly prohibited in this architecture. Does *not* need to include extensions that are excluded because of a conflict-by-definition with a mandatory extension, as those will be calculated automatically |
+| `additional_extensions` | `boolean` |  | Whether a compliant instance may implement extensions beyond those listed in `mandatory_extensions`/`non_mandatory_extensions`. Defaults to `true` if omitted. |
+| `requirements` | A condition (YAML structure or IDL function). See the conditions reference for details. |  | Additional condition that must be satisfied for this configuration to be valid (e.g., a parameter constraint or extension dependency). |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="mandatory-extensions-schema"></a><code>mandatory_extensions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`) |
+| `version` | `string` \| Array&lt;`string`&gt; |  | Version requirement or list of requirements (e.g., `&gt;= 2.0` or `['&gt;= 2.0', '&lt; 3.0']`) |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="non-mandatory-extensions-schema"></a><code>non_mandatory_extensions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`) |
+| `version` | `string` \| Array&lt;`string`&gt; |  | Version requirement or list of requirements (e.g., `&gt;= 2.0` or `['&gt;= 2.0', '&lt; 3.0']`) |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="prohibited-extensions-schema"></a><code>prohibited_extensions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`) |
+| `version` | `string` \| Array&lt;`string`&gt; |  | Version requirement or list of requirements (e.g., `&gt;= 2.0` or `['&gt;= 2.0', '&lt; 3.0']`) |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="compatible-example"></a><code>compatible</code> example</summary>
+
+```yaml
+profile/RVA23U64
+```
+
+</details>
+
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+### `unconfigured`
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `string` (const: `config_schema.json#`) | ✓ | Schema reference - must be `config_schema.json#` |
+| `kind` | `string` (const: `architecture configuration`) | ✓ | Document type identifier - must be `architecture configuration` |
+| `type` | `string` (const: `unconfigured`) | ✓ | Configuration specificity level - `unconfigured` represents the entire RISC-V specification with all implementation choices left unresolved |
+| `name` | `string` | ✓ | Name of the configuration |
+| `description` | `string` | ✓ | Human-readable description of this configuration (AsciiDoc format) |
+| `arch_overlay` | `string` |  | Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or an absolute or relative path to an overlay directory |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+
+## Examples
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Full Configuration Example (RV64)</summary>
+
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: RV64GC
+description: 64-bit RISC-V with General-purpose and Compressed extensions
+params:
+  XLEN: 64
+  MXLEN: 64
+  SXLEN: 64
+  UXLEN: 64
+implemented_extensions:
+- name: I
+  version: '2.1'
+- name: M
+  version: '2.0'
+- name: A
+  version: '2.1'
+- name: F
+  version: '2.2'
+- name: D
+  version: '2.2'
+- name: C
+  version: '2.0'
+- name: Zicsr
+  version: '2.0'
+- name: Zifencei
+  version: '2.0'
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Partial Configuration Example (Profile)</summary>
+
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: partially configured
+name: RVA22U64
+description: RISC-V Application Profile for 64-bit Unix-like systems
+mandatory_extensions:
+- name: I
+  version: ">= 2.1"
+- name: M
+  version: ">= 2.0"
+- name: A
+  version: ">= 2.1"
+- name: F
+  version: ">= 2.2"
+- name: D
+  version: ">= 2.2"
+- name: C
+  version: ">= 2.0"
+- name: Zicsr
+  version: ">= 2.0"
+non_mandatory_extensions:
+- name: V
+  version: ">= 1.0"
+params:
+  XLEN: 64
+additional_extensions: false
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Unconfigured Example</summary>
+
+```yaml
+"$schema": config_schema.json#
+kind: architecture configuration
+type: unconfigured
+name: generic
+description: Generic unconfigured RISC-V architecture
+
+```
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

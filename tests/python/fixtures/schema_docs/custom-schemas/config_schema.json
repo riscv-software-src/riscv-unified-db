@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "v0.2",
+  "title": "Custom Schema",
+  "description": "Compare <bound> and `Bits<32>`.\n\n> Keep this blockquote.\n\nUse >= 0 and <= 10.",
+  "$defs": {
+    "local_type": {
+      "description": "Local <value>\nMore detail",
+      "type": "string",
+      "enum": ["yes", "no"]
+    },
+    "inner_object": {
+      "type": "object",
+      "properties": {
+        "allowed": true,
+        "forbidden": false
+      }
+    }
+  },
+  "type": "object",
+  "required": ["items", "kind"],
+  "properties": {
+    "anything": true,
+    "nothing": false,
+    "unused": {"type": "null"},
+    "$source": {"type": "string"},
+    "local": {"$ref": "#/$defs/local_type"},
+    "peer": {"$ref": "peer_schema.json#/$defs/remote"},
+    "meta": {"$ref": "json-schema-draft-07.json#"},
+    "web": {"$ref": "https://example.org/schema.json#/$defs/x"},
+    "kind": {"type": "string", "const": "sample"},
+    "boolean_const": {"type": "boolean", "const": false},
+    "items": {
+      "type": "array",
+      "description": "Item <details>\nSecond line",
+      "items": {"$ref": "schema_defs.json#/$defs/item"},
+      "examples": [[{"name": "é", "version": "2.1"}]]
+    },
+    "choices": {
+      "oneOf": [
+        {"type": "string"},
+        {"type": "integer"},
+        false
+      ]
+    }
+  },
+  "examples": [
+    {
+      "_quick_start": true,
+      "_title": "Unicode and scalars",
+      "$schema": "config_schema.json#",
+      "kind": "sample",
+      "items": [{"name": "é", "version": "2.1"}],
+      "values": ["yes", "no", "true", "null", "0123", "1.0", ">= 1.0", "= 2.1", "2019-04", "2025-01-01"],
+      "number": 1.5,
+      "boolean": false,
+      "nil": null
+    },
+    {
+      "_title": "Multiline",
+      "description": "First line\nSecond line\n",
+      "empty": "",
+      "nested": {"_keep": "metadata is stripped only at root"},
+      "string": "The B standard extension comprises instructions provided by the Zba, Zbb, and Zbs extensions."
+    }
+  ]
+}
