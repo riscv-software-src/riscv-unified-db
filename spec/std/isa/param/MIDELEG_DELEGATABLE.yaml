@@ -17,9 +17,12 @@ description: |
   An unimplemented interrupt cannot be delegated, i.e., if `STI_INTR_IMPL` is false,
   `MIDELEG_DELEGATABLE[5]` must be false.
 
-  When the H extension is implemented, VSSI, VSTI, VSEI, and SGEI are always delegated to HS-mode,
-  so `MIDELEG_DELEGATABLE[2]`, `[6]`, `[10]`, and `[12]` must be true.
-  When H is not implemented, they must be false.
+  When the H extension is implemented, VSSI, VSTI, and VSEI are always delegated to HS-mode,
+  so `MIDELEG_DELEGATABLE[2]`, `[6]`, and `[10]` must be true.
+  SGEI is also always delegated when any guest external interrupts are implemented
+  (`NUM_EXTERNAL_GUEST_INTERRUPTS` is nonzero), so `MIDELEG_DELEGATABLE[12]` must then be true;
+  otherwise it must be false.
+  When H is not implemented, all four must be false.
 long_name: Interrupts that can be delegated through mideleg
 schema:
   type: array
@@ -115,7 +118,7 @@ requirements:
           name: MIDELEG_DELEGATABLE
           index: 13
           equal: false
-    # VSSI, VSTI, VSEI, and SGEI are always delegated to HS-mode when H is implemented
+    # VSSI, VSTI, and VSEI are always delegated to HS-mode when H is implemented
     - if:
         extension:
           name: H
@@ -131,9 +134,7 @@ requirements:
             - name: MIDELEG_DELEGATABLE
               index: 10
               equal: true
-            - name: MIDELEG_DELEGATABLE
-              index: 12
-              equal: true
+    # VSSI, VSTI, VSEI, and SGEI are defined by H
     - if:
         not:
           extension:
@@ -153,3 +154,29 @@ requirements:
             - name: MIDELEG_DELEGATABLE
               index: 12
               equal: false
+    # SGEI is always delegated to HS-mode when any guest external interrupts are implemented (GEILEN nonzero)
+    - if:
+        allOf:
+          - extension:
+              name: H
+          - not:
+              param:
+                name: NUM_EXTERNAL_GUEST_INTERRUPTS
+                equal: 0
+      then:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 12
+          equal: true
+    - if:
+        allOf:
+          - extension:
+              name: H
+          - param:
+              name: NUM_EXTERNAL_GUEST_INTERRUPTS
+              equal: 0
+      then:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 12
+          equal: false

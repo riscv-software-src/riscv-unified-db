@@ -222,9 +222,12 @@ fields:
     description: |
       *Supervisor Guest External Interrupt delegation*
 
-      Supervisor Guest External interrupts are always delegated to HS-mode, so this field is read-only one.
+      Supervisor Guest External interrupts are always delegated to HS-mode when any guest external interrupts
+      are implemented (`NUM_EXTERNAL_GUEST_INTERRUPTS` is nonzero), so this field is read-only one;
+      otherwise it is read-only zero.
     type: RO
-    reset_value: 1
+    reset_value(): |
+      return NUM_EXTERNAL_GUEST_INTERRUPTS > 0 ? 1 : 0;
     definedBy:
       extension:
         name: H
