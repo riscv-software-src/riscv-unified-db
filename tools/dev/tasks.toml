@@ -161,6 +161,98 @@ dir = "{{config_root}}"
 env = { PYTHONPATH = "src:tests/python", UV_NO_SYNC = "1" }
 run = ".venv/bin/python -m pytest"
 
+["build:cpp-hart"]
+description = "Generate and build the native C++ hart library"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli build cpp-hart"
+
+["build:iss"]
+description = "Generate and build the native instruction-set simulator"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli build iss"
+
+["build:renode-hart"]
+description = "Generate and build the native Renode hart library"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli build renode-hart"
+
+["build:softfloat-tests"]
+description = "Generate rv64/debug sources and build native SoftFloat tests"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native-base"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli build softfloat-tests"
+
+["build:riscv-tests"]
+description = "Initialize and build retained RISC-V architecture tests"
+usage = '''
+flag "--xlen <xlen>" help="Architecture width" {
+  choices "32" "64"
+}
+flag "--build-type <type>" help="Native build type" default="fast-debug" {
+  choices "debug" "fast-debug" "release" "asan"
+}
+flag "-j --jobs <jobs>" help="Parallel native jobs"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli build riscv-tests"
+
+["test:cpp-hart"]
+description = "Build and run native C++ hart unit tests"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli test cpp-hart"
+
+["test:riscv-tests"]
+description = "Run scalar RISC-V architecture tests through the generated ISS"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+flag "--timeout <seconds>" help="Per-test timeout" default="10"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli test riscv-tests"
+
+["test:riscv-vector-tests"]
+description = "Run retained vector architecture tests through the generated ISS"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli test riscv-vector-tests"
+
+["test:softfloat"]
+description = "Build and run the native rv64/debug SoftFloat tests"
+usage = '''
+include file="{{ config_root }}/tools/dev/native.usage.kdl"
+use "native-base"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli test softfloat"
+
+["test:native-bits"]
+description = "Build and run handwritten native Bits tests without hart generation"
+usage = '''
+flag "--build-type <type>" help="Native build type" default="debug" {
+  choices "debug" "fast-debug" "release" "asan"
+}
+flag "-j --jobs <jobs>" help="Parallel native jobs"
+'''
+run = ".venv/bin/python -m tools.dev.native.cli test native-bits"
+
+["test:llvm"]
+description = "Configure LLVM and build llvm-tblgen"
+run = ".venv/bin/python -m tools.dev.native.cli test llvm"
+
 ["docs:build"]
 description = "Build retained site, Pages, IDL, schema, or deferred API docs"
 usage = '''
