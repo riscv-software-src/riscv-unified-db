@@ -27,12 +27,11 @@ def test_native_bits_no_longer_authors_test_source() -> None:
 
 
 def test_native_bits_ci_does_not_depend_on_hart_generation() -> None:
-    registry = YAML(typ="safe").load(ROOT / "tools/test/regress-tests.yaml")
-    job = registry["tests"]["regress-native-bits"]
-    commands = "\n".join(step["run"] for step in job["test"])
+    commands = (ROOT / "tools/dev/regression-tasks/test/ci/native-bits").read_text()
     assert "cmake -S backends/cpp_hart_gen/cpp/test" in commands
     assert "--target test_bits_random test_bits_directed -j1" in commands
     assert "ctest --test-dir gen/native-bits" in commands
     assert "./do" not in commands and "ruby" not in commands
     workflow = YAML(typ="safe").load(ROOT / ".github/workflows/regress.yml")
-    assert all(step in workflow["jobs"]["regress-native-bits"]["steps"] for step in job["test"])
+    steps = workflow["jobs"]["native-bits"]["steps"]
+    assert any(step.get("run") == "mise run test:ci:native-bits" for step in steps)

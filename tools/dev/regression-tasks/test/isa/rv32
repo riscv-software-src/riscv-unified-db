@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-riscv-tests-32"
+
+set -e
+
+# Step 1: Run RV32 riscv-tests
+(
+  ./do test:riscv_tests CONFIG=rv32 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
+)

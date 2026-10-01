@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-python-extension-documents"
+
+set -e
+
+# Step 1: Validate retained extension source, fields, IDL and declared resources
+(
+  uv run --locked python -m pytest -n 8 --basetemp=gen/extension-documents/pytest tests/python/test_extension_documents.py tests/python/test_extension_contracts.py tests/python/test_extension_assets.py tests/python/test_extension_pdf.py tests/python/test_extension_fidelity.py -k "not actual_official"
+)
+
+# Step 2: Inspect actual official external PDF products
+(
+  mkdir -p gen/extension-documents/locks
+  UDB_RUN_PDF_ACCEPTANCE=1 \
+    UDB_PDF_RENDER_DIRECT=1 \
+    UDB_RUBY_LOCK=gen/extension-documents/locks/ruby.lock \
+    uv run --locked python -m pytest -n 0 \
+    --basetemp=gen/extension-documents/pdf \
+    tests/python/test_extension_pdf.py -k actual_official
+)

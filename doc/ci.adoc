@@ -39,7 +39,8 @@ They generate artifacts that are deployed to https://riscv.github.io/riscv-unifi
 If any test in the second group fails, a PR is removed from the merge queue.
 While in the merge queue, the CI tests generate artifacts but do not upload/update pages yet.
 The upload occurs after the PR merges to main and the test runs again.
-The tests are defined in xref:tools/test/regress-tests.yaml[`tools/test/regress-tests.yaml`] (jobs with `ci_stage: merge_queue`), and run via xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
+Merge-queue-only jobs are marked with event conditions in xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
+Their reusable commands are mise tasks under `tools/dev/regression-tasks/`.
 The resulting artifacts/pages are uploaded via xref:.github/workflows/pages.yml[`.github/workflows/pages.yml`].
 
 == CI Policies

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from resolve-unconfig"
+
+set -e
+
+# Step 1: Resolve Unconfig with IDL AST
+(
+  ./do gen:resolved_arch COMPILE_IDL=1
+)
+
+# Step 2: Tar unconfig
+(
+  tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_ && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_/resolved_spec.tar.gz
+)

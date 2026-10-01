@@ -24,16 +24,16 @@ bin/doctor   # verify the environment is correctly set up (run after bin/setup)
 ## Common Commands
 
 ```bash
-./bin/regress -h              # help on running regression tests
-udb --help                     # help on installed database tools
+udb --help                    # help on the installed database tool
+mise tasks                    # list all developer and regression tasks
 ./bin/chore -h                # help on repository development chores
 
-./bin/regress --list          # list all regression tests
-./bin/regress --tag smoke     # run smoke tests (fast subset)
-./bin/regress --tag unit      # run unit tests
-./bin/regress --all           # run full regression suite
-./bin/regress -n <test-name>  # run a single named test
-./bin/regress -n regress-udb-unit-test --matrix=test=conditions  # run a single matrix variant
+mise run check:smoke          # run smoke tests (fast subset)
+mise run check:unit           # run unit tests
+mise run check:integration    # run integration tests
+mise run check:artifacts      # build and verify artifacts
+mise run check:all            # run the full regression suite
+mise run test:ruby:udb-unit --test conditions  # run a single matrix variant
 
 ./do test:idlc:unit           # run IDL compiler unit tests
 ./do test:udb:unit            # run UDB library unit tests
@@ -119,7 +119,7 @@ See `doc/stage5-retirements.md` for the approved document and Explorer retiremen
 
 Pre-commit hooks run automatically on `git commit`. They include YAML/JSON linting, schema validation, and prettier formatting. If a hook auto-fixes files, `git add` the changes and recommit.
 
-CI is split into PR tests (`ci_stage: pr`) and merge-queue deployment tests (`ci_stage: merge_queue`). Test definitions are in `tools/test/regress-tests.yaml`.
+CI is split into PR checks and merge-queue deployment checks. Regression commands are mise tasks under `tools/dev/regression-tasks/`; CI orchestration is in `.github/workflows/regress.yml`.
 
 ## Contribution Notes
 
@@ -127,7 +127,7 @@ CI is split into PR tests (`ci_stage: pr`) and merge-queue deployment tests (`ci
 - Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0) style (not enforced)
 - PRs require approval from a maintainer
 - Link PRs to issues with `Fixes #<number>` or `Closes #<number>` in the PR description
-- All PRs must pass `./bin/regress --all`
+- All PRs must pass `mise run check:all`
 
 ### Pull Request Message Style
 

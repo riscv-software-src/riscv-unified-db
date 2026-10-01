@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-python-versions-parity"
+
+set -e
+
+# Step 1: Compare Python and Ruby RISC-V version semantics
+(
+  UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_versions.py
+)

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-python-idl-architecture"
+
+set -e
+
+# Step 1: Check captured sources and all available IDL architecture bodies
+(
+  uv run --locked python -m pytest -n 0 tests/python/test_configuration_idl_source.py tests/python/test_database_idl_sources.py tests/python/test_idl_environment.py tests/python/test_idl_environment_fixes.py tests/python/test_idl_environment_review.py tests/python/test_idl_architecture_adapter.py tests/python/test_idl_architecture_review_fixes.py tests/python/test_idl_architecture_review_regressions.py tests/python/test_idl_csr_protocol_review.py tests/python/test_idl_csr_symbolic_base_review.py tests/python/test_idl_native_descriptor_integration.py tests/python/test_idl_effective_xlen_review.py tests/python/test_idl_unavailable_body_review.py tests/python/test_idl_unavailable_body_edges.py tests/python/test_idl_rori_source_review.py tests/python/test_idl_qc_ilut_source_review.py tests/python/test_idl_architecture_real.py
+)

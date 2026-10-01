@@ -26,10 +26,7 @@
     "schedule": ["before 6am on monday"]
   },
   "github-actions": {
-    "managerFilePatterns": [
-      "/^tools/test/[^/]+-tests\\.yaml$/",
-      "/^tools/test/regress-gh-template\\.yaml$/"
-    ]
+    "managerFilePatterns": ["/^tools/test/[^/]+-tests\\.yaml$/"]
   },
   "bundler": {
     "managerFilePatterns": ["/(^|/)Gemfile\\.lock$/", "/(^|/)[^/]+\\.gemspec$/"]
