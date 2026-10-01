@@ -73,6 +73,8 @@ tested, but are not labeled as Ruby defects.
 | 58 | In full-configuration extension documents, RV32-only CSRs such as `jvt` and `ssp` render an empty `Length ^ -bit` row and RV64 register-diagram geometry. | Fixed-width CSRs render 32-bit lengths and diagrams. Covered by the `native-fixed-rv32-csr-correction` deltas in [`test_extension_fidelity.py`](../tests/python/test_extension_fidelity.py). Passing. |
 | 59 | `udb-gen ext-doc --no-csr-field-desc` sets `exclude_csr_field_descriptions`, which nothing reads, so field descriptions are always emitted. | The option suppresses descriptions while keeping the field summary. Covered by `test_field_summary_flag_never_evaluates_excluded_descriptions` in [`test_extension_documents.py`](../tests/python/test_extension_documents.py). Passing. |
 | 60 | An `@latest` selector such as `Zba@latest` leaves the extension list unset, so `ext-doc` raises `NoMethodError: undefined method 'each' for nil`. | `@latest` uses normal version matching and generates a complete document. Covered in [`test_extension_documents.py`](../tests/python/test_extension_documents.py); the captured Ruby failure is pinned by `test_recorded_native_latest_error_is_not_an_artifact_parity_pass` in [`test_extension_fidelity.py`](../tests/python/test_extension_fidelity.py). Passing. |
+| 61 | `idlc eval -DA=1==1 A` prints `1`: the define parser splits at every `=` and binds `A` to `1`, silently discarding `==1`. Direct `idlc eval '1 == 1'` prints `true`. | Defines split only at the first `=` and evaluate the full expression. The `define-equality` case in [`test_idl_cli.py`](../tests/python/test_idl_cli.py) expects the captured `equality` output. Passing. |
+| 62 | `idlc tc inst -` loses the bare stdin argument, prints help, and exits 1; `idlc tc inst -- -` succeeds. | A bare `-` reads stdin for normal and strict checking. The `check-stdin` and `check-strict` cases in [`test_idl_cli.py`](../tests/python/test_idl_cli.py) expect the captured separated-form results. Passing. |
 
 Entry 40 also affects exception reachability across independently cloned symbol tables
 with the same name. The standalone [`ruby_idl_passes_assignment_binding.rb`](../tests/python/ruby_idl_passes_assignment_binding.rb)
@@ -111,3 +113,10 @@ none established an additional Ruby defect, so the confirmed list remains at
 nine entries at that gate. Stage 3 entries above have separate Ruby reproductions.
 Python-only version hashing and array-domain analysis defects found during Stage 3
 review are corrected with regressions and are not Ruby bug-log entries.
+
+Stage 4 and Stage 5 entries 49-62 have live Ruby reproductions, captured Ruby
+output, or source witnesses recorded with their regressions. The instruction
+table, QC layouts, native Bits tests, generator retirements, generic C/SystemVerilog/Go
+generators and C++ hart lanes found no additional corrected Ruby defects. Their
+differences are exact parity, intentionally preserved output quirks, approved scope
+reductions, defects in pre-existing Python scripts, or defects in new Python code.
