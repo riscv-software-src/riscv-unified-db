@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,3 +43,14 @@ def python_command(*command: str) -> list[str]:
 
 def udb_command(*command: str) -> list[str]:
     return [str(ROOT / ".venv" / "bin" / "udb"), *command]
+
+
+def entrypoint(main: Callable[[], int]) -> int:
+    try:
+        return main()
+    except DevError as error:
+        task = os.environ.get("MISE_TASK_NAME", "developer task")
+        print(f"{task}: {error}", file=sys.stderr)
+        return error.exit_code
+    except KeyboardInterrupt:
+        return 130

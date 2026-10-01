@@ -55,3 +55,161 @@ run = '''
 ["container:remove"]
 description = "Remove the content-addressed toolchain image"
 run = ".venv/bin/python -m tools.dev.container remove"
+
+["gen:all"]
+description = "Generate all retained developer artifacts and refreshable fixtures"
+usage = 'flag "--check" help="Report drift without writing"'
+run = ".venv/bin/python -m tools.dev.generate all"
+
+["gen:quick"]
+description = "Generate the quick retained developer artifacts"
+usage = 'flag "--check" help="Report drift without writing"'
+run = ".venv/bin/python -m tools.dev.generate quick"
+
+["gen:profile-configs"]
+description = "Generate strict profile configurations"
+usage = 'flag "--check" help="Report drift without writing"'
+run = ".venv/bin/python -m tools.dev.generate profile-configs"
+
+["gen:schema-docs"]
+description = "Generate schema documentation"
+usage = 'flag "--check" help="Report drift without writing"'
+run = ".venv/bin/python -m tools.dev.generate schema-docs"
+
+["gen:idl-grammar"]
+description = "Generate the TextMate IDL grammar from the Prism definition"
+usage = 'flag "--check" help="Report drift without writing"'
+run = ".venv/bin/python -m tools.dev.generate idl-grammar"
+
+["fixtures:list"]
+description = "List refreshable and frozen regression fixtures"
+usage = '''
+flag "-f --format <format>" help="Output format" default="text" {
+  choices "text" "json"
+}
+'''
+run = ".venv/bin/python -m tools.dev.fixtures list"
+
+["fixtures:refresh"]
+description = "Refresh named fixtures or check them for drift"
+usage = '''
+arg "[names]" help="Fixture registry names" var=#true
+flag "--all" help="Select every registered fixture"
+flag "--check" help="Report drift without writing"
+'''
+run = ".venv/bin/python -m tools.dev.fixtures refresh"
+
+["author:rvtest"]
+description = "Create RV32/RV64 architecture-test source templates"
+usage = '''
+arg "<name>" help="Instruction test name"
+flag "--root <root>" help="Repository root" default="."
+'''
+run = ".venv/bin/python -m tools.dev.author"
+
+[check]
+description = "Run retained data, IDL, layout, fixture, lint, and format checks"
+usage = 'flag "-j --jobs <jobs>" help="Maximum parallel checks"'
+run = ".venv/bin/python -m tools.dev.checks all"
+
+["check:data"]
+description = "Validate all selected database documents"
+run = ".venv/bin/python -m tools.dev.checks data"
+
+["check:encodings"]
+description = "Check instruction encoding conflicts"
+run = ".venv/bin/python -m tools.dev.checks encodings"
+
+["check:csrs"]
+description = "Check CSR address and indirect-key conflicts"
+run = ".venv/bin/python -m tools.dev.checks csrs"
+
+["check:idl"]
+description = "Parse and type-check configured IDL"
+usage = 'flag "-c --config <config>" help="Configuration selector" default="_"'
+run = ".venv/bin/python -m tools.dev.checks idl"
+
+["check:layouts"]
+description = "Check generated architecture layouts for drift"
+run = ".venv/bin/python -m tools.dev.checks layouts"
+
+["check:schema-versions"]
+description = "Compare generated schemas with their published URLs (networked)"
+run = ".venv/bin/python -m tools.dev.checks schema-versions"
+
+[lint]
+description = "Run non-mutating source, shell, license, data, and IDL checks"
+usage = '''
+arg "[files]" help="Files to lint; omitted means changed files" var=#true
+flag "--all" help="Lint the whole repository"
+'''
+run = ".venv/bin/python -m tools.dev.quality lint"
+
+[fmt]
+description = "Format selected source files"
+usage = '''
+arg "[files]" help="Files to format; omitted means changed files" var=#true
+flag "--all" help="Format the whole repository"
+flag "--check" help="Check formatting without writing"
+'''
+run = ".venv/bin/python -m tools.dev.quality format"
+
+["test:python"]
+description = "Run Python tests with pytest"
+raw_args = true
+dir = "{{config_root}}"
+env = { PYTHONPATH = "src:tests/python", UV_NO_SYNC = "1" }
+run = ".venv/bin/python -m pytest"
+
+["docs:build"]
+description = "Build retained site, Pages, IDL, schema, or deferred API docs"
+usage = '''
+arg "<target>" help="Documentation target" {
+  choices "site" "pages" "idl" "schemas" "api"
+}
+'''
+run = ".venv/bin/python -m tools.dev.docs build"
+
+["docs:serve"]
+description = "Serve an already-built documentation tree"
+usage = '''
+arg "<target>" help="Documentation target" {
+  choices "site" "api"
+}
+flag "--port <port>" help="HTTP port" default="8000"
+'''
+run = ".venv/bin/python -m tools.dev.docs serve"
+
+["build:package"]
+description = "Build both wheel and source distribution"
+usage = '''
+flag "-o --output <output>" help="Artifact directory" default="dist"
+flag "--wheel-only" help="Build only a wheel"
+flag "--sdist-only" help="Build only a source distribution"
+'''
+run = ".venv/bin/python -m tools.dev.package build"
+
+["build:wheel"]
+description = "Build the Python wheel"
+usage = 'flag "-o --output <output>" help="Artifact directory" default="dist"'
+run = ".venv/bin/python -m tools.dev.package build --wheel-only"
+
+["build:sdist"]
+description = "Build the Python source distribution"
+usage = 'flag "-o --output <output>" help="Artifact directory" default="dist"'
+run = ".venv/bin/python -m tools.dev.package build --sdist-only"
+
+["package:check"]
+description = "Check installed wheel and optionally a wheel rebuilt from the sdist"
+usage = 'flag "--rebuild-sdist" help="Also rebuild, install, and check the sdist wheel"'
+run = ".venv/bin/python -m tools.dev.package check"
+
+["release:package"]
+description = "Publish built Python artifacts to an explicit repository"
+usage = 'flag "--repository <repository>" help="Required package repository name or URL"'
+run = ".venv/bin/python -m tools.dev.release package"
+
+["release:schemas"]
+description = "Publish immutable schema release assets"
+usage = 'flag "--check-only" help="Compare remote assets without publishing"'
+run = ".venv/bin/python -m tools.dev.release schemas"

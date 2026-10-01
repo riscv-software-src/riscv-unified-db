@@ -168,7 +168,7 @@ const tmLanguage = {
   name: 'IDL',
   scopeName: 'source.idl',
   // AUTO-GENERATED — do not edit by hand.
-  // Edit doc/src/prism/idl.js and run: bin/chore gen idl-grammar
+  // Edit doc/src/prism/idl.js and run: mise run gen:idl-grammar
   patterns,
   repository,
 };
@@ -177,7 +177,15 @@ const tmLanguage = {
 // Write output
 // ---------------------------------------------------------------------------
 
-fs.mkdirSync(path.dirname(TMLANG_OUT), { recursive: true });
-fs.writeFileSync(TMLANG_OUT, JSON.stringify(tmLanguage, null, 2) + '\n');
-
-console.log(`Written: ${path.relative(ROOT, TMLANG_OUT)}`);
+const generated = JSON.stringify(tmLanguage, null, 2) + '\n';
+if (process.argv.includes('--check')) {
+  const current = fs.existsSync(TMLANG_OUT) ? fs.readFileSync(TMLANG_OUT, 'utf8') : null;
+  if (current !== generated) {
+    console.log(path.relative(ROOT, TMLANG_OUT));
+    process.exitCode = 1;
+  }
+} else {
+  fs.mkdirSync(path.dirname(TMLANG_OUT), { recursive: true });
+  fs.writeFileSync(TMLANG_OUT, generated);
+  console.log(`Written: ${path.relative(ROOT, TMLANG_OUT)}`);
+}

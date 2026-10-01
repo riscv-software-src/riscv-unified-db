@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from . import container
-from .common import ROOT
+from .common import ROOT, entrypoint
 
 
 @dataclass(frozen=True)
@@ -143,4 +143,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(entrypoint(main))

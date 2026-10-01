@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 
 from . import container
-from .common import ROOT
+from .common import ROOT, entrypoint
 
 
 def choose_toolchain(requested: str, root: Path = ROOT) -> str:
@@ -74,4 +74,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(entrypoint(main))

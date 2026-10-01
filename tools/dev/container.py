@@ -9,7 +9,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .common import ROOT, DevError
+from .common import ROOT, DevError, entrypoint
 
 
 def image_name(root: Path = ROOT) -> str:
@@ -74,4 +74,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(entrypoint(main))
