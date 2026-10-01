@@ -59,7 +59,7 @@ repos:
         exclude: backends/cpp_hart_gen
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.6
+    rev: v0.16.8
     hooks:
       - id: ruff-format
         priority: 20
