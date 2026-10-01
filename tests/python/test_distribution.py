@@ -171,7 +171,10 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
     rebuilt_wheel = next(rebuilt_dist.glob("*.whl"))
     direct_data = _wheel_data(direct_wheel)
     assert direct_data == _wheel_data(rebuilt_wheel)
-    assert len(direct_data) == len(package_data(REPOSITORY_ROOT))
+    assert len(direct_data) == sum(
+        destination.as_posix().startswith("udb/_data/")
+        for destination in package_data(REPOSITORY_ROOT).values()
+    )
     assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in direct_data)
     assert not any(name.endswith(".erb") for name in direct_data)
     isa_root = REPOSITORY_ROOT / "spec" / "std" / "isa"

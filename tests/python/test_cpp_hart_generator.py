@@ -85,6 +85,7 @@ def _expected_plan_paths(*config_names):
     paths = {str(output) for output, _, _, _ in RuntimeResources.from_path(ROOT).files()}
     paths.update(SHARED_ARTIFACTS)
     paths.add("include/udb/libhart_renode.h")
+    paths.add("NOTICE_CPP_HART")
     paths.add("cpp-hart-manifest.json")
     for name in config_names:
         paths.update(f"include/udb/cfgs/{name}/{artifact}" for artifact in CONFIG_ARTIFACTS)
@@ -153,6 +154,7 @@ def test_runtime_resources_match_native_copy_rule_and_cmake_references(plan):
             (contents["CMakeLists.txt"].decode(), "", "CMAKE_SOURCE_DIR"),
             (contents["test/bits-tests.cmake"].decode(), "test/", "CMAKE_CURRENT_LIST_DIR"),
         )
+        for cmake in ("\n".join(line.split("#", 1)[0] for line in cmake.splitlines()),)
         for match in (
             prefix + path
             for path in re.findall(

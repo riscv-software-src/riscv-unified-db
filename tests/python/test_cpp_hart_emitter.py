@@ -57,6 +57,13 @@ def test_native_type_families():
     assert names("rv32", "csr_field", "mstatus", "MIE") == "Rv32_Mstatus_Mie_Field"
 
 
+def test_unbounded_runtime_width_uses_native_infinite_precision_constant():
+    emitter = Emitter(SymbolTable())
+    dtype = Type(TypeKind.BITS, width=WIDTH_UNKNOWN)
+    assert emitter.runtime_width(dtype) == "BitsInfinitePrecision"
+    assert emitter.runtime_width(dtype, raw=True) == "BitsInfinitePrecision"
+
+
 def test_tuple_dontcare_return_has_concrete_native_type():
     table = SymbolTable()
     body = parse_function_body("return 1, -;")

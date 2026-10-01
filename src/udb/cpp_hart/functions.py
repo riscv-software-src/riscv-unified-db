@@ -29,7 +29,7 @@ def _signature(context, function, compiled, *, definition):
             if dtype.width == WIDTH_UNKNOWN:
                 unknown_type = f"_PossiblyUnknownRuntimeBits<BitsInfinitePrecision, {prefix}Signed>"
                 known_type = f"_RuntimeBits<BitsInfinitePrecision, {prefix}Signed>"
-                initializer = f"_{name}, {emitter.expression(dtype.width_ast)}"
+                initializer = f"_{name}, {emitter.runtime_width(dtype, raw=True)}"
             else:
                 unknown_type = f"_PossiblyUnknownBits<{dtype.width}, {prefix}Signed>"
                 known_type = f"_Bits<{dtype.width}, {prefix}Signed>"

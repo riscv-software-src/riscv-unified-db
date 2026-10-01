@@ -25,6 +25,12 @@ class Emitter:
     def known(self, node: ast.Node):
         return node.value(self.symtab)
 
+    def runtime_width(self, dtype, *, raw=False):
+        if dtype.width_ast is None:
+            return "BitsInfinitePrecision"
+        width = self.expression(dtype.width_ast)
+        return width if raw else f"{width}.get()"
+
     def width(self, node: ast.Node) -> str:
         try:
             return str(self.known(node))
@@ -320,13 +326,13 @@ class Emitter:
             if node.ary_size is not None:
                 return f"{typ} {name} = {self._array_cast(dtype, node.rhs.type(self.symtab), rhs)}"
             if dtype.is_runtime and dtype.kind is TypeKind.BITS:
-                return f"{typ} {name}({rhs}, {self.expression(dtype.width_ast)})"
+                return f"{typ} {name}({rhs}, {self.runtime_width(dtype, raw=True)})"
             return f"{typ} {name}({rhs})"
         if dtype.is_runtime:
             initializer = (
                 "__UDB_HART"
                 if dtype.kind is TypeKind.STRUCT
-                else "WidthArg(" + self.expression(dtype.width_ast) + ".get())"
+                else f"WidthArg({self.runtime_width(dtype)})"
             )
             return f"{typ} {name}{{{initializer}}}"
         return f"{typ} {name}"

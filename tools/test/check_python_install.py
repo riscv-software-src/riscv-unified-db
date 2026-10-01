@@ -275,12 +275,23 @@ def check_cpp_hart(resolved: udb.ResolvedDatabase, root: Path) -> None:
         text=True,
     )
     assert not result.stdout and not result.stderr
-    assert tree_digest(api_root) == tree_digest(cli_root)
+    api_digest = tree_digest(api_root)
+    cli_digest = tree_digest(cli_root)
+    api_manifest = json.loads((api_root / "cpp-hart-manifest.json").read_text())
+    cli_manifest = json.loads((cli_root / "cpp-hart-manifest.json").read_text())
+    assert api_digest.keys() == cli_digest.keys()
+    assert all(
+        api_digest[path] == cli_digest[path]
+        for path in api_digest.keys() - {"cpp-hart-manifest.json"}
+    )
+    assert api_manifest["outputs"] == cli_manifest["outputs"]
+    source_input = "configs/installed-cpp-smoke.source-text.utf8"
+    assert source_input not in api_manifest["inputs"]
+    assert source_input in cli_manifest["inputs"]
     assert (api_root / "include/udb/cfgs/installed-cpp-smoke/hart.hxx").is_file()
     assert (api_root / "include/udb/bits.hpp").is_file()
-    manifest = json.loads((api_root / "cpp-hart-manifest.json").read_text())
-    assert manifest["configurations"] == ["installed-cpp-smoke"]
-    assert set(manifest["outputs"]) == tree_digest(api_root).keys() - {"cpp-hart-manifest.json"}
+    assert api_manifest["configurations"] == ["installed-cpp-smoke"]
+    assert set(api_manifest["outputs"]) == api_digest.keys() - {"cpp-hart-manifest.json"}
 
 
 def check_config_headers(resolved: udb.ResolvedDatabase) -> None:

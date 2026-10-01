@@ -3,6 +3,8 @@
 
 """Configuration-independent database, enum, bitfield and factory interfaces."""
 
+from udb.idl.types import TypeKind
+
 from .conditions import condition_cpp
 from .emitter import Emitter
 from .types import cpp_type, literal
@@ -305,8 +307,8 @@ def structs(context):
             if dtype.is_runtime:
                 initializer = (
                     "__UDB_HART"
-                    if dtype.width_ast is None
-                    else f"WidthArg({emitter.expression(dtype.width_ast)}.get())"
+                    if dtype.kind is TypeKind.STRUCT
+                    else f"WidthArg({emitter.runtime_width(dtype)})"
                 )
                 runtime.append(f"{member}({initializer})")
         ctor = (

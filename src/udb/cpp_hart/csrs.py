@@ -351,9 +351,14 @@ def csr_container(context):
     missing = {dep for deps in graph.values() for dep in deps if dep not in graph}
     if missing:
         raise CppGenerationError(f"CSR reset references unavailable CSRs: {sorted(missing)}")
-    reset = "\n".join(
-        f"{csr.replace('.', '_')}.reset();" for csr in TopologicalSorter(graph).static_order()
-    )
+    sorter = TopologicalSorter({name: tuple(sorted(graph[name])) for name in sorted(graph)})
+    sorter.prepare()
+    reset_order = []
+    while sorter.is_active():
+        ready = sorted(sorter.get_ready())
+        reset_order.extend(ready)
+        sorter.done(*ready)
+    reset = "\n".join(f"{csr.replace('.', '_')}.reset();" for csr in reset_order)
     return f"""#pragma once
 #include "udb/cfgs/{context.name}/csrs.hxx"
 namespace udb {{
