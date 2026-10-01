@@ -93,6 +93,7 @@ class ArchitectureCompiler:
         self.database = cfg_arch.database
         self.global_ast = global_ast(self.database)
         self._globals = symbol_table(cfg_arch)
+        self._globals.freeze_globals()
         for csr in self._globals.csr_hash.values():
             csr._bases._compiler = self
 

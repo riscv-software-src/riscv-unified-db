@@ -519,6 +519,138 @@ def _clone_binding(value: object, memo: dict[int, object]) -> object:
     return copy.deepcopy(value, memo)
 
 
+def _unchanged(value: object, original: object) -> bool:
+    """Whether a binding copied from ``original`` still has identical state."""
+    return (
+        type(value) is Var
+        and type(original) is Var
+        and value.value is original.value
+        and value.type is original.type
+        and value._const_compatible is original._const_compatible
+        and value.param is original.param
+        and value.decode_var is original.decode_var
+        and value.function_name is original.function_name
+        and value.for_loop_iter is original.for_loop_iter
+        and value.name is original.name
+    )
+
+
+class _GlobalScope:
+    """Global bindings that are copied from an immutable base on first access.
+
+    A clone shares its source's frozen ``base`` and copies a binding only
+    when it is read or replaced. Each table therefore still owns independent
+    mutable ``Var`` objects and ``FunctionType`` bindings bound to itself,
+    while cloning costs time proportional to the bindings that differ from
+    the base rather than to the size of the global scope.
+    """
+
+    __slots__ = ("_base", "_deleted", "_lazy", "_memo", "_own", "_table")
+
+    def __init__(
+        self,
+        table: SymbolTable,
+        own: dict[str, object] | None = None,
+        base: dict[str, object] | None = None,
+    ) -> None:
+        self._table = table
+        self._base: dict[str, object] = {} if base is None else base
+        self._own: dict[str, object] = {} if own is None else own
+        self._lazy: set[str] = set()
+        self._deleted: set[str] = set()
+        self._memo: dict[int, object] = {}
+
+    def _materialize(self, name: str) -> object | None:
+        if name in self._deleted:
+            return None
+        value = self._base.get(name)
+        if value is None:
+            return None
+        if isinstance(value, FunctionType):
+            if value._symtab is not self._table:
+                value = value.bound_to(self._table)
+        elif isinstance(value, (Type, IdlSource)):
+            return value
+        else:
+            value = _clone_binding(value, self._memo)
+        self._own[name] = value
+        self._lazy.add(name)
+        return value
+
+    def get(self, name: str, default: object | None = None) -> object | None:
+        value = self._own.get(name)
+        if value is None and name not in self._own:
+            value = self._materialize(name)
+            if value is None:
+                return default
+        return value
+
+    def __contains__(self, name: object) -> bool:
+        return name in self._own or (name in self._base and name not in self._deleted)
+
+    def __getitem__(self, name: str) -> object:
+        if name not in self:
+            raise KeyError(name)
+        return self.get(name)
+
+    def __setitem__(self, name: str, value: object) -> None:
+        self._own[name] = value
+        self._lazy.discard(name)
+        self._deleted.discard(name)
+
+    def __delitem__(self, name: str) -> None:
+        if name not in self:
+            raise KeyError(name)
+        self._own.pop(name, None)
+        self._lazy.discard(name)
+        if name in self._base:
+            self._deleted.add(name)
+
+    def keys(self) -> list[str]:
+        own = self._own
+        deleted = self._deleted
+        keys = [name for name in self._base if name not in deleted]
+        keys.extend(name for name in own if name not in self._base)
+        return keys
+
+    def __iter__(self):
+        return iter(self.keys())
+
+    def __len__(self) -> int:
+        return len(self.keys())
+
+    def values(self) -> list[object]:
+        return [self.get(name) for name in self.keys()]
+
+    def items(self) -> list[tuple[str, object]]:
+        return [(name, self.get(name)) for name in self.keys()]
+
+    def freeze(self) -> None:
+        """Make the current bindings the shared base of this table and its clones."""
+        merged = {name: value for name, value in self._base.items() if name not in self._deleted}
+        merged.update(self._own)
+        self._base = merged
+        self._own = {}
+        self._lazy = set()
+        self._deleted = set()
+        self._memo = {}
+
+    def clone(self, table: SymbolTable, memo: dict[int, object]) -> _GlobalScope:
+        result = _GlobalScope(table, base=self._base)
+        result._deleted = set(self._deleted)
+        for name, value in self._own.items():
+            if name in self._lazy and (
+                isinstance(value, FunctionType) or _unchanged(value, self._base.get(name))
+            ):
+                continue
+            result._own[name] = (
+                value.bound_to(table)
+                if isinstance(value, FunctionType)
+                else _clone_binding(value, memo)
+            )
+        return result
+
+
 class SymbolTable:
     """A scoped symbol table holding known symbols at a point during IDL compilation.
 
@@ -540,7 +672,7 @@ class SymbolTable:
             "true": Var("true", BOOL_TYPE, True),
             "false": Var("false", BOOL_TYPE, False),
         }
-        self._scopes: list[dict[str, object]] = [scope0]
+        self._scopes: list[dict[str, object]] = [_GlobalScope(self, scope0)]  # type: ignore[list-item]
 
         for rf in env.register_files:
             if rf.name in env.register_file_max_widths:
@@ -810,7 +942,6 @@ class SymbolTable:
         self, scopes: Sequence[dict[str, object]], callstack: Sequence[object | None]
     ) -> SymbolTable:
         clone = object.__new__(SymbolTable)
-        clone._scopes = [{}]
         clone._callstack = list(callstack)
         clone._mxlen = self._mxlen
         clone._name = self._name
@@ -820,17 +951,21 @@ class SymbolTable:
         clone._csrs = self._csrs
         clone._csr_hash = dict(self._csr_hash)
         memo: dict[int, object] = {}
-        for key, value in scopes[0].items():
-            clone._scopes[0][key] = (
-                FunctionType(value.name, value.func_def_ast, clone)
-                if isinstance(value, FunctionType)
-                else _clone_binding(value, memo)
-            )
+        clone._scopes = [scopes[0].clone(clone, memo)]  # type: ignore[attr-defined]
         clone._scopes.extend(
             {key: _clone_binding(value, memo) for key, value in scope.items()}
             for scope in scopes[1:]
         )
         return clone
+
+    def freeze_globals(self) -> None:
+        """Share the current global bindings with later clones without copying them.
+
+        The table and each clone still receive independent copies of mutable
+        bindings when they first access them, so callers must not retain
+        global ``Var`` objects obtained before freezing.
+        """
+        self._scopes[0].freeze()  # type: ignore[attr-defined]
 
     def release(self) -> None:
         """No-op. Mirrors ``SymbolTable#release``; see module docstring deviation 1."""

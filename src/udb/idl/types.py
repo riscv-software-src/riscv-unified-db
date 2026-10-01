@@ -1210,6 +1210,14 @@ class FunctionType(Type):
         object.__setattr__(self, "func_def_ast", func_def_ast)
         object.__setattr__(self, "_symtab", symtab)
 
+    def bound_to(self, symtab: SymbolTableLike) -> FunctionType:
+        """Return this signature bound to another table's global context."""
+        result = object.__new__(FunctionType)
+        for slot in _FUNCTION_TYPE_SLOTS:
+            object.__setattr__(result, slot, getattr(self, slot))
+        object.__setattr__(result, "_symtab", symtab)
+        return result
+
     @property
     def argument_nodes(self) -> Sequence[object]:
         return self.func_def_ast.argument_nodes
@@ -1356,6 +1364,11 @@ class FunctionType(Type):
     @property
     def body(self) -> FunctionBodyLike:
         return self.func_def_ast.body
+
+
+_FUNCTION_TYPE_SLOTS = tuple(
+    slot for klass in FunctionType.__mro__ for slot in getattr(klass, "__slots__", ())
+)
 
 
 class RegFileElementType(Type):
