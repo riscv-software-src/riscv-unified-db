@@ -93,6 +93,54 @@ def test_doctor_json_and_failure_status(monkeypatch, capsys) -> None:
     assert [check["name"] for check in payload["checks"]] == ["ok", "optional", "bad"]
 
 
+def test_doctor_checks_non_ruby_mise_tools(monkeypatch, tmp_path: Path) -> None:
+    (tmp_path / ".mise.toml").write_text(
+        '[tools]\nruby = "3.4.10"\nuv = "0.12.10"\n"github-cli" = "2.100.0"\n',
+        encoding="utf-8",
+    )
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(command, **_kwargs):
+        calls.append(tuple(command))
+        if command[:2] == ["mise", "which"]:
+            return subprocess.CompletedProcess(command, 0, f"/mise/{command[2]}\n", "")
+        return subprocess.CompletedProcess(command, 0, f"{command[0]} 1.0\n", "")
+
+    monkeypatch.setattr(doctor.subprocess, "run", fake_run)
+
+    checks = doctor._mise_tool_checks(tmp_path)
+
+    assert [check.name for check in checks] == ["mise-tool:uv", "mise-tool:github-cli"]
+    assert ("mise", "which", "uv") in calls
+    assert ("mise", "which", "gh") in calls
+    assert all("ruby" not in command for command in calls)
+
+
+def test_doctor_compiles_cxx_requirements_with_shared_check(monkeypatch, tmp_path: Path) -> None:
+    shared = tmp_path / ".toolchain/check_cxx.cmake"
+    shared.parent.mkdir()
+    shared.write_text("# shared requirements\n", encoding="utf-8")
+    cmake_lists = ""
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(command, **_kwargs):
+        nonlocal cmake_lists
+        calls.append(tuple(command))
+        if command == ["mise", "which", "cmake"]:
+            return subprocess.CompletedProcess(command, 0, "/mise/cmake\n", "")
+        cmake_lists = (tmp_path / "gen/doctor-cxx-check/CMakeLists.txt").read_text()
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(doctor.subprocess, "run", fake_run)
+
+    check = doctor._native_cxx_requirements_check(tmp_path, "/usr/bin/g++", required=True)
+
+    assert check.status == "pass"
+    assert f'include("{shared}")' in cmake_lists
+    assert any("-DCMAKE_CXX_COMPILER=/usr/bin/g++" in command for command in calls)
+    assert not (tmp_path / "gen/doctor-cxx-check").exists()
+
+
 def test_mise_includes_developer_tasks_without_bin_dev() -> None:
     config = tomllib.loads((ROOT / ".mise.toml").read_text(encoding="utf-8"))
     assert config["task_config"]["includes"] == [
