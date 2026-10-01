@@ -5,6 +5,7 @@
 
 import hashlib
 import json
+import os
 from dataclasses import asdict
 from pathlib import Path
 
@@ -17,6 +18,10 @@ from udb.idl_environment import possible_xlens
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.mark.skipif(
+    os.environ.get("UDB_RUN_SLOW") != "1",
+    reason="type-checks every real IDL body; set UDB_RUN_SLOW=1 (CI runs it)",
+)
 @pytest.mark.parametrize("name", ["_", "rv32", "rv64", "qc_iu"])
 def test_actual_architecture_bodies_and_unavailable_coverage(name, tmp_path):
     configuration = Configuration.from_file(ROOT / "cfgs" / f"{name}.yaml")
