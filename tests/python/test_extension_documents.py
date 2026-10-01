@@ -8,7 +8,8 @@ import json
 import re
 import subprocess
 from datetime import date
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from types import SimpleNamespace
 
 import pytest
 from extension_documents_helpers import (
@@ -18,6 +19,7 @@ from extension_documents_helpers import (
 )
 
 from udb import Configuration, Database
+from udb.database import DatabaseObject
 from udb.extension_docs import (
     DocumentOptions,
     ExtensionDocumentError,
@@ -164,6 +166,41 @@ def test_provider_binding_and_native_csr_content(database):
     assert "== Software read" in text
     assert "== Field Summary" in text and "Reset value::" in text
     assert "[wavedrom," in text and "=== mtval_for" in text
+
+
+def test_provider_binding_renders_native_syntax_from_captured_scalar(monkeypatch):
+    from udb.prose import ProseInputs
+
+    monkeypatch.setattr(
+        ProseInputs,
+        "from_architecture",
+        classmethod(
+            lambda cls, architecture: SimpleNamespace(
+                extensions={"H": True}, parameters={"MXLEN": 64}
+            )
+        ),
+    )
+    arch = SimpleNamespace(database=object())
+    record = DatabaseObject(
+        "native-prose",
+        "test",
+        PurePosixPath("test/native-prose.yaml"),
+        {
+            "name": "native-prose",
+            "kind": "test",
+            "description": "{% if extensions.H %}H{% endif %}:{{ params.MXLEN }}",
+        },
+    )
+    provider = configured_prose_provider(arch)
+    assert (
+        provider(
+            record["description"],
+            record=record,
+            field_path=("description",),
+            architecture=arch,
+        )
+        == "H:64"
+    )
 
 
 def test_field_summary_flag_never_evaluates_excluded_descriptions(architecture):

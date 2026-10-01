@@ -30,6 +30,10 @@ def configured_prose_provider(architecture: ConfiguredArchitecture) -> ProseProv
             "udb.prose package or pass DocumentOptions(prose=...)"
         ) from error
     inputs = ProseInputs.from_architecture(architecture)
+    native_values = {
+        "extensions": inputs.extensions,
+        "params": inputs.parameters,
+    }
 
     def provider(text, *, record, field_path, architecture):
         captured = CapturedProse.from_record(architecture.database, record, *field_path)
@@ -37,6 +41,8 @@ def configured_prose_provider(architecture: ConfiguredArchitecture) -> ProseProv
             raise ExtensionDocumentError(
                 f"{captured.label}: configured prose scalar changed during rendering"
             )
-        return (render_legacy if "<%" in text else render_native)(captured, inputs)
+        if "<%" in text:
+            return render_legacy(captured, inputs)
+        return render_native(captured, native_values)
 
     return provider
