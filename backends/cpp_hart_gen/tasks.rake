@@ -3,6 +3,7 @@
 require "active_support"
 require "active_support/core_ext/string/inflections"
 require "tty-command"
+require "yaml"
 
 require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
@@ -268,64 +269,37 @@ end
 namespace :gen do
   desc HELP
   task :cpp_hart do
-    configs, build_name = configs_build_name
-
-    Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp").each do |inc|
-      dst_path = CPP_HART_GEN_DST / build_name / "include" / "udb" / File.basename(inc)
-      Rake::Task[dst_path].invoke
-    end
-    Dir.glob("#{CPP_HART_GEN_SRC}/c/include/udb/*.h").each do |inc|
-      dst_path = CPP_HART_GEN_DST / build_name / "include" / "udb" / File.basename(inc)
-      Rake::Task[dst_path].invoke
-    end
-    Dir.glob("#{CPP_HART_GEN_SRC}/cpp/src/*.cpp").each do |src|
-      dst_path = CPP_HART_GEN_DST / build_name / "src" / File.basename(src)
-      Rake::Task[dst_path].invoke
-    end
-    Dir.glob("#{CPP_HART_GEN_SRC}/cpp/test/*.{cpp,hpp,cmake}").each do |src|
-      dst_path = CPP_HART_GEN_DST / build_name / "test" / File.basename(src)
-      Rake::Task[dst_path].invoke
-    end
-
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/CMakeLists.txt"].invoke
-
-    generated_files = []
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/hart_factory.hxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/enum.cxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/bitfield.hxx"
-    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/libhart.h"
-
-    configs.each do |config|
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst_impl.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart_impl.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs_impl.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/structs.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/func_prototypes.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/idl_funcs_impl.hxx"
-
-      Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
-        Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
+    config_names, build_name = configs_build_name
+    selectors = ENV.fetch("CONFIG").split(",")
+    selected_files =
+      if selectors == ["all"]
+        Dir.glob("#{$root}/cfgs/*.yaml")
+      else
+        selectors.filter_map do |selector|
+          path = File.file?(selector) ? selector : "#{$root}/cfgs/#{selector}.yaml"
+          path if File.file?(path)
+        end
       end
+    overlays = selected_files.filter_map do |path|
+      data = YAML.safe_load_file(path, aliases: true)
+      data["arch_overlay"] if data.is_a?(Hash)
+    end.uniq
+    python_build_name = ENV["BUILD_NAME"] || config_names.first
+    cmd = [
+      "#{$root}/bin/python", "-m", "udb", "generate", "cpp-hart",
+      "--source", "#{$root}/spec/std/isa",
+      "--schemas", "#{$root}/spec/schemas",
+      "--runtime-root", $root.to_s,
+      "--configs-directory", "#{$root}/cfgs",
+      "--config", ENV.fetch("CONFIG"),
+      "--build-name", python_build_name,
+      "--build-type", cmake_build_type,
+      "--out", "#{CPP_HART_GEN_DST}/#{build_name}"
+    ]
+    overlays.each do |overlay|
+      cmd.push("--overlay", "#{$root}/spec/custom/isa/#{overlay}")
     end
-
-    pb =
-      Udb.create_progressbar(
-        "Generating ISS source files (:file) [:bar] :current/:total",
-        total: generated_files.size,
-        clear: true
-      )
-    generated_files.each { |fn| pb.advance(file: File.basename(fn)); Rake::Task["#{fn}.unformatted"].invoke }
-
-    multitask "__generate_formatted_cpp_#{build_name}" => generated_files
-    Rake::MultiTask["__generate_formatted_cpp_#{build_name}"].invoke
+    sh(*cmd)
   end
 end
 

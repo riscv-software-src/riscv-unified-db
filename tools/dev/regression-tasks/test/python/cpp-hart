@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Check retained C++ hart source generation"
+
+set -e
+
+uv run --locked python -m pytest -n 8 \
+  --basetemp=gen/cpp-hart/pytest \
+  tests/python/test_cpp_hart_emitter.py \
+  tests/python/test_cpp_hart_generator.py

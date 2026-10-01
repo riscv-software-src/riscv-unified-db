@@ -43,12 +43,21 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
     assert "udb/extension_docs/assets/fonts/JetBrainsMono-Regular.ttf" in destinations
     assert "udb/extension_docs/assets/images/wavedrom/float-csr.adoc" in destinations
     assert "udb/extension_docs/templates/header.adoc" in destinations
+    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/CMakeLists.txt" in destinations
+    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/include/udb/bits.hpp" in destinations
+    assert (
+        "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/test_bits_properties_small.cpp"
+        in destinations
+    )
+    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/bits-tests.cmake" in destinations
+    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/bits_property.hpp" in destinations
     assert not any(destination.endswith(".erb") for destination in destinations)
 
 
 def _wheel_data(wheel: Path) -> dict[str, str]:
     with zipfile.ZipFile(wheel) as archive:
         for source in (
+            "src/udb/cpp_hart/NOTICE",
             "src/udb/schema_docs/NOTICE",
             "src/udb/extension_docs/assets/NOTICE.txt",
             "src/udb/extension_docs/assets/fonts/OFL-M.txt",
@@ -107,6 +116,7 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
         names = archive.getnames()
         assert any(name.endswith("/doc/stage5-configured-prose.md") for name in names)
         for source in (
+            "src/udb/cpp_hart/NOTICE",
             "src/udb/schema_docs/NOTICE",
             "src/udb/extension_docs/assets/NOTICE.txt",
             "src/udb/extension_docs/assets/fonts/OFL-M.txt",
@@ -124,6 +134,10 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
         )
         assert any(
             name.endswith("/tests/python/fixtures/query_reports/manifest.json") for name in names
+        )
+        assert any(name.endswith("backends/cpp_hart_gen/CMakeLists.txt") for name in names)
+        assert any(
+            name.endswith("tests/data/fp/directed/f32_fpgen_expanded.jsonl") for name in names
         )
         assert not any(name.endswith(".erb") for name in names)
         qc_sources = {
@@ -184,6 +198,8 @@ assert (files('udb') / '_data' / 'schemas' / 'inst_schema.json').is_file()
 assert (files('udb') / '_data' / 'layouts' / 'inst' / 'Zaamo' / 'amoadd.SIZE.AQRL.layout').is_file()
 assert (files('udb') / 'extension_docs' / 'assets' / 'fonts' / 'JetBrainsMono-Regular.ttf').is_file()
 assert (files('udb') / 'extension_docs' / 'templates' / 'header.adoc').is_file()
+assert (files('udb') / '_data' / 'cpp_hart' / 'backends' / 'cpp_hart_gen' / 'CMakeLists.txt').is_file()
+assert (files('udb') / '_data' / 'cpp_hart' / 'backends' / 'cpp_hart_gen' / 'cpp' / 'include' / 'udb' / 'bits.hpp').is_file()
 assert udb.Database.bundled().extension('Zvkg').name == 'Zvkg'
 resolved = udb.Database.bundled().resolve(validate=True)
 assert resolved.profile('RVI20U64')['extensions']['I']['presence'] == 'mandatory'

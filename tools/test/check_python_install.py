@@ -168,6 +168,121 @@ def check_query_reports(resolved: udb.ResolvedDatabase) -> None:
     assert matcher.match("0001", width=32).results[0].illegal
 
 
+def cpp_hart_smoke_configuration() -> udb.Configuration:
+    disabled = [False] * 32
+    return udb.Configuration(
+        {
+            "$schema": "config_schema.json#",
+            "kind": "architecture configuration",
+            "type": "fully configured",
+            "name": "installed-cpp-smoke",
+            "description": "Installed C++ hart source-generation smoke configuration",
+            "implemented_extensions": [
+                {"name": "Sm", "version": "1.11.0"},
+                {"name": "I", "version": "2.1"},
+                {"name": "Zicsr", "version": "2.0"},
+            ],
+            "params": {
+                "ARCH_ID_VALUE": 1,
+                "COUNTINHIBIT_EN": disabled,
+                "HPM_COUNTER_EN": disabled,
+                "IMP_ID_VALUE": 0,
+                "MARCHID_IMPLEMENTED": True,
+                "MCOUNTENABLE_EN": disabled,
+                "MCOUNTINHIBIT_IMPLEMENTED": True,
+                "MEI_INTR_IMPL": False,
+                "MIMPID_IMPLEMENTED": True,
+                "MISALIGNED_LDST": True,
+                "MISALIGNED_LDST_EXCEPTION_PRIORITY": "low",
+                "MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE": 4,
+                "MISALIGNED_SPLIT_STRATEGY": "sequential_bytes",
+                "MISA_CSR_IMPLEMENTED": True,
+                "MSI_INTR_IMPL": False,
+                "MTI_INTR_IMPL": False,
+                "MTVAL_WIDTH": 32,
+                "MTVEC_ACCESS": "rw",
+                "MTVEC_BASE_ALIGNMENT_DIRECT": 4,
+                "MTVEC_BASE_ALIGNMENT_VECTORED": 4,
+                "MTVEC_ILLEGAL_WRITE_BEHAVIOR": "retain",
+                "MTVEC_MODES": [0, 1],
+                "MXLEN": 32,
+                "M_MODE_ENDIANNESS": "little",
+                "NON_STANDARD_EXTENSION_IMPLEMENTED": False,
+                "NUM_PMP_ENTRIES": 16,
+                "NUM_USABLE_PMP_ENTRIES": 16,
+                "PHYS_ADDR_WIDTH": 32,
+                "PMA_GRANULARITY": 12,
+                "PMP_GRANULARITY": 12,
+                "PMP_NA4_SUPPORTED": False,
+                "PMP_NAPOT_SUPPORTED": True,
+                "PMP_TOR_SUPPORTED": True,
+                "PRECISE_SYNCHRONOUS_EXCEPTIONS": True,
+                "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION": True,
+                "REPORT_VA_IN_MTVAL_ON_BREAKPOINT": True,
+                "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT": True,
+                "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED": True,
+                "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT": True,
+                "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED": True,
+                "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT": True,
+                "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED": True,
+                "TRAP_ON_EBREAK": True,
+                "TRAP_ON_ECALL_FROM_M": True,
+                "TRAP_ON_ILLEGAL_WLRL": True,
+                "TRAP_ON_RESERVED_INSTRUCTION": True,
+                "TRAP_ON_UNIMPLEMENTED_CSR": True,
+                "TRAP_ON_UNIMPLEMENTED_INSTRUCTION": True,
+                "VENDOR_ID_BANK": 1,
+                "VENDOR_ID_OFFSET": 1,
+                "WFI_FINITE": True,
+                "WFI_U_MODE": False,
+            },
+        }
+    )
+
+
+def check_cpp_hart(resolved: udb.ResolvedDatabase, root: Path) -> None:
+    from udb.cpp_hart import CppHartGenerator, RuntimeResources
+
+    configuration = cpp_hart_smoke_configuration()
+    architecture = resolved.configure(configuration)
+    api_root = root / "cpp-hart-api"
+    cli_root = root / "cpp-hart-cli"
+    plan = CppHartGenerator([architecture]).plan()
+    runtime_paths = {str(output) for output, _, _, _ in RuntimeResources.bundled().files()}
+    assert {
+        "CMakeLists.txt",
+        "include/udb/bits.hpp",
+        "test/bits-tests.cmake",
+        "test/bits_property.hpp",
+    } <= runtime_paths
+    assert runtime_paths <= {str(output.path) for output in plan.outputs}
+    plan.apply(api_root)
+    assert plan.apply(api_root, check=True) == ()
+    config_path = root / "installed-cpp-smoke.json"
+    config_path.write_text(json.dumps(configuration.to_dict()), encoding="utf-8")
+    result = subprocess.run(
+        [
+            str(Path(sys.executable).with_name("udb")),
+            "generate",
+            "cpp-hart",
+            "--config",
+            str(config_path),
+            "--out",
+            str(cli_root),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert not result.stdout and not result.stderr
+    assert tree_digest(api_root) == tree_digest(cli_root)
+    assert (api_root / "include/udb/cfgs/installed-cpp-smoke/hart.hxx").is_file()
+    assert (api_root / "include/udb/bits.hpp").is_file()
+    manifest = json.loads((api_root / "cpp-hart-manifest.json").read_text())
+    assert manifest["configurations"] == ["installed-cpp-smoke"]
+    assert set(manifest["outputs"]) == tree_digest(api_root).keys() - {"cpp-hart-manifest.json"}
+
+
 def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
     """Use bundled ISA data and an explicit full config, never a checkout path."""
     from udb.generators.config_headers import generate_config_header
@@ -681,6 +796,8 @@ def check_install() -> None:
         assert rejected.returncode == 2
         assert json.loads(rejected.stdout)["status"] == "error"
 
+        check_cpp_hart(resolved, root)
+
         authoring_root = root / "authoring"
         outputs = udb.generate_layouts(authoring_root)
         assert len(outputs) == 532
@@ -887,6 +1004,7 @@ def check_install() -> None:
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
+        "installed C++ hart API/CLI source generation, "
         f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
         "standalone IDL CLI, IDL statement typing & execution, captured architecture compilation & value bounds, "
         "standalone analysis and source-generation passes, symbolic IDL conditions & genuine hooks"

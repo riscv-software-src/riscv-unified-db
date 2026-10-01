@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 from pathlib import Path, PurePosixPath
 
@@ -44,6 +45,14 @@ def package_data(source_root: Path) -> dict[Path, PurePosixPath]:
         if not path.is_file():
             raise RuntimeError(f"required generic configuration is missing: {path}")
         mappings[path] = PurePosixPath("udb/_data/configs") / path.name
+    cpp_spec = importlib.util.spec_from_file_location(
+        "_udb_cpp_hart_assets", source_root / "src/udb/cpp_hart/asset_manifest.py"
+    )
+    if cpp_spec is None or cpp_spec.loader is None:
+        raise RuntimeError("C++ runtime resource manifest could not be loaded")
+    cpp_assets = importlib.util.module_from_spec(cpp_spec)
+    cpp_spec.loader.exec_module(cpp_assets)
+    mappings.update(cpp_assets.package_mapping(source_root))
     qc_root = source_root / "spec/custom/isa/qc_iu"
     for stem, count in (
         ("mclicip", 8),
