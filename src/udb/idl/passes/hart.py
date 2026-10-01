@@ -48,10 +48,13 @@ def constexpr(node: ast.Node, symtab: SymbolTable) -> bool:
     return all(constexpr(child, symtab) for child in node.children)
 
 
-def control_flow(node: ast.Node, symtab: SymbolTable) -> bool:
+def control_flow(
+    node: ast.Node, symtab: SymbolTable, *, cache: dict[int, bool] | None = None
+) -> bool:
     """Find explicit PC writes, including callees, but excluding exception raises."""
 
     active: set[int] = set()
+    completed = {} if cache is None else cache
 
     def visit(current: ast.Node) -> bool:
         if isinstance(current, ast.PcAssignment):
@@ -65,11 +68,15 @@ def control_flow(node: ast.Node, symtab: SymbolTable) -> bool:
             if function.builtin or function.generated or function.body is None:
                 return False
             identity = id(function)
+            if identity in completed:
+                return completed[identity]
             if identity in active:
                 return False
             active.add(identity)
             try:
-                return visit(function.body)
+                result = visit(function.body)
+                completed[identity] = result
+                return result
             finally:
                 active.remove(identity)
         return False

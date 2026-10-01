@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from functools import cache
 from typing import TYPE_CHECKING
 
 from .errors import DataError
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
     from .source import SourceText
 
 
+@cache
 def global_ast(database: ResolvedDatabase, *, entrypoint: str = "isa/globals.isa") -> Isa | None:
     """Flatten includes once in source order, retaining each declaration's own span."""
     if not database.idl_sources:
