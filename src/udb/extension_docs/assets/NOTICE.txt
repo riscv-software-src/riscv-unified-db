@@ -1,0 +1,51 @@
+Retained extension-document resources
+=====================================
+
+All font and image binaries are unmodified copies of the declared sources.
+manifest.json records each source, its SHA-256 and any explicit text conversion.
+The bundle is intentionally limited to resources used by extension documents.
+
+RISC-V document resources (theme and images)
+  Source: https://github.com/riscv/docs-resources
+  Copyright RISC-V International and contributors.
+  License: CC-BY-4.0, reproduced in fonts/OFL1.txt.
+  Despite its original filename, OFL1.txt is NOT an Open Font License.
+
+Qualcomm PDF theme
+  Source: tools/ruby-gems/udb-gen/themes/qc-pdf.yml.
+  Copyright Qualcomm Technologies, Inc. and/or its subsidiaries.
+  License: BSD-3-Clause-Clear.
+
+Montserrat font family
+  Copyright 2011 The Montserrat Project Authors.
+  License: OFL-1.1, including the notice in fonts/OFL-M.txt.
+
+Petrona font family
+  Copyright 2019 The Petrona Project Authors.
+  License: OFL-1.1, including the notice in fonts/OFL-P.txt.
+
+JetBrains Mono font family
+  Copyright 2020 The JetBrains Mono Project Authors.
+  Source: https://github.com/JetBrains/JetBrainsMono
+  License: OFL-1.1. The full OFL-1.1 text is reproduced in fonts/OFL-M.txt.
+  Original embedded font copyright and license records are retained.
+
+Computer Modern Unicode Typewriter Light (cmunbtl.ttf)
+  Converted by Andrey V. Panov from TeX fonts.
+  License: OFL-1.1, as declared by the original embedded font license record.
+  The full OFL-1.1 text is reproduced in fonts/OFL-M.txt.
+  Original embedded font copyright and license records are retained.
+
+M+ fonts
+  Copyright 2012 M+ FONTS PROJECT; original embedded notices are retained.
+  License: mplus, reproduced in fonts/LICENSE-mplus.txt.
+  License provenance: official Asciidoctor PDF distribution,
+    https://github.com/asciidoctor/asciidoctor-pdf/blob/main/data/fonts/LICENSE-mplus
+
+Float-CSR register diagram
+  Source: RISC-V ISA manual, src/unpriv/images/wavedrom/float-csr.edn.
+  Copyright RISC-V International and contributors.
+  License: CC-BY-4.0.
+  The literal object was converted to strict JSON without changing fields.
+
+Official renderer fonts referenced through GEM_FONTS_DIR are NOT redistributed.

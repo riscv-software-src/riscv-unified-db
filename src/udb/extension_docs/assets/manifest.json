@@ -1,0 +1,170 @@
+[
+  {
+    "path": "LICENSE",
+    "source": "ext/docs-resources/LICENSE",
+    "sha256": "7e7170e3cebf88a9f60c7b8421418323c09304da1af4d5e90f4da1dc1c8a2661"
+  },
+  {
+    "path": "fonts/JetBrainsMono-Bold.ttf",
+    "source": "ext/docs-resources/fonts/JetBrainsMono-Bold.ttf",
+    "sha256": "5590990c82e097397517f275f430af4546e1c45cff408bde4255dad142479dcb"
+  },
+  {
+    "path": "fonts/JetBrainsMono-BoldItalic.ttf",
+    "source": "ext/docs-resources/fonts/JetBrainsMono-BoldItalic.ttf",
+    "sha256": "4039d5ce0ed225bf9c8b2c8c6436290ae2f356b7e90d70fa666227238324aa3b"
+  },
+  {
+    "path": "fonts/JetBrainsMono-Italic.ttf",
+    "source": "ext/docs-resources/fonts/JetBrainsMono-Italic.ttf",
+    "sha256": "9d0a1f7a708e6af183f1193b7e81d40da294f5c67682c085d8401c60aac8ded4"
+  },
+  {
+    "path": "fonts/JetBrainsMono-Regular.ttf",
+    "source": "ext/docs-resources/fonts/JetBrainsMono-Regular.ttf",
+    "sha256": "a0bf60ef0f83c5ed4d7a75d45838548b1f6873372dfac88f71804491898d138f"
+  },
+  {
+    "path": "fonts/Montserrat-Italic.ttf",
+    "source": "ext/docs-resources/fonts/Montserrat-Italic.ttf",
+    "sha256": "162c518fc243971f2f74400c010b5385c3872abaaf9d0398a22dd196c33c002d"
+  },
+  {
+    "path": "fonts/Montserrat-Light.ttf",
+    "source": "ext/docs-resources/fonts/Montserrat-Light.ttf",
+    "sha256": "e0feb97ab7fdca79ccdfcc7df7b629f86705e33b7687b7463b388b003ffef865"
+  },
+  {
+    "path": "fonts/Montserrat-Medium.ttf",
+    "source": "ext/docs-resources/fonts/Montserrat-Medium.ttf",
+    "sha256": "421f26b23e2be6b98373d32acd3cb2897b154d4bf0a77d26534ce476e4cbed53"
+  },
+  {
+    "path": "fonts/Montserrat-MediumItalic.ttf",
+    "source": "ext/docs-resources/fonts/Montserrat-MediumItalic.ttf",
+    "sha256": "dbd2c024fe113eee25fe8230d54da263ee82782d84c3c7ec2b3b9a571d1ef896"
+  },
+  {
+    "path": "fonts/Montserrat-Regular.ttf",
+    "source": "ext/docs-resources/fonts/Montserrat-Regular.ttf",
+    "sha256": "077cdab15161232a9ba7124d2ddd7a9425145750788e9a966c156cc66274f525"
+  },
+  {
+    "path": "fonts/OFL-M.txt",
+    "source": "ext/docs-resources/fonts/OFL-M.txt",
+    "sha256": "41e9dddf63f645fc3287f325469a2d653ad7f3a4fadc983ad0bb607c16c6f28c"
+  },
+  {
+    "path": "fonts/OFL-P.txt",
+    "source": "ext/docs-resources/fonts/OFL-P.txt",
+    "sha256": "f9dc4bc8b95e3c9d4d3c38991a01dba70091e508059f1aeebc34b523fe6a4514"
+  },
+  {
+    "path": "fonts/OFL1.txt",
+    "source": "ext/docs-resources/fonts/OFL1.txt",
+    "sha256": "7e7170e3cebf88a9f60c7b8421418323c09304da1af4d5e90f4da1dc1c8a2661"
+  },
+  {
+    "path": "fonts/Petrona-Light.ttf",
+    "source": "ext/docs-resources/fonts/Petrona-Light.ttf",
+    "sha256": "f185bf816a0aa09350993210859b5da9b6cdf79a0d61a35762af5530eaab9f29"
+  },
+  {
+    "path": "fonts/Petrona-LightItalic.ttf",
+    "source": "ext/docs-resources/fonts/Petrona-LightItalic.ttf",
+    "sha256": "a2bc2502cde1976d0c7f5fbd927e54a6130a52fd92dc306217040b290c5caa26"
+  },
+  {
+    "path": "fonts/Petrona-Medium.ttf",
+    "source": "ext/docs-resources/fonts/Petrona-Medium.ttf",
+    "sha256": "4b46b33bc23f90c6c26aa679c9e0414f151a4e3bd643a32ea746efb3dcc1346c"
+  },
+  {
+    "path": "fonts/Petrona-MediumItalic.ttf",
+    "source": "ext/docs-resources/fonts/Petrona-MediumItalic.ttf",
+    "sha256": "6f6c69e2d1feb0e3355762307f6027988d9f07020943e4bc5363223b0f361ab7"
+  },
+  {
+    "path": "fonts/Petrona-Thin.ttf",
+    "source": "ext/docs-resources/fonts/Petrona-Thin.ttf",
+    "sha256": "0a134883b12e36235e3fec4b48640fb6fb327fc26d0788b5ed04fdb8317540b4"
+  },
+  {
+    "path": "fonts/cmunbtl.ttf",
+    "source": "ext/docs-resources/fonts/cmunbtl.ttf",
+    "sha256": "093ceab998d9bb0f4f1312fd10980b3919e557ad594080f7da8c8938a38e4a49"
+  },
+  {
+    "path": "fonts/cmunbto.ttf",
+    "source": "ext/docs-resources/fonts/cmunbto.ttf",
+    "sha256": "0736b190835798366166ec4bc6f4f768111abbd1939991240d51f143b3f62160"
+  },
+  {
+    "path": "fonts/mplus-1mn-bold.ttf",
+    "source": "ext/docs-resources/fonts/mplus-1mn-bold.ttf",
+    "sha256": "978e5868233982a4ff58dba6c7665dbecfe29bebdab53a3044036332e8438f0a"
+  },
+  {
+    "path": "fonts/mplus-1mn-light.ttf",
+    "source": "ext/docs-resources/fonts/mplus-1mn-light.ttf",
+    "sha256": "712b8726ab2df9a16d5624cd5baf6fae39a297fe1c8a0f36e7398c1a5ce6c432"
+  },
+  {
+    "path": "fonts/mplus-1mn-medium.ttf",
+    "source": "ext/docs-resources/fonts/mplus-1mn-medium.ttf",
+    "sha256": "b74cdc817a190de8d2b265cc087896d26948a247b06e019bd7551b6c743c6edf"
+  },
+  {
+    "path": "fonts/mplus-1mn-regular.ttf",
+    "source": "ext/docs-resources/fonts/mplus-1mn-regular.ttf",
+    "sha256": "7aa4645fb6913127a0aec69418d57f4ff93e3bc719a0b3fec7701de99fb457ac"
+  },
+  {
+    "path": "fonts/mplus-1p-regular-fallback.ttf",
+    "source": "ext/docs-resources/fonts/mplus-1p-regular-fallback.ttf",
+    "sha256": "f0c2de2c64c2db1ae61bb4ea7c56ada7fa45383fd6d4a9b44b1834b19be82837"
+  },
+  {
+    "path": "images/draft.png",
+    "source": "ext/docs-resources/images/draft.png",
+    "sha256": "2a41f11a6adc72785245253f46955b75d565330ea7a9d09bdb15dea59b356785"
+  },
+  {
+    "path": "images/risc-v_logo.png",
+    "source": "ext/docs-resources/images/risc-v_logo.png",
+    "sha256": "0eb4573e234789838a73037c7403e7ac1ab1ebe95bcfcaf9343892c81bee2b26"
+  },
+  {
+    "path": "images/risc-v_logo.svg",
+    "source": "ext/docs-resources/images/risc-v_logo.svg",
+    "sha256": "0462984b6f06992620b29f6bc7d909dd504020005a7104f48fab9dcce4f318d1"
+  },
+  {
+    "path": "themes/riscv-pdf.yml",
+    "source": "ext/docs-resources/themes/riscv-pdf.yml",
+    "sha256": "bb8dbab2b2eff85e77da4a345e6fb29abdb8b95e95d684b8c61f7b8f6ff5c024"
+  },
+  {
+    "path": "themes/qc-pdf.yml",
+    "source": "tools/ruby-gems/udb-gen/themes/qc-pdf.yml",
+    "sha256": "f50cb0f4ebf69d855fc0f9072fdec5bbd32d9d616592045dceea15d8702a2441"
+  },
+  {
+    "path": "images/wavedrom/float-csr.adoc",
+    "source": "ext/riscv-isa-manual/src/unpriv/images/wavedrom/float-csr.edn",
+    "source_sha256": "0bd82227fc0d8c6699b2dd98fd10a91e7f9213d12251cc756a9f6011969a7187",
+    "conversion": "literal register object converted to strict JSON; all bits/name/attr/config preserved",
+    "sha256": "c9674ba164b1c5f4cb71c142e8e6c832c70233c32f48f5eba03eb76817ba0849"
+  },
+  {
+    "path": "NOTICE.txt",
+    "source": "retained resource attribution and original embedded font notices",
+    "sha256": "c58906d1a421029a6b8e3770244ecaad9f1f75fd3cbc34c1a390ea15d1217176"
+  },
+  {
+    "path": "fonts/LICENSE-mplus.txt",
+    "source": "https://github.com/asciidoctor/asciidoctor-pdf/blob/main/data/fonts/LICENSE-mplus",
+    "license": "mplus",
+    "sha256": "ebe77013f68231c6f828b988081f1184d9fa009e8a72bab9c14f318e81c10332"
+  }
+]

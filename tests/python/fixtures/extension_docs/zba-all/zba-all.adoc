@@ -1,0 +1,1570 @@
+[[header]]
+:description: Address generation (Zba)
+:revdate: 2021-06
+:revnumber: 1.0.0
+:revmark: This document is in the http://riscv.org/spec-state[Ratified state] + \
++ \
+No changes are allowed. + \
+Any desired or needed changes can be the subject of a follow-on new extension. + \
+Ratified extensions are never revised. + \
+
+:company: RISC-V International
+:url-riscv: https://riscv.org
+:doctype: book
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+// Settings
+:experimental:
+:reproducible:
+// needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+:toc: left
+:toclevels: 2
+:source-highlighter: pygments
+ifdef::backend-pdf[]
+:source-highlighter: rouge
+endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+
+= Address generation
+
+// Preamble
+[WARNING]
+.This document is in the link:http://riscv.org/spec-state[Ratified state]
+====
+No changes are allowed. Any desired or needed changes can be the subject of a
+follow-on new extension. Ratified extensions are never revised
+====
+
+
+[preface]
+== Copyright and license information
+This document is released under the unknown[unknown].
+
+Copyright 2021 by RISC-V International.
+
+This document was created using the http://github.org/riscv/riscv-unified-db[RISC-V Unified Database] at commit a67618c2cd25ec235ccaa35adfc523ed56ef83ea.
+
+[preface]
+== Acknowledgements
+
+Contributors to version 1.0.0 of the Zba specification (in alphabetical order) include: +
+
+  * Jacob Bachmeyer <> ()
+
+  * Allen Baum <> ()
+
+  * Ari Ben <> ()
+
+  * Alex Bradbury <> ()
+
+  * Steven Brager <> ()
+
+  * Rogier Brussee <> ()
+
+  * Michael Clark <> ()
+
+  * Ken Dockser <> ()
+
+  * Paul Donahue <> ()
+
+  * Dennis Ferguson <> ()
+
+  * Fabian Giesen <> ()
+
+  * John Hauser <> ()
+
+  * Robert Henry <> ()
+
+  * Bruce Holt <> ()
+
+  * Po-wei Huang <> ()
+
+  * Ben Marshall <> ()
+
+  * Rex McCrary <> ()
+
+  * Lee Moore <> ()
+
+  * Jiri Moravec <> ()
+
+  * Samuel Neves <> ()
+
+  * Markus Oberhumer <> ()
+
+  * Christopher Olson <> ()
+
+  * Nils Pipenbrinck <> ()
+
+  * Joseph Rahmeh <> ()
+
+  * Xue Saw <> ()
+
+  * Tommy Thorn <> ()
+
+  * Philipp Tomsich <> ()
+
+  * Avishai Tvila <> ()
+
+  * Andrew Waterman <> ()
+
+  * Thomas Wicki <> ()
+
+  * Claire Wolf <> ()
+
+
+We express our gratitude to everyone that contributed to, reviewed or
+improved this specification through their comments and questions.
+
+[preface]
+== Versions
+
+
+This specification documents version 1.0.0 of Zba.
+
+=== Version History
+
+[frame="none",grid="none",cols="1,4"]
+|===
+2+^| Zba
+
+h| 1.0.0
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! ratified
+h! Ratification date ! 2021-06
+
+!===
+
+|===
+
+
+
+<<<
+== Conventions
+
+Version requirements are specified as conditions using the following operators:
+
+[cols="1,2"]
+|===
+| Operator | Meaning
+
+| `~> VERSION` | Accepts any version that is _compatible_ with `VERSION`. By default, a version A is compatible with a version B if A's version number is greater than or equal to version B. If that default assumption is ever broken, it will be noted in the list of extension versions.
+| `= VERSION` | Accepts only version `VERSION`.
+| `>= VERSION` | Accepts any version greater than or equal to `VERSION`.
+| `\<= VERSION` | Accepts any version less than or equal to `VERSION`.
+| `> VERSION` | Accepts any version greater than `VERSION`.
+| `< VERSION` | Accepts any version less than `VERSION`.
+|===
+
+<<<
+== Extension description
+
+
+:leveloffset: +2
+The Zba instructions can be used to accelerate the generation of addresses that index into
+arrays of basic types (halfword, word, doubleword) using both unsigned word-sized and
+XLEN-sized indices: a shifted index is added to a base address.
+
+The shift and add instructions do a left shift of 1, 2, or 3 because these are commonly found
+in real-world code and because they can be implemented with a minimal amount of additional
+hardware beyond that of the simple adder. This avoids lengthening the critical path in
+implementations.
+
+While the shift and add instructions are limited to a maximum left shift of 3, the xref:#udb-insn-slli[`slli`]
+instruction (from the base ISA) can be used to perform similar shifts for indexing into arrays
+of wider elements. The xref:#udb-insn-slli_uw[`slli.uw`] -- added in this extension -- can be used when the index is to
+be interpreted as an unsigned word.
+
+:leveloffset: -2
+
+
+
+
+
+
+
+
+<<<
+== Instruction list
+
+
+
+The following 9 instructions must be implemented when Zba is implemented:
+
+.Instructions defined by Zba
+[cols="1,1,5,5"]
+|===
+| RV32 | RV64 | Mnemonic | Instruction 
+| 
+| &#x2713;
+| `add.uw xd, xs1, xs2`
+| xref:#udb-insn-add_uw[Add unsigned word]
+| 
+| &#x2713;
+| `sh1add.uw xd, xs1, xs2`
+| xref:#udb-insn-sh1add_uw[Shift unsigned word left by 1 and add]
+| &#x2713;
+| &#x2713;
+| `sh1add xd, xs1, xs2`
+| xref:#udb-insn-sh1add[Shift left by 1 and add]
+| 
+| &#x2713;
+| `sh2add.uw xd, xs1, xs2`
+| xref:#udb-insn-sh2add_uw[Shift unsigned word left by 2 and add]
+| &#x2713;
+| &#x2713;
+| `sh2add xd, xs1, xs2`
+| xref:#udb-insn-sh2add[Shift left by 2 and add]
+| 
+| &#x2713;
+| `sh3add.uw xd, xs1, xs2`
+| xref:#udb-insn-sh3add_uw[Shift unsigned word left by 3 and add]
+| &#x2713;
+| &#x2713;
+| `sh3add xd, xs1, xs2`
+| xref:#udb-insn-sh3add[Shift left by 3 and add]
+| 
+| &#x2713;
+| `slli.uw xd, xs1, shamt`
+| xref:#udb-insn-slli_uw[Shift left unsigned word (Immediate)]
+| 
+| &#x2713;
+| `c.zext.w xd`
+| xref:#udb-insn-c_zext_w[Zero-extend word, 16-bit encoding]
+|===
+
+
+
+
+
+
+
+
+
+[.portrait]
+<<<
+[#insns,reftext="Instructions (in alphabetical order)"]
+== Instructions (in alphabetical order)
+
+:leveloffset: +2
+
+
+[#udb:doc:inst:add_uw]
+= add.uw
+
+Synopsis::
+Add unsigned word
+
+Mnemonic::
+----
+add.uw xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x3b,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x4,"type":2}]}
+....
+
+Description::
+Performs an XLEN-wide addition between xs2 and the
+zero-extended least-significant word of xs1.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] X[xs1][31:0];
+----
+
+
+Included in::
+--
+xref:#udb-insn-add_uw[`add.uw`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:c_zext_w]
+= c.zext.w
+
+Synopsis::
+Zero-extend word, 16-bit encoding
+
+Mnemonic::
+----
+c.zext.w xd
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x71,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x27,"type":2}]}
+....
+
+Description::
+Takes a single source/destination operand.
+It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<3> xd = $encoding[9:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::C) && MISA_CSR_IMPLEMENTED && (CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-C[C] == 1'b0)) {
+  xref:#udb-function-reserved_instruction[reserved_instruction]pass:[(]$encoding);
+}
+X[xref:#udb-function-creg2reg[creg2reg]pass:[(]xd)] = X[xref:#udb-function-creg2reg[creg2reg]pass:[(]xd)][31:0];
+----
+
+
+Included in::
+--
+xref:#udb-insn-c_zext_w[`c.zext.w`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh1add]
+= sh1add
+
+Synopsis::
+Shift left by 1 and add
+
+Mnemonic::
+----
+sh1add xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x33,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Shifts `xs1` to the left by 1 bit and adds it to `xs2`.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1] << 1);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh1add[`sh1add`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+| *Zba*
+| any
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh1add_uw]
+= sh1add.uw
+
+Synopsis::
+Shift unsigned word left by 1 and add
+
+Mnemonic::
+----
+sh1add.uw xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x3b,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Performs an XLEN-wide addition of two addends. The first addend is xs2.
+The second addend is the unsigned value formed by extracting the least-significant word of xs1
+and shifting it left by 1 place.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1][31:0] << 1);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh1add_uw[`sh1add.uw`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh2add]
+= sh2add
+
+Synopsis::
+Shift left by 2 and add
+
+Mnemonic::
+----
+sh2add xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x33,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Shifts `xs1` to the left by 2 places and adds it to `xs2`.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1] << 2);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh2add[`sh2add`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+| *Zba*
+| any
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh2add_uw]
+= sh2add.uw
+
+Synopsis::
+Shift unsigned word left by 2 and add
+
+Mnemonic::
+----
+sh2add.uw xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x3b,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Performs an XLEN-wide addition of two addends. The first addend is xs2.
+The second addend is the unsigned value formed by extracting the least-significant word of xs1
+and shifting it left by 2 places.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1][31:0] << 2);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh2add_uw[`sh2add.uw`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh3add]
+= sh3add
+
+Synopsis::
+Shift left by 3 and add
+
+Mnemonic::
+----
+sh3add xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x33,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Shifts `xs1` to the left by 3 places and adds it to `xs2`.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1] << 3);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh3add[`sh3add`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+| *Zba*
+| any
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:sh3add_uw]
+= sh3add.uw
+
+Synopsis::
+Shift unsigned word left by 3 and add
+
+Mnemonic::
+----
+sh3add.uw xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x3b,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x10,"type":2}]}
+....
+
+Description::
+Performs an XLEN-wide addition of two addends. The first addend is xs2.
+The second addend is the unsigned value formed by extracting the least-significant word of xs1
+and shifting it left by 3 places.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> xs2 = $encoding[24:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs2] pass:[+] (X[xs1][31:0] << 3);
+----
+
+
+Included in::
+--
+xref:#udb-insn-sh3add_uw[`sh3add.uw`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:slli_uw]
+= slli.uw
+
+Synopsis::
+Shift left unsigned word (Immediate)
+
+Mnemonic::
+----
+slli.uw xd, xs1, shamt
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x1b,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":6,"name": "shamt","type":4},{"bits":6,"name": 0x2,"type":2}]}
+....
+
+Description::
+Takes the least-significant word of xs1, zero-extends it, and shifts it
+left by the immediate.
+
+[NOTE]
+This instruction is the same as xref:#udb-insn-slli[`slli`] with `zext.w` performed on xs1 before shifting.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<6> shamt = $encoding[25:20];
+Bits<5> xs1 = $encoding[19:15];
+Bits<5> xd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+X[xd] = X[xs1][31:0] << shamt;
+----
+
+
+Included in::
+--
+xref:#udb-insn-slli_uw[`slli.uw`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+
+<<<
+== IDL Functions
+
+[#udb-function-abort_current_instruction]
+=== abort_current_instruction (builtin)
+Abort the current instruction, and start refetching from $pc.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+None
+
+|===
+
+
+[#udb-function-creg2reg]
+=== creg2reg
+Maps a C register index (_e.g._, `rs1'` in the specification) to an X register index. From the
+specification:
+
+.Registers specified by the three-bit _rs1_&#x2032;, _rs2_&#x2032;, and _rd_&#x2032; fields of the CIW, CL, CS, CA, and CB formats.
+//[cols="20%,10%,10%,10%,10%,10%,10%,10%,10%"]
+[float="center",align="center",cols="1a, 1a",frame="none",grid="none"]
+|===
+|
+[%autowidth,cols="<",frame="none",grid="none",options="noheader"]
+!===
+!RVC Register Number
+!Integer Register Number
+!Integer Register ABI Name
+!Floating-Point Register Number
+!Floating-Point Register ABI Name
+!===
+|
+
+[%autowidth,cols="^,^,^,^,^,^,^,^",options="noheader"]
+!===
+!`000` !`001` !`010` !`011` !`100` !`101` !`110` !`111`
+!`x8` !`x9` !`x10` !`x11` !`x12` !`x13` !`x14`!`x15`
+!`s0` !`s1` !`a0` !`a1` !`a2` !`a3` !`a4`!`a5`
+!`f8` !`f9` !`f10` !`f11` !`f12` !`f13`!`f14` !`f15`
+!`fs0` !`fs1` !`fa0` !`fa1` !`fa2` !`fa3` !`fa4` !`fa5`
+!===
+|===
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Bits<5>`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `Bits<3>`
+! creg_idx
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+return {2'b01, creg_idx};
+----
+
+[#udb-function-exception_handling_mode]
+=== exception_handling_mode
+Returns the target privilege mode that will handle synchronous exception `exception_code`
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `PrivilegeMode`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::M) {
+  return PrivilegeMode::M;
+} else if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::S) && ((xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::HS) || (xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::U))) {
+  if pass:[(]($bits(CSR[xref:#udb-csr-medeleg[CSR[medeleg]]]) & (MXLEN'1 << $bits(exception_code))) != 0) {
+    return PrivilegeMode::HS;
+  } else {
+    return PrivilegeMode::M;
+  }
+} else if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::H) && ((xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::VS) || (xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::VU))) {
+  if pass:[(]($bits(CSR[xref:#udb-csr-medeleg[CSR[medeleg]]]) & (MXLEN'1 << $bits(exception_code))) != 0) {
+    if pass:[(]($bits(CSR[xref:#udb-csr-hedeleg[CSR[hedeleg]]]) & (MXLEN'1 << $bits(exception_code))) != 0) {
+      return PrivilegeMode::VS;
+    } else {
+      return PrivilegeMode::HS;
+    }
+  } else {
+    return PrivilegeMode::M;
+  }
+} else {
+  xref:#udb-function-unreachable[unreachable]pass:[(]);
+}
+----
+
+[#udb-function-implemented?]
+=== implemented? (generated)
+Return true if the implementation supports `extension`.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Boolean`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExtensionName`
+! extension
+!===
+
+|===
+
+
+[#udb-function-implemented_version?]
+=== implemented_version? (generated)
+Return true if the implementation supports `extension` meeting 'version_requirement'.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Boolean`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExtensionName`
+! extension
+! 1
+h! `String`
+! version_requirement
+!===
+
+|===
+
+
+[#udb-function-mode]
+=== mode
+Returns the current active privilege mode.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `PrivilegeMode`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(](!xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::S)) && (!xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::U)) && (!xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::H))) {
+  return PrivilegeMode::M;
+} else {
+  return current_mode;
+}
+----
+
+[#udb-function-mtval_for]
+=== mtval_for
+Given an exception code and a *legal* non-zero value for mtval,
+returns the value to be written in mtval considering implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `XReg`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+! 1
+h! `XReg`
+! tval
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]exception_code == ExceptionCode::Breakpoint) {
+  return REPORT_VA_IN_MTVAL_ON_BREAKPOINT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAddressMisaligned) {
+  return REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+  return REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAddressMisaligned) {
+  return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAccessFault) {
+  return REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAccessFault) {
+  return REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAccessFault) {
+  return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadPageFault) {
+  return REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoPageFault) {
+  return REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionPageFault) {
+  return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::IllegalInstruction) {
+  return REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::SoftwareCheck) {
+  return tval;
+} else {
+  return 0;
+}
+----
+
+[#udb-function-mtval_readonly?]
+=== mtval_readonly?
+Returns whether or not CSR[mtval] is read-only based on implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Boolean`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+return !(REPORT_VA_IN_MTVAL_ON_BREAKPOINT || REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED || REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED || REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED || REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT || REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT || REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT || REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT || REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT || REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT || REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION || REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK || REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK);
+----
+
+[#udb-function-notify_mode_change]
+=== notify_mode_change (builtin)
+Called whenever the privilege mode changes. Downstream tools can use this to hook events.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `PrivilegeMode`
+! new_mode
+! 1
+h! `PrivilegeMode`
+! old_mode
+!===
+
+|===
+
+
+[#udb-function-raise]
+=== raise
+Raise synchronous exception number `exception_code`.
+
+The exception may be imprecise, and will cause execution to enter an
+unpredictable state, if PRECISE_SYNCHRONOUS_EXCEPTIONS is false.
+
+Otherwise, the exception will be precise.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+! 1
+h! `PrivilegeMode`
+! from_mode
+! 2
+h! `XReg`
+! tval
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]!PRECISE_SYNCHRONOUS_EXCEPTIONS) {
+  xref:#udb-function-unpredictable[unpredictable]pass:[(]"Imprecise synchronous exception");
+} else {
+  xref:#udb-function-raise_precise[raise_precise]pass:[(]exception_code, from_mode, tval);
+}
+----
+
+[#udb-function-raise_precise]
+=== raise_precise
+Raise synchronous exception number `exception_code`.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+! 1
+h! `PrivilegeMode`
+! from_mode
+! 2
+h! `XReg`
+! tval
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+PrivilegeMode handling_mode = xref:#udb-function-exception_handling_mode[exception_handling_mode]pass:[(]exception_code);
+if pass:[(]handling_mode == PrivilegeMode::M) {
+  CSR[xref:#udb-csr-mepc[mepc]].xref:#udb-csrfield-mepc-PC[PC] = $pc;
+  if pass:[(]!xref:#udb-function-mtval_readonly?[mtval_readonly?]pass:[(])) {
+    CSR[xref:#udb-csr-mtval[mtval]].xref:#udb-csrfield-mtval-VALUE[VALUE] = xref:#udb-function-mtval_for[mtval_for]pass:[(]exception_code, tval);
+  }
+  $pc = {CSR[xref:#udb-csr-mtvec[mtvec]].xref:#udb-csrfield-mtvec-BASE[BASE], 2'b00};
+  CSR[xref:#udb-csr-mcause[mcause]].xref:#udb-csrfield-mcause-INT[INT] = 1'b0;
+  CSR[xref:#udb-csr-mcause[mcause]].xref:#udb-csrfield-mcause-CODE[CODE] = $bits(exception_code);
+  if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::H) && CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-H[H] == 1) {
+    CSR[xref:#udb-csr-mtval2[mtval2]].xref:#udb-csrfield-mtval2-VALUE[VALUE] = 0;
+    CSR[xref:#udb-csr-mtinst[mtinst]].xref:#udb-csrfield-mtinst-VALUE[VALUE] = 0;
+    if pass:[(]from_mode == PrivilegeMode::VU || from_mode == PrivilegeMode::VS) {
+      if pass:[(]MXLEN == 32) {
+        CSR[xref:#udb-csr-mstatush[mstatush]].xref:#udb-csrfield-mstatush-MPV[MPV] = 1;
+      } else {
+        CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-MPV[MPV] = 1;
+      }
+    } else {
+      if pass:[(]MXLEN == 32) {
+        CSR[xref:#udb-csr-mstatush[mstatush]].xref:#udb-csrfield-mstatush-MPV[MPV] = 0;
+      } else {
+        CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-MPV[MPV] = 0;
+      }
+    }
+  }
+  CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-MPP[MPP] = $bits(from_mode);
+} else if pass:[(]CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-S[S] == 1 && (handling_mode == PrivilegeMode::S)) {
+  CSR[xref:#udb-csr-sepc[sepc]].xref:#udb-csrfield-sepc-PC[PC] = $pc;
+  if pass:[(]!xref:#udb-function-stval_readonly?[stval_readonly?]pass:[(])) {
+    CSR[xref:#udb-csr-stval[stval]].xref:#udb-csrfield-stval-VALUE[VALUE] = xref:#udb-function-stval_for[stval_for]pass:[(]exception_code, tval);
+  }
+  $pc = {CSR[xref:#udb-csr-stvec[stvec]].xref:#udb-csrfield-stvec-BASE[BASE], 2'b00};
+  CSR[xref:#udb-csr-scause[scause]].xref:#udb-csrfield-scause-INT[INT] = 1'b0;
+  CSR[xref:#udb-csr-scause[scause]].xref:#udb-csrfield-scause-CODE[CODE] = $bits(exception_code);
+  CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-SPP[SPP] = $bits(from_mode)[0];
+  if pass:[(]CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-H[H] == 1) {
+    CSR[xref:#udb-csr-htval[htval]].xref:#udb-csrfield-htval-VALUE[VALUE] = 0;
+    CSR[xref:#udb-csr-htinst[htinst]].xref:#udb-csrfield-htinst-VALUE[VALUE] = 0;
+    CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-SPV[SPV] = $bits(from_mode)[2];
+    if pass:[(]from_mode == PrivilegeMode::VU || from_mode == PrivilegeMode::VS) {
+      CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-SPV[SPV] = 1;
+      if pass:[(]((exception_code == ExceptionCode::Breakpoint) && (REPORT_VA_IN_STVAL_ON_BREAKPOINT)) || ((exception_code == ExceptionCode::LoadAddressMisaligned) && (REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED)) || ((exception_code == ExceptionCode::StoreAmoAddressMisaligned) && (REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED)) || ((exception_code == ExceptionCode::InstructionAddressMisaligned) && (REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED)) || ((exception_code == ExceptionCode::LoadAccessFault) && (REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT)) || ((exception_code == ExceptionCode::StoreAmoAccessFault) && (REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT)) || ((exception_code == ExceptionCode::InstructionAccessFault) && (REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT)) || ((exception_code == ExceptionCode::LoadPageFault) && (REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT)) || ((exception_code == ExceptionCode::StoreAmoPageFault) && (REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT)) || ((exception_code == ExceptionCode::InstructionPageFault) && (REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT))) {
+        CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-GVA[GVA] = 1;
+      } else {
+        CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-GVA[GVA] = 0;
+      }
+      CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-SPVP[SPVP] = $bits(from_mode)[0];
+    } else {
+      CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-SPV[SPV] = 0;
+      CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-GVA[GVA] = 0;
+    }
+  }
+} else if pass:[(]CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-H[H] == 1 && (handling_mode == PrivilegeMode::VS)) {
+  CSR[xref:#udb-csr-vsepc[vsepc]].xref:#udb-csrfield-vsepc-PC[PC] = $pc;
+  if pass:[(]!xref:#udb-function-vstval_readonly?[vstval_readonly?]pass:[(])) {
+    CSR[xref:#udb-csr-vstval[vstval]].xref:#udb-csrfield-vstval-VALUE[VALUE] = xref:#udb-function-vstval_for[vstval_for]pass:[(]exception_code, tval);
+  }
+  $pc = {CSR[xref:#udb-csr-vstvec[vstvec]].xref:#udb-csrfield-vstvec-BASE[BASE], 2'b00};
+  CSR[xref:#udb-csr-vscause[vscause]].xref:#udb-csrfield-vscause-INT[INT] = 1'b0;
+  CSR[xref:#udb-csr-vscause[vscause]].xref:#udb-csrfield-vscause-CODE[CODE] = $bits(exception_code);
+  CSR[xref:#udb-csr-vsstatus[vsstatus]].xref:#udb-csrfield-vsstatus-SPP[SPP] = $bits(from_mode)[0];
+}
+xref:#udb-function-set_mode[set_mode]pass:[(]handling_mode);
+xref:#udb-function-abort_current_instruction[abort_current_instruction]pass:[(]);
+----
+
+[#udb-function-refresh_pending_interrupts]
+=== refresh_pending_interrupts
+refreshes the calculation of a pending interrupt
+
+needs to be called after any state update that could change a pending interrupt. This includes:
+   - CSR[mip]
+   - CSR[mie]
+   - CSR[mstatus].MIE
+   - CSR[mstatus].SIE
+   - CSR[vsstatus].SIE
+   - CSR[mideleg]
+   - CSR[sideleg]
+   - CSR[hideleg]
+   - CSR[hvip]
+   - CSR[hgeip]
+   - CSR[hgeie]
+   - mode changes
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<MXLEN> pending_ints = CSR[xref:#udb-csr-mip[CSR[mip]]].sw_read() & $bits(CSR[xref:#udb-csr-mie[CSR[mie]]]);
+if pass:[(]pending_ints == 0) {
+  pending_and_enabled_interrupts = 0;
+  return ;
+}
+Boolean HAS_MIDELEG = xref:#udb-function-implemented_version?[implemented_version?]pass:[(]ExtensionName::S, "<= 1.9.1") || (xref:#udb-function-implemented_version?[implemented_version?]pass:[(]ExtensionName::S, "> 1.9.1") && xref:#udb-function-implemented_version?[implemented_version?]pass:[(]ExtensionName::Sm, "> 1.9.1"));
+Bits<MXLEN> mmode_enabled_ints = ((xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::M) && (CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-MIE[MIE] == 1'b0)) ? 0 : ($bits(CSR[xref:#udb-csr-mie[CSR[mie]]]) & (HAS_MIDELEG ? ~$bits(CSR[xref:#udb-csr-mideleg[CSR[mideleg]]]) : ~MXLEN'0));
+Bits<MXLEN> mmode_pending_and_enabled = pending_ints & mmode_enabled_ints;
+if pass:[(]mmode_pending_and_enabled != 0) {
+  pending_and_enabled_interrupts = mmode_pending_and_enabled;
+  return ;
+}
+if pass:[(]CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-S[S] == 1'b1) {
+  Bits<MXLEN> smode_enabled_ints = ((xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::M) || (CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-SIE[SIE] == 1'b0)) ? 0 : $bits(CSR[xref:#udb-csr-mie[CSR[mie]]]) & ($bits(CSR[xref:#udb-csr-mideleg[CSR[mideleg]]]));
+  Bits<MXLEN> smode_pending_and_enabled = pending_ints & smode_enabled_ints;
+  if pass:[(]smode_pending_and_enabled != 0) {
+    pending_and_enabled_interrupts = smode_pending_and_enabled;
+    return ;
+  }
+}
+pending_and_enabled_interrupts = 0;
+----
+
+[#udb-function-reserved_instruction]
+=== reserved_instruction
+Either raises an IllegalInstruction exception or enters unpredictable state,
+depending on the setting of the TRAP_ON_UNIMPLEMENTED_INSTRUCTION parameter.
+
+This should be called when an instruction is architecturally defined but
+has been disabled at runtime (_e.g._, by clearing misa.A).
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `Bits<INSTR_ENC_SIZE>`
+! encoding
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]TRAP_ON_UNIMPLEMENTED_INSTRUCTION) {
+  xref:#udb-function-raise[raise]pass:[(]ExceptionCode::IllegalInstruction, xref:#udb-function-mode[mode]pass:[(]), encoding);
+} else {
+  xref:#udb-function-unpredictable[unpredictable]pass:[(]"Unimplemented instruction that does not trap");
+}
+----
+
+[#udb-function-set_mode]
+=== set_mode
+Set the current privilege mode to `new_mode`
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `PrivilegeMode`
+! new_mode
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]new_mode != current_mode) {
+  xref:#udb-function-notify_mode_change[notify_mode_change]pass:[(]new_mode, current_mode);
+  current_mode = new_mode;
+  xref:#udb-function-refresh_pending_interrupts[refresh_pending_interrupts]pass:[(]);
+}
+----
+
+[#udb-function-stval_for]
+=== stval_for
+Given an exception code and a *legal* non-zero value for stval,
+returns the value to be written in stval considering implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `XReg`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+! 1
+h! `XReg`
+! tval
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]exception_code == ExceptionCode::Breakpoint) {
+  return REPORT_VA_IN_STVAL_ON_BREAKPOINT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAddressMisaligned) {
+  return REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+  return REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAddressMisaligned) {
+  return REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAccessFault) {
+  return REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAccessFault) {
+  return REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAccessFault) {
+  return REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadPageFault) {
+  return REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoPageFault) {
+  return REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionPageFault) {
+  return REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::IllegalInstruction) {
+  return REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::SoftwareCheck) {
+  return tval;
+} else {
+  return 0;
+}
+----
+
+[#udb-function-stval_readonly?]
+=== stval_readonly?
+Returns whether or not CSR[stval] is read-only based on implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Boolean`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::S)) {
+  return !(REPORT_VA_IN_STVAL_ON_BREAKPOINT || REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED || REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED || REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED || REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT || REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT || REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT || REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT || REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT || REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT || REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION || REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK || REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK);
+} else {
+  return true;
+}
+----
+
+[#udb-function-unpredictable]
+=== unpredictable (builtin)
+Indicate that the hart has reached a state that is unpredictable because the
+RISC-V spec allows multiple behaviors. Generally, this will be a fatal condition
+to any emulation, since it is unclear what to do next.
+
+The single argument _why_ is a string describing why the hart entered an
+unpredictable state.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `String`
+! why
+!===
+
+|===
+
+
+[#udb-function-unreachable]
+=== unreachable (builtin)
+Indicate that the IDL line should be unreachable.
+
+If this function is called, it represents a bug in the IDL code.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+None
+
+|===
+
+
+[#udb-function-vstval_for]
+=== vstval_for
+Given an exception code and a *legal* non-zero value for vstval,
+returns the value to be written in vstval considering implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `XReg`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `ExceptionCode`
+! exception_code
+! 1
+h! `XReg`
+! tval
+!===
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]exception_code == ExceptionCode::Breakpoint) {
+  return REPORT_VA_IN_VSTVAL_ON_BREAKPOINT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAddressMisaligned) {
+  return REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+  return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAddressMisaligned) {
+  return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadAccessFault) {
+  return REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoAccessFault) {
+  return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionAccessFault) {
+  return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::LoadPageFault) {
+  return REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::StoreAmoPageFault) {
+  return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::InstructionPageFault) {
+  return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::IllegalInstruction) {
+  return REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+} else if pass:[(]exception_code == ExceptionCode::SoftwareCheck) {
+  return tval;
+} else {
+  return 0;
+}
+----
+
+[#udb-function-vstval_readonly?]
+=== vstval_readonly?
+Returns whether or not CSR[vstval] is read-only based on implementation options
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Boolean`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::H)) {
+  return !(REPORT_VA_IN_VSTVAL_ON_BREAKPOINT || REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED || REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED || REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED || REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT || REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT || REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT || REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT || REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT || REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT || REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION || REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK || REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK);
+} else {
+  return true;
+}
+----
+
+
