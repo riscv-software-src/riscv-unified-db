@@ -25,6 +25,24 @@ class _StructuralBases:
         self._solver: ConditionSolver | None = None
         self._cache: dict[str, int | None] = {}
         self._compiler = None
+        # Results of compiled field functions, which depend only on the configuration.
+        self.field_results: dict[tuple[str, str, str, int | None], tuple[bool, object]] = {}
+
+    def field_result(
+        self, csr_name: str, field_name: str, behavior: str, base: int | None, compute: Any
+    ) -> object:
+        key = (csr_name, field_name, behavior, base)
+        cached = self.field_results.get(key)
+        if cached is None:
+            try:
+                cached = (True, compute())
+            except IdlValueUnknown as error:
+                cached = (False, error)
+            self.field_results[key] = cached
+        ok, result = cached
+        if not ok:
+            raise result
+        return result
 
     @property
     def compiler(self):
@@ -157,6 +175,11 @@ class _CsrFieldAdapter:
     def type(self, base: int | None) -> str | None:
         if "type" in self._data:
             return self._data["type"]
+        return self._parent._bases.field_result(
+            self._parent.name, self.name, "type()", base, lambda: self._compiled_type(base)
+        )
+
+    def _compiled_type(self, base: int | None) -> str:
         compiled = self._parent._bases.compiler.compile_field(
             self._parent.name, self.name, "type()", effective_xlen=base
         )
@@ -178,6 +201,11 @@ class _CsrFieldAdapter:
     def reset_value(self) -> object:
         if "reset_value" in self._data:
             return self._data["reset_value"]
+        return self._parent._bases.field_result(
+            self._parent.name, self.name, "reset_value()", None, self._compiled_reset_value
+        )
+
+    def _compiled_reset_value(self) -> object:
         from .idl.ast import Id
 
         compiled = self._parent._bases.compiler.compile_field(

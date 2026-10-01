@@ -406,6 +406,30 @@ def test_structural_csr_values_are_exact_and_dynamic_types_require_genuine_enum_
     assert field.reset_value == 1
 
 
+def test_compiled_csr_field_results_are_computed_once_per_environment(monkeypatch):
+    database = _database(
+        {
+            "csr/dynamic.yaml": _csr(
+                "dynamic",
+                fields={"FIELD": {"location": 0, "type": "RO", "reset_value()": "return 1;"}},
+            ),
+        }
+    )
+    _, _, csrs = _adapted_csrs(database)
+    compiler = csrs["dynamic"]._bases.compiler
+    calls = []
+    original = compiler.compile_field
+
+    def counting(*args, **kwargs):
+        calls.append(args)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(compiler, "compile_field", counting)
+    assert csrs["dynamic"].fields[0].reset_value == 1
+    assert csrs["dynamic"].fields[0].reset_value == 1
+    assert calls == [("dynamic", "FIELD", "reset_value()")]
+
+
 def _real_architecture(name):
     root = Path(__file__).resolve().parents[2]
     configuration = Configuration.from_file(root / "cfgs" / f"{name}.yaml")
