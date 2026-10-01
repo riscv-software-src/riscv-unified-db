@@ -26,10 +26,12 @@ class WriteAnalysis:
     def __init__(self, node: ast.Node, symtab: SymbolTable):
         self.node = clone(node)
         self.symtab = symtab
+        self.scoped = {name for scope in symtab.keys_pretty()[1:] for name in scope}
+        # Global originals are added on first use, which avoids copying every
+        # global binding out of the shared frozen scope.
         self.originals = {
             (0, name): binding
-            for scope in symtab.keys_pretty()
-            for name in scope
+            for name in self.scoped
             if isinstance(binding := symtab.get(name), Var)
         }
         self.changed: set[Key] = set()
@@ -50,6 +52,20 @@ class WriteAnalysis:
             for key in self.originals.keys() & unknown:
                 table.get(key[1]).value = None
 
+        def key_of(name: str, binding: Var) -> Key:
+            key = keys.get(id(binding))
+            if key is None and name not in self.scoped and binding is table.get_global(name):
+                key = (0, name)
+                original = self.symtab.get(name)
+                if not isinstance(original, Var):
+                    raise KeyError(id(binding))
+                self.originals[key] = original
+                keys[id(binding)] = key
+                bindings[id(binding)] = binding
+                if unknown and key in unknown:
+                    binding.value = None
+            return keys[id(binding)]
+
         def write(current: ast.Node, target: ast.Node) -> None:
             root = _root(target)
             if not isinstance(root, ast.Id):
@@ -58,7 +74,7 @@ class WriteAnalysis:
             if binding is None:
                 root.type_error(f"No symbol '{root.name}'")
             if isinstance(binding, Var):
-                action(current, target, keys[id(binding)], binding, table)
+                action(current, target, key_of(root.name, binding), binding, table)
 
         def visit(current: ast.Node) -> None:
             if isinstance(current, (ast.FunctionBody, ast.IfBody, ast.ForLoop)):
@@ -77,7 +93,7 @@ class WriteAnalysis:
                 dependencies = set()
                 if isinstance(current, ast.VariableDeclarationWithInitialization):
                     dependencies = {
-                        keys[id(binding)]
+                        key_of(child.name, binding)
                         for child in walk(current.rhs)
                         if isinstance(child, ast.Id)
                         and isinstance(binding := table.get(child.name), Var)

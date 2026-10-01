@@ -172,7 +172,7 @@ from __future__ import annotations
 
 import copy
 import re
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
 
@@ -535,6 +535,9 @@ def _unchanged(value: object, original: object) -> bool:
     )
 
 
+_MISSING = object()
+
+
 class _GlobalScope:
     """Global bindings that are copied from an immutable base on first access.
 
@@ -637,6 +640,33 @@ class _GlobalScope:
         names = [name for name in base_names if name not in own and name not in deleted]
         names.extend(name for name, value in own.items() if predicate(value))
         return names
+
+    def touched(self) -> list[str]:
+        """Names whose binding this scope has copied, replaced or added."""
+        return list(self._own)
+
+    def state_key(self, describe: Callable[[object], Hashable]) -> Hashable:
+        info = self._info
+        token = info.get("token")
+        if token is None:
+            token = info["token"] = object()
+        base_states = info.get(describe)
+        if base_states is None:
+            base_states = info[describe] = {}
+        base = self._base
+        diffs = []
+        for name, value in self._own.items():
+            state = describe(value)
+            if name in base:
+                base_state = base_states.get(name, _MISSING)
+                if base_state is _MISSING:
+                    base_state = base_states[name] = describe(base[name])
+                if state == base_state:
+                    continue
+            diffs.append((name, state))
+        diffs.extend((name, _MISSING) for name in self._deleted)
+        diffs.sort(key=lambda item: item[0])
+        return token, tuple(diffs)
 
     def freeze(self) -> None:
         """Make the current bindings the shared base of this table and its clones."""
@@ -980,6 +1010,23 @@ class SymbolTable:
         properties, so results for shared unmodified bindings can be reused.
         """
         return self._scopes[0].names_where(predicate)  # type: ignore[attr-defined]
+
+    def touched_global_names(self) -> list[str]:
+        """Global names this table has read, replaced or added since cloning.
+
+        Any other global binding is still identical to the shared frozen base
+        and to every other table cloned from the same source.
+        """
+        return self._scopes[0].touched()  # type: ignore[attr-defined]
+
+    def global_state_key(self, describe: Callable[[object], Hashable]) -> Hashable:
+        """A key that is equal for two tables only when their global states are equal.
+
+        Tables cloned from the same frozen source with equal states get equal
+        keys. ``describe`` maps a binding to a hashable state and must be a pure,
+        long-lived function (results for the shared base are cached on it).
+        """
+        return self._scopes[0].state_key(describe)  # type: ignore[attr-defined]
 
     def freeze_globals(self) -> None:
         """Share the current global bindings with later clones without copying them.

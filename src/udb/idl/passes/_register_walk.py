@@ -10,7 +10,7 @@ from collections.abc import Iterator
 from .. import ast
 from ..errors import IdlValueUnknown
 from ..symbols import SymbolTable, Var
-from ._tree import clone, isolated_symtab
+from ._tree import clone, isolated_symtab, merge_names
 from ._writes import written_names
 
 
@@ -63,7 +63,7 @@ def register_nodes(node: ast.Node, symtab: SymbolTable) -> Iterator[tuple[ast.No
             branch = isolated_symtab(local)
             yield from visit(current.final_else_body, branch)
             alternatives.append(branch)
-            for name in {name for scope in local.keys_pretty() for name in scope}:
+            for name in merge_names(local, alternatives):
                 binding = local.get(name)
                 if isinstance(binding, Var):
                     values = [branch.get(name).value for branch in alternatives]

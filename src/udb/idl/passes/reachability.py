@@ -12,7 +12,7 @@ from typing import Any
 from .. import ast
 from ..errors import IdlValueUnknown
 from ..symbols import SymbolTable, Var
-from ._tree import clone, isolated_symtab
+from ._tree import clone, isolated_symtab, merge_names
 
 _UNKNOWN = object()
 
@@ -33,6 +33,10 @@ def _hashable(value: Any) -> Hashable:
     if isinstance(value, dict):
         return tuple(sorted((key, _hashable(item)) for key, item in value.items()))
     return (type(value).__name__, value)
+
+
+def _global_state(binding: Any) -> Hashable:
+    return ("var", _hashable(binding.value)) if isinstance(binding, Var) else ("other",)
 
 
 def function_definition(call: ast.FunctionCallExpression, symtab: SymbolTable) -> ast.FunctionDef:
@@ -118,11 +122,7 @@ class _Graph:
         if definition.builtin or definition.generated or definition.body is None:
             return
         body_symtab, values = _arguments(node, definition, symtab)
-        globals_ = tuple(
-            (name, _hashable(binding.value))
-            for name in sorted(body_symtab.keys_pretty()[0])
-            if isinstance(binding := body_symtab.get_global(name), Var)
-        )
+        globals_ = body_symtab.global_state_key(_global_state)
         key = (
             "exceptions" if self.exceptions else "functions",
             id(symtab._env),
@@ -169,7 +169,7 @@ class _Graph:
                 alternative = isolated_symtab(symtab)
                 self.visit(node.final_else_body, alternative, vertex)
                 alternatives.append(alternative)
-            for name in {name for scope in symtab.keys_pretty() for name in scope}:
+            for name in merge_names(symtab, alternatives):
                 binding = symtab.get(name)
                 if isinstance(binding, Var):
                     values = [alternative.get(name).value for alternative in alternatives]
@@ -194,9 +194,10 @@ class _Graph:
                     _nullify(action, symtab)
         elif isinstance(node, ast.ForLoop):
             local = isolated_symtab(symtab)
+            scoped = {name for scope in symtab.keys_pretty()[1:] for name in scope}
             bindings = [
                 (binding, local.get(name))
-                for name in {name for scope in symtab.keys_pretty() for name in scope}
+                for name in scoped
                 if isinstance(binding := symtab.get(name), Var)
             ]
             local.push(node)
@@ -210,6 +211,12 @@ class _Graph:
                 self.visit(child, local, vertex)
 
             _nullify(node, local, loop_carried=True)
+            # Globals the loop never touched still equal the caller's values.
+            bindings.extend(
+                (binding, local.get_global(name))
+                for name in local.touched_global_names()
+                if name not in scoped and isinstance(binding := symtab.get(name), Var)
+            )
             for original, copied in bindings:
                 if local.get(original.name) is copied:
                     original.value = copied.value
