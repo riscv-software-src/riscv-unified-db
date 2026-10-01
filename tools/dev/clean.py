@@ -5,18 +5,13 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 from pathlib import Path
 
 from . import container
-from .common import ROOT, entrypoint
+from .common import ROOT, DevError, entrypoint
 
-CLEAN_PATHS = (
-    "gen",
-    ".stamps",
-    "tests/isa/build",
-    "tests/isa/build32",
-    "tests/isa/build64",
-)
+CLEAN_PATHS = ("gen", ".stamps")
 CLOBBER_PATHS = (".venv", "node_modules", ".home", ".cache")
 
 
@@ -27,13 +22,31 @@ def _remove(path: Path) -> None:
         shutil.rmtree(path)
 
 
-def clean(root: Path = ROOT) -> None:
+def isa_clean_commands(root: Path = ROOT) -> tuple[tuple[str, ...], ...]:
+    tests = str(root / "tests/isa")
+    return (
+        ("make", "-C", tests, "clean"),
+        ("make", "-C", tests, "XLEN=32", "clean"),
+    )
+
+
+def clean(root: Path = ROOT) -> int:
     for relative in CLEAN_PATHS:
         _remove(root / relative)
+    for command in isa_clean_commands(root):
+        try:
+            result = subprocess.run(command, cwd=root, check=False)
+        except OSError as error:
+            raise DevError(f"failed to run {' '.join(command)}: {error}") from error
+        if result.returncode:
+            return result.returncode
+    return 0
 
 
 def clobber(root: Path = ROOT, *, remove_container: bool = False) -> int:
-    clean(root)
+    status = clean(root)
+    if status:
+        return status
     for relative in CLOBBER_PATHS:
         _remove(root / relative)
     if remove_container:
@@ -47,8 +60,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--container", action="store_true")
     args = parser.parse_args(argv)
     if args.action == "clean":
-        clean()
-        return 0
+        return clean()
     return clobber(remove_container=args.container)
 
 

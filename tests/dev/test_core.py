@@ -8,6 +8,7 @@ import os
 import subprocess
 import tomllib
 from pathlib import Path
+from types import SimpleNamespace
 
 from tools.dev import bootstrap, clean, container, doctor
 
@@ -31,7 +32,10 @@ def test_toolchain_auto_selection(monkeypatch, tmp_path: Path) -> None:
     assert bootstrap.choose_toolchain("auto", tmp_path) == "none"
 
 
-def test_clean_and_clobber_preserve_toolchain(tmp_path: Path) -> None:
+def test_clean_and_clobber_preserve_toolchain(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        clean.subprocess, "run", lambda *_args, **_kwargs: SimpleNamespace(returncode=0)
+    )
     for relative in (*clean.CLEAN_PATHS, *clean.CLOBBER_PATHS):
         path = tmp_path / relative
         path.mkdir(parents=True)
@@ -44,6 +48,22 @@ def test_clean_and_clobber_preserve_toolchain(tmp_path: Path) -> None:
         (tmp_path / relative).exists() for relative in (*clean.CLEAN_PATHS, *clean.CLOBBER_PATHS)
     )
     assert (tmp_path / ".toolchain-local").is_file()
+
+
+def test_clean_constructs_legacy_isa_make_commands(monkeypatch, tmp_path: Path) -> None:
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(command, **_kwargs):
+        calls.append(tuple(command))
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(clean.subprocess, "run", fake_run)
+
+    assert clean.clean(tmp_path) == 0
+    assert calls == [
+        ("make", "-C", str(tmp_path / "tests/isa"), "clean"),
+        ("make", "-C", str(tmp_path / "tests/isa"), "XLEN=32", "clean"),
+    ]
 
 
 def test_container_command_construction(monkeypatch, tmp_path: Path) -> None:
