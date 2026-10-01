@@ -141,11 +141,6 @@ interface Generator {
 
 const generators: Generator[] = [
   {
-    name: 'PRM PDF',
-    description: 'Platform Reference Manual in PDF format',
-    link: '/docs/generators/prm-pdf',
-  },
-  {
     name: 'C Headers',
     description: 'Instruction encoding and CSR definitions',
     link: '/docs/generators/c-header',
@@ -156,13 +151,8 @@ const generators: Generator[] = [
     link: '/docs/generators/sverilog',
   },
   {
-    name: 'ISA Explorer',
-    description: 'Interactive instruction reference tables',
-    link: '/docs/generators/isa-explorer',
-  },
-  {
     name: 'Documentation',
-    description: 'Extension and manual generation',
+    description: 'Extension documentation and PDF generation',
     link: '/docs/generators/overview',
   },
 ];

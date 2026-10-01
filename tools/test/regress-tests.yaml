@@ -330,12 +330,6 @@ tests:
       - name: Run sorbet checks
         run: ./do test:sorbet
 
-  regress-ext-explorer:
-    ci_stage: pr
-    test:
-      - name: Generate ISA Explorer browser artifacts
-        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer --skip 6
-
   regress-idl-typecheck-smoke:
     ci_stage: pr
     tags:
@@ -368,43 +362,11 @@ tests:
       - name: Checking for conflicts in instruction encodings
         run: ./do test:inst_encodings
 
-  regress-gen-isa-manual:
-    ci_stage: pr
-    gh_pre:
-      - name: checkout ISA manual
-        run: git submodule update --init ext/riscv-isa-manual
-      - name: Mark isa-manual as safe
-        # Run in docker to get git config set correctly for submodules
-        run: ./bin/bash -c "git config --local --add safe.directory '*'"
-    test:
-      - name: Generate HTML ISA manual
-        run: ./bin/generate manual -c regress -v isa_regress -f html
-
-  regress-gen-instruction-appendix:
-    ci_stage: pr
-    test:
-      - name: Generate instruction appendix asciidoc
-        run: ./do gen:instruction_appendix_adoc
-      - name: Check instruction appendix result
-        run: ./do test:instruction_appendix
-
-  regress-cfg-manual:
-    ci_stage: pr
-    test:
-      - name: Generate HTML ISA manual
-        run: ./do gen:html[example_rv64_with_overlay]
-
   regress-gen-ext-pdf:
     ci_stage: pr
     test:
       - name: Generate Xqci extension PDF
         run: ./bin/ruby tools/scripts/gen_xqci.rb
-
-  regress-gen-profile:
-    ci_stage: pr
-    test:
-      - name: Generate extension PDF
-        run: ./do gen:profile_release_pdf[RVI20]
 
   regress-profile-strict-cfg:
     ci_stage: pr
@@ -527,12 +489,6 @@ tests:
       - name: Run vector riscv-tests
         run: ./do test:riscv_vector_tests CONFIG=rv64-vector IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
 
-  regress-profile-extensions:
-    ci_stage: pr
-    test:
-      - name: Check profile_extensions
-        run: ./do test:profile_extensions
-
   regress-build-udb-gem:
     ci_stage: pr
     tags:
@@ -582,98 +538,6 @@ tests:
         run: ./do gen:resolved_arch COMPILE_IDL=1
       - name: Tar unconfig
         run: tar czf gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_ && mv gen/resolved_spec/_resolved_spec.tar.gz gen/resolved_spec/_/resolved_spec.tar.gz
-
-  build-isa-explorer-csr:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: isa-explorer-csr
-        path: gen/isa_explorer/browser
-    tags: [artifacts]
-    test:
-      - name: Generate ISA Explorer CSR
-        run: ./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer/browser
-
-  build-isa-explorer-ext:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: isa-explorer-ext
-        path: gen/isa_explorer/browser
-    tags: [artifacts]
-    test:
-      - name: Generate ISA Explorer Extension
-        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer/browser
-
-  build-isa-explorer-inst:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: isa-explorer-inst
-        path: gen/isa_explorer/browser
-    tags: [artifacts]
-    test:
-      - name: Generate ISA Explorer Instruction
-        run: ./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer/browser
-
-  build-isa-explorer-spreadsheet:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: isa-explorer-spreadsheet
-        path: gen/isa_explorer/spreadsheet
-    test:
-      - name: Generate ISA Explorer Spreadsheet
-        run: ./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer/spreadsheet
-
-  build-html-isa-manual:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: isa-html-manual
-        path: gen/manual/isa/top/all/html
-    tags: [artifacts]
-    test:
-      - name: Generate HTML ISA manual
-        run: ./bin/generate manual -v all -f html
-
-  build-html-cfg-isa-manual:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: cfg-html-manual
-        path: gen/cfg_html_doc/example_rv64_with_overlay/html
-    tags: [artifacts]
-    test:
-      - name: Generate HTML ISA manual for a config
-        run: ./do gen:html[example_rv64_with_overlay]
-
-  build-instruction-appendix:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: inst-appendix
-        path: gen/instructions_appendix/instructions_appendix.pdf
-    gh_pre:
-      - name: checkout docs resources
-        run: git submodule update --init ext/docs-resources
-    tags: [artifacts]
-    test:
-      - name: Generate instruction appendix
-        run: ./do gen:instruction_appendix
-
-  build-profile:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: ${{ matrix.profile }}
-        path: gen/profile/pdf/${{ matrix.profile }}ProfileRelease.pdf
-    strategy:
-      matrix:
-        profile:
-          - RVI20
-          - RVA20
-          - RVA22
-          - RVA23
-          - RVB23
-    tags: [artifacts]
-    test:
-      - name: Generate ${{ matrix.profile }}
-        run: |
-          PROFILE_NAME="${{ matrix.profile }}"
-          ./do gen:profile_release_pdf[${PROFILE_NAME}]
 
   regress-schema-versions:
     ci_stage: pr

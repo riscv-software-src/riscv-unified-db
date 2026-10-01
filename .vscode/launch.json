@@ -100,69 +100,6 @@
       "askParameters": false
     },
     {
-      "type": "rdbg",
-      "name": "portfolios",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "portfolios",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "MockProfile",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:profile_release_pdf[Mock]",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "RVI20",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:profile_release_pdf[RVI20]",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "ISA Explorer Browser Extension Generator",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:isa_explorer_browser_ext",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "ISA Explorer Browser Instruction Generator",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:isa_explorer_browser_inst",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "ISA Explorer Browser CSR Generator",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:isa_explorer_browser_csr",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "ISA Explorer Spreadsheet Generator",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:isa_explorer_spreadsheet",
-      "args": [],
-      "askParameters": false
-    },
-    {
       "type": "cppdbg",
       "name": "Run MC100-32 iss",
       "request": "launch",

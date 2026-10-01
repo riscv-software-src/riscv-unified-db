@@ -39,7 +39,6 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-progressbar"
   s.add_dependency "tty-table"
   s.add_dependency "udb", "= 0.1.17"
-  s.add_dependency "write_xlsx"
 
   s.add_development_dependency "mocha"
   s.add_development_dependency "sorbet"

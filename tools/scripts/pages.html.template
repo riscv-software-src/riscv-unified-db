@@ -50,60 +50,6 @@
 
       <div class="row">
         <div class="col">
-          <h3>ISA Manual</h3>
-          <ul>
-            <li><a href="@@PAGES_URL@@/manual/html/index.html">Generated HTML ISA manuals, all versions</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h3>Instruction Appendix</h3>
-          <ul>
-            <li><a href="@@PAGES_URL@@/pdfs/instructions_appendix.pdf">Generated PDF appendix of all instructions</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h3>RISC-V ISA Explorer</h3>
-          Candidate replacement for <a href="https://docs.google.com/spreadsheets/d/1A40dfm0nnn2-tgKIhdi3UYQ1GBr8iRiV2edFowvgp7E/edit?gid=1157775000">Profiles & Bases & Extensions Google Sheet</a>
-          using data in riscv-unified-db.
-          <ul>
-            <li><a href="@@PAGES_URL@@/isa_explorer/ext-explorer.html">Extensions</a></li>
-            <li><a href="@@PAGES_URL@@/isa_explorer/inst-explorer.html">Instructions</a></li>
-            <li><a href="@@PAGES_URL@@/isa_explorer/csr-explorer.html">CSRs</a></li>
-            <li><a href="@@PAGES_URL@@/isa_explorer/isa_explorer.xlsx">Excel version (includes Extensions, Instructions, CSRs)</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h3>Profile Releases</h3>
-          <ul>
-            <li><a href="@@PAGES_URL@@/pdfs/RVI20ProfileRelease.pdf">RVI20 Profile Release</a></li>
-            <li><a href="@@PAGES_URL@@/pdfs/RVA20ProfileRelease.pdf">RVA20 Profile Release</a></li>
-            <li><a href="@@PAGES_URL@@/pdfs/RVA22ProfileRelease.pdf">RVA22 Profile Release</a></li>
-            <li><a href="@@PAGES_URL@@/pdfs/RVA23ProfileRelease.pdf">RVA23 Profile Release</a></li>
-            <li><a href="@@PAGES_URL@@/pdfs/RVB23ProfileRelease.pdf">RVB23 Profile Release</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h3>Configuration-specific documentation</h3>
-          <ul>
-            <li><a href="@@PAGES_URL@@/example_cfg/html/index.html">Architecture documentation for example RV64 config</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
           <h3>UDB Documentation Site (Preview)</h3>
           <ul>
             <li><a href="@@PAGES_URL@@/docs-preview/">Documentation site built with Docusaurus</a></li>

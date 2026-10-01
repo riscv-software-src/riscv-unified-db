@@ -416,13 +416,6 @@ module Udb
       end
     end
 
-    # parse description field with asciidoctor, and return the HTML result
-    #
-    # @return [String] Parsed description in HTML
-    def description_html
-      Asciidoctor.convert description
-    end
-
     # return list of extension requirements that must be implemented for this Csr to be defined
     #
     # will not include any extension requirements that are conditionally required

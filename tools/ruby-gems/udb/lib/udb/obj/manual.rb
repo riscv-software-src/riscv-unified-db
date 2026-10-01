@@ -4,8 +4,6 @@
 
 # frozen_string_literal: true
 
-require "asciidoctor"
-
 require_relative "database_obj"
 
 module Udb
@@ -41,12 +39,6 @@ module Udb
 
     def name
       @path.basename(".adoc").to_s
-    end
-
-    def title
-      return @title unless @title.nil?
-
-      @title = (Asciidoctor.load File.read(fullpath).scrub).doctitle.encode("US-ASCII")
     end
 
     def fullpath

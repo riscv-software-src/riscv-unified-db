@@ -691,16 +691,6 @@ jobs:
       - name: Run sorbet checks
         run: ./do test:sorbet
 
-  regress-ext-explorer:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ISA Explorer browser artifacts
-        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer --skip 6
-
   regress-idl-typecheck-smoke:
     runs-on: ubuntu-latest
     steps:
@@ -741,43 +731,6 @@ jobs:
       - name: Checking for conflicts in instruction encodings
         run: ./do test:inst_encodings
 
-  regress-gen-isa-manual:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: checkout ISA manual
-        run: git submodule update --init ext/riscv-isa-manual
-      - name: Mark isa-manual as safe
-        # Run in docker to get git config set correctly for submodules
-        run: ./bin/bash -c "git config --local --add safe.directory '*'"
-      - name: Generate HTML ISA manual
-        run: ./bin/generate manual -c regress -v isa_regress -f html
-
-  regress-gen-instruction-appendix:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate instruction appendix asciidoc
-        run: ./do gen:instruction_appendix_adoc
-      - name: Check instruction appendix result
-        run: ./do test:instruction_appendix
-
-  regress-cfg-manual:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate HTML ISA manual
-        run: ./do gen:html[example_rv64_with_overlay]
-
   regress-gen-ext-pdf:
     runs-on: ubuntu-latest
     steps:
@@ -787,16 +740,6 @@ jobs:
         uses: ./.github/actions/mise-setup
       - name: Generate Xqci extension PDF
         run: ./bin/ruby tools/scripts/gen_xqci.rb
-
-  regress-gen-profile:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate extension PDF
-        run: ./do gen:profile_release_pdf[RVI20]
 
   regress-profile-strict-cfg:
     runs-on: ubuntu-latest
@@ -954,16 +897,6 @@ jobs:
       - name: Run vector riscv-tests
         run: ./do test:riscv_vector_tests CONFIG=rv64-vector IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
 
-  regress-profile-extensions:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Check profile_extensions
-        run: ./do test:profile_extensions
-
   regress-build-udb-gem:
     runs-on: ubuntu-latest
     steps:
@@ -1041,154 +974,6 @@ jobs:
           name: resolved-spec
           path: gen/resolved_spec/_
           include-hidden-files: true
-  build-isa-explorer-csr:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ISA Explorer CSR
-        run: ./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer/browser
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: isa-explorer-csr
-          path: gen/isa_explorer/browser
-  build-isa-explorer-ext:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ISA Explorer Extension
-        run: ./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer/browser
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: isa-explorer-ext
-          path: gen/isa_explorer/browser
-  build-isa-explorer-inst:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ISA Explorer Instruction
-        run: ./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer/browser
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: isa-explorer-inst
-          path: gen/isa_explorer/browser
-  build-isa-explorer-spreadsheet:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ISA Explorer Spreadsheet
-        run: ./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer/spreadsheet
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: isa-explorer-spreadsheet
-          path: gen/isa_explorer/spreadsheet
-  build-html-isa-manual:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate HTML ISA manual
-        run: ./bin/generate manual -v all -f html
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: isa-html-manual
-          path: gen/manual/isa/top/all/html
-  build-html-cfg-isa-manual:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate HTML ISA manual for a config
-        run: ./do gen:html[example_rv64_with_overlay]
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: cfg-html-manual
-          path: gen/cfg_html_doc/example_rv64_with_overlay/html
-  build-instruction-appendix:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: checkout docs resources
-        run: git submodule update --init ext/docs-resources
-      - name: Generate instruction appendix
-        run: ./do gen:instruction_appendix
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: inst-appendix
-          path: gen/instructions_appendix/instructions_appendix.pdf
-  build-profile:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push') && (github.ref_name == 'main'))
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up mise environment
-        uses: ./.github/actions/mise-setup
-      - name: Generate ${{ matrix.profile }}
-        run: |
-          PROFILE_NAME="${{ matrix.profile }}"
-          ./do gen:profile_release_pdf[${PROFILE_NAME}]
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-        with:
-          name: ${{ matrix.profile }}
-          path: gen/profile/pdf/${{ matrix.profile }}ProfileRelease.pdf
-    strategy:
-      matrix:
-        profile:
-          - RVI20
-          - RVA20
-          - RVA22
-          - RVA23
-          - RVB23
   regress-schema-versions:
     runs-on: ubuntu-latest
     steps:
@@ -1324,15 +1109,10 @@ jobs:
       - regress-udb-gen-integration
       - regress-udb-gen-chore
       - regress-sorbet
-      - regress-ext-explorer
       - regress-idl-typecheck-smoke
       - regress-idl-typecheck-other
       - regress-test-inst-encodings
-      - regress-gen-isa-manual
-      - regress-gen-instruction-appendix
-      - regress-cfg-manual
       - regress-gen-ext-pdf
-      - regress-gen-profile
       - regress-profile-strict-cfg
       - regress-udb-unit-test
       - regress-gen-go
@@ -1344,20 +1124,11 @@ jobs:
       - regress-riscv-tests-32
       - regress-riscv-tests-64
       - regress-riscv-tests-vector
-      - regress-profile-extensions
       - regress-build-udb-gem
       - regress-regress
       - build-reuse-manifest
       - build-udb-api-docs
       - resolve-unconfig
-      - build-isa-explorer-csr
-      - build-isa-explorer-ext
-      - build-isa-explorer-inst
-      - build-isa-explorer-spreadsheet
-      - build-html-isa-manual
-      - build-html-cfg-isa-manual
-      - build-instruction-appendix
-      - build-profile
       - regress-schema-versions
       - regress-schema-docs
       - build-idl-doc
