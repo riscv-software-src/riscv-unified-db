@@ -22,3 +22,5 @@ tests/python/fixtures/generic_codegen
 tests/python/fixtures/extension_docs
 src/udb/extension_docs/assets
 src/udb/extension_docs/templates
+# Preserve C++ source probes and byte-for-byte native oracle inputs.
+tests/python/fixtures/cpp_hart
