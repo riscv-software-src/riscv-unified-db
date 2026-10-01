@@ -16,7 +16,7 @@ from .types import CppGenerationError, literal
 
 
 def _field_dynamic(context, field):
-    return context.multi and Emitter._field_dynamic(field)
+    return context.multi and field.dynamic_location()
 
 
 def _csr_dynamic(context, csr):

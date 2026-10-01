@@ -298,7 +298,7 @@ class Emitter:
 
     @staticmethod
     def _field_dynamic(field) -> bool:
-        return field.defined_in_all_bases and field.location(32) != field.location(64)
+        return field.dynamic_location()
 
     @staticmethod
     def _array_cast(lhs, rhs, text):

@@ -24,6 +24,7 @@ from udb.cpp_hart.catalog import Catalog
 from udb.cpp_hart.context import Context
 from udb.cpp_hart.generator import _unavailable, build_type
 from udb.cpp_hart.resources import package_mapping, standalone_cmake
+from udb.idl_csr_environment import _CsrFieldAdapter
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = Path(__file__).parent / "fixtures" / "cpp_hart"
@@ -313,6 +314,26 @@ def test_progress_is_opt_in_and_written_to_stderr(tmp_path, capsys, monkeypatch)
     assert main(["--config", "rv64", "--out", str(tmp_path), "--progress"]) == 0
     error = capsys.readouterr().err
     assert "cpp-hart: rv64:instruction_headers 2/3 elapsed=" in error
+
+
+def test_dynamic_field_location_uses_accessible_privilege_modes(monkeypatch):
+    from udb import idl_environment
+
+    class Parent:
+        _cfg_arch = object()
+
+        @staticmethod
+        def modes_with_access():
+            return ("M", "S")
+
+    monkeypatch.setattr(
+        idl_environment,
+        "_multi_xlen_in_mode",
+        lambda architecture, mode: mode == "S",
+    )
+    assert _CsrFieldAdapter("field", {"location": None}, Parent()).dynamic_location()
+    assert not _CsrFieldAdapter("field", {"location": "3-0"}, Parent()).dynamic_location()
+    assert not _CsrFieldAdapter("field", {"location": None}).dynamic_location()
 
 
 def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):

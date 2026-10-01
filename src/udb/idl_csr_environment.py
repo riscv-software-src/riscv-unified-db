@@ -110,6 +110,16 @@ class _CsrFieldAdapter:
             raise ValueError("effective XLEN must be 32 or 64")
         return self._base in (None, xlen)
 
+    def dynamic_location(self) -> bool:
+        if self._data.get("location") is not None or self._parent is None:
+            return False
+        from .idl_environment import _multi_xlen_in_mode
+
+        return any(
+            _multi_xlen_in_mode(self._parent._cfg_arch, mode)
+            for mode in self._parent.modes_with_access()
+        )
+
     @property
     def base64_only(self) -> bool:
         return self._base == 64
@@ -219,6 +229,20 @@ class _CsrAdapter:
             raise ValueError("effective XLEN must be 32 or 64")
         return self._base in (None, xlen)
 
+    def modes_with_access(self) -> tuple[str, ...]:
+        modes = {
+            "M": ("M",),
+            "S": ("M", "S", "VS"),
+            "U": ("M", "S", "U", "VS", "VU"),
+            "VS": ("M", "S", "VS"),
+            "D": ("M", "D"),
+        }
+        privilege = self._record.data.get("priv_mode", "M")
+        try:
+            return modes[privilege]
+        except KeyError:
+            raise IdlInternalError(f"Unexpected CSR privilege mode: {privilege!r}") from None
+
     @property
     def fields(self) -> Sequence[_CsrFieldAdapter]:
         return tuple(
@@ -291,17 +315,9 @@ class _CsrAdapter:
             values = config.params.get(raw)
             return values is None or len(values) > 1
         if raw == "XLEN":
-            modes = {
-                "M": ("M",),
-                "S": ("M", "S", "VS"),
-                "U": ("M", "S", "U", "VS", "VU"),
-                "VS": ("M", "S", "VS"),
-                "D": ("M", "D"),
-            }
-            privilege = self._record.data.get("priv_mode", "M")
-            if privilege not in modes:
-                raise IdlInternalError(f"Unexpected CSR privilege mode: {privilege!r}")
-            return any(_multi_xlen_in_mode(self._cfg_arch, mode) for mode in modes[privilege])
+            return any(
+                _multi_xlen_in_mode(self._cfg_arch, mode) for mode in self.modes_with_access()
+            )
         raise IdlInternalError(f"Unexpected length field for CSR {self.name!r}: {raw!r}")
 
     @property
