@@ -22,7 +22,7 @@ def constexpr(node: ast.Node, symtab: SymbolTable) -> bool:
             return False
         if binding.param:
             parameter = symtab.param(node.name)
-            return parameter is not None and parameter.value_known()
+            return parameter is not None and parameter.value_known
         return not binding.type.is_global
     if isinstance(
         node,

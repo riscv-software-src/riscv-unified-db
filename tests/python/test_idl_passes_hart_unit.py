@@ -1,12 +1,48 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+from pathlib import Path
+
 import pytest
 
+from udb import Configuration, Database
 from udb.idl import parse
 from udb.idl.passes import constexpr, control_flow, written
 from udb.idl.symbols import SymbolTable, Var
 from udb.idl.types import Type, TypeKind
+from udb.idl_architecture import ArchitectureCompiler
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture(scope="module")
+def database():
+    return Database.from_path(ROOT / "spec/std/isa", schemas_path=ROOT / "spec/schemas").resolve()
+
+
+@pytest.mark.parametrize(
+    ("configuration", "name", "value", "known"),
+    [
+        ("rv32-riscv-tests", "MXLEN", 32, True),
+        ("rv32-riscv-tests", "MUTABLE_MISA_C", False, True),
+        ("rv32-riscv-tests", "IMP_ID_VALUE", 0, True),
+        ("_", "MXLEN", None, False),
+    ],
+)
+def test_constexpr_uses_actual_architectural_parameter_properties(
+    database, configuration, name, value, known
+):
+    architecture = database.configure(
+        Configuration.from_file(ROOT / "cfgs" / f"{configuration}.yaml")
+    )
+    symtab = ArchitectureCompiler(architecture).global_symbol_table
+    parameter = symtab.param(name)
+    assert parameter is not None
+    assert parameter.value_known is known
+    binding = symtab.get(name)
+    assert isinstance(binding, Var) and binding.param
+    assert binding.value == value
+    assert constexpr(parse(name, "expression"), symtab) is known
 
 
 def test_constexpr_distinguishes_local_known_global_and_runtime_bindings():
