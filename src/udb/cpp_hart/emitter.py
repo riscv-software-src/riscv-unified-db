@@ -112,8 +112,7 @@ class Emitter:
                     )
                     return f"{macro}({node.name})"
                 if binding.decode_var:
-                    value = node.name + "()"
-                    return f"({value}).make_signed()" if binding.type.is_signed else value
+                    return node.name + "()"
             return node.name
         if isinstance(node, (ast.BuiltinTypeName, ast.UserTypeName)):
             return self.type_name(node)
@@ -143,8 +142,6 @@ class Emitter:
             dtype = cpp_type(node.type(self.symtab))
             return f"(({emit(node.condition)}) ? static_cast<{dtype}>({emit(node.true_expression)}) : static_cast<{dtype}>({emit(node.false_expression)}))"
         if isinstance(node, ast.SignCast):
-            if node.expression.type(self.symtab).is_signed:
-                return emit(node.expression)
             return f"({emit(node.expression)}).make_signed()"
         if isinstance(node, ast.WidthReveal):
             return f"{emit(node.expression)}.width()"

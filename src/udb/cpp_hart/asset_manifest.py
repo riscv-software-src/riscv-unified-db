@@ -10,7 +10,7 @@ GROUPS = {
     "cpp/include/udb": ("include/udb", {".hpp"}),
     "c/include/udb": ("include/udb", {".h"}),
     "cpp/src": ("src", {".cpp"}),
-    "cpp/test": ("test", {".cpp"}),
+    "cpp/test": ("test", {".cmake", ".cpp", ".hpp"}),
     "gdb": ("gdb", {".xml"}),
     "renode": ("renode", {".cs", ".repl", ".resc"}),
 }

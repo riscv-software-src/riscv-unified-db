@@ -118,12 +118,39 @@ constructor accepts both retained `[name, version]` pairs and the public
 configuration API's `{name, version}` records without altering input/output
 schema versions.
 
+Several representation-level differences from the Ruby templates are explicit:
+
+- instruction-body XLEN selection is a compile-time branch on the instantiated
+  instruction XLEN; this assumes decoded instruction objects are not reused
+  after an effective-XLEN mode change;
+- multi-value returns use `std::make_tuple`, so element types are deduced before
+  conversion to the declared tuple return type;
+- integer literals use brace initialization and are masked to their declared
+  width, while native masks only negative literals;
+- integral element access uses the template `at<index>()` form whenever the
+  index is constant, including when the surrounding width is not statically
+  known;
+- dynamic array sizes use the public `Bits` alias rather than the native
+  `_Bits<..., false>` spelling;
+- source/destination register lists are sorted by register file and index rather
+  than preserving analysis traversal order, and unknown register determination
+  falls back on `IdlValueUnknown` rather than the Ruby-only exception class;
+- immutable global initializers use their accepted evaluated literal values
+  instead of re-rendering the original expression.
+
+Signed decode-variable access preserves native behavior: bare decode variables
+emit their unsigned accessor, while an explicit `$signed(...)` operation emits
+`make_signed()`.
+
 ## Development evidence
 
 `tests/python/capture_cpp_hart.rb` is a development-only oracle with explicit
 resolver/output roots. `capture_cpp_hart_metadata.py` verifies every captured
 raw output hash before extracting class and decode-field observations; it
-never rewrites the raw artifacts. Focused tests cover retained products,
+never rewrites the raw artifacts and redacts host-specific paths in committed
+metadata. Native `types.hxx` is classified as uncapturable by the standalone
+oracle because its template requires a task-local `symtab` binding; no
+`types.hxx` comparison is claimed. Focused tests cover retained products,
 provenance, declared resources, offline generation, safe/check-only writes and
 genuine native interfaces. Native C++ probes are under
 `tests/python/fixtures/cpp_hart`.
@@ -148,7 +175,7 @@ compiled concrete RV32 hart probe covering reset, decode, arithmetic, signed
 immediates and CSR access. The fetched-instruction probe additionally covers
 the run loop, taken branches, jump/link, word stores, signed/unsigned byte
 loads and software CSR read/write/set/zero-mask behavior.
-A real two-configuration source tree with 98 outputs and compiled
+A real two-configuration source tree and compiled
 factory-selection probe cover independent generated namespaces. Distinct full
 RV32/RV64 configurations additionally verify per-hart register/CSR widths,
 RV64 high-bit arithmetic and ADDIW sign extension. Fresh generic RV32 source
@@ -161,11 +188,10 @@ not acceptance of every generic/overlay/multiconfiguration tree, installed
 package, or ISS execution path; those boundaries
 must be checked separately before registry cutover.
 
-The packaged runtime currently contains 64 static resources. This is three more
-than the original lane capture because the accepted native Bits layer replaced
-generated random tests with its handwritten property/defect corpus; the C++
-hart generator copies those retained native resources and does not regenerate
-Bits tests.
+The packaged runtime follows the native copy rule for C/C++ headers, sources and
+`cpp/test/*.{cpp,hpp,cmake}`. The accepted native Bits layer replaced generated
+random tests with its handwritten property/defect corpus; the C++ hart
+generator copies that retained corpus and does not regenerate Bits tests.
 
 Standalone generated CMake configures offline against explicitly declared
 cached dependency sources, and its native `hart` library builds. The verbatim
@@ -174,4 +200,7 @@ the QC delay/syscall/device/synchronization methods; this is not patched during
 source generation. The retained native run loops also do not increment
 `HartBase::m_num_inst_exec`. The compatibility probe explicitly checks the
 observed zero counter, not a repaired counter or correct large-block instruction
-limit. Both native boundaries remain separate from generation acceptance.
+limit. Consequently, `run_n` requests at least as large as the basic-block limit
+can loop without a decreasing instruction budget until another stop reason
+occurs. Both native boundaries remain separate from generation acceptance, and
+the failing Renode target is excluded from the successful `hart` build claim.

@@ -17,7 +17,7 @@ from udb.idl.types import VOID_TYPE, WIDTH_UNKNOWN, EnumerationType, Qualifier, 
         ("8'shff", "_Bits<8, true>{255_b}"),
         ("true", "true"),
         ("$signed(8'h80)", "(_Bits<8, false>{128_b}).make_signed()"),
-        ("$signed(8'shff)", "_Bits<8, true>{255_b}"),
+        ("$signed(8'shff)", "(_Bits<8, true>{255_b}).make_signed()"),
         ("8'hf `+ 8'h1", "(_Bits<8, false>{15_b}.widening_add(_Bits<8, false>{1_b}))"),
         ("8'hf[3:1]", "_Bits<8, false>{15_b}.template extract<3, 1>()"),
     ],
@@ -29,13 +29,13 @@ def test_expression_lowering(text, expected):
     assert Emitter(table).expression(node) == expected
 
 
-def test_emission_owns_scopes_and_signed_decode():
+def test_emission_owns_scopes_and_preserves_native_decode_access():
     table = SymbolTable()
     table.add(
         "imm",
         Var("imm", Type(TypeKind.BITS, width=12, qualifiers=(Qualifier.SIGNED,)), decode_var=True),
     )
-    assert Emitter(table).expression(parse_expression("imm")) == "(imm()).make_signed()"
+    assert Emitter(table).expression(parse_expression("imm")) == "imm()"
     assert Emitter(table).expression(parse_expression("$signed(imm)")) == "(imm()).make_signed()"
     body = parse_function_body("Bits<8> x = 1; if (x == 1) { x = 2; }")
     table.push(body)

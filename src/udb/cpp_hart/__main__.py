@@ -17,6 +17,30 @@ from .resources import RuntimeResources
 from .types import CppGenerationError
 
 
+def configuration_overlays(configs, paths):
+    by_name = {}
+    for path in paths:
+        name = path.name
+        if name in by_name:
+            raise CppGenerationError(f"Duplicate --overlay input named {name!r}")
+        by_name[name] = path
+    required = {config.overlay for config in configs if config.overlay is not None}
+    missing = required - by_name.keys()
+    if missing:
+        raise CppGenerationError(
+            "Missing explicit --overlay input for " + ", ".join(sorted(missing))
+        )
+    unused = by_name.keys() - required
+    if unused:
+        raise CppGenerationError(
+            "Unused --overlay input does not match a selected configuration: "
+            + ", ".join(sorted(unused))
+        )
+    return tuple(
+        (by_name[config.overlay],) if config.overlay is not None else () for config in configs
+    )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", action="append", required=True)
@@ -31,6 +55,8 @@ def main(argv=None):
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     try:
+        if args.schemas is not None and args.source is None:
+            raise CppGenerationError("--schemas requires an explicit --source")
         selectors = [selector for group in args.config for selector in group.split(",")]
         if "all" in selectors:
             if selectors != ["all"]:
@@ -57,15 +83,15 @@ def main(argv=None):
             if args.source
             else Database.bundled()
         )
-        if args.schemas is not None and args.source is None:
-            raise CppGenerationError("--schemas requires an explicit --source")
-        for config in configs:
-            if config.overlay and not args.overlay:
-                raise CppGenerationError(
-                    f"{config.name}: architecture overlay requires explicit --overlay input"
-                )
-        resolved = database.resolve(overlays=tuple(args.overlay))
-        architectures = [resolved.configure(config) for config in configs]
+        overlay_groups = configuration_overlays(configs, args.overlay)
+        resolved_databases = {}
+        architectures = []
+        for config, overlays in zip(configs, overlay_groups, strict=True):
+            resolved = resolved_databases.get(overlays)
+            if resolved is None:
+                resolved = database.resolve(overlays=overlays)
+                resolved_databases[overlays] = resolved
+            architectures.append(resolved.configure(config))
         generator = CppHartGenerator(
             architectures,
             resources=RuntimeResources.from_path(args.runtime_root) if args.runtime_root else None,

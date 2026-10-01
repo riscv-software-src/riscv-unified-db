@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -18,7 +19,7 @@ from udb.cpp_hart import (
     CppHartGenerator,
     RuntimeResources,
 )
-from udb.cpp_hart.__main__ import main
+from udb.cpp_hart.__main__ import configuration_overlays, main
 from udb.cpp_hart.catalog import Catalog
 from udb.cpp_hart.context import Context
 from udb.cpp_hart.generator import _unavailable, build_type
@@ -47,8 +48,53 @@ def _contents(plan):
     return {str(file.path): file.content for file in plan.outputs}
 
 
+def _native_resource_sources():
+    backend = ROOT / "backends/cpp_hart_gen"
+    sources = {Path("backends/cpp_hart_gen/CMakeLists.txt")}
+    for directory, suffixes in (
+        ("cpp/include/udb", {".hpp"}),
+        ("c/include/udb", {".h"}),
+        ("cpp/src", {".cpp"}),
+        ("cpp/test", {".cmake", ".cpp", ".hpp"}),
+        ("gdb", {".xml"}),
+        ("renode", {".cs", ".repl", ".resc"}),
+    ):
+        sources.update(
+            path.relative_to(ROOT)
+            for path in (backend / directory).iterdir()
+            if path.is_file() and path.suffix in suffixes
+        )
+    sources.update(
+        Path(path)
+        for path in (
+            "LICENSE-BSD-3-Clause-Clear.txt",
+            "LICENSE-MIT.txt",
+            "LICENSE-CC-BY.txt",
+            "LICENSES/BSD-2-Clause.txt",
+            "NOTICE",
+            ".toolchain/check_cxx.cmake",
+            ".toolchain/.build-elfutils.sh",
+            "cfgs/rv64-riscv-tests.yaml",
+            "tests/data/fp/directed/f32_fpgen_expanded.jsonl",
+        )
+    )
+    return sources
+
+
+def _expected_plan_paths(*config_names):
+    paths = {str(output) for output, _, _, _ in RuntimeResources.from_path(ROOT).files()}
+    paths.update(SHARED_ARTIFACTS)
+    paths.add("include/udb/libhart_renode.h")
+    paths.add("cpp-hart-manifest.json")
+    for name in config_names:
+        paths.update(f"include/udb/cfgs/{name}/{artifact}" for artifact in CONFIG_ARTIFACTS)
+        paths.add(f"cfgs/{name}.json")
+    return paths
+
+
 def test_complete_artifact_set_and_provenance(plan):
     contents = _contents(plan)
+    assert set(contents) == _expected_plan_paths("cpp-smoke")
     assert set(SHARED_ARTIFACTS) <= contents.keys()
     assert {f"include/udb/cfgs/cpp-smoke/{name}" for name in CONFIG_ARTIFACTS} <= contents.keys()
     assert {
@@ -93,6 +139,28 @@ def test_explicit_resources_are_byte_exact(plan):
     for output, original, _, _ in RuntimeResources.from_path(ROOT).files():
         if str(output) != "CMakeLists.txt":
             assert contents[str(output)] == original
+
+
+def test_runtime_resources_match_native_copy_rule_and_cmake_references(plan):
+    resources = tuple(RuntimeResources.from_path(ROOT).files())
+    assert {Path(origin) for _, _, _, origin in resources} == _native_resource_sources()
+    contents = _contents(plan)
+    assert "test/bits-tests.cmake" in contents
+    assert "test/bits_property.hpp" in contents
+    references = {
+        match
+        for cmake, prefix, variable in (
+            (contents["CMakeLists.txt"].decode(), "", "CMAKE_SOURCE_DIR"),
+            (contents["test/bits-tests.cmake"].decode(), "test/", "CMAKE_CURRENT_LIST_DIR"),
+        )
+        for match in (
+            prefix + path
+            for path in re.findall(
+                rf"\$\{{{variable}\}}/([A-Za-z0-9_./-]+\.(?:cmake|cpp|h|hpp))", cmake
+            )
+        )
+    }
+    assert references <= contents.keys()
 
 
 def test_source_generation_is_offline(architecture, monkeypatch):
@@ -150,7 +218,16 @@ root = Path(sys.argv[1])
 spec = importlib.util.spec_from_file_location("cpp_assets", root / "src/udb/cpp_hart/asset_manifest.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-assert len(module.package_mapping(root)) >= 55
+mapping = module.package_mapping(root)
+test_root = root / "backends/cpp_hart_gen/cpp/test"
+expected_tests = {
+    path for path in test_root.iterdir()
+    if path.is_file() and path.suffix in {".cmake", ".cpp", ".hpp"}
+}
+assert expected_tests <= mapping.keys()
+assert test_root / "bits-tests.cmake" in mapping
+assert test_root / "bits_property.hpp" in mapping
+assert len(mapping) == len(tuple(module.resource_entries(root))) + 1
 """
     result = subprocess.run(
         [sys.executable, "-S", "-c", script, str(ROOT)],
@@ -204,6 +281,62 @@ def test_empty_all_selection_is_explicit(tmp_path, capsys):
         == 2
     )
     assert "No configurations selected" in capsys.readouterr().err
+
+
+def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):
+    overlay_data = Configuration.builtin("rv32").to_dict()
+    overlay_data["name"] = "with-overlay"
+    overlay_data["arch_overlay"] = "example"
+    configs = (Configuration(overlay_data), Configuration.builtin("rv64"))
+    example = tmp_path / "example"
+    assert configuration_overlays(configs, [example]) == ((example,), ())
+    with pytest.raises(CppGenerationError, match="Missing explicit"):
+        configuration_overlays(configs, [])
+    with pytest.raises(CppGenerationError, match="Unused"):
+        configuration_overlays(configs, [example, tmp_path / "other"])
+
+
+def test_unified_cli_delegates_cpp_hart_arguments(tmp_path, monkeypatch):
+    import udb.cli
+    import udb.cpp_hart.__main__ as cpp_main
+
+    calls = []
+    monkeypatch.setattr(cpp_main, "main", lambda args: calls.append(args) or 7)
+    output = tmp_path / "generated"
+    overlay = tmp_path / "overlay"
+    result = udb.cli.main(
+        [
+            "generate",
+            "cpp-hart",
+            "--config",
+            "rv32,rv64",
+            "--build-name",
+            "both",
+            "--build-type",
+            "Debug",
+            "--overlay",
+            str(overlay),
+            "--out",
+            str(output),
+            "--check",
+        ]
+    )
+    assert result == 7
+    assert calls == [
+        [
+            "--out",
+            str(output),
+            "--build-type",
+            "Debug",
+            "--config",
+            "rv32,rv64",
+            "--build-name",
+            "both",
+            "--overlay",
+            str(overlay),
+            "--check",
+        ]
+    ]
 
 
 def test_invalid_or_missing_inputs_are_explicit(architecture, tmp_path):
@@ -281,7 +414,7 @@ def test_multiple_real_configurations_share_artifacts_without_namespace_aliasing
     )
     plan = generator.plan()
     contents = _contents(plan)
-    assert len(contents) == 98
+    assert set(contents) == _expected_plan_paths("cpp-smoke", "cpp-second")
     for name in ("cpp-smoke", "cpp-second"):
         assert {f"include/udb/cfgs/{name}/{file}" for file in CONFIG_ARTIFACTS} <= contents.keys()
     factory = contents["include/udb/hart_factory.hxx"].decode()
@@ -302,7 +435,7 @@ def test_mixed_full_width_configurations_preserve_per_hart_width(database, archi
         [architecture, wide], resources=RuntimeResources.from_path(ROOT), build_name="widths"
     ).plan()
     contents = _contents(plan)
-    assert len(contents) == 98
+    assert set(contents) == _expected_plan_paths("cpp-smoke", "cpp-wide")
     manifest = json.loads(contents["cpp-hart-manifest.json"])
     assert manifest["configurations"] == ["cpp-smoke", "cpp-wide"]
     assert manifest["unavailable"] == []

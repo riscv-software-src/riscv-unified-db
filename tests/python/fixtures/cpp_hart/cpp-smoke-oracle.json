@@ -1,6 +1,6 @@
 {
   "capture_selectors": [
-    "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s31-cpp-hart/gen/cpp-hart-validation/cpp-smoke.yaml"
+    "<repository>/gen/cpp-hart-validation/cpp-smoke.yaml"
   ],
   "classification": "native-full-config-positive-only-SAT",
   "classified_interfaces": {
@@ -23923,11 +23923,11 @@
   },
   "prefix": "CppSmoke_",
   "raw_errors": {
-    "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s31-cpp-hart/gen/cpp-hart-validation/cpp-smoke.yaml/types.hxx": {
+    "<repository>/gen/cpp-hart-validation/cpp-smoke.yaml/types.hxx": {
       "backtrace": [
-        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s31-cpp-hart/backends/cpp_hart_gen/templates/types.hxx.erb:10:in 'CppHartGen::TemplateEnv#get_binding'",
-        "/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/erb-6.0.7/lib/erb.rb:1065:in 'Kernel#eval'",
-        "/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/erb-6.0.7/lib/erb.rb:1065:in 'ERB#result'",
+        "<repository>/backends/cpp_hart_gen/templates/types.hxx.erb:10:in 'CppHartGen::TemplateEnv#get_binding'",
+        "<ruby-gems>/erb-6.0.7/lib/erb.rb:1065:in 'Kernel#eval'",
+        "<ruby-gems>/erb-6.0.7/lib/erb.rb:1065:in 'ERB#result'",
         "tests/python/capture_cpp_hart.rb:61:in 'block (2 levels) in <main>'",
         "tests/python/capture_cpp_hart.rb:55:in 'Array#each'",
         "tests/python/capture_cpp_hart.rb:55:in 'block in <main>'",
@@ -23959,5 +23959,8 @@
     "params.hxx": "3373ab213f9aa969666ad28b3ff95b525e3df223334c9400bf4be78bbc99fc15",
     "structs.hxx": "b460e37543eb8b2e045c846a5db03334936f638586b4f91c9ccf828a9a93fb7b"
   },
-  "ruby": "ruby 3.4.10 (2026-06-30 revision 2b0b7728dc) +YJIT +PRISM [aarch64-linux]"
+  "ruby": "ruby 3.4.10 (2026-06-30 revision 2b0b7728dc) +YJIT +PRISM [aarch64-linux]",
+  "uncapturable_native_artifacts": {
+    "types.hxx": "The standalone capture lacks the native task-local symtab binding."
+  }
 }

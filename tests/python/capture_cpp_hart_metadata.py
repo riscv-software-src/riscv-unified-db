@@ -12,6 +12,19 @@ from pathlib import Path
 CLASS = re.compile(r"(?:class|struct)\s+(\w+)\s*(?::[^;{}]+)?\{")
 INST = re.compile(r"class\s+(\w+_Inst)\s*:")
 FIELD = re.compile(r"Bits\s*<\s*(\d+)\s*>\s+(\w+)\s*\([^)]*\)\s*const")
+RUBY_GEMS = re.compile(r"/(?:[^/\s]+/)+mise/installs/ruby/[^/]+/lib/ruby/gems/[^/]+/gems")
+
+
+def sanitize_paths(value, root: str):
+    if isinstance(value, str):
+        return RUBY_GEMS.sub("<ruby-gems>", value.replace(root, "<repository>"))
+    if isinstance(value, list):
+        return [sanitize_paths(item, root) for item in value]
+    if isinstance(value, dict):
+        return {
+            sanitize_paths(key, root): sanitize_paths(item, root) for key, item in value.items()
+        }
+    return value
 
 
 def interface(text, *, prefix):
@@ -46,11 +59,14 @@ def extract(capture: Path, config: str, prefix: str):
             hashes[path.name] = actual
             observations[path.name] = interface(content.decode(), prefix=prefix)
     return {
-        "capture_selectors": manifest["selectors"],
+        "capture_selectors": sanitize_paths(manifest["selectors"], manifest["root"]),
         "ruby": manifest["ruby"],
         "input_hashes": manifest["inputs"],
         "raw_output_hashes": hashes,
-        "raw_errors": manifest["errors"],
+        "raw_errors": sanitize_paths(manifest["errors"], manifest["root"]),
+        "uncapturable_native_artifacts": {
+            "types.hxx": "The standalone capture lacks the native task-local symtab binding."
+        },
         "config": config,
         "prefix": prefix,
         "observations": observations,
