@@ -32,6 +32,8 @@ All patches must meet the UnifiedDB code standards. This includes:
 * Pass regression tests
 ** run locally as `./bin/regress --all`...though this will take a while to run sequentially. These will also run in GitHub automatically.
 * Use appropriate commit messages
+* Sign off every commit (see <<Developer Certificate of Origin (DCO)>>)
+* Cryptographically sign every commit (see <<Commit signing>>)
 * Go through code review as a Pull Request
 
 === Regression tests
@@ -51,6 +53,166 @@ When a commit will close a GitHub Issue, it should be noted in the PR descriptio
 Fixes #<issue number>
 Closes #<issue number>
 ```
+
+=== Developer Certificate of Origin (DCO)
+
+UnifiedDB uses the https://developercertificate.org/[Developer Certificate of Origin] (DCO)
+to confirm that contributors have the right to submit their work under the project's
+xref:LICENSE-BSD-3-Clause-Clear.txt[license]. The DCO is a short statement, not a separate
+agreement to sign. By adding a `Signed-off-by` line to a commit, you certify that you wrote
+the contribution or otherwise have the right to submit it under the project's license.
+
+Every commit in a Pull Request must carry a `Signed-off-by` line, in this form:
+
+----
+Signed-off-by: Jane Developer <jane@example.com>
+----
+
+The name and email must be your real name and the email address configured in git.
+
+NOTE: Because of the squash merge policy, only the PR title and description appear in `main`.
+Include a `Signed-off-by` line at the end of your PR description as well, so the sign-off is
+part of the final commit message.
+
+==== Adding the sign-off
+
+Git adds the line for you when you pass `-s` (`--signoff`):
+
+[source,bash]
+----
+git config --global user.name "Jane Developer"
+git config --global user.email "jane@example.com"
+
+git commit -s -m "fix: correct fcvt metadata"
+----
+
+==== Fixing commits that are missing the sign-off
+
+For the most recent commit:
+
+[source,bash]
+----
+git commit --amend --no-edit -s
+git push --force-with-lease
+----
+
+For several commits on your branch:
+
+[source,bash]
+----
+git rebase --exec 'git commit --amend --no-edit -s' upstream/main
+git push --force-with-lease
+----
+
+NOTE: The DCO sign-off (`Signed-off-by`) is a line of text in the commit message. It is
+different from a cryptographic signature (see <<Commit signing>>). Both are required.
+
+=== Commit signing
+
+All commits must be cryptographically signed so that GitHub shows them as *Verified*.
+You can sign with either an SSH key or a GPG key. SSH signing is simpler if you already
+use SSH keys, and requires Git 2.34 or later.
+
+IMPORTANT: The email address on your commits (`git config user.email`) must match a verified
+email address on your GitHub account, or the commit will not show as Verified.
+
+==== Option A: Sign with an SSH key (recommended)
+
+. Create a key if you don't have one:
++
+[source,bash]
+----
+ssh-keygen -t ed25519 -C "jane@example.com"
+----
+. Add the *public* key to GitHub as a *Signing Key*: _Settings > SSH and GPG keys >
+  New SSH key_, and set *Key type* to *Signing Key*. A key added only for authentication does
+  not verify commits, so add it again as a signing key if needed.
+. Configure git:
++
+[source,bash]
+----
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true
+----
+
+==== Option B: Sign with a GPG key
+
+. Install GPG, then generate a key. Choose the default key type, and use the same email
+  address as your GitHub account:
++
+[source,bash]
+----
+gpg --full-generate-key
+----
+. Find your key ID (the part after `sec   <algorithm>/`):
++
+[source,bash]
+----
+gpg --list-secret-keys --keyid-format=long
+----
+. Export the public key and add it in GitHub under _Settings > SSH and GPG keys >
+  New GPG key_:
++
+[source,bash]
+----
+gpg --armor --export <KEY_ID>
+----
+. Configure git:
++
+[source,bash]
+----
+git config --global user.signingkey <KEY_ID>
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true
+----
+. If git reports `gpg failed to sign the data`, add this line to your shell profile
+  (`~/.bashrc`, `~/.zshrc`) and restart the shell:
++
+[source,bash]
+----
+export GPG_TTY=$(tty)
+----
+
+With `commit.gpgsign true`, every commit is signed automatically. Without it, pass `-S`
+to `git commit`. To sign off *and* sign in one step:
+
+[source,bash]
+----
+git commit -s -S -m "fix: correct fcvt metadata"
+----
+
+==== Verifying your signature
+
+On GitHub, a signed commit shows a *Verified* badge next to it. You can also check locally:
+
+[source,bash]
+----
+git log --show-signature -1
+----
+
+GPG signatures verify locally once your public key is in your keyring. SSH signatures need
+an allowed-signers file before `git log --show-signature` can verify them:
+
+[source,bash]
+----
+mkdir -p ~/.config/git
+echo "jane@example.com $(cat ~/.ssh/id_ed25519.pub)" >> ~/.config/git/allowed_signers
+git config --global gpg.ssh.allowedSignersFile ~/.config/git/allowed_signers
+----
+
+==== Signing commits you already made
+
+[source,bash]
+----
+git rebase --exec 'git commit --amend --no-edit -s -S' upstream/main
+git push --force-with-lease
+----
+
+See GitHub's documentation on
+https://docs.github.com/en/authentication/managing-commit-signature-verification[managing commit signature verification]
+for more detail.
 
 === Code review
 
