@@ -12,7 +12,7 @@ runs:
   steps:
     - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
       with:
-        version: 2026.9.12
+        version: 2026.9.13
     # Write the toolchain preference before bin/setup runs.
     - name: Configure toolchain
       shell: bash
