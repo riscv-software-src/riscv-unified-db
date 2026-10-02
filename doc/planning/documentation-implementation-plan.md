@@ -4,6 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 -->
 # UDB Documentation Site — Implementation Plan
 
+> [!NOTE]
+> This planning snapshot predates the unified `udb` command and mise developer
+> tasks. Command names below are historical design inputs, not current usage.
+
 This file tracks the detailed implementation plan for the new UDB Docusaurus documentation site.
 Status is tracked inline so we can resume work across sessions.
 

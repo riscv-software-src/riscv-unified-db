@@ -4,6 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 -->
 # UDB Documentation Site Design
 
+> [!NOTE]
+> This planning snapshot predates the unified `udb` command and mise developer
+> tasks. Command names below are historical design inputs, not current usage.
+
 This file captures the design decisions for the UDB Docusaurus documentation site,
 including the landing page layout, navigation structure, and audience targeting.
 

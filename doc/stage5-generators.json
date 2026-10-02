@@ -56,7 +56,7 @@
       ],
       "consumers": ["qc_iu overlay resolution, documentation and simulator"],
       "prospective_owner": "udb.layouts + udb.layout_collections",
-      "python_cli": "udb generate-layouts --collection qc_iu --root DIR [--source-root DIR] [--check]",
+      "python_cli": "udb author layouts --collection qc-iu --root DIR [--source-root DIR] [--check]",
       "fixtures": [
         "tests/data/qc_layouts/oracle.json: all 56 genuine native/tracked files",
         "doc/stage5-qc-layouts.md: source and installed authoring contract"
@@ -871,7 +871,7 @@
       "output_paths": ["spec/std/isa/**/*.yaml"],
       "consumers": ["source DB package", "./bin/chore gen all"],
       "prospective_owner": "udb.layouts",
-      "python_cli": "udb generate-layouts --root DIR [--check]",
+      "python_cli": "udb author layouts --root DIR [--check]",
       "fixtures": ["tracked layout-derived arch YAML"],
       "comparison_policy": "byte-exact drift versus tracked output",
       "gates": {

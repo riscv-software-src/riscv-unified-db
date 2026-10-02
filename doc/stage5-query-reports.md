@@ -122,27 +122,21 @@ silently remove a legacy fixed-bit match. Assembly text is returned unexpanded;
 register naming, pseudoinstruction selection, reserved operand interpretation,
 and instruction execution are outside this capability.
 
-## Testing CLI
+## Installed CLI
 
 ```bash
-python -m udb.query_reports show extension I
-python -m udb.query_reports show parameter MXLEN --config rv32
-python -m udb.query_reports list extensions --config rv64
-python -m udb.query_reports list parameters -e Sm -f json
-python -m udb.query_reports list csrs
-python -m udb.query_reports disasm fff10093 --config rv32 --width 32
+udb inspect extension I
+udb inspect parameter MXLEN --config rv32
+udb inspect extensions --config rv64
+udb inspect parameters -e Sm -f json
+udb inspect csrs
+udb inspect encoding fff10093 --config rv32 --width 32
 ```
 
-All leaves accept `--arch`/`--path`/`-a`, `--schemas`, `--config`/`-c`,
-`--config-dir`/`--config_dir`, `--arch-overlay`/`--arch_overlay`,
-repeatable explicit `--overlay`, and the compatibility-only `--gen`
-(accepted without generating files). An explicit `--arch`/`--path` requires
-an explicit `--schemas`; the Python API does not discover a repository schema
-directory. Repository wrappers therefore supply both paths. Omitted ISA input
-uses packaged data and its packaged schemas.
-Configuration lookup tries an existing supplied filename, an explicitly
-supplied configuration directory, then packaged `_`, `rv32`, `rv64` when no
-directory was supplied. No checkout configuration directory is discovered.
+Global `--database`, `--schema-dir`, and repeatable `--overlay` options precede
+the command. Omitted ISA input uses packaged data and schemas. Configuration
+selectors are bundled `_`, `rv32`, or `rv64`, or an explicit YAML path; no
+checkout configuration directory is discovered.
 
 `--arch-overlay` is the container for the configuration's `arch_overlay`
 declaration; it alone does not apply an overlay to `_`. Alternatively, explicit

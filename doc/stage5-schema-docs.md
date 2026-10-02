@@ -168,12 +168,12 @@ custom.plan("custom-docs").apply("custom-docs")
 drift = generate_schema_docs("generated-schema-docs", check=True)
 ```
 
-Equivalent standalone module commands:
+Equivalent installed commands:
 
 ```sh
-python -m udb.schema_docs --out generated-schema-docs
-python -m udb.schema_docs --schemas my-schemas --out custom-docs --check
-python -m udb.schema_docs --out pages --schema config_schema.json --output-file config.md
+udb generate schema-docs --output generated-schema-docs
+udb --schema-dir my-schemas generate schema-docs --output custom-docs --check
+udb generate schema-docs --output pages --schema config_schema.json --output-file config.md
 ```
 
 Exit codes are 0 for successful generation or clean checks, 1 for check

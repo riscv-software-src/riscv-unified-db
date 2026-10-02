@@ -25,7 +25,7 @@ bin/doctor   # verify the environment is correctly set up (run after bin/setup)
 
 ```bash
 ./bin/regress -h              # help on running regression tests
-./bin/generate -h             # help on generating content
+udb --help                     # help on installed database tools
 ./bin/chore -h                # help on repository development chores
 
 ./bin/regress --list          # list all regression tests
@@ -46,8 +46,8 @@ bin/doctor   # verify the environment is correctly set up (run after bin/setup)
 ./do gen:resolved_arch CFG=_  # resolve a configuration (default: "_" = unconfigured)
 ./do gen:schemas              # resolve schema files to gen/schemas/
 
-./bin/generate ext-doc -h                     # generate extension documentation
-./bin/generate inst-table -h                  # generate an instruction table
+udb generate extension-document --help        # generate extension documentation
+udb generate instruction-table --help         # generate an instruction table
 
 ./bin/pre-commit              # run pre-commit checks manually
 ```
@@ -84,7 +84,7 @@ Key data types and their locations:
 
 Some files are auto-generated from Python-native `.layout` templates (e.g., AMO variants, HPM
 counters, PMP registers). Run `./do gen:arch` to regenerate them or
-`udb generate-layouts --root . --check` to check for drift. Auto-generated files are read-only
+`udb author layouts --root . --check` to check for drift. Auto-generated files are read-only
 (chmod 0444).
 
 ### Configurations (`cfgs/`)

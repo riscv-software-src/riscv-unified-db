@@ -48,10 +48,10 @@ it to imitate Ruby's quiet output. Literal and single-line plain YAML diagnostic
 reuse the accepted enclosing-file source map. Quoted/folded strings and
 multiline plain scalars remain valid CLI inputs and explicitly label any
 diagnostic coordinates as a decoded scalar.
-Invalid arguments exit 2; input, IDL and output errors exit 1.
+Invalid arguments and input, IDL, or output errors exit 2.
 
 ```shell
-python -m udb.idl.cli eval -DA=8 "'hff + A"
-python -m udb.idl.cli compile --format json functions.isa
-python -m udb.idl.cli tc inst -d xd=5 -d xs1=5 -k 'operation()' instruction.yaml
+udb idl eval -D A=8 "'hff + A"
+udb idl compile --format json functions.isa
+udb idl check instruction -d xd=5 -d xs1=5 --key 'operation()' instruction.yaml
 ```

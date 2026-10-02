@@ -41,20 +41,19 @@ network operations, native formatters, or checkout discovery. Callers may supply
 a raw/resolved `Database` or `ConfiguredArchitecture`; only automatic C/SV
 exception rendering requires a configured source.
 
-The module commands are available independently of the deferred final unified
-command spelling:
+The generators are available through the unified installed command:
 
 ```sh
-python -m udb.generators.c_encoding --config rv32 -o gen/c_header/encoding.out.h
-python -m udb.generators.sv_decode --config rv64 -o gen/sverilog/riscv_decode_package.svh
-python -m udb.generators.go --config _ -o gen/go/inst.go
+udb generate c-encoding --config rv32 -o gen/c_header/encoding.out.h
+udb generate sv-decode --config rv64 -o gen/sverilog/riscv_decode_package.svh
+udb generate go-encoding --config _ -o gen/go/inst.go
 ```
 
-`--path`, `--schemas`, and repeatable `--overlay` select explicit resources.
+Global `--database`, `--schema-dir`, and repeatable `--overlay` select explicit resources.
 Non-generic `--config` values are explicit YAML paths. If that configuration
-declares `arch_overlay`, supply its resources with `--overlay` or an explicit
-`--overlay-root`; no custom database is discovered implicitly. Existing
-database resolution implements the merge, without a second resolver.
+declares `arch_overlay`, supply its resources with `--overlay`; no custom
+database is discovered implicitly. Existing database resolution implements the
+merge, without a second resolver.
 `--exception-records` supplies a strict JSON array of the four rendered-row
 fields. `--package-name` overrides the SV output basename. Without `-o`, output
 is UTF-8/LF stdout; named outputs create parents. Rendering/validation completes

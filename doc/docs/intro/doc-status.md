@@ -77,14 +77,8 @@ title: Documentation Status
 | Section | Status | Notes |
 |---------|--------|-------|
 | Overview | 📋 Planned | Tool ecosystem overview |
-| udb gem | 📋 Planned | Main database interface |
-| udb-gen gem | 📋 Planned | Artifact generation |
-| idlc gem | 📋 Planned | IDL compiler |
-| udb_helpers gem | 📋 Planned | Template helpers |
-| idl_highlighter gem | 📋 Planned | Syntax highlighting |
-| bin/generate | 📋 Planned | Generator wrapper script |
-| bin/regress | 📋 Planned | Regression test runner |
-| bin/chore | 📋 Planned | Repository maintenance |
+| `udb` command | 🚧 In Progress | Installed query, validation, IDL, generation, authoring, and rendering |
+| mise tasks | 🚧 In Progress | Repository setup, generation, validation, testing, and maintenance |
 
 ## Generators
 
