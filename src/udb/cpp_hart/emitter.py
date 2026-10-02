@@ -353,6 +353,12 @@ class Emitter:
         """Constructor argument for a runtime declaration without an initial value."""
         if not dtype.is_runtime:
             return None
+        if dtype.kind is TypeKind.ARRAY:
+            element_initializer = self.runtime_initializer(type_node, dtype.sub_type)
+            if element_initializer is None:
+                return None
+            element_type = self.type_name(type_node)
+            return ", ".join(f"{element_type}{{{element_initializer}}}" for _ in range(dtype.width))
         if dtype.kind is TypeKind.STRUCT:
             return "__UDB_HART"
         if dtype.kind is TypeKind.BITS and not self.needs_runtime_width(type_node, dtype):

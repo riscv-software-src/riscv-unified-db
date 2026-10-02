@@ -112,6 +112,15 @@ def test_multi_xlen_xreg_locals_use_fixed_width_constructors():
     ]
 
 
+def test_multi_xlen_xreg_arrays_need_no_width_initializer():
+    table = _multi_xlen_table()
+    body = parse_function_body("XReg arr[4];")
+    table.push(body)
+    table.add("__expected_return_type", VOID_TYPE)
+    body.type_check(table)
+    assert Emitter(table).statement(body) == "std::array<PossiblyUnknownBits<64>, 4> arr;"
+
+
 def test_multi_xlen_xreg_struct_members_need_no_width_initializer():
     table = _multi_xlen_table()
     isa = parse_isa("%version: 1.0\nstruct Order { XReg vaddr; Bits<8> asid; }\n")
