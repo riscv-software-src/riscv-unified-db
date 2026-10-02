@@ -430,7 +430,6 @@ def check_generic_codegens(resolved: udb.ResolvedDatabase) -> None:
         "sv-decode": "9c44e97fe06e78ad4d202b92f48b481acec5ed4efcb7a37b2796b634642e039f",
         "go-encoding": "a5f7d09c1bf20879ba60e00a5a0a2e316f9b6bc5a3197559ac3c5192254dbbb6",
     }
-    modules = {"c-encoding": "c_encoding", "sv-decode": "sv_decode", "go-encoding": "go"}
     filenames = {
         "c-encoding": "encoding.out.h",
         "sv-decode": "riscv_decode_package.svh",
@@ -450,19 +449,6 @@ def check_generic_codegens(resolved: udb.ResolvedDatabase) -> None:
             args = [command, "generate", generator, "--config", config]
             result = subprocess.run(args, check=True, capture_output=True)
             assert result.stdout == expected and result.stderr == b""
-            module_result = subprocess.run(
-                [
-                    sys.executable,
-                    "-I",
-                    "-m",
-                    f"udb.generators.{modules[generator]}",
-                    "--config",
-                    config,
-                ],
-                check=True,
-                capture_output=True,
-            )
-            assert module_result.stdout == expected and module_result.stderr == b""
             output = Path("all" if config == "_" else config) / filenames[generator]
             try:
                 written = subprocess.run(

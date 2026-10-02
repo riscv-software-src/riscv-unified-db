@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -18,6 +19,7 @@ from udb.cli import app
 from udb.cli_output import write_generated_source
 
 RUNNER = CliRunner()
+REPOSITORY_ROOT = Path(__file__).parents[2]
 
 LEAF_HELP = (
     ("list",),
@@ -78,6 +80,14 @@ def test_final_tree_has_no_transitional_commands() -> None:
 
     for removed in ("validate-cfg", "generate-layouts", "schemas", "disasm"):
         assert not re.search(rf"\b{re.escape(removed)}\b", result.stdout)
+
+
+def test_udb_is_the_only_installed_or_repository_user_entrypoint() -> None:
+    metadata = tomllib.loads((REPOSITORY_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+
+    assert metadata["project"]["scripts"] == {"udb": "udb.cli:main"}
+    for wrapper in ("udb", "idlc", "udb-gen"):
+        assert not (REPOSITORY_ROOT / "bin" / wrapper).exists()
 
 
 def test_version_and_usage_exit_codes() -> None:
