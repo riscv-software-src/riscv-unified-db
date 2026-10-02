@@ -88,7 +88,7 @@ def test_udb_is_the_only_installed_or_repository_user_entrypoint() -> None:
     metadata = tomllib.loads((REPOSITORY_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 
     assert metadata["project"]["scripts"] == {"udb": "udb.cli:main"}
-    for wrapper in ("udb", "idlc", "udb-gen"):
+    for wrapper in ("udb", "idlc", "udb-gen", "generate"):
         assert not (REPOSITORY_ROOT / "bin" / wrapper).exists()
 
 
