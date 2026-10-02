@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+from types import SimpleNamespace
+
 import pytest
 
 from udb.cpp_hart.emitter import Emitter
+from udb.cpp_hart.shared import structs
 from udb.cpp_hart.types import cpp_type, names
-from udb.idl.parser import parse_expression, parse_function_body
-from udb.idl.symbols import SymbolTable, Var
+from udb.idl.parser import parse_expression, parse_function_body, parse_isa
+from udb.idl.symbols import IdlEnvironment, SymbolTable, Var
 from udb.idl.types import VOID_TYPE, WIDTH_UNKNOWN, EnumerationType, Qualifier, Type, TypeKind
 
 
@@ -90,3 +93,36 @@ def test_enum_array_cast_uses_the_accepted_type_node():
     node = parse_expression("$enum_to_a(Mode)")
     node.type_check(table)
     assert Emitter(table).expression(node) == "std::array<Bits<3>, 2>{0_b, 4_b}"
+
+
+def _multi_xlen_table():
+    return SymbolTable(IdlEnvironment(possible_xlens_cb=lambda: (32, 64)))
+
+
+def test_multi_xlen_xreg_locals_use_fixed_width_constructors():
+    table = _multi_xlen_table()
+    body = parse_function_body("XReg x = 1; XReg y; x = y;")
+    table.push(body)
+    table.add("__expected_return_type", VOID_TYPE)
+    body.type_check(table)
+    assert Emitter(table).statement(body).splitlines() == [
+        "PossiblyUnknownBits<64> x(_Bits<1, false>{1_b});",
+        "PossiblyUnknownBits<64> y;",
+        "x = y;",
+    ]
+
+
+def test_multi_xlen_xreg_struct_members_need_no_width_initializer():
+    table = _multi_xlen_table()
+    isa = parse_isa("%version: 1.0\nstruct Order { XReg vaddr; Bits<8> asid; }\n")
+    context = SimpleNamespace(
+        name="multi",
+        table=table,
+        global_ast=isa,
+        symbol=lambda kind, name=None: f"Multi_{name or kind}",
+    )
+    text = structs(context)
+    assert "PossiblyUnknownBits<64> vaddr;" in text
+    assert "template <class HartType> Multi_Order(const HartType*) {}" in text
+    assert "Multi_Order() = delete;" in text
+    assert "WidthArg" not in text

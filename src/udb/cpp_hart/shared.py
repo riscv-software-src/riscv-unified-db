@@ -3,8 +3,6 @@
 
 """Configuration-independent database, enum, bitfield and factory interfaces."""
 
-from udb.idl.types import TypeKind
-
 from .conditions import condition_cpp
 from .emitter import Emitter
 from .types import cpp_type, literal
@@ -301,21 +299,23 @@ def structs(context):
         name = context.symbol("struct", struct.name)
         members = []
         runtime = []
+        has_runtime = False
         for member, typ in zip(struct.member_names, struct.member_types, strict=True):
             dtype = typ.type(context.table)
             members.append(f"{emitter.type_name(typ)} {member};")
             if dtype.is_runtime:
-                initializer = (
-                    "__UDB_HART"
-                    if dtype.kind is TypeKind.STRUCT
-                    else f"WidthArg({emitter.runtime_width(dtype)})"
-                )
-                runtime.append(f"{member}({initializer})")
-        ctor = (
-            f"template <class HartType> {name}(const HartType* hart) : {', '.join(runtime)} {{}}\n{name}() = delete;"
-            if runtime
-            else f"{name}() = default;"
-        )
+                has_runtime = True
+                initializer = emitter.runtime_initializer(typ, dtype)
+                if initializer is not None:
+                    runtime.append(f"{member}({initializer})")
+        # Runtime structs are always constructed from the hart, even when every
+        # runtime member is emitted with a fixed (maximum) width.
+        if runtime:
+            ctor = f"template <class HartType> {name}(const HartType* hart) : {', '.join(runtime)} {{}}\n{name}() = delete;"
+        elif has_runtime:
+            ctor = f"template <class HartType> {name}(const HartType*) {{}}\n{name}() = delete;"
+        else:
+            ctor = f"{name}() = default;"
         assignments = "\n".join(f"{member} = other.{member};" for member in struct.member_names)
         out.append(
             f"struct {name} {{\n"

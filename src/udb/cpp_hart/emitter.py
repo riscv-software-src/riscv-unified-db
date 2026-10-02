@@ -41,20 +41,38 @@ class Emitter:
         if isinstance(node, ast.UserTypeName):
             dtype = node.type(self.symtab)
             return f"__UDB_STRUCT({node.name})" if dtype.kind is TypeKind.STRUCT else node.name
-        if isinstance(node, ast.BuiltinTypeName):
-            if node.type_name == "XReg":
-                return f"PossiblyUnknownBits<{max(self.symtab.possible_xlens)}>"
-            if node.type_name in {"U32", "U64"}:
-                return f"PossiblyUnknownBits<{node.type_name[1:]}>"
-            if node.type_name == "Bits":
-                dtype = node.type(self.symtab)
-                try:
-                    return f"PossiblyUnknownBits<{self.known(node.bits_expression)}>"
-                except IdlValueUnknown:
-                    if constexpr(node.bits_expression, self.symtab):
-                        return f"PossiblyUnknownBits<{self.expression(node.bits_expression)}.get()>"
-                    return cpp_type(dtype)
+        fixed = self._fixed_bits_width(node)
+        if fixed is not None:
+            return f"PossiblyUnknownBits<{fixed}>"
         return cpp_type(node.type(self.symtab))
+
+    def _fixed_bits_width(self, node: ast.Node) -> str | None:
+        """The C++ template width of a builtin bits type emitted with a compile-time width."""
+        if not isinstance(node, ast.BuiltinTypeName):
+            return None
+        if node.type_name == "XReg":
+            return str(max(self.symtab.possible_xlens))
+        if node.type_name in {"U32", "U64"}:
+            return node.type_name[1:]
+        if node.type_name == "Bits":
+            try:
+                return str(self.known(node.bits_expression))
+            except IdlValueUnknown:
+                if constexpr(node.bits_expression, self.symtab):
+                    return f"{self.expression(node.bits_expression)}.get()"
+        return None
+
+    def needs_runtime_width(self, type_node: ast.Node, dtype) -> bool:
+        """Whether a runtime bits declaration is emitted as a runtime-width C++ type.
+
+        A multi-XLEN ``XReg`` is runtime in IDL but is emitted as the fixed
+        maximum-width type, which has no width constructor argument.
+        """
+        return (
+            dtype.is_runtime
+            and dtype.kind is TypeKind.BITS
+            and self._fixed_bits_width(type_node) is None
+        )
 
     def _register(self, node: ast.Node) -> str | None:
         dtype = node.type(self.symtab)
@@ -325,17 +343,21 @@ class Emitter:
             rhs = self.expression(node.rhs)
             if node.ary_size is not None:
                 return f"{typ} {name} = {self._array_cast(dtype, node.rhs.type(self.symtab), rhs)}"
-            if dtype.is_runtime and dtype.kind is TypeKind.BITS:
+            if self.needs_runtime_width(node.type_name, dtype):
                 return f"{typ} {name}({rhs}, {self.runtime_width(dtype, raw=True)})"
             return f"{typ} {name}({rhs})"
-        if dtype.is_runtime:
-            initializer = (
-                "__UDB_HART"
-                if dtype.kind is TypeKind.STRUCT
-                else f"WidthArg({self.runtime_width(dtype)})"
-            )
-            return f"{typ} {name}{{{initializer}}}"
-        return f"{typ} {name}"
+        initializer = self.runtime_initializer(node.type_name, dtype)
+        return f"{typ} {name}" if initializer is None else f"{typ} {name}{{{initializer}}}"
+
+    def runtime_initializer(self, type_node: ast.Node, dtype) -> str | None:
+        """Constructor argument for a runtime declaration without an initial value."""
+        if not dtype.is_runtime:
+            return None
+        if dtype.kind is TypeKind.STRUCT:
+            return "__UDB_HART"
+        if dtype.kind is TypeKind.BITS and not self.needs_runtime_width(type_node, dtype):
+            return None
+        return f"WidthArg({self.runtime_width(dtype)})"
 
     def _range_assignment(self, node):
         emit = self.expression
