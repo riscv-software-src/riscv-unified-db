@@ -20,6 +20,7 @@ from .idl.ast import (
     UserTypeName,
 )
 from .idl.parser import parse_isa
+from .idl.passes._tree import clone
 from .idl.source import IdlSource
 
 if TYPE_CHECKING:
@@ -27,9 +28,19 @@ if TYPE_CHECKING:
     from .source import SourceText
 
 
-@cache
 def global_ast(database: ResolvedDatabase, *, entrypoint: str = "isa/globals.isa") -> Isa | None:
-    """Flatten includes once in source order, retaining each declaration's own span."""
+    """Flatten includes in source order, retaining each declaration's own span.
+
+    Each call returns an independent tree: analyses memoize architecture-specific
+    results on AST nodes, so a tree must not be shared between architectures.
+    """
+    pristine = _parsed_global_ast(database, entrypoint)
+    return None if pristine is None else clone(pristine)  # type: ignore[return-value]
+
+
+@cache
+def _parsed_global_ast(database: ResolvedDatabase, entrypoint: str) -> Isa | None:
+    """Parse once per database; callers receive clones and never see this tree."""
     if not database.idl_sources:
         return None
     loaded: set[tuple[str, str]] = set()

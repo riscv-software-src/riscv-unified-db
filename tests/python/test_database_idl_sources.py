@@ -38,6 +38,24 @@ def test_resolution_captures_custom_idl_includes_and_yaml(tmp_path: Path) -> Non
     (root / "ext/Xcustom.yaml").write_text("changed: true\n", encoding="utf-8")
     assert resolved.idl_sources["isa/helpers.idl"].text == helper
     assert resolved.source_text("ext/Xcustom.yaml") == yaml
+
+
+def test_global_ast_calls_never_share_node_caches(tmp_path: Path) -> None:
+    root = tmp_path / "custom"
+    _write(root, "isa/globals.isa", '%version: 1.0\ninclude "helpers.idl"\nBits<8> TOP = 1;\n')
+    _write(root, "isa/helpers.idl", "%version: 1.0\nBits<8> CUSTOM = 3;\n")
+    resolved = Database.from_path(root).resolve()
+
+    first, second = global_ast(resolved), global_ast(resolved)
+    assert first is not None and second is not None
+    names = [item.var_decl_with_init.lhs.name for item in first.globals]
+    assert names == [item.var_decl_with_init.lhs.name for item in second.globals]
+    assert names == ["CUSTOM", "TOP"]
+    for one, other in zip(first.definitions, second.definitions, strict=True):
+        assert one is not other
+        assert one.parent is first and other.parent is second
+    first.globals[0]._cache["architecture"] = "rv32"
+    assert "architecture" not in second.globals[0]._cache
     assert resolved.resolve() is resolved
 
 
