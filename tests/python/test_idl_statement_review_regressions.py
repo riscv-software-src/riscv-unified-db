@@ -542,3 +542,53 @@ def test_function_return_values_are_reused_only_for_equal_globals_and_arguments(
         known = table.deep_clone()
         known.get_global("u").value = 0
         assert parse_expression("guarded()").value(known) == 1
+
+
+@pytest.mark.parametrize(
+    ("definitions", "dtype_name", "initial", "expected", "function"),
+    [
+        (
+            (
+                "struct S { Bits<8> x; }\n"
+                "function mutate { returns Bits<8> arguments S s description { mutate } "
+                "body { s.x = 1; return 2; } }\n"
+                "function wrapper { returns Bits<8> arguments S s description { wrapper } "
+                "body { return mutate(s); } }"
+            ),
+            "S",
+            {"x": 0},
+            {"x": 1},
+            "wrapper",
+        ),
+        (
+            (
+                "function mutate { returns Bits<8> arguments Bits<8> a[2] "
+                "description { mutate } body { a[0] = 1; return 2; } }"
+            ),
+            None,
+            [0, 0],
+            [1, 0],
+            "mutate",
+        ),
+    ],
+)
+def test_return_value_cache_does_not_skip_parameter_mutations(
+    definitions, dtype_name, initial, expected, function
+):
+    table = SymbolTable()
+    parse_isa("%version: 1.0\n" + definitions).type_check(table)
+    dtype = (
+        table.get(dtype_name)
+        if dtype_name is not None
+        else Type(TypeKind.ARRAY, width=2, sub_type=BITS8)
+    )
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+    first, second = initial.copy(), initial.copy()
+    table.add("first", Var("first", dtype, first))
+    table.add("second", Var("second", dtype, second))
+
+    assert parse_expression(f"{function}(first)").value(table) == 2
+    assert parse_expression(f"{function}(second)").value(table) == 2
+    assert first == expected
+    assert second == expected

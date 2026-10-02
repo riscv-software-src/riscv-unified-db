@@ -109,7 +109,9 @@ def _targets(node: Node) -> tuple[Node, ...]:
 def _scan_globals(
     nodes: Iterable[Node],
     shadowed: set[str],
+    parameters: frozenset[str],
     targets: dict[str, None],
+    parameter_targets: dict[str, None],
     ids: dict[str, None],
     calls: list[Node],
 ) -> None:
@@ -117,31 +119,61 @@ def _scan_globals(
     for node in nodes:
         declaration = _declaration(node)
         if declaration.is_declaration:
-            _scan_globals(_declaration_expressions(declaration), local, targets, ids, calls)
+            _scan_globals(
+                _declaration_expressions(declaration),
+                local,
+                parameters,
+                targets,
+                parameter_targets,
+                ids,
+                calls,
+            )
             local.update(_declared_names(declaration))
             continue
         if node.kind == "for_loop":
             _scan_globals(
                 (node.init, node.condition, *node.stmts, node.update),
                 local,
+                parameters,
                 targets,
+                parameter_targets,
                 ids,
                 calls,
             )
             continue
         for target in _targets(node):
             name = extract_base_var_name(target)
+            if name in parameters and isinstance(
+                node,
+                (
+                    AryElementAssignment,
+                    AryRangeAssignment,
+                    FieldAssignment,
+                    MultiVariableAssignment,
+                ),
+            ):
+                parameter_targets[name] = None
             if name is not None and name not in local:
                 targets[name] = None
         if node.kind == "id" and node.name not in local:
             ids[node.name] = None
         if node.kind == "funcall_expr":
             calls.append(node)
-        _scan_globals(node.children, local, targets, ids, calls)
+        _scan_globals(
+            node.children,
+            local,
+            parameters,
+            targets,
+            parameter_targets,
+            ids,
+            calls,
+        )
 
 
-def _body_effects(definition: Node) -> tuple[tuple[str, ...], tuple[str, ...], tuple[Node, ...]]:
-    """Global names a body may write or alias, and the calls it makes.
+def _body_effects(
+    definition: Node,
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[Node, ...], tuple[str, ...]]:
+    """Global effects, calls, and aggregate parameters a body directly mutates.
 
     The summary is purely syntactic, so it is computed once per definition;
     bindings are resolved against the caller's table on every use.
@@ -149,18 +181,97 @@ def _body_effects(definition: Node) -> tuple[tuple[str, ...], tuple[str, ...], t
     cached = definition._cache.get("global_effects")
     if cached is None:
         targets: dict[str, None] = {}
+        parameter_targets: dict[str, None] = {}
         ids: dict[str, None] = {}
         calls: list[Node] = []
+        parameters = frozenset(argument.id.name for argument in definition.argument_nodes)
         _scan_globals(
             definition.body.stmts,
-            {argument.id.name for argument in definition.argument_nodes},
+            set(parameters),
+            parameters,
             targets,
+            parameter_targets,
             ids,
             calls,
         )
-        cached = (tuple(targets), tuple(ids), tuple(calls))
+        cached = (tuple(targets), tuple(ids), tuple(calls), tuple(parameter_targets))
         definition._cache["global_effects"] = cached
     return cached
+
+
+def _parameter_references(node: Node, parameters: frozenset[str]) -> set[str]:
+    references: set[str] = set()
+    pending = [node]
+    while pending:
+        current = pending.pop()
+        if current.kind == "id" and current.name in parameters:
+            references.add(current.name)
+        pending.extend(current.children)
+    return references
+
+
+def mutated_parameters(definition: Node, symtab: SymbolTable) -> frozenset[str]:
+    """Parameters whose aliased values may be mutated directly or by a callee."""
+    cached = definition._cache.get("mutated_parameters")
+    if cached is not None:
+        return cached
+
+    definitions: dict[int, Node] = {}
+    calls_by_definition: dict[int, tuple[Node, ...]] = {}
+    pending = [definition]
+    while pending:
+        current = pending.pop()
+        identity = id(current)
+        if identity in definitions:
+            continue
+        definitions[identity] = current
+        _, _, calls, _ = _body_effects(current)
+        calls_by_definition[identity] = calls
+        for call in calls:
+            function = _global_binding(symtab, call.name)
+            if (
+                isinstance(function, FunctionType)
+                and not function.is_builtin
+                and not function.is_external
+                and not function.is_generated
+            ):
+                pending.append(function.func_def_ast)
+
+    mutated: dict[int, set[str]] = {}
+    for identity, current in definitions.items():
+        _, _, _, direct = _body_effects(current)
+        mutated[identity] = set(direct)
+
+    changed = True
+    while changed:
+        changed = False
+        for identity, current in definitions.items():
+            parameters = frozenset(argument.id.name for argument in current.argument_nodes)
+            for call in calls_by_definition[identity]:
+                function = _global_binding(symtab, call.name)
+                if not isinstance(function, FunctionType):
+                    continue
+                if function.is_builtin or function.is_external or function.is_generated:
+                    affected = range(len(call.args))
+                else:
+                    callee = function.func_def_ast
+                    callee_mutated = mutated[id(callee)]
+                    affected = (
+                        index
+                        for index, argument in enumerate(callee.argument_nodes)
+                        if argument.id.name in callee_mutated
+                    )
+                before = len(mutated[identity])
+                for index in affected:
+                    if index < len(call.args):
+                        mutated[identity].update(
+                            _parameter_references(call.args[index], parameters)
+                        )
+                changed |= len(mutated[identity]) != before
+
+    for identity, current in definitions.items():
+        current._cache["mutated_parameters"] = frozenset(mutated[identity])
+    return definition._cache["mutated_parameters"]
 
 
 def _mutable_global(variable: object) -> bool:
@@ -207,7 +318,7 @@ def invalidate_call(call: Node, symtab: SymbolTable) -> None:
         definition = function.func_def_ast
         if definition.body is None:
             current.internal_error(f"Function {current.name} has no body")
-        targets, ids, calls = _body_effects(definition)
+        targets, ids, calls, _ = _body_effects(definition)
         for name in targets:
             _invalidate_variable(_global_binding(symtab, name))
         for name in ids:

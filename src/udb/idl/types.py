@@ -1326,6 +1326,7 @@ class FunctionType(Type):
         call_site_symtab: SymbolTableLike,
         func_call_ast: FunctionCallLike,
     ) -> object:
+        from .ast._effects import mutated_parameters
         from .errors import IdlValueUnknown
         from .symbols import binding_state, value_key
 
@@ -1337,7 +1338,11 @@ class FunctionType(Type):
         cache = key = None
         state_key = getattr(self._symtab, "global_state_key", None)
         node_cache = getattr(self.func_def_ast, "_cache", None)
-        if state_key is not None and isinstance(node_cache, dict):
+        if (
+            state_key is not None
+            and isinstance(node_cache, dict)
+            and not mutated_parameters(self.func_def_ast, self._symtab)
+        ):
             try:
                 key = (
                     state_key(binding_state),
