@@ -40228,6 +40228,7 @@ for pass:[(]U32 i = 0; i < NUM_PMP_ENTRIES; i++) {
   Bits<32> pmpaddr_csr_value = xref:#udb-function-csr_sw_read[csr_sw_read]pass:[(]pmpaddr_csr);
   Bits<PHYS_ADDR_WIDTH> range_base = 0;
   Bits<PHYS_ADDR_WIDTH> range_limit = 0;
+  Boolean active = false;
   if pass:[(]cfg.A == $bits(PmpCfg_A::TOR)) {
     if pass:[(]i == 0) {
       range_base = 0;
@@ -40235,19 +40236,26 @@ for pass:[(]U32 i = 0; i < NUM_PMP_ENTRIES; i++) {
       Csr tor_pmpaddr_csr = xref:#udb-function-direct_csr_lookup[direct_csr_lookup]pass:[(]pmpaddr_idx - 1);
       range_base = xref:#udb-function-csr_sw_read[csr_sw_read]pass:[(]tor_pmpaddr_csr)[PHYS_ADDR_WIDTH - 1:0];
     }
-    range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH - 1:0] - 1;
+    if pass:[(]range_base < (pmpaddr_csr_value)[PHYS_ADDR_WIDTH - 1:0]) {
+      range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH - 1:0] - 1;
+      active = true;
+    }
   } else if pass:[(]cfg.A == $bits(PmpCfg_A::NAPOT)) {
     Bits<PHYS_ADDR_WIDTH - 1> pmpaddr_value = pmpaddr_csr_value[PHYS_ADDR_WIDTH - 3:0];
     Bits<PHYS_ADDR_WIDTH - 1> mask = pmpaddr_value ^ (pmpaddr_value pass:[+] 1);
     range_base = pmpaddr_value & ~mask;
     range_limit = range_base pass:[+] mask;
+    active = true;
   } else if pass:[(]cfg.A == $bits(PmpCfg_A::NA4)) {
     range_base = pmpaddr_csr_value[PHYS_ADDR_WIDTH - 1:0];
-    range_limit = range_base pass:[+] 3;
+    range_limit = range_base;
+    active = true;
   }
-  if pass:[(]((paddr >> 2) >= range_base) && (((paddr pass:[+] (access_size / 8) - 1) >> 2) <= range_limit)) {
+  Bits<PHYS_ADDR_WIDTH> first_word = paddr >> 2;
+  Bits<PHYS_ADDR_WIDTH> last_word = (paddr pass:[+] (access_size / 8) - 1) >> 2;
+  if pass:[(]active && (first_word >= range_base) && (last_word <= range_limit)) {
     return PmpMatchResult::FullMatch, cfg;
-  } else if pass:[(]!(((paddr pass:[+] (access_size / 8) - 1) < range_base) || (paddr >= range_limit))) {
+  } else if pass:[(]active && !((last_word < range_base) || (first_word > range_limit))) {
     return PmpMatchResult::PartialMatch, -;
   }
 }

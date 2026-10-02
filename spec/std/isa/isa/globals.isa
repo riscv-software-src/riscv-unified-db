@@ -1038,6 +1038,7 @@ function pmp_match_64 {
       # compared to the access
       Bits<PHYS_ADDR_WIDTH> range_base = 0;
       Bits<PHYS_ADDR_WIDTH> range_limit = 0;
+      Boolean active = false;
 
       if (cfg.A == $bits(PmpCfg_A::TOR)) {
         if (i == 0) {
@@ -1048,7 +1049,11 @@ function pmp_match_64 {
           Csr tor_pmpaddr_csr = direct_csr_lookup(pmpaddr_idx - 1);
           range_base = (csr_sw_read(tor_pmpaddr_csr))[PHYS_ADDR_WIDTH-1:0];
         }
-        range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0] - 1;
+        # "If pmpaddr[i-1] >= pmpaddr[i] and pmpcfg[i].A=TOR, then PMP entry i matches no addresses."
+        if (range_base < (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0]) {
+          range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0] - 1;
+          active = true;
+        }
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1061,16 +1066,22 @@ function pmp_match_64 {
         Bits<PHYS_ADDR_WIDTH-1> mask = pmpaddr_value ^ (pmpaddr_value + 1);
         range_base = (pmpaddr_value & ~mask);
         range_limit = range_base + mask;
+        active = true;
 
       } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
         range_base = pmpaddr_csr_value[PHYS_ADDR_WIDTH-1:0];
-        range_limit = range_base + 3;
+        range_limit = range_base;
+        active = true;
       }
 
-      if (((paddr >> 2) >= range_base) && (((paddr + (access_size/8) - 1) >> 2) <= range_limit)) {
+      # range_base and range_limit are word addresses (pmpaddr holds paddr[PHYS_ADDR_WIDTH-1:2]),
+      # and range_limit is inclusive
+      Bits<PHYS_ADDR_WIDTH> first_word = paddr >> 2;
+      Bits<PHYS_ADDR_WIDTH> last_word = (paddr + (access_size/8) - 1) >> 2;
+      if (active && (first_word >= range_base) && (last_word <= range_limit)) {
         # full match
         return PmpMatchResult::FullMatch, cfg;
-      } else if (!(((paddr + (access_size/8) - 1) < range_base) || (paddr >= range_limit))) {
+      } else if (active && !((last_word < range_base) || (first_word > range_limit))) {
         # this is a partial match. By definition, the access must fail, regardless
         # of the pmp cfg settings
         return PmpMatchResult::PartialMatch, -;
@@ -1110,6 +1121,7 @@ function pmp_match_32 {
       # compared to the access
       Bits<PHYS_ADDR_WIDTH> range_base = 0;
       Bits<PHYS_ADDR_WIDTH> range_limit = 0;
+      Boolean active = false;
 
       if (cfg.A == $bits(PmpCfg_A::TOR)) {
         if (i == 0) {
@@ -1120,7 +1132,11 @@ function pmp_match_32 {
           Csr tor_pmpaddr_csr = direct_csr_lookup(pmpaddr_idx - 1);
           range_base = csr_sw_read(tor_pmpaddr_csr)[PHYS_ADDR_WIDTH-1:0];
         }
-        range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0] - 1;
+        # "If pmpaddr[i-1] >= pmpaddr[i] and pmpcfg[i].A=TOR, then PMP entry i matches no addresses."
+        if (range_base < (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0]) {
+          range_limit = (pmpaddr_csr_value)[PHYS_ADDR_WIDTH-1:0] - 1;
+          active = true;
+        }
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1133,16 +1149,22 @@ function pmp_match_32 {
         Bits<PHYS_ADDR_WIDTH-1> mask = pmpaddr_value ^ (pmpaddr_value + 1);
         range_base = pmpaddr_value & ~mask;
         range_limit = range_base + mask;
+        active = true;
 
       } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
         range_base = pmpaddr_csr_value[PHYS_ADDR_WIDTH-1:0];
-        range_limit = range_base + 3;
+        range_limit = range_base;
+        active = true;
       }
 
-      if (((paddr >> 2) >= range_base) && (((paddr + (access_size/8) - 1) >> 2) <= range_limit)) {
+      # range_base and range_limit are word addresses (pmpaddr holds paddr[PHYS_ADDR_WIDTH-1:2]),
+      # and range_limit is inclusive
+      Bits<PHYS_ADDR_WIDTH> first_word = paddr >> 2;
+      Bits<PHYS_ADDR_WIDTH> last_word = (paddr + (access_size/8) - 1) >> 2;
+      if (active && (first_word >= range_base) && (last_word <= range_limit)) {
         # full match
         return PmpMatchResult::FullMatch, cfg;
-      } else if (!(((paddr + (access_size/8) - 1) < range_base) || (paddr >= range_limit))) {
+      } else if (active && !((last_word < range_base) || (first_word > range_limit))) {
         # this is a partial match. By definition, the access must fail, regardless
         # of the pmp cfg settings
         return PmpMatchResult::PartialMatch, -;
