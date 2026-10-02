@@ -36,22 +36,22 @@ fields:
 
       Otherwise, `sip.SSIP` is an alias of `mip.SSIP`.
 
-      <%- if ext?(:Smaia) -%>
+      {%- if extensions.Smaia -%}
       When using AIA/IMSIC, IPIs are expected to be delivered as external interrupts
       and SSIP is not backed by any hardware update (aside from any aliasing effects).
 
       However, SSIP is still writable by S-mode software and, when written, can be used to
       generate an S-mode Software Interrupt.
-      <%- end -%>
+      {%- endif -%}
 
-      Since it is an alias, writes to `sip.SSIP` are also be reflected in `mip.SSIP`<% if ext?(:Smaia) %> and `mvip.SSIP`<% end %>.
+      Since it is an alias, writes to `sip.SSIP` are also be reflected in `mip.SSIP`{% if extensions.Smaia %} and `mvip.SSIP`{% endif %}.
 
-      <% if ext?(:Smaia) %>_Aliases_<% else %>_Alias_<% end %>:
+      {% if extensions.Smaia %}_Aliases_{% else %}_Alias_{% endif %}:
 
       * `mip.SSIP` when `mideleg.SSI` is set
-      <%- if ext?(:Smaia) -%>
+      {%- if extensions.Smaia -%}
       * `mvip.SSIP` when `mideleg.SSI` is set
-      <%- end -%>
+      {%- endif -%}
 
       To summarize:
       [separator="!",%autowidth]
@@ -59,7 +59,7 @@ fields:
       ! `mideleg.SSI` ! `sip.SSIP` behavior
 
       ! 0 ! read-only 0
-      ! 1 ! writable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
+      ! 1 ! writable alias of `mip.SSIP` {% if extensions.Smaia %}and `mvip.SSIP`{% endif %}
       !===
     type: RW-R
     sw_write(csr_value): |
@@ -87,12 +87,12 @@ fields:
 
       Otherwise, `sip.STIP` is a read-only view of `mip.STIP`.
 
-      <% if ext?(:Smaia) %>_Aliases_<% else %>_Alias_<% end %>:
+      {% if extensions.Smaia %}_Aliases_{% else %}_Alias_{% endif %}:
 
       * `mip.STIP` when `mideleg.STI` is set
-      <%- if ext?(:Smaia) -%>
+      {%- if extensions.Smaia -%}
       * `mvip.STIP` when `mideleg.SSI` is set and `menvcfg.STCE` is clear.
-      <%- end -%>
+      {%- endif -%}
 
       To summarize:
       [separator="!",%autowidth]
@@ -100,7 +100,7 @@ fields:
       ! `mideleg.STI` ! `sip.STIP` behavior
 
       ! 0 ! read-only 0
-      ! 1 ! read-only alias of `mip.STIP` <% if ext?(:Smaia) %>(and `mvip.STIP` when `menvcfg.STCE` is clear)<% end %>
+      ! 1 ! read-only alias of `mip.STIP` {% if extensions.Smaia %}(and `mvip.STIP` when `menvcfg.STCE` is clear){% endif %}
       !===
     type: RO-H
     reset_value: UNDEFINED_LEGAL

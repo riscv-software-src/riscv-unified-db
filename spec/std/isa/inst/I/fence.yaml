@@ -51,7 +51,7 @@ description: |
   The `xs1` and `xd` fields are unused and ignored.
 
   In modes other than M-mode, `fence` is further affected by `menvcfg.FIOM`,
-  `senvcfg.FIOM`<% if ext?(:H) %>, and/or `henvcfg.FIOM`<% end %>
+  `senvcfg.FIOM`{% if extensions.H %}, and/or `henvcfg.FIOM`{% endif %}
   as follows:
 
   .Effective PR/PW/SR/SW in (H)S-mode
@@ -98,7 +98,7 @@ description: |
   ! 1 ! - ! 1 ! ! 1
   !===
 
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   .Effective PR/PW/SR/SW in VS-mode and VU-mode
   [%autowidth,options="header",separator="!",cols=",,,,"]
   !===
@@ -121,7 +121,7 @@ description: |
   ! 1 ! - ! 0 ! ! from encoding
   ! 1 ! - ! 1 ! ! 1
   !===
-  <%- end -%>
+  {%- endif -%}
 
 definedBy:
   extension:

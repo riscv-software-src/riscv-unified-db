@@ -29,7 +29,7 @@ fields:
       ! Exception type ! Value
 
       ! [0] Instruction address misaligned ! The misaligned virtual PC (same as the value written to `mepc`).
-      ! [1] Instruction access fault ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the access fault <%- unless ext?(:C) -%>(same as the value written to `mepc`)<%- end -%>.
+      ! [1] Instruction access fault ! The {% if extensions.C %} portion of the {% endif %} virtual PC causing the access fault {%- if not extensions.C -%}(same as the value written to `mepc`){%- endif -%}.
       ! [2] Illegal Instruction ! The encoding of the illegal instruction.
       ! [3] Breakpoint
       ! [when,"REPORT_VA_IN_MTVAL_ON_BREAKPOINT == true"]
@@ -58,15 +58,15 @@ fields:
         address + 4 is reported).
 
         (Even though the access fault arises on a physical address, the virtual address is reported)
-      ! [8] Environment call from U-mode <% if ext?(:H) %>or VU-mode<% end %> ! Zero
+      ! [8] Environment call from U-mode {% if extensions.H %}or VU-mode{% endif %} ! Zero
       ! [9] Environment call from (H)S-mode ! Zero
-      <%- if ext?(:H) -%>
+      {%- if extensions.H -%}
       ! [10] Environment call from VS-mode ! Zero
-      <%- end -%>
+      {%- endif -%}
       ! [11] Environment call from M-mode ! Zero
       ! [12] Instruction page fault
-      ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the page fault
-        <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
+      ! The {% if extensions.C %} portion of the {% endif %} virtual PC causing the page fault
+        {% if not extensions.C %}(same as the value written to `mepc`){% endif %}.
       ! [13] Load page fault
       ! The part of the virtual load address causing in the page fault.
 
@@ -77,9 +77,9 @@ fields:
 
         When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
-      <%- if ext?(:H) -%>
+      {%- if extensions.H -%}
       ! [20] Instruction guest-page fault
-      ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the fault <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
+      ! The {% if extensions.C %} portion of the {% endif %} virtual PC causing the fault {% if not extensions.C %}(same as the value written to `mepc`){% endif %}.
 
         The guest physical address is reported in `mtval2`.
       ! [21] Load guest-page fault
@@ -98,7 +98,7 @@ fields:
         (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
 
         The guest physical address is reported in `mtval2`.
-      <%- end -%>
+      {%- endif -%}
       !===
 
     type: RW-H

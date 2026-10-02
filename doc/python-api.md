@@ -354,36 +354,31 @@ An optional `GeneratedFile.overwrite_prefixes` tuple restricts replacement to fi
 with one of the nonempty byte prefixes. When supplied, unowned existing files are rejected
 before writes, including in check mode. Omitting it preserves ordinary authoring behavior.
 
-Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` text in a layout is
-content preserved for a later configured-document rendering stage; it is not executed by the
-layout renderer.
+Layout directives use `{{ value }}` and `{% ... %}`. Layouts that emit native configured-prose
+tags quote the complete tag as a Stage 2 expression, so the authoring renderer writes it literally
+for the later configuration-sensitive rendering stage.
 
 Configuration-sensitive instruction and CSR prose can be rendered offline from captured database
 and configuration data:
 
 ```python
 from udb import Configuration, Database
-from udb.prose import CapturedProse, ProseInputs, render_legacy, render_native
+from udb.prose import CapturedProse, ProseInputs, native_prose_values, render_native
 
 resolved = Database.bundled().resolve()
 inputs = ProseInputs.from_database(resolved, Configuration.builtin("rv64"))
 scalar = CapturedProse.from_record(resolved, resolved.csr("stvec"), "fields", "BASE", "description")
-text = render_legacy(scalar, inputs)
-native = render_native(
-    CapturedProse("{% if extensions.H %}H{% endif %}:{{ params.MXLEN }}"),
-    {"extensions": {"H": True}, "params": {"MXLEN": 64}},
-)
+text = render_native(scalar, native_prose_values(scalar, inputs))
 ```
 
-`render_legacy` is a restricted migration adapter for the captured ERB grammar, not a Ruby
-interpreter. Unsupported syntax and unavailable inputs raise `ProseError` with the captured scalar,
-source span, exact tag, configuration facts, and legacy error class when applicable.
-`render_native` uses the bounded layout expression engine and rejects ERB. Structured generator
-consumers should use `resolve_all_exception_records`; `resolved_exception_names` instead selects
-only configuration-available codes. These APIs do not reopen checkout files or invoke Ruby, Git,
-or a solver. There is intentionally no configured-prose CLI. The source YAML remains in legacy
-syntax until its downstream consumers are migrated; see the
-[configured-prose contract and cutover boundary](stage5-configured-prose.md).
+`render_native` uses the bounded layout expression engine and rejects ERB. `native_prose_values`
+projects the typed extension, parameter, selected-width, cache-granularity, and code-row inputs used
+by the captured scalar. Structured generator consumers should use
+`resolve_all_exception_records`; `resolved_exception_names` instead selects only
+configuration-available codes. These APIs do not reopen checkout files or invoke Ruby, Git, or a
+solver. There is intentionally no configured-prose CLI. The former restricted ERB adapter remains
+only for the immutable migration oracle; live architecture sources and production consumers use
+native syntax. See the [configured-prose contract](stage5-configured-prose.md).
 
 The wheel contains the standard ISA YAML, IDL, referenced AsciiDoc sources, authoring layouts, and
 their JSON schemas. The bundled layouts let the authoring command populate an explicit output root

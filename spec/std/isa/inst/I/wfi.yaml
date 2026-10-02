@@ -10,7 +10,7 @@ long_name: Wait for interrupt
 description: |
   Can causes the processor to enter a low-power state until the next interrupt occurs.
 
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   The behavior of `wfi` is affected by the `mstatus.TW`
   and `hstatus.VTW` bits, as summarized below.
 
@@ -27,7 +27,7 @@ description: |
   Trap (V) - Trap with `Virtual Instruction` code
   |===
 
-  <%- else -%>
+  {%- else -%}
   The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
 
   [%autowidth,%footer]
@@ -41,7 +41,7 @@ description: |
   3+| Trap (I) - Trap with `Illegal Instruction` code
   |===
 
-  <%- end -%>
+  {%- endif -%}
 
   When `wfi` is marked as causing a trap above, the implementation is allowed to wait
   for an unspecified period of time to see if an interrupt occurs before raising the trap.
@@ -59,7 +59,7 @@ access:
   vs: sometimes
   vu: sometimes
 access_detail: |
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   The behavior of `wfi` is affected by the `mstatus.TW`
   and `hstatus.VTW` bits, as summarized below.
 
@@ -76,7 +76,7 @@ access_detail: |
   Trap (V) - Trap with `Virtual Instruction` code
   |===
 
-  <%- else -%>
+  {%- else -%}
   The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
 
   [%autowidth,%footer]
@@ -90,7 +90,7 @@ access_detail: |
   3+| Trap (I) - Trap with `Illegal Instruction` code
   |===
 
-  <%- end -%>
+  {%- endif -%}
 operation(): |
   # first, perform all the access checks
   if (mode() == PrivilegeMode::U && !WFI_U_MODE) {

@@ -51,23 +51,23 @@ description: |
 
   `cbo.inval` is ordered by `FENCE` instructions but not `FENCE.I` or `SFENCE.VMA`.
 
-  <%- if (CACHE_BLOCK_SIZE.bit_length - 1) > [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+  {%- if derived.cache_block_size_log2 > derived.min_cache_granularity -%}
   Both PMP and PMA access control must be the same for all bytes in the block; otherwise, `cbo.inval` has UNSPECIFIED behavior.
-  <%- end -%>
+  {%- endif -%}
 
   Invalidate operations are treated as stores for page and access permissions. If permission checks fail,
   one of the following exceptions will occur:
 
-    <%- if ext?(:H) -%>
+    {%- if extensions.H -%}
     * `Store/AMO Guest-Page Fault` if virtual memory translation fails during G-stage translation.
-    <%- end -%>
-    * `Store/AMO Page Fault` if virtual memory translation fails <% if ext?(:H) %>when V=0 or during VS-stage translation<% end %>
+    {%- endif -%}
+    * `Store/AMO Page Fault` if virtual memory translation fails {% if extensions.H %}when V=0 or during VS-stage translation{% endif %}
     * `Store/AMO Access Fault` if a PMP or PMA access check fails.
 
-  <%- if (CACHE_BLOCK_SIZE.bit_length - 1) <= [PMP_GRANULARITY, PMA_GRANULARITY].min -%>
+  {%- if derived.cache_block_size_log2 <= derived.min_cache_granularity -%}
   Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
   and PMA access checks only need to check a single address in the line.
-  <%- end -%>
+  {%- endif -%}
 
   CBO operations never raise a misaligned address fault.
 definedBy:

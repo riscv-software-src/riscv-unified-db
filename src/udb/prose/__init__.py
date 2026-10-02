@@ -14,6 +14,7 @@ from .inputs import (
 from .render import (
     ProseDiagnostic,
     ProseError,
+    native_prose_values,
     render_legacy,
     render_native,
     resolve_all_exception_records,
@@ -30,6 +31,7 @@ __all__ = [
     "ProseError",
     "ProseInputs",
     "all_exception_records",
+    "native_prose_values",
     "render_legacy",
     "render_native",
     "resolve_all_exception_records",

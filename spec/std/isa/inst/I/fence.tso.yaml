@@ -18,7 +18,7 @@ description: |
   The `xs1` and `xd` fields are unused and ignored.
 
   In modes other than M-mode, `fence.tso` is further affected by `menvcfg.FIOM`,
-  `senvcfg.FIOM`<% if ext?(:H) %>, and/or `henvcfg.FIOM`<% end %>.
+  `senvcfg.FIOM`{% if extensions.H %}, and/or `henvcfg.FIOM`{% endif %}.
 
 definedBy:
   extension:

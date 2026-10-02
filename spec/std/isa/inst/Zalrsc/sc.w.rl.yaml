@@ -24,10 +24,10 @@ description: |
   Other failure codes are reserved at this time.
   Portable software should only assume the failure code will be non-zero.
 
-  <%- if MXLEN == 64 -%>
+  {%- if params.MXLEN == 64 -%}
   [NOTE]
    `sc.w.rl` sign-extends the value placed in _xd_.
-  <%- end -%>
+  {%- endif -%}
 
   The address held in _xs1_ must be naturally aligned to the size of the operand
   (_i.e._, four-byte aligned).

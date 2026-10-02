@@ -51,7 +51,8 @@ def test_editable_install_can_generate_from_bundled_layout_resources(tmp_path: P
 def test_native_renderer_supports_only_bounded_data_constructs(tmp_path: Path) -> None:
     layout = tmp_path / "example.layout"
     layout.write_text(
-        "literal <% if ext?(:H) %>runtime ERB<% end %>\n"
+        'literal {{ "{% if extensions.H %}" }}runtime configured prose'
+        '{{ "{% endif %}" }}\n'
         "{% for number in numbers %}"
         "{% if enabled and number >= 2 %}{{ item.name }}={{ number * 2 }}\n{% endif %}"
         "{% endfor %}",
@@ -61,7 +62,7 @@ def test_native_renderer_supports_only_bounded_data_constructs(tmp_path: Path) -
     assert render_layout(
         layout,
         {"numbers": (1, 2, 3), "enabled": True, "item": {"name": "value"}},
-    ) == ("literal <% if ext?(:H) %>runtime ERB<% end %>\nvalue=4\nvalue=6\n")
+    ) == ("literal {% if extensions.H %}runtime configured prose{% endif %}\nvalue=4\nvalue=6\n")
 
 
 @pytest.mark.parametrize(

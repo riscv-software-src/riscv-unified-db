@@ -11,11 +11,11 @@ description: |
   For RV64, load 64 bits of data into register `xd` from an
   address formed by adding `xs1` to a signed offset.
 
-  <% if ext?(:Zilsd) %>
+  {%- if extensions.Zilsd -%}
   For RV32, Loads a 64-bit value into registers xd and xd+1.
   The effective address is obtained by adding
   register xs1 to the sign-extended 12-bit offset.
-  <% end %>
+  {%- endif -%}
 
 definedBy:
   anyOf:

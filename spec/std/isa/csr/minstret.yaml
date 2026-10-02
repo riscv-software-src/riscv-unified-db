@@ -24,26 +24,26 @@ fields:
     description: |
       Instructions retired counter.
 
-      <%- if ext?(:Zicntr) -%>
+      {%- if extensions.Zicntr -%}
       Aliased as `instret.COUNT`.
-      <%- end -%>
+      {%- endif -%}
 
       Increments every time an instruction retires unless:
 
-        * `mcountinhibit.IR` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.IR`<%- end -%> is set
-        <%- if ext?(:Smcntrpmf) -%>
+        * `mcountinhibit.IR` {%- if extensions.Smcdeleg -%}or its alias `scountinhibit.IR`{%- endif -%} is set
+        {%- if extensions.Smcntrpmf -%}
         * `minstretcfg.MINH` is set and the current privilege level is M
-        <%- if ext?(:S) -%>
-        * `minstretcfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is (H)S
-        <%- end -%>
-        <%- if ext?(:U) -%>
-        * `minstretcfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.UINH`<%- end -%> is set and the current privilege level is U
-        <%- end -%>
-        <%- if ext?(:H) -%>
-        * `minstretcfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.VSINH`<%- end -%> is set and the current privilege level is VS
-        * `minstretcfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.VUINH`<%- end -%> is set and the current privilege level is VU
-        <%- end -%>
-        <%- end -%>
+        {%- if extensions.S -%}
+        * `minstretcfg.SINH` {%- if extensions.Ssccfg -%}or its alias `instretcfg.SINH`{%- endif -%} is set and the current privilege level is (H)S
+        {%- endif -%}
+        {%- if extensions.U -%}
+        * `minstretcfg.UINH` {%- if extensions.Ssccfg -%}or its alias `instretcfg.UINH`{%- endif -%} is set and the current privilege level is U
+        {%- endif -%}
+        {%- if extensions.H -%}
+        * `minstretcfg.VSINH` {%- if extensions.Ssccfg -%}or its alias `instretcfg.VSINH`{%- endif -%} is set and the current privilege level is VS
+        * `minstretcfg.VUINH` {%- if extensions.Ssccfg -%}or its alias `instretcfg.VUINH`{%- endif -%} is set and the current privilege level is VU
+        {%- endif -%}
+        {%- endif -%}
 
       An instruction that causes an exception, notably including MRET/SRET,
       does not retire and does not cause `minstret.COUNT` to increment.

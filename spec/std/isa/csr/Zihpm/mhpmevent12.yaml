@@ -16,7 +16,7 @@ priv_mode: M
 length: 64
 description: |
   Programmable hardware performance counter event selector
-  <% if ext?(:Sscofpmf) %> and overflow/filtering control<% end %>
+  {% if extensions.Sscofpmf %} and overflow/filtering control{% endif %}
 definedBy:
   allOf:
     - extension:

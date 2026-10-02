@@ -7,9 +7,9 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 
 ## Boundary (specified before implementation)
 
-This is a **transitional, restricted ERB-to-native adapter**, not a Ruby
-interpreter and not Stage 5 cutover. Standard YAML/layout sources remain
-immutable. Native templates use the existing bounded layout engine's
+The frozen migration oracle retains a **restricted ERB-to-native adapter**; it is
+not a Ruby interpreter and is not used by production consumers. Live standard
+YAML/layout sources use the existing bounded layout engine's
 `{{ expression }}`, `{% if/elif/else/endif %}`, and `{% for/endfor %}` syntax.
 Configuration inputs are captured, typed data; neither native rendering nor
 the adapter evaluates Python/Ruby source or reopens a source directory.
@@ -20,9 +20,9 @@ products does not remove configuration-sensitive instruction/CSR content needed
 by retained extension documentation or exception-name inputs needed by generators.
 Python conversion is feasible for the complete captured source grammar and
 structured-name boundary; no Ruby fallback or semantic-support retirement is
-required. Unsupported inputs fail explicitly rather than leaking raw ERB or
-silently omitting configured content. Source-format cutover remains separate
-because this lane must not modify source data while legacy consumers depend on it.
+required. Unsupported inputs fail explicitly rather than leaking template syntax
+or silently omitting configured content. The original ERB sources and Ruby
+outcomes remain immutable in the reviewed test corpus.
 
 The accepted `d6b06ca3` snapshot actually contains **128**, not 135,
 ERB-bearing standard YAML records: **111 CSR and 17 instruction** records,
@@ -185,18 +185,17 @@ the archive; Python diagnostics use the stable unavailable constant name rather
 than fabricating a Ruby object address. Other captured parameter-error messages
 are compared exactly.
 
-## Migration patch boundary
+## Native source cutover
 
-After downstream Ruby consumers are migrated, replace these 255 embedded
-scalar templates and their originating layouts with native syntax, changing
-only template tags, not prose. Retire production use of the legacy adapter and
-Ruby-specific unknown/error compatibility policy without discarding the frozen
-differential/error archive or its runnable regression coverage. CSR code tables need a
-native loop over prepared rows from typed code records; cache constraints need named typed
-derived inputs; `va_size` must be an explicit selected-width input.
-The precise authoring patch boundary is **31 handwritten YAML files and seven
-layouts**, regenerating **97 layout-owned YAML files**, not editing generated
-read-only files directly:
+The source cutover replaces these 255 embedded scalar templates and their
+originating layouts with native syntax, changing only template tags, not prose.
+Production consumers use `render_native`; the legacy adapter and Ruby-specific
+unknown/error compatibility policy remain only for the frozen differential/error
+archive and its runnable regression coverage. CSR code tables use native loops over
+prepared rows from typed code records, cache constraints use named typed derived
+inputs, and `va_size` is an explicit selected-width input. The precise authoring
+patch boundary is **31 handwritten YAML files and seven layouts**, regenerating
+**97 layout-owned YAML files** rather than editing generated read-only files directly:
 
 | Originating layout                | ERB-bearing generated records |
 | --------------------------------- | ----------------------------: |
@@ -223,24 +222,20 @@ raw-block language, second renderer, or source YAML edits.
 Native loops consume bounded prepared scalar rows (the existing layout engine
 does not iterate arbitrary objects). Typed code records remain at the API
 boundary; row preparation reuses that engine. No second renderer is added.
-The shared CLI, installed checker, CI inventory, schemas, and source-format
-conversion are parent-owned integration surfaces, not changed in this lane.
-Remaining ERB means Stage 5 is **not fully cut over**.
+The shared CLI, installed checker, CI inventory, and schemas remain parent-owned
+integration surfaces. A repository gate rejects ERB in live architecture YAML and
+layout sources, while the immutable migration fixtures retain the original ERB text.
 
 ## Standalone API
 
 ```python
 from udb import Configuration, Database
-from udb.prose import CapturedProse, ProseInputs, render_legacy, render_native
+from udb.prose import CapturedProse, ProseInputs, native_prose_values, render_native
 
 database = Database.bundled().resolve()
 inputs = ProseInputs.from_database(database, Configuration.builtin("rv64"))
 scalar = CapturedProse.from_record(database, database.csr("stvec"), "fields", "BASE", "description")
-text = render_legacy(scalar, inputs)
-native = render_native(
-    CapturedProse("{% if extensions.H %}H{% endif %}:{{ params.MXLEN }}"),
-    {"extensions": {"H": True}, "params": {"MXLEN": 64}},
-)
+text = render_native(scalar, native_prose_values(scalar, inputs))
 ```
 
 `ProseError.diagnostic` retains the scalar and captured YAML text/span, field
@@ -263,12 +258,10 @@ UDB/Qualcomm/ISA-manual contributor attribution; synthetic whitespace/name/query
 probes do not claim to contain specification prose. Prettier formatting must
 leave parsed raw values unchanged.
 
-`test_exact_source_inventory` remains a live pre-cutover gate: no scalar or
-directive is dropped to pass it. During the **parent-owned** native source
-conversion, replace only this live source-identity comparison with a gate over
-the migration manifest's paths, native fields and regenerated layout outputs.
-Keep the immutable ERB corpus, digest, all legacy differential/error tests and
-synthetic probes as frozen-archive regressions; do not skip or delete them when
-the live tree no longer contains ERB. Add native source parity assertions for the
-converted fields. The qc_iu Ruby authoring generator is a separate lane, not an
+`test_exact_source_inventory` gates the migration manifest's 255 scalar paths,
+native fields, regenerated layout outputs, and the absence of ERB from live
+architecture sources. The immutable ERB corpus, digest, legacy differential/error
+tests, and synthetic probes remain frozen-archive regressions. Native source parity
+assertions render every converted field across the original and supplemental
+configuration matrices. The qc_iu authoring generator is a separate lane, not an
 omitted configured-prose scalar or a reason to reduce this denominator.
