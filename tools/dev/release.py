@@ -7,7 +7,7 @@ import argparse
 import os
 import subprocess
 
-from .common import ROOT, DevError, entrypoint, python_command
+from .common import ROOT, DevError, entrypoint, python_command, udb_command
 
 
 def package_command(repository: str | None, artifacts: list[str] | None = None) -> list[str]:
@@ -30,6 +30,13 @@ def release_package(repository: str | None) -> int:
 
 
 def release_schemas(*, check_only: bool) -> int:
+    status = subprocess.run(
+        udb_command("generate", "schema-bundle", "-o", str(ROOT / "gen/schemas")),
+        cwd=ROOT,
+        check=False,
+    ).returncode
+    if status:
+        return status
     command = python_command(str(ROOT / "tools/scripts/publish_schemas.py"))
     if check_only:
         command.append("--check-only")

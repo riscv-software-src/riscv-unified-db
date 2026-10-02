@@ -1,5 +1,5 @@
 The Python C++ hart source generator ports the retained interfaces and rendering
-behavior of backends/cpp_hart_gen, including its templates, gen_cpp.rb and
+behavior of the retired backends/cpp_hart_gen implementation, including its templates, gen_cpp.rb and
 template helpers.
 
 The original generator is Copyright (c) Qualcomm Technologies, Inc. and/or its

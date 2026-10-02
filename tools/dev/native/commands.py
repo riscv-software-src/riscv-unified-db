@@ -209,7 +209,7 @@ def native_bits_plan(
             (
                 "cmake",
                 "-S",
-                str(root / "backends/cpp_hart_gen/cpp/test"),
+                str(root / "src/udb/cpp_hart/runtime/cpp/test"),
                 "-B",
                 str(build),
                 f"-DCMAKE_CXX_COMPILER={compiler}",

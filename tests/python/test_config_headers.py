@@ -500,121 +500,19 @@ def test_frozen_ruby_parameter_artifact(language, extension):
     )
 
 
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-@pytest.mark.parametrize("language,extension", [("c", "h"), ("svh", "svh")])
-def test_live_ruby_parameter_artifact(language, extension):
-    result = subprocess.run(
-        [
-            "mise",
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            f"-I{ROOT / 'tools/ruby-gems/udb/lib'}",
-            f"-I{ROOT / 'tools/ruby-gems/udb-gen/lib'}",
-            str(Path(__file__).with_name("ruby_config_headers_oracle.rb")),
-            str(ROOT),
-            language,
-            str(FIXTURES / "values.json"),
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        check=True,
-    )
-    assert result.stdout == (FIXTURES / f"values.{extension}").read_bytes()
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-def test_live_ruby_invalid_macros_are_reproduced_and_explicitly_rejected(tmp_path):
-    data = {"name": "Unsupported", "params": {"MXLEN": 32, "NEGATIVE": -1, "MIXED": [True, 1]}}
-    path = tmp_path / "unsupported.json"
-    path.write_text(json.dumps(data))
-    result = subprocess.run(
-        [
-            "mise",
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            f"-I{ROOT / 'tools/ruby-gems/udb/lib'}",
-            f"-I{ROOT / 'tools/ruby-gems/udb-gen/lib'}",
-            str(Path(__file__).with_name("ruby_config_headers_oracle.rb")),
-            str(ROOT),
-            "svh",
-            str(path),
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        check=True,
-        text=True,
-    )
-    assert "`define UDB_NEGATIVE 32'h-1\n" in result.stdout
-    assert "`define UDB_NEGATIVE_-1\n" in result.stdout
-    assert "`define UDB_MIXED" not in result.stdout
+def test_invalid_macros_are_explicitly_rejected():
     with pytest.raises(ConfigHeaderError, match="Unsupported macro"):
         generate_config_header(configured({"NEGATIVE": -1}), "svh")
     with pytest.raises(ConfigHeaderError, match="outside its declared domain"):
         generate_config_header(configured({"MIXED": [True, 1]}), "svh")
 
 
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
 @pytest.mark.parametrize("configuration", ["_", "rv32", "rv64"])
-def test_live_ruby_full_only_support_is_verified(configuration):
-    result = subprocess.run(
-        [
-            "mise",
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            f"-I{ROOT / 'tools/ruby-gems/udb/lib'}",
-            f"-I{ROOT / 'tools/ruby-gems/udb-gen/lib'}",
-            str(Path(__file__).with_name("ruby_config_headers_oracle.rb")),
-            str(ROOT),
-            "c",
-            configuration,
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        check=False,
-    )
-    assert result.returncode != 0
-    assert b"is not fully configured. Only fully configured configs are supported." in (
-        result.stdout + result.stderr
-    )
-    assert b"#define " not in result.stdout
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-@pytest.mark.parametrize("language,extension", [("c", "h"), ("svh", "svh")])
-def test_live_ruby_artifact_oracle(full_architecture, language, extension):
-    result = subprocess.run(
-        [
-            "mise",
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            f"-I{ROOT / 'tools/ruby-gems/udb/lib'}",
-            f"-I{ROOT / 'tools/ruby-gems/udb-gen/lib'}",
-            str(Path(__file__).with_name("ruby_config_headers_oracle.rb")),
-            str(ROOT),
-            language,
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        check=True,
-    )
-    assert result.stdout == Path(f"{GOLDEN}.{extension}").read_bytes()
-    assert result.stdout == generate_config_header(full_architecture, language).encode()
+def test_only_fully_configured_architectures_are_supported(configuration):
+    database = Database.bundled().resolve()
+    architecture = database.configure(Configuration.builtin(configuration))
+    with pytest.raises(ConfigHeaderError, match="fully configured"):
+        generate_config_header(architecture, "c")
 
 
 @pytest.mark.skipif(

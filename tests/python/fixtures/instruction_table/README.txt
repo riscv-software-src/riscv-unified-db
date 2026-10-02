@@ -21,9 +21,5 @@ The legacy TableBuilder enumerates all instructions, regardless of configuration
 It does not enumerate implemented_instructions or possible_instructions.
 All fixtures are compared verbatim: no normalization.
 
-Ruby capture command (from the lane worktree):
-flock /home/jcarlin/.copilot/session-state/e7cf3328-386d-40d9-b677-2d92e44c2ebb/files/ruby.lock \
-  mise exec --no-deps -- bundle exec ruby tests/python/ruby_instruction_table_oracle.rb
-
-This script is maintainer-only oracle tooling, never imported or invoked by
-generation or ordinary Python tests.
+These are reviewed, immutable legacy captures. The retired implementation and
+capture utility are no longer present, so there is no refresh command.

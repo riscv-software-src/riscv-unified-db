@@ -1,7 +1,6 @@
 ---
 # Priority groups (lower runs earlier; equal priority runs in parallel):
 minimum_prek_version: "0.3.4"
-exclude: ^docs/ruby/ # All generated code
 default_language_version:
   python: python3.12
 default_stages: [pre-commit]
@@ -56,7 +55,7 @@ repos:
         files: \.(hpp|cpp)$
         # TEMPORARILY DISABLE CLANG-FORMAT IN LIBHART
         # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
-        exclude: backends/cpp_hart_gen|^tests/python/fixtures/cpp_hart/
+        exclude: ^src/udb/cpp_hart/runtime/|^tests/python/fixtures/cpp_hart/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.9
@@ -192,7 +191,7 @@ repos:
       - id: check-csr-conflicts
         name: Check CSR address conflicts
         priority: 40
-        files: ^(Rakefile|\.pre-commit-config\.yaml|spec/std/isa/csr/.*\.ya?ml)$
+        files: ^(\.pre-commit-config\.yaml|spec/std/isa/csr/.*\.ya?ml)$
         pass_filenames: false
         language: system
-        entry: ./do test:csrs
+        entry: mise run check:csrs

@@ -8,7 +8,7 @@ import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 
-from . import fixtures, quality
+from . import fixtures, generate, quality
 from .common import ROOT, entrypoint, python_command, udb_command
 
 
@@ -31,6 +31,10 @@ def run_one(name: str, *, config: str = "_") -> int:
         commands = quality.lint_commands([], True)
         commands.extend(quality.format_commands([], True, check=True))
         return quality.execute(commands)
+    if name == "schema-versions":
+        status = generate.run_leaf("schemas", check=False)
+        if status:
+            return status
     return subprocess.run(command_for(name, config=config), cwd=ROOT, check=False).returncode
 
 

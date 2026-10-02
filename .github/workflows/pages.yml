@@ -1,7 +1,7 @@
 name: Deploy pages
 on:
   workflow_run:
-    workflows: [CI/CD]
+    workflows: [CI]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -44,20 +44,6 @@ jobs:
           path: _site/resolved_spec
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - name: Download UDB API Docs
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: udb-api
-          path: _site/htmls/udb_api_doc
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-      - name: Download IDL Doc
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: idl-doc
-          path: idl.html
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
       - name: Download Docusaurus site
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -69,18 +55,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./do gen:schemas
-          ./bin/python tools/scripts/download_schema_releases.py \
+          uv run udb generate schema-bundle -o gen/schemas
+          uv run python tools/scripts/download_schema_releases.py \
             --gen-schemas-dir gen/schemas \
             --output-dir _site/schemas
-          ./bin/python tools/scripts/gen_schema_index.py _site/schemas _site/schemas/index.json
+          uv run python tools/scripts/gen_schema_index.py _site/schemas _site/schemas/index.json
 
       - name: Create index
         env:
           PAGES_URL: https://riscv.github.io/riscv-unified-db
         run: >
           cp doc/udb-block.svg _site/ &&
-          ./bin/python tools/scripts/gen_pages_index.py
+          uv run python tools/scripts/gen_pages_index.py
 
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6

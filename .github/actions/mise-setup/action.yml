@@ -21,19 +21,8 @@ runs:
         UV_PYTHON: ${{ inputs.python-version }}
       with:
         version: 2026.9.13
-    # Write the toolchain preference before bin/setup runs.
-    - name: Configure toolchain
-      shell: bash
-      run: |
-        if [[ "${{ inputs.toolchain }}" == "true" ]]; then
-          echo "UDB_TOOLCHAIN_CONTAINER=1" > .toolchain-local
-          echo "UDB_TOOLCHAIN_CONTAINER=1" >> "$GITHUB_ENV"
-        else
-          echo "UDB_TOOLCHAIN_NONE=1" > .toolchain-local
-          echo "UDB_TOOLCHAIN_NONE=1" >> "$GITHUB_ENV"
-        fi
-    # Docker Buildx must be available before bin/setup runs. The setup script
-    # can call _pull_or_build_toolchain_image, which uses buildx in CI.
+    # Docker Buildx must be available before the setup task pulls or builds the
+    # content-addressed toolchain image.
     - name: Set up Docker Buildx
       if: inputs.toolchain == 'true'
       uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -60,4 +49,9 @@ runs:
       shell: bash
       env:
         UV_PYTHON: ${{ inputs.python-version }}
-      run: ./bin/setup
+      run: |
+        if [[ "${{ inputs.toolchain }}" == "true" ]]; then
+          mise run setup -- --toolchain container --no-hooks
+        else
+          mise run setup -- --toolchain none --no-hooks
+        fi

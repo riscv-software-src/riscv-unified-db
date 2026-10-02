@@ -10,8 +10,6 @@ This extension pack bundles all the VSCode extensions needed for working with th
 ## Included Extensions
 
 - **IDL Language Support** - Syntax highlighting for ISA Description Language files
-- **C++ ERB Template** - C++ with Ruby ERB templating support
-- **AsciiDoc ERB Template** - AsciiDoc with Ruby ERB templating support
 - **YAML with IDL Injection** - YAML files with IDL and AsciiDoc injection
 
 ## Installation

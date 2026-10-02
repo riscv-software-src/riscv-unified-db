@@ -55,7 +55,7 @@ class PageRenderer(TypeFormatter):
             f"sidebar_label: {title}\n"
             "custom_edit_url: null\n"
             f"# This file is auto-generated from {self.name}\n"
-            "# Do not edit manually - run `bin/chore gen schema-docs` to regenerate\n"
+            "# Do not edit manually - run `mise run gen:schema-docs` to regenerate\n"
             "---\n"
         )
         body = [self.header(title)]
@@ -103,8 +103,8 @@ class PageRenderer(TypeFormatter):
             f"This page is generated from [`{self.name}`]"
             f"(https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/{self.name}) "
             "by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/"
-            "tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). "
-            "To update this page, edit the schema file and run `bin/chore gen schema-docs`.\n:::\n"
+            "src/udb/schema_docs/_render.py). "
+            "To update this page, edit the schema file and run `mise run gen:schema-docs`.\n:::\n"
         )
         if self.schema.get("description"):
             self.consume(self.schema, "description")

@@ -28,59 +28,44 @@ To run a specific regression test:
 
 [source,bash]
 --
-# run the Sorbet test
-mise run test:ruby:sorbet
+# type-check IDL for the rv64 configuration
+mise run check:idl -- --config rv64
 --
 
-To run all regression tests matching a tag:
+To run the default Python tests:
 
 [source,bash]
 --
-# run the smoke group
-mise run check:smoke
+mise run test
 --
 
 === Add a new regression
 
-Add a local regression as a mise task under `tools/dev/regression-tasks/`.
-Add it to the appropriate aggregate task in `tools/dev/regression-aggregates.toml`.
+Declare the mise task in `tools/dev/tasks.toml` and put non-trivial reusable
+logic in an appropriate Python module under `tools/dev/`.
+Add it to the appropriate aggregate task.
 If CI should run it, add a readable job or job step to `.github/workflows/regress.yml`.
 
 See xref:regress-test-infrastructure.adoc[Regression test infrastructure] for more details.
 
+=== Find a repository command
 
-=== Update Ruby gem dependencies to latest versions
-
-To update Ruby gems to the latest available versions, run:
-
-[source,bash]
-----
-./bin/chore update gems
-----
-
-Then `git add` all updated/new files and make a PR.
-
-=== Add a new Ruby gem dependence
-
-Add the gem in the appropriate gemspace or Gemfile (top, or one of the sub-project gems under tools/ruby-gems).
-
-Install it:
+Repository development commands are mise tasks:
 
 [source,bash]
 ----
-./bin/chore install gems # add '-t' option to avoid incrementing the container tag
+mise tasks
+mise run <task> -- --help
 ----
 
-=== Update the version of z3 used by udb
-
-This requires docker/podman to run since it builds a portable binary using an old distro in a container.
+Database queries, validation, IDL tools, authoring, generation, and rendering
+use the installed `udb` command:
 
 [source,bash]
 ----
-./bin/chore update z3
+uv run udb --help
+uv run udb generate --help
 ----
-
-Check in the updates, and make sure to bump the version of the udb gem.
 
 === Build the container image
 
@@ -88,14 +73,14 @@ To build the development container image:
 
 [source,bash]
 ----
-./bin/chore container build
+mise run container:build
 ----
 
 To force rebuild even if the container already exists:
 
 [source,bash]
 ----
-./bin/chore container build -f
+mise run container:build -- --force
 ----
 
 === Pull the container image
@@ -104,14 +89,14 @@ To pull the container image from the registry:
 
 [source,bash]
 ----
-./bin/chore container pull
+mise run container:pull
 ----
 
 To force pull even if the container already exists locally:
 
 [source,bash]
 ----
-./bin/chore container pull -f
+mise run container:pull -- --force
 ----
 
 === Remove the container image
@@ -120,23 +105,25 @@ To remove the local container image:
 
 [source,bash]
 ----
-./bin/chore container remove
-# or use the short form:
-./bin/chore container rm
+mise run container:remove
 ----
 
-=== Generate Ruby type definitions
+=== Regenerate retained artifacts
 
-To generate Sorbet type definitions for all Ruby gems:
+To regenerate the quick developer artifacts:
 
 [source,bash]
 ----
-./bin/chore gen ruby-type-def
+mise run gen:quick
 ----
 
-To generate type definitions for a specific gem:
+To regenerate everything maintained by the repository task surface:
 
 [source,bash]
 ----
-./bin/chore gen ruby-type-def -g udb    # or idlc, or udb-gen
+mise run gen:all
 ----
+
+Run `mise tasks` for narrower generation tasks. Commands removed during the
+Ruby-to-Python migration are listed once in
+xref:python-migration-command-map.md[the migration command map].

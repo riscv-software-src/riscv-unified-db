@@ -25,25 +25,18 @@ SPDX-License-Identifier = "BSD-3-Clause-Clear"
 [[annotations]]
 path = [
     ".**",
-    "arch_def.yardopts",
-    "backends/**",
     "bin/**",
     "cert_flow.txt",
     "cfgs/**",
-    "do",
     "doc/data-templates.adoc",
     "doc/riscv-opcodes-migration.adoc",
     "docs/**",
-    "Gemfile.lock",
-    "Gemfile",
-    "idl.yardopts",
     "lib/**",
     "package-lock.json",
     "package.json",
-    "Rakefile",
     "README.adoc",
-    "spec/schemas/**",
-    "sorbet/config"
+    "src/udb/cpp_hart/runtime/**",
+    "spec/schemas/**"
 ]
 SPDX-FileCopyrightText = [
     "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
@@ -101,8 +94,7 @@ SPDX-License-Identifier = "CC0-1.0"
 path = [
   "doc/**/*.json",
   "doc/**/*.mdx",
-  "doc/**/*.md",
-  "tools/internal-gems/README.md"
+  "doc/**/*.md"
 ]
 SPDX-FileCopyrightText = "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries."
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
@@ -119,8 +111,7 @@ SPDX-License-Identifier = "MIT"
 path = [
     "cfgs/prm_demo_rv32.yaml",
     "spec/schemas/prm_schema.json",
-    "spec/custom/non_isa/prm_example/prm_demo_rv32_with_external.yaml",
-    "tools/ruby-gems/udb/lib/udb/obj/prm.rb"
+    "spec/custom/non_isa/prm_example/prm_demo_rv32_with_external.yaml"
 ]
 SPDX-FileCopyrightText = "Copyright (c) 2025 Synopsys, Inc."
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
@@ -132,14 +123,6 @@ path = [
 ]
 SPDX-FileCopyrightText = "Copyright (c) Jordan Carlin"
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
-
-# Computer-generated files that are checked in
-[[annotations]]
-path = [
-    "sorbet/rbi/**"
-]
-SPDX-FileCopyrightText = "NONE"
-SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
 path = ["tests/python/data/idl/**"]

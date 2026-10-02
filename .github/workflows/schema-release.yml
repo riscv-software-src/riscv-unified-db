@@ -1,5 +1,5 @@
 # This workflow creates GitHub releases for schema files.
-# It runs after the CI/CD workflow completes successfully on the main branch.
+# It runs after the CI workflow completes successfully on the main branch.
 # Each schema version gets its own release tag (e.g., schemas/<schema_name>/<version>).
 # Published schema version assets are immutable; if content changes, bump the
 # schema $id so a new release tag is created.
@@ -8,7 +8,7 @@ name: Schema Release
 
 on:
   workflow_run:
-    workflows: [CI/CD]
+    workflows: [CI]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -28,9 +28,9 @@ jobs:
         uses: ./.github/actions/mise-setup
 
       - name: Generate resolved schemas
-        run: ./do gen:schemas
+        run: uv run udb generate schema-bundle -o gen/schemas
 
       - name: Publish changed schema versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./bin/python tools/scripts/publish_schemas.py
+        run: mise run release:schemas

@@ -37,12 +37,9 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
     assert "udb/extension_docs/assets/fonts/JetBrainsMono-Regular.ttf" in destinations
     assert "udb/extension_docs/assets/images/wavedrom/float-csr.adoc" in destinations
     assert "udb/extension_docs/templates/header.adoc" in destinations
-    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/CMakeLists.txt" in destinations
-    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/include/udb/bits.hpp" in destinations
-    assert (
-        "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/test_bits_properties_small.cpp"
-        in destinations
-    )
-    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/bits-tests.cmake" in destinations
-    assert "udb/_data/cpp_hart/backends/cpp_hart_gen/cpp/test/bits_property.hpp" in destinations
+    assert "udb/_data/cpp_hart/runtime/CMakeLists.txt" in destinations
+    assert "udb/_data/cpp_hart/runtime/cpp/include/udb/bits.hpp" in destinations
+    assert "udb/_data/cpp_hart/runtime/cpp/test/test_bits_properties_small.cpp" in destinations
+    assert "udb/_data/cpp_hart/runtime/cpp/test/bits-tests.cmake" in destinations
+    assert "udb/_data/cpp_hart/runtime/cpp/test/bits_property.hpp" in destinations
     assert not any(destination.endswith(".erb") for destination in destinations)

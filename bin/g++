@@ -16,7 +16,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   _setup_toolchain_run
   exec $TOOLCHAIN_RUN g++ "$@"
 elif PATH="${PATH//"${ROOT}:"/}" command -v g++ > /dev/null 2>&1; then
-  # Strip bin/ from PATH to avoid infinite recursion (same pattern as bin/rake),
+  # Strip bin/ from PATH to avoid infinite wrapper recursion,
   # then check C++ requirements before delegating to the real g++.
   PATH="${PATH//"${ROOT}:"/}"
   export PATH

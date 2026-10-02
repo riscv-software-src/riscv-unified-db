@@ -4,22 +4,41 @@ sidebar_position: 1
 status: in-progress
 ---
 
-import InternalGemsReadme from '../../../tools/internal-gems/README.md';
-
 :::warning[Status: Incomplete]
 This documentation is under construction.
 :::
 
-UDB provides an installed `udb` command for database work and mise tasks for repository development.
+UDB has two supported command surfaces:
+
+- the installed `udb` command for database and artifact operations;
+- `mise run <task>` for work that is specific to a repository checkout.
 
 ## Tool Organization
 
-<InternalGemsReadme />
+The Python package under `src/udb/` owns database loading and resolution,
+configured architectures, IDL compilation, validation, authoring, and retained
+generators. These capabilities are available through the installed `udb`
+command and Python API. They work from an installed wheel unless a command
+explicitly requires caller-supplied checkout data.
+
+Repository setup, checks, tests, native builds, documentation, fixture refreshes,
+and releases are mise tasks. Run `mise tasks` for the authoritative task list.
+Their reusable implementations live under `tools/dev/`.
 
 ## Command-Line Tools
 
-- **`udb`** - Query, validate, generate, author, and render from the installed database
-- **`mise tasks`** - List repository development tasks
-- **`mise run <task>`** - Run a repository development task
+- **`uv run udb --help`** — use the installed command from a checkout without
+  activating an environment
+- **`udb list` / `udb show` / `udb inspect`** — query UDB data and configured
+  architecture state
+- **`udb validate`** — validate data, configurations, encodings, CSRs, and IDL
+- **`udb idl`** — parse, evaluate, and type-check IDL
+- **`udb generate`** — produce retained source and documentation artifacts
+- **`udb author`** — update maintained source data such as layout-derived YAML
+- **`udb render`** — invoke an explicit external renderer for generated source
+- **`mise tasks`** — list repository development tasks
+- **`mise run <task>`** — run a repository development task
 
-See the individual tool documentation pages for detailed usage information.
+Run `--help` at any command level for current options. The repository's
+[migration command map](https://github.com/riscv/riscv-unified-db/blob/main/doc/python-migration-command-map.md)
+records the replacement for common retired commands.

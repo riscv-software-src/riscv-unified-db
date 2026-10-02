@@ -9,14 +9,10 @@ import pytest
 from idl_semantics_helpers import run_semantic_case
 from ruamel.yaml import YAML
 
-ROOT = Path(__file__).resolve().parents[2]
 YAML_LOADER = YAML(typ="safe")
-GOOD = YAML_LOADER.load((ROOT / "tools/ruby-gems/idlc/test/idl/constraints.yaml").read_text())[
-    "tests"
-]
-BAD = YAML_LOADER.load((ROOT / "tools/ruby-gems/idlc/test/idl/constraint_errors.yaml").read_text())[
-    "tests"
-]
+CORPUS = YAML_LOADER.load((Path(__file__).parent / "data/idl/constraints.yaml").read_text())
+GOOD = CORPUS["tests"]
+BAD = CORPUS["error_tests"]
 
 
 def _setup(parameters):

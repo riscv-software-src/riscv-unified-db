@@ -89,6 +89,7 @@ function highest_set_bit {
 ```
 
 The returned bit pattern for `highest_set_bit(0)` is `0xff` -- 255 if read as unsigned. Use `$signed` to treat the return value as signed.
+
 ```idl title="clz, from Zbb/clz.yaml"
 X[xd] = (xlen() - 1) - $signed(highest_set_bit(X[xs1]));
 ```
@@ -112,7 +113,7 @@ function NAME {
 
 1. Optionally declare return type(s). May be omitted for void functions. May be a list for multiple return values.
 2. Optionally declare argument(s). May be omitted for zero-argument functions. May be a list for multiple arguments.
-3. A description of the function. Required — IDL is intended as executable documentation. May contain any character except `}`, including newlines. ERB escape sequences are also not permitted.
+3. A description of the function. Required — IDL is intended as executable documentation. May contain any character except `}`, including newlines.
 4. The executable statements of the function.
 
 ### Rules and rationale

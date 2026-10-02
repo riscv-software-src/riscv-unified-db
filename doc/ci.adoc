@@ -14,25 +14,26 @@ We use two frameworks for CI:
 
 === pre-commit
 
-`pre-commit` checks are installed by the UnifiedDB setup and automatically run as a git hook on commit.
+Pre-commit checks are installed by `mise run setup` and automatically run as a git hook on commit.
 Any errors from pre-commit will cause a `git commit` to fail.
 Most pre-commit checks (like linters) will automatically edit the offending files to fix them;
 just `git add` the changes and try again.
 
-`pre-commit` can also be run on demand with `./bin/pre-commit`.
+Run the complete hook set on demand with `mise run check:pre-commit`.
 
 === GitHub Actions
 
 The upstream UnifiedDB main branch is protected by a variety of checks.
 The checks are split into two different groups.
 
-==== PR Regression Tests
+==== Pull-request checks
 
 The first group runs on any PR targeting the main branch.
 All of the tests must pass before the PR is allowed to move to the https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue[merge queue].
-The tests are specified in xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
+The jobs are specified in xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`]
+and call the same `mise run` tasks available locally.
 
-==== Deployment Tests / Actions
+==== Merge-queue and deployment artifacts
 
 The second group of tests run when a PR enters the merge queue.
 They generate artifacts that are deployed to https://riscv.github.io/riscv-unified-db/[GitHub pages].
@@ -40,15 +41,16 @@ If any test in the second group fails, a PR is removed from the merge queue.
 While in the merge queue, the CI tests generate artifacts but do not upload/update pages yet.
 The upload occurs after the PR merges to main and the test runs again.
 Merge-queue-only jobs are marked with event conditions in xref:.github/workflows/regress.yml[`.github/workflows/regress.yml`].
-Their reusable commands are mise tasks under `tools/dev/regression-tasks/`.
+Their reusable commands are mise tasks implemented under `tools/dev/`.
 The resulting artifacts/pages are uploaded via xref:.github/workflows/pages.yml[`.github/workflows/pages.yml`].
 
 == CI Policies
 
-=== Test Coverage
+=== Required aggregate
 
-Code coverage is tracked for the `idlc` and `udb` Ruby gems.
-New PRs must not drop line coverage of the gems by more than 1%.
+`regress-complete` is the required aggregate job. It succeeds only when every
+required Python, data, package, documentation, editor, and native job succeeds.
 
-While coverage is not currently tracked for other collateral, any new features are expected to be
-tested and those tests are expected to be run during CI.
+New features and defect fixes are expected to include focused tests in the
+appropriate default or slow lane. Each slow lane is kept independently bounded
+so CI can run them in parallel.

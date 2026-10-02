@@ -1,7 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Standalone configured prose; native rendering plus a restricted migration adapter."""
+"""Standalone native configured prose rendering."""
 
 from .inputs import (
     CapturedFailure,
@@ -15,7 +15,6 @@ from .render import (
     ProseDiagnostic,
     ProseError,
     native_prose_values,
-    render_legacy,
     render_native,
     resolve_all_exception_records,
     resolve_exception_records,
@@ -32,7 +31,6 @@ __all__ = [
     "ProseInputs",
     "all_exception_records",
     "native_prose_values",
-    "render_legacy",
     "render_native",
     "resolve_all_exception_records",
     "resolve_exception_records",

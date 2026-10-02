@@ -4,9 +4,6 @@
 from __future__ import annotations
 
 import json
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -33,9 +30,6 @@ from udb.schema import SchemaStore
 REPOSITORY_ROOT = Path(__file__).parents[2]
 ISA_ROOT = REPOSITORY_ROOT / "spec" / "std" / "isa"
 SCHEMA_ROOT = REPOSITORY_ROOT / "spec" / "schemas"
-MOCK_ISA_ROOT = REPOSITORY_ROOT / "tools" / "ruby-gems" / "udb" / "test" / "mock_spec" / "isa"
-RUBY_ORACLE = Path(__file__).with_name("ruby_domain_oracle.rb")
-RUBY_Z3_DEFECTS = Path(__file__).with_name("ruby_domain_z3_defects.rb")
 
 
 def domain(schema: dict, *, source: str = "test schema") -> ParameterDomain:
@@ -591,95 +585,3 @@ def test_all_standard_parameter_schemas_are_supported_and_nonempty() -> None:
         schema = parameter["schema"]
         if "default" in schema:
             assert result.accepts(schema["default"]), parameter.name
-
-
-def test_all_legacy_mock_parameter_schemas_are_supported_and_nonempty() -> None:
-    database = Database.from_path(MOCK_ISA_ROOT, schemas_path=SCHEMA_ROOT)
-    store = SchemaStore(database.schemas_root)
-    domains = [
-        ParameterDomain.from_schema(
-            parameter["schema"], schema_store=store, source=str(parameter.path)
-        )
-        for parameter in database.objects("parameter")
-    ]
-
-    assert len(domains) == 8
-    assert all(not result.is_empty for result in domains)
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare membership with Ruby JSONSchemer",
-)
-def test_membership_matches_ruby_json_schema_oracle() -> None:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    cases = [
-        ({"type": "boolean", "const": True}, [False, True, 1]),
-        (
-            {"type": "integer", "exclusiveMinimum": 1, "exclusiveMaximum": 5},
-            [0, 1, 2, 4, 5],
-        ),
-        ({"type": "string", "enum": ["a", "b"]}, ["a", "c", 1]),
-        (
-            {
-                "type": "array",
-                "items": {"type": "integer", "enum": [0, 7, 16]},
-                "contains": {"const": 0},
-                "minItems": 1,
-                "maxItems": 3,
-                "uniqueItems": True,
-            },
-            [[], [0], [7], [0, 0], [7, 0, 16]],
-        ),
-    ]
-
-    for schema, values in cases:
-        result = subprocess.run(
-            [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
-            cwd=REPOSITORY_ROOT,
-            input=json.dumps({"schema": schema, "values": values}),
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            pytest.fail(f"Ruby domain oracle failed:\n{result.stdout}\n{result.stderr}")
-        expected = json.loads(result.stdout)
-        actual_domain = domain(schema)
-        assert [actual_domain.accepts(value) for value in values] == expected
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to reproduce the legacy Ruby Z3 defects",
-)
-def test_legacy_ruby_z3_domain_defects_are_reproducible() -> None:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    result = subprocess.run(
-        [
-            mise,
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            "-Itools/ruby-gems/udb/lib",
-            str(RUBY_Z3_DEFECTS),
-        ],
-        cwd=REPOSITORY_ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby Z3 defect reproduction failed:\n{result.stdout}\n{result.stderr}")
-    assert json.loads(result.stdout) == {
-        "accepts_duplicate_unique_items": True,
-        "accepts_array_without_required_item": True,
-        "accepts_exclusive_lower_endpoint": True,
-    }

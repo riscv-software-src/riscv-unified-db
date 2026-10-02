@@ -51,7 +51,7 @@ def parse_args() -> argparse.Namespace:
 
 def generated_schema_tags(schemas_dir: Path) -> set[str]:
     if not schemas_dir.is_dir():
-        raise FileNotFoundError(f"{schemas_dir} does not exist; run './do gen:schemas' first")
+        raise FileNotFoundError(f"{schemas_dir} does not exist; run 'mise run gen:schemas' first")
 
     return {
         f"schemas/{schema_dir.name}/{version_dir.name}"

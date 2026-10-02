@@ -1,18 +1,20 @@
 # Python migration plan
 
+> **Historical plan:** This document preserves the migration design and staged
+> implementation record. Its progress table, branch names, and command examples
+> describe the migration as it was planned and are not current operating
+> instructions. See [the current handoff](python-migration-handoff.md) and
+> [command map](python-migration-command-map.md).
+
 ## Status
 
-| Work | Status |
-| --- | --- |
-| Migration planning and repository inventory | Complete |
-| Stage 1: packaged source database and raw API | Complete locally; CI pending |
-| Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
-| Stage 2b: schema validation | Complete locally; CI pending |
-| Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
-| Stage 3: versions, configurations, conditions, and solving | Complete locally, including IDL-backed queries; CI pending |
-| Stage 4: IDL compiler and semantic passes | Complete locally; corrected development-fork CI pending |
-| Stage 5: generators, templates, and document rendering | In progress: retained-generator inventory and contracts |
-| Stage 6: CLI, build, release, and Ruby removal | Pending |
+| Work                                                                  | Status                  |
+| --------------------------------------------------------------------- | ----------------------- |
+| Migration planning and repository inventory                           | Complete                |
+| Stages 1–4: package, resolution, schemas, configurations, and IDL     | Complete and integrated |
+| Stage 5: retained generators, templates, and document rendering       | Complete and integrated |
+| Stage 6: CLI, development tasks, tests, and CI                        | Complete and integrated |
+| Stage 6: first-party Ruby removal and final clean-checkout acceptance | In progress             |
 
 The standard database is bundled in the `udb` Python distribution. The
 [approved retention scope](stage5-generators.md#approved-retention-scope-2026-09-30)
@@ -56,28 +58,28 @@ does not preserve a bug merely to obtain an exact match with Ruby.
 Each branch contains one logical capability and builds on the preceding branch.
 These are local branches until publication of the PR stack.
 
-| Branch | Base | Capability |
-| --- | --- | --- |
-| `migration/python-01-package` | `main` | Installable standard database and raw API |
-| `migration/python-02-resolution` | `migration/python-01-package` | Inheritance, overlays, and profile-report cutover |
-| `migration/python-03-schema` | `migration/python-02-resolution` | Offline schema validation |
-| `migration/python-04-serialization` | `migration/python-03-schema` | Deterministic resolved data and schema publication |
-| `migration/python-05-layout` | `migration/python-04-serialization` | Python layout authoring and publication fixes |
-| `migration/python-06-source-maps` | `migration/python-05-layout` | Source provenance, lazy references, and combined installed-package gate |
-| `migration/python-07-versions` | `migration/python-06-source-maps` | Immutable RISC-V versions and release requirements |
-| `migration/python-08-configurations` | `migration/python-07-versions` | Immutable configurations and bundled generic configurations |
-| `migration/python-09-domains` | `migration/python-08-configurations` | Offline JSON Schema parameter domains and combined foundation gates |
-| `migration/python-10-conditions` | `migration/python-09-domains` | Condition parsing, normalization, concrete evaluation, and Z3 condition solving |
-| `migration/python-11-configured-queries` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
-| `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
-| `migration/python-13-idl-syntax` | `migration/python-12-stage3-gates` | Pure-Python IDL parser and syntax tree with full-database Ruby parity |
-| `migration/python-14-idl-expressions` | `migration/python-13-idl-syntax` | IDL type system, symbol table, and expression semantics with Ruby oracle parity |
-| `migration/python-15-idl-statements` | `migration/python-14-idl-expressions` | Statements, functions, execution, strictness, and unknown-value semantics |
-| `migration/python-16-idl-architecture` | `migration/python-15-idl-statements` | Captured source providers, native architecture environments, and full-configuration type checking |
-| `migration/python-17-idl-passes` | `migration/python-16-idl-architecture` | Semantic analyses, AsciiDoc source generation, and hart/decode analyses |
-| `migration/python-18-idl-conditions` | `migration/python-17-idl-passes` | Symbolic IDL requirements, completed configured queries, and a small configuration-validation CLI |
-| `migration/python-19-cfg-diagnostics` | `migration/python-18-idl-conditions` | Captured-source explanations of configuration conflicts without changing solver results |
-| `migration/python-20-generator-contracts` | `migration/python-19-cfg-diagnostics` | Source-traced retained generator/consumer inventory and artifact acceptance contracts |
+| Branch                                    | Base                                     | Capability                                                                                        |
+| ----------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `migration/python-01-package`             | `main`                                   | Installable standard database and raw API                                                         |
+| `migration/python-02-resolution`          | `migration/python-01-package`            | Inheritance, overlays, and profile-report cutover                                                 |
+| `migration/python-03-schema`              | `migration/python-02-resolution`         | Offline schema validation                                                                         |
+| `migration/python-04-serialization`       | `migration/python-03-schema`             | Deterministic resolved data and schema publication                                                |
+| `migration/python-05-layout`              | `migration/python-04-serialization`      | Python layout authoring and publication fixes                                                     |
+| `migration/python-06-source-maps`         | `migration/python-05-layout`             | Source provenance, lazy references, and combined installed-package gate                           |
+| `migration/python-07-versions`            | `migration/python-06-source-maps`        | Immutable RISC-V versions and release requirements                                                |
+| `migration/python-08-configurations`      | `migration/python-07-versions`           | Immutable configurations and bundled generic configurations                                       |
+| `migration/python-09-domains`             | `migration/python-08-configurations`     | Offline JSON Schema parameter domains and combined foundation gates                               |
+| `migration/python-10-conditions`          | `migration/python-09-domains`            | Condition parsing, normalization, concrete evaluation, and Z3 condition solving                   |
+| `migration/python-11-configured-queries`  | `migration/python-10-conditions`         | Data-only configured architecture queries, overlap checks, and solver integration                 |
+| `migration/python-12-stage3-gates`        | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates                                |
+| `migration/python-13-idl-syntax`          | `migration/python-12-stage3-gates`       | Pure-Python IDL parser and syntax tree with full-database Ruby parity                             |
+| `migration/python-14-idl-expressions`     | `migration/python-13-idl-syntax`         | IDL type system, symbol table, and expression semantics with Ruby oracle parity                   |
+| `migration/python-15-idl-statements`      | `migration/python-14-idl-expressions`    | Statements, functions, execution, strictness, and unknown-value semantics                         |
+| `migration/python-16-idl-architecture`    | `migration/python-15-idl-statements`     | Captured source providers, native architecture environments, and full-configuration type checking |
+| `migration/python-17-idl-passes`          | `migration/python-16-idl-architecture`   | Semantic analyses, AsciiDoc source generation, and hart/decode analyses                           |
+| `migration/python-18-idl-conditions`      | `migration/python-17-idl-passes`         | Symbolic IDL requirements, completed configured queries, and a small configuration-validation CLI |
+| `migration/python-19-cfg-diagnostics`     | `migration/python-18-idl-conditions`     | Captured-source explanations of configuration conflicts without changing solver results           |
+| `migration/python-20-generator-contracts` | `migration/python-19-cfg-diagnostics`    | Source-traced retained generator/consumer inventory and artifact acceptance contracts             |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -91,16 +93,16 @@ The following inventory counts tracked first-party files and physical lines at
 the time this plan was written. It excludes `ext/`, `gen/`, dependency trees,
 and coverage output. The counts describe migration size, not estimated effort.
 
-| Source | Files | Physical lines | Migration relevance |
-| --- | ---: | ---: | --- |
-| Ruby (`.rb`) | 163 | 75,409 | Database, object model, logic, IDL, generators, tests, and support code |
-| Rake | 16 | 3,241 | Resolution, generation, testing, packaging, and documentation orchestration |
-| ERB | 63 | 6,668 | C/C++/SystemVerilog, HTML, AsciiDoc, YAML, and document templates |
-| Treetop grammar | 1 | 652 | Current IDL parser grammar |
-| Layout sources | 31 | 2,990 | Source-data expansion driven by Ruby/ERB conventions |
-| Python | 16 | 4,761 | Existing generators and repository scripts; not yet a complete library |
-| JavaScript | 8 | 7,633 | Explorer/indexing and editor/documentation support |
-| Shell and `bin/` scripts | 56 | 4,628 | Developer and CI entry points |
+| Source                   | Files | Physical lines | Migration relevance                                                         |
+| ------------------------ | ----: | -------------: | --------------------------------------------------------------------------- |
+| Ruby (`.rb`)             |   163 |         75,409 | Database, object model, logic, IDL, generators, tests, and support code     |
+| Rake                     |    16 |          3,241 | Resolution, generation, testing, packaging, and documentation orchestration |
+| ERB                      |    63 |          6,668 | C/C++/SystemVerilog, HTML, AsciiDoc, YAML, and document templates           |
+| Treetop grammar          |     1 |            652 | Current IDL parser grammar                                                  |
+| Layout sources           |    31 |          2,990 | Source-data expansion driven by Ruby/ERB conventions                        |
+| Python                   |    16 |          4,761 | Existing generators and repository scripts; not yet a complete library      |
+| JavaScript               |     8 |          7,633 | Explorer/indexing and editor/documentation support                          |
+| Shell and `bin/` scripts |    56 |          4,628 | Developer and CI entry points                                               |
 
 The Ruby-controlled migration surface is therefore 274 files and 88,960
 physical lines when Ruby, Rake, ERB, Treetop, and layouts are counted together.
@@ -489,28 +491,28 @@ All generation commands are installed through one or more documented extras;
 is fixed when dependency evaluation is complete, without moving core
 resolution, configuration, or IDL behind an extra.
 
-| Generator or workflow | Planned Python disposition | Required comparison |
-| --- | --- | --- |
-| Raw/resolved architecture and resolved schemas | Core serializer and CLI commands | Canonical structured equality and schema-version behavior |
-| Layout-derived architecture YAML | Stage 2 authoring command | Tracked-file equality/drift check |
-| Configuration C header | Direct Python generator | Compile check plus reviewed golden output |
-| Configuration SystemVerilog header | Direct Python generator | Syntax/lint check plus reviewed golden output |
-| Generic C encoding header | Port existing Python generator onto public API | Header diff and consumer compile check |
-| Generic SystemVerilog output | Port existing Python generator onto public API | Output diff and syntax/lint check |
-| Go output | Port existing Python generator onto public API | Output diff and Go compile/test |
-| Instruction table | Python structured table builder | Canonical table equality |
-| Extension documentation and PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor rendering | Semantic AsciiDoc diff and external rendered smoke/golden checks |
-| Strict profile configurations | Core Python configuration transformation and authoring | All retained profile configuration outputs and semantics |
-| C++ hart model and decode tree | `udb[sim]`: Python semantic passes and source templates | Generated C++ build/unit tests and RV32/RV64/vector suites |
-| C++ Bits tests | Native C++ randomized/property tests, no source generator | Preserve existing width/signedness/operation/edge-case coverage |
-| QC interrupt-controller CSR authoring | Python `.layout` mechanism | Complete generated CSR family and tracked-file drift |
-| UDB query/report/instruction matching | Native Python CLI capabilities | Query, formatted output and decoding behavior |
-| IDL command-line interface | Align with the Python IDL API | Parsing, evaluation and checking behavior, not Ruby parser quirks |
-| Configured prose and exception names | Python conversion if feasible; otherwise approved retirement | Exact configured output or explicit reported unsupported scope, never a Ruby fallback |
-| Schema documentation | Replace internal Ruby gem with Python generator | Versioned MDX equality and immutability checks |
-| IDL language documentation/highlighting | IDL syntax definitions and external document rendering | HTML build and representative token classes |
-| Pages landing and schema indexes | Retain independent Python publication helpers | Correct artifact/schema links and version history |
-| UDB API documentation | Python API reference | Installed-package import and docs link checks |
+| Generator or workflow                          | Planned Python disposition                                              | Required comparison                                                                   |
+| ---------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Raw/resolved architecture and resolved schemas | Core serializer and CLI commands                                        | Canonical structured equality and schema-version behavior                             |
+| Layout-derived architecture YAML               | Stage 2 authoring command                                               | Tracked-file equality/drift check                                                     |
+| Configuration C header                         | Direct Python generator                                                 | Compile check plus reviewed golden output                                             |
+| Configuration SystemVerilog header             | Direct Python generator                                                 | Syntax/lint check plus reviewed golden output                                         |
+| Generic C encoding header                      | Port existing Python generator onto public API                          | Header diff and consumer compile check                                                |
+| Generic SystemVerilog output                   | Port existing Python generator onto public API                          | Output diff and syntax/lint check                                                     |
+| Go output                                      | Port existing Python generator onto public API                          | Output diff and Go compile/test                                                       |
+| Instruction table                              | Python structured table builder                                         | Canonical table equality                                                              |
+| Extension documentation and PDF                | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor rendering | Semantic AsciiDoc diff and external rendered smoke/golden checks                      |
+| Strict profile configurations                  | Core Python configuration transformation and authoring                  | All retained profile configuration outputs and semantics                              |
+| C++ hart model and decode tree                 | `udb[sim]`: Python semantic passes and source templates                 | Generated C++ build/unit tests and RV32/RV64/vector suites                            |
+| C++ Bits tests                                 | Native C++ randomized/property tests, no source generator               | Preserve existing width/signedness/operation/edge-case coverage                       |
+| QC interrupt-controller CSR authoring          | Python `.layout` mechanism                                              | Complete generated CSR family and tracked-file drift                                  |
+| UDB query/report/instruction matching          | Native Python CLI capabilities                                          | Query, formatted output and decoding behavior                                         |
+| IDL command-line interface                     | Align with the Python IDL API                                           | Parsing, evaluation and checking behavior, not Ruby parser quirks                     |
+| Configured prose and exception names           | Python conversion if feasible; otherwise approved retirement            | Exact configured output or explicit reported unsupported scope, never a Ruby fallback |
+| Schema documentation                           | Replace internal Ruby gem with Python generator                         | Versioned MDX equality and immutability checks                                        |
+| IDL language documentation/highlighting        | IDL syntax definitions and external document rendering                  | HTML build and representative token classes                                           |
+| Pages landing and schema indexes               | Retain independent Python publication helpers                           | Correct artifact/schema links and version history                                     |
+| UDB API documentation                          | Python API reference                                                    | Installed-package import and docs link checks                                         |
 
 Retire manual/config/appendix/profile-release/PRM documents, Explorer browsers
 and workbook, the profile-extension report and JSON-reference search index,
@@ -897,8 +899,8 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   - syntax errors at a newline or in an unterminated trailing comment reported the
     wrong position;
   - `from_h` crashed on unknown-bit literals.
-  The parser now relinks parents after parsing, raises the recursion limit while it
-  runs, and reports nesting that is still too deep as `IdlSyntaxError`.
+    The parser now relinks parents after parsing, raises the recursion limit while it
+    runs, and reports nesting that is still too deep as `IdlSyntaxError`.
 - The parser is a package of grammar-area modules (`udb.idl.parser`), each under about
   900 lines; the public API is unchanged.
 

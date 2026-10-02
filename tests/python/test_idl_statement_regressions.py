@@ -3,8 +3,6 @@
 
 """Focused statement integration and safe unknown-write regressions."""
 
-import os
-
 import pytest
 from idl_semantics_helpers import make_symtab, run_semantic_case
 
@@ -152,19 +150,6 @@ def test_implication_recursive_check_preserves_valid_comparisons(text):
     node = parse_constraint_body(text)
     node.type_check(table, strict=True)
     assert node.satisfied(table) is True
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="requires locked Ruby oracle")
-def test_isa_valid_program_matches_live_ruby():
-    from regen_idl_statements import run_oracle
-
-    case = {
-        "id": "valid_isa_registration",
-        "root": "isa",
-        "text": ISA_PROGRAM,
-        "observe": {"symbols": ["Constant"], "functions": True},
-    }
-    assert run_semantic_case(case) == run_oracle([case])[0]
 
 
 @pytest.mark.parametrize("text", ["Bits<8> x; Bits<8> x;", "Bits<8> x, x;"])

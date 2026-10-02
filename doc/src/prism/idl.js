@@ -7,12 +7,11 @@
 // The TextMate grammar at tools/vscode/idl/syntaxes/idl.tmLanguage.json
 // is generated from this file. To regenerate it, run:
 //
-//   bin/chore gen vscode-idl
+//   mise run gen:idl-grammar
 //
 
 module.exports = function (Prism) {
   Prism.languages.idl = {
-
     // Comments: # to end of line
     comment: {
       pattern: /#.*/,
@@ -36,66 +35,68 @@ module.exports = function (Prism) {
     },
 
     // Verilog-style sized literals: 32'hDEAD, 8'd255, 1'b1, 4'o7
-    'verilog-literal': {
+    "verilog-literal": {
       pattern: /\b(?:\d+|MXLEN)'s?[bBoOdDhH][0-9a-fA-F_]+\b/,
-      alias: 'number',
+      alias: "number",
     },
 
     // C-style hex literals: 0xDEAD
-    'hex-literal': {
+    "hex-literal": {
       pattern: /\b0x[0-9a-fA-F_]+\b/,
-      alias: 'number',
+      alias: "number",
     },
 
     // Binary literals: 0b1010
-    'binary-literal': {
+    "binary-literal": {
       pattern: /\b0b[01_]+\b/,
-      alias: 'number',
+      alias: "number",
     },
 
     // Decimal integers
     number: /\b\d+\b/,
 
     // Keywords
-    keyword: /\b(?:if|else|for|returns|return|arguments|description|body|builtin|function|enum|bitfield|struct)\b/,
+    keyword:
+      /\b(?:if|else|for|returns|return|arguments|description|body|builtin|function|enum|bitfield|struct)\b/,
 
     // Builtin variables and cast operators ($ prefix)
-    builtin: /\$(?:pc|encoding|signed|bits|enum_to_a|enum|array_size|enum_size|enum_element_size)\b/,
+    builtin:
+      /\$(?:pc|encoding|signed|bits|enum_to_a|enum|array_size|enum_size|enum_element_size)\b/,
 
     // Boolean literals
     boolean: /\b(?:true|false)\b/,
 
     // Type aliases
-    'type-alias': {
+    "type-alias": {
       pattern: /\b(?:Bits|XReg|U64|U32|Boolean|String)\b/,
-      alias: 'class-name',
+      alias: "class-name",
     },
 
     // CSR access: CSR[name] or CSR[name].field
     csr: {
       pattern: /\bCSR\b/,
-      alias: 'keyword',
+      alias: "keyword",
     },
 
     // Enum/bitfield scope operator: Type::Member
-    'scope-resolution': {
+    "scope-resolution": {
       pattern: /\b([A-Z][a-zA-Z0-9_]*)(::[A-Za-z][A-Za-z0-9_]*)\b/,
       inside: {
-        'class-name': /^[A-Z][a-zA-Z0-9_]*/,
+        "class-name": /^[A-Z][a-zA-Z0-9_]*/,
         punctuation: /::/,
         property: /[A-Za-z][A-Za-z0-9_]*$/,
       },
     },
 
     // Function declarations: function name
-    'function-declaration': {
+    "function-declaration": {
       pattern: /(\bfunction\s+)[a-z][a-zA-Z0-9_]*\??/,
       lookbehind: true,
-      alias: 'function',
+      alias: "function",
     },
 
     // Function calls: name( or name<...>(
-    'function-call': {
+    "function-call": {
       pattern: /\b([a-z][a-zA-Z0-9_]*\??)\s*(?:<[^>]*>\s*)?\(/,
       inside: {
         function: /^[a-z][a-zA-Z0-9_]*\??/,
@@ -107,9 +108,9 @@ module.exports = function (Prism) {
     constant: /\b[A-Z][a-zA-Z0-9_]*\b/,
 
     // Widening operators (backtick prefix)
-    'widening-operator': {
+    "widening-operator": {
       pattern: /`[+\-*]|`<</,
-      alias: 'operator',
+      alias: "operator",
     },
 
     // Operators

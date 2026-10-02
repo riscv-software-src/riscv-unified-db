@@ -8,23 +8,16 @@ from pathlib import Path
 
 import pytest
 from idl_semantics_helpers import assert_case_matches
-from ruamel.yaml import YAML
 
-ROOT = Path(__file__).resolve().parents[2]
-FIXTURE = ROOT / "tools/ruby-gems/idlc/test/data/type_checking_tests.yaml"
 CORPUS = json.loads((Path(__file__).parent / "data/idl/statements.json").read_text())["cases"]
-BY_ID = {case["id"]: case for case in CORPUS}
-TYPE_DATA = YAML(typ="safe").load(FIXTURE.read_text())
-TYPE_ENTRIES = [(category, entry) for category, entries in TYPE_DATA.items() for entry in entries]
+TYPE_CASES = [case for case in CORPUS if case["id"].startswith("ruby_type__")]
 
 
 @pytest.mark.parametrize(
-    ("category", "entry"),
-    TYPE_ENTRIES,
-    ids=[f"{category}__{entry['name']}" for category, entry in TYPE_ENTRIES],
+    "case",
+    TYPE_CASES,
+    ids=[case["id"].removeprefix("ruby_type__") for case in TYPE_CASES],
 )
-def test_ruby_type_checking_fixture(category, entry):
-    case = BY_ID[f"ruby_type__{category}__{entry['name']}"]
-    assert case["source"]["should_pass"] == entry["should_pass"]
-    assert case["source"]["expected_type"] == entry.get("expected_type")
+def test_frozen_type_checking_case(case):
+    assert "should_pass" in case["source"]
     assert_case_matches(case)

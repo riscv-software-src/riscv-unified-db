@@ -66,7 +66,7 @@ def schema_check_failed(schema_file: Path) -> bool:
 
 def main() -> None:
     if not GEN_SCHEMAS_DIR.is_dir():
-        raise FileNotFoundError("gen/schemas does not exist; run './do gen:schemas' first")
+        raise FileNotFoundError("gen/schemas does not exist; run 'mise run gen:schemas' first")
 
     schema_files = sorted(path for path in GEN_SCHEMAS_DIR.rglob("*.json") if path.is_file())
     failed = False

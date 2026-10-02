@@ -78,7 +78,7 @@ def test_developer_tasks_use_uv_environment() -> None:
     assert "uv run --locked" not in source
 
 
-def test_fixture_registry_marks_ruby_oracles_frozen(capsys) -> None:
+def test_fixture_registry_marks_legacy_captures_frozen(capsys) -> None:
     assert fixtures.list_fixtures("json") == 0
     entries = {entry["name"]: entry for entry in json.loads(capsys.readouterr().out)}
     assert entries["config-headers"]["refreshable"]

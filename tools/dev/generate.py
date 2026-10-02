@@ -19,6 +19,8 @@ def leaf_command(name: str, *, check: bool) -> list[str]:
         command = udb_command("generate", "schema-docs", "-o", str(ROOT / "doc/docs/schemas"))
         command.extend(suffix if check else ["--replace-current"])
         return command
+    if name == "schemas":
+        return udb_command("generate", "schema-bundle", "-o", str(ROOT / "gen/schemas"), *suffix)
     if name == "idl-grammar":
         return [
             "node",
@@ -35,7 +37,7 @@ def run_leaf(name: str, *, check: bool) -> int:
 def run_group(name: str, *, check: bool) -> int:
     leaves = ["idl-grammar"]
     if name == "all":
-        leaves[1:1] = ["profile-configs", "schema-docs"]
+        leaves[1:1] = ["schemas", "profile-configs", "schema-docs"]
     for leaf in leaves:
         status = run_leaf(leaf, check=check)
         if status:
@@ -48,7 +50,8 @@ def run_group(name: str, *, check: bool) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "name", choices=("all", "quick", "profile-configs", "schema-docs", "idl-grammar")
+        "name",
+        choices=("all", "quick", "schemas", "profile-configs", "schema-docs", "idl-grammar"),
     )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
