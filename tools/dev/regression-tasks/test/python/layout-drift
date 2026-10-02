@@ -7,5 +7,5 @@ set -e
 
 # Step 1: Check layout-derived architecture files
 (
-  uv run --locked udb generate-layouts --root . --collection standard --collection qc_iu --check
+  uv run --locked udb author layouts --root . --collection standard --collection qc-iu --check
 )

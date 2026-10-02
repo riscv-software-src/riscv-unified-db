@@ -7,5 +7,5 @@ set -e
 
 # Step 1: Check schema versions against published URLs
 (
-  uv run --locked udb --schemas spec/schemas schemas gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
+  uv run --locked udb --schema-dir spec/schemas generate schema-bundle -o gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
 )

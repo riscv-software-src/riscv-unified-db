@@ -7,8 +7,8 @@ set -e
 
 # Step 1: Generate configuration header artifacts with installed Python CLI
 (
-  uv run --locked udb generate cfg-c-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.h
-  uv run --locked udb generate cfg-svh-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.svh
+  uv run --locked udb generate config-c-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.h
+  uv run --locked udb generate config-sv-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.svh
   cmp gen/config-headers/config.h tests/golden/mc100-32-full-example.golden.h
   cmp gen/config-headers/config.svh tests/golden/mc100-32-full-example.golden.svh
 )

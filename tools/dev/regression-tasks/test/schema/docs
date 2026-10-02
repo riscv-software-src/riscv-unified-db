@@ -7,7 +7,7 @@ set -e
 
 # Step 1: Check schema documentation without rewriting released pages
 (
-  ./bin/python -m udb generate schema-docs --schemas spec/schemas --out doc/docs/schemas --check
+  ./bin/python -m udb --schema-dir spec/schemas generate schema-docs -o doc/docs/schemas --check
 )
 
 # Step 2: Check old schema MDX files were not modified

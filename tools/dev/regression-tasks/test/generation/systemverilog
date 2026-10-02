@@ -7,7 +7,7 @@ set -e
 
 # Step 1: Generate SystemVerilog decode package with Python
 (
-  uv run --locked python -m udb.generators.sv_decode -o gen/sverilog/riscv_decode_package.svh
+  uv run --locked udb generate sv-decode -o gen/sverilog/riscv_decode_package.svh
 )
 
 # Step 2: Parse every SystemVerilog declaration and consumer reference

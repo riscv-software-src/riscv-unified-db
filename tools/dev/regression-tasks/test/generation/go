@@ -7,7 +7,7 @@ set -e
 
 # Step 1: Generate Go code with Python
 (
-  uv run --locked python -m udb.generators.go -o gen/go/inst.go
+  uv run --locked udb generate go-encoding -o gen/go/inst.go
 )
 
 # Step 2: Compile and execute the complete Go assembler adaptor
