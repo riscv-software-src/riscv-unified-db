@@ -363,45 +363,55 @@ def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):
 
 def test_unified_cli_delegates_cpp_hart_arguments(tmp_path, monkeypatch):
     import udb.cli
-    import udb.cpp_hart.__main__ as cpp_main
+    from udb.commands import generation_impl
 
     calls = []
-    monkeypatch.setattr(cpp_main, "main", lambda args: calls.append(args) or 7)
+
+    def run_generation(state, generator, *, progress=None, **options):
+        calls.append((state, generator, progress, options))
+        return 7
+
+    monkeypatch.setattr(generation_impl, "run_generation", run_generation)
     output = tmp_path / "generated"
     overlay = tmp_path / "overlay"
     result = udb.cli.main(
         [
+            "--overlay",
+            str(overlay),
             "generate",
             "cpp-hart",
-            "--config",
-            "rv32,rv64",
+            "-c",
+            "rv32",
+            "-c",
+            "rv64",
             "--build-name",
             "both",
             "--build-type",
             "Debug",
-            "--overlay",
-            str(overlay),
-            "--out",
+            "-j",
+            "2",
+            "-o",
             str(output),
             "--check",
         ]
     )
     assert result == 7
-    assert calls == [
-        [
-            "--out",
-            str(output),
-            "--build-type",
-            "Debug",
-            "--config",
-            "rv32,rv64",
-            "--build-name",
-            "both",
-            "--overlay",
-            str(overlay),
-            "--check",
-        ]
-    ]
+    state, generator, progress, options = calls[0]
+    assert state.overlays == [overlay]
+    assert generator == "cpp-hart"
+    assert progress is None
+    assert options == {
+        "output": output,
+        "config": ["rv32", "rv64"],
+        "all_configs": False,
+        "config_dir": None,
+        "runtime_root": None,
+        "build_name": "both",
+        "build_type": "Debug",
+        "jobs": 2,
+        "show_progress": False,
+        "check": True,
+    }
 
 
 def test_invalid_or_missing_inputs_are_explicit(architecture, tmp_path):

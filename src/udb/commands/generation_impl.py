@@ -245,6 +245,109 @@ def _schema_docs(state: CliState, options: dict[str, object]) -> int:
     return 1 if options.get("check") and drift else 0
 
 
+def _configuration_overlays(configurations, overlays: list[Path]) -> tuple[tuple[Path, ...], ...]:
+    """Match declared overlays by basename; otherwise apply all explicit overlays."""
+
+    by_name: dict[str, Path] = {}
+    for path in overlays:
+        if path.name in by_name:
+            raise CliError(f"duplicate --overlay input named {path.name!r}")
+        by_name[path.name] = path
+    declared = {config.overlay for config in configurations if config.overlay is not None}
+    missing = declared - by_name.keys()
+    if missing:
+        raise CliError("missing --overlay input for " + ", ".join(sorted(missing)))
+    if declared and all(config.overlay is not None for config in configurations):
+        unused = by_name.keys() - declared
+        if unused:
+            raise CliError("unused --overlay input: " + ", ".join(sorted(unused)))
+    return tuple(
+        (by_name[config.overlay],) if config.overlay is not None else tuple(overlays)
+        for config in configurations
+    )
+
+
+def _cpp_hart(
+    state: CliState,
+    options: dict[str, object],
+    progress: ProgressCallback | None,
+) -> int:
+    from ..configuration import Configuration
+    from ..cpp_hart import CppHartGenerator, RuntimeResources
+    from ..database import Database
+    from ..schema import SchemaStore
+
+    selectors = list(options.get("config") or ())
+    all_configs = bool(options.get("all_configs"))
+    config_dir = options.get("config_dir")
+    if bool(selectors) == all_configs:
+        raise CliError("select one or more --config values or --all-configs")
+    if all_configs:
+        if config_dir is None:
+            selectors = ["_", "rv32", "rv64"]
+        else:
+            selectors = [str(path) for path in sorted(Path(config_dir).glob("*.yaml"))]
+            if not selectors:
+                raise CliError(f"no configuration YAML files found in {config_dir}")
+    if any("," in selector for selector in selectors):
+        raise CliError("repeat --config instead of using comma-separated values")
+
+    database = (
+        Database.from_path(state.database, schemas_path=state.schema_dir)
+        if state.database is not None
+        else Database.bundled()
+    )
+    if state.schema_dir is not None and state.database is None:
+        database = Database(database.isa_root, schemas_root=state.schema_dir)
+    schema_store = SchemaStore(database.schemas_root) if database.schemas_root is not None else None
+    configurations = []
+    for selector in selectors:
+        if selector in {"_", "rv32", "rv64"} and config_dir is None:
+            configurations.append(Configuration.builtin(selector))
+            continue
+        path = Path(selector)
+        if config_dir is not None and not path.is_file():
+            path = Path(config_dir) / f"{selector}.yaml"
+        configurations.append(Configuration.from_file(path, schema_store=schema_store))
+
+    overlay_groups = _configuration_overlays(configurations, state.overlays)
+    resolved_databases = {}
+    architectures = []
+    for configuration, overlays in zip(configurations, overlay_groups, strict=True):
+        resolved = resolved_databases.get(overlays)
+        if resolved is None:
+            resolved = database.resolve(overlays=overlays, progress=progress)
+            resolved_databases[overlays] = resolved
+        architectures.append(resolved.configure(configuration))
+
+    def cpp_progress(phase: str, current: int, total: int) -> None:
+        report_progress(
+            progress,
+            f"cpp-hart:{phase}",
+            f"Generating C++ hart: {phase}",
+            completed=current,
+            total=total,
+            finished=current == total,
+        )
+
+    # Generation is currently single-process; accept the stable jobs/progress
+    # options while the shared CLI progress callback owns presentation.
+    _ = options.get("jobs"), options.get("show_progress")
+    generator = CppHartGenerator(
+        architectures,
+        resources=(
+            RuntimeResources.from_path(options["runtime_root"])
+            if options.get("runtime_root") is not None
+            else None
+        ),
+        build_name=options.get("build_name"),
+        build_type=str(options.get("build_type", "RelWithDebInfo")),
+        progress=cpp_progress if progress is not None else None,
+    )
+    changed = generator.generate(options["output"], check=bool(options.get("check")))
+    return 1 if options.get("check") and changed else 0
+
+
 def run_generation(
     state: CliState,
     generator: str,
@@ -262,6 +365,8 @@ def run_generation(
         return _schema_docs(state, options)
     if state.view is View.RAW:
         raise CliError("--view raw is only accepted by list and show")
+    if generator == "cpp-hart":
+        return _cpp_hart(state, options, progress)
     if generator == "profile-configs":
         from ..profile_configs import profile_configuration_plan
 
