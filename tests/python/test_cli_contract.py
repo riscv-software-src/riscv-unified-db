@@ -16,7 +16,9 @@ import pytest
 from typer.testing import CliRunner
 
 from udb.cli import app
+from udb.cli import main as cli_main
 from udb.cli_output import write_generated_source
+from udb.commands.common import CliState, _progress_enabled
 
 RUNNER = CliRunner()
 REPOSITORY_ROOT = Path(__file__).parents[2]
@@ -97,6 +99,30 @@ def test_version_and_usage_exit_codes() -> None:
     assert version.exit_code == 0
     assert version.stdout.startswith("udb ")
     assert invalid.exit_code == 2
+
+
+def test_process_boundary_usage_errors_are_one_line(capsys: pytest.CaptureFixture[str]) -> None:
+    assert cli_main(["not-a-command"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "Error: No such command 'not-a-command'.\n"
+
+
+def test_progress_policy_respects_tty_quiet_and_terminal_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("udb.commands.common.sys.stderr.isatty", lambda: True)
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
+
+    assert _progress_enabled(CliState())
+    assert not _progress_enabled(CliState(quiet=True))
+    monkeypatch.setenv("NO_COLOR", "1")
+    assert not _progress_enabled(CliState())
+    monkeypatch.delenv("NO_COLOR")
+    monkeypatch.setenv("TERM", "dumb")
+    assert not _progress_enabled(CliState())
 
 
 def test_global_options_must_precede_the_command() -> None:

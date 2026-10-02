@@ -13,7 +13,7 @@ import typer
 from typer._click.core import ParameterSource
 
 from .commands import author, generation, idl, query, render, validation
-from .commands.common import CliState, View, version_callback
+from .commands.common import CliState, View, print_error, version_callback
 
 _CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
@@ -108,7 +108,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return int(result or 0)
     except ClickException as error:
-        error.show()
+        print_error(error.format_message())
         return error.exit_code
 
 

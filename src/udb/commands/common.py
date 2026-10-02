@@ -155,7 +155,9 @@ def progress_renderer(state: CliState) -> Iterator[ProgressCallback | None]:
         renderer.close()
 
 
-def _print_error(message: str) -> None:
+def print_error(message: str) -> None:
+    """Write one styled diagnostic line to stderr."""
+
     color = (
         sys.stderr.isatty() and os.environ.get("TERM") != "dumb" and "NO_COLOR" not in os.environ
     )
@@ -173,16 +175,16 @@ def run_action(
         with progress_renderer(state) as progress:
             result = action(progress)
     except CliError as error:
-        _print_error(str(error))
+        print_error(str(error))
         raise typer.Exit(error.status) from error
     except Exception as error:
         from ..errors import UdbError
         from ..idl.errors import IdlError
 
         if isinstance(error, (IdlError, UdbError, OSError, UnicodeError, ValueError, KeyError)):
-            _print_error(str(error))
+            print_error(str(error))
             raise typer.Exit(2) from error
-        _print_error(f"internal error: {error}")
+        print_error(f"internal error: {error}")
         if state.debug or os.environ.get("UDB_DEBUG") == "1":
             traceback.print_exc()
         raise typer.Exit(4) from error
