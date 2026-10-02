@@ -70,10 +70,6 @@ Signed-off-by: Jane Developer <jane@example.com>
 
 The name and email must be your real name and the email address configured in git.
 
-NOTE: Because of the squash merge policy, only the PR title and description appear in `main`.
-Include a `Signed-off-by` line at the end of your PR description as well, so the sign-off is
-part of the final commit message.
-
 ==== Adding the sign-off
 
 Git adds the line for you when you pass `-s` (`--signoff`):
@@ -110,109 +106,11 @@ different from a cryptographic signature (see <<Commit signing>>). Both are requ
 === Commit signing
 
 All commits must be cryptographically signed so that GitHub shows them as *Verified*.
-You can sign with either an SSH key or a GPG key. SSH signing is simpler if you already
-use SSH keys, and requires Git 2.34 or later.
-
-IMPORTANT: The email address on your commits (`git config user.email`) must match a verified
-email address on your GitHub account, or the commit will not show as Verified.
-
-==== Option A: Sign with an SSH key (recommended)
-
-. Create a key if you don't have one:
-+
-[source,bash]
-----
-ssh-keygen -t ed25519 -C "jane@example.com"
-----
-. Add the *public* key to GitHub as a *Signing Key*: _Settings > SSH and GPG keys >
-  New SSH key_, and set *Key type* to *Signing Key*. A key added only for authentication does
-  not verify commits, so add it again as a signing key if needed.
-. Configure git:
-+
-[source,bash]
-----
-git config --global gpg.format ssh
-git config --global user.signingkey ~/.ssh/id_ed25519.pub
-git config --global commit.gpgsign true
-git config --global tag.gpgsign true
-----
-
-==== Option B: Sign with a GPG key
-
-. Install GPG, then generate a key. Choose the default key type, and use the same email
-  address as your GitHub account:
-+
-[source,bash]
-----
-gpg --full-generate-key
-----
-. Find your key ID (the part after `sec   <algorithm>/`):
-+
-[source,bash]
-----
-gpg --list-secret-keys --keyid-format=long
-----
-. Export the public key and add it in GitHub under _Settings > SSH and GPG keys >
-  New GPG key_:
-+
-[source,bash]
-----
-gpg --armor --export <KEY_ID>
-----
-. Configure git:
-+
-[source,bash]
-----
-git config --global user.signingkey <KEY_ID>
-git config --global commit.gpgsign true
-git config --global tag.gpgsign true
-----
-. If git reports `gpg failed to sign the data`, add this line to your shell profile
-  (`~/.bashrc`, `~/.zshrc`) and restart the shell:
-+
-[source,bash]
-----
-export GPG_TTY=$(tty)
-----
-
-With `commit.gpgsign true`, every commit is signed automatically. Without it, pass `-S`
-to `git commit`. To sign off *and* sign in one step:
-
-[source,bash]
-----
-git commit -s -S -m "fix: correct fcvt metadata"
-----
-
-==== Verifying your signature
-
-On GitHub, a signed commit shows a *Verified* badge next to it. You can also check locally:
-
-[source,bash]
-----
-git log --show-signature -1
-----
-
-GPG signatures verify locally once your public key is in your keyring. SSH signatures need
-an allowed-signers file before `git log --show-signature` can verify them:
-
-[source,bash]
-----
-mkdir -p ~/.config/git
-echo "jane@example.com $(cat ~/.ssh/id_ed25519.pub)" >> ~/.config/git/allowed_signers
-git config --global gpg.ssh.allowedSignersFile ~/.config/git/allowed_signers
-----
-
-==== Signing commits you already made
-
-[source,bash]
-----
-git rebase --exec 'git commit --amend --no-edit -s -S' upstream/main
-git push --force-with-lease
-----
-
-See GitHub's documentation on
+You can sign with an SSH key or a GPG key; see GitHub's documentation on
 https://docs.github.com/en/authentication/managing-commit-signature-verification[managing commit signature verification]
-for more detail.
+for how to set one up. The email address on your commits (`git config user.email`) must match
+a verified email address on your GitHub account. To sign a commit, pass `-S` to `git commit`
+(or set `commit.gpgsign` to `true`), and check the result with `git log --show-signature -1`.
 
 === Code review
 
