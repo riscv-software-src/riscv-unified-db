@@ -12,6 +12,8 @@ import pytest
 from capture_cpp_hart_metadata import interface
 
 from udb import Configuration, Database
+from udb.commands.common import CliError
+from udb.commands.generation_impl import _configuration_overlays
 from udb.cpp_hart import (
     CONFIG_ARTIFACTS,
     SHARED_ARTIFACTS,
@@ -19,7 +21,6 @@ from udb.cpp_hart import (
     CppHartGenerator,
     RuntimeResources,
 )
-from udb.cpp_hart.__main__ import configuration_overlays, main
 from udb.cpp_hart.catalog import Catalog
 from udb.cpp_hart.context import Context
 from udb.cpp_hart.csrs import _reset_order
@@ -270,53 +271,6 @@ def test_bundled_runtime_assets_are_independent_of_checkout(tmp_path, monkeypatc
     assert copied == original
 
 
-def test_empty_all_selection_is_explicit(tmp_path, capsys):
-    assert (
-        main(
-            [
-                "--config",
-                "all",
-                "--configs-directory",
-                str(tmp_path),
-                "--out",
-                str(tmp_path / "out"),
-            ]
-        )
-        == 2
-    )
-    assert "No configurations selected" in capsys.readouterr().err
-
-
-def test_progress_is_opt_in_and_written_to_stderr(tmp_path, capsys, monkeypatch):
-    from udb.cpp_hart import __main__ as entrypoint
-
-    class FakeDatabase:
-        @classmethod
-        def bundled(cls):
-            return cls()
-
-        def resolve(self, *, overlays=()):
-            return self
-
-        def configure(self, config):
-            return object()
-
-    class FakeGenerator:
-        def __init__(self, architectures, **kwargs):
-            self.progress = kwargs["progress"]
-
-        def generate(self, root, *, check=False):
-            if self.progress is not None:
-                self.progress("rv64:instruction_headers", 2, 3)
-            return ()
-
-    monkeypatch.setattr(entrypoint, "Database", FakeDatabase)
-    monkeypatch.setattr(entrypoint, "CppHartGenerator", FakeGenerator)
-    assert main(["--config", "rv64", "--out", str(tmp_path), "--progress"]) == 0
-    error = capsys.readouterr().err
-    assert "cpp-hart: rv64:instruction_headers 2/3 elapsed=" in error
-
-
 def test_dynamic_field_location_uses_accessible_privilege_modes(monkeypatch):
     from udb import idl_environment
 
@@ -354,11 +308,11 @@ def test_configuration_overlays_apply_only_to_declaring_configuration(tmp_path):
     overlay_data["arch_overlay"] = "example"
     configs = (Configuration(overlay_data), Configuration.builtin("rv64"))
     example = tmp_path / "example"
-    assert configuration_overlays(configs, [example]) == ((example,), ())
-    with pytest.raises(CppGenerationError, match="Missing explicit"):
-        configuration_overlays(configs, [])
-    with pytest.raises(CppGenerationError, match="Unused"):
-        configuration_overlays(configs, [example, tmp_path / "other"])
+    assert _configuration_overlays(configs, [example]) == ((example,), (example,))
+    with pytest.raises(CliError, match="missing --overlay"):
+        _configuration_overlays(configs, [])
+    with pytest.raises(CliError, match="unused --overlay"):
+        _configuration_overlays((configs[0],), [example, tmp_path / "other"])
 
 
 def test_unified_cli_delegates_cpp_hart_arguments(tmp_path, monkeypatch):

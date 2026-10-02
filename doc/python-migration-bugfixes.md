@@ -75,6 +75,7 @@ tested, but are not labeled as Ruby defects.
 | 60 | An `@latest` selector such as `Zba@latest` leaves the extension list unset, so `ext-doc` raises `NoMethodError: undefined method 'each' for nil`. | `@latest` uses normal version matching and generates a complete document. Covered in [`test_extension_documents.py`](../tests/python/test_extension_documents.py); the captured Ruby failure is pinned by `test_recorded_native_latest_error_is_not_an_artifact_parity_pass` in [`test_extension_fidelity.py`](../tests/python/test_extension_fidelity.py). Passing. |
 | 61 | `idlc eval -DA=1==1 A` prints `1`: the define parser splits at every `=` and binds `A` to `1`, silently discarding `==1`. Direct `idlc eval '1 == 1'` prints `true`. | Defines split only at the first `=` and evaluate the full expression. The `define-equality` case in [`test_idl_cli.py`](../tests/python/test_idl_cli.py) expects the captured `equality` output. Passing. |
 | 62 | `idlc tc inst -` loses the bare stdin argument, prints help, and exits 1; `idlc tc inst -- -` succeeds. | A bare `-` reads stdin for normal and strict checking. The `check-stdin` and `check-strict` cases in [`test_idl_cli.py`](../tests/python/test_idl_cli.py) expect the captured separated-form results. Passing. |
+| 63 | C++ hart generation for the unconfigured `_` architecture aborts with `TSort::Cyclic` because the Ruby reset-order graph contains the mutual `misa`/`mstatus` dependency. | Python collapses cyclic CSR reset dependencies into a deterministic order and generates `_` successfully. Covered by `test_csr_reset_order_collapses_cycles_deterministically` in [`test_cpp_hart_generator.py`](../tests/python/test_cpp_hart_generator.py) and the `_` generation gate. Passing. |
 
 Entry 40 also affects exception reachability across independently cloned symbol tables
 with the same name. The standalone [`ruby_idl_passes_assignment_binding.rb`](../tests/python/ruby_idl_passes_assignment_binding.rb)
@@ -114,9 +115,9 @@ nine entries at that gate. Stage 3 entries above have separate Ruby reproduction
 Python-only version hashing and array-domain analysis defects found during Stage 3
 review are corrected with regressions and are not Ruby bug-log entries.
 
-Stage 4 and Stage 5 entries 49-62 have live Ruby reproductions, captured Ruby
+Stage 4 and Stage 5 entries 49-63 have live Ruby reproductions, captured Ruby
 output, or source witnesses recorded with their regressions. The instruction
 table, QC layouts, native Bits tests, generator retirements, generic C/SystemVerilog/Go
-generators and C++ hart lanes found no additional corrected Ruby defects. Their
+generators and the other C++ hart comparisons found no additional corrected Ruby defects. Their
 differences are exact parity, intentionally preserved output quirks, approved scope
 reductions, defects in pre-existing Python scripts, or defects in new Python code.

@@ -41,28 +41,25 @@ come from the installed package by default. Alternatively,
 texts. The generator does not search upward for a repository or implicitly
 follow configuration overlay pointers.
 
-## Testing entry point
-
-Pending integration into the unified CLI:
+## Command line
 
 ```sh
-python -m udb.cpp_hart \
-  --source spec/std/isa --schemas spec/schemas \
-  --runtime-root . --config cfgs/rv32-riscv-tests.yaml \
-  --out gen/cpp-hart-source
+udb --database spec/std/isa --schema-dir spec/schemas \
+  generate cpp-hart --runtime-root . \
+  --config cfgs/rv32-riscv-tests.yaml --output gen/cpp-hart-source
 
-python -m udb.cpp_hart \
-  --config rv32,rv64 --build-name both --out generated
+udb generate cpp-hart \
+  --config rv32 --config rv64 --build-name both --output generated
 ```
 
-Repeat `--config` or use comma-separated selectors. Builtin `_`, `rv32` and
-`rv64` inputs are packaged resources; other selectors are explicit YAML paths
-or names in `--configs-directory`. `--config all` selects that declared
-directory, or the three builtin inputs when no directory is supplied. Multiple
-configurations require `--build-name`; duplicate names and C++ name collisions
-are errors. Build types are `Debug`, `RelWithDebInfo`, `Release` and `Asan`;
-legacy uppercase spellings and `FAST_DEBUG` are accepted. The build name does
-not rename configuration namespaces.
+Repeat `--config` for multiple configurations. Builtin `_`, `rv32` and `rv64`
+inputs are packaged resources; other selectors are explicit YAML paths or names
+in `--config-dir`. `--all-configs` selects every YAML file in that directory, or
+the three builtin inputs when no directory is supplied. Multiple configurations
+require `--build-name`; duplicate names and C++ name collisions are errors. Build
+types are `Debug`, `RelWithDebInfo`, `Release` and `Asan`; legacy uppercase
+spellings and `FAST_DEBUG` are accepted. The build name does not rename
+configuration namespaces.
 
 ## Retained files and resources
 
