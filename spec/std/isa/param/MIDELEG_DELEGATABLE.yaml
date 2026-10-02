@@ -134,7 +134,43 @@ requirements:
             - name: MIDELEG_DELEGATABLE
               index: 10
               equal: true
-    # VSSI, VSTI, VSEI, and SGEI are defined by H
+    - if:
+        extension:
+          name: H
+      then:
+        allOf:
+          # VSSI, VSTI, and VSEI are always delegated to HS-mode when H is implemented
+          - param:
+              allOf:
+                - name: MIDELEG_DELEGATABLE
+                  index: 2
+                  equal: true
+                - name: MIDELEG_DELEGATABLE
+                  index: 6
+                  equal: true
+                - name: MIDELEG_DELEGATABLE
+                  index: 10
+                  equal: true
+          # SGEI is always delegated to HS-mode when any guest external interrupts are implemented (GEILEN nonzero)
+          - if:
+              not:
+                param:
+                  name: NUM_EXTERNAL_GUEST_INTERRUPTS
+                  equal: 0
+            then:
+              param:
+                name: MIDELEG_DELEGATABLE
+                index: 12
+                equal: true
+          - if:
+              param:
+                name: NUM_EXTERNAL_GUEST_INTERRUPTS
+                equal: 0
+            then:
+              param:
+                name: MIDELEG_DELEGATABLE
+                index: 12
+                equal: false
     - if:
         not:
           extension:
@@ -154,29 +190,3 @@ requirements:
             - name: MIDELEG_DELEGATABLE
               index: 12
               equal: false
-    # SGEI is always delegated to HS-mode when any guest external interrupts are implemented (GEILEN nonzero)
-    - if:
-        allOf:
-          - extension:
-              name: H
-          - not:
-              param:
-                name: NUM_EXTERNAL_GUEST_INTERRUPTS
-                equal: 0
-      then:
-        param:
-          name: MIDELEG_DELEGATABLE
-          index: 12
-          equal: true
-    - if:
-        allOf:
-          - extension:
-              name: H
-          - param:
-              name: NUM_EXTERNAL_GUEST_INTERRUPTS
-              equal: 0
-      then:
-        param:
-          name: MIDELEG_DELEGATABLE
-          index: 12
-          equal: false
